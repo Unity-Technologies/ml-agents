@@ -1,0 +1,9 @@
+tensorflow>=1.0
+Pillow>=4.2.1
+matplotlib
+numpy>=1.11.0
+scipy
+jupyter
+mock>=2.0.0
+pytest>=3.2.2
+docopt
