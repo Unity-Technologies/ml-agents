@@ -19,10 +19,12 @@ Make sure you have Unity 2017.1 or later installed. Download link available [her
     - Save environment binary to a sub-directory containing the model to use for training *(you may need to click on the down arrow on the file chooser to be able to select that folder)*
 
 ## Example Projects
-The `Examples` subfolder contains a set of example environments to use either as starting points or templates for designing your own environments.
+The `Examples` subfolder contains a set of example environments to use either as starting points or templates for designing your own environments. 
 * **3DBalanceBall** - Physics-based game where the agent must rotate a 3D-platform to keep a ball in the air. Supports both discrete and continuous control.
 * **GridWorld** - A simple gridworld containing regions which provide positive and negative reward. The agent must learn to move to the rewarding regions (green) and avoid the negatively rewarding ones (red). Supports discrete control.
 * **Tennis** - An adversarial game where two agents control rackets, which must be used to bounce a ball back and forth between them. Supports continuous control.
+
+For more informoation on each of these environments, see this [wiki page](../../../wiki/Example-Environments).
 
 Within `ML-Agents/Template` there also exists:
 * **Template** - An empty Unity scene with a single _Academy_, _Brain_, and _Agent_. Designed to be used as a template for new environments. 
