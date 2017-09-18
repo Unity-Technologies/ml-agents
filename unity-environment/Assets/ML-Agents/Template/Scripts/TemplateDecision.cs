@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Template : MonoBehaviour, Decision {
+public class TemplateDecision : MonoBehaviour, Decision {
 
 	public float[] Decide (List<float> state, List<Camera> observation, float reward, bool done, float[] memory)
 	{

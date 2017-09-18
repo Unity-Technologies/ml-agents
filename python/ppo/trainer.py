@@ -165,7 +165,7 @@ class Trainer(object):
         summary = tf.Summary()
         for key in self.stats:
             if len(self.stats[key]) > 0:
-                stat_mean = np.mean(self.stats[key])
+                stat_mean = float(np.mean(self.stats[key]))
                 summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
                 self.stats[key] = []
         summary_writer.add_summary(summary, steps)

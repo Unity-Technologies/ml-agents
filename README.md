@@ -1,5 +1,4 @@
-![alt text](images/banner.png "Unity ML - Agents")
-
+<img src="images/unity-wide.png" align="middle" width="3000"/>
 
 # Unity ML - Agents
 **Unity Machine Learning Agents** allows researchers and developers to create games and simulations using the Unity Editor which serve as environments where intelligent agents can be trained using reinforcement learning, neuroevolution, or other machine learning methods through a simple-to-use Python API. For more information, see the [wiki page](../../wiki).

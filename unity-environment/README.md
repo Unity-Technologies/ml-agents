@@ -19,7 +19,7 @@ Make sure you have Unity 2017.1 or later installed. Download link available [her
     - Save environment binary to a sub-directory containing the model to use for training *(you may need to click on the down arrow on the file chooser to be able to select that folder)*
 
 ## Example Projects
-The `Examples` subfolder contains a set of example environments to use either as starting points or templates for designing your own environments. 
+The `Examples` subfolder contains a set of example environments to use either as starting points or templates for designing your own environments.
 * **3DBalanceBall** - Physics-based game where the agent must rotate a 3D-platform to keep a ball in the air. Supports both discrete and continuous control.
 * **GridWorld** - A simple gridworld containing regions which provide positive and negative reward. The agent must learn to move to the rewarding regions (green) and avoid the negatively rewarding ones (red). Supports discrete control.
 * **Tennis** - An adversarial game where two agents control rackets, which must be used to bounce a ball back and forth between them. Supports continuous control.
@@ -30,8 +30,11 @@ Within `ML-Agents/Template` there also exists:
 * **Template** - An empty Unity scene with a single _Academy_, _Brain_, and _Agent_. Designed to be used as a template for new environments. 
 
 ## Agents SDK Package
-A link to Unity package containing the Agents SDK for Unity 2017.1 can be downloaded from `Control/UnitEnvironment_0.1.unitpackage`.
-For  information on the use of each script, see the comments and documentation within the files themselves, or read the documentation linked to below. 
+A link to Unity package containing the Agents SDK for Unity 2017.1 can be downloaded here :   
+ * [ML-Agents package without TensorflowSharp](https://s3.amazonaws.com/unity-agents/ML-AgentsNoPlugin.unitypackage)  
+ * [ML-Agents package with TensorflowSharp](https://s3.amazonaws.com/unity-agents/ML-AgentsWithPlugin.unitypackage)  
+
+For  information on the use of each script, see the comments and documentation within the files themselves, or read the [documentation](../../../wiki). 
 
 ## Creating your own Unity Environment
 For information on how to create a new Unity Environment, see the walkthrough [here](../../../wiki/Making-a-new-Unity-Environment). If you have questions or run into issues, please feel free to create issues through the repo, and we will do our best to address them.
@@ -40,7 +43,7 @@ For information on how to create a new Unity Environment, see the walkthrough [h
 If you will be using Tensorflow Sharp in Unity, you must:
 
 1. Make sure you are using Unity 2017.1 or newer.
-2. Make sure the TensorflowSharp plugin is in your Asset folder. A Plugins folder which includes TF# can be downloaded [here](https://drive.google.com/file/d/0BxZSPcA0DrkfSEFWcFFCNVZ6U2s/view?usp=sharing).
+2. Make sure the TensorflowSharp plugin is in your Asset folder. A Plugins folder which includes TF# can be downloaded [here](https://s3.amazonaws.com/unity-agents/TFSharpPlugin.unitypackage).
 3. Go to `Edit` -> `Project Settings` -> `Player`
 4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):   
 	1. Go into `Other Settings`.

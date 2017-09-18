@@ -17,10 +17,10 @@ Options:
   --help                     Show this message.
   --max-step=<n>             Maximum number of steps to run environment [default: 5e6].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
-  --load-model               Whether to load the model or randomly initialize [default: False].
-  --train-model              Whether to train model, or only run inference [default: True].
-  --summary-freq=<n>         Frequency at which to save training statistics [default: 5000].
-  --save-freq=<n>            Frequency at which to save model [default: 20000].
+  --load                     Whether to load the model or randomly initialize [default: False].
+  --train                    Whether to train model, or only run inference [default: True].
+  --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
+  --save-freq=<n>            Frequency at which to save model [default: 50000].
   --gamma=<n>                Reward discount rate [default: 0.99].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
@@ -40,8 +40,8 @@ print(options)
 max_steps = float(options['--max-step'])
 model_path = './models/{}'.format(str(options['--run-path']))
 summary_path = './summaries/{}'.format(str(options['--run-path']))
-load_model = options['--load-model']
-train_model = options['--train-model']
+load_model = options['--load']
+train_model = options['--train']
 summary_freq = int(options['--summary-freq'])
 save_freq = int(options['--save-freq'])
 env_name = options['<env>']
@@ -93,7 +93,7 @@ with tf.Session() as sess:
     summary_writer = tf.summary.FileWriter(summary_path)
     info = env.reset(train_mode=train_model)[brain_name]
     trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations)
-    while steps <= max_steps:
+    while steps <= max_steps or not train_model:
         if env.global_done:
             info = env.reset(train_mode=train_model)[brain_name]
         # Decide and take an action

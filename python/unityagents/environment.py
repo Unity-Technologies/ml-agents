@@ -9,8 +9,8 @@ import socket
 import subprocess
 import signal
 
-from .brain import *
-from .exception import *
+from .brain import BrainInfo, BrainParameters
+from .exception import UnityEnvironmentException, UnityActionException
 
 from PIL import Image
 from sys import platform

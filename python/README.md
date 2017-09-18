@@ -1,3 +1,5 @@
+![alt text](../images/banner.png "Unity ML - Agents")
+
 # Unity ML - Agents (Python API)
 
 ## Python Setup
@@ -45,7 +47,7 @@ Then navigate to `localhost:6006` to monitor progress with Tensorboard.
 
 To train using PPO without the notebook, run:
 
-`python3 ppo.py <env_name> --train-model`
+`python3 ppo.py <env_name> --train`
 
 For a list of additional hyperparameters, run:
 
