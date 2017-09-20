@@ -24,7 +24,7 @@ example environments, start
 
 ## Creating an Environment
 
-The _Agents SDK_, including example environment scenes is localted in
+The _Agents SDK_, including example environment scenes is located in
 `unity-environment` folder. For requirements, instructions, and other
 information, see the contained Readme and the relevant
 [wiki page](../../wiki/Making-a-new-Unity-Environment).
