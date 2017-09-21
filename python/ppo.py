@@ -31,6 +31,7 @@ Options:
   --learning-rate=<rate>     Model learning rate [default: 3e-4].
   --hidden-units=<n>         Number of units in hidden layer [default: 64].
   --batch-size=<n>           How many experiences per gradient descent update step [default: 64].
+  --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
 '''
 
 options = docopt(_USAGE)
@@ -45,6 +46,7 @@ train_model = options['--train']
 summary_freq = int(options['--summary-freq'])
 save_freq = int(options['--save-freq'])
 env_name = options['<env>']
+keep_checkpoints = int(options['--keep-checkpoints'])
 
 # Algorithm-specific parameters for tuning
 gamma = float(options['--gamma'])
@@ -79,7 +81,7 @@ if not os.path.exists(summary_path):
     os.makedirs(summary_path)
 
 init = tf.global_variables_initializer()
-saver = tf.train.Saver()
+saver = tf.train.Saver(max_to_keep=keep_checkpoints)
 
 with tf.Session() as sess:
     # Instantiate model parameters
