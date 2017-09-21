@@ -6,11 +6,11 @@
 
 ### Requirements
 * Jupyter
+* docopt
 * Matplotlib
 * numpy
 * Pillow
 * Python (2 or 3)
-* scipy
 * Tensorflow (1.0+)
 
 ### Installing Dependencies
