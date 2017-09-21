@@ -7,7 +7,6 @@ import numpy as np
 import os
 import socket
 import subprocess
-import signal
 
 from .brain import BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException
@@ -76,28 +75,27 @@ class UnityEnvironment(object):
         except os.error:
             self.close()
             raise UnityEnvironmentException("Couldn't launch new environment. "
-                                            "Provided filename does not match any \environments in {}."
-                                            .format(cwd))
+                "Provided filename does not match any \environments in {}."
+                .format(cwd))
 
-        def timeout_handler():
-            raise UnityEnvironmentException(
-                "The Unity environment took too long to respond. Make sure {} does not need user interaction to launch "
-                "and that the Academy and the external Brain(s) scripts are attached to objects in the Scene.".format(
-                    str(file_name)))
-
-        old_handler = signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(30)  # trigger alarm in x seconds
+        self._socket.settimeout(30) 
         try:
-            self._socket.listen(1)
-            self._conn, _ = self._socket.accept()
-            p = self._conn.recv(self._buffer_size).decode('utf-8')
-            p = json.loads(p)
+            try:
+                self._socket.listen(1)
+                self._conn, _ = self._socket.accept()
+                self._conn.setblocking(1)
+                p = self._conn.recv(self._buffer_size).decode('utf-8')
+                p = json.loads(p)
+            except socket.timeout as e:
+                raise UnityEnvironmentException(
+                "The Unity environment took too long to respond. Make sure {} does not need user interaction to launch "
+                "and that the Academy and the external Brain(s) are attached to objects in the Scene.".format(
+                    str(file_name)))
         except UnityEnvironmentException:
             proc1.kill()
             self.close()
             raise
-        signal.signal(signal.SIGALRM, old_handler)
-        signal.alarm(0)
+
 
         self._data = {}
         self._global_done = None
