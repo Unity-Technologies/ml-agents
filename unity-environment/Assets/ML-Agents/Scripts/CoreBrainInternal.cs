@@ -221,10 +221,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             runner.AddInput(graph[graphScope + ObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);
         }
 
-        TFTensor[] runned;
+        TFTensor[] networkOutput;
         try
         {
-            runned = runner.Run();
+            networkOutput = runner.Run();
         }
         catch (TFException e)
         {
@@ -249,7 +249,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
             runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
             runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
-            float[,] recurrent_tensor = runned[1].GetValue() as float[,];
+            float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
             int i = 0;
             foreach (int k in agentKeys)
@@ -270,7 +270,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
-            float[,] output = runned[0].GetValue() as float[,];
+            float[,] output = networkOutput[0].GetValue() as float[,];
             int i = 0;
             foreach (int k in agentKeys)
             {
@@ -285,7 +285,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
         else if (brain.brainParameters.actionSpaceType == StateType.discrete)
         {
-            long[,] output = runned[0].GetValue() as long[,];
+            long[,] output = networkOutput[0].GetValue() as long[,];
             int i = 0;
             foreach (int k in agentKeys)
             {
