@@ -2,9 +2,10 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 from tensorflow.python.tools import freeze_graph
+from unityagents import UnityEnvironmentException
 
 
-def create_agent_model(env, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3):
+def create_agent_model(env, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6):
     """
     Takes a Unity environment and model-specific hyperparameters and returns the
     appropriate PPO agent model for the environment.
@@ -17,16 +18,23 @@ def create_agent_model(env, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3):
     """
     brain_name = env.brain_names[0]
     if env.brains[brain_name].action_space_type == "continuous":
-        return ContinuousControlModel(lr, env.brains[brain_name].state_space_size,
-                                      env.brains[brain_name].action_space_size, h_size, epsilon, beta)
+        if env.brains[brain_name].number_observations == 0:
+            return ContinuousControlModel(lr, env.brains[brain_name].state_space_size,
+                                          env.brains[brain_name].action_space_size, h_size, epsilon, beta, max_step)
+        else:
+            raise UnityEnvironmentException("There is currently no PPO model which supports both a continuous "
+                                            "action space and camera observations.")
     if env.brains[brain_name].action_space_type == "discrete":
         if env.brains[brain_name].number_observations == 0:
             return DiscreteControlModel(lr, env.brains[brain_name].state_space_size,
-                                        env.brains[brain_name].action_space_size, h_size, epsilon, beta)
+                                        env.brains[brain_name].action_space_size, h_size, epsilon, beta, max_step)
         else:
             brain = env.brains[brain_name]
+            if env.brains[brain_name].state_space_size > 0:
+                print("This brain contains agents with both observations and states. There is currently no PPO model"
+                      "which supports this. Defaulting to Vision-based PPO model.")
             h, w = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['height']
-            return VisualDiscreteControlModel(lr, h, w, env.brains[brain_name].action_space_size, h_size, epsilon, beta)
+            return VisualDiscreteControlModel(lr, h, w, env.brains[brain_name].action_space_size, h_size, epsilon, beta, max_step)
 
 
 def save_model(sess, saver, model_path="./", steps=0):
@@ -37,7 +45,7 @@ def save_model(sess, saver, model_path="./", steps=0):
     :param steps: Current number of steps in training process.
     :param saver: Tensorflow saver for session.
     """
-    last_checkpoint = model_path+'/model-'+str(steps)+'.cptk'
+    last_checkpoint = model_path + '/model-' + str(steps) + '.cptk'
     saver.save(sess, last_checkpoint)
     tf.train.write_graph(sess.graph_def, model_path, 'raw_graph_def.pb', as_text=False)
     print("Saved Model")
@@ -61,7 +69,7 @@ def export_graph(model_path, env_name="env", target_nodes="action"):
 
 
 class PPOModel(object):
-    def __init__(self, probs, old_probs, value, entropy, beta, epsilon, lr):
+    def __init__(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
         """
         Creates training-specific Tensorflow ops for PPO models.
         :param probs: Current policy probabilities
@@ -85,15 +93,18 @@ class PPOModel(object):
 
         self.loss = self.policy_loss + self.value_loss - beta * tf.reduce_mean(entropy)
 
-        optimizer = tf.train.AdamOptimizer(learning_rate=lr)
+        self.global_step = tf.Variable(0, trainable=False, name='global_step', dtype=tf.int32)
+        self.learning_rate = tf.train.polynomial_decay(lr, self.global_step,
+                                                       max_step, 1e-10,
+                                                       power=1.0)
+        optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
 
-        self.global_step = tf.Variable(0, trainable=False, name='global_step', dtype=tf.int32)
-        self.increment_step = tf.assign(self.global_step, self.global_step+1)
+        self.increment_step = tf.assign(self.global_step, self.global_step + 1)
 
 
 class ContinuousControlModel(PPOModel):
-    def __init__(self, lr, s_size, a_size, h_size, epsilon, beta):
+    def __init__(self, lr, s_size, a_size, h_size, epsilon, beta, max_step):
         """
         Creates Continuous Control Actor-Critic model.
         :param s_size: State-space size
@@ -127,11 +138,11 @@ class ContinuousControlModel(PPOModel):
 
         self.old_probs = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='old_probabilities')
 
-        PPOModel.__init__(self, self.probs, self.old_probs, self.value, self.entropy, 0.0, epsilon, lr)
+        PPOModel.__init__(self, self.probs, self.old_probs, self.value, self.entropy, 0.0, epsilon, lr, max_step)
 
 
 class DiscreteControlModel(PPOModel):
-    def __init__(self, lr, s_size, a_size, h_size, epsilon, beta):
+    def __init__(self, lr, s_size, a_size, h_size, epsilon, beta, max_step):
         """
         Creates Discrete Control Actor-Critic model.
         :param s_size: State-space size
@@ -158,11 +169,11 @@ class DiscreteControlModel(PPOModel):
         self.old_responsible_probs = tf.reduce_sum(self.old_probs * self.selected_actions, axis=1)
 
         PPOModel.__init__(self, self.responsible_probs, self.old_responsible_probs,
-                          self.value, self.entropy, beta, epsilon, lr)
+                          self.value, self.entropy, beta, epsilon, lr, max_step)
 
 
 class VisualDiscreteControlModel(PPOModel):
-    def __init__(self, lr, o_size_h, o_size_w, a_size, h_size, epsilon, beta):
+    def __init__(self, lr, o_size_h, o_size_w, a_size, h_size, epsilon, beta, max_step):
         """
         Creates Discrete Control Actor-Critic model for use with visual observations (images).
         :param o_size_h: Observation height.
@@ -194,4 +205,4 @@ class VisualDiscreteControlModel(PPOModel):
         self.old_responsible_probs = tf.reduce_sum(self.old_probs * self.selected_actions, axis=1)
 
         PPOModel.__init__(self, self.responsible_probs, self.old_responsible_probs,
-                          self.value, self.entropy, beta, epsilon, lr)
+                          self.value, self.entropy, beta, epsilon, lr, max_step)

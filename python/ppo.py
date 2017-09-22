@@ -15,7 +15,7 @@ Usage:
 
 Options:
   --help                     Show this message.
-  --max-step=<n>             Maximum number of steps to run environment [default: 5e6].
+  --max-steps=<n>             Maximum number of steps to run environment [default: 5e6].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
   --load                     Whether to load the model or randomly initialize [default: False].
   --train                    Whether to train model, or only run inference [default: True].
@@ -38,7 +38,7 @@ options = docopt(_USAGE)
 print(options)
 
 # General parameters
-max_steps = float(options['--max-step'])
+max_steps = float(options['--max-steps'])
 model_path = './models/{}'.format(str(options['--run-path']))
 summary_path = './summaries/{}'.format(str(options['--run-path']))
 load_model = options['--load']
@@ -69,7 +69,7 @@ tf.reset_default_graph()
 # Create the Tensorflow model graph
 ppo_model = create_agent_model(env, lr=learning_rate,
                                h_size=hidden_units, epsilon=epsilon,
-                               beta=beta)
+                               beta=beta, max_step=max_steps)
 
 is_continuous = (env.brains[brain_name].action_space_type == "continuous")
 use_observations = (env.brains[brain_name].number_observations > 0)

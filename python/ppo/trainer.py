@@ -17,7 +17,7 @@ class Trainer(object):
         self.model = ppo_model
         self.sess = sess
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
-                 'entropy': [], 'value_loss': [], 'policy_loss': []}
+                 'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
         self.stats = stats
 
         self.training_buffer = vectorize_history(empty_local_history({}))
@@ -45,11 +45,13 @@ class Trainer(object):
                          self.model.batch_size: len(info.states)}
         else:
             feed_dict = {self.model.state_in: info.states, self.model.batch_size: len(info.states)}
-        actions, a_dist, value, ent = self.sess.run([self.model.output, self.model.probs,
-                                                     self.model.value, self.model.entropy],
-                                                    feed_dict=feed_dict)
+        actions, a_dist, value, ent, learn_rate = self.sess.run([self.model.output, self.model.probs,
+                                                                 self.model.value, self.model.entropy,
+                                                                 self.model.learning_rate],
+                                                                feed_dict=feed_dict)
         self.stats['value_estimate'].append(value)
         self.stats['entropy'].append(ent)
+        self.stats['learning_rate'].append(learn_rate)
         new_info = env.step(actions, value={brain_name: value})[brain_name]
         self.add_experiences(info, new_info, epsi, actions, a_dist, value)
         return new_info
