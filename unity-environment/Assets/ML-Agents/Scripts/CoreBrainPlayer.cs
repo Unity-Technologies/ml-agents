@@ -26,6 +26,10 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         public float value;
     }
 
+    public bool broadcast;
+    /**< If true, the brain will send states / actions / rewards through the communicator */
+    ExternalCommunicator coord;
+
     [SerializeField]
     /// Contains the mapping from input to continuous actions
     private ContinuousPlayerAction[] continuousPlayerActions;
@@ -47,7 +51,23 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// Nothing to implement
     public void InitializeCoreBrain()
     {
-
+        if (broadcast)
+        {
+            if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+            {
+                coord = new ExternalCommunicator(brain.gameObject.transform.parent.gameObject.GetComponent<Academy>());
+                brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator = coord;
+                coord.SubscribeBrain(brain);
+            }
+            else
+            {
+                if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+                {
+                    coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+                    coord.SubscribeBrain(brain);
+                }
+            }
+        }
     }
 
     /// Uses the continuous inputs or dicrete inputs of the player to 
@@ -95,7 +115,10 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// decisions
     public void SendState()
     {
-
+        if (broadcast)
+        {
+            coord.giveBrainInfo(brain);
+        }
     }
 
     /// Displays continuous or discrete input mapping in the inspector
@@ -104,6 +127,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         SerializedObject serializedBrain = new SerializedObject(this);
+        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
             GUILayout.Label("Edit the continuous inputs for you actions", EditorStyles.boldLabel);

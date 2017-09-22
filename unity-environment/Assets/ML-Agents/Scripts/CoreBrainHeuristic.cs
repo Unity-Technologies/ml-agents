@@ -13,6 +13,10 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     public Brain brain;
     /**< Reference to the brain that uses this CoreBrainHeuristic */
 
+    public bool broadcast;
+    /**< If true, the brain will send states / actions / rewards through the communicator */
+    ExternalCommunicator coord;
+
     public Decision decision;
     /**< Reference to the Decision component used to decide the actions */
 
@@ -26,6 +30,24 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     public void InitializeCoreBrain()
     {
         decision = brain.gameObject.GetComponent<Decision>();
+
+        if (broadcast)
+        {
+            if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+            {
+                coord = new ExternalCommunicator(brain.gameObject.transform.parent.gameObject.GetComponent<Academy>());
+                brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator = coord;
+                coord.SubscribeBrain(brain);
+            }
+            else
+            {
+                if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+                {
+                    coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+                    coord.SubscribeBrain(brain);
+                }
+            }
+        }
     }
 
     /// Uses the Decision Component to decide that action to take
@@ -69,13 +91,18 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     /// Nothing needs to be implemented, the states are collected in DecideAction
     public void SendState()
     {
-
+        if (broadcast)
+        {
+            coord.giveBrainInfo(brain);
+        }
     }
 
     /// Displays an error if no decision component is attached to the brain
     public void OnInspector()
     {
 #if UNITY_EDITOR
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         if (brain.gameObject.GetComponent<Decision>() == null)
         {
             EditorGUILayout.HelpBox("You need to add a 'Decision' component to this gameObject", MessageType.Error);
