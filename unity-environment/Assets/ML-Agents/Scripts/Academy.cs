@@ -117,16 +117,22 @@ public abstract class Academy : MonoBehaviour
         brains = gameObject.GetComponentsInChildren<Brain>();
         InitializeAcademy();
 
+        communicator = new ExternalCommunicator(this);
+        if (!communicator.CommunicatorHandShake())
+        {
+            communicator = null;
+        }
+
         foreach (Brain brain in brains)
         {
             brain.InitializeBrain();
         }
-
         if (communicator != null)
         {
             communicator.InitializeCommunicator();
             externalCommand = communicator.GetCommand();
         }
+            
         windowResize = true;
         done = true;
         acceptingSteps = true;

@@ -86,21 +86,22 @@ public class ExternalCommunicator : Communicator
         hasSentState[brain.gameObject.name] = false;
     }
 
-    /// Contains the logic for the initializtation of the socket.
-    public void InitializeCommunicator()
-    {
+
+    public bool CommunicatorHandShake(){
         try
         {
             ReadArgs();
         }
         catch
         {
-            throw new UnityAgentsException("One of the brains was set to " +
-                "External mode or broadcast" +
-                " but Unity was unable to read the" +
-                " arguments passed at launch");
+            return false;
         }
+        return true;
+    }
 
+    /// Contains the logic for the initializtation of the socket.
+    public void InitializeCommunicator()
+    {
         messageHolder = new byte[messageLength];
 
         // Create a TCP/IP  socket.  

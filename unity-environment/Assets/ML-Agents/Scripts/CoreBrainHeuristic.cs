@@ -13,8 +13,6 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     public Brain brain;
     /**< Reference to the brain that uses this CoreBrainHeuristic */
 
-    public bool broadcast;
-    /**< If true, the brain will send states / actions / rewards through the communicator */
     ExternalCommunicator coord;
 
     public Decision decision;
@@ -31,22 +29,14 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     {
         decision = brain.gameObject.GetComponent<Decision>();
 
-        if (broadcast)
+        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
         {
-            if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
-            {
-                coord = new ExternalCommunicator(brain.gameObject.transform.parent.gameObject.GetComponent<Academy>());
-                brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator = coord;
-                coord.SubscribeBrain(brain);
-            }
-            else
-            {
-                if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
-                {
-                    coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
-                    coord.SubscribeBrain(brain);
-                }
-            }
+            coord = null;
+        }
+        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        {
+            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord.SubscribeBrain(brain);
         }
     }
 
@@ -91,7 +81,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     /// Nothing needs to be implemented, the states are collected in DecideAction
     public void SendState()
     {
-        if (broadcast)
+        if (coord!=null)
         {
             coord.giveBrainInfo(brain);
         }
@@ -102,7 +92,6 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     {
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         if (brain.gameObject.GetComponent<Decision>() == null)
         {
             EditorGUILayout.HelpBox("You need to add a 'Decision' component to this gameObject", MessageType.Error);

@@ -41,6 +41,9 @@ public interface Communicator
     /// decisions made outside of Unity
     void SubscribeBrain(Brain brain);
 
+    /// First contact between Communicator and external process
+    bool CommunicatorHandShake();
+
     /// Implement this method to initialize the communicator
     void InitializeCommunicator();
 
