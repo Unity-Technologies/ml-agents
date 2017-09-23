@@ -62,6 +62,15 @@ def export_graph(model_path, env_name="env", target_nodes="action"):
 
 class PPOModel(object):
     def create_visual_encoder(self, o_size_h, o_size_w, h_size, num_streams, activation):
+        """
+        Builds a set of visual (CNN) encoders.
+        :param o_size_h: Height observation size.
+        :param o_size_w: Width observation size.
+        :param h_size: Hidden layer size.
+        :param num_streams: Number of visual streams to construct.
+        :param activation: What type of activation function to use for layers.
+        :return: List of hidden layer tensors.
+        """
         self.observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, 1], dtype=tf.float32,
                                              name='observation_0')
         streams = []
@@ -75,6 +84,14 @@ class PPOModel(object):
         return streams
 
     def create_continuous_state_encoder(self, s_size, h_size, num_streams, activation):
+        """
+        Builds a set of hidden state encoders.
+        :param s_size: state input size.
+        :param h_size: Hidden layer size.
+        :param num_streams: Number of state streams to construct.
+        :param activation: What type of activation function to use for layers.
+        :return: List of hidden layer tensors.
+        """
         self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
         streams = []
         for i in range(num_streams):
@@ -84,6 +101,14 @@ class PPOModel(object):
         return streams
 
     def create_discrete_state_encoder(self, s_size, h_size, num_streams, activation):
+        """
+        Builds a set of hidden state encoders from discrete state input.
+        :param s_size: state input size (discrete).
+        :param h_size: Hidden layer size.
+        :param num_streams: Number of state streams to construct.
+        :param activation: What type of activation function to use for layers.
+        :return: List of hidden layer tensors.
+        """
         self.state_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='state')
         state_in = tf.reshape(self.state_in, [-1])
         state_onehot = c_layers.one_hot_encoding(state_in, s_size)
@@ -155,7 +180,6 @@ class ContinuousControlModel(PPOModel):
         elif hidden_visual is not None and hidden_state is None:
             hidden_policy, hidden_value = hidden_visual
         elif hidden_visual is None and hidden_state is not None:
-            print(hidden_state)
             hidden_policy, hidden_value = hidden_state
         elif hidden_visual is not None and hidden_state is not None:
             hidden_policy = tf.concat([hidden_visual[0], hidden_state[0]], axis=1)
