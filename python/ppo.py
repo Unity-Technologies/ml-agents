@@ -15,7 +15,7 @@ Usage:
 
 Options:
   --help                     Show this message.
-  --max-steps=<n>             Maximum number of steps to run environment [default: 5e6].
+  --max-steps=<n>             Maximum number of steps to run environment [default: 1e6].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
   --load                     Whether to load the model or randomly initialize [default: False].
   --train                    Whether to train model, or only run inference [default: True].

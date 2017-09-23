@@ -61,28 +61,37 @@ def export_graph(model_path, env_name="env", target_nodes="action"):
 
 
 class PPOModel(object):
-    def create_visual_encoder(self, o_size_h, o_size_w, h_size):
+    def create_visual_encoder(self, o_size_h, o_size_w, h_size, num_streams, activation):
         self.observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, 1], dtype=tf.float32,
                                              name='observation_0')
-        self.conv1 = tf.layers.conv2d(self.observation_in, 32, kernel_size=[3, 3], strides=[2, 2],
-                                      use_bias=False, activation=tf.nn.elu)
-        self.conv2 = tf.layers.conv2d(self.conv1, 64, kernel_size=[3, 3], strides=[2, 2],
-                                      use_bias=False, activation=tf.nn.elu)
-        hidden = tf.layers.dense(c_layers.flatten(self.conv2), h_size, use_bias=False, activation=tf.nn.elu)
-        return hidden
+        streams = []
+        for i in range(num_streams):
+            self.conv1 = tf.layers.conv2d(self.observation_in, 32, kernel_size=[3, 3], strides=[2, 2],
+                                          use_bias=False, activation=activation)
+            self.conv2 = tf.layers.conv2d(self.conv1, 64, kernel_size=[3, 3], strides=[2, 2],
+                                          use_bias=False, activation=activation)
+            hidden = tf.layers.dense(c_layers.flatten(self.conv2), h_size, use_bias=False, activation=activation)
+            streams.append(hidden)
+        return streams
 
-    def create_continuous_state_encoder(self, s_size, h_size):
+    def create_continuous_state_encoder(self, s_size, h_size, num_streams, activation):
         self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
-        hidden_1 = tf.layers.dense(self.state_in, h_size, use_bias=False, activation=tf.nn.elu)
-        hidden_2 = tf.layers.dense(hidden_1, h_size, use_bias=False, activation=tf.nn.elu)
-        return hidden_2
+        streams = []
+        for i in range(num_streams):
+            hidden_1 = tf.layers.dense(self.state_in, h_size, use_bias=False, activation=activation)
+            hidden_2 = tf.layers.dense(hidden_1, h_size, use_bias=False, activation=activation)
+            streams.append(hidden_2)
+        return streams
 
-    def create_discrete_state_encoder(self, s_size, h_size):
+    def create_discrete_state_encoder(self, s_size, h_size, num_streams, activation):
         self.state_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='state')
         state_in = tf.reshape(self.state_in, [-1])
         state_onehot = c_layers.one_hot_encoding(state_in, s_size)
-        hidden = tf.layers.dense(state_onehot, h_size, activation=tf.nn.elu)
-        return hidden
+        streams = []
+        for i in range(num_streams):
+            hidden = tf.layers.dense(state_onehot, h_size, use_bias=False, activation=activation)
+            streams.append(hidden)
+        return streams
 
     def create_ppo_optimizer(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
         """
@@ -123,21 +132,38 @@ class ContinuousControlModel(PPOModel):
     def __init__(self, lr, brain, h_size, epsilon, max_step):
         """
         Creates Continuous Control Actor-Critic model.
-        :param s_size: State-space size
-        :param a_size: Action-space size
+        :param brain: State-space size
         :param h_size: Hidden layer size
         """
         s_size = brain.state_space_size
         a_size = brain.action_space_size
 
-        self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
-        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
-        hidden_policy = tf.layers.dense(self.state_in, h_size, use_bias=False, activation=tf.nn.tanh)
-        hidden_value = tf.layers.dense(self.state_in, h_size, use_bias=False, activation=tf.nn.tanh)
-        hidden_policy_2 = tf.layers.dense(hidden_policy, h_size, use_bias=False, activation=tf.nn.tanh)
-        hidden_value_2 = tf.layers.dense(hidden_value, h_size, use_bias=False, activation=tf.nn.tanh)
+        hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
+        if brain.number_observations > 0:
+            h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['height']
+            hidden_visual = self.create_visual_encoder(h_size, w_size, h_size, 2, tf.nn.tanh)
+        if brain.state_space_size > 0:
+            s_size = brain.state_space_size
+            if brain.state_space_type == "continuous":
+                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 2, tf.nn.tanh)
+            else:
+                hidden_state = self.create_discrete_state_encoder(s_size, h_size, 2, tf.nn.tanh)
 
-        self.mu = tf.layers.dense(hidden_policy_2, a_size, activation=None, use_bias=False,
+        if hidden_visual is None and hidden_state is None:
+            raise Exception("No valid network configuration possible. "
+                            "There are no states or observations in this brain")
+        elif hidden_visual is not None and hidden_state is None:
+            hidden_policy, hidden_value = hidden_visual
+        elif hidden_visual is None and hidden_state is not None:
+            print(hidden_state)
+            hidden_policy, hidden_value = hidden_state
+        elif hidden_visual is not None and hidden_state is not None:
+            hidden_policy = tf.concat([hidden_visual[0], hidden_state[0]], axis=1)
+            hidden_value = tf.concat([hidden_visual[1], hidden_state[1]], axis=1)
+
+        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
+
+        self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.1))
         self.log_sigma_sq = tf.Variable(tf.zeros([a_size]))
         self.sigma_sq = tf.exp(self.log_sigma_sq)
@@ -153,7 +179,7 @@ class ContinuousControlModel(PPOModel):
 
         self.entropy = tf.reduce_sum(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
 
-        self.value = tf.layers.dense(hidden_value_2, 1, activation=None, use_bias=False)
+        self.value = tf.layers.dense(hidden_value, 1, activation=None, use_bias=False)
 
         self.old_probs = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='old_probabilities')
 
@@ -170,13 +196,13 @@ class DiscreteControlModel(PPOModel):
         hidden_state, hidden_visual, hidden = None, None, None
         if brain.number_observations > 0:
             h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['height']
-            hidden_visual = self.create_visual_encoder(h_size, w_size, h_size)
+            hidden_visual = self.create_visual_encoder(h_size, w_size, h_size, 1, tf.nn.elu)[0]
         if brain.state_space_size > 0:
             s_size = brain.state_space_size
             if brain.state_space_type == "continuous":
-                hidden_state = self.create_continuous_state_encoder(s_size, h_size)
+                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 1, tf.nn.elu)[0]
             else:
-                hidden_state = self.create_discrete_state_encoder(s_size, h_size)
+                hidden_state = self.create_discrete_state_encoder(s_size, h_size, 1, tf.nn.elu)[0]
 
         if hidden_visual is None and hidden_state is None:
             raise Exception("No valid network configuration possible. "
