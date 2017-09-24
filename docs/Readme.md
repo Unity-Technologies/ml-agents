@@ -1,4 +1,4 @@
-# Unity ML Agents Wiki
+# Unity ML Agents Documentation
 
 ## Basic 
  * [Unity ML Agents Overview](Unity-Agents-Overview.md)
