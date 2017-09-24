@@ -1,3 +1,5 @@
+# Limitations and Common Issues
+
 ## Unity SDK
 ### Headless Mode
 Currently headless mode is disabled. We hope to address these in a future version of Unity.
