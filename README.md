@@ -27,7 +27,7 @@ example environments, start
 The _Agents SDK_, including example environment scenes is located in
 `unity-environment` folder. For requirements, instructions, and other
 information, see the contained Readme and the relevant
-[wiki page](docs/Making-a-new-Unity-Environment.md).
+[documentation](docs/Making-a-new-Unity-Environment.md).
 
 ## Training your Agents
 
@@ -35,4 +35,4 @@ Once you've built a Unity Environment, example Reinforcement Learning
 algorithms and the Python API are available in the `python`
 folder. For requirements, instructions, and other information, see the
 contained Readme and the relevant
-[wiki page](docs/Unity-Agents---Python-API.md).
+[documentation](docs/Unity-Agents---Python-API.md).
