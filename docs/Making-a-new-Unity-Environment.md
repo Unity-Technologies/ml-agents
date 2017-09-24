@@ -1,6 +1,8 @@
+# Making a new Learning Environment
+
 This tutorial walks through the process of creating a Unity Environment. A Unity Environment is an application built using the Unity Engine which can be used to train Reinforcement Learning agents.
 
-# Setting up the Unity Project
+## Setting up the Unity Project
 
 1. Open an existing Unity project, or create a new one and import the RL interface package:   
  * [ML-Agents package without TensorflowSharp](https://s3.amazonaws.com/unity-agents/ML-AgentsNoPlugin.unitypackage)  
@@ -50,7 +52,7 @@ This tutorial walks through the process of creating a Unity Environment. A Unity
 
 4. Within **`AcademyReset()`**, you can reset the environment for a new episode. It should contain environment-specific code for setting up the environment. Note that `AcademyReset()` is called at the beginning of the training session to ensure the first episode is similar to the others.
 
-# Implementing `YourNameBrain`
+## Implementing `YourNameBrain`
 For each Brain game object in your academy : 
 
 1. Click on the game object `YourNameBrain`
@@ -88,7 +90,7 @@ For each Brain game object in your academy :
      * `Value Type` : Either Integer or Floating Point.
      * `Min Value` and 'Max Value' : Specify the minimum and maximum values (included) the placeholder can take. The value will be sampled from the uniform distribution at each step. If you want this value to be fixed, set both `Min Value` and `Max Value` to the same number.
  		 
-# Implementing `YourNameAgent`
+## Implementing `YourNameAgent`
 
 1. Rename `TemplateAgent.cs` (and the contained class name) to the desired name of your new agent. Typical naming convention is `YourNameAgent`.
 
@@ -126,7 +128,7 @@ Small negative rewards are also typically used each step in scenarios where the 
 
 Note that the reward is reset to 0 at every step, you must add to the reward (`reward += rewardIncrement`). If you use `skipFrame` in the Academy and set your rewards instead of incrementing them, you might loose information since the reward is sent at every step, not at every frame.
 
-# Agent Monitor
+## Agent Monitor
 * You can add the script `AgentMonitor.cs` to any gameObject with a component `YourNameAgent.cs`. In the inspector of this component, you will see:
   * `Fixed Position` : If this box is checked, the monitor will be on the left corner of the screen and will remain here. Note that you can only have one agent with a fixed monitor or multiple monitors will overlap.
   * `Vertical Offset`: If `Fixed Position` is unchecked, the monitor will follow the Agent on the screen. Use `Vertical Offset` to decide how far above the agent the monitor should be.
