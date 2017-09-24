@@ -1,3 +1,5 @@
+# Organizing the Scene Layout
+
 This tutorial will help you understand how to organize your scene when using Agents in your Unity environment.
 
 ## ML-Agents Game Objects
@@ -13,7 +15,7 @@ There are three kinds of game objects you need to include in your scene in order
 
 #### Here is an example of what your scene hierarchy should look like :  
 
-![Scene Hierarchy](../raw/master/images/scene-hierarchy.png)
+![Scene Hierarchy](../images/scene-hierarchy.png)
 
 ### Functionality
 
