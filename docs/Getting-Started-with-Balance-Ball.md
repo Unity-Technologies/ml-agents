@@ -1,5 +1,6 @@
+# Getting Started with the Balance Ball Example
 
-![Balance Ball](../raw/master/images/balance.png)
+![Balance Ball](../images/balance.png)
 
 This tutorial will walk through the end-to-end process of installing Unity Agents, building an example environment, training an agent in it, and finally embedding the trained model into the Unity environment. 
 
