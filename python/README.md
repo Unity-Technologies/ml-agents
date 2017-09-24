@@ -54,7 +54,7 @@ For a list of additional hyperparameters, run:
 `python3 ppo.py --help`
 
 ## Using Python API
-See this [wiki page](https://github.com/Unity-Technologies/python-rl-control/wiki/Unity-Agents---Python-API) for a detailed description of the functions and uses of the Python API.
+See this [documentation](../docs/Unity-Agents---Python-API.md) for a detailed description of the functions and uses of the Python API.
 
 ## Training on AWS
 See this related [blog post](https://medium.com/towards-data-science/how-to-run-unity-on-amazon-cloud-or-without-monitor-3c10ce022639) for a description of how to run Unity Environments on AWS EC2 instances with the GPU.
