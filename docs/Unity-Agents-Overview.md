@@ -1,4 +1,4 @@
-## Learning Environments
+# Learning Environments Overview
 
 ![diagram](../images/agents_diagram.png)
 
