@@ -1,3 +1,4 @@
+# Example Learning Environments
 
 ### About Example Environments
 Unity ML Agents currently contains three example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
@@ -6,7 +7,7 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
 
 ## 3DBall
 
-![Balance Ball](../raw/master/images/balance.png)
+![Balance Ball](../images/balance.png)
 
 * Set-up: A balance-ball task, where the agent controls the platform. 
 * Goal: The agent must balance the platform in order to keep the ball on it for as long as possible.
@@ -22,7 +23,7 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
 
 ## GridWorld
 
-![GridWorld](../raw/master/images/gridworld.png)
+![GridWorld](../images/gridworld.png)
 
 * Set-up: A version of the classic grid-world task. Scene contains agent, goal, and obstacles. 
 * Goal: The agent must navigate the grid to the goal while avoiding the obstacles.
@@ -40,7 +41,7 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
 
 ## Tennis
 
-![Tennis](../raw/master/images/tennis.png)
+![Tennis](../images/tennis.png)
 
 * Set-up: Two-player game where agents control rackets to bounce ball over a net. 
 * Goal: The agents must bounce ball between one another while not dropping or sending ball out of bounds.
