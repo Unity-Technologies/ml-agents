@@ -1,6 +1,8 @@
+# ML Agnets Editor Interface
+
 This page contains an explanation of the use of each of the inspector panels relating to the `Academy`, `Brain`, and `Agent` objects.
 
-# Academy
+## Academy
 
 ![Academy Inspector](../raw/master/images/academy.png)
 
@@ -16,7 +18,7 @@ of steps. Once the step counter reaches maximum, the environment will reset.
     * `Target Frame Rate` - FPS engine attempts to maintain. 
 * `Default Reset Parameters` - List of custom parameters that can be changed in the environment on reset.
 
-# Brain
+## Brain
 
 ![Brain Inspector](../raw/master/images/brain.png)
 
@@ -36,7 +38,7 @@ values (in _Discrete_ action space).
     * `Player` - Actions are decided using Player input mappings.
     * `Heuristic` - Actions are decided using custom `Decision` script, which should be attached to the Brain game object.
 
-## Internal Brain
+### Internal Brain
 
 ![Internal Brain Inspector](../raw/master/images/internal_brain.png)
 
@@ -54,13 +56,13 @@ values (in _Discrete_ action space).
      * `Min Value` and `Max Value` : Specify the range of the value here. The value will be sampled from the uniform distribution ranging from `Min Value` to `Max Value` inclusive.
 
 
-## Player Brain
+### Player Brain
 
 ![Player Brain Inspector](../raw/master/images/player_brain.png)
 
 If the action space is discrete, you must map input keys to their corresponding integer values. If the action space is continuous, you must map input keys to their corresponding indices and float values.
 
-# Agent
+## Agent
 
 ![Agent Inspector](../raw/master/images/agent.png)
 
