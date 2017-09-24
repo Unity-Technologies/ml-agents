@@ -1,8 +1,8 @@
-## Unity Environments
+## Learning Environments
 
-![diagram](../raw/master/images/agents_diagram.png)
+![diagram](../images/agents_diagram.png)
 
-A visual depiction of how an Agents Learning Environment might be configured within ML-Agents.
+A visual depiction of how an Learning Environment might be configured within ML-Agents.
 
 The three main kinds of objects within any Agents Learning Environment are:
 
