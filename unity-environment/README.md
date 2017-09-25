@@ -24,7 +24,7 @@ The `Examples` subfolder contains a set of example environments to use either as
 * **GridWorld** - A simple gridworld containing regions which provide positive and negative reward. The agent must learn to move to the rewarding regions (green) and avoid the negatively rewarding ones (red). Supports discrete control.
 * **Tennis** - An adversarial game where two agents control rackets, which must be used to bounce a ball back and forth between them. Supports continuous control.
 
-For more informoation on each of these environments, see this [wiki page](../../../wiki/Example-Environments).
+For more informoation on each of these environments, see this [documentation page](../docs/Example-Environments.md).
 
 Within `ML-Agents/Template` there also exists:
 * **Template** - An empty Unity scene with a single _Academy_, _Brain_, and _Agent_. Designed to be used as a template for new environments. 
@@ -37,7 +37,7 @@ A link to Unity package containing the Agents SDK for Unity 2017.1 can be downlo
 For  information on the use of each script, see the comments and documentation within the files themselves, or read the [documentation](../../../wiki). 
 
 ## Creating your own Unity Environment
-For information on how to create a new Unity Environment, see the walkthrough [here](../../../wiki/Making-a-new-Unity-Environment). If you have questions or run into issues, please feel free to create issues through the repo, and we will do our best to address them.
+For information on how to create a new Unity Environment, see the walkthrough [here](../docs/Making-a-new-Unity-Environment.md). If you have questions or run into issues, please feel free to create issues through the repo, and we will do our best to address them.
 
 ## Embedding Models with TensorflowSharp _[Experimental]_
 If you will be using Tensorflow Sharp in Unity, you must:
