@@ -20,11 +20,7 @@ def create_agent_model(env, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_ste
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
     if brain.action_space_type == "continuous":
-        if brain.number_observations == 0:
-            return ContinuousControlModel(lr, brain, h_size, epsilon, max_step)
-        else:
-            raise UnityEnvironmentException("There is currently no PPO model which supports both a continuous "
-                                            "action space and camera observations.")
+        return ContinuousControlModel(lr, brain, h_size, epsilon, max_step)
     if brain.action_space_type == "discrete":
         return DiscreteControlModel(lr, brain, h_size, epsilon, beta, max_step)
 
@@ -61,17 +57,23 @@ def export_graph(model_path, env_name="env", target_nodes="action"):
 
 
 class PPOModel(object):
-    def create_visual_encoder(self, o_size_h, o_size_w, h_size, num_streams, activation):
+    def create_visual_encoder(self, o_size_h, o_size_w, bw, h_size, num_streams, activation):
         """
         Builds a set of visual (CNN) encoders.
         :param o_size_h: Height observation size.
         :param o_size_w: Width observation size.
+        :param bw: Whether image is greyscale {True} or color {False}.
         :param h_size: Hidden layer size.
         :param num_streams: Number of visual streams to construct.
         :param activation: What type of activation function to use for layers.
         :return: List of hidden layer tensors.
         """
-        self.observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, 1], dtype=tf.float32,
+        if bw:
+            c_channels = 1
+        else:
+            c_channels = 3
+
+        self.observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32,
                                              name='observation_0')
         streams = []
         for i in range(num_streams):
@@ -166,7 +168,8 @@ class ContinuousControlModel(PPOModel):
         hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
         if brain.number_observations > 0:
             h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['height']
-            hidden_visual = self.create_visual_encoder(h_size, w_size, h_size, 2, tf.nn.tanh)
+            bw = brain.camera_resolutions[0]['blackAndWhite']
+            hidden_visual = self.create_visual_encoder(h_size, w_size, bw, h_size, 2, tf.nn.tanh)
         if brain.state_space_size > 0:
             s_size = brain.state_space_size
             if brain.state_space_type == "continuous":
@@ -220,7 +223,8 @@ class DiscreteControlModel(PPOModel):
         hidden_state, hidden_visual, hidden = None, None, None
         if brain.number_observations > 0:
             h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['height']
-            hidden_visual = self.create_visual_encoder(h_size, w_size, h_size, 1, tf.nn.elu)[0]
+            bw = brain.camera_resolutions[0]['blackAndWhite']
+            hidden_visual = self.create_visual_encoder(h_size, w_size, bw, h_size, 1, tf.nn.elu)[0]
         if brain.state_space_size > 0:
             s_size = brain.state_space_size
             if brain.state_space_type == "continuous":
