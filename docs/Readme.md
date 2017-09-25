@@ -2,6 +2,7 @@
 
 ## Basic 
  * [Unity ML Agents Overview](Unity-Agents-Overview.md)
+ * [Installation & Set-up](installation.md)
  * [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
  * [Example Environments](Example-Environments.md)
 
