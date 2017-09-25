@@ -51,7 +51,6 @@ If you are a Windows user who is new to Python/TensorFlow, follow [this guide](h
 * numpy
 * Pillow
 * Python (2 or 3)
-* scipy
 * TensorFlow (1.0+)
 
 ### Installing Dependencies
