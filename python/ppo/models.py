@@ -167,7 +167,7 @@ class ContinuousControlModel(PPOModel):
 
         hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
         if brain.number_observations > 0:
-            h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['height']
+            h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']
             bw = brain.camera_resolutions[0]['blackAndWhite']
             hidden_visual = self.create_visual_encoder(h_size, w_size, bw, h_size, 2, tf.nn.tanh)
         if brain.state_space_size > 0:
@@ -222,7 +222,7 @@ class DiscreteControlModel(PPOModel):
         """
         hidden_state, hidden_visual, hidden = None, None, None
         if brain.number_observations > 0:
-            h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['height']
+            h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']
             bw = brain.camera_resolutions[0]['blackAndWhite']
             hidden_visual = self.create_visual_encoder(h_size, w_size, bw, h_size, 1, tf.nn.elu)[0]
         if brain.state_space_size > 0:
