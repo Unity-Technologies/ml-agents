@@ -15,7 +15,7 @@ Usage:
 
 Options:
   --help                     Show this message.
-  --max-steps=<n>             Maximum number of steps to run environment [default: 5e6].
+  --max-steps=<n>             Maximum number of steps to run environment [default: 1e6].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
   --load                     Whether to load the model or randomly initialize [default: False].
   --train                    Whether to train model, or only run inference [default: True].
@@ -73,6 +73,7 @@ ppo_model = create_agent_model(env, lr=learning_rate,
 
 is_continuous = (env.brains[brain_name].action_space_type == "continuous")
 use_observations = (env.brains[brain_name].number_observations > 0)
+use_states = (env.brains[brain_name].state_space_size > 0)
 
 if not os.path.exists(model_path):
     os.makedirs(model_path)
@@ -94,7 +95,7 @@ with tf.Session() as sess:
     steps = sess.run(ppo_model.global_step)
     summary_writer = tf.summary.FileWriter(summary_path)
     info = env.reset(train_mode=train_model)[brain_name]
-    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations)
+    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
     while steps <= max_steps or not train_model:
         if env.global_done:
             info = env.reset(train_mode=train_model)[brain_name]

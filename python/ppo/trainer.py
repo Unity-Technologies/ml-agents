@@ -5,7 +5,7 @@ from ppo.history import *
 
 
 class Trainer(object):
-    def __init__(self, ppo_model, sess, info, is_continuous, use_observations):
+    def __init__(self, ppo_model, sess, info, is_continuous, use_observations, use_states):
         """
         Responsible for collecting experinces and training PPO model.
         :param ppo_model: Tensorflow graph defining model.
@@ -26,6 +26,7 @@ class Trainer(object):
 
         self.is_continuous = is_continuous
         self.use_observations = use_observations
+        self.use_states = use_states
 
     def take_action(self, info, env, brain_name):
         """
@@ -36,15 +37,14 @@ class Trainer(object):
         :return: BrainInfo corresponding to new environment state.
         """
         epsi = None
+        feed_dict = {self.model.batch_size: len(info.states)}
         if self.is_continuous:
             epsi = np.random.randn(len(info.states), env.brains[brain_name].action_space_size)
-            feed_dict = {self.model.state_in: info.states, self.model.batch_size: len(info.states),
-                         self.model.epsilon: epsi}
-        elif self.use_observations:
-            feed_dict = {self.model.observation_in: np.vstack(info.observations),
-                         self.model.batch_size: len(info.states)}
-        else:
-            feed_dict = {self.model.state_in: info.states, self.model.batch_size: len(info.states)}
+            feed_dict[self.model.epsilon] = epsi
+        if self.use_observations:
+            feed_dict[self.model.observation_in] = np.vstack(info.observations)
+        if self.use_states:
+            feed_dict[self.model.state_in] = info.states
         actions, a_dist, value, ent, learn_rate = self.sess.run([self.model.output, self.model.probs,
                                                                  self.model.value, self.model.entropy,
                                                                  self.model.learning_rate],
@@ -72,13 +72,13 @@ class Trainer(object):
                 if not info.local_done[idx]:
                     if self.use_observations:
                         history['observations'].append(info.observations[idx])
-                    else:
+                    if self.use_states:
                         history['states'].append(info.states[idx])
+                    if self.is_continuous:
+                        history['epsilons'].append(epsi[idx])
                     history['actions'].append(actions[idx])
                     history['rewards'].append(next_info.rewards[idx])
                     history['action_probs'].append(a_dist[idx])
-                    if self.is_continuous:
-                        history['epsilons'].append(epsi[idx])
                     history['value_estimates'].append(value[idx][0])
                     history['cumulative_reward'] += next_info.rewards[idx]
                     history['episode_steps'] += 1
@@ -98,12 +98,11 @@ class Trainer(object):
                 if info.local_done[l]:
                     value_next = 0.0
                 else:
+                    feed_dict = {self.model.batch_size: len(info.states)}
                     if self.use_observations:
-                        feed_dict = {self.model.observation_in: np.vstack(info.observations),
-                                     self.model.batch_size: len(info.states)}
-                    else:
-                        feed_dict = {self.model.state_in: info.states,
-                                     self.model.batch_size: len(info.states)}
+                        feed_dict[self.model.observation_in] = np.vstack(info.observations)
+                    if self.use_states:
+                        feed_dict[self.model.state_in] = info.states
                     value_next = self.sess.run(self.model.value, feed_dict)[l]
                 history = vectorize_history(self.history_dict[info.agents[l]])
                 history['advantages'] = get_gae(rewards=history['rewards'],
@@ -140,13 +139,12 @@ class Trainer(object):
                              self.model.old_probs: np.vstack(training_buffer['action_probs'][start:end])}
                 if self.is_continuous:
                     feed_dict[self.model.epsilon] = np.vstack(training_buffer['epsilons'][start:end])
-                    feed_dict[self.model.state_in] = np.vstack(training_buffer['states'][start:end])
                 else:
                     feed_dict[self.model.action_holder] = np.hstack(training_buffer['actions'][start:end])
-                    if self.use_observations:
-                        feed_dict[self.model.observation_in] = np.vstack(training_buffer['observations'][start:end])
-                    else:
-                        feed_dict[self.model.state_in] = np.vstack(training_buffer['states'][start:end])
+                if self.use_states:
+                    feed_dict[self.model.state_in] = np.vstack(training_buffer['states'][start:end])
+                if self.use_observations:
+                    feed_dict[self.model.observation_in] = np.vstack(training_buffer['observations'][start:end])
                 v_loss, p_loss, _ = self.sess.run([self.model.value_loss, self.model.policy_loss,
                                                    self.model.update_batch], feed_dict=feed_dict)
                 total_v += v_loss

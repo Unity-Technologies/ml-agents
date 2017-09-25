@@ -55,27 +55,26 @@ public struct resolution
  * Defines brain-specific parameters
 */
 [System.Serializable]
-public struct BrainParameters
+public class BrainParameters
 {
-    public int stateSize;
+    public int stateSize = 1;
     /**< \brief If continuous : The length of the float vector that represents 
      * the state
      * <br> If discrete : The number of possible values the state can take*/
-    public int actionSize;
+    public int actionSize = 1;
     /**< \brief If continuous : The length of the float vector that represents the action
      * <br> If discrete : The number of possible values the action can take*/
-    public int memorySize;
+    public int memorySize = 0;
     /**< \brief The length of the float vector that holds the memory for the agent */
     public resolution[] cameraResolutions;
     /**<\brief  The list of observation resolutions for the brain */
 
     public string[] actionDescriptions;
     /**< \brief The list of strings describing what the actions correpond to */
-    public StateType actionSpaceType;
+    public StateType actionSpaceType = StateType.discrete;
     /**< \brief Defines if the action is discrete or continuous */
-    public StateType stateSpaceType;
+    public StateType stateSpaceType = StateType.continuous;
     /**< \brief Defines if the state is discrete or continuous */
-
 }
 
 /**
@@ -87,7 +86,7 @@ public struct BrainParameters
  */
 public class Brain : MonoBehaviour
 {
-    public BrainParameters brainParameters;
+    public BrainParameters brainParameters = new BrainParameters();
     /**< \brief Defines brain specific parameters such as the state size*/
     public BrainType brainType;
     /**<  \brief Defines what is the type of the brain : 
@@ -178,10 +177,15 @@ public class Brain : MonoBehaviour
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
             List<float> states = idAgent.Value.CollectState();
-            if (states.Count != brainParameters.stateSize)
+            if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous ))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
-	Was expecting {1} states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
+    Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
+            }
+            if ((states.Count != 1) && (brainParameters.stateSpaceType == StateType.discrete ))
+            {
+                throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
+    Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
             }
             result.Add(idAgent.Key, states);
         }
