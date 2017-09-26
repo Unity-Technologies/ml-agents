@@ -92,7 +92,7 @@ In order to train the agents within the Ball Balance environment:
 In order to observe the training process in more detail, you can use Tensorboard. 
 In your command line, run :
 
-`tensorboard --logdir='summaries`
+`tensorboard --logdir=summaries`
 
 Then navigate to `localhost:6006`.
 
