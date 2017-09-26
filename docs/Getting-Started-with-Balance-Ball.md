@@ -10,15 +10,9 @@ In this walkthrough we will be using the **3D Balance Ball** environment. The en
 
 Let's get started!
 
-## Getting Unity ML Agents
-### Start by installing **Unity 2017.1** or later (required)
+## Installation
 
-Download link available [here](https://store.unity.com/download?ref=update).
-
-If you are new to using the Unity Editor, you can find the general documentation [here](https://docs.unity3d.com/Manual/index.html).
-
-### Clone the repository
-Once installed, you will want to clone the Agents GitHub repository. References will be made throughout to `unity-environment` and `python` directories. Both are located at the root of the repository. 
+In order to install and set-up the Python and Unity environments, see the instructions [here](installation.md).
 
 ## Building Unity Environment
 Launch the Unity Editor, and log in, if necessary. 
@@ -37,34 +31,6 @@ Launch the Unity Editor, and log in, if necessary.
     - (optional) Select “Developer Build” to log debug messages.
 6. Click *Build*:
     - Save environment binary to the `python` sub-directory of the cloned repository *(you may need to click on the down arrow on the file chooser to be able to select that folder)*
-
-## Installing Python API
-In order to train an agent within the framework, you will need to install Python 2 or 3, and the dependencies described below.
-
-### Windows Users
-
-If you are a Windows user who is new to Python/TensorFlow, follow [this guide](https://nitishmutha.github.io/tensorflow/2017/01/22/TensorFlow-with-gpu-for-windows.html) to set up your Python environment.
-
-### Requirements
-* Jupyter
-* Matplotlib
-* numpy
-* Pillow
-* Python (2 or 3)
-* TensorFlow (1.0+)
-
-### Installing Dependencies
-To install dependencies, go into the `python` directory and run:
-
-`pip install .`
-
-or 
-
-`pip3 install  .`
-
-If your Python environment doesn't include `pip`, see these [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers) on installing it.
-
-Once dependencies are installed, you are ready to test the Ball balance environment from Python.
 
 ### Testing Python API
 
