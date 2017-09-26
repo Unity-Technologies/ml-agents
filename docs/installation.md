@@ -20,12 +20,12 @@ If you are a Windows user who is new to Python/TensorFlow, follow [this guide](h
 * Matplotlib
 * numpy
 * Pillow
-* Python (2 or 3)
+* Python (2 or 3; 64bit required)
 * docopt (Training)
 * TensorFlow (1.0+) (Training)
 
 ### Installing Dependencies
-To install dependencies, go into the `python` directory and run (depending on your python version):
+To install dependencies, go into the `python` sub-directory of the repositroy, and run (depending on your python version) from the command line:
 
 `pip install .`
 
