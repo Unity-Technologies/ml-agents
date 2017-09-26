@@ -32,6 +32,8 @@ Launch the Unity Editor, and log in, if necessary.
 6. Click *Build*:
     - Save environment binary to the `python` sub-directory of the cloned repository *(you may need to click on the down arrow on the file chooser to be able to select that folder)*
 
+## Training the Brain with Reinforcement Learning
+
 ### Testing Python API
 
 To launch jupyter, run in the command line:
@@ -41,8 +43,6 @@ To launch jupyter, run in the command line:
 Then navigate to `localhost:8888` to access the notebooks. If you're new to jupyter, check out the [quick start guide](https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/execute.html) before you continue.
 
 To ensure that your environment and the Python API work as expected, you can use the `python/Basics` Jupyter notebook. This notebook contains a simple walkthrough of the functionality of the API. Within `Basics`, be sure to set `env_name` to the name of the environment file you built earlier.
-
-## Training the Brain with Reinforcement Learning
 
 ### Training with PPO
 In order to train an agent to correctly balance the ball, we will use a Reinforcement Learning algorithm called Proximal Policy Optimization (PPO). This is a method that has been shown to be safe, efficient, and more general purpose than many other RL algorithms, as such we have chosen it as the example algorithm for use with ML Agents. For more information on PPO, OpenAI has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/) explaining it. 
