@@ -127,7 +127,7 @@ Because TensorFlowSharp support is still experimental, it is disabled by default
 4. Select the `3DBallBrain` object from the Scene hierarchy. 
 5. Change the `Type of Brain` to `Internal`.
 6. Drag the `<env_name>.bytes` file from the Project window of the Editor to the `Graph Model` placeholder in the `3DBallBrain` inspector window.
-7. Set the `Graph Placeholder` size to 1. 
+7. Set the `Graph Placeholder` size to 1 (Note that step 7 8 are done because 3DBall is a continuous control environment, and the TensorFlow model requires a noise parameter to decide actions. In cases with discrete control, epsilon is not needed). 
 8. Add a placeholder called `epsilon` with a type of `floating point` and a range of values from 0 to 0.
 9. Press the Play button at the top of the editor.
 
