@@ -113,6 +113,9 @@ class UnityEnvironment(object):
         self._conn.send(b".")
         self._loaded = True
         logger.info("\n'{}' started successfully!".format(self._academy_name))
+        if (self._num_external_brains == 0):
+            logger.warning(" No External Brains found in the Unity Environment. "
+                "You will not be able to pass actions to your agent(s).")
 
     @property
     def brains(self):
