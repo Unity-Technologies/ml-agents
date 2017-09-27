@@ -17,12 +17,13 @@ public enum BrainType
     External,
     Internal
 }
+
 #else
 public enum BrainType
 {
-Player,
-Heuristic,
-External,
+    Player,
+    Heuristic,
+    External,
 }
 #endif
 
@@ -32,8 +33,7 @@ External,
 public enum StateType
 {
     discrete,
-    continuous
-}
+    continuous}
 ;
 
 /** Only need to be modified in the brain's inpector.
@@ -151,7 +151,14 @@ public class Brain : MonoBehaviour
         {
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
-                CoreBrains[(int)bt] = ScriptableObject.Instantiate(CoreBrains[(int)bt]);
+                if (CoreBrains[(int)bt] == null)
+                {
+                    CoreBrains[(int)bt] = ScriptableObject.CreateInstance("CoreBrain" + bt.ToString());
+                }
+                else
+                {
+                    CoreBrains[(int)bt] = ScriptableObject.Instantiate(CoreBrains[(int)bt]);
+                }
             }
             instanceID = gameObject.GetInstanceID();
         }

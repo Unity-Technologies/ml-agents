@@ -238,7 +238,11 @@ class UnityEnvironment(object):
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
-            actions = state_dict["actions"]
+            # actions = state_dict["actions"]
+            if n_agent > 0 :
+                actions =  np.array(state_dict["actions"]).reshape((n_agent, -1))
+            else :
+                actions = np.array([])
 
             observations = []
             for o in range(self._brains[b].number_observations):
