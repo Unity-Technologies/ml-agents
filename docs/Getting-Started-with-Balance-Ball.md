@@ -10,15 +10,9 @@ In this walkthrough we will be using the **3D Balance Ball** environment. The en
 
 Let's get started!
 
-## Getting Unity ML Agents
-### Start by installing **Unity 2017.1** or later (required)
+## Installation
 
-Download link available [here](https://store.unity.com/download?ref=update).
-
-If you are new to using the Unity Editor, you can find the general documentation [here](https://docs.unity3d.com/Manual/index.html).
-
-### Clone the repository
-Once installed, you will want to clone the Agents GitHub repository. References will be made throughout to `unity-environment` and `python` directories. Both are located at the root of the repository. 
+In order to install and set-up the Python and Unity environments, see the instructions [here](installation.md).
 
 ## Building Unity Environment
 Launch the Unity Editor, and log in, if necessary. 
@@ -34,37 +28,11 @@ Launch the Unity Editor, and log in, if necessary.
 3. Expand the `Ball3DAcademy` GameObject and locate its child object `Ball3DBrain` within the Scene hierarchy in the editor. Ensure Type of Brain for this object is set to `External`.
 4. *File -> Build Settings*
 5. Choose your target platform:
-    - (optional) Select “Developer Build” to log debug messages.
+    - (optional) Select “Development Build” to log debug messages.
 6. Click *Build*:
     - Save environment binary to the `python` sub-directory of the cloned repository *(you may need to click on the down arrow on the file chooser to be able to select that folder)*
 
-## Installing Python API
-In order to train an agent within the framework, you will need to install Python 2 or 3, and the dependencies described below.
-
-### Windows Users
-
-If you are a Windows user who is new to Python/TensorFlow, follow [this guide](https://nitishmutha.github.io/tensorflow/2017/01/22/TensorFlow-with-gpu-for-windows.html) to set up your Python environment.
-
-### Requirements
-* Jupyter
-* Matplotlib
-* numpy
-* Pillow
-* Python (2 or 3)
-* TensorFlow (1.0+)
-
-### Installing Dependencies
-To install dependencies, go into the `python` directory and run:
-
-`pip install .`
-
-or 
-
-`pip3 install  .`
-
-If your Python environment doesn't include `pip`, see these [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers) on installing it.
-
-Once dependencies are installed, you are ready to test the Ball balance environment from Python.
+## Training the Brain with Reinforcement Learning
 
 ### Testing Python API
 
@@ -75,8 +43,6 @@ To launch jupyter, run in the command line:
 Then navigate to `localhost:8888` to access the notebooks. If you're new to jupyter, check out the [quick start guide](https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/execute.html) before you continue.
 
 To ensure that your environment and the Python API work as expected, you can use the `python/Basics` Jupyter notebook. This notebook contains a simple walkthrough of the functionality of the API. Within `Basics`, be sure to set `env_name` to the name of the environment file you built earlier.
-
-## Training the Brain with Reinforcement Learning
 
 ### Training with PPO
 In order to train an agent to correctly balance the ball, we will use a Reinforcement Learning algorithm called Proximal Policy Optimization (PPO). This is a method that has been shown to be safe, efficient, and more general purpose than many other RL algorithms, as such we have chosen it as the example algorithm for use with ML Agents. For more information on PPO, OpenAI has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/) explaining it. 
@@ -90,9 +56,9 @@ In order to train the agents within the Ball Balance environment:
 
 ### Observing Training Progress
 In order to observe the training process in more detail, you can use Tensorboard. 
-In your command line, run :
+In your command line, enter into `python` and then run :
 
-`tensorboard --logdir='summaries`
+`tensorboard --logdir=summaries`
 
 Then navigate to `localhost:6006`.
 
@@ -127,7 +93,7 @@ Because TensorFlowSharp support is still experimental, it is disabled by default
 4. Select the `3DBallBrain` object from the Scene hierarchy. 
 5. Change the `Type of Brain` to `Internal`.
 6. Drag the `<env_name>.bytes` file from the Project window of the Editor to the `Graph Model` placeholder in the `3DBallBrain` inspector window.
-7. Set the `Graph Placeholder` size to 1. 
+7. Set the `Graph Placeholder` size to 1 (_Note that step 7 and 8 are done because 3DBall is a continuous control environment, and the TensorFlow model requires a noise parameter to decide actions. In cases with discrete control, epsilon is not needed_). 
 8. Add a placeholder called `epsilon` with a type of `floating point` and a range of values from 0 to 0.
 9. Press the Play button at the top of the editor.
 
