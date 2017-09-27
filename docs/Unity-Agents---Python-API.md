@@ -34,10 +34,16 @@ Send a reset signal to the environment, and provides a dictionary mapping brain 
     - `train_model` indicates whether to run the environment in train (`True`) or test (`False`) mode.
     - `config` is an optional dictionary of configuration flags specific to the environment. For more information on adding optional config flags to an environment, see [here](Making-a-new-Unity-Environment.md#implementing-yournameacademy). For generic environments, `config` can be ignored. `config` is a dictionary of strings to floats where the keys are the names of the `resetParameters` and the values are their corresponding float values.  
 - **Step : `env.step(action, memory=None, value = None)`**  
-Sends a step signal to the environment using the actions. Note that if you have more than one brain in the environment, you must provide a dictionary from brain names to actions.  
+Sends a step signal to the environment using the actions. For each brain : 
     - `action` can be one dimensional arrays or two dimensional arrays if you have multiple agents per brains.
     - `memory` is an optional input that can be used to send a list of floats per agents to be retrieved at the next step.
-    - `value` is an optional input that be used to send a single float per agent to be displayed if and `AgentMonitor.cs` component is attached to the agent.
+    - `value` is an optional input that be used to send a single float per agent to be displayed if and `AgentMonitor.cs` component is attached to the agent. 
+
+Note that if you have more than one external brain in the environment, you must provide dictionaries from brain names to arrays for `action`, `memory` and `value`. For example: If you have two external brains named `brain1` and `brain2` each with one agent taking two continuous actions, then you can have:
+```python
+action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
+```
+
 Returns a dictionary mapping brain names to BrainInfo objects.  
 - **Close : `env.close()`**  
 Sends a shutdown signal to the environment and closes the communication socket.
