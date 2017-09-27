@@ -5,14 +5,16 @@ using UnityEngine;
 public class WallAgent : Agent
 {
 	public GameObject goalHolder;
+    public GameObject block;
+    public GameObject area;
 
 	public override List<float> CollectState()
 	{
 		List<float> state = new List<float>();
         Vector3 velocity = GetComponent<Rigidbody>().velocity;
-		state.Add(transform.position.x);
-		state.Add(transform.position.y);
-		state.Add(transform.position.z);
+		state.Add(transform.position.x - area.transform.position.x);
+		state.Add(transform.position.y - area.transform.position.x);
+		state.Add(transform.position.z + 4 - area.transform.position.x);
 
         state.Add(velocity.x);
 		state.Add(velocity.y);
@@ -33,31 +35,38 @@ public class WallAgent : Agent
 		if (movement == 2) { directionZ = -1; }
 		if (movement == 3) { directionZ = 1; }
 		if (movement == 4) { directionY = 1; }
-        if (gameObject.transform.position.y > 1.1f || gameObject.transform.position.y < 0.9f) 
+
+        Vector3 fwd = transform.TransformDirection(Vector3.down);
+        if (!Physics.Raycast(transform.position, fwd, 0.6f) && 
+            !Physics.Raycast(transform.position + new Vector3(0.4f, 0f, 0f), fwd, 0.6f) && 
+            !Physics.Raycast(transform.position + new Vector3(-0.4f, 0f, 0f), fwd, 0.6f) && 
+            !Physics.Raycast(transform.position + new Vector3(0.0f, 0f, 0.4f), fwd, 0.6f) && 
+            !Physics.Raycast(transform.position + new Vector3(0.0f, 0f, -0.4f), fwd, 0.6f))
         { 
             directionY = 0f;
             directionX = directionX / 2f;
             directionZ = directionZ / 2f;
         }
-		gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(directionX * 40f, directionY * 400f, directionZ * 40f));
-        Debug.Log(GetComponent<Rigidbody>().velocity.sqrMagnitude);
+
+		gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(directionX * 40f, directionY * 300f, directionZ * 40f));
         if (GetComponent<Rigidbody>().velocity.sqrMagnitude > 25f) 
         {
             GetComponent<Rigidbody>().velocity *= 0.95f;
         }
 
-        if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x) > 7f || Mathf.Abs(gameObject.transform.position.z) > 7f)
+        if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 7f || Mathf.Abs(gameObject.transform.position.z + 4 - area.transform.position.z) > 7)
 		{
 			done = true;
-			reward = -0.1f;
+			reward = -1f;
 		}
 	}
 
 	public override void AgentReset()
 	{
-		transform.position = new Vector3(0f, 1.1f, -3f);
+        transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1.1f, -8f) + area.transform.position;
 		GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-        goalHolder.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 0.2f, Random.Range(0f, 3.5f));
+        goalHolder.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 0.1f, -1f) + area.transform.position;
+        block.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1f, Random.Range(-7f, -5f)) + area.transform.position;
 	}
 
 	public override void AgentOnDone()
