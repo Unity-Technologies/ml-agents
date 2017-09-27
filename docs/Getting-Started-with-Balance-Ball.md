@@ -28,7 +28,7 @@ Launch the Unity Editor, and log in, if necessary.
 3. Expand the `Ball3DAcademy` GameObject and locate its child object `Ball3DBrain` within the Scene hierarchy in the editor. Ensure Type of Brain for this object is set to `External`.
 4. *File -> Build Settings*
 5. Choose your target platform:
-    - (optional) Select “Developer Build” to log debug messages.
+    - (optional) Select “Development Build” to log debug messages.
 6. Click *Build*:
     - Save environment binary to the `python` sub-directory of the cloned repository *(you may need to click on the down arrow on the file chooser to be able to select that folder)*
 
@@ -56,7 +56,7 @@ In order to train the agents within the Ball Balance environment:
 
 ### Observing Training Progress
 In order to observe the training process in more detail, you can use Tensorboard. 
-In your command line, run :
+In your command line, enter into `python` and then run :
 
 `tensorboard --logdir=summaries`
 
