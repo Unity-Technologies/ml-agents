@@ -301,21 +301,21 @@ class UnityEnvironment(object):
                         "You have {0} brains, you need to feed a dictionary of brain names a keys, "
                         "and actions as values".format(self._num_brains))
                 else:
-                    action = {self._brain_names[0]: action}
+                    action = {self._external_brain_names[0]: action}
             if isinstance(memory, (int, np.int_, float, np.float_, list, np.ndarray)):
                 if self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and memories as values".format(self._num_brains))
                 else:
-                    memory = {self._brain_names[0]: memory}
+                    memory = {self._external_brain_names[0]: memory}
             if isinstance(value, (int, np.int_, float, np.float_, list, np.ndarray)):
                 if self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and state/action value estimates as values".format(self._num_brains))
                 else:
-                    value = {self._brain_names[0]: value}
+                    value = {self._external_brain_names[0]: value}
 
             for b in self._external_brain_names:
                 n_agent = len(self._data[b].agents)
