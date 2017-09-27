@@ -32,6 +32,7 @@ Options:
   --hidden-units=<n>         Number of units in hidden layer [default: 64].
   --batch-size=<n>           How many experiences per gradient descent update step [default: 64].
   --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
+  --worker-id=<n>            Number to add to communication port (5005). Used for asynchronous agent scenarios [default: 0].
 '''
 
 options = docopt(_USAGE)
@@ -47,6 +48,7 @@ summary_freq = int(options['--summary-freq'])
 save_freq = int(options['--save-freq'])
 env_name = options['<env>']
 keep_checkpoints = int(options['--keep-checkpoints'])
+worker_id = int(options['--worker-id'])
 
 # Algorithm-specific parameters for tuning
 gamma = float(options['--gamma'])
@@ -60,7 +62,7 @@ learning_rate = float(options['--learning-rate'])
 hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
 
-env = UnityEnvironment(file_name=env_name)
+env = UnityEnvironment(file_name=env_name, worker_id=worker_id)
 print(str(env))
 brain_name = env.brain_names[0]
 
