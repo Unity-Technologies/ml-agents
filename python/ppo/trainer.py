@@ -71,7 +71,7 @@ class Trainer(object):
                 idx = info.agents.index(agent)
                 if not info.local_done[idx]:
                     if self.use_observations:
-                        history['observations'].append(info.observations[idx])
+                        history['observations'].append([info.observations[0][idx]])
                     if self.use_states:
                         history['states'].append(info.states[idx])
                     if self.is_continuous:
