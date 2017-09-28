@@ -32,15 +32,15 @@ public class TennisAgent : Agent
     {
         float moveX = 0.0f;
         float moveY = 0.0f;
-        if (act[0] == 0f)
+        if (act[0] == 1f)
         {
             moveX = invertMult * -0.25f;
         }
-        if (act[0] == 1f)
+        if (act[0] == 2f)
         {
             moveX = invertMult * 0.25f;
         }
-        if (act[0] == 2f)
+        if (act[0] == 0f)
         {
             moveX = 0.0f;
         }

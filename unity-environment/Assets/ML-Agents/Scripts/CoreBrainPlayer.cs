@@ -35,7 +35,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// Contains the mapping from input to discrete actions
     private DiscretePlayerAction[] discretePlayerActions;
     [SerializeField]
-    private int defaultAction = -1;
+    private int defaultAction = 0;
 
     /// Reference to the brain that uses this CoreBrainPlayer
     public Brain brain;
