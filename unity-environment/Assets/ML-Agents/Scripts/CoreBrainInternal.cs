@@ -32,6 +32,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     }
 
+    ExternalCommunicator coord;
+
     /// Modify only in inspector : Reference to the Graph asset
     public TextAsset graphModel;
     /// Modify only in inspector : If a scope was used when training the model, specify it here
@@ -87,6 +89,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 			
 		}
 #endif
+        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        {
+            coord = null;
+        }
+        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        {
+            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord.SubscribeBrain(brain);
+        }
 
         if (graphModel != null)
         {
@@ -123,6 +134,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         currentBatchSize = brain.agents.Count;
         if (currentBatchSize == 0)
         {
+
+            if (coord!=null)
+            {
+                coord.giveBrainInfo(brain);
+            }
             return;
         }
 
@@ -166,7 +182,13 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 i++;
             }
         }
-#endif
+
+
+        if (coord!=null)
+        {
+            coord.giveBrainInfo(brain);
+        }
+        #endif
     }
 
 

@@ -111,7 +111,14 @@ public abstract class Agent : MonoBehaviour
         RemoveBrain();
         brain = b;
         brain.agents.Add(id, gameObject.GetComponent<Agent>());
-        agentStoredAction = new float[brain.brainParameters.actionSize];
+        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        {
+            agentStoredAction = new float[brain.brainParameters.actionSize];
+        }
+        else
+        {
+            agentStoredAction = new float[1];
+        }
         memory = new float[brain.brainParameters.memorySize];
     }
 

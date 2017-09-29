@@ -109,7 +109,6 @@ class UnityEnvironment(object):
         self._resetParameters = p["resetParameters"]
         for i in range(self._num_brains):
             self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
-            print(p["brainParameters"][i])
         self._conn.send(b".")
         self._loaded = True
         logger.info("\n'{}' started successfully!".format(self._academy_name))
