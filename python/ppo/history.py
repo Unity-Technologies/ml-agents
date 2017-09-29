@@ -104,6 +104,7 @@ def shuffle_buffer(global_buffer):
     :return: Randomized buffer
     """
     s = np.arange(global_buffer[history_keys[2]].shape[0])
+    np.random.shuffle(s)
     for key in history_keys:
         if len(global_buffer[key]) > 0:
             global_buffer[key] = global_buffer[key][s]
