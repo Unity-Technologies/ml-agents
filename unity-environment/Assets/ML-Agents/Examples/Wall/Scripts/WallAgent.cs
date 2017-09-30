@@ -5,6 +5,7 @@ using UnityEngine;
 public class WallAgent : Agent
 {
 	public GameObject goalHolder;
+    public GameObject academy;
     public GameObject block;
     public GameObject area;
     public GameObject wall;
@@ -45,18 +46,19 @@ public class WallAgent : Agent
 		if (movement == 2) { directionX = 1; }
 		if (movement == 3) { directionZ = -1; }
 		if (movement == 4) { directionZ = 1; }
-		if (movement == 5) { directionY = 1; }
+		if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+
 
         Vector3 fwd = transform.TransformDirection(Vector3.down);
-        if (!Physics.Raycast(transform.position, fwd, 0.55f) && 
-            !Physics.Raycast(transform.position + new Vector3(0.49f, 0f, 0f), fwd, 0.55f) && 
-            !Physics.Raycast(transform.position + new Vector3(-0.49f, 0f, 0f), fwd, 0.55f) && 
-            !Physics.Raycast(transform.position + new Vector3(0.0f, 0f, 0.49f), fwd, 0.55f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.0f, 0f, -0.49f), fwd, 0.55f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.49f, 0f, 0.49f), fwd, 0.55f) &&
-			!Physics.Raycast(transform.position + new Vector3(-0.49f, 0f, 0.49f), fwd, 0.55f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.49f, 0f, 0.49f), fwd, 0.55f) &&
-			!Physics.Raycast(transform.position + new Vector3(-0.49f, 0f, -0.49f), fwd, 0.55f))
+        if (!Physics.Raycast(transform.position, fwd, 0.51f) && 
+            !Physics.Raycast(transform.position + new Vector3(0.499f, 0f, 0f), fwd, 0.51f) && 
+            !Physics.Raycast(transform.position + new Vector3(-0.499f, 0f, 0f), fwd, 0.51f) && 
+            !Physics.Raycast(transform.position + new Vector3(0.0f, 0f, 0.499f), fwd, 0.51f) &&
+			!Physics.Raycast(transform.position + new Vector3(0.0f, 0f, -0.499f), fwd, 0.51f) &&
+			!Physics.Raycast(transform.position + new Vector3(0.499f, 0f, 0.499f), fwd, 0.51f) &&
+			!Physics.Raycast(transform.position + new Vector3(-0.499f, 0f, 0.499f), fwd, 0.51f) &&
+			!Physics.Raycast(transform.position + new Vector3(0.499f, 0f, -0.499f), fwd, 0.51f) &&
+			!Physics.Raycast(transform.position + new Vector3(-0.499f, 0f, -0.499f), fwd, 0.51f))
         { 
             directionY = 0f;
             directionX = directionX / 5f;
@@ -78,10 +80,12 @@ public class WallAgent : Agent
 
 	public override void AgentReset()
 	{
-        transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1.1f, -9f) + area.transform.position;
+        int wallHeightMin = (int)academy.GetComponent<Academy>().resetParameters["wall_height_min"];
+		int wallHeightMax = (int)academy.GetComponent<Academy>().resetParameters["wall_height_max"];
+		transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1.1f, -9f) + area.transform.position;
 		GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-        goalHolder.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 0.1f, 0f) + area.transform.position;
-        wall.transform.localScale = new Vector3(12f, Random.Range(0f, 2f), 1f);
+        goalHolder.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 0.5f, 0f) + area.transform.position;
+        wall.transform.localScale = new Vector3(12f, Random.Range(wallHeightMin, wallHeightMax), 1f);
         block.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1f, Random.Range(-4f, -8f)) + area.transform.position;
 	}
 
