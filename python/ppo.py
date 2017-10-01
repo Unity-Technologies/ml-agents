@@ -96,7 +96,7 @@ with tf.Session() as sess:
         sess.run(init)
     steps = sess.run(ppo_model.global_step)
     summary_writer = tf.summary.FileWriter(summary_path)
-    info = env.reset(train_mode=train_model)[brain_name]
+    info = env.reset(train_mode=train_model, config={"steps": int(steps)})[brain_name]
     trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
     while steps <= max_steps or not train_model:
         if env.global_done:
