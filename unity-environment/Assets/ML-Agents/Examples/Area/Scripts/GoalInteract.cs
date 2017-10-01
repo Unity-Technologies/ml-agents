@@ -5,6 +5,7 @@ using UnityEngine;
 public class GoalInteract : MonoBehaviour
 {
     public GameObject myAgent;
+    public GameObject myObject;
     // Use this for initialization
     void Start()
     {
@@ -19,10 +20,12 @@ public class GoalInteract : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        WallAgent agent =myAgent.GetComponent<WallAgent>();
-        agent.done = true;
-        agent.reward = 1f;
-        //GameObject.Find("Academy").GetComponent<Academy>().done = true;;
+        if (collision.gameObject == myObject)
+        {
+            Agent agent = myAgent.GetComponent<Agent>();
+            agent.done = true;
+            agent.reward = 1f;
+        }
 	}
 
 }

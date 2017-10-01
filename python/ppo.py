@@ -100,7 +100,7 @@ with tf.Session() as sess:
     trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
     while steps <= max_steps or not train_model:
         if env.global_done:
-            info = env.reset(train_mode=train_model)[brain_name]
+            info = env.reset(train_mode=train_model, config={"steps": int(steps)})[brain_name]
         # Decide and take an action
         new_info = trainer.take_action(info, env, brain_name)
         info = new_info

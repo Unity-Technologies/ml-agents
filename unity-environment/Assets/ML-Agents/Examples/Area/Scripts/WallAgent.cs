@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WallAgent : Agent
+public class WallAgent : AreaAgent
 {
 	public GameObject goalHolder;
-    public GameObject academy;
     public GameObject block;
-    public GameObject area;
     public GameObject wall;
+
+    public override void InitializeAgent()
+    {
+		base.InitializeAgent();
+    }
 
 	public override List<float> CollectState()
 	{
 		List<float> state = new List<float>();
         Vector3 velocity = GetComponent<Rigidbody>().velocity / 20f;
+        Vector3 blockVelocity = block.GetComponent<Rigidbody>().velocity / 20f;
         state.Add((transform.position.x - area.transform.position.x) / 10f);
         state.Add((transform.position.y - area.transform.position.y) / 10f);
         state.Add((transform.position.z + 5 - area.transform.position.z) / 10f);
@@ -31,6 +35,10 @@ public class WallAgent : Agent
 		state.Add(velocity.x);
 		state.Add(velocity.y);
 		state.Add(velocity.z);
+
+		//state.Add(blockVelocity.x);
+		//state.Add(blockVelocity.y);
+		//state.Add(blockVelocity.z);
 
 		return state;
 	}
@@ -80,13 +88,10 @@ public class WallAgent : Agent
 
 	public override void AgentReset()
 	{
-        int wallHeightMin = (int)academy.GetComponent<Academy>().resetParameters["wall_height_min"];
-		int wallHeightMax = (int)academy.GetComponent<Academy>().resetParameters["wall_height_max"];
-		transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1.1f, -9f) + area.transform.position;
+		transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1.1f, -8f) + area.transform.position;
 		GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-        goalHolder.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 0.5f, 0f) + area.transform.position;
-        wall.transform.localScale = new Vector3(12f, Random.Range(wallHeightMin, wallHeightMax), 1f);
-        block.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1f, Random.Range(-4f, -8f)) + area.transform.position;
+
+        area.GetComponent<Area>().ResetArea();
 	}
 
 	public override void AgentOnDone()
