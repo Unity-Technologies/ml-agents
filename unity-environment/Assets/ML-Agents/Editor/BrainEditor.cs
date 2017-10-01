@@ -22,7 +22,7 @@ public class BrainEditor : Editor
 			EditorGUILayout.HelpBox ("A Brain GameObject myst be a child of an Academy GameObject!", MessageType.Error);
 		} else if (myBrain.transform.parent.GetComponent<Academy> () == null) {
 			EditorGUILayout.HelpBox ("The Parent of a Brain must have an Academy Component attached to it!", MessageType.Error);
-		} 
+		}
 
 
 		SerializedProperty bp = serializedBrain.FindProperty ("brainParameters");
@@ -32,15 +32,17 @@ public class BrainEditor : Editor
 		if (myBrain.brainParameters.actionSize != myBrain.brainParameters.actionDescriptions.Count()) {
 			myBrain.brainParameters.actionDescriptions = new string[myBrain.brainParameters.actionSize];
 		}
-		serializedBrain.Update ();
-		EditorGUILayout.PropertyField (bp, true);
-		serializedBrain.ApplyModifiedProperties ();
+		serializedBrain.Update();
+		EditorGUILayout.PropertyField(bp, true);
 
-		myBrain.brainType = (BrainType)EditorGUILayout.EnumPopup ("Type Of Brain ", myBrain.brainType);
+		SerializedProperty bt = serializedBrain.FindProperty("brainType");
+		EditorGUILayout.PropertyField(bt);
 
-		if ((int)myBrain.brainType >= System.Enum.GetValues (typeof(BrainType)).Length) {
-			myBrain.brainType = BrainType.Player;
+		if (bt.enumValueIndex < 0) {
+			bt.enumValueIndex = (int)BrainType.Player;
 		}
+
+		serializedBrain.ApplyModifiedProperties();
 
 		myBrain.UpdateCoreBrains ();
 
