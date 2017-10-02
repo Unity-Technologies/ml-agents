@@ -22,8 +22,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         public enum tensorType
         {
             Integer,
-            FloatingPoint
-        };
+            FloatingPoint}
+
+        ;
 
         public string name;
         public tensorType valueType;
@@ -135,7 +136,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         if (currentBatchSize == 0)
         {
 
-            if (coord!=null)
+            if (coord != null)
             {
                 coord.giveBrainInfo(brain);
             }
@@ -184,7 +185,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
 
-        if (coord!=null)
+        if (coord != null)
         {
             coord.giveBrainInfo(brain);
         }
@@ -234,7 +235,19 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            runner.AddInput(graph[graphScope + StatePlacholderName][0], inputState);
+            if (brain.brainParameters.stateSpaceType == StateType.discrete)
+            {
+                int[,] discreteInputState = new int[currentBatchSize, 1];
+                for (int i = 0; i < currentBatchSize; i++)
+                {
+                    discreteInputState[i, 0] = (int)inputState[i, 0];
+                }
+                runner.AddInput(graph[graphScope + StatePlacholderName][0], discreteInputState);
+            }
+            else
+            {
+                runner.AddInput(graph[graphScope + StatePlacholderName][0], inputState);
+            }
         }
 
         // Create the observation tensors
