@@ -656,6 +656,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   block: {fileID: 1493483966197088}
   goalHolder: {fileID: 1576612233868982}
+  academy: {fileID: 0}
 --- !u!114 &114371909629876940
 MonoBehaviour:
   m_ObjectHideFlags: 1
