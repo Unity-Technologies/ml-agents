@@ -19,7 +19,7 @@ public class BrainEditor : Editor
 		SerializedObject serializedBrain = new SerializedObject (target);
 
 		if (myBrain.transform.parent == null) {
-			EditorGUILayout.HelpBox ("A Brain GameObject myst be a child of an Academy GameObject!", MessageType.Error);
+			EditorGUILayout.HelpBox ("A Brain GameObject must be a child of an Academy GameObject!", MessageType.Error);
 		} else if (myBrain.transform.parent.GetComponent<Academy> () == null) {
 			EditorGUILayout.HelpBox ("The Parent of a Brain must have an Academy Component attached to it!", MessageType.Error);
 		} 
