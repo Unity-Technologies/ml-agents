@@ -256,6 +256,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             runner.AddInput(graph[graphScope + ObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);
         }
 
+        if (hasRecurrent)
+        {
+            runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
+            runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
+        }
+            
         TFTensor[] networkOutput;
         try
         {
@@ -282,8 +288,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             Dictionary<int, float[]> new_memories = new Dictionary<int, float[]>();
 
-            runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
-            runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
             int i = 0;
