@@ -100,15 +100,21 @@ class UnityEnvironment(object):
         self._data = {}
         self._global_done = None
         self._academy_name = p["AcademyName"]
-        self._num_brains = len(p["brainParameters"])
         self._brains = {}
         self._brain_names = p["brainNames"]
+        self._external_brain_names = p["externalBrainNames"]
+        self._external_brain_names = [] if self._external_brain_names is None else self._external_brain_names
+        self._num_brains = len(self._brain_names)
+        self._num_external_brains = len(self._external_brain_names)
         self._resetParameters = p["resetParameters"]
         for i in range(self._num_brains):
             self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
         self._conn.send(b".")
         self._loaded = True
         logger.info("\n'{}' started successfully!".format(self._academy_name))
+        if (self._num_external_brains == 0):
+            logger.warning(" No External Brains found in the Unity Environment. "
+                "You will not be able to pass actions to your agent(s).")
 
     @property
     def brains(self):
@@ -127,8 +133,16 @@ class UnityEnvironment(object):
         return self._num_brains
 
     @property
+    def number_external_brains(self):
+        return self._num_external_brains
+
+    @property
     def brain_names(self):
         return self._brain_names
+
+    @property
+    def external_brain_names(self):
+        return self._external_brain_names
 
     @staticmethod
     def _process_pixels(image_bytes=None, bw=False):
@@ -223,6 +237,11 @@ class UnityEnvironment(object):
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
+            # actions = state_dict["actions"]
+            if n_agent > 0 :
+                actions =  np.array(state_dict["actions"]).reshape((n_agent, -1))
+            else :
+                actions = np.array([])
 
             observations = []
             for o in range(self._brains[b].number_observations):
@@ -232,7 +251,7 @@ class UnityEnvironment(object):
 
                 observations.append(np.array(obs_n))
 
-            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones)
+            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions)
 
         self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
 
@@ -269,7 +288,7 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
-    def step(self, action, memory=None, value=None):
+    def step(self, action = None, memory=None, value=None):
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly, and returns
         observation, state, and reward information to the agent.
@@ -278,32 +297,33 @@ class UnityEnvironment(object):
         :param value: Value estimate to send to environment for visualization. Can be a scalar or vector of float(s).
         :return: A Data structure corresponding to the new state of the environment.
         """
+        action = {} if action is None else action
         memory = {} if memory is None else memory
         value = {} if value is None else value
         if self._loaded and not self._global_done and self._global_done is not None:
             if isinstance(action, (int, np.int_, float, np.float_, list, np.ndarray)):
-                if self._num_brains > 1:
+                if self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names a keys, "
                         "and actions as values".format(self._num_brains))
                 else:
-                    action = {self._brain_names[0]: action}
+                    action = {self._external_brain_names[0]: action}
             if isinstance(memory, (int, np.int_, float, np.float_, list, np.ndarray)):
-                if self._num_brains > 1:
+                if self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and memories as values".format(self._num_brains))
                 else:
-                    memory = {self._brain_names[0]: memory}
+                    memory = {self._external_brain_names[0]: memory}
             if isinstance(value, (int, np.int_, float, np.float_, list, np.ndarray)):
-                if self._num_brains > 1:
+                if self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and state/action value estimates as values".format(self._num_brains))
                 else:
-                    value = {self._brain_names[0]: value}
+                    value = {self._external_brain_names[0]: value}
 
-            for b in self._brain_names:
+            for b in self._external_brain_names:
                 n_agent = len(self._data[b].agents)
                 if b not in action:
                     raise UnityActionException("You need to input an action for the brain {0}".format(b))

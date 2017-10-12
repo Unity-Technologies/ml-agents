@@ -8,7 +8,8 @@ public class Ball3DDecision : MonoBehaviour, Decision
     {
         if (gameObject.GetComponent<Brain>().brainParameters.actionSpaceType == StateType.continuous)
         {
-            return new float[4]{ 0f, 0f, 0f, 0.0f };
+            
+            return new float[2]{ -10*(state[4]-state[2]), -10*(state[2]+state[4])};
 
         }
         else
