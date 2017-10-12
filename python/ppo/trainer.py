@@ -28,7 +28,14 @@ class Trainer(object):
         self.use_observations = use_observations
         self.use_states = use_states
 
-    def take_action(self, info, env, brain_name):
+    def running_average(self, data, steps, running_mean, running_variance):
+        mean, var = self.sess.run([running_mean, running_variance])
+        current_x = np.mean(data, axis=0)
+        new_mean = mean + (current_x - mean) / (steps + 1)
+        new_variance = var + (current_x - new_mean) * (current_x - mean)
+        return new_mean, new_variance
+
+    def take_action(self, info, env, brain_name, steps):
         """
         Decides actions given state/observation information, and takes them in environment.
         :param info: Current BrainInfo from environment.
@@ -37,7 +44,15 @@ class Trainer(object):
         :return: BrainInfo corresponding to new environment state.
         """
         epsi = None
-        feed_dict = {self.model.batch_size: len(info.states)}
+
+        new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean, self.model.running_variance)
+        new_r_mean, new_r_variance = self.running_average(info.rewards, steps, self.model.reward_mean, self.model.reward_variance)
+
+        feed_dict = {self.model.batch_size: len(info.states),
+                     self.model.new_mean: new_mean,
+                     self.model.new_variance: new_variance/(steps+1),
+                     self.model.new_reward_mean: new_r_mean,
+                     self.model.new_reward_variance: new_r_variance}
         if self.is_continuous:
             epsi = np.random.randn(len(info.states), env.brains[brain_name].action_space_size)
             feed_dict[self.model.epsilon] = epsi
@@ -45,18 +60,21 @@ class Trainer(object):
             feed_dict[self.model.observation_in] = np.vstack(info.observations)
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
-        actions, a_dist, value, ent, learn_rate = self.sess.run([self.model.output, self.model.probs,
+        actions, a_dist, value, ent, learn_rate, _, _, _, _ = self.sess.run([self.model.output, self.model.probs,
                                                                  self.model.value, self.model.entropy,
-                                                                 self.model.learning_rate],
+                                                                 self.model.learning_rate,
+                                                                 self.model.update_mean, self.model.update_variance,
+                                                                 self.model.update_reward_mean, self.model.update_reward_variance],
                                                                 feed_dict=feed_dict)
         self.stats['value_estimate'].append(value)
         self.stats['entropy'].append(ent)
         self.stats['learning_rate'].append(learn_rate)
         new_info = env.step(actions, value={brain_name: value})[brain_name]
-        self.add_experiences(info, new_info, epsi, actions, a_dist, value)
+        reward_std = np.sqrt(new_r_variance[0]/(steps+1))
+        self.add_experiences(info, new_info, epsi, actions, a_dist, value, reward_std)
         return new_info
 
-    def add_experiences(self, info, next_info, epsi, actions, a_dist, value):
+    def add_experiences(self, info, next_info, epsi, actions, a_dist, value, reward_std):
         """
         Adds experiences to each agent's experience history.
         :param info: Current BrainInfo.
@@ -77,7 +95,7 @@ class Trainer(object):
                     if self.is_continuous:
                         history['epsilons'].append(epsi[idx])
                     history['actions'].append(actions[idx])
-                    history['rewards'].append(next_info.rewards[idx])
+                    history['rewards'].append(next_info.rewards[idx] / float(reward_std + 1e-10))
                     history['action_probs'].append(a_dist[idx])
                     history['value_estimates'].append(value[idx][0])
                     history['cumulative_reward'] += next_info.rewards[idx]

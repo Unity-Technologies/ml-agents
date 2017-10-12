@@ -110,7 +110,7 @@ with tf.Session() as sess:
                 config = {}
             info = env.reset(train_mode=train_model, config=config)[brain_name]
         # Decide and take an action
-        new_info = trainer.take_action(info, env, brain_name)
+        new_info = trainer.take_action(info, env, brain_name, steps)
         info = new_info
         trainer.process_experiences(info, time_horizon, gamma, lambd)
         if len(trainer.training_buffer['actions']) > buffer_size and train_model:

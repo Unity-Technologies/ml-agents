@@ -95,6 +95,18 @@ class PPOModel(object):
         :return: List of hidden layer tensors.
         """
         self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
+
+        self.running_mean = tf.Variable(tf.zeros(shape=[s_size]), trainable=False, name='running_mean', dtype=tf.float32)
+        self.running_variance = tf.Variable(tf.ones(shape=[s_size]), trainable=False, name='running_variance', dtype=tf.float32)
+
+        self.new_mean = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_mean')
+        self.new_variance = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_variance')
+
+        self.state_in = (self.state_in - self.running_mean) / tf.sqrt(self.running_variance)
+
+        self.update_mean = tf.assign(self.running_mean, self.new_mean)
+        self.update_variance = tf.assign(self.running_variance, self.new_variance)
+
         streams = []
         for i in range(num_streams):
             hidden_1 = tf.layers.dense(self.state_in, h_size, use_bias=False, activation=activation)
@@ -132,6 +144,15 @@ class PPOModel(object):
         :param lr: Learning rate
         :param max_step: Total number of training steps.
         """
+        self.reward_mean = tf.Variable(tf.zeros(shape=1), trainable=False, name='running_mean', dtype=tf.float32)
+        self.reward_variance = tf.Variable(tf.zeros(shape=1), trainable=False, name='running_variance', dtype=tf.float32)
+
+        self.new_reward_mean = tf.placeholder(shape=1, dtype=tf.float32, name='new_mean')
+        self.new_reward_variance = tf.placeholder(shape=1, dtype=tf.float32, name='new_variance')
+
+        self.update_reward_mean = tf.assign(self.reward_mean, self.new_reward_mean)
+        self.update_reward_variance = tf.assign(self.reward_variance, self.new_reward_variance)
+
         self.returns_holder = tf.placeholder(shape=[None], dtype=tf.float32, name='discounted_rewards')
         self.advantage = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='advantages')
 
