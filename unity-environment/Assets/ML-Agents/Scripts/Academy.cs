@@ -73,9 +73,13 @@ public abstract class Academy : MonoBehaviour
 
     ExternalCommand externalCommand;
 
-    private bool acceptingSteps;
+    public bool autoSteps = true;
+    /**< \brief Whether automatic running the steps and receiving command in fixed update. Must be true for the external brain to work. */
+
     private int framesSinceAction;
     private bool skippingFrames = true;
+
+
     [HideInInspector]
     public bool done;
     /**< \brief The done flag of the Academy. */
@@ -129,7 +133,6 @@ public abstract class Academy : MonoBehaviour
         }
         windowResize = true;
         done = true;
-        acceptingSteps = true;
     }
 
     /// Environment specific initialization.
@@ -145,7 +148,7 @@ public abstract class Academy : MonoBehaviour
 
     private void ConfigureEngine()
     {
-        if ((communicator != null) && (!isInference))
+        if (((communicator != null) && (!isInference)) || !autoSteps)
         {
             Screen.SetResolution(trainingConfiguration.width, trainingConfiguration.height, false);
             QualitySettings.SetQualityLevel(trainingConfiguration.qualityLevel, true);
@@ -253,7 +256,7 @@ public abstract class Academy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (acceptingSteps)
+        if (autoSteps)
         {
             RunMdp();
         }
@@ -345,6 +348,59 @@ public abstract class Academy : MonoBehaviour
         }
 
     }
+
+    /// <summary>
+    /// run the step manually instead of running everything in the RunMdp automatically when autoSteps is false. Use for internal brain only.
+    /// This function will skip frames inside if frame skipping is enabled, which means this function will always decide a new action when every called.
+    /// </summary>
+    public void RunStepManual()
+    {
+        Debug.Assert(communicator == null, "Can not have external brains while in manual mode");
+
+        timeAtStep = Time.time;
+
+        DecideAction();
+
+
+        while (!((framesSinceAction > frameToSkip) || done))
+        {
+
+            AcademyStep();
+
+            foreach (Brain brain in brains)
+            {
+                brain.Step();
+            }
+            currentStep += 1;
+            framesSinceAction += 1;
+            if ((currentStep >= maxSteps) && maxSteps > 0)
+            {
+                done = true;
+            }
+        }
+
+        framesSinceAction = 0;
+        
+        Step();
+    }
+
+    /// <summary>
+    /// run the reset manually instead of running everything in the RunMdp automatically when autoSteps is false. Use for internal brain only.
+    /// </summary>
+    public void RunResetManual(Dictionary<string, float> newResetParameters = null)
+    {
+        if (newResetParameters != null)
+        {
+            foreach (KeyValuePair<string, float> kv in newResetParameters)
+            {
+                resetParameters[kv.Key] = kv.Value;
+            }
+        }
+        Reset();
+    }
+
+
+
 
     private static void GetBrains(GameObject gameObject, List<Brain> brains)
     {

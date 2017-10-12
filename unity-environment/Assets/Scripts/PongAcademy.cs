@@ -6,6 +6,7 @@ public class PongAcademy : Academy {
 
     public override void InitializeAcademy()
     {
+        RestartGame();
     }
 
 
@@ -199,6 +200,11 @@ public class PongAcademy : Academy {
         currentGameState.rewardLastStepRight = 0;
         currentGameState.rewardLastStepLeft = 0;
         currentGameState.gameWinPlayer = -1;
+
+        agentLeft.currentState = GetState(0);
+        agentRight.currentState = GetState(1);
+        agentLeft.reward = RewardsLastStep[0];
+        agentRight.reward = RewardsLastStep[1];
     }
 
 

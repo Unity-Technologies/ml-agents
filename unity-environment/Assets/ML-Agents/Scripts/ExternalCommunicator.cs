@@ -186,7 +186,7 @@ public class ExternalCommunicator : Communicator
 
     /// Contains logic for coverting texture into bytearray to send to 
     /// external agent.
-    private byte[] TexToByteArray(Texture2D tex)
+    public static byte[] TexToByteArray(Texture2D tex)
     {
         byte[] bytes = tex.EncodeToPNG();
         Object.DestroyImmediate(tex);
