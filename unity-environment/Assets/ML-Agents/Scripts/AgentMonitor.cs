@@ -141,7 +141,7 @@ public class AgentMonitor : MonoBehaviour
             }
             else
             {
-                texts.text += "State : " + ((int)agent.agentStoredAction[0]).ToString() + "\n";
+                texts.text += "Action : " + ((int)agent.agentStoredAction[0]).ToString() + "\n";
             }
         }
 

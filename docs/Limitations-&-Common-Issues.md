@@ -41,3 +41,7 @@ If you receive a file-not-found error while attempting to launch an environment,
 If you receive an exception `"Couldn't launch new environment because communication port {} is still in use. "`, you can change the worker number in the python script when calling 
 
 `UnityEnvironment(file_name=filename, worker_num=X)`
+
+### Mean reward : nan
+
+If you recieve a message `Mean reward : nan` when attempting to train a model using PPO, this is due to the episodes of the learning environment not terminating. In order to address this, set `Max Steps` for either the Academy or Agents within the Scene Inspector to a value greater than 0. Alternatively, it is possible to manually set `done` conditions for episodes from within scripts for custom episode-terminating events.
