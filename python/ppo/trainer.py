@@ -49,7 +49,7 @@ class Trainer(object):
 
         feed_dict = {self.model.batch_size: len(info.states),
                      self.model.new_mean: new_mean,
-                     self.model.new_variance: new_variance/(steps+1)}
+                     self.model.new_variance: new_variance}
         if self.is_continuous:
             epsi = np.random.randn(len(info.states), env.brains[brain_name].action_space_size)
             feed_dict[self.model.epsilon] = epsi

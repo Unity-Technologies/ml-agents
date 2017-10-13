@@ -57,6 +57,9 @@ def export_graph(model_path, env_name="env", target_nodes="action"):
 
 
 class PPOModel(object):
+    def create_global_steps(self):
+        self.global_step = tf.Variable(0, trainable=False, name='global_step', dtype=tf.int32)
+
     def create_visual_encoder(self, o_size_h, o_size_w, bw, h_size, num_streams, activation):
         """
         Builds a set of visual (CNN) encoders.
@@ -102,7 +105,7 @@ class PPOModel(object):
         self.new_mean = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_mean')
         self.new_variance = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_variance')
 
-        self.state_in = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(self.running_variance), -5, 5)
+        self.state_in = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(self.running_variance / (self.global_steps +1)), -5, 5)
 
         self.update_mean = tf.assign(self.running_mean, self.new_mean)
         self.update_variance = tf.assign(self.running_variance, self.new_variance)
@@ -158,7 +161,6 @@ class PPOModel(object):
 
         self.loss = self.policy_loss + self.value_loss - beta * tf.reduce_mean(entropy)
 
-        self.global_step = tf.Variable(0, trainable=False, name='global_step', dtype=tf.int32)
         self.learning_rate = tf.train.polynomial_decay(lr, self.global_step,
                                                        max_step, 1e-10,
                                                        power=1.0)
@@ -178,6 +180,7 @@ class ContinuousControlModel(PPOModel):
         s_size = brain.state_space_size
         a_size = brain.action_space_size
 
+        self.create_global_steps()
         hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
         if brain.number_observations > 0:
             h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']
@@ -233,6 +236,8 @@ class DiscreteControlModel(PPOModel):
         :param brain: State-space size
         :param h_size: Hidden layer size
         """
+        self.create_global_steps()
+
         hidden_state, hidden_visual, hidden = None, None, None
         if brain.number_observations > 0:
             h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']

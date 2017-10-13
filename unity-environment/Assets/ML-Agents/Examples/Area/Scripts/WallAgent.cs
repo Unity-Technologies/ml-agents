@@ -17,7 +17,6 @@ public class WallAgent : AreaAgent
 	{
 		List<float> state = new List<float>();
         Vector3 velocity = GetComponent<Rigidbody>().velocity / 20f;
-        //Vector3 blockVelocity = block.GetComponent<Rigidbody>().velocity / 20f;
         state.Add((transform.position.x - area.transform.position.x) / 10f);
         state.Add((transform.position.y - area.transform.position.y) / 10f);
         state.Add((transform.position.z + 5 - area.transform.position.z) / 10f);
@@ -36,9 +35,10 @@ public class WallAgent : AreaAgent
 		state.Add(velocity.y);
 		state.Add(velocity.z);
 
-		//state.Add(blockVelocity.x);
-		//state.Add(blockVelocity.y);
-		//state.Add(blockVelocity.z);
+        Vector3 blockVelocity = block.GetComponent<Rigidbody>().velocity / 20f;
+		state.Add(blockVelocity.x);
+		state.Add(blockVelocity.y);
+		state.Add(blockVelocity.z);
 
 		return state;
 	}
