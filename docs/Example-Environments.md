@@ -89,9 +89,9 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Observations: None.
 * Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of elements for Curriculum Learning.
 
-### Jump Area
+### Wall Area
 
-![Jump](../images/jump.png)
+![Wall](../images/wall.png)
 
 * Set-up: A platforming environment where the agent can jump over a wall.
 * Goal: The agent must use the block to scale the wall and reach the goal.
