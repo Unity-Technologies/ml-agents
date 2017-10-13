@@ -102,7 +102,7 @@ class PPOModel(object):
         self.new_mean = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_mean')
         self.new_variance = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_variance')
 
-        self.state_in = (self.state_in - self.running_mean) / tf.sqrt(self.running_variance)
+        self.state_in = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(self.running_variance), -5, 5)
 
         self.update_mean = tf.assign(self.running_mean, self.new_mean)
         self.update_variance = tf.assign(self.running_variance, self.new_variance)
@@ -144,14 +144,6 @@ class PPOModel(object):
         :param lr: Learning rate
         :param max_step: Total number of training steps.
         """
-        self.reward_mean = tf.Variable(tf.zeros(shape=1), trainable=False, name='running_mean', dtype=tf.float32)
-        self.reward_variance = tf.Variable(tf.zeros(shape=1), trainable=False, name='running_variance', dtype=tf.float32)
-
-        self.new_reward_mean = tf.placeholder(shape=1, dtype=tf.float32, name='new_mean')
-        self.new_reward_variance = tf.placeholder(shape=1, dtype=tf.float32, name='new_variance')
-
-        self.update_reward_mean = tf.assign(self.reward_mean, self.new_reward_mean)
-        self.update_reward_variance = tf.assign(self.reward_variance, self.new_reward_variance)
 
         self.returns_holder = tf.placeholder(shape=[None], dtype=tf.float32, name='discounted_rewards')
         self.advantage = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='advantages')
@@ -212,7 +204,7 @@ class ContinuousControlModel(PPOModel):
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
 
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
-                                  kernel_initializer=c_layers.variance_scaling_initializer(factor=0.1))
+                                  kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
         self.log_sigma_sq = tf.Variable(tf.zeros([a_size]))
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
