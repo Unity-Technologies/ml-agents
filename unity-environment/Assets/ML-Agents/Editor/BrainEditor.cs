@@ -16,7 +16,7 @@ public class BrainEditor : Editor
 	public override void OnInspectorGUI ()
 	{
 		Brain myBrain = (Brain)target;
-		SerializedObject serializedBrain = new SerializedObject (target);
+		SerializedObject serializedBrain = serializedObject;
 
 		if (myBrain.transform.parent == null) {
 			EditorGUILayout.HelpBox ("A Brain GameObject must be a child of an Academy GameObject!", MessageType.Error);
