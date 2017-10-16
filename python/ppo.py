@@ -24,7 +24,7 @@ Options:
   --gamma=<n>                Reward discount rate [default: 0.99].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
-  --beta=<n>                 Strength of entropy regularization [default: 1e-3].
+  --beta=<n>                 Strength of entropy regularization [default: 5e-3].
   --num-epoch=<n>            Number of gradient descent steps per batch of experiences [default: 5].
   --epsilon=<n>              Acceptable threshold around ratio of old and new policy probabilities [default: 0.2].
   --buffer-size=<n>          How large the experience buffer should be before gradient descent [default: 2048].
@@ -95,17 +95,17 @@ with tf.Session() as sess:
     else:
         sess.run(init)
     steps = sess.run(ppo_model.global_step)
-    summary_writer = tf.summary.FileWriter(summary_path)
+    summary_writer = tf.summary.FileWriter(summary_path, sess.graph)
     if "step" in env._resetParameters:
         config = {"steps": int(steps)}
     else:
         config = {}
     info = env.reset(train_mode=train_model, config=config)[brain_name]
-    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
+    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states, train_model)
     while steps <= max_steps or not train_model:
         if env.global_done:
-            if "step" in env._resetParameters:
-                config = {"steps": int(steps)}
+            if "progress" in env._resetParameters:
+                config = {"progress": float(float(steps) / max_steps)}
             else:
                 config = {}
             info = env.reset(train_mode=train_model, config=config)[brain_name]

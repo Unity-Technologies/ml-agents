@@ -58,7 +58,7 @@ def export_graph(model_path, env_name="env", target_nodes="action"):
 
 class PPOModel(object):
     def create_global_steps(self):
-        self.global_step = tf.Variable(0, trainable=False, name='global_step', dtype=tf.int32)
+        self.global_step = tf.Variable(0, name="global_step", trainable=False, dtype=tf.int32)
 
     def create_visual_encoder(self, o_size_h, o_size_w, bw, h_size, num_streams, activation):
         """
@@ -99,20 +99,21 @@ class PPOModel(object):
         """
         self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
 
-        self.running_mean = tf.Variable(tf.zeros(shape=[s_size]), trainable=False, name='running_mean', dtype=tf.float32)
-        self.running_variance = tf.Variable(tf.ones(shape=[s_size]), trainable=False, name='running_variance', dtype=tf.float32)
+        self.running_mean = tf.get_variable("running_mean", [s_size], trainable=False, dtype=tf.float32,
+                                            initializer=tf.zeros_initializer)
+        self.running_variance = tf.get_variable("running_variance", [s_size], trainable=False, dtype=tf.float32,
+                                                initializer=tf.ones_initializer)
+
+        self.normalized_state = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(self.running_variance / (tf.cast(self.global_step, tf.float32) +1)), -5, 5, name="normalized_state")
 
         self.new_mean = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_mean')
         self.new_variance = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_variance')
-
-        self.state_in = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(self.running_variance / (self.global_steps +1)), -5, 5)
-
         self.update_mean = tf.assign(self.running_mean, self.new_mean)
         self.update_variance = tf.assign(self.running_variance, self.new_variance)
 
         streams = []
         for i in range(num_streams):
-            hidden_1 = tf.layers.dense(self.state_in, h_size, use_bias=False, activation=activation)
+            hidden_1 = tf.layers.dense(self.normalized_state, h_size, use_bias=False, activation=activation)
             hidden_2 = tf.layers.dense(hidden_1, h_size, use_bias=False, activation=activation)
             streams.append(hidden_2)
         return streams
@@ -151,7 +152,7 @@ class PPOModel(object):
         self.returns_holder = tf.placeholder(shape=[None], dtype=tf.float32, name='discounted_rewards')
         self.advantage = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='advantages')
 
-        r_theta = probs / old_probs
+        r_theta = probs / (old_probs + 1e-10)
         p_opt_a = r_theta * self.advantage
         p_opt_b = tf.clip_by_value(r_theta, 1 - epsilon, 1 + epsilon) * self.advantage
         self.policy_loss = -tf.reduce_mean(tf.minimum(p_opt_a, p_opt_b))
@@ -208,7 +209,7 @@ class ContinuousControlModel(PPOModel):
 
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.log_sigma_sq = tf.Variable(tf.zeros([a_size]))
+        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32, initializer=tf.ones_initializer)
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='epsilon')
@@ -265,7 +266,7 @@ class DiscreteControlModel(PPOModel):
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.1))
-        self.probs = tf.nn.softmax(self.policy)
+        self.probs = tf.nn.softmax(self.policy, name="action_probs")
         self.action = tf.multinomial(self.policy, 1)
         self.output = tf.identity(self.action, name='action')
         self.value = tf.layers.dense(hidden, 1, activation=None, use_bias=False)
