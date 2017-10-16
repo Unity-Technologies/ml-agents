@@ -20,7 +20,7 @@ public class WallArea : Area {
 	}
 
     public override void ResetArea() {
-		int wallHeightMin = (int)academy.GetComponent<WallAcademy>().minWallHeght;
+		int wallHeightMin = (int)academy.GetComponent<WallAcademy>().minWallHeight;
 		int wallHeightMax = (int)academy.GetComponent<WallAcademy>().maxWallHeight;
 		wall.transform.localScale = new Vector3(12f, Random.Range(wallHeightMin, wallHeightMax), 1f);
         block.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1f, Random.Range(-4f, -8f)) + gameObject.transform.position;

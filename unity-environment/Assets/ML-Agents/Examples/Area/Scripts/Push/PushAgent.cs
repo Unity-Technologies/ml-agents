@@ -15,19 +15,19 @@ public class PushAgent : AreaAgent
 	public override List<float> CollectState()
 	{
 		List<float> state = new List<float>();
-        Vector3 velocity = GetComponent<Rigidbody>().velocity / 20f;
-        Vector3 blockVelocity = block.GetComponent<Rigidbody>().velocity / 20f;
-        state.Add((transform.position.x - area.transform.position.x) / 10f);
-        state.Add((transform.position.y - area.transform.position.y) / 10f);
-        state.Add((transform.position.z + 5 - area.transform.position.z) / 10f);
+        Vector3 velocity = GetComponent<Rigidbody>().velocity;
+        Vector3 blockVelocity = block.GetComponent<Rigidbody>().velocity;
+        state.Add((transform.position.x - area.transform.position.x));
+        state.Add((transform.position.y - area.transform.position.y));
+        state.Add((transform.position.z + 5 - area.transform.position.z));
 
-        state.Add((goalHolder.transform.position.x - area.transform.position.x) / 10f);
-        state.Add((goalHolder.transform.position.y - area.transform.position.y) / 10f);
-        state.Add((goalHolder.transform.position.z + 5 - area.transform.position.z) / 10f);
+        state.Add((goalHolder.transform.position.x - area.transform.position.x));
+        state.Add((goalHolder.transform.position.y - area.transform.position.y));
+        state.Add((goalHolder.transform.position.z + 5 - area.transform.position.z));
 
-        state.Add((block.transform.position.x - area.transform.position.x) / 10f);
-        state.Add((block.transform.position.y - area.transform.position.y) / 10f);
-        state.Add((block.transform.position.z + 5 - area.transform.position.z) / 10f);
+        state.Add((block.transform.position.x - area.transform.position.x));
+        state.Add((block.transform.position.y - area.transform.position.y));
+        state.Add((block.transform.position.z + 5 - area.transform.position.z));
 
 		state.Add(velocity.x);
 		state.Add(velocity.y);
