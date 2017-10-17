@@ -8,6 +8,7 @@ import os
 from ppo.models import *
 from ppo.trainer import Trainer
 from unityagents import UnityEnvironment
+import time
 
 _USAGE = '''
 Usage:
@@ -21,6 +22,7 @@ Options:
   --train                    Whether to train model, or only run inference [default: True].
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
   --save-freq=<n>            Frequency at which to save model [default: 50000].
+  --prog-freq=<n>            Frequency at which to save model [default: 10000].
   --gamma=<n>                Reward discount rate [default: 0.99].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
@@ -46,6 +48,7 @@ load_model = options['--load']
 train_model = options['--train']
 summary_freq = int(options['--summary-freq'])
 save_freq = int(options['--save-freq'])
+progress_freq = int(options['--prog-freq'])
 env_name = options['<env>']
 keep_checkpoints = int(options['--keep-checkpoints'])
 worker_id = int(options['--worker-id'])
@@ -96,11 +99,20 @@ with tf.Session() as sess:
         sess.run(init)
     steps = sess.run(ppo_model.global_step)
     summary_writer = tf.summary.FileWriter(summary_path)
-    info = env.reset(train_mode=train_model)[brain_name]
+    if "steps" in env._resetParameters:
+        config = {"steps": int(steps)}
+    else:
+        config = {}
+    info = env.reset(train_mode=train_model, config=config)[brain_name]
     trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
+    timer = time.time()
     while steps <= max_steps or not train_model:
         if env.global_done:
-            info = env.reset(train_mode=train_model)[brain_name]
+            if "steps" in env._resetParameters:
+                config = {"steps": int(steps)}
+            else:
+                config = {}
+            info = env.reset(train_mode=train_model, config=config)[brain_name]
         # Decide and take an action
         new_info = trainer.take_action(info, env, brain_name)
         info = new_info
@@ -114,6 +126,17 @@ with tf.Session() as sess:
         if steps % save_freq == 0 and steps != 0 and train_model:
             # Save Tensorflow model
             save_model(sess, model_path=model_path, steps=steps, saver=saver)
+            export_graph(model_path, env_name)
+            print('model saved.')
+        if steps % progress_freq == 0 and steps != 0 and train_model:
+            m, s = divmod((time.time() - timer) / progress_freq * (max_steps - steps),60)
+            h, m = divmod(m, 60)
+            timer = time.time()
+            print(
+                f"Progress: {steps/max_steps * 100:.2f}%, time to max-steps {h}h:{m}m:{s:.2f}s")
+
+                                                          
+
         steps += 1
         sess.run(ppo_model.increment_step)
     # Final save Tensorflow model
