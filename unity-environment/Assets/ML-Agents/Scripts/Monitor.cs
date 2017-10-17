@@ -326,7 +326,7 @@ public class Monitor : MonoBehaviour
                     }
                     if (valsSum == 0)
                     {
-                        Debug.LogError(string.Format("The value for key {0} must be "
+                        Debug.LogError(string.Format("The Monitor value for key {0} must be "
                                 + "a list or array of positive values and cannot be empty.", key));
                     }
                     else
