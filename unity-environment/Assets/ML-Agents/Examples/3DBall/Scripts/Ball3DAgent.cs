@@ -12,12 +12,12 @@ public class Ball3DAgent : Agent
         List<float> state = new List<float>();
         state.Add(gameObject.transform.rotation.z);
         state.Add(gameObject.transform.rotation.x);
-        state.Add((ball.transform.position.x - gameObject.transform.position.x) / 5f);
-        state.Add((ball.transform.position.y - gameObject.transform.position.y) / 5f);
-        state.Add((ball.transform.position.z - gameObject.transform.position.z) / 5f);
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.x / 5f);
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.y / 5f);
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.z / 5f);
+        state.Add((ball.transform.position.x - gameObject.transform.position.x));
+        state.Add((ball.transform.position.y - gameObject.transform.position.y));
+        state.Add((ball.transform.position.z - gameObject.transform.position.z));
+        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.x);
+        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.y);
+        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.z);
         return state;
     }
 

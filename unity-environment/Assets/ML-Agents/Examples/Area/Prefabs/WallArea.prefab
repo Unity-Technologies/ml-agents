@@ -139,8 +139,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4601298475788644}
+  - component: {fileID: 114215545026793406}
   m_Layer: 0
-  m_Name: Area
+  m_Name: WallArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -303,7 +304,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1718829686919056}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -15, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4182184265281318}
@@ -376,7 +377,7 @@ Transform:
   m_GameObject: {fileID: 1312874949203312}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2, y: 1, z: -8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 1, z: 1}
   m_Children:
   - {fileID: 4106492414392050}
   m_Father: {fileID: 4601298475788644}
@@ -766,6 +767,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAgent: {fileID: 1986507356043702}
+  myObject: {fileID: 1986507356043702}
 --- !u!114 &114200736018184412
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -793,6 +795,21 @@ MonoBehaviour:
   block: {fileID: 1312874949203312}
   area: {fileID: 1718829686919056}
   wall: {fileID: 1506931635139370}
+--- !u!114 &114215545026793406
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1718829686919056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8852782dcebdd427799bf307c5ef2314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wall: {fileID: 1506931635139370}
+  academy: {fileID: 0}
+  block: {fileID: 1312874949203312}
+  goalHolder: {fileID: 1960504220667788}
 --- !u!114 &114280768661186092
 MonoBehaviour:
   m_ObjectHideFlags: 1

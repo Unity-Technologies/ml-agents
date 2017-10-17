@@ -26,7 +26,7 @@ Options:
   --gamma=<n>                Reward discount rate [default: 0.99].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
-  --beta=<n>                 Strength of entropy regularization [default: 1e-3].
+  --beta=<n>                 Strength of entropy regularization [default: 5e-3].
   --num-epoch=<n>            Number of gradient descent steps per batch of experiences [default: 5].
   --epsilon=<n>              Acceptable threshold around ratio of old and new policy probabilities [default: 0.2].
   --buffer-size=<n>          How large the experience buffer should be before gradient descent [default: 2048].
@@ -98,23 +98,27 @@ with tf.Session() as sess:
     else:
         sess.run(init)
     steps = sess.run(ppo_model.global_step)
+
     summary_writer = tf.summary.FileWriter(summary_path)
     if "steps" in env._resetParameters:
+
         config = {"steps": int(steps)}
     else:
         config = {}
     info = env.reset(train_mode=train_model, config=config)[brain_name]
-    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
+
+    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states, train_model)
     timer = time.time()
     while steps <= max_steps or not train_model:
         if env.global_done:
             if "steps" in env._resetParameters:
                 config = {"steps": int(steps)}
+
             else:
                 config = {}
             info = env.reset(train_mode=train_model, config=config)[brain_name]
         # Decide and take an action
-        new_info = trainer.take_action(info, env, brain_name)
+        new_info = trainer.take_action(info, env, brain_name, steps)
         info = new_info
         trainer.process_experiences(info, time_horizon, gamma, lambd)
         if len(trainer.training_buffer['actions']) > buffer_size and train_model:
