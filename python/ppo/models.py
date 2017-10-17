@@ -39,7 +39,7 @@ def save_model(sess, saver, model_path="./", steps=0):
     print("Saved Model")
 
 
-def export_graph(model_path, env_name="env", target_nodes="action"):
+def export_graph(model_path, env_name="env", target_nodes="action,value_estimate,action_probs"):
     """
     Exports latest saved model to .bytes format for Unity embedding.
     :param model_path: path of model checkpoints.
@@ -219,11 +219,12 @@ class ContinuousControlModel(PPOModel):
 
         a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output) - self.mu, 2) / (2 * self.sigma_sq))
         b = 1 / tf.sqrt(2 * self.sigma_sq * np.pi)
-        self.probs = a * b
+        self.probs = tf.multiply(a, b, name="action_probs")
 
         self.entropy = tf.reduce_sum(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
 
         self.value = tf.layers.dense(hidden_value, 1, activation=None, use_bias=False)
+        self.value = tf.identity(self.value, name="value_estimate")
 
         self.old_probs = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='old_probabilities')
 
@@ -267,9 +268,9 @@ class DiscreteControlModel(PPOModel):
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.1))
         self.probs = tf.nn.softmax(self.policy, name="action_probs")
-        self.action = tf.multinomial(self.policy, 1)
-        self.output = tf.identity(self.action, name='action')
+        self.action = tf.multinomial(self.policy, 1, name='action')
         self.value = tf.layers.dense(hidden, 1, activation=None, use_bias=False)
+        self.value = tf.identity(self.value, name="value_estimate")
 
         self.entropy = -tf.reduce_sum(self.probs * tf.log(self.probs + 1e-10), axis=1)
 
