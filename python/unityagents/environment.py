@@ -10,6 +10,7 @@ import subprocess
 
 from .brain import BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException
+from .curriculum import Curriculum
 
 from PIL import Image
 from sys import platform
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005):
+                 base_port=5005, curriculum = None):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -96,7 +97,6 @@ class UnityEnvironment(object):
             self.close()
             raise
 
-
         self._data = {}
         self._global_done = None
         self._academy_name = p["AcademyName"]
@@ -107,9 +107,9 @@ class UnityEnvironment(object):
         self._num_brains = len(self._brain_names)
         self._num_external_brains = len(self._external_brain_names)
         self._resetParameters = p["resetParameters"]
+        self._curriculum = Curriculum(curriculum, self._resetParameters)
         for i in range(self._num_brains):
             self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
-        self._conn.send(b".")
         self._loaded = True
         logger.info("\n'{}' started successfully!".format(self._academy_name))
         if (self._num_external_brains == 0):
@@ -188,12 +188,17 @@ class UnityEnvironment(object):
         state_dict = json.loads(state)
         return state_dict
 
-    def reset(self, train_mode=True, config=None):
+    def reset(self, train_mode=True, config=None, progress = None):
         """
         Sends a signal to reset the unity environment.
         :return: A Data structure corresponding to the initial reset state of the environment.
         """
-        config = config or {}
+        old_lesson = self._curriculum.get_lesson_number()
+        config = self._curriculum.get_lesson(progress) if config is None else config 
+        if old_lesson != self._curriculum.get_lesson_number():
+            logger.info("\nLesson changed. Now in Lesson {0} : \n\t{1}"
+                .format(self._curriculum.get_lesson_number(),
+                    ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
         if self._loaded:
             self._conn.send(b"RESET")
             self._conn.recv(self._buffer_size)

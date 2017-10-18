@@ -181,7 +181,6 @@ public class ExternalCommunicator : Communicator
     {
         string envMessage = JsonConvert.SerializeObject(envParams, Formatting.Indented);
         sender.Send(Encoding.ASCII.GetBytes(envMessage));
-        Receive();
     }
 
     /// Receives messages from external agent
