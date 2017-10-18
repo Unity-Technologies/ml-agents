@@ -9,6 +9,7 @@ from ppo.models import *
 from ppo.trainer import Trainer
 from unityagents import UnityEnvironment
 import time
+import shutil
 
 _USAGE = '''
 Usage:
@@ -22,7 +23,6 @@ Options:
   --train                    Whether to train model, or only run inference [default: True].
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
   --save-freq=<n>            Frequency at which to save model [default: 50000].
-  --prog-freq=<n>            Frequency at which to save model [default: 10000].
   --gamma=<n>                Reward discount rate [default: 0.99].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
@@ -48,7 +48,6 @@ load_model = options['--load']
 train_model = options['--train']
 summary_freq = int(options['--summary-freq'])
 save_freq = int(options['--save-freq'])
-progress_freq = int(options['--prog-freq'])
 env_name = options['<env>']
 keep_checkpoints = int(options['--keep-checkpoints'])
 worker_id = int(options['--worker-id'])
@@ -86,8 +85,22 @@ if not os.path.exists(model_path):
 if not os.path.exists(summary_path):
     os.makedirs(summary_path)
 
+def update_progress_bar(elapsed,remain,decimals=2, length=16, fill='█'):
+    clear_progress_bar()
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (steps / float(max_steps)))
+    filledLength = int(length * steps // max_steps)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % ('', bar, percent, f" elapsed: {elapsed}, remaining: {remain}"), end='\r')
+
+def clear_progress_bar():
+    w, h = shutil.get_terminal_size((80, 24))
+    print('\r' + ' ' * w, end='\r')
+
 init = tf.global_variables_initializer()
 saver = tf.train.Saver(max_to_keep=keep_checkpoints)
+
+timer = time.time()
+last_progress_time = -1
 
 with tf.Session() as sess:
     # Instantiate model parameters
@@ -105,7 +118,10 @@ with tf.Session() as sess:
         config = {}
     info = env.reset(train_mode=train_model, config=config)[brain_name]
     trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
-    timer = time.time()
+
+    # Make space for progress bar
+    print('\r')
+
     while steps <= max_steps or not train_model:
         if env.global_done:
             if "steps" in env._resetParameters:
@@ -121,19 +137,28 @@ with tf.Session() as sess:
             # Perform gradient descent with experience buffer
             trainer.update_model(batch_size, num_epoch)
         if steps % summary_freq == 0 and steps != 0 and train_model:
+            # Clear progress bar
+            clear_progress_bar()
             # Write training statistics to tensorboard.
             trainer.write_summary(summary_writer, steps)
         if steps % save_freq == 0 and steps != 0 and train_model:
+            # Clear progress bar
+            clear_progress_bar()
             # Save Tensorflow model
             save_model(sess, model_path=model_path, steps=steps, saver=saver)
             export_graph(model_path, env_name)
             print('model saved.')
-        if steps % progress_freq == 0 and steps != 0 and train_model:
-            m, s = divmod((time.time() - timer) / progress_freq * (max_steps - steps),60)
+        if time.time() - last_progress_time > 0.5 and steps != 0 and train_model:
+            last_progress_time = time.time()
+
+            m, s = divmod(time.time() - timer, 60)
             h, m = divmod(m, 60)
-            timer = time.time()
-            print(
-                f"Progress: {steps/max_steps * 100:.2f}%, time to max-steps {h}h:{m}m:{s:.2f}s")
+            el = f"{h:.0f}h{m:.0f}m{s:.0f}s"
+
+            m, s = divmod((time.time() - timer) / steps * (max_steps - steps), 60)
+            h, m = divmod(m, 60)
+            re = f"{h:.0f}h{m:.0f}m{s:.0f}s"
+            update_progress_bar(el,re)
 
                                                           
 
