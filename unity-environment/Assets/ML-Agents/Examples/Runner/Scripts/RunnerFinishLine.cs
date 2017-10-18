@@ -6,8 +6,8 @@ using System.Collections;
 */
 public class RunnerFinishLine : MonoBehaviour, IAgentTrigger
 {
-	public void OnEnter(RunnerAgent agent)
-	{
+    public void OnEnter(RunnerAgent agent)
+    {
         agent.status = RunnerAgent.AgentStatus.Finished;
-	}
+    }
 }

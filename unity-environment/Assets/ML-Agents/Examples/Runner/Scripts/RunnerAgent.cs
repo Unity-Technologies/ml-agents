@@ -10,12 +10,12 @@ public interface IAgentTrigger
 
 public class RunnerAgent : Agent
 {
-	public enum AgentStatus
-	{
-		None,
-		Killed,
-		Finished
-	}
+    public enum AgentStatus
+    {
+        None,
+        Killed, 
+        Finished
+    }
 
     private const int ColliderPhysicMask = (1 << 8);
     private const int KillzonePhysicMask = (1 << 9);
@@ -66,23 +66,23 @@ public class RunnerAgent : Agent
             case AgentStatus.Killed:
                 {
                     reward = -1;
-					done = true;
+                    done = true;
                 }
                 break;
             case AgentStatus.Finished:
-				{
-					reward = 1;
-					done = true;
-				}
-				break;
+                {
+                    reward = 1;
+                    done = true;
+                }
+                break;
             default:
-				{
+                {
                     if (isOnFloor)
                     {
-						if (act[0].Equals(1))
-						{
-							Jump();
-						}
+                        if (act[0].Equals(1))
+                        {
+                            Jump();
+                        }
                         else
                         {
                             reward += 0.05f;
@@ -90,13 +90,13 @@ public class RunnerAgent : Agent
                     }
 
                     reward += collectedBonus;
-					collectedBonus = 0;
-				}
-				break;
+                    collectedBonus = 0;
+                }
+                break;
         }
     }
 
-	public void FixedUpdate()
+    public void FixedUpdate()
     {
         isOnFloor = ScanFloor();
 
@@ -115,7 +115,7 @@ public class RunnerAgent : Agent
     /// Add the distance of each zone from the Agent and their sizes in states
     public void ScanForKillzones(ref List<float> states, int searchLimit)
     {
-		float scanDistance = 10f;
+        float scanDistance = 10f;
 
         int killzoneFound = 0;
         float currentX = 0;
@@ -182,7 +182,7 @@ public class RunnerAgent : Agent
         RaycastHit hitInfo;
         if (Physics.Raycast(new Vector3(transform.position.x + 0.5f, 0.75f, transform.position.z), Vector3.right, out hitInfo, scanDistance, BonusPhysicMask))
         {
-			return hitInfo.distance / scanDistance;
+            return hitInfo.distance / scanDistance;
         }
 
         return -1;
@@ -227,8 +227,8 @@ public class RunnerAgent : Agent
         OnCollisionStay(collision);
     }
 
-	public void OnCollisionStay(Collision collision)
-	{
+    public void OnCollisionStay(Collision collision)
+    {
         if (collision.gameObject.tag == "killZone")
         {
             Kill();
@@ -259,16 +259,16 @@ public class RunnerAgent : Agent
 
         for (int i = 0; i < zoneDetection; i++)
         {
-			if (collect[i*zoneDetection] > 0)
-			{
-                float zonePos = collect[i*2] * 10;
-				Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z - 0.4f), new Vector3(zonePos, 0.5f, transform.position.z - 0.4f));
-				Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z + 0.4f), new Vector3(zonePos, 0.5f, transform.position.z + 0.4f));
+            if (collect[i * zoneDetection] > 0)
+            {
+                float zonePos = collect[i * 2] * 10;
+                Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z - 0.4f), new Vector3(zonePos, 0.5f, transform.position.z - 0.4f));
+                Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z + 0.4f), new Vector3(zonePos, 0.5f, transform.position.z + 0.4f));
 
-				zonePos += collect[i* zoneDetection +1] * 10;
-				Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z - 0.4f), new Vector3(zonePos, 0.5f, transform.position.z - 0.4f));
-				Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z + 0.4f), new Vector3(zonePos, 0.5f, transform.position.z + 0.4f));
-			}
+                zonePos += collect[i * zoneDetection + 1] * 10;
+                Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z - 0.4f), new Vector3(zonePos, 0.5f, transform.position.z - 0.4f));
+                Gizmos.DrawLine(new Vector3(zonePos, -1.5f, transform.position.z + 0.4f), new Vector3(zonePos, 0.5f, transform.position.z + 0.4f));
+            }
         }
 
         var bonusPosState = ScanForBonus();

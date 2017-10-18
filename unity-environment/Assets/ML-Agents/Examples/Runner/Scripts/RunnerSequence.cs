@@ -8,12 +8,12 @@ public class RunnerSequence : MonoBehaviour
 {
     [Header("Parameters")]
     [SerializeField]
-	// Size of this sequence, used to generate the level and know where the next sequence will be instanciated
-	private int blockSize = 16;
+    // Size of this sequence, used to generate the level and know where the next sequence will be instanciated
+    private int blockSize = 16;
 
     [SerializeField]
-	// Snap position in editor mode for child object to homogenised levels
-	private bool snapPosition = true;
+    // Snap position in editor mode for child object to homogenised levels
+    private bool snapPosition = true;
 
     [SerializeField]
     // List of positions (x) where bonus needs to be instanciated
@@ -30,15 +30,15 @@ public class RunnerSequence : MonoBehaviour
         }
     }
 
-	#region Properties
-	public int Size
-	{
-		get { return blockSize; }
-	}
-	#endregion
+    #region Properties
+    public int Size
+    {
+        get { return blockSize; }
+    }
+    #endregion
 
-	#region Debug functions
-	protected void OnDrawGizmosSelected()
+    #region Debug functions
+    protected void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(1, 1, 1, 0.5f);
         Gizmos.DrawWireCube(transform.position + Vector3.right * Size / 2f, new Vector3(Size, 3, 3));

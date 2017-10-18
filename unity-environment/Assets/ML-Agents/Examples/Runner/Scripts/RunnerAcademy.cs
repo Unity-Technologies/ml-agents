@@ -20,28 +20,29 @@ public class SequenceSetup
     public int curriculumLevel;
 }
 
-public class RunnerAcademy : Academy {
+public class RunnerAcademy : Academy
+{
 
-	[Header("Game specific")]
-	[SerializeField]
-	// Prefab to instantiate for each bonus
-	private GameObject bonusPrefab;
+    [Header("Game specific")]
+    [SerializeField]
+    // Prefab to instantiate for each bonus
+    private GameObject bonusPrefab;
 
     [SerializeField]
     // Prefab to instantiate for ground killzone
     private GameObject killZonePrefab;
 
-	[SerializeField]
-	private Transform scrollRoot;
+    [SerializeField]
+    private Transform scrollRoot;
 
-	[SerializeField]
-	private float scrollSpeed = 0.15f;
+    [SerializeField]
+    private float scrollSpeed = 0.15f;
 
-	[SerializeField]
-	private List<AgentSetup> agentSetup;
+    [SerializeField]
+    private List<AgentSetup> agentSetup;
 
-	[SerializeField]
-	private SequenceSetup[] sequenceSetup;
+    [SerializeField]
+    private SequenceSetup[] sequenceSetup;
 
     [SerializeField]
     private RunnerSequence startSequence;
@@ -55,14 +56,14 @@ public class RunnerAcademy : Academy {
     private List<RunnerAgent> Agents = new List<RunnerAgent>();
 
     public override void InitializeAcademy()
-	{
-		Physics.gravity = new Vector3(0, -18, 0);
+    {
+        Physics.gravity = new Vector3(0, -18, 0);
 
         // Instantiate killZone, scale depending on the number of agents
         var zone = Instantiate(killZonePrefab, new Vector3(40, -1.75f, agentSetup.Count / 2f - 0.5f), Quaternion.identity);
         zone.transform.localScale = new Vector3(100, 0.5f, agentSetup.Count);
 
-		for (int i = 0; i < agentSetup.Count; i++)
+        for (int i = 0; i < agentSetup.Count; i++)
         {
             var agent = Instantiate(agentSetup[i].prefab, new Vector3(0, 1, i * 1), Quaternion.identity) as RunnerAgent;
             agent.GiveBrain(agentSetup[i].brain);
@@ -73,31 +74,31 @@ public class RunnerAcademy : Academy {
     /// Scroll the root transform of the level
     /// Check if all agents are done
     public override void AcademyStep()
-	{
+    {
         scrollRoot.localPosition = new Vector3(scrollRoot.localPosition.x - scrollSpeed, 0, 0);
 
         if (Agents.All((a) => a.done))
             done = true;
-	}
+    }
 
-	public override void AcademyReset()
-	{
-		scrollRoot.localPosition = Vector3.zero;
+    public override void AcademyReset()
+    {
+        scrollRoot.localPosition = Vector3.zero;
 
-		foreach (Transform child in scrollRoot)
-		{
-		    Destroy(child.gameObject);
-		}
+        foreach (Transform child in scrollRoot)
+        {
+            Destroy(child.gameObject);
+        }
 
-		for (int i = 0; i < agentSetup.Count; i++)
-		{
+        for (int i = 0; i < agentSetup.Count; i++)
+        {
             GenerateAgentLevel(i, agentSetup[i].lineColor);
-		}
-	}
+        }
+    }
 
     /// Generate the level by chosing sequence randomly depending of the max steps
     private void GenerateAgentLevel(int i, Color sequenceColor)
-	{
+    {
         float posZ = i * 1;
 
         int posX = AddSequence(startSequence, new Vector3(0, 0, posZ), sequenceColor);
@@ -109,7 +110,7 @@ public class RunnerAcademy : Academy {
         }
 
         AddSequence(endSequence, new Vector3(posX, 0, posZ), sequenceColor);
-	}
+    }
 
     private int AddSequence(RunnerSequence sequence, Vector3 pos, Color color)
     {
@@ -122,10 +123,10 @@ public class RunnerAcademy : Academy {
         }
 
         // Add collectable bonus to this sequence
-		foreach (var b in newSequence.bonusPositions)
-		{
+        foreach (var b in newSequence.bonusPositions)
+        {
             Instantiate(bonusPrefab, newSequence.transform.position + b, Quaternion.identity, newSequence.transform);
-		}
+        }
 
         return sequence.Size;
     }
