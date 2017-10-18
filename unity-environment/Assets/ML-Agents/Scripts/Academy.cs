@@ -46,7 +46,7 @@ public abstract class Academy : MonoBehaviour
 
 
     [SerializeField]
-    private int maxSteps;
+    protected int maxSteps;
     [SerializeField]
     private int frameToSkip;
     [SerializeField]
