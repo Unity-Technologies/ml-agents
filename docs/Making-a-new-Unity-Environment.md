@@ -67,9 +67,7 @@ For each Brain game object in your academy :
         * `discrete` corresponds to describing the action space with an `int`.
         * `continuous` corresponds to describing the action space with an array of `float`.
 
-3. If you want to collect data on you play, you can check the box **`Collect Data`**. This way, the states and actions passing through the brain will be saved in the folder `saved_plays`.
-
-4. You can chose what kind of brain you want `YourNameBrain` to be. There are four possibilities:
+3. You can chose what kind of brain you want `YourNameBrain` to be. There are four possibilities:
  * `External` : You need at least one of your brains to be external if you wish to interact with your environment from python.
  * `Player` : To control you agents manually. If the action space is discrete, you must map input keys to their corresponding integer values. If the action space is continuous, you must map input keys to their corresponding indices and float values.
  * `Heuristic` : You can have your brain automatically react to the observations and states in a customizable way. You will need to drag a `Decision` script into `YourNameBrain`. To create a custom reaction, you must :
