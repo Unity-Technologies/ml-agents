@@ -163,38 +163,13 @@ MonoBehaviour:
     - 
     actionSpaceType: 0
     stateSpaceType: 1
-  brainType: 3
+  brainType: 2
   CoreBrains:
-  - {fileID: 91657040}
-  - {fileID: 688336208}
-  - {fileID: 2099931303}
+  - {fileID: 1421197323}
+  - {fileID: 2009693786}
+  - {fileID: 1555891628}
   - {fileID: 1741479929}
-  instanceID: 11226
---- !u!114 &91657040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  continuousPlayerActions: []
-  discretePlayerActions:
-  - key: 97
-    value: 1
-  - key: 100
-    value: 2
-  - key: 119
-    value: 4
-  - key: 115
-    value: 3
-  - key: 32
-    value: 5
-  defaultAction: 0
-  brain: {fileID: 7561199}
+  instanceID: 16656
 --- !u!1001 &266100897
 Prefab:
   m_ObjectHideFlags: 0
@@ -250,7 +225,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -310,7 +285,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -370,7 +345,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -430,7 +405,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -456,18 +431,6 @@ MonoBehaviour:
   ObservationPlaceholderName: []
   ActionPlaceholderName: action
   brain: {fileID: 846768605}
---- !u!114 &688336208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 7561199}
 --- !u!1 &762086410
 GameObject:
   m_ObjectHideFlags: 0
@@ -588,7 +551,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -647,13 +610,13 @@ MonoBehaviour:
     - 
     actionSpaceType: 0
     stateSpaceType: 1
-  brainType: 3
+  brainType: 0
   CoreBrains:
-  - {fileID: 1646074016}
-  - {fileID: 1099997460}
-  - {fileID: 1672955636}
+  - {fileID: 1482008487}
+  - {fileID: 1432473954}
+  - {fileID: 1681142243}
   - {fileID: 615800816}
-  instanceID: 11260
+  instanceID: 14144
 --- !u!1001 &893880180
 Prefab:
   m_ObjectHideFlags: 0
@@ -709,7 +672,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -842,7 +805,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -902,23 +865,11 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1099997460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 846768605}
 --- !u!1001 &1301384644
 Prefab:
   m_ObjectHideFlags: 0
@@ -974,11 +925,48 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &1421197323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  continuousPlayerActions: []
+  discretePlayerActions:
+  - key: 97
+    value: 1
+  - key: 100
+    value: 2
+  - key: 119
+    value: 4
+  - key: 115
+    value: 3
+  - key: 32
+    value: 5
+  defaultAction: 0
+  brain: {fileID: 7561199}
+--- !u!114 &1432473954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 846768605}
 --- !u!1001 &1443938957
 Prefab:
   m_ObjectHideFlags: 0
@@ -1034,7 +1022,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -1094,11 +1082,48 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &1482008487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  continuousPlayerActions: []
+  discretePlayerActions:
+  - key: 97
+    value: 1
+  - key: 100
+    value: 2
+  - key: 119
+    value: 4
+  - key: 115
+    value: 3
+  - key: 32
+    value: 5
+  defaultAction: 0
+  brain: {fileID: 846768605}
+--- !u!114 &1555891628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 7561199}
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,8 +1167,8 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   defaultResetParameters:
-  - key: steps
-    value: 1000000
+  - key: object_size
+    value: 1
   done: 0
   episodeCount: 1
   currentStep: 0
@@ -1165,32 +1190,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1646074016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  continuousPlayerActions: []
-  discretePlayerActions:
-  - key: 97
-    value: 1
-  - key: 100
-    value: 2
-  - key: 119
-    value: 4
-  - key: 115
-    value: 3
-  - key: 32
-    value: 5
-  defaultAction: 0
-  brain: {fileID: 846768605}
---- !u!114 &1672955636
+--- !u!114 &1681142243
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1199,7 +1199,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   brain: {fileID: 846768605}
 --- !u!1001 &1735475192
@@ -1241,11 +1241,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 114371909629876940, guid: db6eac8138a454addbb6d1e5f475d886,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 846768605}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_Name
       value: Area
@@ -1255,32 +1250,11 @@ Prefab:
       propertyPath: academy
       value: 
       objectReference: {fileID: 1574236047}
-    - target: {fileID: 23361251118430556, guid: db6eac8138a454addbb6d1e5f475d886,
+    - target: {fileID: 114371909629876940, guid: db6eac8138a454addbb6d1e5f475d886,
         type: 2}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1684647471145214, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
-      propertyPath: m_StaticEditorFlags
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1204575965717360, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
-      propertyPath: m_StaticEditorFlags
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893190605547158, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
-      propertyPath: m_StaticEditorFlags
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1433578436929790, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
-      propertyPath: m_StaticEditorFlags
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 23361251118430556, guid: db6eac8138a454addbb6d1e5f475d886,
-        type: 2}
-      propertyPath: m_PreserveUVs
-      value: 1
-      objectReference: {fileID: 0}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
   m_IsPrefabParent: 0
@@ -1360,7 +1334,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -1420,12 +1394,12 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &2099931303
+--- !u!114 &2009693786
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1433,8 +1407,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   brain: {fileID: 7561199}
 --- !u!1001 &2117874515
@@ -1492,7 +1466,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
@@ -1552,7 +1526,7 @@ Prefab:
       objectReference: {fileID: 1574236047}
     - target: {fileID: 1279120735226386, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db6eac8138a454addbb6d1e5f475d886, type: 2}
