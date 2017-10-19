@@ -341,7 +341,7 @@ class UnityEnvironment(object):
                         "There are no external brains in the environment, " 
                         "step cannot take a value input")
 
-            for brain_name in action.keys() + memory.keys() + value.keys():
+            for brain_name in list(action.keys()) + list(memory.keys()) + list(value.keys()):
                 if brain_name not in self._external_brain_names:
                     raise UnityActionException(
                         "The name {0} does not correspond to an external brain "
