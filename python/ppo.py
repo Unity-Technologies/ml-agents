@@ -21,7 +21,7 @@ Options:
   --train                    Whether to train model, or only run inference [default: True].
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
   --save-freq=<n>            Frequency at which to save model [default: 50000].
-  --gamma=<n>                Reward discount rate [default: 0.99].
+  --gamma=<n>                Reward discount rate [default: 0.995].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
   --beta=<n>                 Strength of entropy regularization [default: 5e-3].
@@ -96,8 +96,8 @@ with tf.Session() as sess:
         sess.run(init)
     steps = sess.run(ppo_model.global_step)
     summary_writer = tf.summary.FileWriter(summary_path, sess.graph)
-    if "step" in env._resetParameters:
-        config = {"steps": int(steps)}
+    if "progress" in env._resetParameters:
+        config = {"progress": int(steps)}
     else:
         config = {}
     info = env.reset(train_mode=train_model, config=config)[brain_name]

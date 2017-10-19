@@ -268,7 +268,8 @@ class DiscreteControlModel(PPOModel):
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.1))
         self.probs = tf.nn.softmax(self.policy, name="action_probs")
-        self.action = tf.multinomial(self.policy, 1, name='action')
+        self.output = tf.multinomial(self.policy, 1)
+        self.output = tf.identity(self.output, name="action")
         self.value = tf.layers.dense(hidden, 1, activation=None, use_bias=False)
         self.value = tf.identity(self.value, name="value_estimate")
 
