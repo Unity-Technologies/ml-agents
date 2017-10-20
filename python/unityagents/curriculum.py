@@ -17,10 +17,15 @@ class Curriculum(object):
             except:
                 raise UnityEnvironmentException(
                         "The file {0} could not be found.".format(location))
-            parameters = self.data["parameters"]
-            self.measure_type = self.data["measure"]
-            self.max_lesson_number = len(self.data['thresholds'])
             self.smoothing_value = 0
+            for key in ['parameters', 'measure', 'thresholds',
+             'min_lesson_length', 'signal_smoothing']:
+                if key not in self.data:
+                    raise UnityEnvironmentException("{0} does not contain a "
+                        "{1} field.".format(location, key))
+            parameters = self.data['parameters']
+            self.measure_type = self.data['measure']
+            self.max_lesson_number = len(self.data['thresholds'])
             for key in parameters:
                 if key not in default_reset_parameters:
                     raise UnityEnvironmentException(

@@ -92,29 +92,30 @@ class UnityEnvironment(object):
                 "The Unity environment took too long to respond. Make sure {} does not need user interaction to launch "
                 "and that the Academy and the external Brain(s) are attached to objects in the Scene.".format(
                     str(file_name)))
+        
+
+            self._data = {}
+            self._global_done = None
+            self._academy_name = p["AcademyName"]
+            self._brains = {}
+            self._brain_names = p["brainNames"]
+            self._external_brain_names = p["externalBrainNames"]
+            self._external_brain_names = [] if self._external_brain_names is None else self._external_brain_names
+            self._num_brains = len(self._brain_names)
+            self._num_external_brains = len(self._external_brain_names)
+            self._resetParameters = p["resetParameters"]
+            self._curriculum = Curriculum(curriculum, self._resetParameters)
+            for i in range(self._num_brains):
+                self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
+            self._loaded = True
+            logger.info("\n'{}' started successfully!".format(self._academy_name))
+            if (self._num_external_brains == 0):
+                logger.warning(" No External Brains found in the Unity Environment. "
+                    "You will not be able to pass actions to your agent(s).")
         except UnityEnvironmentException:
             proc1.kill()
             self.close()
             raise
-
-        self._data = {}
-        self._global_done = None
-        self._academy_name = p["AcademyName"]
-        self._brains = {}
-        self._brain_names = p["brainNames"]
-        self._external_brain_names = p["externalBrainNames"]
-        self._external_brain_names = [] if self._external_brain_names is None else self._external_brain_names
-        self._num_brains = len(self._brain_names)
-        self._num_external_brains = len(self._external_brain_names)
-        self._resetParameters = p["resetParameters"]
-        self._curriculum = Curriculum(curriculum, self._resetParameters)
-        for i in range(self._num_brains):
-            self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
-        self._loaded = True
-        logger.info("\n'{}' started successfully!".format(self._academy_name))
-        if (self._num_external_brains == 0):
-            logger.warning(" No External Brains found in the Unity Environment. "
-                "You will not be able to pass actions to your agent(s).")
 
     @property
     def brains(self):
