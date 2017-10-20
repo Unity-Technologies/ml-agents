@@ -12,6 +12,7 @@ parameters don't seem to be giving the level of performance you would like.
 of the `buffer_size`. If you are using a continuous action space, this value should be large. If you are using a discrete action space, this value should be smaller. 
 
 Typical Range (Continuous): `512` - `5120`
+
 Typical Range (Discrete): `32` - `512`
 
 
