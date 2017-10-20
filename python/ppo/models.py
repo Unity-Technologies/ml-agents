@@ -100,9 +100,9 @@ class PPOModel(object):
         self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
 
         self.running_mean = tf.get_variable("running_mean", [s_size], trainable=False, dtype=tf.float32,
-                                            initializer=tf.zeros_initializer)
+                                            initializer=tf.zeros_initializer())
         self.running_variance = tf.get_variable("running_variance", [s_size], trainable=False, dtype=tf.float32,
-                                                initializer=tf.ones_initializer)
+                                                initializer=tf.ones_initializer())
 
         self.normalized_state = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(self.running_variance / (tf.cast(self.global_step, tf.float32) +1)), -5, 5, name="normalized_state")
 
@@ -209,7 +209,7 @@ class ContinuousControlModel(PPOModel):
 
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32, initializer=tf.ones_initializer)
+        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32, initializer=tf.ones_initializer())
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='epsilon')
