@@ -56,7 +56,7 @@ In order to train the agents within the Ball Balance environment:
 
 ### Observing Training Progress
 In order to observe the training process in more detail, you can use Tensorboard. 
-In your command line, enter into `python` and then run :
+In your command line, enter into `python` directory and then run :
 
 `tensorboard --logdir=summaries`
 
