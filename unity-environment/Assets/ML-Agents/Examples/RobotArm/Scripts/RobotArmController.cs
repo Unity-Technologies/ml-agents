@@ -17,7 +17,7 @@ public class RobotArmController : MonoBehaviour {
     public Vector2 BendMinMax = new Vector2(-90, 360);
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (Input.GetKey(leftKey)) Left();
         if (Input.GetKey(rightKey)) Right();

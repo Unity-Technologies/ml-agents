@@ -16,5 +16,8 @@ complexity over time.
 * States should include all variables relevant to allowing the agent to take the optimally informed decision.
 * Categorical state variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (ie `3` -> `0, 0, 1`).
 
+### Implicit vs. Explicit State information
+Based on experiments with the Simple Robot Arm example, explicit information seems to be more useful than implicit information. For example: Adding the "hand" location to the state data provided a maximum mean reward 3x higher than just providing the angles of the joints. While the hand position is derrived from the joint angles, having the explicit information made for better training results.
+
 ## Actions
 * When using continuous control, action values should be clipped to an appropriate range.

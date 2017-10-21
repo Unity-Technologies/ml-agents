@@ -1,19 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RobotArmGameManager : MonoBehaviour
 {
-    public float timeTaken;
     public float score;
-    public float distanceToTarget;
-    public float gameLength = 30f;
     public float targetHitValue = 1f;
 
-    public UnityFloatEvent OnBallReleased;
     public GameObject SpawnCenter;
     public float SpawnDistance;
     public GameObject target;
+
+    public GameObject Rotator1;
+    public GameObject Bender1;
+    public GameObject Hand;
+
+    public RobotArmController ArmController;
+
+    public UnityEvent OnTargetHit;
+    public UnityEvent OnGameReset;
 
     // Use this for initialization
     void Start()
@@ -25,25 +31,23 @@ public class RobotArmGameManager : MonoBehaviour
     public void ResetGame()
     {
         score = 0;
-        timeTaken = 0f;
+        Rotator1.transform.rotation = Quaternion.identity;
+        Bender1.transform.rotation = Quaternion.identity;
         MoveTarget();
-    }
-
-    private void Update()
-    {
-        timeTaken += Time.deltaTime;
-        if (timeTaken > gameLength) ResetGame();
+        if (OnGameReset != null) OnGameReset.Invoke();
     }
 
     private void MoveTarget()
     {
-        target.transform.position = GetPointOnUnitSphereCap(Quaternion.LookRotation(Vector3.up), SpawnDistance);
+        target.transform.position = GetPointOnUnitSphereCap(Quaternion.LookRotation(Vector3.up), SpawnDistance) + transform.position + new Vector3(0f, 0.1f, 0f);
     }
 
     public void TargetHit()
     {
-        score += targetHitValue;
         MoveTarget();
+        score += targetHitValue;
+        // if the target is hit, do something
+        if (OnTargetHit != null) OnTargetHit.Invoke();
     }
 
     //C# version
