@@ -8,8 +8,10 @@ public class ReacherAgent : Agent {
     public GameObject pendulumB;
     public GameObject hand;
     public GameObject goal;
+    float goalDegree;
     Rigidbody rbA;
     Rigidbody rbB;
+    float goalSpeed;
 
     public override void InitializeAgent()
     {
@@ -56,6 +58,9 @@ public class ReacherAgent : Agent {
 
 	public override void AgentStep(float[] act)
 	{
+        goalDegree += goalSpeed;
+        UpdateGoalPosition();
+
         float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
         float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
         rbA.AddTorque(new Vector3(torque_x, 0f, torque_z));
@@ -67,6 +72,15 @@ public class ReacherAgent : Agent {
         //reward -= 0.001f;
         //reward += (Mathf.Max(-4f, pendulumB.transform.position.y) + 4f) / 200f;
 	}
+
+    void UpdateGoalPosition() {
+        float radians = (goalDegree * Mathf.PI) / 180f;
+        float goalX = 8f * Mathf.Cos(radians);
+        float goalY = 8f * Mathf.Sin(radians);
+
+        goal.transform.position = new Vector3(goalY, -1f, goalX) + transform.position;
+
+    }
 
 
     public override void AgentReset()
@@ -82,13 +96,13 @@ public class ReacherAgent : Agent {
         rbB.angularVelocity = new Vector3(0f, 0f, 0f);
 
 
-        float degree = Random.Range(0, 360);
-        float radians = (degree * Mathf.PI) / 180f;
-        float goalX = 8f * Mathf.Cos(radians);
-        float goalY = 8f * Mathf.Sin(radians);
+        goalDegree = Random.Range(0, 360);
+        UpdateGoalPosition();
 
-        goal.transform.position = new Vector3(goalY, -1f, goalX) + transform.position;
-        float goalSize = GameObject.Find("Academy").GetComponent<ReacherAcademy>().goalSize;
+        ReacherAcademy academy = GameObject.Find("Academy").GetComponent<ReacherAcademy>();
+        float goalSize = academy.goalSize;
+        goalSpeed = academy.goalSpeed;
+
         goal.transform.localScale = new Vector3(goalSize, goalSize, goalSize);
     }
 

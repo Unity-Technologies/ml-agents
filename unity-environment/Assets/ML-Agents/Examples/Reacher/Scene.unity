@@ -2071,12 +2071,15 @@ MonoBehaviour:
   defaultResetParameters:
   - key: goal_size
     value: 5
+  - key: goal_speed
+    value: 0.5
   done: 0
   episodeCount: 1
   currentStep: 0
   isInference: 0
   windowResize: 0
   goalSize: 5
+  goalSpeed: 0.5
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0
