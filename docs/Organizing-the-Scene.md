@@ -24,7 +24,7 @@ The Academy is responsible for:
 * Synchronizing the environment and keeping all agent's steps in pace. As such, there can only be one per scene. 
 * Determining the speed of the engine, its quality, and the display's resolution. 
 * Modifying the environment at every step and every reset according to the logic defined in `AcademyStep()` and `AcademyReset()`. 
-* Coordingating the Brains which must be set as children of the Academy.
+* Coordinating the Brains which must be set as children of the Academy.
 
 #### Brains
 Each brain corresponds to a specific Decision-making method. This often aligns with a specific neural network model. A Brains is responsible for deciding the action of all the Agents which are linked to it. There can be multiple brains in the same scene and multiple agents can subscribe to the same brain. 
