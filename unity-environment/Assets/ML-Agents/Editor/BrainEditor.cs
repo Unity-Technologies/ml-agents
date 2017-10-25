@@ -11,12 +11,10 @@ using System.Linq;
 [CustomEditor (typeof(Brain))]
 public class BrainEditor : Editor
 {
-	
-
 	public override void OnInspectorGUI ()
 	{
 		Brain myBrain = (Brain)target;
-		SerializedObject serializedBrain = new SerializedObject (target);
+		SerializedObject serializedBrain = serializedObject;
 
 		if (myBrain.transform.parent == null) {
 			EditorGUILayout.HelpBox ("A Brain GameObject must be a child of an Academy GameObject!", MessageType.Error);
@@ -24,15 +22,13 @@ public class BrainEditor : Editor
 			EditorGUILayout.HelpBox ("The Parent of a Brain must have an Academy Component attached to it!", MessageType.Error);
 		}
 
-
-		SerializedProperty bp = serializedBrain.FindProperty ("brainParameters");
-		if (myBrain.brainParameters.actionDescriptions == null) {
-			myBrain.brainParameters.actionDescriptions = new string[myBrain.brainParameters.actionSize];
-		}
-		if (myBrain.brainParameters.actionSize != myBrain.brainParameters.actionDescriptions.Count()) {
-			myBrain.brainParameters.actionDescriptions = new string[myBrain.brainParameters.actionSize];
-		}
+		BrainParameters parameters = myBrain.brainParameters;
+		if (parameters.actionDescriptions == null || parameters.actionDescriptions.Length != parameters.actionSize)
+			parameters.actionDescriptions = new string[parameters.actionSize];
+		
 		serializedBrain.Update();
+		
+		SerializedProperty bp = serializedBrain.FindProperty ("brainParameters");
 		EditorGUILayout.PropertyField(bp, true);
 
 		SerializedProperty bt = serializedBrain.FindProperty("brainType");
@@ -45,13 +41,10 @@ public class BrainEditor : Editor
 		serializedBrain.ApplyModifiedProperties();
 
 		myBrain.UpdateCoreBrains ();
-
 		myBrain.coreBrain.OnInspector ();
 
 		#if !NET_4_6 && ENABLE_TENSORFLOW
 		EditorGUILayout.HelpBox ("You cannot have ENABLE_TENSORFLOW without NET_4_6", MessageType.Error);
 		#endif
-
-
 	}
 }
