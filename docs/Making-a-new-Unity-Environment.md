@@ -37,7 +37,7 @@ This tutorial walks through the process of creating a Unity Environment. A Unity
 
 2. In the inspector tab, you can modify the characteristics of the academy:
  * **`Max Steps`** Maximum length of each episode (set to 0 if you want do not want the environment to reset after a certain time).
- * **`Wait Time`** Real-time between steps when running environment in test-mode. Used only when steps happen in `Update()`.
+ * **`Wait Time`** Real-time between steps when running environment in test-mode.
  * **`Frames To Skip`** Number of frames (or physics updates) to skip between steps. The agents will act at every frame but get new actions only at every step.
  * **`Training Configuration`** and **`Inference Configuration`** The first defines the configuration of the Engine at training time and the second at test / inference time. The training mode corresponds only to external training when the reset parameter `train_model` was set to True. The adjustable parameters are as follows:
     * `Width` and `Height` Correspond to the width and height in pixels of the window (must be both greater than 0). Typically set it to a small size during training, and a larger size for visualization during inference.
