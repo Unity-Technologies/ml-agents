@@ -7,6 +7,7 @@ import numpy as np
 import os
 import socket
 import subprocess
+import struct
 
 from .brain import BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException
@@ -34,7 +35,7 @@ class UnityEnvironment(object):
 
         atexit.register(self.close)
         self.port = base_port + worker_id
-        self._buffer_size = 120000
+        self._buffer_size = 12000
         self._loaded = False
         self._open_socket = False
 
@@ -168,13 +169,22 @@ class UnityEnvironment(object):
                                                              for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
+
+    def _recv_bytes(self):
+        s = self._conn.recv(self._buffer_size)
+        message_length = struct.unpack("I", bytearray(s[:4]))[0]
+        s = s[4:]
+        while len(s) != message_length:
+            s += self._conn.recv(self._buffer_size)
+        return s
+
     def _get_state_image(self, bw):
         """
         Receives observation from socket, and confirms.
         :param bw:
         :return:
         """
-        s = self._conn.recv(self._buffer_size)
+        s = self._recv_bytes()
         s = self._process_pixels(image_bytes=s, bw=bw)
         self._conn.send(b"RECEIVED")
         return s
@@ -184,7 +194,7 @@ class UnityEnvironment(object):
         Receives dictionary of state information from socket, and confirms.
         :return:
         """
-        state = self._conn.recv(self._buffer_size).decode('utf-8')
+        state = self._recv_bytes().decode('utf-8')
         self._conn.send(b"RECEIVED")
         state_dict = json.loads(state)
         return state_dict

@@ -209,6 +209,13 @@ public class ExternalCommunicator : Communicator
         return bytes;
     }
 
+    private byte[] AppendLength(byte[] input){
+        byte[] newArray = new byte[input.Length + 4];
+        input.CopyTo(newArray, 4);
+        System.BitConverter.GetBytes(input.Length).CopyTo(newArray, 0);
+        return newArray;
+    }
+
     /// Collects the information from the brains and sends it accross the socket
     public void giveBrainInfo(Brain brain)
     {
@@ -245,14 +252,14 @@ public class ExternalCommunicator : Communicator
             dones = concatenatedDones
         };
         string envMessage = JsonConvert.SerializeObject(message, Formatting.Indented);
-        sender.Send(Encoding.ASCII.GetBytes(envMessage));
+        sender.Send(AppendLength(Encoding.ASCII.GetBytes(envMessage)));
         Receive();
         int i = 0;
         foreach (resolution res in brain.brainParameters.cameraResolutions)
         {
             foreach (int id in current_agents[brainName])
             {
-                sender.Send(TexToByteArray(brain.ObservationToTex(collectedObservations[id][i], res.width, res.height)));
+                sender.Send(AppendLength(TexToByteArray(brain.ObservationToTex(collectedObservations[id][i], res.width, res.height))));
                 Receive();
             }
             i++;
