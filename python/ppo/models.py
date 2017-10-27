@@ -57,6 +57,11 @@ def export_graph(model_path, env_name="env", target_nodes="action"):
 
 
 class PPOModel(object):
+    def create_reward_encoder(self):
+        self.last_reward = tf.Variable(0, name="last_reward", trainable=False, dtype=tf.float32)
+        self.new_reward = tf.placeholder(shape=[], dtype=tf.float32, name='new_reward')
+        self.update_reward = tf.assign(self.last_reward, self.new_reward)
+
     def create_visual_encoder(self, o_size_h, o_size_w, bw, h_size, num_streams, activation):
         """
         Builds a set of visual (CNN) encoders.
@@ -165,6 +170,8 @@ class ContinuousControlModel(PPOModel):
         s_size = brain.state_space_size
         a_size = brain.action_space_size
 
+        self.create_reward_encoder()
+
         hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
         if brain.number_observations > 0:
             h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']
@@ -220,6 +227,8 @@ class DiscreteControlModel(PPOModel):
         :param brain: State-space size
         :param h_size: Hidden layer size
         """
+        self.create_reward_encoder()
+
         hidden_state, hidden_visual, hidden = None, None, None
         if brain.number_observations > 0:
             h_size, w_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']

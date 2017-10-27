@@ -199,7 +199,7 @@ class UnityEnvironment(object):
         state_dict = json.loads(state)
         return state_dict
 
-    def reset(self, train_mode=True, config=None, progress = None):
+    def reset(self, train_mode=True, config=None, progress=None):
         """
         Sends a signal to reset the unity environment.
         :return: A Data structure corresponding to the initial reset state of the environment.
@@ -207,7 +207,11 @@ class UnityEnvironment(object):
         old_lesson = self._curriculum.get_lesson_number()
         config = self._curriculum.get_lesson(progress) if config is None else config 
         if old_lesson != self._curriculum.get_lesson_number():
-            logger.info("\nLesson changed. Now in Lesson {0} : \n\t{1}"
+            logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
+                .format(self._curriculum.get_lesson_number(),
+                    ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
+        else:
+            logger.info("\nEpisode Reset. In Lesson {0} : \t{1}"
                 .format(self._curriculum.get_lesson_number(),
                     ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
         if self._loaded:
