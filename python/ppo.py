@@ -15,7 +15,6 @@ Usage:
 
 Options:
   --help                     Show this message.
-<<<<<<< HEAD
   --batch-size=<n>           How many experiences per gradient descent update step [default: 64].
   --beta=<n>                 Strength of entropy regularization [default: 5e-3].
   --buffer-size=<n>          How large the experience buffer should be before gradient descent [default: 2048].
