@@ -55,7 +55,7 @@ class Trainer(object):
             feed_dict[self.model.observation_in] = np.vstack(info.observations)
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
-        if self.is_training and env.brains[brain_name].state_space_type == "continuous":
+        if self.is_training and env.brains[brain_name].state_space_type == "continuous" and self.use_states:
             new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean,
                                                           self.model.running_variance)
             feed_dict[self.model.new_mean] = new_mean

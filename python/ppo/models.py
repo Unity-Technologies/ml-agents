@@ -80,9 +80,9 @@ class PPOModel(object):
                                              name='observation_0')
         streams = []
         for i in range(num_streams):
-            self.conv1 = tf.layers.conv2d(self.observation_in, 32, kernel_size=[3, 3], strides=[2, 2],
+            self.conv1 = tf.layers.conv2d(self.observation_in, 16, kernel_size=[8, 8], strides=[4, 4],
                                           use_bias=False, activation=activation)
-            self.conv2 = tf.layers.conv2d(self.conv1, 64, kernel_size=[3, 3], strides=[2, 2],
+            self.conv2 = tf.layers.conv2d(self.conv1, 32, kernel_size=[4, 4], strides=[2, 2],
                                           use_bias=False, activation=activation)
             hidden = tf.layers.dense(c_layers.flatten(self.conv2), h_size, use_bias=False, activation=activation)
             streams.append(hidden)
