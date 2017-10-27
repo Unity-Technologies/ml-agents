@@ -19,6 +19,8 @@ Options:
   --batch-size=<n>           How many experiences per gradient descent update step [default: 64].
   --beta=<n>                 Strength of entropy regularization [default: 5e-3].
   --buffer-size=<n>          How large the experience buffer should be before gradient descent [default: 2048].
+  --curriculum               Whether to use curriculum for training (requires curriculum json) [default: False]
+  --curriculum-path=<path>   Path to curriculum json file for environment [default: curriculum.json]
   --epsilon=<n>              Acceptable threshold around ratio of old and new policy probabilities [default: 0.2].
   --gamma=<n>                Reward discount rate [default: 0.995].
   --hidden-units=<n>         Number of units in hidden layer [default: 64].
@@ -29,15 +31,6 @@ Options:
   --num-epoch=<n>            Number of gradient descent steps per batch of experiences [default: 5].
   --max-steps=<n>             Maximum number of steps to run environment [default: 1e6].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
-=======
-  --curriculum               Whether to use curriculum for training (requires curriculum json) [default: False]
-  --curriculum-path=<path>   Path to curriculum json file for environment [default: curriculum.json]
-  --max-steps=<n>            Maximum number of steps to run environment [default: 1e6].
-  --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
-  --load                     Whether to load the model or randomly initialize [default: False].
-  --train                    Whether to train model, or only run inference [default: False].
-  --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
->>>>>>> dev-broadcast-curriculum
   --save-freq=<n>            Frequency at which to save model [default: 50000].
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
   --train                    Whether to train model, or only run inference [default: True].
