@@ -137,7 +137,6 @@ with tf.Session() as sess:
         sess.run(ppo_model.increment_step)
         if len(trainer.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(trainer.stats['cumulative_reward'])
-            print(mean_reward)
             sess.run(ppo_model.update_reward, feed_dict={ppo_model.new_reward: mean_reward})
             last_reward = sess.run(ppo_model.last_reward)
     # Final save Tensorflow model
