@@ -15,6 +15,7 @@ Usage:
 
 Options:
   --help                     Show this message.
+<<<<<<< HEAD
   --batch-size=<n>           How many experiences per gradient descent update step [default: 64].
   --beta=<n>                 Strength of entropy regularization [default: 5e-3].
   --buffer-size=<n>          How large the experience buffer should be before gradient descent [default: 2048].
@@ -28,6 +29,15 @@ Options:
   --num-epoch=<n>            Number of gradient descent steps per batch of experiences [default: 5].
   --max-steps=<n>             Maximum number of steps to run environment [default: 1e6].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
+=======
+  --curriculum               Whether to use curriculum for training (requires curriculum json) [default: False]
+  --curriculum-path=<path>   Path to curriculum json file for environment [default: curriculum.json]
+  --max-steps=<n>            Maximum number of steps to run environment [default: 1e6].
+  --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
+  --load                     Whether to load the model or randomly initialize [default: False].
+  --train                    Whether to train model, or only run inference [default: False].
+  --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
+>>>>>>> dev-broadcast-curriculum
   --save-freq=<n>            Frequency at which to save model [default: 50000].
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
   --train                    Whether to train model, or only run inference [default: True].
@@ -49,6 +59,11 @@ save_freq = int(options['--save-freq'])
 env_name = options['<env>']
 keep_checkpoints = int(options['--keep-checkpoints'])
 worker_id = int(options['--worker-id'])
+use_curriculum = options['--curriculum']
+if use_curriculum:
+    curriculum_path = str(options['--curriculum-path'])
+else:
+    curriculum_path = None
 
 # Algorithm-specific parameters for tuning
 gamma = float(options['--gamma'])
@@ -62,7 +77,7 @@ learning_rate = float(options['--learning-rate'])
 hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
 
-env = UnityEnvironment(file_name=env_name, worker_id=worker_id)
+env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_path)
 print(str(env))
 brain_name = env.brain_names[0]
 
@@ -86,6 +101,18 @@ if not os.path.exists(summary_path):
 init = tf.global_variables_initializer()
 saver = tf.train.Saver(max_to_keep=keep_checkpoints)
 
+
+def get_progress():
+    if use_curriculum:
+        if env._curriculum.measure_type == "progress":
+            return steps / max_steps
+        elif env._curriculum.measure_type == "reward":
+            return last_reward
+        else:
+            return None
+    else:
+        return None
+
 with tf.Session() as sess:
     # Instantiate model parameters
     if load_model:
@@ -94,21 +121,13 @@ with tf.Session() as sess:
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         sess.run(init)
-    steps = sess.run(ppo_model.global_step)
-    summary_writer = tf.summary.FileWriter(summary_path, sess.graph)
-    if "progress" in env._resetParameters:
-        config = {"progress": int(steps)}
-    else:
-        config = {}
-    info = env.reset(train_mode=train_model, config=config)[brain_name]
+    steps, last_reward = sess.run([ppo_model.global_step, ppo_model.last_reward])
+    summary_writer = tf.summary.FileWriter(summary_path)
+    info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
     trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states, train_model)
     while steps <= max_steps or not train_model:
         if env.global_done:
-            if "progress" in env._resetParameters:
-                config = {"progress": float(float(steps) / max_steps)}
-            else:
-                config = {}
-            info = env.reset(train_mode=train_model, config=config)[brain_name]
+            info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
         # Decide and take an action
         new_info = trainer.take_action(info, env, brain_name, steps)
         info = new_info
@@ -125,6 +144,10 @@ with tf.Session() as sess:
         if train_model:
             steps += 1
             sess.run(ppo_model.increment_step)
+            if len(trainer.stats['cumulative_reward']) > 0:
+                mean_reward = np.mean(trainer.stats['cumulative_reward'])
+                sess.run(ppo_model.update_reward, feed_dict={ppo_model.new_reward: mean_reward})
+                last_reward = sess.run(ppo_model.last_reward)
     # Final save Tensorflow model
     if steps != 0 and train_model:
         save_model(sess, model_path=model_path, steps=steps, saver=saver)
