@@ -215,7 +215,7 @@ class ContinuousControlModel(PPOModel):
 
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32, initializer=tf.ones_initializer())
+        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32, initializer=tf.zeros_initializer())
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='epsilon')
