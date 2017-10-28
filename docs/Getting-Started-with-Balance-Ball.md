@@ -52,11 +52,11 @@ In order to train the agents within the Ball Balance environment:
 1. Open `python/PPO.ipynb` notebook from Jupyter.
 2. Set `env_name` to whatever you named your environment file.
 3. (optional) Set `run_path` directory to your choice. 
-4. Run all cells of notebook except for final.
+4. Run all cells of notebook with the exception of the last one under "Export the trained Tensorflow graph."
 
 ### Observing Training Progress
 In order to observe the training process in more detail, you can use Tensorboard. 
-In your command line, enter into `python` and then run :
+In your command line, enter into `python` directory and then run :
 
 `tensorboard --logdir=summaries`
 

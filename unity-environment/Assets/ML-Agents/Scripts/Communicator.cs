@@ -15,11 +15,9 @@ public struct AcademyParameters
     public Dictionary<string, float> resetParameters;
     /**< \brief The default reset parameters are sent via socket*/
     public List<string> brainNames;
-    /**< \brief A list of the all the brains names sent via socket*/
+    /**< \brief A list of the External brains names sent via socket*/
     public List<BrainParameters> brainParameters;
     /**< \brief  A list of the External brains parameters sent via socket*/
-    public List<string> externalBrainNames;
-    /**< \brief  A list of the External brains names sent via socket*/
 }
 
 public enum ExternalCommand
@@ -40,9 +38,6 @@ public interface Communicator
     /// Implement this method to allow brains to subscribe to the 
     /// decisions made outside of Unity
     void SubscribeBrain(Brain brain);
-
-    /// First contact between Communicator and external process
-    bool CommunicatorHandShake();
 
     /// Implement this method to initialize the communicator
     void InitializeCommunicator();

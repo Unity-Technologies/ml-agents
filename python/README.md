@@ -45,13 +45,11 @@ Then navigate to `localhost:6006` to monitor progress with Tensorboard.
 
 ## Training PPO directly
 
-To train using PPO without the notebook, run:
+To train using PPO without the notebook, run: `python3 ppo.py <env_name> --train`
 
-`python3 ppo.py <env_name> --train`
+Where `<env_name>` corresponds to the name of the built Unity environment.
 
-For a list of additional hyperparameters, run:
-
-`python3 ppo.py --help`
+For a list of additional hyperparameters, run: `python3 ppo.py --help`
 
 ## Using Python API
 See this [documentation](../docs/Unity-Agents---Python-API.md) for a detailed description of the functions and uses of the Python API.

@@ -5,6 +5,20 @@ Unity ML Agents currently contains three example environments which demonstrate 
 
 Environments are located in `unity-environment/ML-Agents/Examples`.
 
+## Basic
+
+* Set-up: A linear movement task where the agent must move left or right to rewarding states.
+* Goal: Move to the most reward state.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function: 
+    * +0.1 for arriving at suboptimal state.
+    * +1.0 for arriving at optimal state.
+* Brains: One brain with the following state/action space.
+    * State space: (Discrete) One variable corresponding to current state.
+    * Action space: (Discrete) Two possible actions (Move left, move right).
+    * Observations: 0
+* Reset Parameters: None
+
 ## 3DBall
 
 ![Balance Ball](../images/balance.png)
@@ -55,4 +69,40 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Action space: (Discrete) Size of 4, corresponding to movement toward net, away from net, jumping, and no-movement.
     * Observations: None
 * Reset Parameters: One, corresponding to size of ball.
+
+## Area 
+
+### Push Area
+
+![Push](../images/push.png)
+
+* Set-up: A platforming environment where the agent can push a block around.
+* Goal: The agent must push the block to the goal.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function: 
+    * -0.01 for every step.
+    * +1.0 if the block touches the goal.
+    * -1.0 if the agent falls off the platform.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
+    * Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Observations: None.
+* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of elements for Curriculum Learning.
+
+### Wall Area
+
+![Wall](../images/wall.png)
+
+* Set-up: A platforming environment where the agent can jump over a wall.
+* Goal: The agent must use the block to scale the wall and reach the goal.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function: 
+    * -0.01 for every step.
+    * +1.0 if the agent touches the goal.
+    * -1.0 if the agent falls off the platform.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
+    * Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Observations: None.
+* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of the wall for Curriculum Learning.
 

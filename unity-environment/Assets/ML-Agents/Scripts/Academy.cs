@@ -67,7 +67,7 @@ public abstract class Academy : MonoBehaviour
 
 
     [HideInInspector]
-    private Brain[] brains = new Brain[0];
+    private List<Brain> brains = new List<Brain>();
 
 
 
@@ -114,25 +114,19 @@ public abstract class Academy : MonoBehaviour
             resetParameters[kv.key] = kv.value;
         }
 
-        brains = gameObject.GetComponentsInChildren<Brain>();
+        GetBrains(gameObject, brains);
         InitializeAcademy();
-
-        communicator = new ExternalCommunicator(this);
-        if (!communicator.CommunicatorHandShake())
-        {
-            communicator = null;
-        }
 
         foreach (Brain brain in brains)
         {
             brain.InitializeBrain();
         }
+
         if (communicator != null)
         {
             communicator.InitializeCommunicator();
             externalCommand = communicator.GetCommand();
         }
-            
         windowResize = true;
         done = true;
         acceptingSteps = true;
@@ -145,7 +139,6 @@ public abstract class Academy : MonoBehaviour
 	*/
     public virtual void InitializeAcademy()
     {
-
 
     }
 
@@ -167,7 +160,6 @@ public abstract class Academy : MonoBehaviour
             Application.targetFrameRate = inferenceConfiguration.targetFrameRate;
         }
     }
-
 
     /// Environment specific step logic.
     /**
@@ -354,4 +346,17 @@ public abstract class Academy : MonoBehaviour
 
     }
 
+    private static void GetBrains(GameObject gameObject, List<Brain> brains)
+    {
+        var transform = gameObject.transform;
+        
+        for (var i = 0; i < transform.childCount; i++)
+        {
+            var child = transform.GetChild(i);
+            var brain = child.GetComponent<Brain>();
+
+            if (brain != null)
+                brains.Add(brain);
+        }
+    }
 }
