@@ -155,7 +155,7 @@ class Trainer(object):
         for key in self.history_dict:
             self.history_dict[key] = empty_local_history(self.history_dict[key])
 
-    def write_summary(self, summary_writer, steps):
+    def write_summary(self, summary_writer, steps, lesson_number):
         """
         Saves training statistics to Tensorboard.
         :param summary_writer: writer associated with Tensorflow session.
@@ -168,5 +168,6 @@ class Trainer(object):
                 stat_mean = float(np.mean(self.stats[key]))
                 summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
                 self.stats[key] = []
+        summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
         summary_writer.add_summary(summary, steps)
         summary_writer.flush()

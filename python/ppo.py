@@ -127,7 +127,7 @@ with tf.Session() as sess:
             trainer.update_model(batch_size, num_epoch)
         if steps % summary_freq == 0 and steps != 0 and train_model:
             # Write training statistics to tensorboard.
-            trainer.write_summary(summary_writer, steps)
+            trainer.write_summary(summary_writer, steps, env._curriculum.lesson_number)
         if steps % save_freq == 0 and steps != 0 and train_model:
             # Save Tensorflow model
             save_model(sess, model_path=model_path, steps=steps, saver=saver)
