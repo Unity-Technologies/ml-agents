@@ -205,7 +205,7 @@ class UnityEnvironment(object):
         :return: A Data structure corresponding to the initial reset state of the environment.
         """
         old_lesson = self._curriculum.get_lesson_number()
-        config = self._curriculum.get_lesson(progress) if config is None else config 
+        config = self._curriculum.get_lesson(progress) if config is None else config
         if old_lesson != self._curriculum.get_lesson_number():
             logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
                 .format(self._curriculum.get_lesson_number(),

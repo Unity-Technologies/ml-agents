@@ -15,8 +15,7 @@ Usage:
 
 Options:
   --help                     Show this message.
-  --curriculum               Whether to use curriculum for training (requires curriculum json) [default: False]
-  --curriculum-path=<path>   Path to curriculum json file for environment [default: curriculum.json]
+  --curriculum=<file>        Curriculum json file for environment [default: None]
   --max-steps=<n>            Maximum number of steps to run environment [default: 1e6].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
   --load                     Whether to load the model or randomly initialize [default: False].
@@ -51,11 +50,9 @@ save_freq = int(options['--save-freq'])
 env_name = options['<env>']
 keep_checkpoints = int(options['--keep-checkpoints'])
 worker_id = int(options['--worker-id'])
-use_curriculum = options['--curriculum']
-if use_curriculum:
-    curriculum_path = str(options['--curriculum-path'])
-else:
-    curriculum_path = None
+curriculum_file = str(options['--curriculum'])
+if curriculum_file == "None":
+    curriculum_file = None
 
 # Algorithm-specific parameters for tuning
 gamma = float(options['--gamma'])
@@ -69,7 +66,7 @@ learning_rate = float(options['--learning-rate'])
 hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
 
-env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_path)
+env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
 print(str(env))
 brain_name = env.brain_names[0]
 
@@ -95,7 +92,7 @@ saver = tf.train.Saver(max_to_keep=keep_checkpoints)
 
 
 def get_progress():
-    if use_curriculum:
+    if curriculum_file is not None:
         if env._curriculum.measure_type == "progress":
             return steps / max_steps
         elif env._curriculum.measure_type == "reward":
@@ -104,6 +101,7 @@ def get_progress():
             return None
     else:
         return None
+
 
 with tf.Session() as sess:
     # Instantiate model parameters
