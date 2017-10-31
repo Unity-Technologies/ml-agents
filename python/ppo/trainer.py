@@ -5,7 +5,7 @@ from ppo.history import *
 
 
 class Trainer(object):
-    def __init__(self, ppo_model, sess, info, is_continuous, use_observations, use_states):
+    def __init__(self, ppo_model, sess, info, is_continuous, use_observations, use_states, training):
         """
         Responsible for collecting experinces and training PPO model.
         :param ppo_model: Tensorflow graph defining model.
@@ -19,7 +19,7 @@ class Trainer(object):
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
         self.stats = stats
-
+        self.is_training = training
         self.training_buffer = vectorize_history(empty_local_history({}))
 
         self.history_dict = empty_all_history(info)
@@ -28,7 +28,14 @@ class Trainer(object):
         self.use_observations = use_observations
         self.use_states = use_states
 
-    def take_action(self, info, env, brain_name):
+    def running_average(self, data, steps, running_mean, running_variance):
+        mean, var = self.sess.run([running_mean, running_variance])
+        current_x = np.mean(data, axis=0)
+        new_mean = mean + (current_x - mean) / (steps + 1)
+        new_variance = var + (current_x - new_mean) * (current_x - mean)
+        return new_mean, new_variance
+
+    def take_action(self, info, env, brain_name, steps):
         """
         Decides actions given state/observation information, and takes them in environment.
         :param info: Current BrainInfo from environment.
@@ -37,7 +44,10 @@ class Trainer(object):
         :return: BrainInfo corresponding to new environment state.
         """
         epsi = None
+
         feed_dict = {self.model.batch_size: len(info.states)}
+        run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
+                    self.model.learning_rate]
         if self.is_continuous:
             epsi = np.random.randn(len(info.states), env.brains[brain_name].action_space_size)
             feed_dict[self.model.epsilon] = epsi
@@ -45,10 +55,15 @@ class Trainer(object):
             feed_dict[self.model.observation_in] = np.vstack(info.observations)
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
-        actions, a_dist, value, ent, learn_rate = self.sess.run([self.model.output, self.model.probs,
-                                                                 self.model.value, self.model.entropy,
-                                                                 self.model.learning_rate],
-                                                                feed_dict=feed_dict)
+        if self.is_training and env.brains[brain_name].state_space_type == "continuous" and self.use_states:
+            new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean,
+                                                          self.model.running_variance)
+            feed_dict[self.model.new_mean] = new_mean
+            feed_dict[self.model.new_variance] = new_variance
+            run_list = run_list + [self.model.update_mean, self.model.update_variance]
+            actions, a_dist, value, ent, learn_rate, _, _ = self.sess.run(run_list, feed_dict=feed_dict)
+        else:
+            actions, a_dist, value, ent, learn_rate = self.sess.run(run_list, feed_dict=feed_dict)
         self.stats['value_estimate'].append(value)
         self.stats['entropy'].append(ent)
         self.stats['learning_rate'].append(learn_rate)
