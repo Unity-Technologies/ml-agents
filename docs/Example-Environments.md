@@ -106,3 +106,17 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Observations: None.
 * Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of the wall for Curriculum Learning.
 
+## Reacher
+
+![Tennis](../images/reacher.png)
+
+* Set-up: Double-jointed arm which can move to target locations.
+* Goal: The agents must move it's hand to the goal location, and keep it there.
+* Agents: The environment contains 32 agent linked to a single brain.
+* Agent Reward Function (independent): 
+    * +0.1 Each step agent's hand is in goal location.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm rigidbodies.
+    * Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
+    * Observations: None
+* Reset Parameters: Two, corresponding to goal size, and goal movement speed.
