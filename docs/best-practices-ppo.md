@@ -1,6 +1,6 @@
 # Best Practices when training with PPO
 
-The process of training a Reinforcement Learning model can often involve the need to tune the hyperparameters in order to achieve 
+The process of training a Reinforcement Learning model can often involve the need to tune the hyperparameters in order to achieve
 a level of performance that is desirable. This guide contains some best practices for tuning the training process when the default
 parameters don't seem to be giving the level of performance you would like.
 
@@ -9,7 +9,7 @@ parameters don't seem to be giving the level of performance you would like.
 ### Batch Size
 
 `batch_size` corresponds to how many experiences are used for each gradient descent update. This should always be a fraction
-of the `buffer_size`. If you are using a continuous action space, this value should be large. If you are using a discrete action space, this value should be smaller. 
+of the `buffer_size`. If you are using a continuous action space, this value should be large. If you are using a discrete action space, this value should be smaller.
 
 Typical Range (Continuous): `512` - `5120`
 
@@ -19,7 +19,7 @@ Typical Range (Discrete): `32` - `512`
 ### Beta
 
 `beta` corresponds to the strength of the entropy regularization. This ensures that discrete action space agents properly
-explore during training. Increasing this will ensure more random actions are taken. This should be adjusted such that 
+explore during training. Increasing this will ensure more random actions are taken. This should be adjusted such that
 the entropy (measurable from TensorBoard) slowly decreases alongside increases in reward. If entropy drops too quickly,
 increase `beta`. If entropy drops too slowly, decrease `beta`.
 
@@ -28,7 +28,7 @@ Typical Range: `1e-4` - `1e-2`
 ### Buffer Size
 
 `buffer_size` corresponds to how many experiences should be collected before gradient descent is performed on them all.
-This should be a multiple of `batch_size`. 
+This should be a multiple of `batch_size`.
 
 Typical Range: `2048` - `409600`
 
@@ -64,14 +64,14 @@ Typical Range: `3` - `10`
 
 `time_horizon` corresponds to how many steps of experience to collect per-agent before adding it to the experience buffer.
 In cases where there are frequent rewards within an episode, or episodes are prohibitively large, this can be a smaller number.
-For most stable training however, this number should be large enough to capture all the important behavior within a sequence of 
+For most stable training however, this number should be large enough to capture all the important behavior within a sequence of
 an agent's actions.
 
 Typical Range: `64` - `2048`
 
 ## Training Statistics
 
-To view training statistics, use Tensorboard. For information on launching and using Tensorboard, see [here](../Getting-Started-with-Balance-Ball.md#observing-training-progress).
+To view training statistics, use Tensorboard. For information on launching and using Tensorboard, see [here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
 
 ### Cumulative Reward
 
@@ -79,7 +79,7 @@ The general trend in reward should consistently increase over time. Small ups an
 
 ### Entropy
 
-This corresponds to how random the decisions of a brain are. This should consistently decrease during training. If it decreases 
+This corresponds to how random the decisions of a brain are. This should consistently decrease during training. If it decreases
 too soon or not at all, `beta` should be adjusted (when using discrete action space).
 
 ### Learning Rate
@@ -92,7 +92,7 @@ These values will oscillate with training.
 
 ### Value Estimate
 
-These values should increase with the reward. They corresponds to how much future reward the agent predicts itself receiving at 
+These values should increase with the reward. They corresponds to how much future reward the agent predicts itself receiving at
 any given point.
 
 ### Value Loss
