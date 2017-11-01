@@ -66,7 +66,7 @@ learning_rate = float(options['--learning-rate'])
 hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
 
-env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
+env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_path)
 print(str(env))
 brain_name = env.brain_names[0]
 
@@ -92,7 +92,7 @@ saver = tf.train.Saver(max_to_keep=keep_checkpoints)
 
 
 def get_progress():
-    if curriculum_file is not None:
+    if use_curriculum:
         if env._curriculum.measure_type == "progress":
             return steps / max_steps
         elif env._curriculum.measure_type == "reward":
@@ -101,7 +101,6 @@ def get_progress():
             return None
     else:
         return None
-
 
 with tf.Session() as sess:
     # Instantiate model parameters
@@ -114,12 +113,12 @@ with tf.Session() as sess:
     steps, last_reward = sess.run([ppo_model.global_step, ppo_model.last_reward])
     summary_writer = tf.summary.FileWriter(summary_path)
     info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
-    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states)
+    trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states, train_model)
     while steps <= max_steps or not train_model:
         if env.global_done:
             info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
         # Decide and take an action
-        new_info = trainer.take_action(info, env, brain_name)
+        new_info = trainer.take_action(info, env, brain_name, steps)
         info = new_info
         trainer.process_experiences(info, time_horizon, gamma, lambd)
         if len(trainer.training_buffer['actions']) > buffer_size and train_model:
@@ -127,16 +126,17 @@ with tf.Session() as sess:
             trainer.update_model(batch_size, num_epoch)
         if steps % summary_freq == 0 and steps != 0 and train_model:
             # Write training statistics to tensorboard.
-            trainer.write_summary(summary_writer, steps, env._curriculum.lesson_number)
+            trainer.write_summary(summary_writer, steps)
         if steps % save_freq == 0 and steps != 0 and train_model:
             # Save Tensorflow model
             save_model(sess, model_path=model_path, steps=steps, saver=saver)
-        steps += 1
-        sess.run(ppo_model.increment_step)
-        if len(trainer.stats['cumulative_reward']) > 0:
-            mean_reward = np.mean(trainer.stats['cumulative_reward'])
-            sess.run(ppo_model.update_reward, feed_dict={ppo_model.new_reward: mean_reward})
-            last_reward = sess.run(ppo_model.last_reward)
+        if train_model:
+            steps += 1
+            sess.run(ppo_model.increment_step)
+            if len(trainer.stats['cumulative_reward']) > 0:
+                mean_reward = np.mean(trainer.stats['cumulative_reward'])
+                sess.run(ppo_model.update_reward, feed_dict={ppo_model.new_reward: mean_reward})
+                last_reward = sess.run(ppo_model.last_reward)
     # Final save Tensorflow model
     if steps != 0 and train_model:
         save_model(sess, model_path=model_path, steps=steps, saver=saver)
