@@ -12,6 +12,8 @@ public struct AcademyParameters
     public string AcademyName;
     /**< \brief The name of the Academy. If the communicator is External, 
      * it will be the name of the Academy GameObject */
+    public string apiNumber;
+    /**< \brief The API number for the communicator. */
     public Dictionary<string, float> resetParameters;
     /**< \brief The default reset parameters are sent via socket*/
     public List<string> brainNames;

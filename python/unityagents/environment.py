@@ -36,6 +36,7 @@ class UnityEnvironment(object):
         atexit.register(self.close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
+        self._python_api = "API-2"
         self._loaded = False
         self._open_socket = False
 
@@ -94,6 +95,14 @@ class UnityEnvironment(object):
                 "and that the Academy and the external Brain(s) are attached to objects in the Scene.".format(
                     str(file_name)))
         
+            if "apiNumber" not in p:
+                self._unity_api = "API-1"
+            else:
+                self._unity_api = p["apiNumber"]
+            if self._unity_api != self._python_api:
+                raise UnityEnvironmentException(
+                    "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
+                    "{1}.".format(self._python_api, self._unity_api))
 
             self._data = {}
             self._global_done = None

@@ -68,7 +68,7 @@ batch_size = int(options['--batch-size'])
 
 env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
 print(str(env))
-brain_name = env.brain_names[0]
+brain_name = env.external_brain_names[0]
 
 tf.reset_default_graph()
 
