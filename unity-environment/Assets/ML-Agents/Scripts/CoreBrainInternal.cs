@@ -39,6 +39,20 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     [SerializeField]
     ///  Modify only in inspector : If your graph takes additional inputs that are fixed you can specify them here.
     private TensorFlowAgentPlaceholder[] graphPlaceholders;
+    [SerializeField]
+    /// Some graph TF outputs that will be initilaize and accessed later.
+    private string[] graphTFOutputs;
+    
+    [SerializeField]
+    /// Some graph TF Operations that will be initilaize and accessed later.
+    private string[] graphTFOperations;
+
+#if ENABLE_TENSORFLOW
+    private Dictionary<string, TFOutputHolder> TFOutputHolders;
+    private Dictionary<string, TFOperationHolder> TFOperationHolders;
+#endif
+
+
     ///  Modify only in inspector : Name of the placholder of the batch size
     public string BatchSizePlaceholderName = "batch_size";
     ///  Modify only in inspector : Name of the state placeholder
@@ -51,7 +65,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public string[] ObservationPlaceholderName;
     /// Modify only in inspector : Name of the action node
     public string ActionPlaceholderName = "action";
-    #if ENABLE_TENSORFLOW
+    /// Modify only in inspector : Name of the init node
+    public string InitializeOperationName = "init";
+
+    public Dictionary<int, float[]> overrideAction = null;
+    public bool whetherOverrideAction = false;
+#if ENABLE_TENSORFLOW
     TFGraph graph;
     TFSession session;
     bool hasRecurrent;
@@ -110,10 +129,96 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             {
                 hasState = true;
             }
+            if(graph[graphScope + InitializeOperationName ]!= null)
+            {
+                var runner = session.GetRunner();
+                TFOperation init = session.Graph[graphScope + InitializeOperationName];
+                runner.AddTarget(init);
+                runner.Run();
+            }
+            TFOutputHolders = new Dictionary<string, TFOutputHolder>();
+            foreach(var o in graphTFOutputs)
+            {
+                TFOutputHolders[o] = new TFOutputHolder(graphScope + o);
+                TFOutputHolders[o].Initialize(graph);
+                Debug.Assert(TFOutputHolders[o].Valid, "output " + o + " does not exist in the graph");
+            }
+            TFOperationHolders = new Dictionary<string, TFOperationHolder>();
+            foreach (var o in graphTFOperations)
+            {
+                TFOperationHolders[o] = new TFOperationHolder(graphScope + o);
+                TFOperationHolders[o].Initialize(graph);
+                Debug.Assert(TFOperationHolders[o].Valid, "operation " + o + " does not exist in the graph");
+            }
         }
 #endif
     }
 
+    /// <summary>
+    /// run the model with intpus/fetches and targets
+    /// </summary>
+    /// <param name="fetches">array of names of TFOutput nodes to be fetched. Those nodes have to be set in graphTFOutputs already</param>
+    /// <param name="targets">array of names of TFOperation to be run. Those operatoin have to be set in graphTFOperations already</param>
+    /// <param name="inputs">Dictionary of <node's name, TFTensor data> inputs to be feed to the model. Those nodes have to be set in graphTFOutputs already</param>
+    /// <returns></returns>
+#if ENABLE_TENSORFLOW
+    public TFTensor[] Run(string[] fetches, string[] targets, Dictionary<string, TFTensor> inputs)
+    {
+
+        var runner = session.GetRunner();
+        if (fetches != null)
+        {
+            foreach (var f in fetches)
+            {
+                Debug.Assert(TFOutputHolders.ContainsKey(f), "Please add the output to graphTFOutputs in inspector");
+
+                runner.Fetch(TFOutputHolders[f].Output);
+            }
+        }
+
+        if (targets != null)
+        {
+            foreach (var t in targets)
+            {
+                Debug.Assert(TFOperationHolders.ContainsKey(t), "Please add the operation to graphTFOutputs in inspector");
+                runner.AddTarget(TFOperationHolders[t].Operation);
+            }
+        }
+
+        if (inputs != null)
+        {
+            foreach (var input in inputs)
+            {
+                Debug.Assert(TFOutputHolders.ContainsKey(input.Key), "Please add the output to graphTFOutputs in inspector");
+                runner.AddInput(TFOutputHolders[input.Key].Output, input.Value);
+            }
+        }
+
+
+        TFTensor[] networkOutput;
+        try
+        {
+            networkOutput = runner.Run();
+        }
+        catch (TFException e)
+        {
+            string errorMessage = e.Message;
+            try
+            {
+                errorMessage = string.Format(@"The tensorflow graph needs an input for {0} of type {1}",
+                    e.Message.Split(new string[] { "Node: " }, 0)[1].Split('=')[0],
+                    e.Message.Split(new string[] { "dtype=" }, 0)[1].Split(',')[0]);
+            }
+            finally
+            {
+                throw new UnityAgentsException(errorMessage);
+            }
+
+        }
+
+        return networkOutput;
+    }
+#endif
 
     /// Collects information from the agents and store them
     public void SendState()
@@ -174,6 +279,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     /// the actions.
     public void DecideAction()
     {
+        //some changes so that i can override the action
+        if (overrideAction!=null && whetherOverrideAction)
+        {
+            brain.SendActions(overrideAction);
+            return;
+        }
 #if ENABLE_TENSORFLOW
         if (currentBatchSize == 0)
         {
@@ -319,7 +430,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
 
         graphScope = EditorGUILayout.TextField("Graph Scope : ", graphScope);
-
+        if (InitializeOperationName == "")
+        {
+            InitializeOperationName = "init";
+        }
+        InitializeOperationName = EditorGUILayout.TextField("Initialiation Node Name", InitializeOperationName);
         if (BatchSizePlaceholderName == "")
         {
             BatchSizePlaceholderName = "batch_size";
@@ -379,6 +494,16 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         SerializedProperty tfPlaceholders = serializedBrain.FindProperty("graphPlaceholders");
         serializedBrain.Update();
         EditorGUILayout.PropertyField(tfPlaceholders, true);
+        serializedBrain.ApplyModifiedProperties();
+
+        SerializedProperty tfOutputss = serializedBrain.FindProperty("graphTFOutputs");
+        serializedBrain.Update();
+        EditorGUILayout.PropertyField(tfOutputss, true);
+        serializedBrain.ApplyModifiedProperties();
+
+        SerializedProperty tfOperations = serializedBrain.FindProperty("graphTFOperations");
+        serializedBrain.Update();
+        EditorGUILayout.PropertyField(tfOperations, true);
         serializedBrain.ApplyModifiedProperties();
 #endif
     }

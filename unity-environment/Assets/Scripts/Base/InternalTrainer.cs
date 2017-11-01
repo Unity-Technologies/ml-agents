@@ -12,10 +12,19 @@ public class InternalTrainer : MonoBehaviour {
     //the academy that needs to be trained. The acadamy needs to have internalbrains
     public Academy academy;
     public List<Brain> brainsToTrain;
-
-
-    public bool training = false;
+    public Agent agentToTrain;
+    public bool running = true;
     
+    public int TotalSteps { get; protected set; }
+    public int StepsFromLastReset { get; protected set; }
+    public int Episodes { get; protected set; }
+    protected virtual void Start()
+    {
+        TotalSteps = 0;
+        StepsFromLastReset = 0;
+        Episodes = 0;
+    }
+
     public class BrainStepMessage
     {
         public string brain_name { get; set; }
@@ -31,29 +40,42 @@ public class InternalTrainer : MonoBehaviour {
     }
 
 
-    // Use this for initialization
-    void Start () {
-        
-
-    }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     private void FixedUpdate()
     {
-        if(academy!= null && training)
+        if(academy!= null && running)
         {
+            BeforeStepTaken();
             academy.RunStepManual();
+            TotalSteps ++;
+            StepsFromLastReset ++;
+            OnStepTaken();
             if (academy.done)
             {
                 academy.RunResetManual();
+                StepsFromLastReset = 0;
+                Episodes++;
             }
-            
         }
     }
+
+
+    /// <summary>
+    /// override this to run the training
+    /// </summary>
+    public virtual void OnStepTaken()
+    {
+
+    }
+
+    /// <summary>
+    /// override this to run tstuff before step is taken
+    /// </summary>
+    public virtual void BeforeStepTaken()
+    {
+
+    }
+
     public BrainStepMessage CollectBrainStepMessage(int brainIndex = 0)
     {
         Debug.Assert(brainIndex < brainsToTrain.Count && brainIndex >=0, "brain index out of bound");

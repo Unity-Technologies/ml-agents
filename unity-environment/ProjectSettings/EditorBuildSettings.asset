@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/ML-Agents/Examples/3DBall/Scene.unity
     guid: a83e830ec5bcd4b1db836428921d59b0
   - enabled: 0
@@ -14,3 +14,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/ML-Agents/Examples/Tennis/Tennis.unity
     guid: 25c0c9e81e55c4e129e1a5c0ac254100
+  - enabled: 1
+    path: Assets/Ponggame.unity
+    guid: b1b141128eabebe4cad29f6815f200a9

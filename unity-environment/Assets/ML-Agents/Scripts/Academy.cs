@@ -55,6 +55,7 @@ public abstract class Academy : MonoBehaviour
     private ScreenConfiguration trainingConfiguration = new ScreenConfiguration(80, 80, 1, 100.0f, 60);
     [SerializeField]
     private ScreenConfiguration inferenceConfiguration = new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
+    private float prevTimescale;
     [SerializeField]
     private ResetParameter[] defaultResetParameters;
     public Dictionary<string, float> resetParameters;
@@ -154,6 +155,7 @@ public abstract class Academy : MonoBehaviour
             QualitySettings.SetQualityLevel(trainingConfiguration.qualityLevel, true);
             Time.timeScale = trainingConfiguration.timeScale;
             Application.targetFrameRate = trainingConfiguration.targetFrameRate;
+            prevTimescale = trainingConfiguration.timeScale;
         }
         else
         {
@@ -161,7 +163,9 @@ public abstract class Academy : MonoBehaviour
             QualitySettings.SetQualityLevel(inferenceConfiguration.qualityLevel, true);
             Time.timeScale = inferenceConfiguration.timeScale;
             Application.targetFrameRate = inferenceConfiguration.targetFrameRate;
+            prevTimescale = inferenceConfiguration.timeScale;
         }
+        
     }
 
     /// Environment specific step logic.
@@ -260,6 +264,16 @@ public abstract class Academy : MonoBehaviour
         {
             RunMdp();
         }
+
+        if(prevTimescale != trainingConfiguration.timeScale && !isInference)
+        {
+            Time.timeScale = trainingConfiguration.timeScale;
+            prevTimescale = Time.timeScale;
+        }else if(prevTimescale != inferenceConfiguration.timeScale && isInference)
+        {
+            Time.timeScale = inferenceConfiguration.timeScale;
+            prevTimescale = Time.timeScale;
+        }
     }
 
     // Contains logic for taking steps in environment simulation.
@@ -357,8 +371,12 @@ public abstract class Academy : MonoBehaviour
     {
         Debug.Assert(communicator == null, "Can not have external brains while in manual mode");
 
-        timeAtStep = Time.time;
+        foreach (Brain brain in brains)
+        {
+            brain.ResetDoneAndReward();
+        }
 
+        timeAtStep = Time.time;
         DecideAction();
 
 
@@ -380,8 +398,21 @@ public abstract class Academy : MonoBehaviour
         }
 
         framesSinceAction = 0;
-        
-        Step();
+
+        // Reset all agents whose flags are set to done.
+        foreach (Brain brain in brains)
+        {
+            // Set all agents to done if academy is done.
+            if (done)
+            {
+                brain.SendDone();
+            }
+            brain.ResetIfDone();
+        }
+
+        SendState();
+
+
     }
 
     /// <summary>

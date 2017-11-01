@@ -1,0 +1,2 @@
+model_checkpoint_path: "D:\\TCMXX\\OneDrive\\ProjectSourceCodes\\UnityProjects\\UnityDeeplearningAPI\\python\\dql\\QNPong1\\checkpoints/modeldata"
+all_model_checkpoint_paths: "D:\\TCMXX\\OneDrive\\ProjectSourceCodes\\UnityProjects\\UnityDeeplearningAPI\\python\\dql\\QNPong1\\checkpoints/modeldata"
