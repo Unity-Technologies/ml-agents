@@ -22,7 +22,7 @@ Options:
   --train                    Whether to train model, or only run inference [default: False].
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
   --save-freq=<n>            Frequency at which to save model [default: 50000].
-  --gamma=<n>                Reward discount rate [default: 0.99].
+  --gamma=<n>                Reward discount rate [default: 0.995].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
   --beta=<n>                 Strength of entropy regularization [default: 1e-3].
