@@ -25,6 +25,8 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         public int index;
         public float value;
     }
+        
+    ExternalCommunicator coord;
 
     [SerializeField]
     /// Contains the mapping from input to continuous actions
@@ -33,7 +35,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// Contains the mapping from input to discrete actions
     private DiscretePlayerAction[] discretePlayerActions;
     [SerializeField]
-    private int defaultAction = -1;
+    private int defaultAction = 0;
 
     /// Reference to the brain that uses this CoreBrainPlayer
     public Brain brain;
@@ -47,7 +49,15 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// Nothing to implement
     public void InitializeCoreBrain()
     {
-
+        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        {
+            coord = null;
+        }
+        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        {
+            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord.SubscribeBrain(brain);
+        }
     }
 
     /// Uses the continuous inputs or dicrete inputs of the player to 
@@ -95,7 +105,10 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// decisions
     public void SendState()
     {
-
+        if (coord!=null)
+        {
+            coord.giveBrainInfo(brain);
+        }
     }
 
     /// Displays continuous or discrete input mapping in the inspector

@@ -127,15 +127,16 @@ Small negative rewards are also typically used each step in scenarios where the 
 Note that the reward is reset to 0 at every step, you must add to the reward (`reward += rewardIncrement`). If you use `skipFrame` in the Academy and set your rewards instead of incrementing them, you might lose information since the reward is sent at every step, not at every frame.
 
 ## Agent Monitor
-* You can add the script `AgentMonitor.cs` to any gameObject with a component `YourNameAgent.cs`. In the inspector of this component, you will see:
-  * `Fixed Position` : If this box is checked, the monitor will be on the left corner of the screen and will remain here. Note that you can only have one agent with a fixed monitor or multiple monitors will overlap.
-  * `Vertical Offset`: If `Fixed Position` is unchecked, the monitor will follow the Agent on the screen. Use `Vertical Offset` to decide how far above the agent the monitor should be.
-  * `Display Brain Name` : If this box is checked, the name of the brain will appear in the monitor. (Can be useful if you have similar agents using different brains).
-  * `Display Brain Type` : If this box is checked, the type of the brain of the agent will be displayed.
-  * `Display FrameCount` : If this box is checked, the number of frames that elapsed since the agent was reset will be displayed.
-  * `Display Current Reward`: If this box is checked, the current reward of the agent will be displayed.
-  * `Display Max Reward` : If this box is checked, the maximum reward obtained during this training session will be displayed.
-  * `Display State` : If this box is checked, the current state of the agent will be displayed.
-  * `Display Action` : If this box is checked, the current action the agent performs will be displayed.
+The monitoring of the environment has been changed. You can now track many different things and not only agents. Use the Log function anywhere in your code :
+```csharp
+   Monitor.Log(key, value, displayType , target)
+```
+ * *`key`* is the name of the information you want to display.
+ * *`value`* is the information you want to display.
+ * *`displayType`* is a MonitorType that can be either `text`, `slider`, `bar` or `hist`.
+   * `text` will convert `value` into a string and display it. It can be useful for displaying error messages!
+   * `slider` is used to display a single float between -1 and 1. Note that value must be a float if you want to use a slider. If the value is positive, the slider will be green, if the value is negative, the slider will be red.
+   * `hist` is used to display multiple floats. Note that value must be a list or array of floats. The Histogram will be a sequence of vertical sliders.
+   * `bar` is used to see the proportions. Note that value must be a list or array of positive floats. For each float in values, a rectangle of width of value divided by the sum of all values will be show.
+ * *`target`* is the transform to which you want to attach information. If the transform is `null` the information will be attached to the global monitor.
 
-If you passed a `value` from an external brain, the value will be displayed as a bar (green if value is positive / red if value is negative) above the monitor. The bar's maximum value is set to 1 by default but if the value of the agent is above this number, it becomes the new maximum.
