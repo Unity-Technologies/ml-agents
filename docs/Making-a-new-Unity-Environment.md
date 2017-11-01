@@ -37,11 +37,11 @@ This tutorial walks through the process of creating a Unity Environment. A Unity
 
 2. In the inspector tab, you can modify the characteristics of the academy:
  * **`Max Steps`** Maximum length of each episode (set to 0 if you want do not want the environment to reset after a certain time).
- * **`Wait Time`** Real-time between steps when running environment in test-mode. Used only when steps happen in `Update()`.
+ * **`Wait Time`** Real-time between steps when running environment in test-mode.
  * **`Frames To Skip`** Number of frames (or physics updates) to skip between steps. The agents will act at every frame but get new actions only at every step.
  * **`Training Configuration`** and **`Inference Configuration`** The first defines the configuration of the Engine at training time and the second at test / inference time. The training mode corresponds only to external training when the reset parameter `train_model` was set to True. The adjustable parameters are as follows:
     * `Width` and `Height` Correspond to the width and height in pixels of the window (must be both greater than 0). Typically set it to a small size during training, and a larger size for visualization during inference.
-    * `Quality Level` Determines how mush rendering is performed. Typically set to small value during training and higher value for visualization during inference.
+    * `Quality Level` Determines how mesh rendering is performed. Typically set to small value during training and higher value for visualization during inference.
     * `Time Scale` Physics speed. If environment utilized physics calculations, increase this during training, and set to `1.0f` during inference. Otherwise, set it to `1.0f`.
     * `Target Frame Rate` Frequency of frame rendering. If environment utilizes observations, increase this during training, and set to `60` during inference. If no observations are used, this can be set to `1` during training.
  * **`Default Reset Parameters`** You can set the default configuration to be passed at reset. This will be a mapping from strings to float values that you can call in the academy with `resetParameters["YourDefaultParameter"]`
@@ -67,9 +67,9 @@ For each Brain game object in your academy :
         * `discrete` corresponds to describing the action space with an `int`.
         * `continuous` corresponds to describing the action space with an array of `float`.
 
-3. You can chose what kind of brain you want `YourNameBrain` to be. There are four possibilities:
+3. You can choose what kind of brain you want `YourNameBrain` to be. There are four possibilities:
  * `External` : You need at least one of your brains to be external if you wish to interact with your environment from python.
- * `Player` : To control you agents manually. If the action space is discrete, you must map input keys to their corresponding integer values. If the action space is continuous, you must map input keys to their corresponding indices and float values.
+ * `Player` : To control your agents manually. If the action space is discrete, you must map input keys to their corresponding integer values. If the action space is continuous, you must map input keys to their corresponding indices and float values.
  * `Heuristic` : You can have your brain automatically react to the observations and states in a customizable way. You will need to drag a `Decision` script into `YourNameBrain`. To create a custom reaction, you must :
    *  Rename `TemplateDecision.cs` (and the contained class name) to the desired name of your new reaction. Typical naming convention is `YourNameDecision`.
    *  Implement `Decide`: Given the state, observation and memory of an agent, this function must return an array of floats corresponding to the actions taken by the agent. If the action space type is discrete, the array must be of size 1.
@@ -84,7 +84,7 @@ For each Brain game object in your academy :
    * `Observation Placeholder Name` : If your graph uses observations as input, you must specify it here. Note that the number of observations is equal to the length of `Camera Resolutions` in the brain parameters.
    * `Action Node Name` : Specify the name of the placeholder corresponding to the actions of the brain in your graph. If the action space type is continuous, the output must be a one dimensional tensor of float of length `Action Space Size`, if the action space type is discrete, the output must be a one dimensional tensor of int of length 1.
    * `Graph Placeholder` : If your graph takes additional inputs that are fixed (example: noise level) you can specify them here. Note that in your graph, these must correspond to one dimensional tensors of int or float of size 1.
-     * `Name` : Corresponds to the name of the placeholdder.
+     * `Name` : Corresponds to the name of the placeholder.
      * `Value Type` : Either Integer or Floating Point.
      * `Min Value` and 'Max Value' : Specify the minimum and maximum values (included) the placeholder can take. The value will be sampled from the uniform distribution at each step. If you want this value to be fixed, set both `Min Value` and `Max Value` to the same number.
  		 
@@ -92,11 +92,11 @@ For each Brain game object in your academy :
 
 1. Rename `TemplateAgent.cs` (and the contained class name) to the desired name of your new agent. Typical naming convention is `YourNameAgent`.
 
-2. Attach `YourNameAgent.cs` to the game object that represents your agent. (Example: if you want to make a self driving car, attach `YourNameAgent.cs` to a car looking game object)
+2. Attach `YourNameAgent.cs` to the game object that represents your agent. (Example: if you want to make a self-driving car, attach `YourNameAgent.cs` to a car looking game object)
 
-3. In the inspector menu of you agent, drag the brain game object you want to use with this agent into the corresponding `Brain` box. Please note that you can have multiple agents with the same brain. If you want to give an agent a brain or change his brain via script, please use the method `ChangeBrain()`.
+3. In the inspector menu of your agent, drag the brain game object you want to use with this agent into the corresponding `Brain` box. Please note that you can have multiple agents with the same brain. If you want to give an agent a brain or change his brain via script, please use the method `ChangeBrain()`.
 
-4. In the inspector menu of you agent, you can specify what cameras, your agent will use as its observations. To do so, drag the desired number of cameras into the `Observations` field. Note that if you want a camera to move along your agent, you can set this camera as a child of your agent
+4. In the inspector menu of your agent, you can specify what cameras, your agent will use as its observations. To do so, drag the desired number of cameras into the `Observations` field. Note that if you want a camera to move along your agent, you can set this camera as a child of your agent
 
 5. If `Reset On Done` is checked, `Reset()` will be called when the agent is done. Else, `AgentOnDone()` will be called. Note that if `Reset On Done` is unchecked, the agent will remain "done" until the Academy resets. This means that it will not take actions in the environment.
 
@@ -124,18 +124,19 @@ The reward function is the set of circumstances and event which we want to rewar
 
 Small negative rewards are also typically used each step in scenarios where the optimal agent behavior is to complete an episode as quickly as possible.
 
-Note that the reward is reset to 0 at every step, you must add to the reward (`reward += rewardIncrement`). If you use `skipFrame` in the Academy and set your rewards instead of incrementing them, you might loose information since the reward is sent at every step, not at every frame.
+Note that the reward is reset to 0 at every step, you must add to the reward (`reward += rewardIncrement`). If you use `skipFrame` in the Academy and set your rewards instead of incrementing them, you might lose information since the reward is sent at every step, not at every frame.
 
 ## Agent Monitor
-* You can add the script `AgentMonitor.cs` to any gameObject with a component `YourNameAgent.cs`. In the inspector of this component, you will see:
-  * `Fixed Position` : If this box is checked, the monitor will be on the left corner of the screen and will remain here. Note that you can only have one agent with a fixed monitor or multiple monitors will overlap.
-  * `Vertical Offset`: If `Fixed Position` is unchecked, the monitor will follow the Agent on the screen. Use `Vertical Offset` to decide how far above the agent the monitor should be.
-  * `Display Brain Name` : If this box is checked, the name of the brain will appear in the monitor. (Can be useful if you have similar agents using different brains).
-  * `Display Brain Type` : If this box is checked, the type of the brain of the agent will be displayed.
-  * `Display FrameCount` : If this box is checked, the number of frames that elapsed since the agent was reset will be displayed.
-  * `Display Current Reward`: If this box is checked, the current reward of the agent will be displayed.
-  * `Display Max Reward` : If this box is checked, the maximum reward obtained during this training session will be displayed.
-  * `Display State` : If this box is checked, the current state of the agent will be displayed.
-  * `Display Action` : If this box is checked, the current action the agent performs will be displayed.
+The monitoring of the environment has been changed. You can now track many different things and not only agents. Use the Log function anywhere in your code :
+```csharp
+   Monitor.Log(key, value, displayType , target)
+```
+ * *`key`* is the name of the information you want to display.
+ * *`value`* is the information you want to display.
+ * *`displayType`* is a MonitorType that can be either `text`, `slider`, `bar` or `hist`.
+   * `text` will convert `value` into a string and display it. It can be useful for displaying error messages!
+   * `slider` is used to display a single float between -1 and 1. Note that value must be a float if you want to use a slider. If the value is positive, the slider will be green, if the value is negative, the slider will be red.
+   * `hist` is used to display multiple floats. Note that value must be a list or array of floats. The Histogram will be a sequence of vertical sliders.
+   * `bar` is used to see the proportions. Note that value must be a list or array of positive floats. For each float in values, a rectangle of width of value divided by the sum of all values will be show.
+ * *`target`* is the transform to which you want to attach information. If the transform is `null` the information will be attached to the global monitor.
 
-If you passed a `value` from an external brain, the value will be displayed as a bar (green if value is positive / red if value is negative) above the monitor. The bar's maximum value is set to 1 by default but if the value of the agent is above this number, it becomes the new maximum.

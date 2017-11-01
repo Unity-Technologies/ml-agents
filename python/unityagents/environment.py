@@ -7,9 +7,11 @@ import numpy as np
 import os
 import socket
 import subprocess
+import struct
 
 from .brain import BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException
+from .curriculum import Curriculum
 
 from PIL import Image
 from sys import platform
@@ -20,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005):
+                 base_port=5005, curriculum = None):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -33,7 +35,7 @@ class UnityEnvironment(object):
 
         atexit.register(self.close)
         self.port = base_port + worker_id
-        self._buffer_size = 120000
+        self._buffer_size = 12000
         self._loaded = False
         self._open_socket = False
 
@@ -91,24 +93,30 @@ class UnityEnvironment(object):
                 "The Unity environment took too long to respond. Make sure {} does not need user interaction to launch "
                 "and that the Academy and the external Brain(s) are attached to objects in the Scene.".format(
                     str(file_name)))
+        
+
+            self._data = {}
+            self._global_done = None
+            self._academy_name = p["AcademyName"]
+            self._brains = {}
+            self._brain_names = p["brainNames"]
+            self._external_brain_names = p["externalBrainNames"]
+            self._external_brain_names = [] if self._external_brain_names is None else self._external_brain_names
+            self._num_brains = len(self._brain_names)
+            self._num_external_brains = len(self._external_brain_names)
+            self._resetParameters = p["resetParameters"]
+            self._curriculum = Curriculum(curriculum, self._resetParameters)
+            for i in range(self._num_brains):
+                self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
+            self._loaded = True
+            logger.info("\n'{}' started successfully!".format(self._academy_name))
+            if (self._num_external_brains == 0):
+                logger.warning(" No External Brains found in the Unity Environment. "
+                    "You will not be able to pass actions to your agent(s).")
         except UnityEnvironmentException:
             proc1.kill()
             self.close()
             raise
-
-
-        self._data = {}
-        self._global_done = None
-        self._academy_name = p["AcademyName"]
-        self._num_brains = len(p["brainParameters"])
-        self._brains = {}
-        self._brain_names = p["brainNames"]
-        self._resetParameters = p["resetParameters"]
-        for i in range(self._num_brains):
-            self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
-        self._conn.send(b".")
-        self._loaded = True
-        logger.info("\n'{}' started successfully!".format(self._academy_name))
 
     @property
     def brains(self):
@@ -127,8 +135,16 @@ class UnityEnvironment(object):
         return self._num_brains
 
     @property
+    def number_external_brains(self):
+        return self._num_external_brains
+
+    @property
     def brain_names(self):
         return self._brain_names
+
+    @property
+    def external_brain_names(self):
+        return self._external_brain_names
 
     @staticmethod
     def _process_pixels(image_bytes=None, bw=False):
@@ -153,13 +169,22 @@ class UnityEnvironment(object):
                                                              for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
+
+    def _recv_bytes(self):
+        s = self._conn.recv(self._buffer_size)
+        message_length = struct.unpack("I", bytearray(s[:4]))[0]
+        s = s[4:]
+        while len(s) != message_length:
+            s += self._conn.recv(self._buffer_size)
+        return s
+
     def _get_state_image(self, bw):
         """
         Receives observation from socket, and confirms.
         :param bw:
         :return:
         """
-        s = self._conn.recv(self._buffer_size)
+        s = self._recv_bytes()
         s = self._process_pixels(image_bytes=s, bw=bw)
         self._conn.send(b"RECEIVED")
         return s
@@ -169,17 +194,26 @@ class UnityEnvironment(object):
         Receives dictionary of state information from socket, and confirms.
         :return:
         """
-        state = self._conn.recv(self._buffer_size).decode('utf-8')
+        state = self._recv_bytes().decode('utf-8')
         self._conn.send(b"RECEIVED")
         state_dict = json.loads(state)
         return state_dict
 
-    def reset(self, train_mode=True, config=None):
+    def reset(self, train_mode=True, config=None, progress=None):
         """
         Sends a signal to reset the unity environment.
         :return: A Data structure corresponding to the initial reset state of the environment.
         """
-        config = config or {}
+        old_lesson = self._curriculum.get_lesson_number()
+        config = self._curriculum.get_lesson(progress) if config is None else config
+        if old_lesson != self._curriculum.get_lesson_number():
+            logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
+                .format(self._curriculum.get_lesson_number(),
+                    ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
+        else:
+            logger.info("\nEpisode Reset. In Lesson {0} : \t{1}"
+                .format(self._curriculum.get_lesson_number(),
+                    ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
         if self._loaded:
             self._conn.send(b"RESET")
             self._conn.recv(self._buffer_size)
@@ -223,6 +257,11 @@ class UnityEnvironment(object):
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
+            # actions = state_dict["actions"]
+            if n_agent > 0 :
+                actions =  np.array(state_dict["actions"]).reshape((n_agent, -1))
+            else :
+                actions = np.array([])
 
             observations = []
             for o in range(self._brains[b].number_observations):
@@ -232,7 +271,7 @@ class UnityEnvironment(object):
 
                 observations.append(np.array(obs_n))
 
-            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones)
+            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions)
 
         self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
 
@@ -269,7 +308,7 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
-    def step(self, action, memory=None, value=None):
+    def step(self, action = None, memory=None, value=None):
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly, and returns
         observation, state, and reward information to the agent.
@@ -278,32 +317,52 @@ class UnityEnvironment(object):
         :param value: Value estimate to send to environment for visualization. Can be a scalar or vector of float(s).
         :return: A Data structure corresponding to the new state of the environment.
         """
+        action = {} if action is None else action
         memory = {} if memory is None else memory
         value = {} if value is None else value
         if self._loaded and not self._global_done and self._global_done is not None:
             if isinstance(action, (int, np.int_, float, np.float_, list, np.ndarray)):
-                if self._num_brains > 1:
+                if self._num_external_brains == 1:
+                    action = {self._external_brain_names[0]: action}
+                elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names a keys, "
                         "and actions as values".format(self._num_brains))
                 else:
-                    action = {self._brain_names[0]: action}
+                    raise UnityActionException(
+                        "There are no external brains in the environment, " 
+                        "step cannot take an action input")
+                    
             if isinstance(memory, (int, np.int_, float, np.float_, list, np.ndarray)):
-                if self._num_brains > 1:
+                if self._num_external_brains == 1:
+                    memory = {self._external_brain_names[0]: memory}
+                elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and memories as values".format(self._num_brains))
                 else:
-                    memory = {self._brain_names[0]: memory}
+                    raise UnityActionException(
+                        "There are no external brains in the environment, " 
+                        "step cannot take a memory input")
             if isinstance(value, (int, np.int_, float, np.float_, list, np.ndarray)):
-                if self._num_brains > 1:
+                if self._num_external_brains == 1:
+                    value = {self._external_brain_names[0]: value}
+                elif self._num_external_brains > 1:  
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and state/action value estimates as values".format(self._num_brains))
                 else:
-                    value = {self._brain_names[0]: value}
+                    raise UnityActionException(
+                        "There are no external brains in the environment, " 
+                        "step cannot take a value input")
 
-            for b in self._brain_names:
+            for brain_name in list(action.keys()) + list(memory.keys()) + list(value.keys()):
+                if brain_name not in self._external_brain_names:
+                    raise UnityActionException(
+                        "The name {0} does not correspond to an external brain "
+                        "in the environment". format(brain_name))
+
+            for b in self._external_brain_names:
                 n_agent = len(self._data[b].agents)
                 if b not in action:
                     raise UnityActionException("You need to input an action for the brain {0}".format(b))
