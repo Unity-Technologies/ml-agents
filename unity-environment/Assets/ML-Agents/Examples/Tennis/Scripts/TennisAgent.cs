@@ -15,15 +15,15 @@ public class TennisAgent : Agent
     public override List<float> CollectState()
     {
         List<float> state = new List<float>();
-        state.Add(invertMult * gameObject.transform.position.x / 8f);
-        state.Add(gameObject.transform.position.y / 2f);
-        state.Add(invertMult * gameObject.GetComponent<Rigidbody>().velocity.x / 10f);
-        state.Add(gameObject.GetComponent<Rigidbody>().velocity.y / 10f);
+        state.Add(invertMult * gameObject.transform.position.x);
+        state.Add(gameObject.transform.position.y);
+        state.Add(invertMult * gameObject.GetComponent<Rigidbody>().velocity.x);
+        state.Add(gameObject.GetComponent<Rigidbody>().velocity.y);
 
-        state.Add(invertMult * ball.transform.position.x / 8f);
-        state.Add(ball.transform.position.y / 8f);
-        state.Add(invertMult * ball.GetComponent<Rigidbody>().velocity.x / 10f);
-        state.Add(ball.GetComponent<Rigidbody>().velocity.y / 10f);
+        state.Add(invertMult * ball.transform.position.x);
+        state.Add(ball.transform.position.y);
+        state.Add(invertMult * ball.GetComponent<Rigidbody>().velocity.x);
+        state.Add(ball.GetComponent<Rigidbody>().velocity.y);
         return state;
     }
 
@@ -32,15 +32,15 @@ public class TennisAgent : Agent
     {
         float moveX = 0.0f;
         float moveY = 0.0f;
-        if (act[0] == 1f)
+        if (act[0] == 0f)
         {
             moveX = invertMult * -0.25f;
         }
-        if (act[0] == 2f)
+        if (act[0] == 1f)
         {
             moveX = invertMult * 0.25f;
         }
-        if (act[0] == 0f)
+        if (act[0] == 2f)
         {
             moveX = 0.0f;
         }
