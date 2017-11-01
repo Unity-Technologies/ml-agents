@@ -9,6 +9,7 @@ public class ShowInfoPong : MonoBehaviour {
     public Text leftWinText;
     public Text rightWinText;
     public Text leftWinPerText;
+    public Text leftHitPercText;
     public PongQNTrainer pongTrainer;
     public PongAgent leftAgent, rightAgent;
 
@@ -23,6 +24,7 @@ public class ShowInfoPong : MonoBehaviour {
         episodeText.text = "Total Episodes: " + pongTrainer.Episodes.ToString();
         leftWinText.text = leftAgent.winCount.ToString();
         rightWinText.text = rightAgent.winCount.ToString();
-        leftWinPerText.text = (leftAgent.winningRate100.Average).ToString();
+        leftWinPerText.text = "Win Rate: " + (leftAgent.winningRate100.Average).ToString();
+        leftHitPercText.text = "Hit Rate: " + leftAgent.hitRate100.Average.ToString();
     }
 }

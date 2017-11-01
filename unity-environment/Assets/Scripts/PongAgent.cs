@@ -11,6 +11,7 @@ public class PongAgent : Agent {
     public AutoAverage winningRate100 = new AutoAverage(100);
     public int playerNum;
     private int totalGames = 0;
+    public AutoAverage hitRate100 = new AutoAverage(100);
 
 	public override List<float> CollectState()
 	{
@@ -22,6 +23,8 @@ public class PongAgent : Agent {
 	public override void AgentStep(float[] act)
 	{
         nextAction = Mathf.FloorToInt(act[0]);
+        
+
         if (academyRef.done)
         {
             done = true;

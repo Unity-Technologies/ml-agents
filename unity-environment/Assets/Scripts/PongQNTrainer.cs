@@ -14,11 +14,15 @@ public class PongQNTrainer : InternalTrainer {
     public float discountFactor = 0.98f;
     public int trainingStepInterval = 10;
     public int stepsBeforeTrain = 100000;
-
+    [Header("Changing RL")]
+    public int changeRLSteps = 3000000;
+    public float startLearningRate=0.4f, endLearningRate=0.05f;
+    public float startInvMomentum = 10, endInvMomentum = 20;
+    public bool modifyLR = true;
     [Header("Random action settings")]
     public float randomChanceStart = 1.0f;
     public float randomChanceEnd = 0.05f;
-    public float randomChanceDropEpisode = 10000;
+    public float randomChanceDropEpisode = 1000;
 
 
 
@@ -108,7 +112,9 @@ public class PongQNTrainer : InternalTrainer {
             }
 
             //train
-            float loss = TrainBatch((float[])samples["State"], (float[])samples["Action"], targetQs, 0.04f, 0.9f);
+            float lr, mom;
+            CalculateMomentumAndLR(out mom, out lr);
+            float loss = TrainBatch((float[])samples["State"], (float[])samples["Action"], targetQs, lr, mom);
         }
     }
 
@@ -191,5 +197,23 @@ public class PongQNTrainer : InternalTrainer {
         rewardsEpisodeHistory.Clear();
         actionsEpisodeHistory.Clear();
         gameEndEpisodeHistory.Clear();
+    }
+
+
+
+    protected void CalculateMomentumAndLR(out float mom, out float lr)
+    {
+
+        float t = (Mathf.Clamp01((float)(TotalSteps - stepsBeforeTrain) / (float)changeRLSteps));
+
+        lr = MathUtils.Interpolate(startLearningRate, endLearningRate, t, MathUtils.InterpolateMethod.Linear);
+        mom = MathUtils.Interpolate(startInvMomentum, endInvMomentum, t, MathUtils.InterpolateMethod.Linear);
+        mom = 1 - 1 / mom;
+        if (mom < 0)
+            mom = -1;
+        if (modifyLR && mom >= 0 && mom < 1)
+        {
+            lr = lr * (1 - mom);
+        }
     }
 }

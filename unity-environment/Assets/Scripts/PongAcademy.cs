@@ -161,7 +161,9 @@ public class PongAcademy : Academy {
                 newBallVel.y = -Mathf.Abs(newBallVel.x) * yHitRatio * 2;
                 newBallVel = newBallVel.normalized * ballSpeed;
                 currentGameState.rewardLastStepLeft += hitBallReward;
+                agentLeft.hitRate100.AddValue(1);
             }
+            agentLeft.hitRate100.AddValue(0);
         }
         else if (currentGameState.ballPosition.x > rightStartX && oldBallPosition.x < rightStartX)
         {
@@ -175,7 +177,9 @@ public class PongAcademy : Academy {
                 newBallVel.y = -Mathf.Abs(newBallVel.x) * yHitRatio * 2;
                 newBallVel = newBallVel.normalized * ballSpeed;
                 currentGameState.rewardLastStepRight += hitBallReward;
+                agentRight.hitRate100.AddValue(1);
             }
+            agentRight.hitRate100.AddValue(0);
         }
 
         //update the velocity
