@@ -95,7 +95,7 @@ public class DroneAgent : Agent {
 
     public override void AgentStep(float[] act)
     {
-        Monitor.Log("Action", act, MonitorType.bar, body);
+        Monitor.Log("Action", act, MonitorType.hist, body);
 
         for(int i = 0; i<4 ; i++)
         {
