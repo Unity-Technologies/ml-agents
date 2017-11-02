@@ -219,7 +219,7 @@ class UnityEnvironment(object):
             logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
                 .format(self._curriculum.get_lesson_number(),
                     ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
-        else:
+        elif config != {}:
             logger.info("\nAcademy Reset. In Lesson {0} : \t{1}"
                 .format(self._curriculum.get_lesson_number(),
                     ', '.join([str(x)+' -> '+str(config[x]) for x in config])))

@@ -23,11 +23,11 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
     {
         if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
         {
+            coord = null;
             throw new UnityAgentsException(string.Format("The brain {0} was set to" +
                 " External mode" +
                 " but Unity was unable to read the" +
                 " arguments passed at launch.", brain.gameObject.name));
-            coord = null;
         }
         else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
         {

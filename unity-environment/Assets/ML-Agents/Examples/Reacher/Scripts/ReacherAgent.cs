@@ -69,8 +69,6 @@ public class ReacherAgent : Agent {
         torque_z = Mathf.Clamp(act[3], -1, 1) * 100f;
         rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
 
-        //reward -= 0.001f;
-        //reward += (Mathf.Max(-4f, pendulumB.transform.position.y) + 4f) / 200f;
 	}
 
     void UpdateGoalPosition() {
@@ -79,7 +77,6 @@ public class ReacherAgent : Agent {
         float goalY = 8f * Mathf.Sin(radians);
 
         goal.transform.position = new Vector3(goalY, -1f, goalX) + transform.position;
-
     }
 
 

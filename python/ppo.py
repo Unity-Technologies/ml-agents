@@ -117,6 +117,7 @@ with tf.Session() as sess:
     while steps <= max_steps or not train_model:
         if env.global_done:
             info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
+            trainer.reset_buffers(info, total=True)
         # Decide and take an action
         new_info = trainer.take_action(info, env, brain_name, steps)
         info = new_info
