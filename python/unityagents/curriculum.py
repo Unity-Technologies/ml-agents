@@ -56,7 +56,7 @@ class Curriculum(object):
         if self.data is None or progress is None:
             return {}
         if self.data["signal_smoothing"]:
-            progress = self.smoothing_value * 0.9 + 0.1 * progress
+            progress = self.smoothing_value * 0.1 + 0.9 * progress
             self.smoothing_value = progress
         self.lesson_length += 1
         if self.lesson_number < self.max_lesson_number:
