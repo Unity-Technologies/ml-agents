@@ -90,7 +90,7 @@ Because TensorFlowSharp support is still experimental, it is disabled by default
 1. Run the final cell of the notebook under "Export the trained TensorFlow graph" to produce an `<env_name >.bytes` file.
 2. Move `<env_name>.bytes` from `python/models/ppo/` into `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 3. Open the Unity Editor, and select the `3DBall` scene as described above.
-4. Select the `3DBallBrain` object from the Scene hierarchy.
+4. Select the `Ball3DBrain` object from the Scene hierarchy.
 5. Change the `Type of Brain` to `Internal`.
 6. Drag the `<env_name>.bytes` file from the Project window of the Editor to the `Graph Model` placeholder in the `3DBallBrain` inspector window.
 7. Set the `Graph Placeholder` size to 1 (_Note that step 7 and 8 are done because 3DBall is a continuous control environment, and the TensorFlow model requires a noise parameter to decide actions. In cases with discrete control, epsilon is not needed_).
