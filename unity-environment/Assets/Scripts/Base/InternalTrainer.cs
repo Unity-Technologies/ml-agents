@@ -1,17 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
-
-
-
+using TensorFlow;
+using System.Text;
 
 public class InternalTrainer : MonoBehaviour {
 
     //the academy that needs to be trained. The acadamy needs to have internalbrains
     public Academy academy;
     public List<Brain> brainsToTrain;
+    protected List<CoreBrainInternal> internalBrainsToTrain;
     public Agent agentToTrain;
     public bool running = true;
     
@@ -23,6 +21,12 @@ public class InternalTrainer : MonoBehaviour {
         TotalSteps = 0;
         StepsFromLastReset = 0;
         Episodes = 0;
+
+        internalBrainsToTrain = new List<CoreBrainInternal>();
+        foreach(var b in brainsToTrain)
+        {
+            internalBrainsToTrain.Add(b.coreBrain as CoreBrainInternal);
+        }
     }
 
     public class BrainStepMessage
@@ -118,8 +122,32 @@ public class InternalTrainer : MonoBehaviour {
         return message;
 
     }
-
-
-
     
+
+    public static void RunOperationWithFilePath(CoreBrainInternal internalBrain, string fileNameNodeName, string filePath, string operationName)
+    {
+        TFTensor tensorStringPath = BuildPathTensor(filePath);
+        Dictionary<string, TFTensor> feedDic = new Dictionary<string, TFTensor>();
+        feedDic[fileNameNodeName] = tensorStringPath;
+        internalBrain.Run(null, new string[] { operationName }, feedDic);
+    }
+
+    /// <summary>
+    /// A helper function to generate a Tensor
+    /// </summary>
+    /// <param name="filenamenodeName">The operation name in the graph that specifies the checkpoint model file name </param>
+    /// <param name="filePathString">A string of the subpath of the check point model file</param>
+    /// <returns>TFTensor that contains the full path of the input string</returns>
+    public static TFTensor BuildPathTensor(string filePathString)
+    {
+
+        //get the full path of the file
+        string fullFilePath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), filePathString);
+
+        fullFilePath = System.IO.Path.GetFullPath(filePathString);
+        //create a tensor from the path string
+        TFTensor tensorStringPath = TFTensor.CreateString(Encoding.ASCII.GetBytes(fullFilePath));
+        return tensorStringPath;
+    }
+
 }

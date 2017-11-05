@@ -201,7 +201,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             foreach (var input in inputs)
             {
-                Debug.Assert(TFOutputHolders.ContainsKey(input.Key), "Please add the output to graphTFOutputs in inspector");
+                Debug.Assert(TFOutputHolders.ContainsKey(input.Key), "Please add the output " + input.Key + "to graphTFOutputs in inspector");
                 runner.AddInput(TFOutputHolders[input.Key].Output, input.Value);
             }
         }

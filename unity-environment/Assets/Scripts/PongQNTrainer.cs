@@ -23,11 +23,17 @@ public class PongQNTrainer : InternalTrainer {
     public float randomChanceStart = 1.0f;
     public float randomChanceEnd = 0.05f;
     public float randomChanceDropEpisode = 1000;
+    [Header("Save and Restore")]
+    public int saveStepInterval = 100000;
+    public string savePath;
+    public string checkpointPathNodeName = "save/Const";
+    public string restoreOperationName = "save/restore_all";
+    public string saveOperationName = "save/control_dependency";
 
 
 
     private ExperienceBuffer experienceBuffer;
-    private CoreBrainInternal internalBrainToTrain;
+    
 
     protected List<float> statesEpisodeHistory;
     protected List<float> rewardsEpisodeHistory;
@@ -50,8 +56,7 @@ public class PongQNTrainer : InternalTrainer {
             new ExperienceBuffer.DataInfo("Reward", ExperienceBuffer.DataType.Float, 1),
             new ExperienceBuffer.DataInfo("GameEnd", ExperienceBuffer.DataType.Float, 1)
             );
-
-        internalBrainToTrain = brainsToTrain[0].coreBrain as CoreBrainInternal;
+        
     }
 
 
@@ -59,21 +64,21 @@ public class PongQNTrainer : InternalTrainer {
     {
         if (!training)
         {
-            internalBrainToTrain.whetherOverrideAction = false;
+            internalBrainsToTrain[0].whetherOverrideAction = false;
         }
         else
         {
             float ChanceOfRandom = randomChanceStart - (Mathf.Clamp01((float)Episodes / (float)randomChanceDropEpisode)) * (randomChanceStart - randomChanceEnd);
             if (UnityEngine.Random.Range(0, 1.0f) < ChanceOfRandom)
             {
-                internalBrainToTrain.whetherOverrideAction = true;
+                internalBrainsToTrain[0].whetherOverrideAction = true;
                 float actionInt = UnityEngine.Random.Range(0, brainsToTrain[0].brainParameters.actionSize);
-                internalBrainToTrain.overrideAction = new Dictionary<int, float[]>();
-                internalBrainToTrain.overrideAction[agentToTrain.id] = new float[] { actionInt };
+                internalBrainsToTrain[0].overrideAction = new Dictionary<int, float[]>();
+                internalBrainsToTrain[0].overrideAction[agentToTrain.id] = new float[] { actionInt };
             }
             else
             {
-                internalBrainToTrain.whetherOverrideAction = false;
+                internalBrainsToTrain[0].whetherOverrideAction = false;
             }
         }
     }
@@ -97,6 +102,7 @@ public class PongQNTrainer : InternalTrainer {
             //print("done one episode");
         }
 
+        //train
         if(TotalSteps > stepsBeforeTrain && TotalSteps % trainingStepInterval == 0)
         {
             //training
@@ -115,6 +121,12 @@ public class PongQNTrainer : InternalTrainer {
             float lr, mom;
             CalculateMomentumAndLR(out mom, out lr);
             float loss = TrainBatch((float[])samples["State"], (float[])samples["Action"], targetQs, lr, mom);
+        }
+
+        //save
+        if(TotalSteps > stepsBeforeTrain && TotalSteps % saveStepInterval == 0)
+        {
+            SaveCheckpoint();
         }
     }
 
@@ -146,7 +158,7 @@ public class PongQNTrainer : InternalTrainer {
         feedDic["input_action"] = inActions;
         feedDic["train_once/momentum"] = new TFTensor(mom);
         feedDic["train_once/learning_rate"] = new TFTensor(lr);
-        TFTensor[]  resultTensors = internalBrainToTrain.Run(new string[] { "output_loss" }, new string[] { "train_once" }, feedDic);
+        TFTensor[]  resultTensors = internalBrainsToTrain[0].Run(new string[] { "output_loss" }, new string[] { "train_once" }, feedDic);
         
         return (float)(resultTensors[0].GetValue());
     }
@@ -155,7 +167,7 @@ public class PongQNTrainer : InternalTrainer {
     {
         Dictionary<string, TFTensor> feedDic = new Dictionary<string, TFTensor>();
         feedDic["input_state"] = TFTensor.FromBuffer(new TFShape(batchSize, brainsToTrain[0].brainParameters.stateSize), nextState, 0, nextState.Length);
-        TFTensor[] resultTensors = internalBrainToTrain.Run(new string[] { "max_Qs" }, null, feedDic);
+        TFTensor[] resultTensors = internalBrainsToTrain[0].Run(new string[] { "max_Qs" }, null, feedDic);
         float[] result = (float[])(resultTensors[0].GetValue());
         return result;
     }
@@ -199,6 +211,18 @@ public class PongQNTrainer : InternalTrainer {
         gameEndEpisodeHistory.Clear();
     }
 
+
+    public void SaveCheckpoint()
+    {
+        RunOperationWithFilePath(internalBrainsToTrain[0], checkpointPathNodeName, savePath, saveOperationName);
+        print("Save to " + savePath);
+    }
+
+    public void RestoreCheckpoint()
+    {
+        RunOperationWithFilePath(internalBrainsToTrain[0], checkpointPathNodeName, savePath, restoreOperationName);
+        print("Restore from " + savePath);
+    }
 
 
     protected void CalculateMomentumAndLR(out float mom, out float lr)
