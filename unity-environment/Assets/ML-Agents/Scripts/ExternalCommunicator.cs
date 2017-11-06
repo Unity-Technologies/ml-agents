@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.IO;
 
 
 /// Responsible for communication with Python API.
@@ -29,6 +30,9 @@ public class ExternalCommunicator : Communicator
     byte[] messageHolder;
 
     const int messageLength = 12000;
+
+    StreamWriter logWriter;
+    string logPath;
 
     const string api = "API-2";
 
@@ -104,6 +108,12 @@ public class ExternalCommunicator : Communicator
     /// Contains the logic for the initializtation of the socket.
     public void InitializeCommunicator()
     {
+        Application.logMessageReceived += HandleLog;
+        logPath = Path.GetFullPath(".") + "/unity-environment.log";
+        logWriter = new StreamWriter(logPath, false);
+        logWriter.WriteLine(System.DateTime.Now.ToString());
+		logWriter.WriteLine(" ");
+        logWriter.Close();
         messageHolder = new byte[messageLength];
 
         // Create a TCP/IP  socket.  
@@ -129,6 +139,15 @@ public class ExternalCommunicator : Communicator
 
         SendParameters(accParamerters);
     }
+
+	void HandleLog(string logString, string stackTrace, LogType type)
+	{
+        logWriter = new StreamWriter(logPath, true);
+        logWriter.WriteLine(type.ToString());
+		logWriter.WriteLine(logString);
+        logWriter.WriteLine(stackTrace);
+		logWriter.Close();
+	}
 
     /// Listens to the socket for a command and returns the corresponding
     ///  External Command.
