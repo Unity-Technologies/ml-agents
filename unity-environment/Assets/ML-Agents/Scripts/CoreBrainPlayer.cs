@@ -108,9 +108,14 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// decisions
     public void SendState()
     {
-        if (coord!=null)
+        if (coord != null)
         {
             coord.giveBrainInfo(brain);
+        }
+        else
+        {
+            //The states are collected in order to debug the CollectStates method.
+            brain.CollectStates();
         }
     }
 
