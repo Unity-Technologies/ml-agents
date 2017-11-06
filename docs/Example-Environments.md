@@ -1,7 +1,7 @@
 # Example Learning Environments
 
 ### About Example Environments
-Unity ML Agents currently contains three example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
+Unity ML Agents contains a set of example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
 
 Environments are located in `unity-environment/ML-Agents/Examples`.
 
@@ -141,8 +141,8 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
 
 ![Spider](../images/spider.png)
 
-* Set-up: A spere with 4 arms and 4 forearms.
-* Goal: The agents must move its body along the x axis.
+* Set-up: A spider with 4 arms and 4 forearms.
+* Goal: The agents must move its body along the x axis without falling.
 * Agents: The environment contains 3 agent linked to a single brain.
 * Agent Reward Function (independent): 
     * +1 times velocity in the x direction
