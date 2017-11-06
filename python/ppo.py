@@ -107,6 +107,9 @@ with tf.Session() as sess:
     if load_model:
         print('Loading Model...')
         ckpt = tf.train.get_checkpoint_state(model_path)
+        if ckpt == None:
+          print('The model {0} could not be found. Make sure you specified the right '
+            '--run-path'.format(model_path))
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         sess.run(init)
