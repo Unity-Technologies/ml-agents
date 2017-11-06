@@ -112,7 +112,7 @@ public class ExternalCommunicator : Communicator
         logPath = Path.GetFullPath(".") + "/unity-environment.log";
         logWriter = new StreamWriter(logPath, false);
         logWriter.WriteLine(System.DateTime.Now.ToString());
-		logWriter.WriteLine(" ");
+        logWriter.WriteLine(" ");
         logWriter.Close();
         messageHolder = new byte[messageLength];
 
@@ -144,9 +144,9 @@ public class ExternalCommunicator : Communicator
 	{
         logWriter = new StreamWriter(logPath, true);
         logWriter.WriteLine(type.ToString());
-		logWriter.WriteLine(logString);
+        logWriter.WriteLine(logString);
         logWriter.WriteLine(stackTrace);
-		logWriter.Close();
+        logWriter.Close();
 	}
 
     /// Listens to the socket for a command and returns the corresponding
