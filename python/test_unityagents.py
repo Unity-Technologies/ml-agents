@@ -4,14 +4,21 @@ import os
 import pytest
 import socket
 import mock
+import struct
 
 from unityagents import UnityEnvironment, UnityEnvironmentException, UnityActionException, BrainInfo, BrainParameters
+
+
+def append_length(input):
+    return struct.pack("I", len(input.encode())) + input.encode()
+
 
 dummy_start = '''{
   "AcademyName": "RealFakeAcademy",
   "resetParameters": {},
   "brainNames": ["RealFakeBrain"],
   "externalBrainNames": ["RealFakeBrain"],
+  "apiNumber":"API-2",
   "brainParameters": [{
       "stateSize": 3,
       "actionSize": 2,
@@ -25,6 +32,7 @@ dummy_start = '''{
 
 dummy_reset = [
 'CONFIG_REQUEST'.encode(),
+append_length(
 '''
 {
   "brain_name": "RealFakeBrain",
@@ -34,11 +42,11 @@ dummy_reset = [
   "actions": [1,2,3,4],
   "memories": [],
   "dones": [false, false]
-}'''.encode(),
+}'''),
 'False'.encode()]
 
 dummy_step = ['actions'.encode(),
-'''
+append_length('''
 {
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
@@ -47,10 +55,10 @@ dummy_step = ['actions'.encode(),
   "actions": [1,2,3,4,5,6],
   "memories": [],
   "dones": [false, false, false]
-}'''.encode(),
+}'''),
 'False'.encode(),
 'actions'.encode(),
-'''
+append_length('''
 {
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
@@ -59,13 +67,13 @@ dummy_step = ['actions'.encode(),
   "actions": [1,2,3,4,5,6],
   "memories": [],
   "dones": [false, false, true]
-}'''.encode(),
+}'''),
 'True'.encode()]
-
 
 def test_handles_bad_filename():
     with pytest.raises(UnityEnvironmentException):
         UnityEnvironment(' ')
+
 
 def test_initialialization():
     with mock.patch('subprocess.Popen') as mock_subproc_popen:
