@@ -54,32 +54,48 @@ class UnityEnvironment(object):
                                "or use a different worker number.".format(str(worker_id)))
 
         cwd = os.getcwd()
-        try:
-            true_filename = os.path.basename(os.path.normpath(file_name))
-            launch_string = ""
-            if platform == "linux" or platform == "linux2":
-                candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
-                if len(candidates) == 0:
-                    candidates = glob.glob(os.path.join(cwd, file_name) + '.x86')
-                if len(candidates) > 0:
-                    launch_string = candidates[0]
-                else:
-                    raise UnityEnvironmentException("Couldn't launch new environment. Provided filename "
-                                                    "does not match any environments in {}. ".format(cwd))
-            elif platform == 'darwin':
-                launch_string = os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename)
-            elif platform == 'win32':
-                launch_string = os.path.join(cwd, file_name + '.exe')
+        file_name = file_name.strip()
+        true_filename = (os.path.basename(os.path.normpath(file_name))
+            .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
+        launch_string = None
+        if platform == "linux" or platform == "linux2":
+            candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(cwd, file_name) + '.x86')
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name + '.x86_64')
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name + '.x86')
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name)
+            if len(candidates) > 0:
+                launch_string = candidates[0]
 
+        elif platform == 'darwin':
+            candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(file_name, 'Contents', 'MacOS', true_filename))
+            if len(candidates) > 0:
+                launch_string = candidates[0]
+        elif platform == 'win32':
+            candidates = glob.glob(os.path.join(cwd, file_name + '.exe'))
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name + '.exe')
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name)
+            if len(candidates) > 0:
+                launch_string = candidates[0]
+        if launch_string is None:
+            raise UnityEnvironmentException("Couldn't launch the {0} environment. "
+            "Provided filename does not match any environments."
+            .format(true_filename))
+        else:
             # Launch Unity environment
             proc1 = subprocess.Popen(
                 [launch_string,
                  '--port', str(self.port)])
-        except os.error:
-            self.close()
-            raise UnityEnvironmentException("Couldn't launch new environment. "
-                "Provided filename does not match any \environments in {}."
-                .format(cwd))
 
         self._socket.settimeout(30) 
         try:
