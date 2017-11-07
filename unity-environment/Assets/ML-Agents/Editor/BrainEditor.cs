@@ -11,45 +11,40 @@ using System.Linq;
 [CustomEditor (typeof(Brain))]
 public class BrainEditor : Editor
 {
-	
-
 	public override void OnInspectorGUI ()
 	{
 		Brain myBrain = (Brain)target;
-		SerializedObject serializedBrain = new SerializedObject (target);
+		SerializedObject serializedBrain = serializedObject;
 
 		if (myBrain.transform.parent == null) {
-			EditorGUILayout.HelpBox ("A Brain GameObject myst be a child of an Academy GameObject!", MessageType.Error);
+			EditorGUILayout.HelpBox ("A Brain GameObject must be a child of an Academy GameObject!", MessageType.Error);
 		} else if (myBrain.transform.parent.GetComponent<Academy> () == null) {
 			EditorGUILayout.HelpBox ("The Parent of a Brain must have an Academy Component attached to it!", MessageType.Error);
-		} 
+		}
 
-
+		BrainParameters parameters = myBrain.brainParameters;
+		if (parameters.actionDescriptions == null || parameters.actionDescriptions.Length != parameters.actionSize)
+			parameters.actionDescriptions = new string[parameters.actionSize];
+		
+		serializedBrain.Update();
+		
 		SerializedProperty bp = serializedBrain.FindProperty ("brainParameters");
-		if (myBrain.brainParameters.actionDescriptions == null) {
-			myBrain.brainParameters.actionDescriptions = new string[myBrain.brainParameters.actionSize];
-		}
-		if (myBrain.brainParameters.actionSize != myBrain.brainParameters.actionDescriptions.Count()) {
-			myBrain.brainParameters.actionDescriptions = new string[myBrain.brainParameters.actionSize];
-		}
-		serializedBrain.Update ();
-		EditorGUILayout.PropertyField (bp, true);
-		serializedBrain.ApplyModifiedProperties ();
+		EditorGUILayout.PropertyField(bp, true);
 
-		myBrain.brainType = (BrainType)EditorGUILayout.EnumPopup ("Type Of Brain ", myBrain.brainType);
+		SerializedProperty bt = serializedBrain.FindProperty("brainType");
+		EditorGUILayout.PropertyField(bt);
 
-		if ((int)myBrain.brainType >= System.Enum.GetValues (typeof(BrainType)).Length) {
-			myBrain.brainType = BrainType.Player;
+		if (bt.enumValueIndex < 0) {
+			bt.enumValueIndex = (int)BrainType.Player;
 		}
+
+		serializedBrain.ApplyModifiedProperties();
 
 		myBrain.UpdateCoreBrains ();
-
 		myBrain.coreBrain.OnInspector ();
 
 		#if !NET_4_6 && ENABLE_TENSORFLOW
 		EditorGUILayout.HelpBox ("You cannot have ENABLE_TENSORFLOW without NET_4_6", MessageType.Error);
 		#endif
-
-
 	}
 }
