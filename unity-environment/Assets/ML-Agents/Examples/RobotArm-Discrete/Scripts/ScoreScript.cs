@@ -15,12 +15,12 @@ public class ScoreScript : MonoBehaviour {
 	public void ResetScore()
     {
         score = 0;
-        tm.text = score.ToString();
+        if (tm) tm.text = score.ToString();
     }
 
     public void IncrementScore()
     {
         score++;
-        tm.text = score.ToString();
+        if (tm) tm.text = score.ToString();
     }
 }

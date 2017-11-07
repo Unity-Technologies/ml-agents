@@ -9,7 +9,6 @@ public class TargetScript : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Bonk");
         if (OnHit != null) OnHit.Invoke();
     }
 }
