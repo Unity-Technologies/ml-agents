@@ -54,9 +54,9 @@ class UnityEnvironment(object):
                                "or use a different worker number.".format(str(worker_id)))
 
         cwd = os.getcwd()
-        file_name = file_name.strip()
-        true_filename = (os.path.basename(os.path.normpath(file_name))
+        file_name = (file_name.strip()
             .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
+        true_filename = os.path.basename(os.path.normpath(file_name))
         launch_string = None
         if platform == "linux" or platform == "linux2":
             candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
@@ -66,8 +66,6 @@ class UnityEnvironment(object):
                 candidates = glob.glob(file_name + '.x86_64')
             if len(candidates) == 0:
                 candidates = glob.glob(file_name + '.x86')
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name)
             if len(candidates) > 0:
                 launch_string = candidates[0]
 
@@ -75,19 +73,16 @@ class UnityEnvironment(object):
             candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
             if len(candidates) == 0:
                 candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(file_name, 'Contents', 'MacOS', true_filename))
             if len(candidates) > 0:
                 launch_string = candidates[0]
         elif platform == 'win32':
             candidates = glob.glob(os.path.join(cwd, file_name + '.exe'))
             if len(candidates) == 0:
                 candidates = glob.glob(file_name + '.exe')
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name)
             if len(candidates) > 0:
                 launch_string = candidates[0]
         if launch_string is None:
+            self.close()
             raise UnityEnvironmentException("Couldn't launch the {0} environment. "
             "Provided filename does not match any environments."
             .format(true_filename))
