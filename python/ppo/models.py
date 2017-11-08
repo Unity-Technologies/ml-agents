@@ -58,10 +58,12 @@ def export_graph(model_path, env_name="env", target_nodes="action,value_estimate
 
 class PPOModel(object):
     def create_global_steps(self):
+        """Creates TF ops to track and increment global training step."""
         self.global_step = tf.Variable(0, name="global_step", trainable=False, dtype=tf.int32)
         self.increment_step = tf.assign(self.global_step, self.global_step + 1)
 
     def create_reward_encoder(self):
+        """Creates TF ops to track and increment recent average cumulative reward."""
         self.last_reward = tf.Variable(0, name="last_reward", trainable=False, dtype=tf.float32)
         self.new_reward = tf.placeholder(shape=[], dtype=tf.float32, name='new_reward')
         self.update_reward = tf.assign(self.last_reward, self.new_reward)
