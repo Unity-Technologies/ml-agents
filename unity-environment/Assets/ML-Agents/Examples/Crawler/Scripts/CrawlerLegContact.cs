@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpiderLegContact : MonoBehaviour {
+public class CrawlerLegContact : MonoBehaviour {
 
     public int index;
-    public SpiderAgentConfigurable agent;
+    public CrawlerAgentConfigurable agent;
 
     void Start(){
 //        agent = gameObject.transform.parent.gameObject.GetComponent<SpiderAgent>();
