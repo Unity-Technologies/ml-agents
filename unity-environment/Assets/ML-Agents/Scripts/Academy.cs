@@ -51,6 +51,7 @@ public abstract class Academy : MonoBehaviour
     private int frameToSkip;
     [SerializeField]
     private float waitTime;
+    [HideInInspector]
     public bool isInference = true;
     /**< \brief Do not modify : If true, the Academy will use inference 
      * settings. */
