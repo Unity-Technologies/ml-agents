@@ -214,6 +214,8 @@ public abstract class Academy : MonoBehaviour
         currentStep = 0;
         episodeCount++;
         done = false;
+        AcademyReset();
+
 
         foreach (Brain brain in brains)
         {
@@ -221,7 +223,6 @@ public abstract class Academy : MonoBehaviour
             brain.ResetDoneAndReward();
         }
 
-        AcademyReset();
     }
 
     // Instructs all brains to collect states from their agents.

@@ -75,7 +75,6 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void AgentStep(float[] act)
     {
-
         reward = -0.01f;
         int action = Mathf.FloorToInt(act[0]);
 
