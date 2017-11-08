@@ -18,48 +18,53 @@ public class AreaAgent : Agent
 		state.Add(velocity.x);
 		state.Add(velocity.y);
 		state.Add(velocity.z);
-
-
 		return state;
 	}
+
+    public void MoveAgent(int movement) {
+        float directionX = 0;
+        float directionZ = 0;
+        float directionY = 0;
+        if (movement == 1) { directionX = -1; }
+        if (movement == 2) { directionX = 1; }
+        if (movement == 3) { directionZ = -1; }
+        if (movement == 4) { directionZ = 1; }
+        if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+
+        float edge = 0.499f;
+        float rayDepth = 0.51f;
+
+        Vector3 fwd = transform.TransformDirection(Vector3.down);
+        if (!Physics.Raycast(transform.position, fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(edge, 0f, 0f), fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(-edge, 0f, 0f), fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(0.0f, 0f, edge), fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(0.0f, 0f, -edge), fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(edge, 0f, edge), fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(-edge, 0f, edge), fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(edge, 0f, -edge), fwd, rayDepth) &&
+            !Physics.Raycast(transform.position + new Vector3(-edge, 0f, -edge), fwd, rayDepth))
+        {
+            directionY = 0f;
+            directionX = directionX / 5f;
+            directionZ = directionZ / 5f;
+        }
+
+        gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(directionX * 40f, directionY * 300f, directionZ * 40f));
+        if (GetComponent<Rigidbody>().velocity.sqrMagnitude > 25f)
+        {
+            GetComponent<Rigidbody>().velocity *= 0.95f;
+        }
+    }
 
 	public override void AgentStep(float[] act)
 	{
 		reward = -0.01f;
-		float movement = act[0];
-		float directionX = 0;
-		float directionZ = 0;
-		float directionY = 0;
-		if (movement == 1) { directionX = -1; }
-		if (movement == 2) { directionX = 1; }
-		if (movement == 3) { directionZ = -1; }
-		if (movement == 4) { directionZ = 1; }
-		if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+        int movement = Mathf.FloorToInt(act[0]);
+        MoveAgent(movement);
 
-
-		Vector3 fwd = transform.TransformDirection(Vector3.down);
-		if (!Physics.Raycast(transform.position, fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.499f, 0f, 0f), fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(-0.499f, 0f, 0f), fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.0f, 0f, 0.499f), fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.0f, 0f, -0.499f), fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.499f, 0f, 0.499f), fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(-0.499f, 0f, 0.499f), fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(0.499f, 0f, -0.499f), fwd, 0.51f) &&
-			!Physics.Raycast(transform.position + new Vector3(-0.499f, 0f, -0.499f), fwd, 0.51f))
-		{
-			directionY = 0f;
-			directionX = directionX / 5f;
-			directionZ = directionZ / 5f;
-		}
-
-		gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(directionX * 40f, directionY * 300f, directionZ * 40f));
-		if (GetComponent<Rigidbody>().velocity.sqrMagnitude > 25f)
-		{
-			GetComponent<Rigidbody>().velocity *= 0.95f;
-		}
-
-		if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
+		if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
+            Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
 		{
 			done = true;
 			reward = -1f;
