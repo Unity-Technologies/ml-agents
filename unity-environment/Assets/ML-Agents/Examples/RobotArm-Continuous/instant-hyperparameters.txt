@@ -1,0 +1,20 @@
+### General parameters
+max_steps = 5e6 # Set maximum number of steps to run environment.
+run_path = "ppo" # The sub-directory name for model and summary statistics
+load_model = False # Whether to load a saved model.
+train_model = True # Whether to train the model.
+summary_freq = 10000 # Frequency at which to save training statistics.
+save_freq = 50000 # Frequency at which to save model.
+env_name = "simplerobot-c-20" # Name of the training environment file.
+
+### Algorithm-specific parameters for tuning
+gamma = 0.99 # Reward discount rate.
+lambd = 0.95 # Lambda parameter for GAE.
+time_horizon = 2048 # How many steps to collect per agent before adding to buffer.
+beta = 4e-3 # Strength of entropy regularization
+num_epoch = 5 # Number of gradient descent steps per batch of experiences.
+epsilon = 0.2 # Acceptable threshold around ratio of old and new policy probabilities.
+buffer_size = 20480 # How large the experience buffer should be before gradient descent.
+learning_rate = 2e-4 # Model learning rate.
+hidden_units = 32 # Number of units in hidden layer.
+batch_size = 1024 # How many experiences per gradient descent update step.

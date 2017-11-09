@@ -608,6 +608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be5f0830c3303034fab3921b9172ed31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameManager: {fileID: 114765050383457102}
   OnHit:
     m_PersistentCalls:
       m_Calls:
