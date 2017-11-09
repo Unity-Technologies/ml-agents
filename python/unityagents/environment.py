@@ -142,6 +142,10 @@ class UnityEnvironment(object):
             raise
 
     @property
+    def logfile_path(self):
+        return self._log_path
+
+    @property
     def brains(self):
         return self._brains
 
@@ -204,6 +208,8 @@ class UnityEnvironment(object):
                raise UnityEnvironmentException("The environment took too long to respond. "
                "No unity-environment.log file could be found.") 
             else:
+                print("An error may have occured in the environment. "
+                    "You can check the logfile for more information at {}".format(self._log_path))
                 with open(self._log_path, "r") as f:
                     printing= False
                     for l in f:
