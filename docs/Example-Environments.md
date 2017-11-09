@@ -137,11 +137,11 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Observations: None
 * Reset Parameters: One, corresponding to goal size.
 
-## Spider
+## Crawler
 
-![Spider](../images/spider.png)
+![Crawler](../images/crawler.png)
 
-* Set-up: A spider with 4 arms and 4 forearms.
+* Set-up: A creature with 4 arms and 4 forearms.
 * Goal: The agents must move its body along the x axis without falling.
 * Agents: The environment contains 3 agent linked to a single brain.
 * Agent Reward Function (independent): 

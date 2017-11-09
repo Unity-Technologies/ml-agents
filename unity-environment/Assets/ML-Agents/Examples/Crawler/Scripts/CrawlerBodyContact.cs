@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpiderBodyContact : MonoBehaviour {
+public class CrawlerBodyContact : MonoBehaviour {
 
-    SpiderAgentConfigurable agent;
+    CrawlerAgentConfigurable agent;
 
     void Start(){
-        agent = gameObject.transform.parent.gameObject.GetComponent<SpiderAgentConfigurable>();
+        agent = gameObject.transform.parent.gameObject.GetComponent<CrawlerAgentConfigurable>();
     }
 
     void OnTriggerEnter(Collider other){

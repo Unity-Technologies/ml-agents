@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005, curriculum = None):
+                 base_port=5005, curriculum=None):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -54,34 +54,45 @@ class UnityEnvironment(object):
                                "or use a different worker number.".format(str(worker_id)))
 
         cwd = os.getcwd()
-        try:
-            true_filename = os.path.basename(os.path.normpath(file_name))
-            launch_string = ""
-            if platform == "linux" or platform == "linux2":
-                candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
-                if len(candidates) == 0:
-                    candidates = glob.glob(os.path.join(cwd, file_name) + '.x86')
-                if len(candidates) > 0:
-                    launch_string = candidates[0]
-                else:
-                    raise UnityEnvironmentException("Couldn't launch new environment. Provided filename "
-                                                    "does not match any environments in {}. ".format(cwd))
-            elif platform == 'darwin':
-                launch_string = os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename)
-            elif platform == 'win32':
-                launch_string = os.path.join(cwd, file_name + '.exe')
+        file_name = (file_name.strip()
+                     .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
+        true_filename = os.path.basename(os.path.normpath(file_name))
+        launch_string = None
+        if platform == "linux" or platform == "linux2":
+            candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(cwd, file_name) + '.x86')
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name + '.x86_64')
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name + '.x86')
+            if len(candidates) > 0:
+                launch_string = candidates[0]
 
+        elif platform == 'darwin':
+            candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
+            if len(candidates) > 0:
+                launch_string = candidates[0]
+        elif platform == 'win32':
+            candidates = glob.glob(os.path.join(cwd, file_name + '.exe'))
+            if len(candidates) == 0:
+                candidates = glob.glob(file_name + '.exe')
+            if len(candidates) > 0:
+                launch_string = candidates[0]
+        if launch_string is None:
+            self.close()
+            raise UnityEnvironmentException("Couldn't launch the {0} environment. "
+                                            "Provided filename does not match any environments."
+                                            .format(true_filename))
+        else:
             # Launch Unity environment
             proc1 = subprocess.Popen(
                 [launch_string,
                  '--port', str(self.port)])
-        except os.error:
-            self.close()
-            raise UnityEnvironmentException("Couldn't launch new environment. "
-                "Provided filename does not match any \environments in {}."
-                .format(cwd))
 
-        self._socket.settimeout(30) 
+        self._socket.settimeout(30)
         try:
             try:
                 self._socket.listen(1)
@@ -91,10 +102,10 @@ class UnityEnvironment(object):
                 p = json.loads(p)
             except socket.timeout as e:
                 raise UnityEnvironmentException(
-                "The Unity environment took too long to respond. Make sure {} does not need user interaction to launch "
-                "and that the Academy and the external Brain(s) are attached to objects in the Scene.".format(
-                    str(file_name)))
-        
+                    "The Unity environment took too long to respond. Make sure {} does not need user interaction to "
+                    "launch and that the Academy and the external Brain(s) are attached to objects in the Scene."
+                    .format(str(file_name)))
+
             if "apiNumber" not in p:
                 self._unity_api = "API-1"
             else:
@@ -102,7 +113,8 @@ class UnityEnvironment(object):
             if self._unity_api != self._python_api:
                 raise UnityEnvironmentException(
                     "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
-                    "{1}.".format(self._python_api, self._unity_api))
+                    "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
+                    "of ML-Agents.".format(self._python_api, self._unity_api))
 
             self._data = {}
             self._global_done = None
@@ -121,7 +133,7 @@ class UnityEnvironment(object):
             logger.info("\n'{}' started successfully!".format(self._academy_name))
             if (self._num_external_brains == 0):
                 logger.warning(" No External Brains found in the Unity Environment. "
-                    "You will not be able to pass actions to your agent(s).")
+                               "You will not be able to pass actions to your agent(s).")
         except UnityEnvironmentException:
             proc1.kill()
             self.close()
@@ -178,7 +190,6 @@ class UnityEnvironment(object):
                                                              for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-
     def _recv_bytes(self):
         s = self._conn.recv(self._buffer_size)
         message_length = struct.unpack("I", bytearray(s[:4]))[0]
@@ -217,12 +228,12 @@ class UnityEnvironment(object):
         config = self._curriculum.get_lesson(progress) if config is None else config
         if old_lesson != self._curriculum.get_lesson_number():
             logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
-                .format(self._curriculum.get_lesson_number(),
-                    ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
+                        .format(self._curriculum.get_lesson_number(),
+                                ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
         elif config != {}:
             logger.info("\nAcademy Reset. In Lesson {0} : \t{1}"
-                .format(self._curriculum.get_lesson_number(),
-                    ', '.join([str(x)+' -> '+str(config[x]) for x in config])))
+                        .format(self._curriculum.get_lesson_number(),
+                                ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
         if self._loaded:
             self._conn.send(b"RESET")
             self._conn.recv(self._buffer_size)
@@ -259,17 +270,17 @@ class UnityEnvironment(object):
                 raise UnityActionException("Brain {0} has an invalid state. "
                                            "Expecting {1} {2} state but received {3}."
                                            .format(b, n_agent if self._brains[b].state_space_type == "discrete"
-                                            else str(self._brains[b].state_space_size * n_agent),
-                                            self._brains[b].state_space_type,
-                                            len(state_dict["states"])))
+                else str(self._brains[b].state_space_size * n_agent),
+                                                   self._brains[b].state_space_type,
+                                                   len(state_dict["states"])))
             memories = np.array(state_dict["memories"]).reshape((n_agent, self._brains[b].memory_space_size))
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
             # actions = state_dict["actions"]
-            if n_agent > 0 :
-                actions =  np.array(state_dict["actions"]).reshape((n_agent, -1))
-            else :
+            if n_agent > 0:
+                actions = np.array(state_dict["actions"]).reshape((n_agent, -1))
+            else:
                 actions = np.array([])
 
             observations = []
@@ -317,7 +328,7 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
-    def step(self, action = None, memory=None, value=None):
+    def step(self, action=None, memory=None, value=None):
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly, and returns
         observation, state, and reward information to the agent.
@@ -339,9 +350,9 @@ class UnityEnvironment(object):
                         "and actions as values".format(self._num_brains))
                 else:
                     raise UnityActionException(
-                        "There are no external brains in the environment, " 
+                        "There are no external brains in the environment, "
                         "step cannot take an action input")
-                    
+
             if isinstance(memory, (int, np.int_, float, np.float_, list, np.ndarray)):
                 if self._num_external_brains == 1:
                     memory = {self._external_brain_names[0]: memory}
@@ -351,25 +362,25 @@ class UnityEnvironment(object):
                         "and memories as values".format(self._num_brains))
                 else:
                     raise UnityActionException(
-                        "There are no external brains in the environment, " 
+                        "There are no external brains in the environment, "
                         "step cannot take a memory input")
             if isinstance(value, (int, np.int_, float, np.float_, list, np.ndarray)):
                 if self._num_external_brains == 1:
                     value = {self._external_brain_names[0]: value}
-                elif self._num_external_brains > 1:  
+                elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and state/action value estimates as values".format(self._num_brains))
                 else:
                     raise UnityActionException(
-                        "There are no external brains in the environment, " 
+                        "There are no external brains in the environment, "
                         "step cannot take a value input")
 
             for brain_name in list(action.keys()) + list(memory.keys()) + list(value.keys()):
                 if brain_name not in self._external_brain_names:
                     raise UnityActionException(
                         "The name {0} does not correspond to an external brain "
-                        "in the environment". format(brain_name))
+                        "in the environment".format(brain_name))
 
             for b in self._external_brain_names:
                 n_agent = len(self._data[b].agents)
@@ -392,16 +403,16 @@ class UnityEnvironment(object):
                     raise UnityActionException(
                         "There was a mismatch between the provided memory and environment's expectation: "
                         "The brain {0} expected {1} memories but was given {2}"
-                        .format(b, self._brains[b].memory_space_size * n_agent, len(memory[b])))
+                            .format(b, self._brains[b].memory_space_size * n_agent, len(memory[b])))
                 if not ((self._brains[b].action_space_type == "discrete" and len(action[b]) == n_agent) or
                             (self._brains[b].action_space_type == "continuous" and len(
                                 action[b]) == self._brains[b].action_space_size * n_agent)):
                     raise UnityActionException(
                         "There was a mismatch between the provided action and environment's expectation: "
                         "The brain {0} expected {1} {2} action(s), but was provided: {3}"
-                        .format(b, n_agent if self._brains[b].action_space_type == "discrete" else
+                            .format(b, n_agent if self._brains[b].action_space_type == "discrete" else
                         str(self._brains[b].action_space_size * n_agent), self._brains[b].action_space_type,
-                        str(action[b])))
+                                    str(action[b])))
             self._conn.send(b"STEP")
             self._send_action(action, memory, value)
             return self._get_state()

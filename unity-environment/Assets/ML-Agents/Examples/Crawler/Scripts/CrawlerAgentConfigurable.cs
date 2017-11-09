@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpiderAgentConfigurable: Agent
+public class CrawlerAgentConfigurable: Agent
 {
 
     public float strength;
@@ -173,7 +173,7 @@ public class SpiderAgentConfigurable: Agent
         Transform[] allChildren = GetComponentsInChildren<Transform>();
         foreach (Transform child in allChildren)
         {
-            if ((child.gameObject.name.Contains("Spider"))
+            if ((child.gameObject.name.Contains("Crawler"))
                 || (child.gameObject.name.Contains("parent")))
             {
                 continue;
