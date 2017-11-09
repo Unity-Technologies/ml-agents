@@ -97,7 +97,8 @@ class UnityEnvironment(object):
             try:
                 self._socket.listen(1)
                 self._conn, _ = self._socket.accept()
-                self._conn.setblocking(1)
+                # self._conn.setblocking(1)
+                self._conn.settimeout(5)
                 p = self._conn.recv(self._buffer_size).decode('utf-8')
                 p = json.loads(p)
             except socket.timeout as e:
@@ -119,6 +120,7 @@ class UnityEnvironment(object):
             self._data = {}
             self._global_done = None
             self._academy_name = p["AcademyName"]
+            self._log_path = p["logPath"]
             self._brains = {}
             self._brain_names = p["brainNames"]
             self._external_brain_names = p["externalBrainNames"]
@@ -191,11 +193,29 @@ class UnityEnvironment(object):
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
     def _recv_bytes(self):
-        s = self._conn.recv(self._buffer_size)
-        message_length = struct.unpack("I", bytearray(s[:4]))[0]
-        s = s[4:]
-        while len(s) != message_length:
-            s += self._conn.recv(self._buffer_size)
+        try:
+            s = self._conn.recv(self._buffer_size)
+            message_length = struct.unpack("I", bytearray(s[:4]))[0]
+            s = s[4:]
+            while len(s) != message_length:
+                s += self._conn.recv(self._buffer_size)
+        except socket.timeout as e:
+            if not os.path.isfile(self._log_path):
+               raise UnityEnvironmentException("The environment took too long to respond. "
+               "No unity-environment.log file could be found.") 
+            else:
+                with open(self._log_path, "r") as f:
+                    printing= False
+                    for l in f:
+                        l=l.strip()
+                        if (l == 'Exception') or (l=='Error'):
+                            printing = True
+                            print('----------------------')
+                        if (l == ''):
+                            printing = False
+                        if printing:
+                            print(l)
+                raise UnityEnvironmentException("The environment took too long to respond.")
         return s
 
     def _get_state_image(self, bw):
