@@ -117,6 +117,8 @@ with tf.Session() as sess:
     summary_writer = tf.summary.FileWriter(summary_path)
     info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
     trainer = Trainer(ppo_model, sess, info, is_continuous, use_observations, use_states, train_model)
+    if train_model:
+        trainer.write_text(summary_writer, 'Hyperparameters', options, steps)
     while steps <= max_steps or not train_model:
         if env.global_done:
             info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
