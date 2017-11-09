@@ -125,6 +125,7 @@ public class ExternalCommunicator : Communicator
         accParamerters.brainNames = new List<string>();
         accParamerters.externalBrainNames = new List<string>();
         accParamerters.apiNumber = api;
+        accParamerters.logPath = logPath;
         foreach (Brain b in brains)
         {
             accParamerters.brainParameters.Add(b.brainParameters);
