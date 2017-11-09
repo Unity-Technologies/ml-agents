@@ -4,6 +4,7 @@
 /unity-environment/[Bb]uild/
 /unity-environment/[Bb]uilds/
 /unity-environment/[Pp]ackages/
+/unity-environment/[Uu]nity[Pp]ackage[Mm]anager/
 /unity-environment/Assets/AssetStoreTools*
 
 # Tensorflow Model Info
