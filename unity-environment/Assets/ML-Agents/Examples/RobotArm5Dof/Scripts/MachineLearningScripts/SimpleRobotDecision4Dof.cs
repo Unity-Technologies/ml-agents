@@ -8,11 +8,11 @@ public class SimpleRobotDecision4Dof : MonoBehaviour, Decision {
     {
         if (gameObject.GetComponent<Brain>().brainParameters.actionSpaceType == StateType.continuous)
         {
-            return new float[4] { 0f, 0f, 0f, 0f };
+            return new float[5] { 0f, 0f, 0f, 0f, 0f };
         }
         else
         {
-            Debug.LogWarning("Simple robot continuous is not designed for discrete space");
+            Debug.LogWarning("Simple robot 5DOF is not designed for discrete space");
             return new float[1] { 0f };
         }
     }

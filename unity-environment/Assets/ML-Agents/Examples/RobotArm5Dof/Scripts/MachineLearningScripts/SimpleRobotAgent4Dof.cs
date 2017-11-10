@@ -81,10 +81,10 @@ public class SimpleRobotAgent4Dof : Agent {
         state.Add((b1 - gm.ArmController.BendMinMax.x) / (gm.ArmController.BendMinMax.y - gm.ArmController.BendMinMax.x));
 
         var b2 = gm.ArmController.Benders[1].CurrentBend;
-        state.Add((b1 - gm.ArmController.BendMinMax.x) / (gm.ArmController.BendMinMax.y - gm.ArmController.BendMinMax.x));
+        state.Add((b2 - gm.ArmController.BendMinMax.x) / (gm.ArmController.BendMinMax.y - gm.ArmController.BendMinMax.x));
 
         var b3 = gm.ArmController.Benders[2].CurrentBend;
-        state.Add((b1 - gm.ArmController.BendMinMax.x) / (gm.ArmController.BendMinMax.y - gm.ArmController.BendMinMax.x));
+        state.Add((b3 - gm.ArmController.BendMinMax.x) / (gm.ArmController.BendMinMax.y - gm.ArmController.BendMinMax.x));
 
         // Get the hand location
         var handLoc = gm.ArmController.HitCenter.transform.position - gm.transform.position;

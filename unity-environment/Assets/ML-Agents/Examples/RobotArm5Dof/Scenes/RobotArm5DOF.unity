@@ -108,66 +108,18 @@ NavMeshSettings:
     tileSize: 256
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &206916067
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 206916068}
-  - component: {fileID: 206916069}
-  m_Layer: 0
-  m_Name: RobotBrain5Dof
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &206916068
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 206916067}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1914187265}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &206916069
+--- !u!114 &84481867
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 206916067}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c676a8ddf5a5f4f64b35e9ed5028679d, type: 3}
-  m_Name: 
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  brainParameters:
-    stateSize: 11
-    actionSize: 5
-    memorySize: 44
-    cameraResolutions: []
-    actionDescriptions:
-    - rot1
-    - rot2
-    - bend1
-    - bend2
-    - bend3
-    actionSpaceType: 1
-    stateSpaceType: 1
-  brainType: 2
-  CoreBrains:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  instanceID: 12258
+  brain: {fileID: 0}
 --- !u!1 &337397264
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,7 +152,7 @@ MonoBehaviour:
   columns: 4
   rowSpacing: 7
   columnSpacing: 7
-  BrainToUse: {fileID: 206916069}
+  BrainToUse: {fileID: 0}
 --- !u!4 &337397266
 Transform:
   m_ObjectHideFlags: 0
@@ -214,6 +166,33 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &387826918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 1835746442}
+--- !u!114 &1555444961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  continuousPlayerActions: []
+  discretePlayerActions: []
+  defaultAction: -1
+  brain: {fileID: 1835746442}
 --- !u!1 &1609316143
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,6 +258,87 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1782376676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  graphModel: {fileID: 0}
+  graphScope: 
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  StatePlacholderName: state
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  ObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  brain: {fileID: 0}
+--- !u!1 &1835746440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1835746441}
+  - component: {fileID: 1835746442}
+  m_Layer: 0
+  m_Name: Brain5Dof
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1835746441
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1835746440}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.5263293, y: 3.598279, z: -5.9133945}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1914187265}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1835746442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1835746440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c676a8ddf5a5f4f64b35e9ed5028679d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  brainParameters:
+    stateSize: 11
+    actionSize: 5
+    memorySize: 0
+    cameraResolutions: []
+    actionDescriptions:
+    - r1
+    - r2
+    - b1
+    - b2
+    - b3
+    actionSpaceType: 1
+    stateSpaceType: 1
+  brainType: 2
+  CoreBrains:
+  - {fileID: 1555444961}
+  - {fileID: 84481867}
+  - {fileID: 387826918}
+  - {fileID: 1782376676}
+  instanceID: 11356
 --- !u!1001 &1836675868
 Prefab:
   m_ObjectHideFlags: 0
@@ -322,7 +382,15 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 206916069}
+      objectReference: {fileID: 1835746442}
+    - target: {fileID: 1300878581379284, guid: 90d1411f0a2e4dc4e9a84447cbf897b6, type: 2}
+      propertyPath: m_Name
+      value: 5DofArm
+      objectReference: {fileID: 0}
+    - target: {fileID: 1865179894645630, guid: 90d1411f0a2e4dc4e9a84447cbf897b6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 90d1411f0a2e4dc4e9a84447cbf897b6, type: 2}
   m_IsPrefabParent: 0
@@ -352,7 +420,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 206916068}
+  - {fileID: 1835746441}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
