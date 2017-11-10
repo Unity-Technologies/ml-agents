@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TensorFlow;
 
-public class PongQNTrainer : InternalTrainer {
+public class MazeQNTrainer : InternalTrainer {
 
     public bool training = false;
 
@@ -40,6 +40,8 @@ public class PongQNTrainer : InternalTrainer {
     protected List<float> actionsEpisodeHistory;
     protected List<float> gameEndEpisodeHistory;
 
+    protected BrainStepMessage stepMessage = null;
+
     protected override void Start()
     {
         base.Start();
@@ -48,7 +50,6 @@ public class PongQNTrainer : InternalTrainer {
         rewardsEpisodeHistory = new List<float>();
         actionsEpisodeHistory = new List<float>();
         gameEndEpisodeHistory = new List<float>();
-
 
         experienceBuffer = new ExperienceBuffer(experienceBufferSize,
             new ExperienceBuffer.DataInfo("State", ExperienceBuffer.DataType.Float, brainsToTrain[0].brainParameters.stateSize),
@@ -88,12 +89,19 @@ public class PongQNTrainer : InternalTrainer {
         {
             return;
         }
-
-        var messge = CollectBrainStepMessage(0);
-        int agentIndex = messge.agents[0];
+        float[] beforeState;
+        if (stepMessage != null)
+            beforeState = stepMessage.states[stepMessage.agents[0]].ToArray();
+        else
+        {
+            beforeState = new float[brainsToTrain[0].brainParameters.stateSize];
+        }
+        //collect new message after step
+        stepMessage = CollectBrainStepMessage(0);
+        int agentIndex = stepMessage.agents[0];
 
         //add history of this step to the episode history buffer
-        AddHistory(messge.states[agentIndex].ToArray(), messge.rewards[agentIndex], messge.actions[agentIndex], messge.dones[agentIndex]);
+        AddHistory(beforeState, stepMessage.rewards[agentIndex], stepMessage.actions[agentIndex], stepMessage.dones[agentIndex]);
 
         if (academy.done)
         {
@@ -116,7 +124,6 @@ public class PongQNTrainer : InternalTrainer {
             {
                 targetQs[i] = maxQs[i] * ((float[])samples["GameEnd"])[i] * discountFactor + ((float[])samples["Reward"])[i];
             }
-
             //train
             float lr, mom;
             CalculateMomentumAndLR(out mom, out lr);
@@ -156,8 +163,10 @@ public class PongQNTrainer : InternalTrainer {
         feedDic["input_state"] = inStates;
         feedDic["input_targetQ"] = inTargetQ;
         feedDic["input_action"] = inActions;
-        feedDic["train_once/momentum"] = new TFTensor(mom);
-        feedDic["train_once/learning_rate"] = new TFTensor(lr);
+        if(mom >=0)
+            feedDic["train_once/momentum"] = new TFTensor(mom);
+        if(lr > 0)
+            feedDic["train_once/learning_rate"] = new TFTensor(lr);
         TFTensor[]  resultTensors = internalBrainsToTrain[0].Run(new string[] { "output_loss" }, new string[] { "train_once" }, feedDic);
         
         return (float)(resultTensors[0].GetValue());
@@ -190,11 +199,18 @@ public class PongQNTrainer : InternalTrainer {
             Tuple.Create<string, int, string>("State", 0, "State"),
             Tuple.Create<string, int, string>("State", 1, "NextState"),
             Tuple.Create<string, int, string>("Action", 0, "Action"),
-            Tuple.Create<string, int, string>("Action", 1, "NextAction"),
             Tuple.Create<string, int, string>("Reward", 0, "Reward"),
             Tuple.Create<string, int, string>("GameEnd", 0, "GameEnd"));
         return samples;
     }
+
+
+
+
+
+
+
+
 
     void UpdateReplayBuffer()
     {
@@ -225,6 +241,19 @@ public class PongQNTrainer : InternalTrainer {
     }
 
 
+
+    public virtual float[][] EvalGetQsBatch(float[] states)
+    {
+
+        Dictionary<string, TFTensor> feedDic = new Dictionary<string, TFTensor>();
+        feedDic["input_state"] = TFTensor.FromBuffer(new TFShape(batchSize, brainsToTrain[0].brainParameters.stateSize), states, 0, states.Length);
+        TFTensor[] resultTensors = internalBrainsToTrain[0].Run(new string[] { "output_Qs" }, null, feedDic);
+        float[][] result = (float[][])(resultTensors[0].GetValue(true));
+        return result;
+
+    }
+
+
     protected void CalculateMomentumAndLR(out float mom, out float lr)
     {
 
@@ -232,7 +261,10 @@ public class PongQNTrainer : InternalTrainer {
 
         lr = MathUtils.Interpolate(startLearningRate, endLearningRate, t, MathUtils.InterpolateMethod.Linear);
         mom = MathUtils.Interpolate(startInvMomentum, endInvMomentum, t, MathUtils.InterpolateMethod.Linear);
-        mom = 1 - 1 / mom;
+        if (mom < 0)
+            mom = -1;
+        else
+            mom = 1 - 1 / mom;
         if (mom < 0)
             mom = -1;
         if (modifyLR && mom >= 0 && mom < 1)
@@ -240,4 +272,6 @@ public class PongQNTrainer : InternalTrainer {
             lr = lr * (1 - mom);
         }
     }
+
+  
 }

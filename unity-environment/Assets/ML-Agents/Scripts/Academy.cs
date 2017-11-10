@@ -14,7 +14,7 @@ public class ScreenConfiguration
     public int height;
     [Range(0, 5)]
     public int qualityLevel;
-    [Range(1f, 100f)]
+    [Range(0.02f, 100f)]
     public float timeScale;
     public int targetFrameRate;
 
