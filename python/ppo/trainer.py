@@ -7,7 +7,7 @@ from ppo.history import *
 class Trainer(object):
     def __init__(self, ppo_model, sess, info, is_continuous, use_observations, use_states, training):
         """
-        Responsible for collecting experinces and training PPO model.
+        Responsible for collecting experiences and training PPO model.
         :param ppo_model: Tensorflow graph defining model.
         :param sess: Tensorflow session.
         :param info: Environment BrainInfo object.
@@ -20,15 +20,21 @@ class Trainer(object):
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
         self.stats = stats
         self.is_training = training
-        self.training_buffer = vectorize_history(empty_local_history({}))
-
-        self.history_dict = empty_all_history(info)
+        self.reset_buffers(info, total=True)
 
         self.is_continuous = is_continuous
         self.use_observations = use_observations
         self.use_states = use_states
 
     def running_average(self, data, steps, running_mean, running_variance):
+        """
+        Computes new running mean and variances.
+        :param data: New piece of data.
+        :param steps: Total number of data so far.
+        :param running_mean: TF op corresponding to stored running mean.
+        :param running_variance: TF op corresponding to stored running variance.
+        :return: New mean and variance values.
+        """
         mean, var = self.sess.run([running_mean, running_variance])
         current_x = np.mean(data, axis=0)
         new_mean = mean + (current_x - mean) / (steps + 1)
@@ -135,6 +141,19 @@ class Trainer(object):
                     history['cumulative_reward'] = 0
                     history['episode_steps'] = 0
 
+    def reset_buffers(self, brain_info=None, total=False):
+        """
+        Resets either all training buffers or local training buffers
+        :param brain_info: The BrainInfo object containing agent ids.
+        :param total: Whether to completely clear buffer.
+        """
+        self.training_buffer = vectorize_history(empty_local_history({}))
+        if not total:
+            for key in self.history_dict:
+                self.history_dict[key] = empty_local_history(self.history_dict[key])
+        else:
+            self.history_dict = empty_all_history(agent_info=brain_info)
+
     def update_model(self, batch_size, num_epoch):
         """
         Uses training_buffer to update model.
@@ -166,9 +185,7 @@ class Trainer(object):
                 total_p += p_loss
         self.stats['value_loss'].append(total_v)
         self.stats['policy_loss'].append(total_p)
-        self.training_buffer = vectorize_history(empty_local_history({}))
-        for key in self.history_dict:
-            self.history_dict[key] = empty_local_history(self.history_dict[key])
+        self.reset_buffers()
 
     def write_summary(self, summary_writer, steps, lesson_number):
         """
@@ -176,7 +193,9 @@ class Trainer(object):
         :param summary_writer: writer associated with Tensorflow session.
         :param steps: Number of environment steps in training process.
         """
-        print("Mean Reward: {0}".format(np.mean(self.stats['cumulative_reward'])))
+        if len(self.stats['cumulative_reward']) > 0:
+            mean_reward = np.mean(self.stats['cumulative_reward'])
+            print("Mean Reward: {0}".format(mean_reward))
         summary = tf.Summary()
         for key in self.stats:
             if len(self.stats[key]) > 0:

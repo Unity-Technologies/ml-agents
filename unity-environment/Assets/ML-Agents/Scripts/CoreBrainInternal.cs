@@ -16,6 +16,9 @@ using TensorFlow;
 public class CoreBrainInternal : ScriptableObject, CoreBrain
 {
 
+    [SerializeField]
+    private bool broadcast = true;
+
     [System.Serializable]
     private struct TensorFlowAgentPlaceholder
     {
@@ -109,7 +112,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 			
 		}
 #endif
-        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        || (!broadcast))
         {
             coord = null;
         }
@@ -455,6 +459,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
 #if ENABLE_TENSORFLOW && UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         SerializedObject serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
         SerializedProperty tfGraphModel = serializedBrain.FindProperty("graphModel");

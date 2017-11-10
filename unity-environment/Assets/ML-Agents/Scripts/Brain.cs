@@ -195,6 +195,7 @@ public class Brain : MonoBehaviour
         Dictionary<int, List<float>> result = new Dictionary<int, List<float>>();
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
+            idAgent.Value.SetCumulativeReward();
             List<float> states = idAgent.Value.CollectState();
             if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous))
             {

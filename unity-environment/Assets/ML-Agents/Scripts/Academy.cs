@@ -51,6 +51,11 @@ public abstract class Academy : MonoBehaviour
     private int frameToSkip;
     [SerializeField]
     private float waitTime;
+    [HideInInspector]
+    public bool isInference = true;
+    /**< \brief Do not modify : If true, the Academy will use inference 
+     * settings. */
+    private bool _isCurrentlyInference;
     [SerializeField]
     private ScreenConfiguration trainingConfiguration = new ScreenConfiguration(80, 80, 1, 100.0f, 60);
     [SerializeField]
@@ -97,16 +102,7 @@ public abstract class Academy : MonoBehaviour
 
     public Communicator communicator;
     /**< \brief Do not modify : pointer to the communicator currently in 
-	 * use by the Academy. */
-    [HideInInspector]
-    public bool isInference;
-    /**< \brief Do not modify : If true, the Academy will use inference 
-	 * settings. */
-    [HideInInspector]
-    public bool windowResize;
-    /**< \brief Do not modify : Used to determine if the application window 
-	 * should be resized at reset. */
-
+     * use by the Academy. */
 
     private float timeAtStep;
 
@@ -138,7 +134,8 @@ public abstract class Academy : MonoBehaviour
             externalCommand = communicator.GetCommand();
         }
             
-        windowResize = true;
+        isInference = (communicator == null);
+        _isCurrentlyInference = !isInference;
         done = true;
     }
 
@@ -221,14 +218,11 @@ public abstract class Academy : MonoBehaviour
     // Called before AcademyReset().
     internal void Reset()
     {
-        if (windowResize)
-        {
-            ConfigureEngine();
-            windowResize = false;
-        }
         currentStep = 0;
         episodeCount++;
         done = false;
+        AcademyReset();
+
 
         foreach (Brain brain in brains)
         {
@@ -236,7 +230,6 @@ public abstract class Academy : MonoBehaviour
             brain.ResetDoneAndReward();
         }
 
-        AcademyReset();
     }
 
     // Instructs all brains to collect states from their agents.
@@ -288,7 +281,13 @@ public abstract class Academy : MonoBehaviour
      */
     void RunMdp()
     {
-        if (((communicator == null) || isInference) && (timeAtStep + waitTime > Time.time))
+        if (isInference != _isCurrentlyInference)
+        {
+            ConfigureEngine();
+            _isCurrentlyInference = isInference;
+        }
+        
+        if ((isInference) && (timeAtStep + waitTime > Time.time))
         {
             return;
         }

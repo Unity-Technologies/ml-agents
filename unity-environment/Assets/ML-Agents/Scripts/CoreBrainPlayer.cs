@@ -10,6 +10,8 @@ using UnityEditor;
 /// CoreBrain which decides actions using Player input.
 public class CoreBrainPlayer : ScriptableObject, CoreBrain
 {
+    [SerializeField]
+    private bool broadcast = true;
 
     [System.Serializable]
     private struct DiscretePlayerAction
@@ -49,7 +51,8 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// Nothing to implement
     public void InitializeCoreBrain()
     {
-        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+            || (!broadcast))
         {
             coord = null;
         }
@@ -105,9 +108,14 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// decisions
     public void SendState()
     {
-        if (coord!=null)
+        if (coord != null)
         {
             coord.giveBrainInfo(brain);
+        }
+        else
+        {
+            //The states are collected in order to debug the CollectStates method.
+            brain.CollectStates();
         }
     }
 
@@ -116,6 +124,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     {
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         SerializedObject serializedBrain = new SerializedObject(this);
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {

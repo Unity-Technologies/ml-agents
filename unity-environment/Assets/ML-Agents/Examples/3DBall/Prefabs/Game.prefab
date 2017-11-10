@@ -75,7 +75,6 @@ GameObject:
   - component: {fileID: 65551894134645910}
   - component: {fileID: 23487775825466554}
   - component: {fileID: 114980646877373948}
-  - component: {fileID: 114290313258162170}
   m_Layer: 0
   m_Name: Platform
   m_TagString: Untagged
@@ -147,6 +146,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -162,6 +162,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -179,6 +180,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -194,6 +196,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -211,6 +214,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -226,6 +230,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -296,26 +301,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114290313258162170
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1914042422505674}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e040eaa8759024abbbb14994dc4c55ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedPosition: 1
-  verticalOffset: 10
-  DisplayBrainName: 1
-  DisplayBrainType: 1
-  DisplayFrameCount: 1
-  DisplayCurrentReward: 0
-  DisplayMaxReward: 1
-  DisplayState: 0
-  DisplayAction: 0
 --- !u!114 &114980646877373948
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -334,7 +319,7 @@ MonoBehaviour:
   reward: 0
   done: 0
   value: 0
-  CummulativeReward: 0
+  CumulativeReward: 0
   stepCounter: 0
   agentStoredAction: []
   memory: []

@@ -30,6 +30,8 @@ public class ExternalCommunicator : Communicator
 
     const int messageLength = 12000;
 
+    const string api = "API-2";
+
     private class StepMessage
     {
         public string brain_name { get; set; }
@@ -112,6 +114,7 @@ public class ExternalCommunicator : Communicator
         accParamerters.brainParameters = new List<BrainParameters>();
         accParamerters.brainNames = new List<string>();
         accParamerters.externalBrainNames = new List<string>();
+        accParamerters.apiNumber = api;
         foreach (Brain b in brains)
         {
             accParamerters.brainParameters.Add(b.brainParameters);
@@ -151,10 +154,6 @@ public class ExternalCommunicator : Communicator
     {
         sender.Send(Encoding.ASCII.GetBytes("CONFIG_REQUEST"));
         ResetParametersMessage resetParams = JsonConvert.DeserializeObject<ResetParametersMessage>(Receive());
-        if (academy.isInference != !resetParams.train_model)
-        {
-            academy.windowResize = true;
-        }
         academy.isInference = !resetParams.train_model;
         return resetParams.parameters;
     }

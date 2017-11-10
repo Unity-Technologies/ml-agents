@@ -1,7 +1,7 @@
 # Example Learning Environments
 
 ### About Example Environments
-Unity ML Agents currently contains three example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
+Unity ML Agents contains a set of example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
 
 Environments are located in `unity-environment/ML-Agents/Examples`.
 
@@ -120,3 +120,38 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
     * Observations: None
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
+
+## Drone
+
+![Drone](../images/drone.png)
+
+* Set-up: Quadcopters have 4 engines to propel them.
+* Goal: The agents must move towards a target in 3D.
+* Agents: The environment contains 10 agent linked to a single brain.
+* Agent Reward Function (independent): 
+    * Between 0 and +0.5 Increasing the closer the agent is to his target.
+    * +1 For Being inside the target.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 24 variables corresponding to position relative to target, rotation, velocity, angular velocity, acceleration and anglular acceleration.
+    * Action space: (Continuous) Size of 4, corresponding to the vertical force applied to each engine. 
+    * Observations: None
+* Reset Parameters: One, corresponding to goal size.
+
+## Crawler
+
+![Crawler](../images/crawler.png)
+
+* Set-up: A creature with 4 arms and 4 forearms.
+* Goal: The agents must move its body along the x axis without falling.
+* Agents: The environment contains 3 agent linked to a single brain.
+* Agent Reward Function (independent): 
+    * +1 times velocity in the x direction
+    * -1 for falling.
+    * -0.01 times the action squared
+    * -0.05 times y position change
+    * -0.05 times velocity in the z direction 
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 117 variables corresponding to position, rotation, velocity, and angular velocities of each limb plus the acceleration and angular acceleration of the body.
+    * Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
+    * Observations: None
+* Reset Parameters: None

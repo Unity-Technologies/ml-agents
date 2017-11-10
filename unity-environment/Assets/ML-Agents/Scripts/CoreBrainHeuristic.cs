@@ -9,6 +9,8 @@ using UnityEditor;
 /// CoreBrain which decides actions using developer-provided Decision.cs script.
 public class CoreBrainHeuristic : ScriptableObject, CoreBrain
 {
+    [SerializeField]
+    private bool broadcast = true;
 
     public Brain brain;
     /**< Reference to the brain that uses this CoreBrainHeuristic */
@@ -29,7 +31,8 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     {
         decision = brain.gameObject.GetComponent<Decision>();
 
-        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+            || (!broadcast))
         {
             coord = null;
         }
@@ -92,6 +95,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     {
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         if (brain.gameObject.GetComponent<Decision>() == null)
         {
             EditorGUILayout.HelpBox("You need to add a 'Decision' component to this gameObject", MessageType.Error);

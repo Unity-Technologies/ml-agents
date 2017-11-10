@@ -6,6 +6,11 @@ from .exception import UnityEnvironmentException
 
 class Curriculum(object):
     def __init__(self, location, default_reset_parameters):
+        """
+        Initializes a Curriculum object.
+        :param location: Path to JSON defining curriculum.
+        :param default_reset_parameters: Set of reset parameters for environment.
+        """
         self.lesson_number = 0
         self.lesson_length = 0
         self.measure_type = None
@@ -53,10 +58,15 @@ class Curriculum(object):
         self.lesson_number = max(0, min(value, self.max_lesson_number))
 
     def get_lesson(self, progress):
+        """
+        Returns reset parameters which correspond to current lesson.
+        :param progress: Measure of progress (either reward or percentage steps completed).
+        :return: Dictionary containing reset parameters.
+        """
         if self.data is None or progress is None:
             return {}
         if self.data["signal_smoothing"]:
-            progress = self.smoothing_value * 0.9 + 0.1 * progress
+            progress = self.smoothing_value * 0.1 + 0.9 * progress
             self.smoothing_value = progress
         self.lesson_length += 1
         if self.lesson_number < self.max_lesson_number:
