@@ -12,7 +12,7 @@ public class TargetScript : MonoBehaviour {
 
     private void Start()
     {
-        touchDistance = (GameManager.Hand.transform.lossyScale.x + transform.lossyScale.x) * 0.5f;
+        touchDistance = 0.1f; // (GameManager.Hand.transform.lossyScale.x + transform.lossyScale.x) * 0.5f;
     }
 
     private void FixedUpdate()
