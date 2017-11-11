@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 114109905380723738}
   - component: {fileID: 114313815954946288}
   m_Layer: 0
-  m_Name: 4DofArm
+  m_Name: 5DofArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

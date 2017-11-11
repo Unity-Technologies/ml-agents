@@ -26,7 +26,6 @@ public class SimpleRobotAgent4Dof : Agent {
         reward += gm.targetHitValue;
     }
 
-    // to be implemented by the developer
     public override void AgentStep(float[] act)
     {
         if (brain.brainParameters.actionSpaceType == StateType.continuous)

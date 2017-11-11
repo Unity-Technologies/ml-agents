@@ -8,6 +8,7 @@ public class SimpleRobotDecision4Dof : MonoBehaviour, Decision {
     {
         if (gameObject.GetComponent<Brain>().brainParameters.actionSpaceType == StateType.continuous)
         {
+            // MAKE SURE THIS IS THE SAME SIZE AS THE ACTION SPACE
             return new float[5] { 0f, 0f, 0f, 0f, 0f };
         }
         else

@@ -26,7 +26,7 @@ public class RobotArmController4Dof : MonoBehaviour {
     // Update is called once per frame
     void FixedUpdate()
     {
-/*
+        /*
         #if UNITY_EDITOR
         SetRotation(0, (Input.GetAxis("Horizontal") * 0.5f) + 0.5f);
         SetRotation(1, (Input.GetAxis("HorizontalRight") * 0.5f) + 0.5f);
