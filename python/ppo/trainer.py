@@ -205,3 +205,24 @@ class Trainer(object):
         summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
         summary_writer.add_summary(summary, steps)
         summary_writer.flush()
+
+    def write_text(self, summary_writer, key, input_dict, steps):
+        """
+        Saves text to Tensorboard.
+        Note: Only works on tensorflow r1.2 or above.
+        :param summary_writer: writer associated with Tensorflow session.
+        :param key: The name of the text.
+        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
+        :param steps: Number of environment steps in training process.
+        """
+        try:
+            s_op = tf.summary.text(key,
+                    tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
+                    )
+            s = self.sess.run(s_op)
+            summary_writer.add_summary(s, steps)
+        except:
+            print("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
+            pass
+
+
