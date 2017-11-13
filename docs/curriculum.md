@@ -14,6 +14,7 @@ applied to machine learning, where training on easier tasks can provide a scaffo
 for harder tasks in the future. 
 
 [Math](../images/math.png)
+
 _Example of a mathematics curriculum. Lessons progress from simpler topics to more 
 complex ones, with each building on the last._
 
@@ -31,6 +32,7 @@ near-impossible task of scaling the wall. We are including just such an environm
 ML-Agents 0.2, called Wall Area.
 
 [Wall](../images/curriculum.png)
+
 _Demonstration of a curriculum training scenario in which a progressively taller wall 
 obstructs the path to the goal._
  
