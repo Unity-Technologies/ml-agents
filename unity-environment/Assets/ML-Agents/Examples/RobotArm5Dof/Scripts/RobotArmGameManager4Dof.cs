@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+
+
 public class RobotArmGameManager4Dof : MonoBehaviour
 {
-    public float score;
-    public float targetHitValue = 1f;
+    public int Score;
+    public int targetHitValue = 1;
 
     public GameObject SpawnCenter;
     public Vector2 SpawnDistanceMinMax;
@@ -17,6 +19,9 @@ public class RobotArmGameManager4Dof : MonoBehaviour
     public UnityEvent OnTargetHit;
     public UnityEvent OnGameReset;
 
+    public int CurrentStep = 0;
+
+
     // Use this for initialization
     void Start()
     {
@@ -24,9 +29,15 @@ public class RobotArmGameManager4Dof : MonoBehaviour
         ResetGame();
     }
 
+    void FixedUpdate()
+    {
+        CurrentStep++;
+    }
+
     public void ResetGame()
     {
-        score = 0;
+        Score = 0;
+        CurrentStep = 0;
         ArmController.Reset();
         MoveTarget();
         if (OnGameReset != null) OnGameReset.Invoke();
@@ -41,7 +52,7 @@ public class RobotArmGameManager4Dof : MonoBehaviour
     public void TargetHit()
     {
         MoveTarget();
-        score += targetHitValue;
+        Score += targetHitValue;
         // if the target is hit, do something
         if (OnTargetHit != null) OnTargetHit.Invoke();
     }

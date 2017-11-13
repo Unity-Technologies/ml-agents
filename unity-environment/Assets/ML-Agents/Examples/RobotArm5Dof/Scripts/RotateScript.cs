@@ -9,8 +9,9 @@ public class RotateScript : MonoBehaviour {
 
     public void Reset()
     {
-        CurrentRotation = 0;
-        DesiredRotation = 0;
+        CurrentRotation = 180f;
+        DesiredRotation = 180f;
         transform.rotation = Quaternion.identity;
+        transform.Rotate(0, 180f, 0);
     }
 }

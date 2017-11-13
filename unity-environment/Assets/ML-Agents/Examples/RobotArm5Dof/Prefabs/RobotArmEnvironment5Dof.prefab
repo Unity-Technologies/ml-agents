@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 23658512488437884}
   - component: {fileID: 114419464393595114}
   m_Layer: 0
-  m_Name: WristRotateBend
+  m_Name: WristRotate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -233,7 +233,7 @@ GameObject:
   - component: {fileID: 23231272252950320}
   - component: {fileID: 114812693882079156}
   m_Layer: 0
-  m_Name: Wrist
+  m_Name: WristBend
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -305,14 +305,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1754966835620184}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0.000036463738, y: 0.005999989, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4645291016676834}
   m_Father: {fileID: 4662129035288518}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4405462480943398
 Transform:
   m_ObjectHideFlags: 1
@@ -360,14 +360,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1873358038038526}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children:
   - {fileID: 4432976025006052}
   m_Father: {fileID: 4578340336777776}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4645291016676834
 Transform:
   m_ObjectHideFlags: 1
@@ -1003,7 +1003,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotateSpeed: 360
   bendSpeed: 360
-  UseRotationSpeeds: 1
   Hand: {fileID: 1791096893276968}
   HitCenter: {fileID: 1796931886002398}
   Rotators:
@@ -1015,6 +1014,22 @@ MonoBehaviour:
   - {fileID: 114812693882079156}
   RotationMinMax: {x: 0, y: 360}
   BendMinMax: {x: -90, y: 90}
+  OnSegmentMove:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114313815954946288}
+        m_MethodName: SubtractMovementPenalty
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEventFloat, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!114 &114219995450773748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1026,10 +1041,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb4ee545dee3874084385785303ebb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 0
+  Score: 0
   targetHitValue: 1
   SpawnCenter: {fileID: 1300878581379284}
-  SpawnDistanceMinMax: {x: 0.5, y: 2}
+  SpawnDistanceMinMax: {x: 1, y: 2}
   target: {fileID: 1132639887624604}
   ArmController: {fileID: 114109905380723738}
   OnTargetHit:
@@ -1075,6 +1090,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+  CurrentStep: 0
 --- !u!114 &114313815954946288
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1098,6 +1114,12 @@ MonoBehaviour:
   agentStoredAction: []
   memory: []
   id: 0
+  MaxScore: 1
+  PerStepPenalty: 0.002
+  PerDegreePenalty: 0
+  SkipMin: 0
+  SkipMax: 0
+  CurrentSkip: 0
 --- !u!114 &114419464393595114
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1109,8 +1131,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f6cb3ab85e77d4790bdd9743b7eb05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentRotation: 0
-  DesiredRotation: 0
+  CurrentRotation: 180
+  DesiredRotation: 180
 --- !u!114 &114713558611453182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1122,8 +1144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f6cb3ab85e77d4790bdd9743b7eb05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentRotation: 0
-  DesiredRotation: 0
+  CurrentRotation: 180
+  DesiredRotation: 180
 --- !u!114 &114812693882079156
 MonoBehaviour:
   m_ObjectHideFlags: 1
