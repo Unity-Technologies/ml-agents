@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class PushAcademy : Academy {
 
-    public float objectSize;
+    public float goalSize;
+    public float blockSize;
+    public float xVariation;
 
 	public override void AcademyReset()
 	{
-        objectSize = (int)resetParameters["object_size"];
+        goalSize = (float)resetParameters["goal_size"];
+        blockSize = (float)resetParameters["block_size"];
+        xVariation = (float)resetParameters["x_variation"];
 	}
 
 	public override void AcademyStep()

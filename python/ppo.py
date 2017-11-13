@@ -16,11 +16,11 @@ Usage:
 Options:
   --help                     Show this message.
   --batch-size=<n>           How many experiences per gradient descent update step [default: 64].
-  --beta=<n>                 Strength of entropy regularization [default: 2e-3].
+  --beta=<n>                 Strength of entropy regularization [default: 2.5e-3].
   --buffer-size=<n>          How large the experience buffer should be before gradient descent [default: 2048].
   --curriculum=<file>        Curriculum json file for environment [default: None].
   --epsilon=<n>              Acceptable threshold around ratio of old and new policy probabilities [default: 0.2].
-  --gamma=<n>                Reward discount rate [default: 0.995].
+  --gamma=<n>                Reward discount rate [default: 0.99].
   --hidden-units=<n>         Number of units in hidden layer [default: 64].
   --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].

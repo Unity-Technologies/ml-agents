@@ -20,13 +20,16 @@ public class PushArea : Area {
 
 	public override void ResetArea()
 	{
-		block.transform.position = new Vector3(Random.Range(-2.5f, 2.5f), 1f, Random.Range(-7f, -5f)) + gameObject.transform.position;
-        goalHolder.transform.position = new Vector3(Random.Range(-3.5f, 3.5f), -0.1f, Random.Range(0f, -3f)) + gameObject.transform.position;
+        float goalSize = academy.GetComponent<PushAcademy>().goalSize;
+        float blockSize = academy.GetComponent<PushAcademy>().blockSize;
+        float xVariation = academy.GetComponent<PushAcademy>().xVariation;
 
-        float size = academy.GetComponent<PushAcademy>().objectSize;
-        size = Random.Range(size * 0.9f, size * 1.1f);
-        block.transform.localScale = new Vector3(size, 1f, size);
-        goalHolder.transform.localScale = new Vector3(size + 1f, 1f, size + 1f);
+        block.transform.position = new Vector3(Random.Range(-xVariation, xVariation), 1f, -6f) + gameObject.transform.position;
+        goalHolder.transform.position = new Vector3(Random.Range(-xVariation, xVariation), -0.1f, -2f) + gameObject.transform.position;
+        goalSize = Random.Range(goalSize * 0.9f, goalSize * 1.1f);
+        blockSize = Random.Range(blockSize * 0.9f, blockSize * 1.1f);
+        block.transform.localScale = new Vector3(blockSize, 1f, blockSize);
+        goalHolder.transform.localScale = new Vector3(goalSize, 1f, goalSize);
 	}
 
 }

@@ -21,15 +21,26 @@ public class AreaAgent : Agent
 		return state;
 	}
 
-    public void MoveAgent(int movement) {
+    public void MoveAgent(float[] act) {
         float directionX = 0;
         float directionZ = 0;
         float directionY = 0;
-        if (movement == 1) { directionX = -1; }
-        if (movement == 2) { directionX = 1; }
-        if (movement == 3) { directionZ = -1; }
-        if (movement == 4) { directionZ = 1; }
-        if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+
+        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        {
+            directionX = Mathf.Clamp(act[0], -1f, 1f);
+            directionZ = Mathf.Clamp(act[1], -1f, 1f);
+            directionY = Mathf.Clamp(act[2], -1f, 1f);
+            if (GetComponent<Rigidbody>().velocity.y > 0) { directionY = 0f; }
+        }
+        else {
+            int movement = Mathf.FloorToInt(act[0]);
+            if (movement == 1) { directionX = -1; }
+            if (movement == 2) { directionX = 1; }
+            if (movement == 3) { directionZ = -1; }
+            if (movement == 4) { directionZ = 1; }
+            if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+        }
 
         float edge = 0.499f;
         float rayDepth = 0.51f;
@@ -59,9 +70,8 @@ public class AreaAgent : Agent
 
 	public override void AgentStep(float[] act)
 	{
-		reward = -0.01f;
-        int movement = Mathf.FloorToInt(act[0]);
-        MoveAgent(movement);
+		reward = -0.005f;
+        MoveAgent(act);
 
 		if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
             Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)

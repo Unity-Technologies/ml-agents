@@ -45,9 +45,8 @@ public class WallAgent : AreaAgent
 
 	public override void AgentStep(float[] act)
 	{
-        reward = -0.01f;
-        int movement = Mathf.FloorToInt(act[0]);
-        MoveAgent(movement);
+        reward = -0.005f;
+        MoveAgent(act);
 
         if (gameObject.transform.position.y < 0.0f ||
             Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f ||

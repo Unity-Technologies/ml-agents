@@ -37,14 +37,16 @@ public class PushAgent : AreaAgent
 		state.Add(blockVelocity.y);
 		state.Add(blockVelocity.z);
 
+        state.Add(block.transform.localScale.x);
+        state.Add(goalHolder.transform.localScale.x);
+
 		return state;
 	}
 
 	public override void AgentStep(float[] act)
 	{
-        reward = -0.01f;
-        int movement = Mathf.FloorToInt(act[0]);
-        MoveAgent(movement);
+        reward = -0.005f;
+        MoveAgent(act);
 
         if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f ||
             Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
@@ -56,7 +58,8 @@ public class PushAgent : AreaAgent
 
 	public override void AgentReset()
 	{
-		transform.position = new Vector3(Random.Range(-3.5f, 3.5f), 1.1f, -8f) + area.transform.position;
+        float xVariation = GameObject.Find("Academy").GetComponent<PushAcademy>().xVariation;
+        transform.position = new Vector3(Random.Range(-xVariation, xVariation), 1.1f, -8f) + area.transform.position;
 		GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
 
         area.GetComponent<Area>().ResetArea();
