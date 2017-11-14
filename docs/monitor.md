@@ -1,5 +1,9 @@
 # Monitor
-The monitoring of the environment has been changed. You can now track many different things and not only agents. Use the Log function anywhere in your code :
+The monitoring of the environment has been changed. Here is an example of what the new monitor looks like. 
+
+![Monitor](../images/monitor.png)
+
+You can now track many different things and not only agents. Use the Log function anywhere in your code :
 ```csharp
    Monitor.Log(key, value, displayType , target)
 ```
