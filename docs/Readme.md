@@ -11,6 +11,7 @@
  * [Best practices when designing an Environment](best-practices.md)
  * [Best practices when training using PPO](best-practices-ppo.md)
  * [How to organize the Scene](Organizing-the-Scene.md)
+ * [How to use the Monitor](monitor.md)
  * [How to use the Python API](Unity-Agents---Python-API.md)
  * [How to use TensorflowSharp inside Unity [Experimental]](Using-TensorFlow-Sharp-in-Unity-(Experimental).md)
  * [Agents SDK Inspector Descriptions](Agents-Editor-Interface.md)
