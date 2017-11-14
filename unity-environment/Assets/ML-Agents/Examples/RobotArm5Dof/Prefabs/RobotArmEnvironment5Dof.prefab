@@ -1104,7 +1104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
   observations: []
-  maxStep: 0
+  maxStep: 300
   resetOnDone: 1
   reward: 0
   done: 0
@@ -1116,7 +1116,7 @@ MonoBehaviour:
   id: 0
   MaxScore: 1
   PerStepPenalty: 0.002
-  PerDegreePenalty: 0
+  PerDegreePenalty: 0.0001
   SkipMin: 0
   SkipMax: 0
   CurrentSkip: 0
