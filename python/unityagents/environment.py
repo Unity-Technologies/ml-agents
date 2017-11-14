@@ -225,28 +225,28 @@ class UnityEnvironment(object):
         :return: A Data structure corresponding to the initial reset state of the environment.
         """
         old_lesson = self._curriculum.get_lesson_number()
-        config = self._curriculum.get_lesson(progress) if config is None else config
-        if old_lesson != self._curriculum.get_lesson_number():
-            logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
-                        .format(self._curriculum.get_lesson_number(),
-                                ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
+        if config is None:
+            config = self._curriculum.get_lesson(progress)
+            if old_lesson != self._curriculum.get_lesson_number():
+                logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
+                            .format(self._curriculum.get_lesson_number(),
+                                    ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
         elif config != {}:
-            logger.info("\nAcademy Reset. In Lesson {0} : \t{1}"
-                        .format(self._curriculum.get_lesson_number(),
-                                ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
+            logger.info("\nAcademy Reset with parameters : \t{0}"
+                        .format(', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
+        for k in config:
+            if (k in self._resetParameters) and (isinstance(config[k], (int, float))):
+                self._resetParameters[k] = config[k]
+            elif not isinstance(config[k], (int, float)):
+                raise UnityEnvironmentException(
+                    "The value for parameter '{0}'' must be an Integer or a Float.".format(k))
+            else:
+                raise UnityEnvironmentException("The parameter '{0}' is not a valid parameter.".format(k))
+
         if self._loaded:
             self._conn.send(b"RESET")
             self._conn.recv(self._buffer_size)
             self._conn.send(json.dumps({"train_model": train_mode, "parameters": config}).encode('utf-8'))
-            for k in config:
-                if (k in self._resetParameters) and (isinstance(config[k], (int, float))):
-                    self._resetParameters[k] = config[k]
-                elif not isinstance(config[k], (int, float)):
-                    raise UnityEnvironmentException(
-                        "The value for parameter '{0}'' must be an Integer or a Float.".format(k))
-                else:
-                    raise UnityEnvironmentException("The parameter '{0}' is not a valid parameter.".format(k))
-
             return self._get_state()
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
