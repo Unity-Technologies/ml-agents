@@ -17,6 +17,7 @@
  * [Agents SDK Inspector Descriptions](Agents-Editor-Interface.md)
  * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
  * [Training with Curriculum Learning](curriculum.md)
+ * [How to use Broadcast](broadcast.md)
 
 ## Help
  * [Limitations & Common Issues](Limitations-&-Common-Issues.md)
