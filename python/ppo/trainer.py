@@ -21,7 +21,7 @@ class Trainer(object):
         self.stats = stats
         self.is_training = training
         self.reset_buffers(info, total=True)
-
+        self.training_buffer = vectorize_history(empty_local_history({}))
         self.is_continuous = is_continuous
         self.use_observations = use_observations
         self.use_states = use_states
