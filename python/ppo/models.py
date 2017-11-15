@@ -112,7 +112,8 @@ class PPOModel(object):
         self.running_variance = tf.get_variable("running_variance", [s_size], trainable=False, dtype=tf.float32,
                                                 initializer=tf.ones_initializer())
 
-        self.normalized_state = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(self.running_variance / (tf.cast(self.global_step, tf.float32) +1)), -5, 5, name="normalized_state")
+        self.normalized_state = tf.clip_by_value((self.state_in - self.running_mean) / tf.sqrt(
+            self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)), -5, 5, name="normalized_state")
 
         self.new_mean = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_mean')
         self.new_variance = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_variance')
@@ -160,15 +161,22 @@ class PPOModel(object):
         self.returns_holder = tf.placeholder(shape=[None], dtype=tf.float32, name='discounted_rewards')
         self.advantage = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='advantages')
 
+        decay_epsilon = tf.train.polynomial_decay(epsilon, self.global_step,
+                                                  max_step, 1e-2,
+                                                  power=1.0)
+
         r_theta = probs / (old_probs + 1e-10)
         p_opt_a = r_theta * self.advantage
-        p_opt_b = tf.clip_by_value(r_theta, 1 - epsilon, 1 + epsilon) * self.advantage
+        p_opt_b = tf.clip_by_value(r_theta, 1 - decay_epsilon, 1 + decay_epsilon) * self.advantage
         self.policy_loss = -tf.reduce_mean(tf.minimum(p_opt_a, p_opt_b))
 
         self.value_loss = tf.reduce_mean(tf.squared_difference(self.returns_holder,
                                                                tf.reduce_sum(value, axis=1)))
 
-        self.loss = self.policy_loss + self.value_loss - beta * tf.reduce_mean(entropy)
+        decay_beta = tf.train.polynomial_decay(beta, self.global_step,
+                                               max_step, 1e-5,
+                                               power=1.0)
+        self.loss = self.policy_loss + self.value_loss - decay_beta * tf.reduce_mean(entropy)
 
         self.learning_rate = tf.train.polynomial_decay(lr, self.global_step,
                                                        max_step, 1e-10,
@@ -217,7 +225,8 @@ class ContinuousControlModel(PPOModel):
 
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32, initializer=tf.zeros_initializer())
+        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32,
+                                            initializer=tf.zeros_initializer())
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='epsilon')
@@ -275,11 +284,12 @@ class DiscreteControlModel(PPOModel):
 
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
-                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.1))
+                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
         self.probs = tf.nn.softmax(self.policy, name="action_probs")
         self.output = tf.multinomial(self.policy, 1)
         self.output = tf.identity(self.output, name="action")
-        self.value = tf.layers.dense(hidden, 1, activation=None, use_bias=False)
+        self.value = tf.layers.dense(hidden, 1, activation=None, use_bias=False,
+                                     kernel_initializer=c_layers.variance_scaling_initializer(factor=1.0))
         self.value = tf.identity(self.value, name="value_estimate")
 
         self.entropy = -tf.reduce_sum(self.probs * tf.log(self.probs + 1e-10), axis=1)

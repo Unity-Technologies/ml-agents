@@ -50,7 +50,6 @@ class Trainer(object):
         :return: BrainInfo corresponding to new environment state.
         """
         epsi = None
-
         feed_dict = {self.model.batch_size: len(info.states)}
         run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
@@ -147,7 +146,6 @@ class Trainer(object):
         :param brain_info: The BrainInfo object containing agent ids.
         :param total: Whether to completely clear buffer.
         """
-        self.training_buffer = vectorize_history(empty_local_history({}))
         if not total:
             for key in self.history_dict:
                 self.history_dict[key] = empty_local_history(self.history_dict[key])
@@ -185,7 +183,7 @@ class Trainer(object):
                 total_p += p_loss
         self.stats['value_loss'].append(total_v)
         self.stats['policy_loss'].append(total_p)
-        self.reset_buffers()
+        self.training_buffer = vectorize_history(empty_local_history({}))
 
     def write_summary(self, summary_writer, steps, lesson_number):
         """
@@ -195,7 +193,8 @@ class Trainer(object):
         """
         if len(self.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(self.stats['cumulative_reward'])
-            print("Mean Reward: {0}".format(mean_reward))
+            print("Step: {0}. Mean Reward: {1}. Std of Reward: {2}."
+                  .format(steps, mean_reward, np.std(self.stats['cumulative_reward'])))
         summary = tf.Summary()
         for key in self.stats:
             if len(self.stats[key]) > 0:

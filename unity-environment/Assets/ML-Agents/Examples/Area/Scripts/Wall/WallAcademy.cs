@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class WallAcademy : Academy {
 
-    public int minWallHeight;
-    public int maxWallHeight;
+    public float minWallHeight;
+    public float maxWallHeight;
 
 	public override void AcademyReset()
 	{
-        minWallHeight = (int)resetParameters["min_wall_height"];
-        maxWallHeight = (int)resetParameters["max_wall_height"];
+        minWallHeight = (float)resetParameters["min_wall_height"];
+        maxWallHeight = (float)resetParameters["max_wall_height"];
 	}
 
 	public override void AcademyStep()
