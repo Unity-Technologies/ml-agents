@@ -9,7 +9,7 @@ class BrainInfo:
         self.rewards = reward
         self.local_done = local_done
         self.agents = agents
-        self.actions = action
+        self.previous_actions = action
 
 
 class BrainParameters:
