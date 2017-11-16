@@ -121,22 +121,6 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Observations: None
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
 
-## Drone
-
-![Drone](../images/drone.png)
-
-* Set-up: Quadcopters have 4 engines to propel them.
-* Goal: The agents must move towards a target in 3D.
-* Agents: The environment contains 10 agent linked to a single brain.
-* Agent Reward Function (independent): 
-    * Between 0 and +0.5 Increasing the closer the agent is to his target.
-    * +1 For Being inside the target.
-* Brains: One brain with the following state/action space.
-    * State space: (Continuous) 24 variables corresponding to position relative to target, rotation, velocity, angular velocity, acceleration and anglular acceleration.
-    * Action space: (Continuous) Size of 4, corresponding to the vertical force applied to each engine. 
-    * Observations: None
-* Reset Parameters: One, corresponding to goal size.
-
 ## Crawler
 
 ![Crawler](../images/crawler.png)
