@@ -17,7 +17,7 @@ from PIL import Image
 from sys import platform
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("unityagents")
 
 
 class UnityEnvironment(object):
