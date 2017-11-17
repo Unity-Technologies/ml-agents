@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TensorFlow;
 
-public class MazeQNTrainer : InternalTrainer {
+
+public class QLearningTrainer : InternalTrainer {
+
 
     public bool training = false;
 
@@ -16,7 +18,7 @@ public class MazeQNTrainer : InternalTrainer {
     public int stepsBeforeTrain = 100000;
     [Header("Changing RL")]
     public int changeRLSteps = 3000000;
-    public float startLearningRate=0.4f, endLearningRate=0.05f;
+    public float startLearningRate = 0.4f, endLearningRate = 0.05f;
     public float startInvMomentum = 10, endInvMomentum = 20;
     public bool modifyLR = true;
     [Header("Random action settings")]
@@ -33,14 +35,14 @@ public class MazeQNTrainer : InternalTrainer {
 
 
     private ExperienceBuffer experienceBuffer;
-    
+
 
     protected List<float> statesEpisodeHistory;
     protected List<float> rewardsEpisodeHistory;
     protected List<float> actionsEpisodeHistory;
     protected List<float> gameEndEpisodeHistory;
-
-    protected BrainStepMessage stepMessage = null;
+    
+    protected float[] beforeState;
 
     protected override void Start()
     {
@@ -57,7 +59,7 @@ public class MazeQNTrainer : InternalTrainer {
             new ExperienceBuffer.DataInfo("Reward", ExperienceBuffer.DataType.Float, 1),
             new ExperienceBuffer.DataInfo("GameEnd", ExperienceBuffer.DataType.Float, 1)
             );
-        
+
     }
 
 
@@ -69,6 +71,7 @@ public class MazeQNTrainer : InternalTrainer {
         }
         else
         {
+            //override the action with random action in the beginning of the training
             float ChanceOfRandom = randomChanceStart - (Mathf.Clamp01((float)Episodes / (float)randomChanceDropEpisode)) * (randomChanceStart - randomChanceEnd);
             if (UnityEngine.Random.Range(0, 1.0f) < ChanceOfRandom)
             {
@@ -82,6 +85,9 @@ public class MazeQNTrainer : InternalTrainer {
                 internalBrainsToTrain[0].whetherOverrideAction = false;
             }
         }
+        
+        beforeState = agentToTrain.CollectState().ToArray();
+
     }
     public override void OnStepTaken()
     {
@@ -89,15 +95,10 @@ public class MazeQNTrainer : InternalTrainer {
         {
             return;
         }
-        float[] beforeState;
-        if (stepMessage != null)
-            beforeState = stepMessage.states[stepMessage.agents[0]].ToArray();
-        else
-        {
-            beforeState = new float[brainsToTrain[0].brainParameters.stateSize];
-        }
+        
+
         //collect new message after step
-        stepMessage = CollectBrainStepMessage(0);
+        BrainStepMessage stepMessage = CollectBrainStepMessage(0);
         int agentIndex = stepMessage.agents[0];
 
         //add history of this step to the episode history buffer
@@ -111,7 +112,7 @@ public class MazeQNTrainer : InternalTrainer {
         }
 
         //train
-        if(TotalSteps > stepsBeforeTrain && TotalSteps % trainingStepInterval == 0)
+        if (TotalSteps > stepsBeforeTrain && TotalSteps % trainingStepInterval == 0)
         {
             //training
             //sample from buffer
@@ -127,11 +128,11 @@ public class MazeQNTrainer : InternalTrainer {
             //train
             float lr, mom;
             CalculateMomentumAndLR(out mom, out lr);
-            float loss = TrainBatch((float[])samples["State"], (float[])samples["Action"], targetQs, lr, mom);
+            TrainBatch((float[])samples["State"], (float[])samples["Action"], targetQs, lr, mom);
         }
 
         //save
-        if(TotalSteps > stepsBeforeTrain && TotalSteps % saveStepInterval == 0)
+        if (TotalSteps > stepsBeforeTrain && TotalSteps % saveStepInterval == 0)
         {
             SaveCheckpoint();
         }
@@ -146,29 +147,29 @@ public class MazeQNTrainer : InternalTrainer {
     /// <param name="lr"></param>
     /// <param name="mom"></param>
     /// <returns></returns>
-    private float TrainBatch(float[] states, float[] actions, float[]  targetQs, float lr, float mom)
+    private float TrainBatch(float[] states, float[] actions, float[] targetQs, float lr, float mom)
     {
         long size = targetQs.LongLength;
 
         int[] actionsInt = new int[actions.Length];
-        for(int i = 0; i < actions.Length; ++i)
+        for (int i = 0; i < actions.Length; ++i)
         {
             actionsInt[i] = (int)actions[i];
         }
         TFTensor inStates = TFTensor.FromBuffer(new TFShape(size, brainsToTrain[0].brainParameters.stateSize), states, 0, states.Length);
         TFTensor inTargetQ = new TFTensor(targetQs);
         TFTensor inActions = new TFTensor(actionsInt);
-        
+
         Dictionary<string, TFTensor> feedDic = new Dictionary<string, TFTensor>();
         feedDic["input_state"] = inStates;
         feedDic["input_targetQ"] = inTargetQ;
         feedDic["input_action"] = inActions;
-        if(mom >=0)
+        if (mom >= 0)
             feedDic["train_once/momentum"] = new TFTensor(mom);
-        if(lr > 0)
+        if (lr > 0)
             feedDic["train_once/learning_rate"] = new TFTensor(lr);
-        TFTensor[]  resultTensors = internalBrainsToTrain[0].Run(new string[] { "output_loss" }, new string[] { "train_once" }, feedDic);
-        
+        TFTensor[] resultTensors = internalBrainsToTrain[0].Run(new string[] { "output_loss" }, new string[] { "train_once" }, feedDic);
+
         return (float)(resultTensors[0].GetValue());
     }
 
@@ -242,7 +243,7 @@ public class MazeQNTrainer : InternalTrainer {
 
 
 
-    public virtual float[][] EvalGetQsBatch(float[] states)
+    public float[][] EvalGetQsBatch(float[] states)
     {
 
         Dictionary<string, TFTensor> feedDic = new Dictionary<string, TFTensor>();
@@ -254,6 +255,11 @@ public class MazeQNTrainer : InternalTrainer {
     }
 
 
+    /// <summary>
+    /// Calculate the momentum and learning rate based on current steps and the settings about changing momentum/learning rate based on steps
+    /// </summary>
+    /// <param name="mom"></param>
+    /// <param name="lr"></param>
     protected void CalculateMomentumAndLR(out float mom, out float lr)
     {
 
@@ -273,5 +279,4 @@ public class MazeQNTrainer : InternalTrainer {
         }
     }
 
-  
 }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MazeUI : MonoBehaviour {
     public MazeAgent agentRef;
     public MazeAcademy academyRef;
-    public MazeQNTrainer trainerRef;
+    public QLearningTrainer trainerRef;
     public Text stepsText;
     public Text episodeText;
     public Text winRateText;

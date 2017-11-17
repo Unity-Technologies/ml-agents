@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PongAgent : Agent {
-
-    public int nextAction;
-    public float[] currentState;
+    
     public PongAcademy academyRef;
     public int winCount = 0;
     public AutoAverage winningRate100 = new AutoAverage(100);
@@ -15,15 +13,13 @@ public class PongAgent : Agent {
 
 	public override List<float> CollectState()
 	{
-		List<float> state = new List<float>(currentState);
-        
-		return state;
-	}
+        List<float> result = new List<float>(academyRef.GetState(playerNum));
+        return result;
+
+    }
 
 	public override void AgentStep(float[] act)
 	{
-        nextAction = Mathf.FloorToInt(act[0]);
-        
 
         if (academyRef.done)
         {

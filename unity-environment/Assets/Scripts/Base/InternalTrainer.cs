@@ -27,6 +27,8 @@ public class InternalTrainer : MonoBehaviour {
         {
             internalBrainsToTrain.Add(b.coreBrain as CoreBrainInternal);
         }
+
+        academy.isInference = false;
     }
 
     public class BrainStepMessage

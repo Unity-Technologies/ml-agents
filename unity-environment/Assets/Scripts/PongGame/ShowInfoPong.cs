@@ -10,7 +10,7 @@ public class ShowInfoPong : MonoBehaviour {
     public Text rightWinText;
     public Text leftWinPerText;
     public Text leftHitPercText;
-    public PongQNTrainer pongTrainer;
+    public QLearningTrainer pongTrainer;
     public PongAgent leftAgent, rightAgent;
 
 	// Use this for initialization

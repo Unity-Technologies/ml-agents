@@ -17,9 +17,7 @@ public class PongAcademy : Academy {
 
 	public override void AcademyStep()
 	{
-        StepAction(agentLeft.nextAction, agentRight.nextAction);
-        agentLeft.currentState = GetState(0);
-        agentRight.currentState = GetState(1);
+        StepAction(Mathf.RoundToInt(agentLeft.agentStoredAction[0]), Mathf.RoundToInt(agentRight.agentStoredAction[0]));
         agentLeft.reward = RewardsLastStep[0];
         agentRight.reward = RewardsLastStep[1];
     }
@@ -88,40 +86,19 @@ public class PongAcademy : Academy {
     /// take actions and step the environment
     /// </summary>
     /// <param name="action">some actions for each player. 0 is down, 1 is not moving, 2 is up</param>
-    public void StepAction(params int[] action)
+    public void StepAction(int actionLeft, int actionRight)
     {
         //clear the reward 
         currentGameState.rewardLastStepLeft = 0;
         currentGameState.rewardLastStepRight = 0;
-        //use AI if the action is -1
-        if (action[0] <= -1)
-        {
-            float y = currentGameState.leftY;
-            if (y > currentGameState.ballPosition.y)
-            {
-                action[0] = 0;
-            }
-            else
-            {
-                action[0] = 2;
-            }
-        }
-        if (action[1] <= -1)
-        {
-            float y = currentGameState.rightY;
-            if (y > currentGameState.ballPosition.y)
-            {
-                action[1] = 0;
-            }
-            else
-            {
-                action[1] = 2;
-            }
-        }
+
+        Debug.Assert(actionLeft >= 0 && actionLeft < 3);
+        Debug.Assert(actionRight >= 0 && actionRight < 3);
+
         //move the rackets
-        currentGameState.leftY += racketSpeed * (action[0] - 1);
+        currentGameState.leftY += racketSpeed * (actionLeft - 1);
         currentGameState.leftY = Mathf.Clamp(currentGameState.leftY, -arenaSize.y / 2 + racketWidth / 2, arenaSize.y / 2 - racketWidth / 2);
-        currentGameState.rightY += racketSpeed * (action[1] - 1);
+        currentGameState.rightY += racketSpeed * (actionRight - 1);
         currentGameState.rightY = Mathf.Clamp(currentGameState.rightY, -arenaSize.y / 2 + racketWidth / 2, arenaSize.y / 2 - racketWidth / 2);
 
         //move the ball
@@ -163,7 +140,10 @@ public class PongAcademy : Academy {
                 currentGameState.rewardLastStepLeft += hitBallReward;
                 agentLeft.hitRate100.AddValue(1);
             }
-            agentLeft.hitRate100.AddValue(0);
+            else
+            {
+                agentLeft.hitRate100.AddValue(0);
+            }
         }
         else if (currentGameState.ballPosition.x > rightStartX && oldBallPosition.x < rightStartX)
         {
@@ -179,7 +159,10 @@ public class PongAcademy : Academy {
                 currentGameState.rewardLastStepRight += hitBallReward;
                 agentRight.hitRate100.AddValue(1);
             }
-            agentRight.hitRate100.AddValue(0);
+            else
+            {
+                agentRight.hitRate100.AddValue(0);
+            }
         }
 
         //update the velocity
@@ -204,9 +187,7 @@ public class PongAcademy : Academy {
         currentGameState.rewardLastStepRight = 0;
         currentGameState.rewardLastStepLeft = 0;
         currentGameState.gameWinPlayer = -1;
-
-        agentLeft.currentState = GetState(0);
-        agentRight.currentState = GetState(1);
+        
         agentLeft.reward = RewardsLastStep[0];
         agentRight.reward = RewardsLastStep[1];
     }
