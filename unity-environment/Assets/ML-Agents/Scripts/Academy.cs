@@ -57,7 +57,7 @@ public abstract class Academy : MonoBehaviour
      * settings. */
     private bool _isCurrentlyInference;
     [SerializeField]
-    private ScreenConfiguration trainingConfiguration = new ScreenConfiguration(80, 80, 1, 100.0f, 60);
+    private ScreenConfiguration trainingConfiguration = new ScreenConfiguration(80, 80, 1, 100.0f, -1);
     [SerializeField]
     private ScreenConfiguration inferenceConfiguration = new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
     [SerializeField]
@@ -154,6 +154,7 @@ public abstract class Academy : MonoBehaviour
             QualitySettings.SetQualityLevel(trainingConfiguration.qualityLevel, true);
             Time.timeScale = trainingConfiguration.timeScale;
             Application.targetFrameRate = trainingConfiguration.targetFrameRate;
+            QualitySettings.vSyncCount = 0;
         }
         else
         {
