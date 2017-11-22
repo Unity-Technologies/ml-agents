@@ -1,9 +1,10 @@
 # Monitor
-The monitoring of the environment has been changed. Here is an example of what the new monitor looks like. 
 
 ![Monitor](../images/monitor.png)
 
-You can now track many different things and not only agents. Use the Log function anywhere in your code :
+The monitor allows visualizing information related to the agents or training process within a Unity scene. 
+
+You can track many different things both related and unrelated to the agents themselves. To use the Monitor, call the Log function anywhere in your code :
 ```csharp
    Monitor.Log(key, value, displayType , target)
 ```
