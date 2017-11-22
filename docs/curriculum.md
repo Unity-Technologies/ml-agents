@@ -61,16 +61,16 @@ point to the JSON file, and PPO we will train using Curriculum Learning. Of cour
 then keep track of the current lesson and progress via TensorBoard.
 
 
-```
+```json
 {
     "measure" : "reward",
-    "thresholds" : [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+    "thresholds" : [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
     "min_lesson_length" : 2,
     "signal_smoothing" : true, 
     "parameters" : 
     {
-        "min_wall_height" : [1, 1, 1, 2, 2, 3, 3, 4, 5],
-        "max_wall_height" : [2, 3, 4, 4, 5, 5, 6, 6, 6]
+        "min_wall_height" : [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5],
+        "max_wall_height" : [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0]
     }
 }
 ```
