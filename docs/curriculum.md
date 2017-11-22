@@ -1,4 +1,4 @@
-# Curriculum Learning
+# Training with Curriculum Learning
 
 ## Background
 
@@ -44,7 +44,7 @@ the task. As you can see, without using curriculum learning the agent has a lot 
 difficulty. We think that by using well-crafted curricula, agents trained using 
 reinforcement learning will be able to accomplish tasks otherwise much more difficult. 
  
-[INSERT TRAINING CURVES]
+![Log](../images/curriculum_progress.png)
 
 ## How-To
  
