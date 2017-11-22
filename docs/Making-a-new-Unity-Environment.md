@@ -46,7 +46,7 @@ This tutorial walks through the process of creating a Unity Environment. A Unity
     * `Target Frame Rate` Frequency of frame rendering. If environment utilizes observations, increase this during training, and set to `60` during inference. If no observations are used, this can be set to `1` during training.
  * **`Default Reset Parameters`** You can set the default configuration to be passed at reset. This will be a mapping from strings to float values that you can call in the academy with `resetParameters["YourDefaultParameter"]`
 
-3. Within **`InitializeAcademy()`**, you can define the initialization of the Academy. Note that this command is ran only once at the beginning of the training session.
+3. Within **`InitializeAcademy()`**, you can define the initialization of the Academy. Note that this command is ran only once at the beginning of the training session. Do **not** use `Awake()`, `Start()` or `OnEnable()`
 
 3. Within **`AcademyStep()`**, you can define the environment logic each step. Use this function to modify the environment for the agents that will live in it.
 
@@ -101,7 +101,7 @@ For each Brain game object in your academy :
 5. If `Reset On Done` is checked, `Reset()` will be called when the agent is done. Else, `AgentOnDone()` will be called. Note that if `Reset On Done` is unchecked, the agent will remain "done" until the Academy resets. This means that it will not take actions in the environment.
 
 6. Implement the following functions in `YourNameAgent.cs` :
- * `InitializeAgent()` : Use this method to initialize your agent. This method is called then the agent is created.
+ * `InitializeAgent()` : Use this method to initialize your agent. This method is called when the agent is created. Do **not** use `Awake()`, `Start()` or `OnEnable()`.
  * `CollectState()` : Must return a list of floats corresponding to the state the agent is in. If the state space type is discrete, return a list of length 1 containing the float equivalent of your state.
  * `AgentStep()` : This function will be called every frame, you must define what your agent will do given the input actions. You must also specify the rewards and whether or not the agent is done. To do so, modify the public fields of the agent `reward` and `done`. 
  * `AgentReset()` : This function is called at start, when the Academy resets and when the agent is done (if `Reset On Done` is checked).
