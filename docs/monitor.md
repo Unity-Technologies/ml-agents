@@ -1,4 +1,4 @@
-# Monitor
+# Using the Monitor
 
 ![Monitor](../images/monitor.png)
 
