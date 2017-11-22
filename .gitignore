@@ -11,6 +11,9 @@
 /python/models
 /python/summaries
 
+# Environemnt logfile
+*unity-environment.log
+
 # Visual Studio 2015 cache directory
 /unity-environment/.vs/
 

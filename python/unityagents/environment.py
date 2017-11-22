@@ -10,14 +10,14 @@ import subprocess
 import struct
 
 from .brain import BrainInfo, BrainParameters
-from .exception import UnityEnvironmentException, UnityActionException
+from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
 from PIL import Image
 from sys import platform
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("unityagents")
 
 
 class UnityEnvironment(object):
@@ -97,11 +97,11 @@ class UnityEnvironment(object):
             try:
                 self._socket.listen(1)
                 self._conn, _ = self._socket.accept()
-                self._conn.setblocking(1)
+                self._conn.settimeout(10)
                 p = self._conn.recv(self._buffer_size).decode('utf-8')
                 p = json.loads(p)
             except socket.timeout as e:
-                raise UnityEnvironmentException(
+                raise UnityTimeOutException(
                     "The Unity environment took too long to respond. Make sure {} does not need user interaction to "
                     "launch and that the Academy and the external Brain(s) are attached to objects in the Scene."
                     .format(str(file_name)))
@@ -119,6 +119,7 @@ class UnityEnvironment(object):
             self._data = {}
             self._global_done = None
             self._academy_name = p["AcademyName"]
+            self._log_path = p["logPath"]
             self._brains = {}
             self._brain_names = p["brainNames"]
             self._external_brain_names = p["externalBrainNames"]
@@ -138,6 +139,10 @@ class UnityEnvironment(object):
             proc1.kill()
             self.close()
             raise
+
+    @property
+    def logfile_path(self):
+        return self._log_path
 
     @property
     def brains(self):
@@ -190,12 +195,16 @@ class UnityEnvironment(object):
                                                              for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
+
     def _recv_bytes(self):
-        s = self._conn.recv(self._buffer_size)
-        message_length = struct.unpack("I", bytearray(s[:4]))[0]
-        s = s[4:]
-        while len(s) != message_length:
-            s += self._conn.recv(self._buffer_size)
+        try:
+            s = self._conn.recv(self._buffer_size)
+            message_length = struct.unpack("I", bytearray(s[:4]))[0]
+            s = s[4:]
+            while len(s) != message_length:
+                s += self._conn.recv(self._buffer_size)
+        except socket.timeout as e:
+            raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
         return s
 
     def _get_state_image(self, bw):
@@ -245,7 +254,10 @@ class UnityEnvironment(object):
 
         if self._loaded:
             self._conn.send(b"RESET")
-            self._conn.recv(self._buffer_size)
+            try:
+                self._conn.recv(self._buffer_size)
+            except socket.timeout as e:
+                raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
             self._conn.send(json.dumps({"train_model": train_mode, "parameters": config}).encode('utf-8'))
             return self._get_state()
         else:
@@ -293,7 +305,10 @@ class UnityEnvironment(object):
 
             self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions)
 
-        self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
+        try:
+            self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
+        except socket.timeout as e:
+            raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
 
         return self._data
 
@@ -304,7 +319,10 @@ class UnityEnvironment(object):
         :param memory: a dictionary of lists of of memories.
         :param value: a dictionary of lists of of value estimates.
         """
-        self._conn.recv(self._buffer_size)
+        try:
+            self._conn.recv(self._buffer_size)
+        except socket.timeout as e:
+            raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
         action_message = {"action": action, "memory": memory, "value": value}
         self._conn.send(json.dumps(action_message).encode('utf-8'))
 
