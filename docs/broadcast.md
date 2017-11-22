@@ -1,4 +1,4 @@
-# Broadcast
+# Using the Broadcast Feature
 The Player, Heuristic and Internal brains have been updated to support broadcast. The broadcast feature allows you to collect data from your agents in python without controling them.  
 ## How to use : Unity
 To turn it on in Unity, simply check the `Broadcast` box as shown bellow:
