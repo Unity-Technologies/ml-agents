@@ -1,0 +1,205 @@
+fileFormatVersion: 2
+guid: e694f124da5bfd84d97e67e8c2719420
+timeCreated: 1453848738
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: arrow
+    100002: bow
+    100004: bow_base
+    100006: bow_base_CTRL
+    100008: bow_base_CTRL_AnimNUL
+    100010: bow_base_CTRL_HmNUL
+    100012: bow_base_CTRL_SpaceNUL
+    100014: //RootNode
+    100016: btmArm0
+    100018: btmArm1
+    100020: btmArm2
+    100022: btmArm3
+    100024: notch
+    100026: stringBtm
+    100028: stringBtmArc
+    100030: stringBtmNotch
+    100032: stringTop
+    100034: stringTopArc
+    100036: stringTopNotch
+    100038: topArm0
+    100040: topArm1
+    100042: topArm2
+    100044: topArm3
+    100046: bow_noString
+    100048: StringGeom
+    400000: arrow
+    400002: bow
+    400004: bow_base
+    400006: bow_base_CTRL
+    400008: bow_base_CTRL_AnimNUL
+    400010: bow_base_CTRL_HmNUL
+    400012: bow_base_CTRL_SpaceNUL
+    400014: //RootNode
+    400016: btmArm0
+    400018: btmArm1
+    400020: btmArm2
+    400022: btmArm3
+    400024: notch
+    400026: stringBtm
+    400028: stringBtmArc
+    400030: stringBtmNotch
+    400032: stringTop
+    400034: stringTopArc
+    400036: stringTopNotch
+    400038: topArm0
+    400040: topArm1
+    400042: topArm2
+    400044: topArm3
+    400046: bow_noString
+    400048: StringGeom
+    4300000: bow
+    4300002: arrow
+    4300004: bow_noString
+    4300006: StringGeom
+    7400000: bowPull
+    9500000: //RootNode
+    13700000: arrow
+    13700002: bow
+    13700004: bow_noString
+    13700006: StringGeom
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 0
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: bowPull
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 120
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: arrow
+        weight: 1
+      - path: bow
+        weight: 1
+      - path: bow_base
+        weight: 1
+      - path: bow_base/btmArm0
+        weight: 1
+      - path: bow_base/btmArm0/btmArm1
+        weight: 1
+      - path: bow_base/btmArm0/btmArm1/btmArm2
+        weight: 1
+      - path: bow_base/btmArm0/btmArm1/btmArm2/btmArm3
+        weight: 1
+      - path: bow_base/btmArm0/btmArm1/btmArm2/btmArm3/stringBtm
+        weight: 1
+      - path: bow_base/btmArm0/btmArm1/btmArm2/btmArm3/stringBtm/stringBtmArc
+        weight: 1
+      - path: bow_base/btmArm0/btmArm1/btmArm2/btmArm3/stringBtm/stringBtmArc/stringBtmNotch
+        weight: 1
+      - path: bow_base/notch
+        weight: 1
+      - path: bow_base/topArm0
+        weight: 1
+      - path: bow_base/topArm0/topArm1
+        weight: 1
+      - path: bow_base/topArm0/topArm1/topArm2
+        weight: 1
+      - path: bow_base/topArm0/topArm1/topArm2/topArm3
+        weight: 1
+      - path: bow_base/topArm0/topArm1/topArm2/topArm3/stringTop
+        weight: 1
+      - path: bow_base/topArm0/topArm1/topArm2/topArm3/stringTop/stringTopArc
+        weight: 1
+      - path: bow_base/topArm0/topArm1/topArm2/topArm3/stringTop/stringTopArc/stringTopNotch
+        weight: 1
+      - path: bow_base_CTRL_HmNUL
+        weight: 1
+      - path: bow_base_CTRL_HmNUL/bow_base_CTRL_SpaceNUL
+        weight: 1
+      - path: bow_base_CTRL_HmNUL/bow_base_CTRL_SpaceNUL/bow_base_CTRL_AnimNUL
+        weight: 1
+      - path: bow_base_CTRL_HmNUL/bow_base_CTRL_SpaceNUL/bow_base_CTRL_AnimNUL/bow_base_CTRL
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

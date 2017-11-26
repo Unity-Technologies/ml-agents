@@ -1,0 +1,204 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: TeleportAreaHighlighted
+  m_Shader: {fileID: 4800000, guid: 787d7485aa6482341a9f55fa37fb84f1, type: 3}
+  m_ShaderKeywords: S_SPECULAR_NONE S_UNLIT _ALPHAPREMULTIPLY_ON _EMISSION
+  m_LightmapFlags: 0
+  m_CustomRenderQueue: 3000
+  stringTagMap:
+    OriginalShader: Standard
+    RenderType: Transparent
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+    - first:
+        name: _BumpMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _DetailAlbedoMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _DetailMask
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _DetailNormalMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _EmissionMap
+      second:
+        m_Texture: {fileID: 2800000, guid: f33ccd07f9433f44f8c5430938b168ac, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _MainTex
+      second:
+        m_Texture: {fileID: 2800000, guid: f33ccd07f9433f44f8c5430938b168ac, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _MetallicGlossMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _OcclusionMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _ParallaxMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _SpecGlossMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: g_tOverrideLightmap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - first:
+        name: _BumpScale
+      second: 1
+    - first:
+        name: _Cutoff
+      second: 0.5
+    - first:
+        name: _Darken
+      second: 0.641
+    - first:
+        name: _DetailNormalMapScale
+      second: 1
+    - first:
+        name: _DstBlend
+      second: 10
+    - first:
+        name: _EmissionScaleUI
+      second: 0
+    - first:
+        name: _FogMultiplier
+      second: 1
+    - first:
+        name: _Glossiness
+      second: 0.126
+    - first:
+        name: _Metallic
+      second: 0.368
+    - first:
+        name: _Mode
+      second: 3
+    - first:
+        name: _OcclusionStrength
+      second: 1
+    - first:
+        name: _OcclusionStrengthDirectDiffuse
+      second: 1
+    - first:
+        name: _OcclusionStrengthDirectSpecular
+      second: 1
+    - first:
+        name: _OcclusionStrengthIndirectDiffuse
+      second: 1
+    - first:
+        name: _OcclusionStrengthIndirectSpecular
+      second: 1
+    - first:
+        name: _Parallax
+      second: 0.02
+    - first:
+        name: _SeeThru
+      second: 0.358
+    - first:
+        name: _SpecularMode
+      second: 2
+    - first:
+        name: _SrcBlend
+      second: 1
+    - first:
+        name: _UVSec
+      second: 0
+    - first:
+        name: _ZWrite
+      second: 0
+    - first:
+        name: g_bReceiveShadows
+      second: 1
+    - first:
+        name: g_bUnlit
+      second: 1
+    - first:
+        name: g_bWorldAlignedTexture
+      second: 0
+    - first:
+        name: g_flCubeMapScalar
+      second: 1
+    - first:
+        name: g_flReflectanceBias
+      second: 0
+    - first:
+        name: g_flReflectanceMax
+      second: 1
+    - first:
+        name: g_flReflectanceMin
+      second: 0
+    - first:
+        name: g_flReflectanceScale
+      second: 1
+    m_Colors:
+    - first:
+        name: _Color
+      second: {r: 0.18325105, g: 0.7196769, b: 0.743, a: 0.61960787}
+    - first:
+        name: _EmissionColor
+      second: {r: 0.17637901, g: 0.6267087, b: 0.683, a: 1}
+    - first:
+        name: _EmissionColorUI
+      second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
+        name: _SpecColor
+      second: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - first:
+        name: _TintColor
+      second: {r: 0.064310014, g: 0.56794316, b: 0.59, a: 1}
+    - first:
+        name: g_vWorldAlignedNormalTangentU
+      second: {r: -1, g: 0, b: 0, a: 0}
+    - first:
+        name: g_vWorldAlignedNormalTangentV
+      second: {r: 0, g: 0, b: 1, a: 0}
+    - first:
+        name: g_vWorldAlignedTextureNormal
+      second: {r: 0, g: 1, b: 0, a: 0}
+    - first:
+        name: g_vWorldAlignedTexturePosition
+      second: {r: 0, g: 0, b: 0, a: 0}
+    - first:
+        name: g_vWorldAlignedTextureSize
+      second: {r: 1, g: 1, b: 1, a: 0}
