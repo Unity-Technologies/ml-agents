@@ -19,6 +19,7 @@ dummy_start = '''{
   "resetParameters": {},
   "brainNames": ["RealFakeBrain"],
   "externalBrainNames": ["RealFakeBrain"],
+  "logPath":"RealFakePath",
   "apiNumber":"API-2",
   "brainParameters": [{
       "stateSize": 3,
