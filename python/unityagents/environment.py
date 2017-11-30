@@ -97,7 +97,7 @@ class UnityEnvironment(object):
             try:
                 self._socket.listen(1)
                 self._conn, _ = self._socket.accept()
-                self._conn.settimeout(10)
+                self._conn.settimeout(30)
                 p = self._conn.recv(self._buffer_size).decode('utf-8')
                 p = json.loads(p)
             except socket.timeout as e:

@@ -155,6 +155,7 @@ public abstract class Academy : MonoBehaviour
             Time.timeScale = trainingConfiguration.timeScale;
             Application.targetFrameRate = trainingConfiguration.targetFrameRate;
             QualitySettings.vSyncCount = 0;
+            Monitor.SetActive(false);
         }
         else
         {
