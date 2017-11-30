@@ -55,6 +55,22 @@ public class TennisAgent : Agent
 
         gameObject.GetComponent<Rigidbody>().velocity = new Vector3(moveX * 50f, GetComponent<Rigidbody>().velocity.y, 0f);
 
+
+        if (invertX)
+        {
+            if (gameObject.transform.position.x + transform.parent.transform.position.x < -(invertMult) * 1f)
+            {
+                gameObject.transform.position = new Vector3(-(invertMult) * 1f + transform.parent.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
+            }
+        }
+        else
+        {
+            if (gameObject.transform.position.x + transform.parent.transform.position.x > -(invertMult) * 1f)
+            {
+                gameObject.transform.position = new Vector3(-(invertMult) * 1f + transform.parent.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
+            }
+        }
+
         scoreText.GetComponent<Text>().text = score.ToString();
     }
 
