@@ -21,14 +21,27 @@ Instructions here are adapted from this [Medium post](https://medium.com/towards
     sudo nvidia-xconfig -a --use-display-device=None --virtual=1280x1024
     ```
 4. Restart the EC2 instance.
-5. On start-up, run:
+
+## Launching your instance
+
+1. Make sure there are no Xorg processes running. To kill the Xorg processes, run `sudo killall Xorg`.  
+Note that you might have to run this command multiple times depending on how Xorg is configured.  
+If you run `nvidia-smi`, you will have a list of processes running on the GPU, Xorg should not be in the list. 
+
+2. Run:
     ```
     sudo /usr/bin/X :0 &
     export DISPLAY=:0
     ```
-    Depending on how Xorg is configured, you may need to run `sudo killall Xorg` before starting Xorg with the above command.
-6. To ensure the installation was succesful, run `glxgears`. If there are no errors, then Xorg is correctly configured.
-7. There is a bug in _Unity 2017.1_ which requires the uninstallation of `libxrandr2`, which can be removed with `apt-get remove --purge libxrandr2`. This is scheduled to be fixed in 2017.3.
+3. To ensure the installation was succesful, run `glxgears`. If there are no errors, then Xorg is correctly configured.
+4. There is a bug in _Unity 2017.1_ which requires the uninstallation of `libxrandr2`, which can be removed with :
+```
+sudo apt-get remove --purge libwxgtk3.0-0v5
+sudo apt-get remove --purge libxrandr2
+```
+This is scheduled to be fixed in 2017.3.
+
+## Testing
 
 If all steps worked correctly, upload an example binary built for Linux to the instance, and test it from python with:
 ```python
