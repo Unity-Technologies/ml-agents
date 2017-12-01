@@ -51,7 +51,7 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * +0.1 To agent when hitting ball after ball was hit by the other agent. 
     * +0.1 To agent who didn't hit ball last when ball hits ground.
 * Brains: One brain with the following state/action space.
-    * State space: (Continuous) 6 variables corresponding to position of agent and nearest goal and obstacle.
+    * State space: (Continuous) 8 variables corresponding to position and velocity of ball and racket.
     * Action space: (Discrete) Size of 4, corresponding to movement toward net, away from net, jumping, and no-movement.
     * Observations: None
 * Reset Parameters: One, corresponding to size of ball.
