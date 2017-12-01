@@ -13,7 +13,7 @@ In order to train an agent within the framework, you will need to install Python
 
 ### Windows Users
 
-If you are a Windows user who is new to Python/TensorFlow, follow [this guide](https://nitishmutha.github.io/tensorflow/2017/01/22/TensorFlow-with-gpu-for-windows.html) to set up your Python environment.
+If you are a Windows user who is new to Python/TensorFlow, follow [this guide](https://unity3d.college/2017/10/25/machine-learning-in-unity3d-setting-up-the-environment-tensorflow-for-agentml-on-windows-10/) to set up your Python environment.
 
 ### Requirements
 * Jupyter

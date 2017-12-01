@@ -20,7 +20,7 @@ env = UnityEnvironment(file_name=filename, worker_num=0)
 A BrainInfo object contains the following fields:
 
 * **`observations`** : A list of 4 dimensional numpy arrays. Matrix n of the list corresponds to the n<sup>th</sup> observation of the brain. 
-* **`states`** : A two dimensional numpy array of dimension `(batch size, state size)` if the state space is continuous and `(batch size, state size)` if the state space is discrete.
+* **`states`** : A two dimensional numpy array of dimension `(batch size, state size)` if the state space is continuous and `(batch size, 1)` if the state space is discrete.
 * **`memories`** : A two dimensional numpy array of dimension `(batch size, memory size)` which corresponds to the memories sent at the previous step.
 * **`rewards`** : A list as long as the number of agents using the brain containing the rewards they each obtained at the previous step. 
 * **`local_done`** : A list as long as the number of agents using the brain containing  `done` flags (wether or not the agent is done). 

@@ -1,6 +1,6 @@
 # Best Practices when training with PPO
 
-The process of training a Reinforcement Learning model can often involve the need to tune the hyperparameters in order to achieve 
+The process of training a Reinforcement Learning model can often involve the need to tune the hyperparameters in order to achieve
 a level of performance that is desirable. This guide contains some best practices for tuning the training process when the default
 parameters don't seem to be giving the level of performance you would like.
 
@@ -72,7 +72,7 @@ Typical Range: `5e5 - 1e7`
 
 ## Training Statistics
 
-To view training statistics, use Tensorboard. For information on launching and using Tensorboard, see [here](../Getting-Started-with-Balance-Ball.md#observing-training-progress).
+To view training statistics, use Tensorboard. For information on launching and using Tensorboard, see [here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
 
 ### Cumulative Reward
 
