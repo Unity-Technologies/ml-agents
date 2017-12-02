@@ -56,3 +56,21 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
+## Runner
+
+![Runner](../images/runner.png)
+
+* Set-up: A classic runner where the agent needs to jump through a series of obstacles. 
+* Goal: The agent must survive as long as possible while avoiding the obstacles and collect bonuses.
+* Agents: The environment contains multiple agents linked to a single brain.
+* Agent Reward Function: 
+* +0.005 for every step on the floor.
+* +1.0 if the agent collect a bonus.
+* +1.0 if the agent finish all sequences (depending on maxStep).
+* -1.0 if the agent fall in a kill zone
+* Brains: One brain with the following state/action space.
+* State space: (Continuous) 6 variables corresponding to nearest obstacle positions, nearest bonus and ground.
+* Action space: (Discrete) Size of 2, corresponding to idle or jump.
+* Observations: 0.
+* Reset Parameters: None
+
