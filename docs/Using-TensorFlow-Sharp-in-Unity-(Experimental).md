@@ -15,10 +15,10 @@ _Notice: This feature is still experimental. While it is possible to embed train
 ## Requirements
 
 * Unity 2017.1 or above
-* Unity Tensorflow Plugin ([Download here](https://s3.amazonaws.com/unity-agents/TFSharpPlugin.unitypackage))
+* Unity Tensorflow Plugin ([Download here](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage))
 # Using TensorflowSharp with ML-Agents
 
-In order to bring a fully trained agent back into Unity, you will need to make sure the nodes of your graph have appropriate names. You can give names to nodes in Tensorflow : 
+In order to bring a fully trained agent back into Unity, you will need to make sure the nodes of your graph have appropriate names. You can give names to nodes in Tensorflow :
 ```python
 variable= tf.identity(variable, name="variable_name")
 ```
@@ -53,11 +53,11 @@ Your model will be saved with the name `your_name_graph.bytes` and will contain 
 
 Go to `Edit` -> `Player Settings` and add `ENABLE_TENSORFLOW` to the `Scripting Define Symbols` for each type of device you want to use (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**).
 
-Set the Brain you used for training to `Internal`. Drag `your_name_graph.bytes` into Unity and then drag it into The `Graph Model` field in the Brain. If you used a scope when training you graph, specify it in the `Graph Scope` field. Specify the names of the nodes you used in your graph. If you followed these instructions well, the agents in your environment that use this brain will use you fully trained network to make decisions. 
+Set the Brain you used for training to `Internal`. Drag `your_name_graph.bytes` into Unity and then drag it into The `Graph Model` field in the Brain. If you used a scope when training you graph, specify it in the `Graph Scope` field. Specify the names of the nodes you used in your graph. If you followed these instructions well, the agents in your environment that use this brain will use you fully trained network to make decisions.
 
 # iOS additional instructions for building
 
-* Once you build for iOS in the editor, Xcode will launch.  
+* Once you build for iOS in the editor, Xcode will launch.
 * In `General` -> `Linked Frameworks and Libraries`:
   * Add a framework called `Framework.accelerate`
   * Remove the library `libtensorflow-core.a`
@@ -65,7 +65,7 @@ Set the Brain you used for training to `Internal`. Drag `your_name_graph.bytes` 
   * Double Click on the flag list
   * Type `-force_load`
   * Drag the library `libtensorflow-core.a` from the `Project Navigator` on the left under `Libraries/ML-Agents/Plugins/iOS` into the flag list.
-   
+
 # Using TensorflowSharp without ML-Agents
 
 Beyond controlling an in-game agent, you may desire to use TensorFlowSharp for more general computation. The below instructions describe how to generally embed Tensorflow models without using the ML-Agents framework.
@@ -77,7 +77,7 @@ You must have a Tensorflow graph `your_name_graph.bytes` made using Tensorflow's
 Put the file `your_name_graph.bytes` into Resources.
 
 In your C# script :
-At the top, add the line 
+At the top, add the line
 ```csharp
 using Tensorflow;
 ```
@@ -87,7 +87,7 @@ If you will be building for android, you must add this block at the start of you
 TensorFlowSharp.Android.NativeBinding.Init();
 #endif
 ```
-Put your graph as a text asset in the variable `graphModel`. You can do so in the inspector by making `graphModel` a public variable and dragging you asset in the inspector or load it from the Resources folder : 
+Put your graph as a text asset in the variable `graphModel`. You can do so in the inspector by making `graphModel` a public variable and dragging you asset in the inspector or load it from the Resources folder :
 ```csharp
 TextAsset graphModel = Resources.Load (your_name_graph) as TextAsset;
 ```
