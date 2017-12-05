@@ -16,14 +16,18 @@ using TensorFlow;
 public class CoreBrainInternal : ScriptableObject, CoreBrain
 {
 
+    [SerializeField]
+    private bool broadcast = true;
+
     [System.Serializable]
     private struct TensorFlowAgentPlaceholder
     {
         public enum tensorType
         {
             Integer,
-            FloatingPoint
-        };
+            FloatingPoint}
+
+        ;
 
         public string name;
         public tensorType valueType;
@@ -31,6 +35,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         public float maxValue;
 
     }
+
+    ExternalCommunicator coord;
 
     /// Modify only in inspector : Reference to the Graph asset
     public TextAsset graphModel;
@@ -87,6 +93,16 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 			
 		}
 #endif
+        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        || (!broadcast))
+        {
+            coord = null;
+        }
+        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        {
+            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord.SubscribeBrain(brain);
+        }
 
         if (graphModel != null)
         {
@@ -123,6 +139,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         currentBatchSize = brain.agents.Count;
         if (currentBatchSize == 0)
         {
+
+            if (coord != null)
+            {
+                coord.giveBrainInfo(brain);
+            }
             return;
         }
 
@@ -166,7 +187,13 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 i++;
             }
         }
-#endif
+
+
+        if (coord != null)
+        {
+            coord.giveBrainInfo(brain);
+        }
+        #endif
     }
 
 
@@ -212,7 +239,19 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            runner.AddInput(graph[graphScope + StatePlacholderName][0], inputState);
+            if (brain.brainParameters.stateSpaceType == StateType.discrete)
+            {
+                int[,] discreteInputState = new int[currentBatchSize, 1];
+                for (int i = 0; i < currentBatchSize; i++)
+                {
+                    discreteInputState[i, 0] = (int)inputState[i, 0];
+                }
+                runner.AddInput(graph[graphScope + StatePlacholderName][0], discreteInputState);
+            }
+            else
+            {
+                runner.AddInput(graph[graphScope + StatePlacholderName][0], inputState);
+            }
         }
 
         // Create the observation tensors
@@ -221,6 +260,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             runner.AddInput(graph[graphScope + ObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);
         }
 
+        if (hasRecurrent)
+        {
+            runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
+            runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
+        }
+            
         TFTensor[] networkOutput;
         try
         {
@@ -247,8 +292,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             Dictionary<int, float[]> new_memories = new Dictionary<int, float[]>();
 
-            runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
-            runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
             int i = 0;
@@ -305,6 +348,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
 #if ENABLE_TENSORFLOW && UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         SerializedObject serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
         SerializedProperty tfGraphModel = serializedBrain.FindProperty("graphModel");

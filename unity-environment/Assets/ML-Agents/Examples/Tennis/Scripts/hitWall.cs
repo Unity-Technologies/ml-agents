@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class hitWall : MonoBehaviour
 {
-
+    public GameObject areaObject;
     int lastAgentHit;
 
     // Use this for initialization
@@ -13,21 +13,14 @@ public class hitWall : MonoBehaviour
         lastAgentHit = -1;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
-        TennisAgent agentA = GameObject.Find("AgentA").GetComponent<TennisAgent>();
-        TennisAgent agentB = GameObject.Find("AgentB").GetComponent<TennisAgent>();
-        TennisAcademy academy = GameObject.Find("Academy").GetComponent<TennisAcademy>();
+        TennisArea area = areaObject.GetComponent<TennisArea>();
+        TennisAgent agentA = area.agentA.GetComponent<TennisAgent>();
+        TennisAgent agentB = area.agentB.GetComponent<TennisAgent>();
 
         if (collision.gameObject.tag == "iWall")
         {
-            academy.done = true;
             if (collision.gameObject.name == "wallA")
             {
                 if (lastAgentHit == 0)
@@ -104,6 +97,9 @@ public class hitWall : MonoBehaviour
                     agentA.score += 1;
                 }
             }
+            area.MatchReset();
+            agentA.done = true;
+            agentB.done = true;
         }
 
         if (collision.gameObject.tag == "agent")
@@ -112,8 +108,12 @@ public class hitWall : MonoBehaviour
             {
                 if (lastAgentHit != 0)
                 {
-                    agentA.reward = 0.1f;
-                    agentB.reward = 0.05f;
+                    agentA.reward += 0.1f;
+                    agentB.reward += 0.05f;
+                }
+                else 
+                {
+                    agentA.reward += 0.01f;
                 }
                 lastAgentHit = 0;
             }
@@ -121,8 +121,12 @@ public class hitWall : MonoBehaviour
             {
                 if (lastAgentHit != 1)
                 {
-                    agentB.reward = 0.1f;
-                    agentA.reward = 0.05f;
+                    agentB.reward += 0.1f;
+                    agentA.reward += 0.05f;
+                }
+                else
+                {
+                    agentB.reward += 0.01f;
                 }
                 lastAgentHit = 1;
             }

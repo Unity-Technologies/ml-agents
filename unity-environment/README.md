@@ -27,14 +27,14 @@ The `Examples` subfolder contains a set of example environments to use either as
 For more informoation on each of these environments, see this [documentation page](../docs/Example-Environments.md).
 
 Within `ML-Agents/Template` there also exists:
-* **Template** - An empty Unity scene with a single _Academy_, _Brain_, and _Agent_. Designed to be used as a template for new environments. 
+* **Template** - An empty Unity scene with a single _Academy_, _Brain_, and _Agent_. Designed to be used as a template for new environments.
 
-## Agents SDK Package
-A link to Unity package containing the Agents SDK for Unity 2017.1 can be downloaded here :   
- * [ML-Agents package without TensorflowSharp](https://s3.amazonaws.com/unity-agents/ML-AgentsNoPlugin.unitypackage)  
- * [ML-Agents package with TensorflowSharp](https://s3.amazonaws.com/unity-agents/ML-AgentsWithPlugin.unitypackage)  
+## Agents SDK
+A link to Unity package containing the Agents SDK for Unity 2017.1 can be downloaded here :
+ * [ML-Agents package without TensorflowSharp](https://s3.amazonaws.com/unity-agents/0.2/ML-AgentsNoPlugin.unitypackage)
+ * [ML-Agents package with TensorflowSharp](https://s3.amazonaws.com/unity-agents/0.2/ML-AgentsWithPlugin.unitypackage)
 
-For  information on the use of each script, see the comments and documentation within the files themselves, or read the [documentation](../../../wiki). 
+For  information on the use of each script, see the comments and documentation within the files themselves, or read the [documentation](../../../wiki).
 
 ## Creating your own Unity Environment
 For information on how to create a new Unity Environment, see the walkthrough [here](../docs/Making-a-new-Unity-Environment.md). If you have questions or run into issues, please feel free to create issues through the repo, and we will do our best to address them.
@@ -43,10 +43,10 @@ For information on how to create a new Unity Environment, see the walkthrough [h
 If you will be using Tensorflow Sharp in Unity, you must:
 
 1. Make sure you are using Unity 2017.1 or newer.
-2. Make sure the TensorflowSharp plugin is in your Asset folder. A Plugins folder which includes TF# can be downloaded [here](https://s3.amazonaws.com/unity-agents/TFSharpPlugin.unitypackage).
+2. Make sure the TensorflowSharp [plugin](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage) is in your Asset folder.
 3. Go to `Edit` -> `Project Settings` -> `Player`
-4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):   
+4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
 	1. Go into `Other Settings`.
-	2. Select `Scripting Runtime Version` to `Experimental (.NET 4.6 Equivalent)` 
+	2. Select `Scripting Runtime Version` to `Experimental (.NET 4.6 Equivalent)`
 	3. In `Scripting Defined Symbols`, add the flag `ENABLE_TENSORFLOW`
 5. Restart the Unity Editor.

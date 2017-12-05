@@ -15,76 +15,60 @@ public class TennisAgent : Agent
     public override List<float> CollectState()
     {
         List<float> state = new List<float>();
-        state.Add(invertMult * gameObject.transform.position.x / 8f);
-        state.Add(gameObject.transform.position.y / 2f);
-        state.Add(invertMult * gameObject.GetComponent<Rigidbody>().velocity.x / 10f);
-        state.Add(gameObject.GetComponent<Rigidbody>().velocity.y / 10f);
+        state.Add(invertMult * gameObject.transform.position.x);
+        state.Add(gameObject.transform.position.y);
+        state.Add(invertMult * gameObject.GetComponent<Rigidbody>().velocity.x);
+        state.Add(gameObject.GetComponent<Rigidbody>().velocity.y);
 
-        state.Add(invertMult * ball.transform.position.x / 8f);
-        state.Add(ball.transform.position.y / 8f);
-        state.Add(invertMult * ball.GetComponent<Rigidbody>().velocity.x / 10f);
-        state.Add(ball.GetComponent<Rigidbody>().velocity.y / 10f);
+        state.Add(invertMult * ball.transform.position.x);
+        state.Add(ball.transform.position.y);
+        state.Add(invertMult * ball.GetComponent<Rigidbody>().velocity.x);
+        state.Add(ball.GetComponent<Rigidbody>().velocity.y);
         return state;
     }
 
     // to be implemented by the developer
     public override void AgentStep(float[] act)
     {
+        int action = Mathf.FloorToInt(act[0]);
         float moveX = 0.0f;
         float moveY = 0.0f;
-        if (act[0] == 0f)
+        if (action == 0)
         {
             moveX = invertMult * -0.25f;
         }
-        if (act[0] == 1f)
+        if (action == 1)
         {
             moveX = invertMult * 0.25f;
         }
-        if (act[0] == 2f)
-        {
-            moveX = 0.0f;
-        }
-        if (act[0] == 3f)
+        if (action == 2 && gameObject.transform.position.y + transform.parent.transform.position.y < -1.5f)
         {
             moveY = 0.5f;
+            gameObject.GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, moveY * 12f, 0f);
         }
-
-        if (gameObject.transform.position.y > -1.9f)
+        if (action == 3)
         {
+            GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x * 0.5f, GetComponent<Rigidbody>().velocity.y, 0f);
             moveY = 0f;
-        }
-        else
-        {
-            gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, moveY * 12f, 0f);
+            moveX = 0f;
         }
 
-        gameObject.transform.position = new Vector3(gameObject.transform.position.x + moveX, gameObject.transform.position.y, 5f);
+        gameObject.GetComponent<Rigidbody>().velocity = new Vector3(moveX * 50f, GetComponent<Rigidbody>().velocity.y, 0f);
+
 
         if (invertX)
         {
-            if (gameObject.transform.position.x > -(invertMult) * 11f)
+            if (gameObject.transform.position.x + transform.parent.transform.position.x < -(invertMult) * 1f)
             {
-                gameObject.transform.position = new Vector3(-(invertMult) * 11f, gameObject.transform.position.y, 5f);
-            }
-            if (gameObject.transform.position.x < -(invertMult) * 2f)
-            {
-                gameObject.transform.position = new Vector3(-(invertMult) * 2f, gameObject.transform.position.y, 5f);
+                gameObject.transform.position = new Vector3(-(invertMult) * 1f + transform.parent.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
             }
         }
         else
         {
-            if (gameObject.transform.position.x < -(invertMult) * 11f)
+            if (gameObject.transform.position.x + transform.parent.transform.position.x > -(invertMult) * 1f)
             {
-                gameObject.transform.position = new Vector3(-(invertMult) * 11f, gameObject.transform.position.y, 5f);
+                gameObject.transform.position = new Vector3(-(invertMult) * 1f + transform.parent.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
             }
-            if (gameObject.transform.position.x > -(invertMult) * 2f)
-            {
-                gameObject.transform.position = new Vector3(-(invertMult) * 2f, gameObject.transform.position.y, 5f);
-            }
-        }
-        if (gameObject.transform.position.y < -2f)
-        {
-            gameObject.transform.position = new Vector3(gameObject.transform.position.x, -2f, 5f);
         }
 
         scoreText.GetComponent<Text>().text = score.ToString();
@@ -102,7 +86,7 @@ public class TennisAgent : Agent
             invertMult = 1f;
         }
 
-        gameObject.transform.position = new Vector3(-(invertMult) * 7f, -1.5f, 5f);
+        gameObject.transform.position = new Vector3(-(invertMult) * 7f, -1.5f, 0f) + transform.parent.transform.position;
         gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
     }
 }

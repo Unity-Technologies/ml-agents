@@ -3,11 +3,16 @@
 /unity-environment/[Oo]bj/
 /unity-environment/[Bb]uild/
 /unity-environment/[Bb]uilds/
+/unity-environment/[Pp]ackages/
+/unity-environment/[Uu]nity[Pp]ackage[Mm]anager/
 /unity-environment/Assets/AssetStoreTools*
 
 # Tensorflow Model Info
 /python/models
 /python/summaries
+
+# Environemnt logfile
+*unity-environment.log
 
 # Visual Studio 2015 cache directory
 /unity-environment/.vs/

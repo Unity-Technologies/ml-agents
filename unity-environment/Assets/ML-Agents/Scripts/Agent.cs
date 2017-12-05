@@ -52,8 +52,8 @@ public abstract class Agent : MonoBehaviour
 	 * If AgentMonitor is attached to the Agent, this value will be displayed.*/
 
     [HideInInspector]
-    public float CummulativeReward;
-    /**< \brief Do not modify: This keeps track of the cummulative reward.*/
+    public float CumulativeReward;
+    /**< \brief Do not modify: This keeps track of the cumulative reward.*/
 
     [HideInInspector]
     public int stepCounter;
@@ -82,7 +82,14 @@ public abstract class Agent : MonoBehaviour
         if (brain != null)
         {
             brain.agents.Add(id, gameObject.GetComponent<Agent>());
-            agentStoredAction = new float[brain.brainParameters.actionSize];
+            if (brain.brainParameters.actionSpaceType == StateType.continuous)
+            {
+                agentStoredAction = new float[brain.brainParameters.actionSize];
+            }
+            else
+            {
+                agentStoredAction = new float[1];
+            }
             memory = new float[brain.brainParameters.memorySize];
         }
         InitializeAgent();
@@ -104,7 +111,14 @@ public abstract class Agent : MonoBehaviour
         RemoveBrain();
         brain = b;
         brain.agents.Add(id, gameObject.GetComponent<Agent>());
-        agentStoredAction = new float[brain.brainParameters.actionSize];
+        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        {
+            agentStoredAction = new float[brain.brainParameters.actionSize];
+        }
+        else
+        {
+            agentStoredAction = new float[1];
+        }
         memory = new float[brain.brainParameters.memorySize];
     }
 
@@ -180,7 +194,7 @@ public abstract class Agent : MonoBehaviour
     public void Reset()
     {
         memory = new float[brain.brainParameters.memorySize];
-        CummulativeReward = 0f;
+        CumulativeReward = 0f;
         stepCounter = 0;
         AgentReset();
     }
@@ -189,6 +203,12 @@ public abstract class Agent : MonoBehaviour
     public float CollectReward()
     {
         return reward;
+    }
+
+    public void SetCumulativeReward()
+    {
+        CumulativeReward += reward;
+        //Debug.Log(reward);
     }
 
     /// Do not modify : Is used by the brain to collect done.
@@ -208,7 +228,6 @@ public abstract class Agent : MonoBehaviour
     {
         AgentStep(agentStoredAction);
         stepCounter += 1;
-        CummulativeReward += reward;
         if ((stepCounter > maxStep) && (maxStep > 0))
         {
             done = true;

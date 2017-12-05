@@ -1,9 +1,23 @@
 # Example Learning Environments
 
 ### About Example Environments
-Unity ML Agents currently contains three example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
+Unity ML Agents contains a set of example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
 
 Environments are located in `unity-environment/ML-Agents/Examples`.
+
+## Basic
+
+* Set-up: A linear movement task where the agent must move left or right to rewarding states.
+* Goal: Move to the most reward state.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function: 
+    * +0.1 for arriving at suboptimal state.
+    * +1.0 for arriving at optimal state.
+* Brains: One brain with the following state/action space.
+    * State space: (Discrete) One variable corresponding to current state.
+    * Action space: (Discrete) Two possible actions (Move left, move right).
+    * Observations: 0
+* Reset Parameters: None
 
 ## 3DBall
 
@@ -56,3 +70,72 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
+## Area 
+
+### Push Area
+
+![Push](../images/push.png)
+
+* Set-up: A platforming environment where the agent can push a block around.
+* Goal: The agent must push the block to the goal.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function: 
+    * -0.01 for every step.
+    * +1.0 if the block touches the goal.
+    * -1.0 if the agent falls off the platform.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
+    * Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Observations: None.
+* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of elements for Curriculum Learning.
+
+### Wall Area
+
+![Wall](../images/wall.png)
+
+* Set-up: A platforming environment where the agent can jump over a wall.
+* Goal: The agent must use the block to scale the wall and reach the goal.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function: 
+    * -0.01 for every step.
+    * +1.0 if the agent touches the goal.
+    * -1.0 if the agent falls off the platform.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
+    * Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Observations: None.
+* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of the wall for Curriculum Learning.
+
+## Reacher
+
+![Tennis](../images/reacher.png)
+
+* Set-up: Double-jointed arm which can move to target locations.
+* Goal: The agents must move it's hand to the goal location, and keep it there.
+* Agents: The environment contains 32 agent linked to a single brain.
+* Agent Reward Function (independent): 
+    * +0.1 Each step agent's hand is in goal location.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm rigidbodies.
+    * Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
+    * Observations: None
+* Reset Parameters: Two, corresponding to goal size, and goal movement speed.
+
+## Crawler
+
+![Crawler](../images/crawler.png)
+
+* Set-up: A creature with 4 arms and 4 forearms.
+* Goal: The agents must move its body along the x axis without falling.
+* Agents: The environment contains 3 agent linked to a single brain.
+* Agent Reward Function (independent): 
+    * +1 times velocity in the x direction
+    * -1 for falling.
+    * -0.01 times the action squared
+    * -0.05 times y position change
+    * -0.05 times velocity in the z direction 
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 117 variables corresponding to position, rotation, velocity, and angular velocities of each limb plus the acceleration and angular acceleration of the body.
+    * Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
+    * Observations: None
+* Reset Parameters: None

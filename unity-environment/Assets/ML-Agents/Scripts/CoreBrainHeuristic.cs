@@ -9,9 +9,13 @@ using UnityEditor;
 /// CoreBrain which decides actions using developer-provided Decision.cs script.
 public class CoreBrainHeuristic : ScriptableObject, CoreBrain
 {
+    [SerializeField]
+    private bool broadcast = true;
 
     public Brain brain;
     /**< Reference to the brain that uses this CoreBrainHeuristic */
+
+    ExternalCommunicator coord;
 
     public Decision decision;
     /**< Reference to the Decision component used to decide the actions */
@@ -26,6 +30,17 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     public void InitializeCoreBrain()
     {
         decision = brain.gameObject.GetComponent<Decision>();
+
+        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+            || (!broadcast))
+        {
+            coord = null;
+        }
+        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        {
+            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord.SubscribeBrain(brain);
+        }
     }
 
     /// Uses the Decision Component to decide that action to take
@@ -69,13 +84,18 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     /// Nothing needs to be implemented, the states are collected in DecideAction
     public void SendState()
     {
-
+        if (coord!=null)
+        {
+            coord.giveBrainInfo(brain);
+        }
     }
 
     /// Displays an error if no decision component is attached to the brain
     public void OnInspector()
     {
 #if UNITY_EDITOR
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
         if (brain.gameObject.GetComponent<Decision>() == null)
         {
             EditorGUILayout.HelpBox("You need to add a 'Decision' component to this gameObject", MessageType.Error);

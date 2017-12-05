@@ -8,6 +8,6 @@ PhysicMaterial:
   m_Name: racketMat
   dynamicFriction: 0
   staticFriction: 0
-  bounciness: 1
+  bounciness: 0
   frictionCombine: 1
   bounceCombine: 3

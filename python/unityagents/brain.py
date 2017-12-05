@@ -1,5 +1,5 @@
 class BrainInfo:
-    def __init__(self, observation, state, memory=None, reward=None, agents=None, local_done=None):
+    def __init__(self, observation, state, memory=None, reward=None, agents=None, local_done=None, action =None):
         """
         Describes experience at current step of all agents linked to a brain.
         """
@@ -9,6 +9,7 @@ class BrainInfo:
         self.rewards = reward
         self.local_done = local_done
         self.agents = agents
+        self.previous_actions = action
 
 
 class BrainParameters:
