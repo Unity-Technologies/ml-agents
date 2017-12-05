@@ -20,6 +20,8 @@ example environments, start
 * Discrete and continuous action spaces
 * Python (2 and 3) control interface
 * Visualizing network outputs in environment
+* Easily definable Curriculum Learning scenarios
+* Broadcasting of Agent behavior for supervised learning
 * Tensorflow Sharp Agent Embedding _[Experimental]_
 
 ## Creating an Environment
