@@ -204,7 +204,7 @@ class ContinuousControlModel(PPOModel):
         :param brain: State-space size
         :param h_size: Hidden layer size
         """
-        super().__init__()
+        super(ContinuousControlModel, self).__init__()
         s_size = brain.state_space_size
         a_size = brain.action_space_size
 
@@ -269,7 +269,7 @@ class DiscreteControlModel(PPOModel):
         :param brain: State-space size
         :param h_size: Hidden layer size
         """
-        super().__init__()
+        super(DiscreteControlModel, self).__init__()
         self.create_global_steps()
         self.create_reward_encoder()
         self.normalize = normalize
