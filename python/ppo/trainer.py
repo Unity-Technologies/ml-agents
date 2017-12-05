@@ -41,7 +41,7 @@ class Trainer(object):
         new_variance = var + (current_x - new_mean) * (current_x - mean)
         return new_mean, new_variance
 
-    def take_action(self, info, env, brain_name, steps):
+    def take_action(self, info, env, brain_name, steps, normalize):
         """
         Decides actions given state/observation information, and takes them in environment.
         :param info: Current BrainInfo from environment.
@@ -60,7 +60,7 @@ class Trainer(object):
             feed_dict[self.model.observation_in] = np.vstack(info.observations)
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
-        if self.is_training and env.brains[brain_name].state_space_type == "continuous" and self.use_states:
+        if self.is_training and env.brains[brain_name].state_space_type == "continuous" and self.use_states and normalize:
             new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean,
                                                           self.model.running_variance)
             feed_dict[self.model.new_mean] = new_mean

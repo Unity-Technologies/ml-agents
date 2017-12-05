@@ -27,7 +27,9 @@ Options:
   --learning-rate=<rate>     Model learning rate [default: 3e-4].
   --load                     Whether to load the model or randomly initialize [default: False].
   --max-steps=<n>            Maximum number of steps to run environment [default: 1e6].
+  --normalize                Whether to normalize the state input using running statistics [default: False].
   --num-epoch=<n>            Number of gradient descent steps per batch of experiences [default: 5].
+  --num-layers=<n>           Number of hidden layers between state/observation and outputs [default: 2].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
   --save-freq=<n>            Frequency at which to save model [default: 50000].
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
@@ -60,11 +62,13 @@ lambd = float(options['--lambd'])
 time_horizon = int(options['--time-horizon'])
 beta = float(options['--beta'])
 num_epoch = int(options['--num-epoch'])
+num_layers = int(options['--num-layers'])
 epsilon = float(options['--epsilon'])
 buffer_size = int(options['--buffer-size'])
 learning_rate = float(options['--learning-rate'])
 hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
+normalize = options['--normalize']
 
 env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
 print(str(env))
@@ -75,7 +79,8 @@ tf.reset_default_graph()
 # Create the Tensorflow model graph
 ppo_model = create_agent_model(env, lr=learning_rate,
                                h_size=hidden_units, epsilon=epsilon,
-                               beta=beta, max_step=max_steps)
+                               beta=beta, max_step=max_steps,
+                               normalize=normalize, num_layers=num_layers)
 
 is_continuous = (env.brains[brain_name].action_space_type == "continuous")
 use_observations = (env.brains[brain_name].number_observations > 0)
@@ -124,7 +129,7 @@ with tf.Session() as sess:
             info = env.reset(train_mode=train_model, progress=get_progress())[brain_name]
             trainer.reset_buffers(info, total=True)
         # Decide and take an action
-        new_info = trainer.take_action(info, env, brain_name, steps)
+        new_info = trainer.take_action(info, env, brain_name, steps, normalize)
         info = new_info
         trainer.process_experiences(info, time_horizon, gamma, lambd)
         if len(trainer.training_buffer['actions']) > buffer_size and train_model:
