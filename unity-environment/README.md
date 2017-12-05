@@ -43,7 +43,7 @@ For information on how to create a new Unity Environment, see the walkthrough [h
 If you will be using Tensorflow Sharp in Unity, you must:
 
 1. Make sure you are using Unity 2017.1 or newer.
-2. Make sure the TensorflowSharp [plugin](https://s3.amazonaws.com/unity-agents/TFSharpPlugin.unitypackage) is in your Asset folder.
+2. Make sure the TensorflowSharp [plugin](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage) is in your Asset folder.
 3. Go to `Edit` -> `Project Settings` -> `Player`
 4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
 	1. Go into `Other Settings`.
