@@ -70,6 +70,18 @@ Typical Range: `64` - `2048`
 
 Typical Range: `5e5 - 1e7`
 
+### Normalize 
+
+`normalize` corresponds to whether normalization is applied to the state inputs. This normalization is based on the running average and variance of the states.
+Normalization can be helpful in cases with complex continuous control problems, but may be harmful with simpler discrete control problems.
+
+### Number of Layers
+
+`num_layers` corresponds to how many hidden layers are present after the state input, or after the CNN encoding of the observation. For simple problems,
+fewer layers are likely to train faster and more efficiently. More layers may be necessary for more complex control problems.
+
+Typical range: `1` - `3`
+
 ## Training Statistics
 
 To view training statistics, use Tensorboard. For information on launching and using Tensorboard, see [here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
