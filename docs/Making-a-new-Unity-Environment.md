@@ -4,9 +4,9 @@ This tutorial walks through the process of creating a Unity Environment. A Unity
 
 ## Setting up the Unity Project
 
-1. Open an existing Unity project, or create a new one and import the RL interface package:   
- * [ML-Agents package without TensorflowSharp](https://s3.amazonaws.com/unity-agents/ML-AgentsNoPlugin.unitypackage)  
- * [ML-Agents package with TensorflowSharp](https://s3.amazonaws.com/unity-agents/ML-AgentsWithPlugin.unitypackage)  
+1. Open an existing Unity project, or create a new one and import the RL interface package:
+ * [ML-Agents package without TensorflowSharp](https://s3.amazonaws.com/unity-agents/0.2/ML-AgentsNoPlugin.unitypackage)
+ * [ML-Agents package with TensorflowSharp](https://s3.amazonaws.com/unity-agents/0.2/ML-AgentsWithPlugin.unitypackage)
 
 2. Rename `TemplateAcademy.cs` (and the contained class name) to the desired name of your new academy class. All Template files are in the folder `Assets -> Template -> Scripts`. Typical naming convention is `YourNameAcademy`.
 
@@ -23,11 +23,11 @@ This tutorial walks through the process of creating a Unity Environment. A Unity
 
 6. If you will be using Tensorflow Sharp in Unity, you must:
 	1. Make sure you are using Unity 2017.1 or newer.
-	2. Make sure the TensorflowSharp plugin is in your Asset folder. It can be downloaded [here](https://s3.amazonaws.com/unity-agents/TFSharpPlugin.unitypackage).
+	2. Make sure the TensorflowSharp [plugin](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage) is in your Asset folder.
 	3. Go to `Edit` -> `Project Settings` -> `Player`
-	4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):   
+	4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
 		1. Go into `Other Settings`.
-		2. Select `Scripting Runtime Version` to `Experimental (.NET 4.6 Equivalent)` 
+		2. Select `Scripting Runtime Version` to `Experimental (.NET 4.6 Equivalent)`
 		3. In `Scripting Defined Symbols`, add the flag `ENABLE_TENSORFLOW`
 	5. Note that some of these changes will require a Unity Restart
 
@@ -53,11 +53,11 @@ This tutorial walks through the process of creating a Unity Environment. A Unity
 4. Within **`AcademyReset()`**, you can reset the environment for a new episode. It should contain environment-specific code for setting up the environment. Note that `AcademyReset()` is called at the beginning of the training session to ensure the first episode is similar to the others.
 
 ## Implementing `YourNameBrain`
-For each Brain game object in your academy : 
+For each Brain game object in your academy :
 
 1. Click on the game object `YourNameBrain`
 
-2. In the inspector tab, you can modify the characteristics of the brain in  **`Brain Parameters`** 
+2. In the inspector tab, you can modify the characteristics of the brain in  **`Brain Parameters`**
     * `State Size` Number of variables within the state provided to the agent(s).
     * `Action Size` The number of possible actions for each individual agent to take.
     * `Memory Size` The number of floats the agents will remember each step.
@@ -73,7 +73,7 @@ For each Brain game object in your academy :
  * `Heuristic` : You can have your brain automatically react to the observations and states in a customizable way. You will need to drag a `Decision` script into `YourNameBrain`. To create a custom reaction, you must :
    *  Rename `TemplateDecision.cs` (and the contained class name) to the desired name of your new reaction. Typical naming convention is `YourNameDecision`.
    *  Implement `Decide`: Given the state, observation and memory of an agent, this function must return an array of floats corresponding to the actions taken by the agent. If the action space type is discrete, the array must be of size 1.
-   *  Optionally, implement `MakeMemory`: Given the state, observation and memory of an agent, this function must return an array of floats corresponding to the new memories of the agent. 
+   *  Optionally, implement `MakeMemory`: Given the state, observation and memory of an agent, this function must return an array of floats corresponding to the new memories of the agent.
  * `Internal` : Note that you must have Tensorflow Sharp setup (see top of this page). Here are the fields that must be completed:
    *  `Graph Model` : This must be the `bytes` file corresponding to the pretrained Tensorflow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
    *  `Graph Scope` : If you set a scope while training your tensorflow model, all your placeholder name will have a prefix. You must specify that prefix here.
@@ -87,7 +87,7 @@ For each Brain game object in your academy :
      * `Name` : Corresponds to the name of the placeholder.
      * `Value Type` : Either Integer or Floating Point.
      * `Min Value` and 'Max Value' : Specify the minimum and maximum values (included) the placeholder can take. The value will be sampled from the uniform distribution at each step. If you want this value to be fixed, set both `Min Value` and `Max Value` to the same number.
- 		 
+
 ## Implementing `YourNameAgent`
 
 1. Rename `TemplateAgent.cs` (and the contained class name) to the desired name of your new agent. Typical naming convention is `YourNameAgent`.
@@ -103,7 +103,7 @@ For each Brain game object in your academy :
 6. Implement the following functions in `YourNameAgent.cs` :
  * `InitializeAgent()` : Use this method to initialize your agent. This method is called when the agent is created. Do **not** use `Awake()`, `Start()` or `OnEnable()`.
  * `CollectState()` : Must return a list of floats corresponding to the state the agent is in. If the state space type is discrete, return a list of length 1 containing the float equivalent of your state.
- * `AgentStep()` : This function will be called every frame, you must define what your agent will do given the input actions. You must also specify the rewards and whether or not the agent is done. To do so, modify the public fields of the agent `reward` and `done`. 
+ * `AgentStep()` : This function will be called every frame, you must define what your agent will do given the input actions. You must also specify the rewards and whether or not the agent is done. To do so, modify the public fields of the agent `reward` and `done`.
  * `AgentReset()` : This function is called at start, when the Academy resets and when the agent is done (if `Reset On Done` is checked).
  * `AgentOnDone()` : If `Reset On Done` is not checked, this function will be called when the agent is done. `Reset()` will only be called when the Academy resets.
 
@@ -125,6 +125,3 @@ The reward function is the set of circumstances and event which we want to rewar
 Small negative rewards are also typically used each step in scenarios where the optimal agent behavior is to complete an episode as quickly as possible.
 
 Note that the reward is reset to 0 at every step, you must add to the reward (`reward += rewardIncrement`). If you use `skipFrame` in the Academy and set your rewards instead of incrementing them, you might lose information since the reward is sent at every step, not at every frame.
-
-
-

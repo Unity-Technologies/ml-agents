@@ -77,9 +77,9 @@ Once the training process displays an average reward of ~75 or greater, and ther
 Because TensorFlowSharp support is still experimental, it is disabled by default. In order to enable it, you must follow these steps. Please note that the `Internal` Brain mode will only be available once completing these steps.
 
 1. Make sure you are using Unity 2017.1 or newer.
-2. Make sure the TensorFlowSharp plugin is in your `Assets` folder. A Plugins folder which includes TF# can be downloaded [here](https://s3.amazonaws.com/unity-agents/TFSharpPlugin.unitypackage). Double click and import it once downloaded.
+2. Make sure the TensorFlowSharp plugin is in your `Assets` folder. A Plugins folder which includes TF# can be downloaded [here](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage). Double click and import it once downloaded.
 3. Go to `Edit` -> `Project Settings` -> `Player`
-4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):   
+4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
 	1. Go into `Other Settings`.
 	2. Select `Scripting Runtime Version` to `Experimental (.NET 4.6 Equivalent)`
 	3. In `Scripting Defined Symbols`, add the flag `ENABLE_TENSORFLOW`
