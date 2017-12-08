@@ -194,7 +194,6 @@ public abstract class Agent : MonoBehaviour
     public void Reset()
     {
         memory = new float[brain.brainParameters.memorySize];
-        CumulativeReward = 0f;
         stepCounter = 0;
         AgentReset();
     }
@@ -238,6 +237,7 @@ public abstract class Agent : MonoBehaviour
     public void ResetReward()
     {
         reward = 0;
+        CumulativeReward = 0f;
     }
 
 }
