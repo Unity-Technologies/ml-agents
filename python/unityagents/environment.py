@@ -408,11 +408,17 @@ class UnityEnvironment(object):
                 if b not in memory:
                     memory[b] = [0.0] * self._brains[b].memory_space_size * n_agent
                 else:
-                    memory[b] = self._flatten(memory[b])
+                    if memory[b] is None:
+                        memory[b] = [0.0] * self._brains[b].memory_space_size * n_agent
+                    else:
+                        memory[b] = self._flatten(memory[b])
                 if b not in value:
                     value[b] = [0.0] * n_agent
                 else:
-                    value[b] = self._flatten(value[b])
+                    if value[b] is None:
+                        value[b] = [0.0] * n_agent
+                    else:
+                        value[b] = self._flatten(value[b])
                 if not (len(value[b]) == n_agent):
                     raise UnityActionException(
                         "There was a mismatch between the provided value and environment's expectation: "
