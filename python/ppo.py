@@ -103,8 +103,8 @@ def get_progress():
 
 with tf.Session() as sess:
     trainers = {}
-    for brain in env.external_brain_names:
-        trainers[brain] = Trainer(sess, env, brain, trainer_parameters, train_model)
+    for brain_name in env.external_brain_names:
+        trainers[brain_name] = Trainer(sess, env, brain_name, trainer_parameters, train_model)
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=keep_checkpoints)
     # Instantiate model parameters
@@ -137,7 +137,7 @@ with tf.Session() as sess:
             take_action_memories[brain_name],
             take_action_values[brain_name], 
             take_action_outputs[brain_name]) = trainer.take_action(
-                info[brain], env, brain_name)
+                info[brain_name], env, brain_name)
         new_info = env.step(action = take_action_actions, memory = take_action_memories, value = take_action_values)
         for brain_name, trainer in trainers.iteritems():
             trainer.add_experiences(info[brain_name], new_info[brain_name], take_action_outputs[brain_name])
@@ -164,9 +164,9 @@ with tf.Session() as sess:
                   .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
             graph_name = os.path.basename(os.path.normpath(graph_name))
             nodes = []
-            for brain in trainers.keys():
+            for brain_name in trainers.keys():
                 # TODO: Should the scope be a Trainer property ?
-                scope = (re.sub('[^0-9a-zA-Z]+', '-', brain)) + '/'
+                scope = (re.sub('[^0-9a-zA-Z]+', '-', brain_name)) + '/'
                 nodes +=[scope + x for x in ["action","value_estimate","action_probs"]]
             export_graph(model_path, graph_name, target_nodes=','.join(nodes))
     # Final save Tensorflow model
@@ -179,8 +179,8 @@ graph_name = (env_name.strip()
       .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
 graph_name = os.path.basename(os.path.normpath(graph_name))
 nodes = []
-for brain in trainers.keys():
-    scope = (re.sub('[^0-9a-zA-Z]+', '-', brain)) + '/'
+for brain_name in trainers.keys():
+    scope = (re.sub('[^0-9a-zA-Z]+', '-', brain_name)) + '/'
     nodes +=[scope + x for x in ["action","value_estimate","action_probs"]]   
 export_graph(model_path, graph_name, target_nodes=','.join(nodes)) 
 # export_graph should be in a utils class 

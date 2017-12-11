@@ -19,7 +19,7 @@ class Trainer(object):
         """
         #TODO: Might want to have multiple models here : Store them in a list ?
         with tf.variable_scope(re.sub('[^0-9a-zA-Z]+', '-', brain_name)):
-            self.model = create_agent_model(env, 
+            self.model = create_agent_model(env.brains[brain_name], 
                    lr=trainer_parameters['learning_rate'],
                    h_size=trainer_parameters['hidden_units'],
                    epsilon=trainer_parameters['epsilon'],
@@ -51,6 +51,7 @@ class Trainer(object):
         self.batch_size = trainer_parameters['batch_size']
         self.num_epoch = trainer_parameters['num_epoch']
         self.summary_freq = trainer_parameters['summary_freq']
+        self.brain_name = brain_name
 
     def get_step(self):
         """
@@ -291,8 +292,8 @@ class Trainer(object):
             steps = self.get_step()
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
-                print("Step: {0}. Mean Reward: {1}. Std of Reward: {2}."
-                      .format(steps, mean_reward, np.std(self.stats['cumulative_reward'])))
+                print("{0} : Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
+                      .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
             summary = tf.Summary()
             for key in self.stats:
                 if len(self.stats[key]) > 0:
