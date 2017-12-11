@@ -43,6 +43,7 @@ class Buffer(object):
 				Sets the list of np.array to the input data
 				:param data: The np.array list to be set.
 				"""
+				del self._list
 				self._list = list(np.array(data))
 				#TODO: find a better way to set the np.array list
 			def get_batch(self, batch_size = None, training_length = None):
@@ -133,7 +134,7 @@ class Buffer(object):
 			:param key_list: The fields that must be shuffled.
 			"""
 			if key_list is None:
-				key_list = self.keys()
+				key_list = list(self.keys())
 			if not self.check_length(key_list):
 				raise BufferException("Unable to shuffle if the fields are not of same length")
 				return
@@ -182,6 +183,9 @@ class Buffer(object):
 		# TODO: Need a better name
 		del self.global_buffer
 		self.global_buffer = self.AgentBuffer() 
+		agent_ids = list(self.keys())
+		for k in agent_ids:
+			del self.local_buffers[k]
 		del self.local_buffers
 		self.local_buffers = {}
 	def append_global(self, agent_id ,key_list = None,  batch_size = None, training_length = None):

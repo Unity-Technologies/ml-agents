@@ -32,7 +32,6 @@ class Trainer(object):
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
         self.stats = stats
         self.is_training = training
-        self.use_normalize = trainer_parameters['normalize']
         # TODO: Figure out if using this buffer makes sense
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
@@ -40,19 +39,21 @@ class Trainer(object):
         self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_observations > 0)
         self.use_states = (env.brains[brain_name].state_space_size > 0)
-
         self.summary_path = './summaries/{}'.format(trainer_parameters['run_path']+'_'+brain_name)
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
         #TODO: Some of these fields could be stored in a more efficient way
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
-        self.max_step = trainer_parameters['max_steps']
-        self.buffer_size = trainer_parameters['buffer_size']
-        self.batch_size = trainer_parameters['batch_size']
-        self.num_epoch = trainer_parameters['num_epoch']
-        self.summary_freq = trainer_parameters['summary_freq']
         self.brain_name = brain_name
+        self.brain = env.brains[self.brain_name]
+        self.trainer_parameters = trainer_parameters
 
+    def get_max_steps(self):
+        """
+        Returns the maximum number of steps. Is used to know when the trainer should be stopped.
+        :return: The maximum number of steps of the trainer
+        """
+        return self.trainer_parameters['max_steps']
     def get_step(self):
         """
         Returns the number of steps the trainer has performed
@@ -99,29 +100,27 @@ class Trainer(object):
         new_variance = var + (current_x - new_mean) * (current_x - mean)
         return new_mean, new_variance
 
-    def take_action(self, info, env, brain_name):
-        #This is not where these arguments should be
+    def take_action(self, info):
         """
         Decides actions given state/observation information, and takes them in environment.
         :param info: Current BrainInfo from environment.
-        :param env: Environment to take actions in.
-        :param brain_name: Name of brain we are learning model for.
         :return: a tupple containing action, memories, values and an object
         to be passed to add experiences
         """
         steps = self.get_step()
+        info = info[self.brain_name]
         epsi = None
         feed_dict = {self.model.batch_size: len(info.states)}
         run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
         if self.is_continuous:
-            epsi = np.random.randn(len(info.states), env.brains[brain_name].action_space_size)
+            epsi = np.random.randn(len(info.states), self.brain.action_space_size)
             feed_dict[self.model.epsilon] = epsi
         if self.use_observations:
             feed_dict[self.model.observation_in] = np.vstack(info.observations)
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
-        if self.is_training and env.brains[brain_name].state_space_type == "continuous" and self.use_states and self.use_normalize:
+        if self.is_training and self.brain.state_space_type == "continuous" and self.use_states and self.trainer_parameters['normalize']:
             new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean,
                                                           self.model.running_variance)
             feed_dict[self.model.new_mean] = new_mean
@@ -146,6 +145,8 @@ class Trainer(object):
         :param next_info: Next BrainInfo.
         :param take_action_outputs: The outputs of the take action method.
         """
+        info = info[self.brain_name]
+        next_info = next_info[self.brain_name]
         actions, epsi, a_dist, value = take_action_outputs
         for agent_id in info.agents:
             if agent_id in next_info.agents:
@@ -169,17 +170,15 @@ class Trainer(object):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-    def process_experiences(self, info, time_horizon, gamma, lambd):
+    def process_experiences(self, info):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
         :param info: Current BrainInfo
-        :param time_horizon: Max steps for individual agent history before processing.
-        :param gamma: Discount factor.
-        :param lambd: GAE factor.
         """
+        info = info[self.brain_name]
         for l in range(len(info.agents)):
-            if (info.local_done[l] or len(self.training_buffer[info.agents[l]]['actions']) > time_horizon) and len(
+            if (info.local_done[l] or len(self.training_buffer[info.agents[l]]['actions']) > self.trainer_parameters['time_horizon']) and len(
                     self.training_buffer[info.agents[l]]['actions']) > 0:
                 if info.local_done[l]:
                     value_next = 0.0
@@ -195,7 +194,7 @@ class Trainer(object):
                     get_gae(
                         rewards=self.training_buffer[agent_id]['rewards'].get_batch(),
                         value_estimates=self.training_buffer[agent_id]['value_estimates'].get_batch(),
-                        value_next=value_next, gamma=gamma, lambd=lambd)
+                        value_next=value_next, gamma=self.trainer_parameters['gamma'], lambd=self.trainer_parameters['lambd'])
                 )
                 self.training_buffer[agent_id]['discounted_returns'].set( \
                  self.training_buffer[agent_id]['advantages'].get_batch() \
@@ -231,19 +230,7 @@ class Trainer(object):
         :return: A boolean corresponding to wether or not update_model() can be run
         """
         #TODO: Put this in update_model()
-        return len(self.training_buffer.global_buffer['actions']) > self.buffer_size
-
-    # def reset_buffers(self, brain_info=None, total=False):
-    #     """
-    #     Resets either all training buffers or local training buffers
-    #     :param brain_info: The BrainInfo object containing agent ids.
-    #     :param total: Whether to completely clear buffer.
-    #     """
-    #     if not total:
-    #         for key in self.history_dict:
-    #             self.history_dict[key] = empty_local_history(self.history_dict[key])
-    #     else:
-    #         self.history_dict = empty_all_history(agent_info=brain_info)
+        return len(self.training_buffer.global_buffer['actions']) > self.trainer_parameters['buffer_size']
 
     def update_model(self):
         """
@@ -251,8 +238,8 @@ class Trainer(object):
         :param batch_size: Size of each mini-batch update.
         :param num_epoch: How many passes through data to update model for.
         """
-        num_epoch = self.num_epoch
-        batch_size = self.batch_size
+        num_epoch = self.trainer_parameters['num_epoch']
+        batch_size = self.trainer_parameters['buffer_size']
         total_v, total_p = 0, 0
         advantages = self.training_buffer.global_buffer['advantages'].get_batch()
         self.training_buffer.global_buffer['advantages'].set(
@@ -288,7 +275,7 @@ class Trainer(object):
         :param lesson_number: The lesson the trainer is at.
         """
         #TODO: Is there a way to remove lesson_number of make it a flexible structure?
-        if self.get_step() % self.summary_freq == 0 and self.get_step() != 0 and self.is_training:
+        if self.get_step() % self.trainer_parameters['summary_freq'] == 0 and self.get_step() != 0 and self.is_training:
             steps = self.get_step()
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
