@@ -10,6 +10,10 @@ from ppo.models import *
 from ppo.trainer import Trainer
 from unityagents import UnityEnvironment
 
+
+
+
+
 _USAGE = '''
 Usage:
   ppo (<env>) [options] 
@@ -147,6 +151,8 @@ with tf.Session() as sess:
             if trainer.is_ready_update() and train_model:
                 # Perform gradient descent with experience buffer
                 trainer.update_model()
+
+
             # Write training statistics to tensorboard.
             trainer.write_summary(env._curriculum.lesson_number)
             if train_model:

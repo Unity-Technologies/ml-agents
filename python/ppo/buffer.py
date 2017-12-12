@@ -1,5 +1,7 @@
 import numpy as np
 
+
+
 class BufferException(Exception):
     """
     Related to errors with the Buffer.
@@ -56,8 +58,8 @@ class Buffer(object):
 				None: only takes one element.
 				"""
 				#TODO: Decide what to do if there enough points to retrieve 
-				if training_length == None:
-					if batch_size == None:
+				if training_length is None:
+					if batch_size is None:
 						#return all of them
 						return np.array(self._list)
 					else:
@@ -66,7 +68,7 @@ class Buffer(object):
 							raise BufferException("Batch size requested is too large")
 						return np.array(self._list[-batch_size:])
 				else:
-					if batch_size == None:
+					if batch_size is None:
 						# retrieve the maximum number of elements
 						batch_size = len(self._list) - training_length + 1
 					if (len(self._list) - training_length + 1) < batch_size :
@@ -93,6 +95,9 @@ class Buffer(object):
 			Resets the AgentBuffer
 			"""
 			#TODO: There might be some garbage collection issues ?
+			field_list = self._data.keys()
+			for k in field_list:
+				del self._data[k]
 			del self._data
 			self._data = {}
 		def __len__(self):
@@ -188,6 +193,7 @@ class Buffer(object):
 			del self.local_buffers[k]
 		del self.local_buffers
 		self.local_buffers = {}
+		# gc.collect()
 	def append_global(self, agent_id ,key_list = None,  batch_size = None, training_length = None):
 		"""
 		Appends the buffer of an agent to the global buffer.
@@ -203,7 +209,7 @@ class Buffer(object):
 				.format(key_list, agent_id))
 		for field_key in key_list:
 			self.global_buffer[field_key].append_list(
-				self.local_buffers[agent_id][field_key].get_batch(batch_size, training_length)
+				self.local_buffers[agent_id][field_key].get_batch(batch_size =batch_size, training_length =training_length)
 			)
 	def append_all_agent_batch_to_global(self, key_list = None,  batch_size = None, training_length = None):
 		"""

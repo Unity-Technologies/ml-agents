@@ -151,7 +151,7 @@ class Trainer(object):
         for agent_id in info.agents:
             if agent_id in next_info.agents:
                 idx = info.agents.index(agent_id)
-                next_idx = idx = next_info.agents.index(agent_id)
+                next_idx = next_info.agents.index(agent_id)
                 if not info.local_done[idx]:
                     if self.use_observations:
                         self.training_buffer[agent_id]['observations'].append_element([info.observations[0][idx]])
@@ -239,7 +239,7 @@ class Trainer(object):
         :param num_epoch: How many passes through data to update model for.
         """
         num_epoch = self.trainer_parameters['num_epoch']
-        batch_size = self.trainer_parameters['buffer_size']
+        batch_size = self.trainer_parameters['batch_size']
         total_v, total_p = 0, 0
         advantages = self.training_buffer.global_buffer['advantages'].get_batch()
         self.training_buffer.global_buffer['advantages'].set(
