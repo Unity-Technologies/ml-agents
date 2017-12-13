@@ -556,8 +556,8 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 378228137}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 617, y: 351.5, z: 0}
-  m_LocalScale: {x: 1.344357, y: 1.344357, z: 1.344357}
+  m_LocalPosition: {x: 746, y: 426.5, z: 0}
+  m_LocalScale: {x: 1.6283145, y: 1.6283145, z: 1.6283145}
   m_Children:
   - {fileID: 1799584681}
   m_Father: {fileID: 0}
@@ -597,7 +597,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   banana: {fileID: 1977190621099370, guid: 283cfdfe70d4d402ab7c47c231020676, type: 2}
-  numBananas: 100
+  numBananas: 50
+  respawnBananas: 1
 --- !u!4 &434326112
 Transform:
   m_ObjectHideFlags: 0
@@ -2046,6 +2047,10 @@ Prefab:
         type: 2}
       propertyPath: maxStep
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1302727675274720, guid: 95a35afee6ce546a5bb9ed8306dce489, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 95a35afee6ce546a5bb9ed8306dce489, type: 2}

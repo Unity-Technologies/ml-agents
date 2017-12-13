@@ -6,6 +6,7 @@ public class BananaArea : Area {
 
     public GameObject banana;
     public int numBananas;
+    public bool respawnBananas;
 
 	// Use this for initialization
 	void Start () {
@@ -34,6 +35,7 @@ public class BananaArea : Area {
 
         for (int i = 0; i < numBananas; i++) {
             GameObject bana = Instantiate(banana, new Vector3(Random.Range(-range, range), 2f, Random.Range(-range, range)) + transform.position, banana.gameObject.transform.rotation);
+            bana.GetComponent<BananaLogic>().respawn = true;
         }
 	}
 

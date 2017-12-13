@@ -177,13 +177,9 @@ public class BananaAgent : Agent
     {
         if (collision.gameObject.tag == "banana")
         {
-            // Agent agent = myAgent.GetComponent<Agent>();
-            //print("banana goal");
-            //Destroy(collision.gameObject);
-            collision.gameObject.transform.position = new Vector3(Random.Range(-45f, 45f), collision.gameObject.transform.position.y + 3f, Random.Range(-45f, 45f));
+            collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             reward += 1f;
             bananas += 1;
-            // myAgentPVP1.reward -= 1f;
         }
     }
 
