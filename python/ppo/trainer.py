@@ -154,15 +154,15 @@ class Trainer(object):
                 next_idx = next_info.agents.index(agent_id)
                 if not info.local_done[idx]:
                     if self.use_observations:
-                        self.training_buffer[agent_id]['observations'].append_element([info.observations[0][idx]])
+                        self.training_buffer[agent_id]['observations'].append([info.observations[0][idx]])
                     if self.use_states:
-                        self.training_buffer[agent_id]['states'].append_element(info.states[idx])
+                        self.training_buffer[agent_id]['states'].append(info.states[idx])
                     if self.is_continuous:
-                        self.training_buffer[agent_id]['epsilons'].append_element(epsi[idx])
-                    self.training_buffer[agent_id]['actions'].append_element(actions[idx])
-                    self.training_buffer[agent_id]['rewards'].append_element(next_info.rewards[next_idx])
-                    self.training_buffer[agent_id]['action_probs'].append_element(a_dist[idx])
-                    self.training_buffer[agent_id]['value_estimates'].append_element(value[idx][0])
+                        self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
+                    self.training_buffer[agent_id]['actions'].append(actions[idx])
+                    self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
+                    self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
+                    self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]

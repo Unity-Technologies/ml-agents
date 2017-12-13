@@ -7,7 +7,7 @@ from docopt import docopt
 import os
 import re
 from ppo.models import *
-from ppo.trainer import Trainer
+from ppo.trainer_lstm import Trainer
 from unityagents import UnityEnvironment
 
 
@@ -164,15 +164,16 @@ with tf.Session() as sess:
             # Save Tensorflow model
             save_model(sess, model_path=model_path, steps=global_step, saver=saver)
 
-            graph_name = (env_name.strip()
-                  .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
-            graph_name = os.path.basename(os.path.normpath(graph_name))
-            nodes = []
-            for brain_name in trainers.keys():
-                # TODO: Should the scope be a Trainer property ?
-                scope = (re.sub('[^0-9a-zA-Z]+', '-', brain_name)) + '/'
-                nodes +=[scope + x for x in ["action","value_estimate","action_probs"]]
-            export_graph(model_path, graph_name, target_nodes=','.join(nodes))
+            #This seems to lead to memory issues with the python process
+            # graph_name = (env_name.strip()
+            #       .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
+            # graph_name = os.path.basename(os.path.normpath(graph_name))
+            # nodes = []
+            # for brain_name in trainers.keys():
+            #     # TODO: Should the scope be a Trainer property ?
+            #     scope = (re.sub('[^0-9a-zA-Z]+', '-', brain_name)) + '/'
+            #     nodes +=[scope + x for x in ["action","value_estimate","action_probs"]]
+            # export_graph(model_path, graph_name, target_nodes=','.join(nodes))
     # Final save Tensorflow model
     if global_step != 0 and train_model:
         save_model(sess, model_path=model_path, steps=global_step, saver=saver)
