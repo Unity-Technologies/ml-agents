@@ -36,6 +36,10 @@ class Buffer(dict):
 				All elements will be retrieved.
 				:param training_length: The length of the sequence to be retrieved. If
 				None: only takes one element.
+				:param sequential: If true and training_length is not None: the elements 
+				will not repeat in the sequence. [a,b,c,d,e] with training_length = 2 and
+				sequential=True gives [[a,b],[c,d],[0,e]]. If sequential=False gives
+				[[a,b],[b,c],[c,d],[d,e]]
 				"""
 				#TODO: Decide what to do if there enough points to retrieve 
 				if training_length is None:
