@@ -18,8 +18,6 @@ class Buffer(dict):
 				"""
 				#TODO: need to handle the case the data is not the right size
 				self += list(np.array(data))
-			# def reorder(self, order):
-			# 	self.sort
 			def set(self, data):
 				"""
 				Sets the list of np.array to the input data
@@ -27,7 +25,6 @@ class Buffer(dict):
 				"""
 				self[:] = []
 				self[:] = list(np.array(data))
-				#TODO: find a better way to set the np.array list
 			def get_batch(self, batch_size = None, training_length = None, sequential = True):
 				"""
 				Retrieve the last batch_size elements of length training_length

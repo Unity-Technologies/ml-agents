@@ -324,7 +324,11 @@ class UnityEnvironment(object):
         except socket.timeout as e:
             raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
         action_message = {"action": action, "memory": memory, "value": value}
-        self._conn.send(json.dumps(action_message).encode('utf-8'))
+        self._conn.send(self._append_length(json.dumps(action_message).encode('utf-8')))
+
+    @staticmethod
+    def _append_length(message):
+        return struct.pack("I", len(message)) + message
 
     @staticmethod
     def _flatten(arr):

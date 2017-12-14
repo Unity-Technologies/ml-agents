@@ -80,7 +80,11 @@ trainer_parameters = {'max_steps':max_steps, 'run_path':run_path, 'env_name':env
     'curriculum_file':curriculum_file, 'gamma':gamma, 'lambd':lambd, 'time_horizon':time_horizon,
     'beta':beta, 'num_epoch':num_epoch, 'epsilon':epsilon, 'buffer_size':buffer_size,
     'learning_rate':learning_rate, 'hidden_units':hidden_units, 'batch_size':batch_size,
-    'normalize':normalize, 'summary_freq':summary_freq, 'num_layers':num_layers}
+    'normalize':normalize, 'summary_freq':summary_freq, 'num_layers':num_layers,
+
+    'use_memory':True,
+    'sequence_length':1
+    }
 # TODO: trainer parameters could contain a string for the type of trainer to use and a string for the 
 # TODO: add a string for the type of model to use ?
 # TODO: Find a better structure to store the trainer paramters
@@ -126,7 +130,7 @@ with tf.Session() as sess:
         for brain_name, trainer in trainers.items():
             trainer.write_text('Hyperparameters', trainer_parameters) #will need one trainer_parameters per trainer
     global_step = 0 # This is only for saving the model
-    while any([t.get_step() < t.get_max_steps() for k, t in trainers.items()]) :
+    while any([t.get_step() < t.get_max_steps() for k, t in trainers.items()]) or not train_model:
         if env.global_done:
             info = env.reset(train_mode=train_model, progress=get_progress())
             for brain_name, trainer in trainers.items():

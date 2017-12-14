@@ -197,6 +197,7 @@ public abstract class Agent : MonoBehaviour
         stepCounter = 0;
         CumulativeReward = 0f;
         AgentReset();
+        CumulativeReward = -reward;
     }
 
     /// Do not modify : Is used by the brain to collect rewards.
