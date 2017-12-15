@@ -90,12 +90,12 @@ public class BrainParameters
 public class Brain : MonoBehaviour
 {
     // Current agent info
-    public Dictionary<int, List<float>> currentStates = new Dictionary<int, List<float>>();
-    public Dictionary<int, List<Camera>> currentCameras = new Dictionary<int, List<Camera>>();
-    public Dictionary<int, float> currentRewards = new Dictionary<int, float>();
-    public Dictionary<int, bool> currentDones = new Dictionary<int, bool>();
-    public Dictionary<int, float[]> currentActions = new Dictionary<int, float[]>();
-    public Dictionary<int, float[]> currentMemories = new Dictionary<int, float[]>();
+    public Dictionary<int, List<float>> currentStates = new Dictionary<int, List<float>>(32);
+    public Dictionary<int, List<Camera>> currentCameras = new Dictionary<int, List<Camera>>(32);
+    public Dictionary<int, float> currentRewards = new Dictionary<int, float>(32);
+    public Dictionary<int, bool> currentDones = new Dictionary<int, bool>(32);
+    public Dictionary<int, float[]> currentActions = new Dictionary<int, float[]>(32);
+    public Dictionary<int, float[]> currentMemories = new Dictionary<int, float[]>(32);
 
 
     public BrainParameters brainParameters = new BrainParameters();
@@ -232,15 +232,10 @@ public class Brain : MonoBehaviour
             }
 
             currentStates.Add(idAgent.Key, states);
-
             currentCameras.Add(idAgent.Key, observations);
-
             currentRewards.Add(idAgent.Key, idAgent.Value.reward);
-
             currentDones.Add(idAgent.Key, idAgent.Value.done);
-
             currentActions.Add(idAgent.Key, idAgent.Value.agentStoredAction);
-
             currentMemories.Add(idAgent.Key, idAgent.Value.memory);
         }
     }

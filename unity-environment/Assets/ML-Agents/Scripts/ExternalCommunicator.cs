@@ -32,13 +32,6 @@ public class ExternalCommunicator : Communicator
     List<bool> concatenatedDones = new List<bool>(32);
     List<float> concatenatedActions = new List<float>(1024);
 
-    //Dictionary<int, List<Camera>> collectedObservations;
-    //Dictionary<int, List<float>> collectedStates;
-    //Dictionary<int, float> collectedRewards;
-    //Dictionary<int, float[]> collectedMemories;
-    //Dictionary<int, bool> collectedDones;
-    //Dictionary<int, float[]> collectedActions;
-
     private int comPort;
     Socket sender;
     byte[] messageHolder;
