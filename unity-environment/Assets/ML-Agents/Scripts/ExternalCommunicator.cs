@@ -43,32 +43,27 @@ public class ExternalCommunicator : Communicator
 
     const string api = "API-2";
 
-    struct StepMessage
+    [System.Serializable]
+    public struct StepMessage
     {
-        public string brain_name { get; set; }
-
-        public List<int> agents { get; set; }
-
-        public List<float> states { get; set; }
-
-        public List<float> rewards { get; set; }
-
-        public List<float> actions { get; set; }
-
-        public List<float> memories { get; set; }
-
-        public List<bool> dones { get; set; }
+        public string brain_name;
+        public List<int> agents;
+        public List<float> states;
+        public List<float> rewards;
+        public List<float> actions;
+        public List<float> memories;
+        public List<bool> dones;
     }
 
     StepMessage sMessage;
     string sMessageString;
 
+    string rMessage;
+
     struct AgentMessage
     {
         public Dictionary<string, List<float>> action { get; set; }
-
         public Dictionary<string, List<float>> memory { get; set; }
-
         public Dictionary<string, List<float>> value { get; set; }
 
     }
@@ -76,7 +71,6 @@ public class ExternalCommunicator : Communicator
     struct ResetParametersMessage
     {
         public Dictionary<string, float> parameters { get; set; }
-
         public bool train_model { get; set; }
     }
 
@@ -186,7 +180,8 @@ public class ExternalCommunicator : Communicator
     public Dictionary<string, float> GetResetParameters()
     {
         sender.Send(Encoding.ASCII.GetBytes("CONFIG_REQUEST"));
-        ResetParametersMessage resetParams = JsonConvert.DeserializeObject<ResetParametersMessage>(Receive());
+        Receive();
+        ResetParametersMessage resetParams = JsonConvert.DeserializeObject<ResetParametersMessage>(rMessage);
         academy.isInference = !resetParams.train_model;
         return resetParams.parameters;
     }
@@ -216,13 +211,11 @@ public class ExternalCommunicator : Communicator
     }
 
     /// Receives messages from external agent
-    private string Receive()
+    private void Receive()
     {
         int location = sender.Receive(messageHolder);
-        string message = Encoding.ASCII.GetString(messageHolder, 0, location);
-        return message;
+        rMessage = Encoding.ASCII.GetString(messageHolder, 0, location);
     }
-
 
     /// Ends connection and closes environment
     private void OnApplicationQuit()
@@ -279,7 +272,7 @@ public class ExternalCommunicator : Communicator
         sMessage.memories = concatenatedMemories;
         sMessage.dones = concatenatedDones;
 
-        sMessageString = JsonConvert.SerializeObject(sMessage, Formatting.Indented);
+        sMessageString = JsonUtility.ToJson(sMessage);
         sender.Send(AppendLength(Encoding.ASCII.GetBytes(sMessageString)));
         Receive();
         int i = 0;
@@ -314,8 +307,8 @@ public class ExternalCommunicator : Communicator
     {
         // TO MODIFY	--------------------------------------------
         sender.Send(Encoding.ASCII.GetBytes("STEPPING"));
-        string a = Receive();
-        AgentMessage agentMessage = JsonConvert.DeserializeObject<AgentMessage>(a);
+        Receive();
+        AgentMessage agentMessage = JsonConvert.DeserializeObject<AgentMessage>(rMessage);
 
         foreach (Brain brain in brains)
         {
