@@ -25,6 +25,20 @@ public class ExternalCommunicator : Communicator
     Dictionary<string, Dictionary<int, float[]>> storedMemories;
     Dictionary<string, Dictionary<int, float>> storedValues;
 
+    // For Messages
+    List<float> concatenatedStates = new List<float>(1024);
+    List<float> concatenatedRewards = new List<float>(32);
+    List<float> concatenatedMemories = new List<float>(1024);
+    List<bool> concatenatedDones = new List<bool>(32);
+    List<float> concatenatedActions = new List<float>(1024);
+
+    //Dictionary<int, List<Camera>> collectedObservations;
+    //Dictionary<int, List<float>> collectedStates;
+    //Dictionary<int, float> collectedRewards;
+    //Dictionary<int, float[]> collectedMemories;
+    //Dictionary<int, bool> collectedDones;
+    //Dictionary<int, float[]> collectedActions;
+
     private int comPort;
     Socket sender;
     byte[] messageHolder;
@@ -93,7 +107,8 @@ public class ExternalCommunicator : Communicator
     }
 
 
-    public bool CommunicatorHandShake(){
+    public bool CommunicatorHandShake()
+    {
         try
         {
             ReadArgs();
@@ -141,14 +156,14 @@ public class ExternalCommunicator : Communicator
         SendParameters(accParamerters);
     }
 
-	void HandleLog(string logString, string stackTrace, LogType type)
-	{
+    void HandleLog(string logString, string stackTrace, LogType type)
+    {
         logWriter = new StreamWriter(logPath, true);
         logWriter.WriteLine(type.ToString());
         logWriter.WriteLine(logString);
         logWriter.WriteLine(stackTrace);
         logWriter.Close();
-	}
+    }
 
     /// Listens to the socket for a command and returns the corresponding
     ///  External Command.
@@ -228,7 +243,8 @@ public class ExternalCommunicator : Communicator
         return bytes;
     }
 
-    private byte[] AppendLength(byte[] input){
+    private byte[] AppendLength(byte[] input)
+    {
         byte[] newArray = new byte[input.Length + 4];
         input.CopyTo(newArray, 4);
         System.BitConverter.GetBytes(input.Length).CopyTo(newArray, 0);
@@ -240,25 +256,21 @@ public class ExternalCommunicator : Communicator
     {
         string brainName = brain.gameObject.name;
         current_agents[brainName] = new List<int>(brain.agents.Keys);
-        List<float> concatenatedStates = new List<float>();
-        List<float> concatenatedRewards = new List<float>();
-        List<float> concatenatedMemories = new List<float>();
-        List<bool> concatenatedDones = new List<bool>();
-        List<float> concatenatedActions = new List<float>();
-        Dictionary<int, List<Camera>> collectedObservations = brain.CollectObservations();
-        Dictionary<int, List<float>> collectedStates = brain.CollectStates();
-        Dictionary<int, float> collectedRewards = brain.CollectRewards();
-        Dictionary<int, float[]> collectedMemories = brain.CollectMemories();
-        Dictionary<int, bool> collectedDones = brain.CollectDones();
-        Dictionary<int, float[]> collectedActions = brain.CollectActions();
+        brain.CollectEverything();
+
+        concatenatedStates.Clear();
+        concatenatedRewards.Clear();
+        concatenatedMemories.Clear();
+        concatenatedDones.Clear();
+        concatenatedActions.Clear();
 
         foreach (int id in current_agents[brainName])
         {
-            concatenatedStates = concatenatedStates.Concat(collectedStates[id]).ToList();
-            concatenatedRewards.Add(collectedRewards[id]);
-            concatenatedMemories = concatenatedMemories.Concat(collectedMemories[id].ToList()).ToList();
-            concatenatedDones.Add(collectedDones[id]);
-            concatenatedActions = concatenatedActions.Concat(collectedActions[id].ToList()).ToList();
+            concatenatedStates = concatenatedStates.Concat(brain.currentStates[id]).ToList();
+            concatenatedRewards.Add(brain.currentRewards[id]);
+            concatenatedMemories = concatenatedMemories.Concat(brain.currentMemories[id].ToList()).ToList();
+            concatenatedDones.Add(brain.currentDones[id]);
+            concatenatedActions = concatenatedActions.Concat(brain.currentActions[id].ToList()).ToList();
         }
         StepMessage message = new StepMessage()
         {
@@ -278,7 +290,7 @@ public class ExternalCommunicator : Communicator
         {
             foreach (int id in current_agents[brainName])
             {
-                sender.Send(AppendLength(TexToByteArray(brain.ObservationToTex(collectedObservations[id][i], res.width, res.height))));
+                sender.Send(AppendLength(TexToByteArray(brain.ObservationToTex(brain.currentCameras[id][i], res.width, res.height))));
                 Receive();
             }
             i++;
@@ -315,6 +327,9 @@ public class ExternalCommunicator : Communicator
                 string brainName = brain.gameObject.name;
 
                 Dictionary<int, float[]> actionDict = new Dictionary<int, float[]>();
+                Dictionary<int, float[]> memoryDict = new Dictionary<int, float[]>();
+                Dictionary<int, float> valueDict = new Dictionary<int, float>();
+
                 for (int i = 0; i < current_agents[brainName].Count; i++)
                 {
                     if (brain.brainParameters.actionSpaceType == StateType.continuous)
@@ -327,26 +342,18 @@ public class ExternalCommunicator : Communicator
                         actionDict.Add(current_agents[brainName][i],
                             agentMessage.action[brainName].GetRange(i, 1).ToArray());
                     }
+
+                    memoryDict.Add(current_agents[brainName][i],
+    agentMessage.memory[brainName].GetRange(i * brain.brainParameters.memorySize, brain.brainParameters.memorySize).ToArray());
+                    
+                    valueDict.Add(current_agents[brainName][i],
+    agentMessage.value[brainName][i]);
+
                 }
                 storedActions[brainName] = actionDict;
-
-                Dictionary<int, float[]> memoryDict = new Dictionary<int, float[]>();
-                for (int i = 0; i < current_agents[brainName].Count; i++)
-                {
-                    memoryDict.Add(current_agents[brainName][i],
-                        agentMessage.memory[brainName].GetRange(i * brain.brainParameters.memorySize, brain.brainParameters.memorySize).ToArray());
-                }
                 storedMemories[brainName] = memoryDict;
-
-                Dictionary<int, float> valueDict = new Dictionary<int, float>();
-                for (int i = 0; i < current_agents[brainName].Count; i++)
-                {
-                    valueDict.Add(current_agents[brainName][i],
-                        agentMessage.value[brainName][i]);
-                }
                 storedValues[brainName] = valueDict;
             }
-
         }
     }
 
