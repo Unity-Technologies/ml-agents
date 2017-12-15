@@ -31,7 +31,6 @@ public class GridAgent : Agent
         int closestPitDistance = 2 * (int)academy.resetParameters["gridSize"];
         GameObject currentClosestPit = academy.actorObjs[0];
         GameObject agent = academy.actorObjs[0];
-        List<float> state = new List<float>();
         foreach (GameObject actor in academy.actorObjs)
         {
             if (actor.tag == "agent")

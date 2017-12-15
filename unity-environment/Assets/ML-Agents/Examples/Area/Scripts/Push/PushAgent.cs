@@ -7,16 +7,21 @@ public class PushAgent : AreaAgent
 	public GameObject goalHolder;
     public GameObject block;
 
+    Rigidbody rb;
+
+    Vector3 velocity;
+    Vector3 blockVelocity;
+
     public override void InitializeAgent()
     {
 		base.InitializeAgent();
+        rb = GetComponent<Rigidbody>();
     }
 
 	public override List<float> CollectState()
 	{
-		List<float> state = new List<float>();
-        Vector3 velocity = GetComponent<Rigidbody>().velocity;
-        Vector3 blockVelocity = block.GetComponent<Rigidbody>().velocity;
+        velocity = rb.velocity;
+        blockVelocity = block.GetComponent<Rigidbody>().velocity;
         state.Add((transform.position.x - area.transform.position.x));
         state.Add((transform.position.y - area.transform.position.y));
         state.Add((transform.position.z + 5 - area.transform.position.z));
@@ -60,7 +65,7 @@ public class PushAgent : AreaAgent
 	{
         float xVariation = GameObject.Find("Academy").GetComponent<PushAcademy>().xVariation;
         transform.position = new Vector3(Random.Range(-xVariation, xVariation), 1.1f, -8f) + area.transform.position;
-		GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+		rb.velocity = new Vector3(0f, 0f, 0f);
 
         area.GetComponent<Area>().ResetArea();
 	}

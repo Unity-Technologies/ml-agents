@@ -9,7 +9,6 @@ public class AreaAgent : Agent
 
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
         Vector3 velocity = GetComponent<Rigidbody>().velocity;
 
 		state.Add((transform.position.x - area.transform.position.x));

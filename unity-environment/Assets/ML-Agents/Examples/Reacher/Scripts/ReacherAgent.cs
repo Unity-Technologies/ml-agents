@@ -21,7 +21,6 @@ public class ReacherAgent : Agent {
 
 	public override List<float> CollectState()
 	{
-		List<float> state = new List<float>();
         state.Add(pendulumA.transform.rotation.x);
         state.Add(pendulumA.transform.rotation.y);
         state.Add(pendulumA.transform.rotation.z);
