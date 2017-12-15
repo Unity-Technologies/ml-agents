@@ -115,7 +115,6 @@ class UnityEnvironment(object):
                     "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
                     "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
                     "of ML-Agents.".format(self._python_api, self._unity_api))
-
             self._data = {}
             self._global_done = None
             self._academy_name = p["AcademyName"]

@@ -60,6 +60,9 @@ public class ExternalCommunicator : Communicator
         public List<bool> dones { get; set; }
     }
 
+    StepMessage sMessage;
+    string sMessageString;
+
     struct AgentMessage
     {
         public Dictionary<string, List<float>> action { get; set; }
@@ -147,6 +150,8 @@ public class ExternalCommunicator : Communicator
         accParamerters.resetParameters = academy.resetParameters;
 
         SendParameters(accParamerters);
+
+        sMessage = new StepMessage();
     }
 
     void HandleLog(string logString, string stackTrace, LogType type)
@@ -259,24 +264,23 @@ public class ExternalCommunicator : Communicator
 
         foreach (int id in current_agents[brainName])
         {
-            concatenatedStates = concatenatedStates.Concat(brain.currentStates[id]).ToList();
+            concatenatedStates.AddRange(brain.currentStates[id]);
             concatenatedRewards.Add(brain.currentRewards[id]);
-            concatenatedMemories = concatenatedMemories.Concat(brain.currentMemories[id].ToList()).ToList();
+            concatenatedMemories.AddRange(brain.currentMemories[id].ToList());
             concatenatedDones.Add(brain.currentDones[id]);
-            concatenatedActions = concatenatedActions.Concat(brain.currentActions[id].ToList()).ToList();
+            concatenatedActions.AddRange(brain.currentActions[id].ToList());
         }
-        StepMessage message = new StepMessage()
-        {
-            brain_name = brainName,
-            agents = current_agents[brainName],
-            states = concatenatedStates,
-            rewards = concatenatedRewards,
-            actions = concatenatedActions,
-            memories = concatenatedMemories,
-            dones = concatenatedDones
-        };
-        string envMessage = JsonConvert.SerializeObject(message, Formatting.Indented);
-        sender.Send(AppendLength(Encoding.ASCII.GetBytes(envMessage)));
+
+        sMessage.brain_name = brainName;
+        sMessage.agents = current_agents[brainName];
+        sMessage.states = concatenatedStates;
+        sMessage.rewards = concatenatedRewards;
+        sMessage.actions = concatenatedActions;
+        sMessage.memories = concatenatedMemories;
+        sMessage.dones = concatenatedDones;
+
+        sMessageString = JsonConvert.SerializeObject(sMessage, Formatting.Indented);
+        sender.Send(AppendLength(Encoding.ASCII.GetBytes(sMessageString)));
         Receive();
         int i = 0;
         foreach (resolution res in brain.brainParameters.cameraResolutions)
