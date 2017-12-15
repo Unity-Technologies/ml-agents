@@ -212,7 +212,7 @@ public class Brain : MonoBehaviour
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
             idAgent.Value.SetCumulativeReward();
-            List<float> states = idAgent.Value.CollectState();
+            List<float> states = idAgent.Value.ClearAndCollectState();
             if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
@@ -249,7 +249,7 @@ public class Brain : MonoBehaviour
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
             idAgent.Value.SetCumulativeReward();
-            List<float> states = idAgent.Value.CollectState();
+            List<float> states = idAgent.Value.ClearAndCollectState();
             if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
@@ -389,8 +389,7 @@ public class Brain : MonoBehaviour
     /// which are not done
     public void Step()
     {
-        List<Agent> agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
+        foreach (Agent agent in agents.Values)
         {
             if (!agent.done)
             {
@@ -402,8 +401,7 @@ public class Brain : MonoBehaviour
     /// Is used by the Academy to reset the agents if they are done
     public void ResetIfDone()
     {
-        List<Agent> agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
+        foreach (Agent agent in agents.Values)
         {
             if (agent.done)
             {
@@ -422,8 +420,7 @@ public class Brain : MonoBehaviour
     /// Is used by the Academy to reset all agents 
     public void Reset()
     {
-        List<Agent> agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
+        foreach (Agent agent in agents.Values)
         {
             agent.Reset();
             agent.done = false;

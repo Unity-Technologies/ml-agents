@@ -74,8 +74,6 @@ public abstract class Academy : MonoBehaviour
     [HideInInspector]
     private List<Brain> brains = new List<Brain>();
 
-
-
     ExternalCommand externalCommand;
 
     private bool acceptingSteps;

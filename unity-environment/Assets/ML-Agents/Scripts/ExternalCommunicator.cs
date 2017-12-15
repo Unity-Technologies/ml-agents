@@ -43,7 +43,7 @@ public class ExternalCommunicator : Communicator
 
     const string api = "API-2";
 
-    private class StepMessage
+    struct StepMessage
     {
         public string brain_name { get; set; }
 
@@ -60,7 +60,7 @@ public class ExternalCommunicator : Communicator
         public List<bool> dones { get; set; }
     }
 
-    private class AgentMessage
+    struct AgentMessage
     {
         public Dictionary<string, List<float>> action { get; set; }
 
@@ -70,7 +70,7 @@ public class ExternalCommunicator : Communicator
 
     }
 
-    private class ResetParametersMessage
+    struct ResetParametersMessage
     {
         public Dictionary<string, float> parameters { get; set; }
 

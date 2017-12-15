@@ -29,6 +29,9 @@ public abstract class Agent : MonoBehaviour
     /**< If true, the agent will reset when done. 
 	 * If not, the agent will remain done, and no longer take actions.*/
 
+    public List<float> state;
+    // State list for the agent.
+
     [HideInInspector]
     public float reward;
     /**< \brief Describes the reward for the given step of the agent.*/
@@ -140,7 +143,7 @@ public abstract class Agent : MonoBehaviour
 	*/
     public virtual void InitializeAgent()
     {
-
+        state = new List<float>(brain.brainParameters.stateSize);
     }
 
     /// Collect the states of the agent with this method
@@ -151,9 +154,15 @@ public abstract class Agent : MonoBehaviour
 	 *  Note : The order of the elements in the state list is important.
 	 *  @returns state A list of floats corresponding to the state of the agent. 
 	*/
+
+    public List<float> ClearAndCollectState() {
+        state.Clear();
+        CollectState();
+        return state;
+    }
+
     public virtual List<float> CollectState()
     {
-        List<float> state = new List<float>();
         return state;
     }
 
