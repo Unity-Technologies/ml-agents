@@ -204,12 +204,6 @@ public abstract class Academy : MonoBehaviour
             brain.ResetDoneAndReward();
         }
 
-        //SendState();
-
-        //foreach (Brain brain in brains)
-        //{
-        //    brain.ResetDoneAndReward();
-        //}
     }
 
     // Called before AcademyReset().
@@ -228,15 +222,6 @@ public abstract class Academy : MonoBehaviour
         }
 
     }
-
-    // Instructs all brains to collect states from their agents.
-    //private void SendState()
-    //{
-    //    foreach (Brain brain in brains)
-    //    {
-    //        brain.SendState();
-    //    }
-    //}
 
     // Instructs all brains to process states to produce actions.
     private void DecideAction()

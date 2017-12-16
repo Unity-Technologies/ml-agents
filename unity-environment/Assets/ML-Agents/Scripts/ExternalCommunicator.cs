@@ -65,7 +65,6 @@ public class ExternalCommunicator : Communicator
         public Dictionary<string, List<float>> action { get; set; }
         public Dictionary<string, List<float>> memory { get; set; }
         public Dictionary<string, List<float>> value { get; set; }
-
     }
 
     struct ResetParametersMessage
