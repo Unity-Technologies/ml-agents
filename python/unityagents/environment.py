@@ -22,7 +22,7 @@ logger = logging.getLogger("unityagents")
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005, curriculum=None):
+                 base_port=5005, curriculum=None, lesson=0):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -127,7 +127,7 @@ class UnityEnvironment(object):
             self._num_brains = len(self._brain_names)
             self._num_external_brains = len(self._external_brain_names)
             self._resetParameters = p["resetParameters"]
-            self._curriculum = Curriculum(curriculum, self._resetParameters)
+            self._curriculum = Curriculum(curriculum, self._resetParameters, lesson)
             for i in range(self._num_brains):
                 self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
             self._loaded = True
