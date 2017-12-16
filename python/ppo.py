@@ -56,6 +56,7 @@ worker_id = int(options['--worker-id'])
 curriculum_file = str(options['--curriculum'])
 if curriculum_file == "None":
     curriculum_file = None
+lesson = int(options['--lesson'])
 
 # Algorithm-specific parameters for tuning
 gamma = float(options['--gamma'])
@@ -70,7 +71,6 @@ learning_rate = float(options['--learning-rate'])
 hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
 normalize = options['--normalize']
-lesson = int(options['--lesson'])
 
 env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file, lesson=lesson)
 print(str(env))
