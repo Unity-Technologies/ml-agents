@@ -33,7 +33,7 @@ public class GridAgent : Agent
         GameObject agent = academy.actorObjs[0];
         foreach (GameObject actor in academy.actorObjs)
         {
-            if (actor.tag == "agent")
+            if (actor.CompareTag("agent"))
             {
                 agent = actor;
                 state.Add(actor.transform.position.x / (gridSize + 1));
@@ -43,7 +43,7 @@ public class GridAgent : Agent
         }
         foreach (GameObject actor in academy.actorObjs)
         {
-            if (actor.tag == "goal")
+            if (actor.CompareTag("goal"))
             {
                 int distance = (int)Mathf.Abs(agent.transform.position.x - actor.transform.position.x) + (int)Mathf.Abs(agent.transform.position.z - actor.transform.position.z);
                 if (closestGoalDistance > distance)
@@ -52,7 +52,7 @@ public class GridAgent : Agent
                     currentClosestGoal = actor;
                 }
             }
-            if (actor.tag == "pit")
+            if (actor.CompareTag("pit"))
             {
                 int distance = (int)Mathf.Abs(agent.transform.position.x - actor.transform.position.x) + (int)Mathf.Abs(agent.transform.position.z - actor.transform.position.z);
                 if (closestPitDistance > distance)
