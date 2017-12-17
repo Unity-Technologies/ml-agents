@@ -38,21 +38,17 @@ public class BananaAgent : Agent
             RaycastHit hit;
             float[] subList = { 0f, 0f, 0f, 0f, 0f };
             if (Physics.SphereCast(transform.position, 1.0f, position, out hit, 25f))
-            //if (Physics.Raycast(transform.position, position, out hit, 15f))
             {
-                if (hit.collider.gameObject.tag == "banana")
+                if (hit.collider.gameObject.CompareTag("banana"))
                 {
-                    //print(this.name + " sees a banana at " + noisyAngle.ToString());
                     subList[1] = 1f;
                 }
-                if (hit.collider.gameObject.tag == "agent")
+                if (hit.collider.gameObject.CompareTag("agent"))
                 {
-                    //print(this.name + " sees an agent at " + noisyAngle.ToString());
                     subList[2] = 1f;
                 }
-                if (hit.collider.gameObject.tag == "wall")
+                if (hit.collider.gameObject.CompareTag("wall"))
                 {
-                    //print(this.name + " sees a wall at " + noisyAngle.ToString());
                     subList[3] = 1f;
                 }
                 subList[4] = hit.distance / 25f;
@@ -98,12 +94,8 @@ public class BananaAgent : Agent
 
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
-        // Vector3 dirToGoY;
-        // Vector3 dirToGoZ;
 
         int movement = Mathf.FloorToInt(act[0]);
-        // print(movement);
-        // print(transform.right)
         bool shoot = false;
 
         if (!frozen)
