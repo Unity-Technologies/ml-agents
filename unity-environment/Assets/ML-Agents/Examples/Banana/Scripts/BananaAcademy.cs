@@ -9,17 +9,22 @@ public class BananaAcademy : Academy {
     public List<BananaArea> listArea;
 	public override void AcademyReset()
 	{
-		GameObject[] oldBanans = GameObject.FindGameObjectsWithTag("banana");
-		foreach (GameObject bana in oldBanans)
-		{
-			Destroy(bana);
-		}
+        ClearObjects(GameObject.FindGameObjectsWithTag("banana"));
+        ClearObjects(GameObject.FindGameObjectsWithTag("badBanana"));
+
 		agents = GameObject.FindGameObjectsWithTag("agent");
         foreach ( BananaArea ba in listArea){
             ba.ResetArea();
         }
 
 	}
+
+    void ClearObjects(GameObject[] objects) {
+        foreach (GameObject bana in objects)
+        {
+            Destroy(bana);
+        }
+    }
 
 	public override void AcademyStep()
 	{

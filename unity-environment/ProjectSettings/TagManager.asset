@@ -6,6 +6,9 @@ TagManager:
   tags:
   - agent
   - iWall
+  - banana
+  - wall
+  - badBanana
   layers:
   - Default
   - TransparentFX

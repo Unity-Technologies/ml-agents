@@ -34,9 +34,9 @@ public class BananaAgent : Agent
             float noise = 0f;
             float noisyAngle = angle + Random.Range(-noise, noise);
             Vector3 position = transform.TransformDirection(GiveCatersian(25f, noisyAngle));
-            Debug.DrawRay(transform.position, position, Color.green, 0f, true);
+            Debug.DrawRay(transform.position, position, Color.green, 0.1f, true);
             RaycastHit hit;
-            float[] subList = { 0f, 0f, 0f, 0f, 0f };
+            float[] subList = { 0f, 0f, 0f, 0f, 0f, 0f };
             if (Physics.SphereCast(transform.position, 1.0f, position, out hit, 25f))
             {
                 if (hit.collider.gameObject.CompareTag("banana"))
@@ -51,7 +51,11 @@ public class BananaAgent : Agent
                 {
                     subList[3] = 1f;
                 }
-                subList[4] = hit.distance / 25f;
+                if (hit.collider.gameObject.CompareTag("badBanana"))
+                {
+                    subList[4] = 1f;
+                }
+                subList[5] = hit.distance / 25f;
             }
             else
             {
@@ -100,22 +104,19 @@ public class BananaAgent : Agent
 
         if (!frozen)
         {
-            if (movement == 1) { rotateDir = -transform.up; } //go left
-            if (movement == 2) { rotateDir = transform.up; } //go right
-            if (movement == 3) { dirToGo = transform.forward; } //go forward
-            if (movement == 4) { dirToGo = -transform.forward; } //go back
-            if (movement == 5) { shoot = true; }
+            if (movement == 2) { rotateDir = -transform.up; } //go left
+            if (movement == 3) { rotateDir = transform.up; } //go right
+            if (movement == 1) { dirToGo = transform.forward; } //go forward
+            //if (movement == 4) { dirToGo = -transform.forward; } //go back
+            if (movement == 4) { shoot = true; }
             agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
             transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
         }
 
-        // agentRB.AddForce(new Vector3(directionX * 40f, directionY * 300f, directionZ * 40f));
         if (agentRB.velocity.sqrMagnitude > 25f) //slow it down
         {
             agentRB.velocity *= 0.95f;
         }
-
-
 
         if (shoot) {
             myLazer.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -167,11 +168,16 @@ public class BananaAgent : Agent
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "banana")
+        if (collision.gameObject.CompareTag("banana"))
         {
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             reward += 1f;
             bananas += 1;
+        }
+        if (collision.gameObject.CompareTag("badBanana"))
+        {
+            collision.gameObject.GetComponent<BananaLogic>().OnEaten();
+            reward -= 1f;
         }
     }
 
