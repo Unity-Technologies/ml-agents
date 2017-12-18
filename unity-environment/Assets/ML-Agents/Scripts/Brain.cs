@@ -490,14 +490,14 @@ public class Brain : MonoBehaviour
     ///  (as list of float arrays)
     public List<float[,,,]> GetObservationMatrixList(List<int> agent_keys)
     {
-        List<float[,,,]> observation_matrix_list = new List<float[,,,]>();
+        var observation_matrix_list = new List<float[,,,]>();
         Dictionary<int, List<Camera>> observations = CollectObservations();
         for (int obs_number = 0; obs_number < brainParameters.cameraResolutions.Length; obs_number++)
         {
-            int width = brainParameters.cameraResolutions[obs_number].width;
-            int height = brainParameters.cameraResolutions[obs_number].height;
-            bool bw = brainParameters.cameraResolutions[obs_number].blackAndWhite;
-            int pixels = 0;
+            var width = brainParameters.cameraResolutions[obs_number].width;
+            var height = brainParameters.cameraResolutions[obs_number].height;
+            var bw = brainParameters.cameraResolutions[obs_number].blackAndWhite;
+            var pixels = 0;
             if (bw)
                 pixels = 1;
             else
@@ -506,7 +506,7 @@ public class Brain : MonoBehaviour
             , height
             , width
             , pixels];
-            int i = 0;
+            var i = 0;
             foreach (int k in agent_keys)
             {
                 Camera agent_obs = observations[k][obs_number];

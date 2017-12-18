@@ -217,7 +217,6 @@ public abstract class Agent : MonoBehaviour
     public void SetCumulativeReward()
     {
         CumulativeReward += reward;
-        //Debug.Log(reward);
     }
 
     /// Do not modify : Is used by the brain to collect done.

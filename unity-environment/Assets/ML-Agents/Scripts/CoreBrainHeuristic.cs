@@ -51,8 +51,8 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
             throw new UnityAgentsException("The Brain is set to Heuristic, but no decision script attached to it");
         }
 
-        Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
-        Dictionary<int, float[]> new_memories = new Dictionary<int, float[]>();
+        var actions = new Dictionary<int, float[]>();
+        var new_memories = new Dictionary<int, float[]>();
         Dictionary<int, List<float>> states = brain.CollectStates();
         Dictionary<int, List<Camera>> observations = brain.CollectObservations();
         Dictionary<int, float> rewards = brain.CollectRewards();

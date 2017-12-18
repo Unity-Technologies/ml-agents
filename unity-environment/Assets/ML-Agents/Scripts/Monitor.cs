@@ -62,11 +62,11 @@ public class Monitor : MonoBehaviour
      * @param value The value you want to display.
      * @param displayType The type of display.
      * @param target The transform you want to attach the information to.
-     */ 
+     */
     public static void Log(
-        string key, 
-        object value, 
-        MonitorType displayType = MonitorType.text, 
+        string key,
+        object value,
+        MonitorType displayType = MonitorType.text,
         Transform target = null)
     {
 
@@ -98,7 +98,7 @@ public class Monitor : MonoBehaviour
         }
         if (!displayValues.ContainsKey(key))
         {
-            DisplayValue dv = new DisplayValue();
+            var dv = new DisplayValue();
             dv.time = Time.timeSinceLevelLoad;
             dv.value = value;
             dv.monitorDisplayType = displayType;
@@ -231,7 +231,7 @@ public class Monitor : MonoBehaviour
             float paddingwidth = 10 * widthScaler;
 
             float scale = 1f;
-            Vector2 origin = new Vector3(0, Screen.height);
+            var origin = new Vector3(0, Screen.height);
             if (!(target == canvas.transform))
             {
                 Vector3 cam2obj = target.position - Camera.main.transform.position;
@@ -359,17 +359,14 @@ public class Monitor : MonoBehaviour
         valueStyle = GUI.skin.label;
         valueStyle.clipping = TextClipping.Overflow;
         valueStyle.wordWrap = false;
-
-
-
         barColors = new Color[6]{ Color.magenta, Color.blue, Color.cyan, Color.green, Color.yellow, Color.red };
         colorStyle = new GUIStyle[barColors.Length];
         for (int i = 0; i < barColors.Length; i++)
         {
-            Texture2D texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
             texture.SetPixel(0, 0, barColors[i]);
             texture.Apply();
-            GUIStyle staticRectStyle = new GUIStyle();
+            var staticRectStyle = new GUIStyle();
             staticRectStyle.normal.background = texture;
             colorStyle[i] = staticRectStyle;
         }

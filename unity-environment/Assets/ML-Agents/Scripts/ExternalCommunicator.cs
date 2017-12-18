@@ -98,10 +98,7 @@ public class ExternalCommunicator : Communicator
         hasSentState[brain.gameObject.name] = false;
     }
 
-    /// <summary>
     /// Attempts to make handshake with external API. 
-    /// </summary>
-    /// <returns><c>true</c>, if hand shake was communicatored, <c>false</c> otherwise.</returns>
     public bool CommunicatorHandShake()
     {
         try
@@ -130,7 +127,7 @@ public class ExternalCommunicator : Communicator
         sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         sender.Connect("localhost", comPort);
 
-        AcademyParameters accParamerters = new AcademyParameters();
+        var accParamerters = new AcademyParameters();
         accParamerters.brainParameters = new List<BrainParameters>();
         accParamerters.brainNames = new List<string>();
         accParamerters.externalBrainNames = new List<string>();
@@ -186,7 +183,7 @@ public class ExternalCommunicator : Communicator
     {
         sender.Send(Encoding.ASCII.GetBytes("CONFIG_REQUEST"));
         Receive();
-        ResetParametersMessage resetParams = JsonConvert.DeserializeObject<ResetParametersMessage>(rMessage);
+        var resetParams = JsonConvert.DeserializeObject<ResetParametersMessage>(rMessage);
         academy.isInference = !resetParams.train_model;
         return resetParams.parameters;
     }
@@ -196,7 +193,7 @@ public class ExternalCommunicator : Communicator
     private void ReadArgs()
     {
         string[] args = System.Environment.GetCommandLineArgs();
-        string inputPort = "";
+        var inputPort = "";
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--port")
@@ -250,7 +247,7 @@ public class ExternalCommunicator : Communicator
     /// Collects the information from the brains and sends it accross the socket
     public void giveBrainInfo(Brain brain)
     {
-        string brainName = brain.gameObject.name;
+        var brainName = brain.gameObject.name;
         current_agents[brainName] = new List<int>(brain.agents.Keys);
         brain.CollectEverything();
 
@@ -313,17 +310,17 @@ public class ExternalCommunicator : Communicator
         // TO MODIFY	--------------------------------------------
         sender.Send(Encoding.ASCII.GetBytes("STEPPING"));
         Receive();
-        AgentMessage agentMessage = JsonConvert.DeserializeObject<AgentMessage>(rMessage);
+        var agentMessage = JsonConvert.DeserializeObject<AgentMessage>(rMessage);
 
         foreach (Brain brain in brains)
         {
             if (brain.brainType == BrainType.External)
             {
-                string brainName = brain.gameObject.name;
+                var brainName = brain.gameObject.name;
 
-                Dictionary<int, float[]> actionDict = new Dictionary<int, float[]>();
-                Dictionary<int, float[]> memoryDict = new Dictionary<int, float[]>();
-                Dictionary<int, float> valueDict = new Dictionary<int, float>();
+                var actionDict = new Dictionary<int, float[]>();
+                var memoryDict = new Dictionary<int, float[]>();
+                var valueDict = new Dictionary<int, float>();
 
                 for (int i = 0; i < current_agents[brainName].Count; i++)
                 {
