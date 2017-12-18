@@ -25,7 +25,7 @@ If you are a Windows user who is new to Python/TensorFlow, follow [this guide](h
 * TensorFlow (1.0+) (Training)
 
 ### Installing Dependencies
-To install dependencies, go into the `python` sub-directory of the repositroy, and run (depending on your python version) from the command line:
+To install dependencies, go into the `python` sub-directory of the repository, and run (depending on your python version) from the command line:
 
 `pip install .`
 
