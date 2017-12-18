@@ -97,21 +97,22 @@ public class Brain : MonoBehaviour
     public Dictionary<int, float[]> currentActions = new Dictionary<int, float[]>(32);
     public Dictionary<int, float[]> currentMemories = new Dictionary<int, float[]>(32);
 
-
-    public BrainParameters brainParameters = new BrainParameters();
     /**< \brief Defines brain specific parameters such as the state size*/
-    public BrainType brainType;
+    public BrainParameters brainParameters = new BrainParameters();
+
     /**<  \brief Defines what is the type of the brain : 
      * External / Internal / Player / Heuristic*/
+    public BrainType brainType;
+
     [HideInInspector]
-    public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
     /**<  \brief Keeps track of the agents which subscribe to this brain*/
+    public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
 
     [SerializeField]
     ScriptableObject[] CoreBrains;
 
-    public CoreBrain coreBrain;
     /**<  \brief Reference to the current CoreBrain used by the brain*/
+    public CoreBrain coreBrain;
 
     //Ensures the coreBrains are not dupplicated with the brains
     [SerializeField]

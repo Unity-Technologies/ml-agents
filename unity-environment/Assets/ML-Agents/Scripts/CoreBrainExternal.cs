@@ -5,9 +5,8 @@ using UnityEngine;
 /// CoreBrain which decides actions via communication with an external system such as Python.
 public class CoreBrainExternal : ScriptableObject, CoreBrain
 {
-
-    public Brain brain;
     /**< Reference to the brain that uses this CoreBrainExternal */
+    public Brain brain;
 
     ExternalCommunicator coord;
 

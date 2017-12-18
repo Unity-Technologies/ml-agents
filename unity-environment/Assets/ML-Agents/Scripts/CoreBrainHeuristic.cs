@@ -12,13 +12,13 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     [SerializeField]
     private bool broadcast = true;
 
-    public Brain brain;
     /**< Reference to the brain that uses this CoreBrainHeuristic */
+    public Brain brain;
 
     ExternalCommunicator coord;
 
-    public Decision decision;
     /**< Reference to the Decision component used to decide the actions */
+    public Decision decision;
 
     /// Create the reference to the brain
     public void SetBrain(Brain b)

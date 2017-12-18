@@ -43,6 +43,7 @@ public class ExternalCommunicator : Communicator
 
     const string api = "API-2";
 
+    /// Placeholder for state information to send.
     [System.Serializable]
     public struct StepMessage
     {
@@ -60,6 +61,7 @@ public class ExternalCommunicator : Communicator
 
     string rMessage;
 
+    /// Placeholder for returned message.
     struct AgentMessage
     {
         public Dictionary<string, List<float>> action { get; set; }
@@ -67,6 +69,7 @@ public class ExternalCommunicator : Communicator
         public Dictionary<string, List<float>> value { get; set; }
     }
 
+    /// Placeholder for reset parameter message
     struct ResetParametersMessage
     {
         public Dictionary<string, float> parameters { get; set; }
@@ -95,7 +98,10 @@ public class ExternalCommunicator : Communicator
         hasSentState[brain.gameObject.name] = false;
     }
 
-
+    /// <summary>
+    /// Attempts to make handshake with external API. 
+    /// </summary>
+    /// <returns><c>true</c>, if hand shake was communicatored, <c>false</c> otherwise.</returns>
     public bool CommunicatorHandShake()
     {
         try
