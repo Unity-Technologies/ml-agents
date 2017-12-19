@@ -64,8 +64,8 @@ Then navigate to `localhost:6006`.
 
 From Tensorboard, you will see the summary statistics of six variables:
 * Cumulative Reward - The mean cumulative episode reward over all agents. Should increase during a successful training session.
-* Value Loss - The mean loss of the value function update. Correlates to how well the model is able to predict the value of each state. This should decrease during a succesful training session.
-* Policy Loss - The mean loss of the policy function update. Correlates to how much the policy (process for deciding actions) is changing. The magnitude of this should decrease during a succesful training session.
+* Value Loss - The mean loss of the value function update. Correlates to how well the model is able to predict the value of each state. This should decrease during a successful training session.
+* Policy Loss - The mean loss of the policy function update. Correlates to how much the policy (process for deciding actions) is changing. The magnitude of this should decrease during a successful training session.
 * Episode Length - The mean length of each episode in the environment for all agents.
 * Value Estimates - The mean value estimate for all states visited by the agent. Should increase during a successful training session.
 * Policy Entropy - How random the decisions of the model are. Should slowly decrease during a successful training process. If it decreases too quickly, the `beta` hyperparameter should be increased.
