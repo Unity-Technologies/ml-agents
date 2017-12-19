@@ -51,8 +51,9 @@ In order to train the agents within the Ball Balance environment:
 
 1. Open `python/PPO.ipynb` notebook from Jupyter.
 2. Set `env_name` to the name of your environment file earlier.
-3. (optional) Set `run_path` directory to your choice.
-4. Run all cells of notebook with the exception of the last one under "Export the trained Tensorflow graph."
+3. (optional) In order to get the best results quickly, set `max_steps` to 50000, set `buffer_size` to 5000, and set `batch_size` to 512.  For this exercise, this will train the model in approximately ~5-10 minutes.
+4. (optional) Set `run_path` directory to your choice.
+5. Run all cells of notebook with the exception of the last one under "Export the trained Tensorflow graph."
 
 ### Observing Training Progress
 In order to observe the training process in more detail, you can use Tensorboard.
