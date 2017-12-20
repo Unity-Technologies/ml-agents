@@ -3,7 +3,7 @@
 ## General
 * It is often helpful to start with the simplest version of the problem, to ensure the agent can learn it. From there increase
 complexity over time. This can either be done manually, or via Curriculum Learning, where a set of lessons which progressively increase in difficulty are presented to the agent ([learn more here](../docs/curriculum.md)).
-* When possible, It is often helpful to ensure that you can complete the task by using a Player Brain to control the agent.
+* When possible, it is often helpful to ensure that you can complete the task by using a Player Brain to control the agent.
 
 ## Rewards
 * The magnitude of any given reward should typically not be greater than 1.0 in order to ensure a more stable learning process.
