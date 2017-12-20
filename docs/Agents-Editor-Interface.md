@@ -32,7 +32,7 @@ values (in _Discrete_ action space).
     * `Action Descriptions` - A list of strings used to name the available actions for the Brain.
 * `State Space Type` - Corresponds to whether state vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
 * `Action Space Type` - Corresponds to whether action vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
-* `Type of Brain` - Describes how Brain will decide actions.
+* `Type of Brain` - Describes how the Brain will decide actions.
     * `External` - Actions are decided using Python API.
     * `Internal` - Actions are decided using internal TensorflowSharp model.
     * `Player` - Actions are decided using Player input mappings.
