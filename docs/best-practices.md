@@ -9,7 +9,7 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 * The magnitude of any given reward should typically not be greater than 1.0 in order to ensure a more stable learning process.
 * Positive rewards are often more helpful to shaping the desired behavior of an agent than negative rewards.
 * For locomotion tasks, a small positive reward (+0.1) for forward velocity is typically used. 
-* If you want the agent the finish a task quickly, it is often helpful to provide a small penalty every step (-0.05) that the agent does not complete the task. In this case completion of the task should also coincide with the end of the episode.
+* If you want the agent to finish a task quickly, it is often helpful to provide a small penalty every step (-0.05) that the agent does not complete the task. In this case completion of the task should also coincide with the end of the episode.
 * Overly-large negative rewards can cause undesirable behavior where an agent learns to avoid any behavior which might produce the negative reward, even if it is also behavior which can eventually lead to a positive reward.
 
 ## States
