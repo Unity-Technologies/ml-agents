@@ -27,7 +27,7 @@ The Academy is responsible for:
 * Coordinating the Brains which must be set as children of the Academy.
 
 #### Brains
-Each brain corresponds to a specific Decision-making method. This often aligns with a specific neural network model. A Brains is responsible for deciding the action of all the Agents which are linked to it. There can be multiple brains in the same scene and multiple agents can subscribe to the same brain. 
+Each brain corresponds to a specific Decision-making method. This often aligns with a specific neural network model. The brain is responsible for deciding the action of all the Agents which are linked to it. There can be multiple brains in the same scene and multiple agents can subscribe to the same brain. 
 
 #### Agents
 Each agent within a scene takes actions according to the decisions provided by it's linked Brain. There can be as many Agents of as many types as you like in the scene. The state size and action size of each agent must match the brain's parameters in order for the Brain to decide actions for it.
