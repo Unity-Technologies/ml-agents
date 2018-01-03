@@ -47,7 +47,7 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * +1.0 if the agent navigates to the goal position of the grid (episode ends).
     * -1.0 if the agent navigates to an obstacle (episode ends).
 * Brains: One brain with the following state/action space.
-    * State space: (Continuous) 6 variables corresponding to position of agent and nearest goal and obstacle.
+    * State space: None
     * Action space: (Discrete) Size of 4, corresponding to movement in cardinal directions.
     * Observations: One corresponding to top-down view of GridWorld.
 * Reset Parameters: Three, corresponding to grid size, number of obstacles, and number of goals.
