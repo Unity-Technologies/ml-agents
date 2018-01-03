@@ -194,7 +194,6 @@ class UnityEnvironment(object):
                                                              for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-
     def _recv_bytes(self):
         try:
             s = self._conn.recv(self._buffer_size)

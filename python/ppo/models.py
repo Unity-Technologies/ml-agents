@@ -174,7 +174,7 @@ class PPOModel(object):
         self.advantage = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='advantages')
 
         decay_epsilon = tf.train.polynomial_decay(epsilon, self.global_step,
-                                                  max_step, 1e-2,
+                                                  max_step, 0.1,
                                                   power=1.0)
 
         r_theta = probs / (old_probs + 1e-10)
@@ -188,7 +188,7 @@ class PPOModel(object):
         decay_beta = tf.train.polynomial_decay(beta, self.global_step,
                                                max_step, 1e-5,
                                                power=1.0)
-        self.loss = self.policy_loss + self.value_loss - decay_beta * tf.reduce_mean(entropy)
+        self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(entropy)
 
         self.learning_rate = tf.train.polynomial_decay(lr, self.global_step,
                                                        max_step, 1e-10,
