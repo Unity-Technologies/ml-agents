@@ -14,7 +14,6 @@ public class TennisAgent : Agent
 
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
         state.Add(invertMult * gameObject.transform.position.x);
         state.Add(gameObject.transform.position.y);
         state.Add(invertMult * gameObject.GetComponent<Rigidbody>().velocity.x);

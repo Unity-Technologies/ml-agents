@@ -36,6 +36,7 @@ Options:
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
   --train                    Whether to train model, or only run inference [default: False].
   --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
+  --lesson=<n>               Start learning from this lesson [default: 0].
 '''
 
 options = docopt(_USAGE)
@@ -55,6 +56,7 @@ worker_id = int(options['--worker-id'])
 curriculum_file = str(options['--curriculum'])
 if curriculum_file == "None":
     curriculum_file = None
+lesson = int(options['--lesson'])
 
 # Algorithm-specific parameters for tuning
 gamma = float(options['--gamma'])
@@ -70,7 +72,7 @@ hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
 normalize = options['--normalize']
 
-env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
+env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file, lesson=lesson)
 print(str(env))
 brain_name = env.external_brain_names[0]
 

@@ -56,7 +56,6 @@ public class CrawlerAgentConfigurable: Agent
 
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
         state.Add(body.transform.rotation.eulerAngles.x);
         state.Add(body.transform.rotation.eulerAngles.y);
         state.Add(body.transform.rotation.eulerAngles.z);
