@@ -69,7 +69,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     {
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
-            float[] action = new float[brain.brainParameters.actionSize];
+            var action = new float[brain.brainParameters.actionSize];
             foreach (ContinuousPlayerAction cha in continuousPlayerActions)
             {
                 if (Input.GetKey(cha.key))
@@ -77,7 +77,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
                     action[cha.index] = cha.value;
                 }
             }
-            Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
+            var actions = new Dictionary<int, float[]>();
             foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
             {
                 actions.Add(idAgent.Key, action);
@@ -86,7 +86,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         }
         else
         {
-            float[] action = new float[1] { defaultAction };
+            var action = new float[1] { defaultAction };
             foreach (DiscretePlayerAction dha in discretePlayerActions)
             {
                 if (Input.GetKey(dha.key))
@@ -95,7 +95,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
                     break;
                 }
             }
-            Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
+            var actions = new Dictionary<int, float[]>();
             foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
             {
                 actions.Add(idAgent.Key, action);
@@ -125,11 +125,11 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
-        SerializedObject serializedBrain = new SerializedObject(this);
+        var serializedBrain = new SerializedObject(this);
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
             GUILayout.Label("Edit the continuous inputs for you actions", EditorStyles.boldLabel);
-            SerializedProperty chas = serializedBrain.FindProperty("continuousPlayerActions");
+            var chas = serializedBrain.FindProperty("continuousPlayerActions");
             serializedBrain.Update();
             EditorGUILayout.PropertyField(chas, true);
             serializedBrain.ApplyModifiedProperties();
@@ -151,7 +151,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         {
             GUILayout.Label("Edit the discrete inputs for you actions", EditorStyles.boldLabel);
             defaultAction = EditorGUILayout.IntField("Default Action", defaultAction);
-            SerializedProperty dhas = serializedBrain.FindProperty("discretePlayerActions");
+            var dhas = serializedBrain.FindProperty("discretePlayerActions");
             serializedBrain.Update();
             EditorGUILayout.PropertyField(dhas, true);
             serializedBrain.ApplyModifiedProperties();

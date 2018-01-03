@@ -15,7 +15,6 @@ public class BasicAgent : Agent
 
 	public override List<float> CollectState()
 	{
-		List<float> state = new List<float>();
 		state.Add(position);
 		return state;
 	}

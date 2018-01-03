@@ -153,7 +153,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             Dictionary<int, List<float>> states = brain.CollectStates();
             inputState = new float[currentBatchSize, brain.brainParameters.stateSize];
-            int i = 0;
+            var i = 0;
             foreach (int k in agentKeys)
             {
                 List<float> state_list = states[k];
@@ -175,7 +175,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             Dictionary<int, float[]> old_memories = brain.CollectMemories();
             inputOldMemories = new float[currentBatchSize, brain.brainParameters.memorySize];
-            int i = 0;
+            var i = 0;
             foreach (int k in agentKeys)
             {
                 float[] m = old_memories[k];
@@ -241,7 +241,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             if (brain.brainParameters.stateSpaceType == StateType.discrete)
             {
-                int[,] discreteInputState = new int[currentBatchSize, 1];
+                var discreteInputState = new int[currentBatchSize, 1];
                 for (int i = 0; i < currentBatchSize; i++)
                 {
                     discreteInputState[i, 0] = (int)inputState[i, 0];
@@ -290,14 +290,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the recurrent tensor
         if (hasRecurrent)
         {
-            Dictionary<int, float[]> new_memories = new Dictionary<int, float[]>();
+            var new_memories = new Dictionary<int, float[]>();
 
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
-            int i = 0;
+            var i = 0;
             foreach (int k in agentKeys)
             {
-                float[] m = new float[brain.brainParameters.memorySize];
+                var m = new float[brain.brainParameters.memorySize];
                 for (int j = 0; j < brain.brainParameters.memorySize; j++)
                 {
                     m[j] = recurrent_tensor[i, j];
@@ -309,15 +309,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             brain.SendMemories(new_memories);
         }
 
-        Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
+        var actions = new Dictionary<int, float[]>();
 
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
-            float[,] output = networkOutput[0].GetValue() as float[,];
-            int i = 0;
+            var output = networkOutput[0].GetValue() as float[,];
+            var i = 0;
             foreach (int k in agentKeys)
             {
-                float[] a = new float[brain.brainParameters.actionSize];
+                var a = new float[brain.brainParameters.actionSize];
                 for (int j = 0; j < brain.brainParameters.actionSize; j++)
                 {
                     a[j] = output[i, j];
@@ -329,10 +329,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         else if (brain.brainParameters.actionSpaceType == StateType.discrete)
         {
             long[,] output = networkOutput[0].GetValue() as long[,];
-            int i = 0;
+            var i = 0;
             foreach (int k in agentKeys)
             {
-                float[] a = new float[1] { (float)(output[i, 0]) };
+                var a = new float[1] { (float)(output[i, 0]) };
                 actions.Add(k, a);
                 i++;
             }
@@ -349,9 +349,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 #if ENABLE_TENSORFLOW && UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
-        SerializedObject serializedBrain = new SerializedObject(this);
+        var serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
-        SerializedProperty tfGraphModel = serializedBrain.FindProperty("graphModel");
+        var tfGraphModel = serializedBrain.FindProperty("graphModel");
         serializedBrain.Update();
         EditorGUILayout.ObjectField(tfGraphModel);
         serializedBrain.ApplyModifiedProperties();
@@ -405,7 +405,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                         ObservationPlaceholderName[obs_number] = "observation_" + obs_number;
                     }
                 }
-                SerializedProperty opn = serializedBrain.FindProperty("ObservationPlaceholderName");
+                var opn = serializedBrain.FindProperty("ObservationPlaceholderName");
                 serializedBrain.Update();
                 EditorGUILayout.PropertyField(opn, true);
                 serializedBrain.ApplyModifiedProperties();
@@ -420,7 +420,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
 
 
-        SerializedProperty tfPlaceholders = serializedBrain.FindProperty("graphPlaceholders");
+        var tfPlaceholders = serializedBrain.FindProperty("graphPlaceholders");
         serializedBrain.Update();
         EditorGUILayout.PropertyField(tfPlaceholders, true);
         serializedBrain.ApplyModifiedProperties();

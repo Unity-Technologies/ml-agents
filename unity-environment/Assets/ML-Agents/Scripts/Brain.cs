@@ -36,6 +36,9 @@ public enum StateType
     continuous}
 ;
 
+
+
+
 /** Only need to be modified in the brain's inpector.
  * Defines what is the resolution of the camera
 */
@@ -86,20 +89,30 @@ public class BrainParameters
  */
 public class Brain : MonoBehaviour
 {
-    public BrainParameters brainParameters = new BrainParameters();
+    // Current agent info
+    public Dictionary<int, List<float>> currentStates = new Dictionary<int, List<float>>(32);
+    public Dictionary<int, List<Camera>> currentCameras = new Dictionary<int, List<Camera>>(32);
+    public Dictionary<int, float> currentRewards = new Dictionary<int, float>(32);
+    public Dictionary<int, bool> currentDones = new Dictionary<int, bool>(32);
+    public Dictionary<int, float[]> currentActions = new Dictionary<int, float[]>(32);
+    public Dictionary<int, float[]> currentMemories = new Dictionary<int, float[]>(32);
+
     /**< \brief Defines brain specific parameters such as the state size*/
-    public BrainType brainType;
+    public BrainParameters brainParameters = new BrainParameters();
+
     /**<  \brief Defines what is the type of the brain : 
      * External / Internal / Player / Heuristic*/
+    public BrainType brainType;
+
     [HideInInspector]
-    public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
     /**<  \brief Keeps track of the agents which subscribe to this brain*/
+    public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
 
     [SerializeField]
     ScriptableObject[] CoreBrains;
 
-    public CoreBrain coreBrain;
     /**<  \brief Reference to the current CoreBrain used by the brain*/
+    public CoreBrain coreBrain;
 
     //Ensures the coreBrains are not dupplicated with the brains
     [SerializeField]
@@ -188,15 +201,19 @@ public class Brain : MonoBehaviour
 
     }
 
-    /// Collects the states of all the agents which subscribe to this brain 
-    /// and returns a dictionary {id -> state}
-    public Dictionary<int, List<float>> CollectStates()
-    {
-        Dictionary<int, List<float>> result = new Dictionary<int, List<float>>();
+
+    public void CollectEverything() {
+        currentStates.Clear();
+        currentCameras.Clear();
+        currentRewards.Clear();
+        currentDones.Clear();
+        currentActions.Clear();
+        currentMemories.Clear();
+
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
             idAgent.Value.SetCumulativeReward();
-            List<float> states = idAgent.Value.CollectState();
+            List<float> states = idAgent.Value.ClearAndCollectState();
             if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
@@ -207,16 +224,53 @@ public class Brain : MonoBehaviour
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
     Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
             }
-            result.Add(idAgent.Key, states);
+
+            List<Camera> observations = idAgent.Value.observations;
+            if (observations.Count < brainParameters.cameraResolutions.Count())
+            {
+                throw new UnityAgentsException(string.Format(@"The number of observations does not match for agent {0}:
+    Was expecting at least {1} observation but received {2}.", idAgent.Value.gameObject.name, brainParameters.cameraResolutions.Count(), observations.Count));
+            }
+
+            currentStates.Add(idAgent.Key, states);
+            currentCameras.Add(idAgent.Key, observations);
+            currentRewards.Add(idAgent.Key, idAgent.Value.reward);
+            currentDones.Add(idAgent.Key, idAgent.Value.done);
+            currentActions.Add(idAgent.Key, idAgent.Value.agentStoredAction);
+            currentMemories.Add(idAgent.Key, idAgent.Value.memory);
         }
-        return result;
+    }
+
+
+    /// Collects the states of all the agents which subscribe to this brain 
+    /// and returns a dictionary {id -> state}
+    public Dictionary<int, List<float>> CollectStates()
+    {
+        currentStates.Clear();
+        foreach (KeyValuePair<int, Agent> idAgent in agents)
+        {
+            idAgent.Value.SetCumulativeReward();
+            List<float> states = idAgent.Value.ClearAndCollectState();
+            if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous))
+            {
+                throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
+    Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
+            }
+            if ((states.Count != 1) && (brainParameters.stateSpaceType == StateType.discrete))
+            {
+                throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
+    Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
+            }
+            currentStates.Add(idAgent.Key, states);
+        }
+        return currentStates;
     }
 
     /// Collects the observations of all the agents which subscribe to this 
     /// brain and returns a dictionary {id -> Camera}
     public Dictionary<int, List<Camera>> CollectObservations()
     {
-        Dictionary<int, List<Camera>> result = new Dictionary<int, List<Camera>>();
+        currentCameras.Clear();
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
             List<Camera> observations = idAgent.Value.observations;
@@ -225,9 +279,9 @@ public class Brain : MonoBehaviour
                 throw new UnityAgentsException(string.Format(@"The number of observations does not match for agent {0}:
 	Was expecting at least {1} observation but received {2}.", idAgent.Value.gameObject.name, brainParameters.cameraResolutions.Count(), observations.Count));
             }
-            result.Add(idAgent.Key, observations);
+            currentCameras.Add(idAgent.Key, observations);
         }
-        return result;
+        return currentCameras;
 
     }
 
@@ -235,48 +289,48 @@ public class Brain : MonoBehaviour
     /// and returns a dictionary {id -> reward}
     public Dictionary<int, float> CollectRewards()
     {
-        Dictionary<int, float> result = new Dictionary<int, float>();
+        currentRewards.Clear();
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
-            result.Add(idAgent.Key, idAgent.Value.reward);
+            currentRewards.Add(idAgent.Key, idAgent.Value.reward);
         }
-        return result;
+        return currentRewards;
     }
 
     /// Collects the done flag of all the agents which subscribe to this brain
     ///  and returns a dictionary {id -> done}
     public Dictionary<int, bool> CollectDones()
     {
-        Dictionary<int, bool> result = new Dictionary<int, bool>();
+        currentDones.Clear();
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
-            result.Add(idAgent.Key, idAgent.Value.done);
+            currentDones.Add(idAgent.Key, idAgent.Value.done);
         }
-        return result;
+        return currentDones;
     }
 
     /// Collects the actions of all the agents which subscribe to this brain 
     /// and returns a dictionary {id -> action}
     public Dictionary<int, float[]> CollectActions()
     {
-        Dictionary<int, float[]> result = new Dictionary<int, float[]>();
+        currentActions.Clear();
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
-            result.Add(idAgent.Key, idAgent.Value.agentStoredAction);
+            currentActions.Add(idAgent.Key, idAgent.Value.agentStoredAction);
         }
-        return result;
+        return currentActions;
     }
 
     /// Collects the memories of all the agents which subscribe to this brain 
     /// and returns a dictionary {id -> memories}
     public Dictionary<int, float[]> CollectMemories()
     {
-        Dictionary<int, float[]> result = new Dictionary<int, float[]>();
+        currentMemories.Clear();
         foreach (KeyValuePair<int, Agent> idAgent in agents)
         {
-            result.Add(idAgent.Key, idAgent.Value.memory);
+            currentMemories.Add(idAgent.Key, idAgent.Value.memory);
         }
-        return result;
+        return currentMemories;
     }
 
     /// Takes a dictionary {id -> memories} and sends the memories to the 
@@ -336,8 +390,7 @@ public class Brain : MonoBehaviour
     /// which are not done
     public void Step()
     {
-        List<Agent> agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
+        foreach (Agent agent in agents.Values)
         {
             if (!agent.done)
             {
@@ -349,8 +402,7 @@ public class Brain : MonoBehaviour
     /// Is used by the Academy to reset the agents if they are done
     public void ResetIfDone()
     {
-        List<Agent> agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
+        foreach (Agent agent in agents.Values)
         {
             if (agent.done)
             {
@@ -369,8 +421,7 @@ public class Brain : MonoBehaviour
     /// Is used by the Academy to reset all agents 
     public void Reset()
     {
-        List<Agent> agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
+        foreach (Agent agent in agents.Values)
         {
             agent.Reset();
             agent.done = false;
@@ -439,14 +490,14 @@ public class Brain : MonoBehaviour
     ///  (as list of float arrays)
     public List<float[,,,]> GetObservationMatrixList(List<int> agent_keys)
     {
-        List<float[,,,]> observation_matrix_list = new List<float[,,,]>();
+        var observation_matrix_list = new List<float[,,,]>();
         Dictionary<int, List<Camera>> observations = CollectObservations();
         for (int obs_number = 0; obs_number < brainParameters.cameraResolutions.Length; obs_number++)
         {
-            int width = brainParameters.cameraResolutions[obs_number].width;
-            int height = brainParameters.cameraResolutions[obs_number].height;
-            bool bw = brainParameters.cameraResolutions[obs_number].blackAndWhite;
-            int pixels = 0;
+            var width = brainParameters.cameraResolutions[obs_number].width;
+            var height = brainParameters.cameraResolutions[obs_number].height;
+            var bw = brainParameters.cameraResolutions[obs_number].blackAndWhite;
+            var pixels = 0;
             if (bw)
                 pixels = 1;
             else
@@ -455,7 +506,7 @@ public class Brain : MonoBehaviour
             , height
             , width
             , pixels];
-            int i = 0;
+            var i = 0;
             foreach (int k in agent_keys)
             {
                 Camera agent_obs = observations[k][obs_number];

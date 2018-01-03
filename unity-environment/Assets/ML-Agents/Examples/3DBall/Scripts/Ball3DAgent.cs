@@ -9,7 +9,6 @@ public class Ball3DAgent : Agent
 
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
         state.Add(gameObject.transform.rotation.z);
         state.Add(gameObject.transform.rotation.x);
         state.Add((ball.transform.position.x - gameObject.transform.position.x));

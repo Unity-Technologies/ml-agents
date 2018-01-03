@@ -12,13 +12,13 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     [SerializeField]
     private bool broadcast = true;
 
-    public Brain brain;
     /**< Reference to the brain that uses this CoreBrainHeuristic */
+    public Brain brain;
 
     ExternalCommunicator coord;
 
-    public Decision decision;
     /**< Reference to the Decision component used to decide the actions */
+    public Decision decision;
 
     /// Create the reference to the brain
     public void SetBrain(Brain b)
@@ -51,8 +51,8 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
             throw new UnityAgentsException("The Brain is set to Heuristic, but no decision script attached to it");
         }
 
-        Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
-        Dictionary<int, float[]> new_memories = new Dictionary<int, float[]>();
+        var actions = new Dictionary<int, float[]>();
+        var new_memories = new Dictionary<int, float[]>();
         Dictionary<int, List<float>> states = brain.CollectStates();
         Dictionary<int, List<Camera>> observations = brain.CollectObservations();
         Dictionary<int, float> rewards = brain.CollectRewards();
