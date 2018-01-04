@@ -7,7 +7,7 @@ from docopt import docopt
 import os
 import re
 from ppo.models import *
-from ppo.trainer_lstm import Trainer
+from ppo.trainer import Trainer
 from unityagents import UnityEnvironment
 
 
@@ -37,9 +37,11 @@ Options:
   --num-layers=<n>           Number of hidden layers between state/observation and outputs [default: 2].
   --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
   --save-freq=<n>            Frequency at which to save model [default: 50000].
+  --sequence-length=<n>      The training length of states used for recurrent state encoding [default: 32]. 
   --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
   --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
   --train                    Whether to train model, or only run inference [default: False].
+  --use-recurrent            Whether to use recurrent encoding of the state and observations [default: False].
   --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
 '''
 
@@ -75,6 +77,8 @@ learning_rate = float(options['--learning-rate'])
 hidden_units = int(options['--hidden-units'])
 batch_size = int(options['--batch-size'])
 normalize = options['--normalize']
+use_recurrent = options['--use-recurrent']
+sequence_length = int(options['--sequence-length'])
 
 trainer_parameters = {'max_steps':max_steps, 'run_path':run_path, 'env_name':env_name,
     'curriculum_file':curriculum_file, 'gamma':gamma, 'lambd':lambd, 'time_horizon':time_horizon,
@@ -82,8 +86,8 @@ trainer_parameters = {'max_steps':max_steps, 'run_path':run_path, 'env_name':env
     'learning_rate':learning_rate, 'hidden_units':hidden_units, 'batch_size':batch_size,
     'normalize':normalize, 'summary_freq':summary_freq, 'num_layers':num_layers,
 
-    'use_memory':True,
-    'sequence_length':1
+    'use_recurrent':use_recurrent,
+    'sequence_length':sequence_length
     }
 # TODO: trainer parameters could contain a string for the type of trainer to use and a string for the 
 # TODO: add a string for the type of model to use ?
