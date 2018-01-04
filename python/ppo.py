@@ -43,6 +43,7 @@ Options:
   --train                    Whether to train model, or only run inference [default: False].
   --use-recurrent            Whether to use recurrent encoding of the state and observations [default: False].
   --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
+  --lesson=<n>               Start learning from this lesson [default: 0].
 '''
 
 options = docopt(_USAGE)
@@ -63,6 +64,7 @@ worker_id = int(options['--worker-id'])
 curriculum_file = str(options['--curriculum'])
 if curriculum_file == "None":
     curriculum_file = None
+lesson = int(options['--lesson'])
 
 # Algorithm-specific parameters for tuning
 gamma = float(options['--gamma'])
@@ -93,7 +95,7 @@ trainer_parameters = {'max_steps':max_steps, 'run_path':run_path, 'env_name':env
 # TODO: add a string for the type of model to use ?
 # TODO: Find a better structure to store the trainer paramters
 
-env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
+env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file, lesson=lesson)
 print(str(env))
 
 tf.reset_default_graph()

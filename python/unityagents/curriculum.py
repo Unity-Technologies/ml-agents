@@ -5,14 +5,14 @@ from .exception import UnityEnvironmentException
 
 
 class Curriculum(object):
-    def __init__(self, location, default_reset_parameters):
+    def __init__(self, location, default_reset_parameters, lesson):
         """
         Initializes a Curriculum object.
         :param location: Path to JSON defining curriculum.
         :param default_reset_parameters: Set of reset parameters for environment.
         """
-        self.lesson_number = 0
         self.lesson_length = 0
+        self.max_lesson_number = 0
         self.measure_type = None
         if location is None:
             self.data = None
@@ -45,6 +45,7 @@ class Curriculum(object):
                         "The parameter {0} in Curriculum {1} must have {2} values "
                         "but {3} were found".format(key, location,
                                                     self.max_lesson_number + 1, len(parameters[key])))
+        self.set_lesson_number(lesson)
 
     @property
     def measure(self):

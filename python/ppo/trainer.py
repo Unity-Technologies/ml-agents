@@ -4,7 +4,7 @@ import re
 import os
 
 from ppo.buffer import *
-from ppo.models_lstm import *
+from ppo.models import *
 import logging
 logger = logging.getLogger("unityagents")
 

@@ -62,45 +62,46 @@ public abstract class Academy : MonoBehaviour
     private ScreenConfiguration inferenceConfiguration = new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
     [SerializeField]
     private ResetParameter[] defaultResetParameters;
-    public Dictionary<string, float> resetParameters;
+
     /**< \brief Contains a mapping from parameter names to float values. */
     /**< You can specify the Default Reset Parameters in the Inspector of the
-	 * Academy. You can modify these parameters when training with an External 
-	 * brain by passing a config dictionary at reset. Reference resetParameters
-	 * in your AcademyReset() or AcademyStep() to modify elements in your 
-	 * environment at reset time. */
+     * Academy. You can modify these parameters when training with an External 
+     * brain by passing a config dictionary at reset. Reference resetParameters
+     * in your AcademyReset() or AcademyStep() to modify elements in your 
+     * environment at reset time. */
+    public Dictionary<string, float> resetParameters;
 
 
     [HideInInspector]
     private List<Brain> brains = new List<Brain>();
-
-
 
     ExternalCommand externalCommand;
 
     private bool acceptingSteps;
     private int framesSinceAction;
     private bool skippingFrames = true;
-    [HideInInspector]
-    public bool done;
+
     /**< \brief The done flag of the Academy. */
     /**< When set to true, the Academy will call AcademyReset() instead of 
-	* AcademyStep() at step time.
-	* If true, all agents done flags will be set to true.*/
+    * AcademyStep() at step time.
+    * If true, all agents done flags will be set to true.*/
     [HideInInspector]
-    public int episodeCount;
+    public bool done;
+
     /**< \brief Increments each time the environment is reset. */
     [HideInInspector]
-    public int currentStep;
+    public int episodeCount;
+
     /**< \brief Increments each time a step is taken in the environment. Is
     * reset to 0 during AcademyReset(). */
+    [HideInInspector]
+    public int currentStep;
 
-    public Communicator communicator;
     /**< \brief Do not modify : pointer to the communicator currently in 
      * use by the Academy. */
+    public Communicator communicator;
 
     private float timeAtStep;
-
 
     void Awake()
     {
@@ -200,14 +201,12 @@ public abstract class Academy : MonoBehaviour
                 brain.SendDone();
             }
             brain.ResetIfDone();
-        }
 
-        SendState();
+            brain.SendState();
 
-        foreach (Brain brain in brains)
-        {
             brain.ResetDoneAndReward();
         }
+
     }
 
     // Called before AcademyReset().
@@ -225,15 +224,6 @@ public abstract class Academy : MonoBehaviour
             brain.ResetDoneAndReward();
         }
 
-    }
-
-    // Instructs all brains to collect states from their agents.
-    private void SendState()
-    {
-        foreach (Brain brain in brains)
-        {
-            brain.SendState();
-        }
     }
 
     // Instructs all brains to process states to produce actions.
