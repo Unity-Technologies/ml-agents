@@ -88,6 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 112000002, guid: 03723c7f910c3423aa1974f1b9ce8392,
     type: 2}
   m_UseShadowmask: 1
@@ -156,24 +157,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainParameters:
     stateSize: 42
-    actionSize: 5
+    stackedStates: 4
+    actionSize: 3
     memorySize: 0
     cameraResolutions: []
     actionDescriptions:
     - 
     - 
     - 
-    - 
-    - 
-    actionSpaceType: 0
+    actionSpaceType: 1
     stateSpaceType: 1
   brainType: 2
   CoreBrains:
-  - {fileID: 111620234}
-  - {fileID: 595321154}
-  - {fileID: 149216067}
-  - {fileID: 48212215}
-  instanceID: 32322
+  - {fileID: 999012827}
+  - {fileID: 1840634445}
+  - {fileID: 1769576998}
+  - {fileID: 1145623605}
+  instanceID: 897812
 --- !u!114 &7561200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,28 +185,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0205d4e23c794363ba1d78b1e3d7339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &48212215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: cdf6863dc22844e448667b29a76a45bd, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  StatePlacholderName: state
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  ObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  brain: {fileID: 7561199}
 --- !u!1001 &90945784
 Prefab:
   m_ObjectHideFlags: 0
@@ -302,50 +280,21 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &111620234
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  continuousPlayerActions:
-  - key: 97
-    index: 0
-    value: -1
-  - key: 100
-    index: 0
-    value: 1
-  - key: 119
-    index: 1
-    value: 1
-  - key: 115
-    index: 1
-    value: -1
-  - key: 32
-    index: 2
-    value: 1
-  discretePlayerActions:
-  - key: 119
-    value: 1
-  - key: 97
-    value: 2
-  - key: 100
-    value: 3
-  - key: 32
-    value: 4
-  defaultAction: 0
-  brain: {fileID: 7561199}
 --- !u!1001 &142683647
 Prefab:
   m_ObjectHideFlags: 0
@@ -441,23 +390,21 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &149216067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 7561199}
 --- !u!1 &273651478
 GameObject:
   m_ObjectHideFlags: 0
@@ -627,6 +574,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -727,6 +684,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -814,8 +781,8 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 378228137}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 524, y: 307, z: 0}
-  m_LocalScale: {x: 1.1578283, y: 1.1578283, z: 1.1578283}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1799584681}
   m_Father: {fileID: 0}
@@ -921,6 +888,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1083,24 +1060,21 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &595321154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 7561199}
 --- !u!1001 &709821816
 Prefab:
   m_ObjectHideFlags: 0
@@ -1196,6 +1170,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1310,6 +1294,21 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
+    - target: {fileID: 114889373953008964, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114604256844745734, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114748389071208022, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
     - target: {fileID: 114676913996936890, guid: 40ff8390cb10a47b69a26f13051c0077,
         type: 2}
       propertyPath: brain
@@ -1320,17 +1319,27 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
-    - target: {fileID: 114889373953008964, guid: 40ff8390cb10a47b69a26f13051c0077,
+    - target: {fileID: 114112207625356520, guid: 40ff8390cb10a47b69a26f13051c0077,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
-    - target: {fileID: 114748389071208022, guid: 40ff8390cb10a47b69a26f13051c0077,
+    - target: {fileID: 114400248333175722, guid: 40ff8390cb10a47b69a26f13051c0077,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
-    - target: {fileID: 114554158772648478, guid: 40ff8390cb10a47b69a26f13051c0077,
+    - target: {fileID: 114280147707096566, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114990244784103046, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114112545714018756, guid: 40ff8390cb10a47b69a26f13051c0077,
         type: 2}
       propertyPath: brain
       value: 
@@ -1340,7 +1349,37 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
-    - target: {fileID: 114112207625356520, guid: 40ff8390cb10a47b69a26f13051c0077,
+    - target: {fileID: 114599097022436236, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114309664209052220, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114554158772648478, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114253751008141412, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114157869930189518, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114472437369918456, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114149411894946530, guid: 40ff8390cb10a47b69a26f13051c0077,
         type: 2}
       propertyPath: brain
       value: 
@@ -1350,40 +1389,6 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
-    - target: {fileID: 114604256844745734, guid: 40ff8390cb10a47b69a26f13051c0077,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 1628510760629990, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4936776279699322, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 4936776279699322, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0.30070576
-      objectReference: {fileID: 0}
-    - target: {fileID: 4936776279699322, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 0.953717
-      objectReference: {fileID: 0}
-    - target: {fileID: 4936776279699322, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 35
-      objectReference: {fileID: 0}
-    - target: {fileID: 4936776279699322, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -15
-      objectReference: {fileID: 0}
-    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
-        type: 2}
-      propertyPath: numBananas
-      value: 75
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0
@@ -1482,6 +1487,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1582,11 +1597,57 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &999012827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  continuousPlayerActions:
+  - key: 119
+    index: 0
+    value: 1
+  - key: 97
+    index: 1
+    value: -1
+  - key: 100
+    index: 1
+    value: 1
+  - key: 32
+    index: 2
+    value: 1
+  discretePlayerActions:
+  - key: 119
+    value: 1
+  - key: 32
+    value: 2
+  - key: 97
+    value: 3
+  - key: 100
+    value: 4
+  defaultAction: 0
+  brain: {fileID: 7561199}
 --- !u!1 &1009000883
 GameObject:
   m_ObjectHideFlags: 0
@@ -1602,7 +1663,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1009000884
 Transform:
   m_ObjectHideFlags: 0
@@ -1647,6 +1708,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 1
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
@@ -1746,11 +1808,47 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &1145623605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  graphModel: {fileID: 4900000, guid: 0e47151b64a7e419a9398c1cf8c06e9a, type: 3}
+  graphScope: 
+  graphPlaceholders:
+  - name: epsilon
+    valueType: 1
+    minValue: -1
+    maxValue: 1
+  BatchSizePlaceholderName: batch_size
+  StatePlacholderName: state
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  ObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  brain: {fileID: 7561199}
 --- !u!1001 &1517704328
 Prefab:
   m_ObjectHideFlags: 0
@@ -1846,6 +1944,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1946,6 +2054,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1979,14 +2097,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSteps: 1500
-  frameToSkip: 4
+  frameToSkip: 3
   waitTime: 0
   isInference: 1
   trainingConfiguration:
-    width: 600
-    height: 600
+    width: 128
+    height: 128
     qualityLevel: 0
-    timeScale: 15
+    timeScale: 10
     targetFrameRate: -1
   inferenceConfiguration:
     width: 1280
@@ -2014,6 +2132,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1769576998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 7561199}
 --- !u!1 &1799584680
 GameObject:
   m_ObjectHideFlags: 0
@@ -2178,11 +2308,34 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &1840634445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 7561199}
 --- !u!1001 &1868026841
 Prefab:
   m_ObjectHideFlags: 0
@@ -2278,6 +2431,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2378,6 +2541,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: numBananas
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: respawnBananas
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

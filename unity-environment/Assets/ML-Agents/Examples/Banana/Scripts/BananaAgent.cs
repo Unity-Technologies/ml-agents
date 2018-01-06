@@ -26,15 +26,13 @@ public class BananaAgent : Agent
 
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
-
         float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
         foreach (float angle in rayAngles)
         {
             float noise = 0f;
             float noisyAngle = angle + Random.Range(-noise, noise);
             Vector3 position = transform.TransformDirection(GiveCatersian(25f, noisyAngle));
-            Debug.DrawRay(transform.position, position, Color.green, 0.1f, true);
+            Debug.DrawRay(transform.position, position, Color.green, 0.0f, true);
             RaycastHit hit;
             float[] subList = { 0f, 0f, 0f, 0f, 0f, 0f };
             if (Physics.SphereCast(transform.position, 1.0f, position, out hit, 25f))
@@ -90,7 +88,7 @@ public class BananaAgent : Agent
     {
         Monitor.Log("Bananas", bananas, MonitorType.text, gameObject.transform);
 
-        if (Time.time > frozenTime + 2f) {
+        if (Time.time > frozenTime + 4f) {
             frozen = false;
             gameObject.GetComponent<Renderer>().material = normalMaterial;
         }
@@ -99,18 +97,21 @@ public class BananaAgent : Agent
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
-        int movement = Mathf.FloorToInt(act[0]);
+        //int movement = Mathf.FloorToInt(act[0]);
         bool shoot = false;
+
 
         if (!frozen)
         {
-            if (movement == 2) { rotateDir = -transform.up; } //go left
-            if (movement == 3) { rotateDir = transform.up; } //go right
-            if (movement == 1) { dirToGo = transform.forward; } //go forward
-            //if (movement == 4) { dirToGo = -transform.forward; } //go back
-            if (movement == 4) { shoot = true; }
-            agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
-            transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
+            dirToGo = transform.forward * Mathf.Clamp(act[0], 0f, 1f);
+            rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
+            if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f) { 
+                shoot = true; 
+            }
+            else {
+                agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
+                transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
+            }
         }
 
         if (agentRB.velocity.sqrMagnitude > 25f) //slow it down
@@ -124,7 +125,7 @@ public class BananaAgent : Agent
             Vector3 position = transform.TransformDirection(GiveCatersian(25f, 90f));
             Debug.DrawRay(transform.position, position, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 1.0f, position, out hit, 25f))
+            if (Physics.SphereCast(transform.position, 2f, position, out hit, 25f))
             {
                 if (hit.collider.gameObject.tag == "agent")
                 {
@@ -164,6 +165,7 @@ public class BananaAgent : Agent
         frozen = false;
         bananas = 0;
         myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
+        gameObject.GetComponent<Renderer>().material = normalMaterial;
     }
 
     private void OnCollisionEnter(Collision collision)

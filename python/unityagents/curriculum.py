@@ -12,6 +12,7 @@ class Curriculum(object):
         :param default_reset_parameters: Set of reset parameters for environment.
         """
         self.lesson_length = 0
+        self.max_lesson_number = 0
         self.measure_type = None
         if location is None:
             self.data = None

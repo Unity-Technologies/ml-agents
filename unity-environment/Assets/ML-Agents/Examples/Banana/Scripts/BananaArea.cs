@@ -9,6 +9,7 @@ public class BananaArea : Area
     public GameObject banana;
     public GameObject badBanana;
     public int numBananas;
+    public int numBadBananas;
     public bool respawnBananas;
 
     // Use this for initialization
@@ -39,12 +40,12 @@ public class BananaArea : Area
 
         for (int i = 0; i < numBananas; i++)
         {
-            GameObject bana = Instantiate(banana, new Vector3(Random.Range(-range, range), 2f, Random.Range(-range, range)) + transform.position, banana.gameObject.transform.rotation);
+            GameObject bana = Instantiate(banana, new Vector3(Random.Range(-range, range), 1f, Random.Range(-range, range)) + transform.position, banana.gameObject.transform.rotation);
             bana.GetComponent<BananaLogic>().respawn = respawnBananas;
         }
-        for (int i = 0; i < numBananas; i++)
+        for (int i = 0; i < numBadBananas; i++)
         {
-            GameObject bana = Instantiate(badBanana, new Vector3(Random.Range(-range, range), 2f, Random.Range(-range, range)) + transform.position, banana.gameObject.transform.rotation);
+            GameObject bana = Instantiate(badBanana, new Vector3(Random.Range(-range, range), 1f, Random.Range(-range, range)) + transform.position, banana.gameObject.transform.rotation);
             bana.GetComponent<BananaLogic>().respawn = respawnBananas;
         }
     }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ball3DAgent : Agent
+public class Ball3DHardAgent : Agent
 {
-    [Header("Specific to Ball3D")]
+    [Header("Specific to Ball3DHard")]
     public GameObject ball;
 
     public override List<float> CollectState()
@@ -14,9 +14,6 @@ public class Ball3DAgent : Agent
         state.Add((ball.transform.position.x - gameObject.transform.position.x));
         state.Add((ball.transform.position.y - gameObject.transform.position.y));
         state.Add((ball.transform.position.z - gameObject.transform.position.z));
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.x);
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.y);
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.z);
         return state;
     }
 

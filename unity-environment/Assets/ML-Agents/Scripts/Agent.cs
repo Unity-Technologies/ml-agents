@@ -32,6 +32,9 @@ public abstract class Agent : MonoBehaviour
     // State list for the agent.
     public List<float> state;
 
+    //List of last n states.
+    public List<float> stackedStates;
+
     /**< \brief Describes the reward for the given step of the agent.*/
     /**< It is reset to 0 at the beginning of every step. 
     * Modify in AgentStep(). 
@@ -144,6 +147,8 @@ public abstract class Agent : MonoBehaviour
     public virtual void InitializeAgent()
     {
         state = new List<float>(brain.brainParameters.stateSize);
+        stackedStates = new List<float>(brain.brainParameters.stateSize * brain.brainParameters.stackedStates);
+        stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
     }
 
     /// Collect the states of the agent with this method
@@ -158,7 +163,9 @@ public abstract class Agent : MonoBehaviour
     public List<float> ClearAndCollectState() {
         state.Clear();
         CollectState();
-        return state;
+        stackedStates.RemoveRange(0, brain.brainParameters.stateSize);
+        stackedStates.AddRange(state);
+        return stackedStates;
     }
 
     public virtual List<float> CollectState()
@@ -203,6 +210,8 @@ public abstract class Agent : MonoBehaviour
     public void Reset()
     {
         memory = new float[brain.brainParameters.memorySize];
+        stackedStates.Clear();
+        stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
         stepCounter = 0;
         CumulativeReward = 0f;
         AgentReset();
