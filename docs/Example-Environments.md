@@ -31,6 +31,7 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * -1.0 if the ball falls from the platform.
 * Brains: One brain with the following state/action space.
     * State space: (Continuous) 8 variables corresponding to rotation of platform, and position, rotation, and velocity of ball.
+    * State space (Hard Version): (Continuous) 5 variables corresponding to rotation of platform and position and rotation of ball.
     * Action space: (Continuous) Size of 2, with one value corresponding to X-rotation, and the other to Z-rotation.
     * Observations: 0
 * Reset Parameters: None

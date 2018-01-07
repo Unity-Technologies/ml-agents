@@ -30,9 +30,11 @@ public abstract class Agent : MonoBehaviour
     public bool resetOnDone = true;
 
     // State list for the agent.
+    [HideInInspector]
     public List<float> state;
 
     //List of last n states.
+    [HideInInspector]
     public List<float> stackedStates;
 
     /**< \brief Describes the reward for the given step of the agent.*/
