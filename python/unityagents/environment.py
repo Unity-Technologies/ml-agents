@@ -73,6 +73,10 @@ class UnityEnvironment(object):
             candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
             if len(candidates) == 0:
                 candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', '*'))
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', '*'))
             if len(candidates) > 0:
                 launch_string = candidates[0]
         elif platform == 'win32':
