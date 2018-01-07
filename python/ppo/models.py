@@ -131,11 +131,11 @@ class PPOModel(object):
             self.normalized_state = self.state_in
         streams = []
         for i in range(num_streams):
-            #if temporal_depth > 1:
+            # if temporal_depth > 1:
             #    reshaped = tf.reshape(self.normalized_state, [-1, s_size/temporal_depth, temporal_depth])
             #    conv_1d = tf.layers.conv1d(reshaped, 16, 1, 1, activation=activation, use_bias=False)
             #    hidden = c_layers.flatten(conv_1d)
-            #else:
+            # else:
             hidden = self.normalized_state
             for j in range(num_layers):
                 hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
@@ -224,7 +224,8 @@ class ContinuousControlModel(PPOModel):
         if brain.state_space_size > 0:
             s_size = brain.state_space_size * brain.stacked_states
             if brain.state_space_type == "continuous":
-                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 2, tf.nn.tanh, num_layers, brain.stacked_states)
+                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 2, tf.nn.tanh, num_layers,
+                                                                    brain.stacked_states)
             else:
                 hidden_state = self.create_discrete_state_encoder(s_size, h_size, 2, tf.nn.tanh, num_layers)
 
@@ -243,8 +244,15 @@ class ContinuousControlModel(PPOModel):
 
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32,
-                                            initializer=tf.zeros_initializer())
+        
+        self.log_sigma_sq = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=True,
+                                            kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
+                                            bias_initializer=tf.zeros_initializer)
+
+        self.log_sigma_sq = tf.exp(tf.log(0.01 + 2 * tf.nn.sigmoid(self.log_sigma_sq)))
+
+        # self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32,
+        #                                    initializer=tf.zeros_initializer())
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='epsilon')
@@ -286,7 +294,8 @@ class DiscreteControlModel(PPOModel):
         if brain.state_space_size > 0:
             s_size = brain.state_space_size * brain.stacked_states
             if brain.state_space_type == "continuous":
-                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers, brain.stacked_states)[0]
+                hidden_state = \
+                self.create_continuous_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers, brain.stacked_states)[0]
             else:
                 hidden_state = self.create_discrete_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers)[0]
 

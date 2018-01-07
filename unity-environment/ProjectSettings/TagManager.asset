@@ -9,6 +9,8 @@ TagManager:
   - banana
   - wall
   - badBanana
+  - pit
+  - frozenAgent
   layers:
   - Default
   - TransparentFX

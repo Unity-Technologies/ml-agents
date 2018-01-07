@@ -21,43 +21,44 @@ public class BananaAgent : Agent
         base.InitializeAgent();
         agentRB = GetComponent<Rigidbody>(); //cache the RB
         Monitor.verticalOffset = 1f;
-
     }
 
     public override List<float> CollectState()
     {
+        float rayDistance = 25f;
         float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
+        string[] detectableObjects = { "banana", "agent", "wall", "badBanana", "frozenAgent" };
+        state = RayPerception(state, rayDistance, rayAngles, detectableObjects);
+        Vector3 localVelocity = transform.InverseTransformDirection(agentRB.velocity);
+        state.Add(localVelocity.x);
+        state.Add(localVelocity.z);
+        return state;
+    }
+
+    public List<float> RayPerception(List<float> state, float rayDistance, float[] rayAngles, string[] detectableObjects) {
         foreach (float angle in rayAngles)
         {
             float noise = 0f;
             float noisyAngle = angle + Random.Range(-noise, noise);
-            Vector3 position = transform.TransformDirection(GiveCatersian(25f, noisyAngle));
+            Vector3 position = transform.TransformDirection(GiveCatersian(rayDistance, noisyAngle));
             Debug.DrawRay(transform.position, position, Color.green, 0.0f, true);
             RaycastHit hit;
-            float[] subList = { 0f, 0f, 0f, 0f, 0f, 0f };
-            if (Physics.SphereCast(transform.position, 1.0f, position, out hit, 25f))
+            float[] subList = new float[detectableObjects.Length + 2];
+            if (Physics.SphereCast(transform.position, 1.0f, position, out hit, rayDistance))
             {
-                if (hit.collider.gameObject.CompareTag("banana"))
+                for (int i = 0; i < detectableObjects.Length; i++)
                 {
-                    subList[1] = 1f;
+                    if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
+                    {
+                        subList[i] = 1;
+                        subList[detectableObjects.Length - 1] = hit.distance / rayDistance;
+                        break;
+                    }
                 }
-                if (hit.collider.gameObject.CompareTag("agent"))
-                {
-                    subList[2] = 1f;
-                }
-                if (hit.collider.gameObject.CompareTag("wall"))
-                {
-                    subList[3] = 1f;
-                }
-                if (hit.collider.gameObject.CompareTag("badBanana"))
-                {
-                    subList[4] = 1f;
-                }
-                subList[5] = hit.distance / 25f;
             }
             else
             {
-                subList[0] = 1f;
+                subList[detectableObjects.Length - 2] = 1f;
             }
             state.AddRange(new List<float>(subList));
         }
@@ -90,6 +91,7 @@ public class BananaAgent : Agent
 
         if (Time.time > frozenTime + 4f) {
             frozen = false;
+            gameObject.tag = "agent";
             gameObject.GetComponent<Renderer>().material = normalMaterial;
         }
 
@@ -104,6 +106,7 @@ public class BananaAgent : Agent
         if (!frozen)
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], 0f, 1f);
+            print(dirToGo.x + " " + dirToGo.y + " " + dirToGo.z);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
             if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f) { 
                 shoot = true; 
@@ -117,6 +120,10 @@ public class BananaAgent : Agent
         if (agentRB.velocity.sqrMagnitude > 25f) //slow it down
         {
             agentRB.velocity *= 0.95f;
+        }
+        if (agentRB.angularVelocity.sqrMagnitude > 25f) //slow it down
+        {
+            agentRB.angularVelocity *= 0.95f;
         }
 
         if (shoot) {
@@ -141,6 +148,7 @@ public class BananaAgent : Agent
     }
 
     public void Freeze() {
+        gameObject.tag = "frozenAgent";
         frozen = true;
         frozenTime = Time.time;
         gameObject.GetComponent<Renderer>().material.color = Color.black;
@@ -161,6 +169,7 @@ public class BananaAgent : Agent
 
     public override void AgentReset()
     {
+        gameObject.tag = "agent";
         agentRB.velocity = Vector3.zero;
         frozen = false;
         bananas = 0;
