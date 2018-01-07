@@ -84,46 +84,40 @@ public class BananaAgent : Agent
         return new Color32(R, G, B, 255);
     }
 
+    public void Unfreeze() {
+        frozen = false;
+        gameObject.tag = "agent";
+        gameObject.GetComponent<Renderer>().material = normalMaterial;
+    }
 
     public void MoveAgent(float[] act)
     {
         Monitor.Log("Bananas", bananas, MonitorType.text, gameObject.transform);
 
         if (Time.time > frozenTime + 4f) {
-            frozen = false;
-            gameObject.tag = "agent";
-            gameObject.GetComponent<Renderer>().material = normalMaterial;
+            Unfreeze();
         }
-
 
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
-
-        //int movement = Mathf.FloorToInt(act[0]);
         bool shoot = false;
-
 
         if (!frozen)
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], 0f, 1f);
-            print(dirToGo.x + " " + dirToGo.y + " " + dirToGo.z);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
             if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f) { 
-                shoot = true; 
+                shoot = true;
+                dirToGo *= 0.5f;
             }
-            else {
-                agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
-                transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
-            }
+            agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
+            transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
+
         }
 
         if (agentRB.velocity.sqrMagnitude > 25f) //slow it down
         {
             agentRB.velocity *= 0.95f;
-        }
-        if (agentRB.angularVelocity.sqrMagnitude > 25f) //slow it down
-        {
-            agentRB.angularVelocity *= 0.95f;
         }
 
         if (shoot) {
@@ -154,14 +148,6 @@ public class BananaAgent : Agent
         gameObject.GetComponent<Renderer>().material.color = Color.black;
     }
 
-    void RotateTowards(Vector3 pos)
-    {
-        Vector3 dirToBox = pos - transform.position; //get dir
-        dirToBox.y = 0;
-        Quaternion targetRotation = Quaternion.LookRotation(dirToBox); //get our needed rotation
-        agentRB.MoveRotation(Quaternion.Lerp(agentRB.transform.rotation, targetRotation, Time.deltaTime * turnSpeed));
-    }
-
     public override void AgentStep(float[] act)
     {
         MoveAgent(act);
@@ -169,12 +155,10 @@ public class BananaAgent : Agent
 
     public override void AgentReset()
     {
-        gameObject.tag = "agent";
+        Unfreeze();
         agentRB.velocity = Vector3.zero;
-        frozen = false;
         bananas = 0;
         myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
     }
 
     private void OnCollisionEnter(Collision collision)
