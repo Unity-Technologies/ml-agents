@@ -18,6 +18,7 @@
  * [Monitor](monitor.md)
  * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
  * [TensorflowSharp in Unity [Experimental]](Using-TensorFlow-Sharp-in-Unity-(Experimental).md)
+ * [Instanciating and Destroying agents](Instantiating-Destroying-Agents.md)
  
 ## Best Practices
  * [Best practices when creating an Environment](best-practices.md)
