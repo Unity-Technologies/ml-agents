@@ -140,3 +140,19 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
     * Observations: None
 * Reset Parameters: None
+
+## Banana Collector
+
+![Banana](../images/banana.png)
+
+* Set-up: A multi-agent environment where agents compete to collect bananas. 
+* Goal: The agents must learn to move to as many yellow bananas as possible while avoiding red bananas.
+* Agents: The environment contains 10 agents linked to a single brain.
+* Agent Reward Function (independent): 
+    * +1 for interaction with yellow banana
+    * -1 for interaction with red banana.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 51 corresponding to velocity of agent, plus ray-based perception of objects around agent's forward direction.
+    * Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
+    * Observations (Optional): First-person view for each agent. 
+* Reset Parameters: None
