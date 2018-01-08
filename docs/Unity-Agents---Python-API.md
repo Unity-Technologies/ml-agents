@@ -9,11 +9,11 @@ Python-side communication happens through `UnityEnvironment` which is located in
 
 ```python
 from unityagents import UnityEnvironment
-env = UnityEnvironment(file_name=filename, worker_num=0)
+env = UnityEnvironment(file_name=filename, worker_id=0)
 ```
 
 * `file_name` is the name of the environment binary (located in the root directory of the python project). 
-* `worker_num` indicates which port to use for communication with the environment. For use in parallel training regimes such as A3C.
+* `worker_id` indicates which port to use for communication with the environment. For use in parallel training regimes such as A3C.
 
 ## Interacting with a Unity Environment
 
