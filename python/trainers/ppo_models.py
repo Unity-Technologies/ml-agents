@@ -6,7 +6,6 @@ from unityagents import UnityEnvironmentException
 
 
 
-
 def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6, normalize=False, use_recurrent = False, num_layers=2, m_size = None):
     """
     Takes a Unity environment and model-specific hyper-parameters and returns the

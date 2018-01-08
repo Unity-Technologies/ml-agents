@@ -3,8 +3,8 @@ import tensorflow as tf
 import re
 import os
 
-from ppo.buffer import *
-from ppo.models import *
+from trainers.buffer import *
+from trainers.ppo_models import *
 import logging
 logger = logging.getLogger("unityagents")
 

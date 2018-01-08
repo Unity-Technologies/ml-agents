@@ -6,8 +6,8 @@ from docopt import docopt
 
 import os
 import re
-from ppo.models import *
-from ppo.trainer import Trainer
+from trainers.ppo_models import *
+from trainers.ppo_trainer import Trainer
 from unityagents import UnityEnvironment
 
 
@@ -162,8 +162,6 @@ with tf.Session() as sess:
                 if trainer.is_ready_update() and train_model:
                     # Perform gradient descent with experience buffer
                     trainer.update_model()
-
-
                 # Write training statistics to tensorboard.
                 trainer.write_summary(env._curriculum.lesson_number)
                 if train_model:
