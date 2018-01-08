@@ -178,6 +178,7 @@ with tf.Session() as sess:
             save_model(sess, model_path=model_path, steps=global_step, saver=saver)
     except KeyboardInterrupt:
       print("\nLearning was interupted. Please wait while the graph is generated.")
+      save_model(sess, model_path=model_path, steps=global_step, saver=saver)
       pass
 env.close()
 graph_name = (env_name.strip()
@@ -186,7 +187,13 @@ graph_name = os.path.basename(os.path.normpath(graph_name))
 nodes = []
 for brain_name in trainers.keys():
     scope = (re.sub('[^0-9a-zA-Z]+', '-', brain_name)) + '/'
-    nodes +=[scope + x for x in ["action","value_estimate","action_probs"]]   
-export_graph(model_path, graph_name, target_nodes=','.join(nodes)) 
+    nodes +=[scope + x for x in ["action","value_estimate","action_probs"]] 
+export_graph(model_path, graph_name, target_nodes=','.join(nodes))
+print("List of available scopes :")
+for brain_name in trainers.keys():
+    print("\t" + re.sub('[^0-9a-zA-Z]+', '-', brain_name) + '/')
+print("List of nodes exported :")
+for n in nodes:
+    print("\t" + n)  
 # export_graph should be in a utils class 
 
