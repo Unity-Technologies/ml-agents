@@ -3329,7 +3329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   banana: {fileID: 1977190621099370, guid: 283cfdfe70d4d402ab7c47c231020676, type: 2}
   badBanana: {fileID: 1724820272436810, guid: cc805f9f7bf0f423ca9323a48df7be14, type: 2}
-  numBananas: 50
+  numBananas: 25
   numBadBananas: 5
   respawnBananas: 1
 --- !u!4 &1812954964
