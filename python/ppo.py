@@ -136,60 +136,52 @@ with tf.Session() as sess:
         for brain_name, trainer in trainers.items():
             trainer.write_text('Hyperparameters', trainer_parameters) #will need one trainer_parameters per trainer
     global_step = 0 # This is only for saving the model
-    while any([t.get_step() < t.get_max_steps() for k, t in trainers.items()]) or not train_model:
-        if env.global_done:
-            info = env.reset(train_mode=train_model, progress=get_progress())
+    try:
+        while any([t.get_step() < t.get_max_steps() for k, t in trainers.items()]) or not train_model:
+            if env.global_done:
+                info = env.reset(train_mode=train_model, progress=get_progress())
+                for brain_name, trainer in trainers.items():
+                    trainer.reset_buffers()
+            # Decide and take an action
+            take_action_actions = {}
+            take_action_memories = {}
+            take_action_values = {}
+            take_action_outputs = {}
             for brain_name, trainer in trainers.items():
-                trainer.reset_buffers()
-        # Decide and take an action
-        take_action_actions = {}
-        take_action_memories = {}
-        take_action_values = {}
-        take_action_outputs = {}
-        for brain_name, trainer in trainers.items():
-            (take_action_actions[brain_name],
-            take_action_memories[brain_name],
-            take_action_values[brain_name], 
-            take_action_outputs[brain_name]) = trainer.take_action(info)
-        new_info = env.step(action = take_action_actions, memory = take_action_memories, value = take_action_values)
-        for brain_name, trainer in trainers.items():
-            trainer.add_experiences(info, new_info, take_action_outputs[brain_name])
-        info = new_info
-        for brain_name, trainer in trainers.items():
-            trainer.process_experiences(info)
-            # TODO : Merge process_experiences with add_experiences
-            if trainer.is_ready_update() and train_model:
-                # Perform gradient descent with experience buffer
-                trainer.update_model()
+                (take_action_actions[brain_name],
+                take_action_memories[brain_name],
+                take_action_values[brain_name], 
+                take_action_outputs[brain_name]) = trainer.take_action(info)
+            new_info = env.step(action = take_action_actions, memory = take_action_memories, value = take_action_values)
+            for brain_name, trainer in trainers.items():
+                trainer.add_experiences(info, new_info, take_action_outputs[brain_name])
+            info = new_info
+            for brain_name, trainer in trainers.items():
+                trainer.process_experiences(info)
+                # TODO : Merge process_experiences with add_experiences
+                if trainer.is_ready_update() and train_model:
+                    # Perform gradient descent with experience buffer
+                    trainer.update_model()
 
 
-            # Write training statistics to tensorboard.
-            trainer.write_summary(env._curriculum.lesson_number)
-            if train_model:
-                global_step += 1
-                trainer.increment_step()
-                trainer.update_last_reward()
-        if global_step % save_freq == 0 and global_step != 0 and train_model:
-            #TODO: Figure out how to save the model in a more elegant way
-            # Save Tensorflow model
+                # Write training statistics to tensorboard.
+                trainer.write_summary(env._curriculum.lesson_number)
+                if train_model:
+                    global_step += 1
+                    trainer.increment_step()
+                    trainer.update_last_reward()
+            if global_step % save_freq == 0 and global_step != 0 and train_model:
+                #TODO: Figure out how to save the model in a more elegant way
+                # Save Tensorflow model
+                save_model(sess, model_path=model_path, steps=global_step, saver=saver)
+
+        # Final save Tensorflow model
+        if global_step != 0 and train_model:
             save_model(sess, model_path=model_path, steps=global_step, saver=saver)
-
-            #This seems to lead to memory issues with the python process
-            # graph_name = (env_name.strip()
-            #       .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
-            # graph_name = os.path.basename(os.path.normpath(graph_name))
-            # nodes = []
-            # for brain_name in trainers.keys():
-            #     # TODO: Should the scope be a Trainer property ?
-            #     scope = (re.sub('[^0-9a-zA-Z]+', '-', brain_name)) + '/'
-            #     nodes +=[scope + x for x in ["action","value_estimate","action_probs"]]
-            # export_graph(model_path, graph_name, target_nodes=','.join(nodes))
-    # Final save Tensorflow model
-    if global_step != 0 and train_model:
-        save_model(sess, model_path=model_path, steps=global_step, saver=saver)
+    except KeyboardInterrupt:
+      print("\nLearning was interupted. Please wait while the graph is generated.")
+      pass
 env.close()
-
-#TODO: Remove this duplicate code (put it in a method in utils)
 graph_name = (env_name.strip()
       .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
 graph_name = os.path.basename(os.path.normpath(graph_name))
