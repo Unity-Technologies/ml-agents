@@ -402,7 +402,8 @@ public class Brain : MonoBehaviour
     /// Is used by the Academy to reset the agents if they are done
     public void ResetIfDone()
     {
-        foreach (Agent agent in agents.Values)
+        var agentsToIterate = agents.Values.ToList();
+        foreach (Agent agent in agentsToIterate)
         {
             if (agent.done)
             {
