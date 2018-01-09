@@ -74,7 +74,7 @@ class PPOModel(object):
         self.new_reward = tf.placeholder(shape=[], dtype=tf.float32, name='new_reward')
         self.update_reward = tf.assign(self.last_reward, self.new_reward)
 
-    def create_recurrent_encoder(self,s_size, input_state):
+    def create_recurrent_encoder(self, s_size, input_state):
         self.lstm_input_state = tf.reshape(input_state, shape = [self.batch_size, self.sequence_length, s_size])
         self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
         rnn_cell = tf.contrib.rnn.BasicLSTMCell(self.m_size / 2)
@@ -114,13 +114,14 @@ class PPOModel(object):
                                           use_bias=False, activation=activation)
 
         if self.use_recurrent:
-            hidden = self.create_recurrent_encoder(s_size, c_layers.flatten(self.conv2))
+            _rec_input = c_layers.flatten(self.conv2)
+            hidden = self.create_recurrent_encoder(_rec_input.get_shape().as_list()[1], _rec_input)
         else:
             hidden = c_layers.flatten(self.conv2)
 
-            for j in range(num_layers):
-                hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
-            streams.append(hidden)
+        for j in range(num_layers):
+            hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
+        streams.append(hidden)
         return streams
 
     def create_continuous_state_encoder(self, s_size, h_size, num_streams, activation, num_layers):

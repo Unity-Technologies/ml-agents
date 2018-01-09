@@ -184,7 +184,7 @@ class Trainer(object):
                 next_idx = next_info.agents.index(agent_id)
                 if not info.local_done[idx]:
                     if self.use_observations:
-                        self.training_buffer[agent_id]['observations'].append([info.observations[0][idx]])
+                        self.training_buffer[agent_id]['observations'].append(info.observations[0][idx])
                     if self.use_states:
                         self.training_buffer[agent_id]['states'].append(info.states[idx])
                     if self.use_recurrent:
@@ -302,14 +302,16 @@ class Trainer(object):
                 if self.is_continuous:
                     feed_dict[self.model.epsilon] = np.array(np.array(self.training_buffer.global_buffer['epsilons'][start:end]).reshape([-1,self.brain.action_space_size]))
                 else:
-                    # if self.is_continuous:
-                    #     feed_dict[self.model.action_holder] = np.array(np.array(self.training_buffer.global_buffer['actions'][start:end]).reshape([-1,self.brain.action_space_size]))
-                    # else:
                     feed_dict[self.model.action_holder] = np.array(np.array(self.training_buffer.global_buffer['actions'][start:end]).reshape([-1]))
                 if self.use_states:
-                    feed_dict[self.model.state_in] = np.array(np.array(self.training_buffer.global_buffer['states'][start:end]).reshape([-1,self.brain.state_space_size]))
+                    if self.is_continuous:
+                        feed_dict[self.model.state_in] = np.array(np.array(self.training_buffer.global_buffer['states'][start:end]).reshape([-1,self.brain.state_space_size]))
+                    else:
+                        feed_dict[self.model.state_in] = np.array(np.array(self.training_buffer.global_buffer['states'][start:end]).reshape([-1,1]))
                 if self.use_observations:
-                    feed_dict[self.model.observation_in] = np.vstack(self.training_buffer.global_buffer['observations'][start:end]) # Not implemented
+                    _obs = np.array(self.training_buffer.global_buffer['observations'][start:end])
+                    (_batch, _seq, _w, _h, _c) = _obs.shape
+                    feed_dict[self.model.observation_in] = _obs.reshape([-1,_w,_h,_c])
                 #Memories are zeros
                 if self.use_recurrent:
                     # feed_dict[self.model.memory_in] = np.array([x[0] for x in self.training_buffer.global_buffer['memory'][start:end]]).reshape([-1,32]) # HARD CODED VALUE
