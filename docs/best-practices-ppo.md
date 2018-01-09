@@ -60,9 +60,12 @@ Typical Range: `3` - `10`
 ### Time Horizon
 
 `time_horizon` corresponds to how many steps of experience to collect per-agent before adding it to the experience buffer.
-In cases where there are frequent rewards within an episode, or episodes are prohibitively large, this can be a smaller number. For most stable training however, this number should be large enough to capture all the important behavior within a sequence of an agent's actions.
+When this limit is reached before the end of an episode, a value estimate is used to predict the overall expected reward from the agent's current state.
+As such, this parameter trades off between a less biased, but higher variance estimate (long time horizon) and more biased, but less varied estimate (short time horizon).
+In cases where there are frequent rewards within an episode, or episodes are prohibitively large, a smaller number can be more ideal. 
+This number should be large enough to capture all the important behavior within a sequence of an agent's actions.
 
-Typical Range: `64` - `2048`
+Typical Range: `32` - `2048`
 
 ### Max Steps
 
