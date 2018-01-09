@@ -204,7 +204,6 @@ public abstract class Agent : MonoBehaviour
     {
         memory = new float[brain.brainParameters.memorySize];
         stepCounter = 0;
-        CumulativeReward = 0f;
         AgentReset();
         CumulativeReward = -reward;
     }
@@ -217,7 +216,12 @@ public abstract class Agent : MonoBehaviour
 
     public void SetCumulativeReward()
     {
-        CumulativeReward += reward;
+        if (!done) {
+            CumulativeReward += reward;
+        }
+        else{
+            CumulativeReward = 0f;
+        }
     }
 
     /// Do not modify : Is used by the brain to collect done.
