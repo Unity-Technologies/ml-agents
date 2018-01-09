@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSteps: 0
   frameToSkip: 0
-  waitTime: 0
+  waitTime: 0.2
   isInference: 0
   trainingConfiguration:
     width: 300
