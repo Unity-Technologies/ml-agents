@@ -113,6 +113,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
             session = new TFSession(graph);
 
+            if ((graphScope.Length > 1) && (graphScope[graphScope.Length - 1] != '/')){
+                graphScope = graphScope + '/';
+            }
+
             if (graph[graphScope + BatchSizePlaceholderName] != null)
             {
                 hasBatchSize = true;
@@ -208,7 +212,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
         var runner = session.GetRunner();
-        runner.Fetch(graph[graphScope + ActionPlaceholderName][0]);
+        try
+        {
+            runner.Fetch(graph[graphScope + ActionPlaceholderName][0]);
+        }
+        catch
+        {
+            throw new UnityAgentsException(string.Format(@"The node {0} could not be found. Please make sure the graphScope {1} is correct",
+					 graphScope + ActionPlaceholderName, graphScope));
+        }
 
         if (hasBatchSize)
         {
