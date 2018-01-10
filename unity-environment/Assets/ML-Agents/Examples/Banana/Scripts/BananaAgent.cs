@@ -25,7 +25,7 @@ public class BananaAgent : Agent
 
     public override List<float> CollectState()
     {
-        float rayDistance = 25f;
+        float rayDistance = 50f;
         float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
         string[] detectableObjects = { "banana", "agent", "wall", "badBanana", "frozenAgent" };
         state = RayPerception(state, rayDistance, rayAngles, detectableObjects);
@@ -51,14 +51,14 @@ public class BananaAgent : Agent
                     if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
                     {
                         subList[i] = 1;
-                        subList[detectableObjects.Length - 1] = hit.distance / rayDistance;
+                        subList[detectableObjects.Length + 1] = hit.distance / rayDistance;
                         break;
                     }
                 }
             }
             else
             {
-                subList[detectableObjects.Length - 2] = 1f;
+                subList[detectableObjects.Length] = 1f;
             }
             state.AddRange(new List<float>(subList));
         }
