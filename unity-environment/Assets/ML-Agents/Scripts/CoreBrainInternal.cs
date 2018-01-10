@@ -262,6 +262,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
         if (hasRecurrent)
         {
+            runner.AddInput(graph[graphScope + "sequence_length"][0],  1 );
             runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
             runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
         }

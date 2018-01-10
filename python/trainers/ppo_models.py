@@ -75,7 +75,7 @@ class PPOModel(object):
         self.update_reward = tf.assign(self.last_reward, self.new_reward)
 
     def create_recurrent_encoder(self, s_size, input_state):
-        self.lstm_input_state = tf.reshape(input_state, shape = [self.batch_size, self.sequence_length, s_size])
+        self.lstm_input_state = tf.reshape(input_state, shape = [-1, self.sequence_length, s_size])
         self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
         rnn_cell = tf.contrib.rnn.BasicLSTMCell(self.m_size / 2)
         lstm_state_in = tf.contrib.rnn.LSTMStateTuple(self.memory_in[:,:self.m_size/2], self.memory_in[:,self.m_size/2 :])

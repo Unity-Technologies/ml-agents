@@ -22,7 +22,7 @@ logger = logging.getLogger("unityagents")
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005, curriculum=None, lesson=0):
+                 base_port=5005, curriculum=None):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -126,7 +126,7 @@ class UnityEnvironment(object):
             self._num_brains = len(self._brain_names)
             self._num_external_brains = len(self._external_brain_names)
             self._resetParameters = p["resetParameters"]
-            self._curriculum = Curriculum(curriculum, self._resetParameters, lesson)
+            self._curriculum = Curriculum(curriculum, self._resetParameters)
             for i in range(self._num_brains):
                 self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
             self._loaded = True
@@ -138,6 +138,9 @@ class UnityEnvironment(object):
             proc1.kill()
             self.close()
             raise
+    @property
+    def curriculum(self):
+        return self._curriculum
 
     @property
     def logfile_path(self):
@@ -187,11 +190,17 @@ class UnityEnvironment(object):
         return s
 
     def __str__(self):
+        _new_reset_param = self._curriculum.get_config()
+        for k in _new_reset_param:
+            self._resetParameters[k] = _new_reset_param[k]
         return '''Unity Academy name: {0}
-        Number of brains: {1}
-        Reset Parameters :\n\t\t{2}'''.format(self._academy_name, str(self._num_brains),
-                                              "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
-                                                             for k in self._resetParameters])) + '\n' + \
+        Number of Brains: {1}
+        Number of External Brains : {2}
+        Lesson number : {3}
+        Reset Parameters :\n\t\t{4}'''.format(self._academy_name, str(self._num_brains),
+                                 str(self._num_external_brains), self._curriculum.get_lesson_number(),
+                                  "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
+                                         for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
     def _recv_bytes(self):
@@ -226,18 +235,15 @@ class UnityEnvironment(object):
         state_dict = json.loads(state)
         return state_dict
 
-    def reset(self, train_mode=True, config=None, progress=None):
+    def reset(self, train_mode=True, config=None, lesson=None):
         """
         Sends a signal to reset the unity environment.
         :return: A Data structure corresponding to the initial reset state of the environment.
         """
-        old_lesson = self._curriculum.get_lesson_number()
         if config is None:
-            config = self._curriculum.get_lesson(progress)
-            if old_lesson != self._curriculum.get_lesson_number():
-                logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
-                            .format(self._curriculum.get_lesson_number(),
-                                    ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
+            config = self._curriculum.get_config(lesson)
+
+
         elif config != {}:
             logger.info("\nAcademy Reset with parameters : \t{0}"
                         .format(', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))

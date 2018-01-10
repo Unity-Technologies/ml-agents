@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import re
 import os
 
 from trainers.buffer import *
@@ -30,7 +29,8 @@ class Trainer(object):
         # print("Is recurrent : "+str(trainer_parameters['use_recurrent']))
         # print("Sequence Lenght : "+str(self.sequence_length))
         # print("Memories : "+str(self.m_size))
-        with tf.variable_scope(re.sub('[^0-9a-zA-Z]+', '-', brain_name)):
+        self.variable_scope = trainer_parameters['graph_scope']#re.sub('[^0-9a-zA-Z]+', '-', brain_name)
+        with tf.variable_scope(self.variable_scope):
             self.model = create_agent_model(env.brains[brain_name], 
                    lr=trainer_parameters['learning_rate'],
                    h_size=trainer_parameters['hidden_units'],
@@ -55,7 +55,8 @@ class Trainer(object):
         self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_observations > 0)
         self.use_states = (env.brains[brain_name].state_space_size > 0)
-        self.summary_path = './summaries/{}'.format(trainer_parameters['run_path']+'_'+brain_name)
+        # self.summary_path = './summaries/{}'.format(trainer_parameters['summary_path'])#+'_'+self.variable_scope)
+        self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
         #TODO: Some of these fields could be stored in a more efficient way
@@ -63,6 +64,14 @@ class Trainer(object):
         self.brain_name = brain_name
         self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
+
+    @property
+    def parameters(self):
+        return self.trainer_parameters
+
+    @property
+    def graph_scope(self):
+        return self.variable_scope
 
     def get_max_steps(self):
         """

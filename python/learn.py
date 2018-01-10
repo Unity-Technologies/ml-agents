@@ -4,11 +4,12 @@
 
 from docopt import docopt
 
-import os
 import re
+import os
+import json
 from trainers.ppo_models import *
 from trainers.ppo_trainer import Trainer
-from unityagents import UnityEnvironment
+from unityagents import UnityEnvironment, UnityEnvironmentException
 
 
 
@@ -30,6 +31,7 @@ Options:
   --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
   --lambd=<n>                Lambda parameter for GAE [default: 0.95].
   --learning-rate=<rate>     Model learning rate [default: 3e-4].
+  --lesson=<n>               Start learning from this lesson [default: 0].
   --load                     Whether to load the model or randomly initialize [default: False].
   --max-steps=<n>            Maximum number of steps to run environment [default: 1e6].
   --normalize                Whether to normalize the state input using running statistics [default: False].
@@ -43,20 +45,17 @@ Options:
   --train                    Whether to train model, or only run inference [default: False].
   --use-recurrent            Whether to use recurrent encoding of the state and observations [default: False].
   --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
-  --lesson=<n>               Start learning from this lesson [default: 0].
 '''
 
 options = docopt(_USAGE)
 print(options)
 
 # General parameters
-max_steps = float(options['--max-steps'])
 model_path = './models/{}'.format(str(options['--run-path']))
-run_path = str(options['--run-path'])
+
 # summary_path = './summaries/{}'.format(str(options['--run-path']))
 load_model = options['--load']
 train_model = options['--train']
-summary_freq = int(options['--summary-freq'])
 save_freq = int(options['--save-freq'])
 env_name = options['<env>']
 keep_checkpoints = int(options['--keep-checkpoints'])
@@ -67,35 +66,49 @@ if curriculum_file == "None":
 lesson = int(options['--lesson'])
 
 # Algorithm-specific parameters for tuning
-gamma = float(options['--gamma'])
-lambd = float(options['--lambd'])
-time_horizon = int(options['--time-horizon'])
-beta = float(options['--beta'])
-num_epoch = int(options['--num-epoch'])
-num_layers = int(options['--num-layers'])
-epsilon = float(options['--epsilon'])
-buffer_size = int(options['--buffer-size'])
-learning_rate = float(options['--learning-rate'])
-hidden_units = int(options['--hidden-units'])
-batch_size = int(options['--batch-size'])
-normalize = options['--normalize']
-use_recurrent = options['--use-recurrent']
-sequence_length = int(options['--sequence-length'])
+# max_steps = float(options['--max-steps'])
+# gamma = float(options['--gamma'])
+# lambd = float(options['--lambd'])
+# time_horizon = int(options['--time-horizon'])
+# beta = float(options['--beta'])
+# num_epoch = int(options['--num-epoch'])
+# num_layers = int(options['--num-layers'])
+# epsilon = float(options['--epsilon'])
+# buffer_size = int(options['--buffer-size'])
+# learning_rate = float(options['--learning-rate'])
+# hidden_units = int(options['--hidden-units'])
+# batch_size = int(options['--batch-size'])
+# normalize = options['--normalize']
+# use_recurrent = options['--use-recurrent']
+# sequence_length = int(options['--sequence-length'])
+# summary_freq = int(options['--summary-freq'])
+# run_path = str(options['--run-path'])
 
-trainer_parameters = {'max_steps':max_steps, 'run_path':run_path, 'env_name':env_name,
-    'curriculum_file':curriculum_file, 'gamma':gamma, 'lambd':lambd, 'time_horizon':time_horizon,
-    'beta':beta, 'num_epoch':num_epoch, 'epsilon':epsilon, 'buffer_size':buffer_size,
-    'learning_rate':learning_rate, 'hidden_units':hidden_units, 'batch_size':batch_size,
-    'normalize':normalize, 'summary_freq':summary_freq, 'num_layers':num_layers,
-
-    'use_recurrent':use_recurrent,
-    'sequence_length':sequence_length
+default_trainer_parameters = {
+    # 'summary_path':str(options['--run-path']), 
+    'max_steps':float(options['--max-steps']), 
+    'gamma':float(options['--gamma']),
+    'lambd':float(options['--lambd']), 
+    'time_horizon':int(options['--time-horizon']),
+    'beta':float(options['--beta']), 
+    'num_epoch':int(options['--num-epoch']), 
+    'epsilon':float(options['--epsilon']), 
+    'buffer_size':int(options['--buffer-size']),
+    'learning_rate':float(options['--learning-rate']), 
+    'hidden_units':int(options['--hidden-units']), 
+    'batch_size':int(options['--batch-size']),
+    'normalize':options['--normalize'], 
+    'summary_freq':int(options['--summary-freq']), 
+    'num_layers':int(options['--num-layers']),
+    'use_recurrent':options['--use-recurrent'],
+    'sequence_length':int(options['--sequence-length'])
     }
 # TODO: trainer parameters could contain a string for the type of trainer to use and a string for the 
 # TODO: add a string for the type of model to use ?
 # TODO: Find a better structure to store the trainer paramters
 
-env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file, lesson=lesson)
+env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
+env.curriculum.set_lesson_number(lesson)
 print(str(env))
 
 tf.reset_default_graph()
@@ -106,18 +119,49 @@ if not os.path.exists(model_path):
 # TODO: Need to specify steps and last_reward here : Could be a sum of rewards or the min step ?
 def get_progress():
     if curriculum_file is not None:
-        if env._curriculum.measure_type == "progress":
-            return steps / max_steps
-        elif env._curriculum.measure_type == "reward":
-            return last_reward
+        if env.curriculum.measure_type == "progress":
+            progress = 0
+            for brain_name in env.external_brain_names:
+                progress += trainers[brain_name].get_step() / trainers[brain_name].get_max_steps()
+            return progress / len(env.external_brain_names)
+        elif env.curriculum.measure_type == "reward":
+            progress = 0
+            for brain_name in env.external_brain_names:
+                progress += trainers[brain_name].get_last_reward()
+            return progress
         else:
             return None
     else:
         return None
 
+try:
+    with open("trainer_configurations.json") as data_file:
+        trainer_configurations = json.load(data_file)
+except IOError:
+    print("The file {0} could not be found. Will use default Hyperparameters".format("trainer_configurations.json"))
+    trainer_configurations = {}
+except UnicodeDecodeError:
+    raise UnityEnvironmentException("There was an error decoding {}".format("trainer_configurations.json"))
+
 with tf.Session() as sess:
     trainers = {}
     for brain_name in env.external_brain_names:
+        trainer_parameters = default_trainer_parameters.copy()
+        if brain_name in trainer_configurations:
+            _brain_key = brain_name
+            while not isinstance(trainer_configurations[_brain_key], dict):
+                _brain_key = trainer_configurations[_brain_key]
+            for k in trainer_configurations[_brain_key]:
+                trainer_parameters[k] = trainer_configurations[_brain_key][k]
+        if len(env.external_brain_names) > 1:
+            graph_scope = re.sub('[^0-9a-zA-Z]+', '-', brain_name)
+            trainer_parameters['graph_scope'] = graph_scope
+            trainer_parameters['summary_path'] = './summaries/{}'.format(str(options['--run-path']))+'__'+graph_scope
+        else :
+            trainer_parameters['graph_scope'] = ''
+            trainer_parameters['summary_path'] = './summaries/{}'.format(str(options['--run-path']))
+        print("Hyperparameters for {}:".format(brain_name))
+        print(trainer_parameters)
         trainers[brain_name] = Trainer(sess, env, brain_name, trainer_parameters, train_model)
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=keep_checkpoints)
@@ -131,15 +175,17 @@ with tf.Session() as sess:
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         sess.run(init)
-    info = env.reset(train_mode=train_model, progress=get_progress())
+    global_step = 0 # This is only for saving the model
+    env.curriculum.increment_lesson(get_progress())
+    info = env.reset(train_mode=train_model)
     if train_model:
         for brain_name, trainer in trainers.items():
-            trainer.write_text('Hyperparameters', trainer_parameters) #will need one trainer_parameters per trainer
-    global_step = 0 # This is only for saving the model
+            trainer.write_text('Hyperparameters', trainer.parameters) #will need one trainer_parameters per trainer
     try:
         while any([t.get_step() < t.get_max_steps() for k, t in trainers.items()]) or not train_model:
             if env.global_done:
-                info = env.reset(train_mode=train_model, progress=get_progress())
+                env.curriculum.increment_lesson(get_progress())
+                info = env.reset(train_mode=train_model)
                 for brain_name, trainer in trainers.items():
                     trainer.reset_buffers()
             # Decide and take an action
@@ -163,7 +209,7 @@ with tf.Session() as sess:
                     # Perform gradient descent with experience buffer
                     trainer.update_model()
                 # Write training statistics to tensorboard.
-                trainer.write_summary(env._curriculum.lesson_number)
+                trainer.write_summary(env.curriculum.lesson_number)
                 if train_model:
                     global_step += 1
                     trainer.increment_step()
@@ -186,12 +232,18 @@ graph_name = (env_name.strip()
 graph_name = os.path.basename(os.path.normpath(graph_name))
 nodes = []
 for brain_name in trainers.keys():
-    scope = (re.sub('[^0-9a-zA-Z]+', '-', brain_name)) + '/'
-    nodes +=[scope + x for x in ["action","value_estimate","action_probs"]] 
+    scope = trainers[brain_name].graph_scope + '/'
+    if scope == '/':
+      scope = ''
+    if not trainers[brain_name].parameters["use_recurrent"]:
+        nodes +=[scope + x for x in ["action","value_estimate","action_probs"]] 
+    else:
+        nodes +=[scope + x for x in ["action","value_estimate","action_probs","recurrent_out"]] 
 export_graph(model_path, graph_name, target_nodes=','.join(nodes))
-print("List of available scopes :")
-for brain_name in trainers.keys():
-    print("\t" + re.sub('[^0-9a-zA-Z]+', '-', brain_name) + '/')
+if len(trainers.keys()) > 1:
+    print("List of available scopes :")
+    for brain_name in trainers.keys():
+        print("\t" + trainers[brain_name].graph_scope + '/')
 print("List of nodes exported :")
 for n in nodes:
     print("\t" + n)  
