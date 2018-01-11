@@ -5,8 +5,8 @@
 Download link available [here](https://store.unity.com/download?ref=update).
 
 ## Clone the repository
-Once installed, you will want to clone the Agents GitHub repository. References will be made 
-throughout to `unity-environment` and `python` directories. Both are located at the root of the repository. 
+Once installed, you will want to clone the Agents GitHub repository. References will be made
+throughout to `unity-environment` and `python` directories. Both are located at the root of the repository.
 
 ## Installing Python API
 In order to train an agent within the framework, you will need to install Python 2 or 3, and the dependencies described below.
@@ -25,11 +25,36 @@ If you are a Windows user who is new to Python/TensorFlow, follow [this guide](h
 * TensorFlow (1.0+) (Training)
 
 ### Installing Dependencies
+
+#### If You're Using Conda
+- Create a new Conda Environment
+    - `conda create --name unity_ml_env`
+    - `source activate unity_ml_env` or if you're on Windows `activate unity_ml_env`
+- Install requirements.
+    - `conda install Matplotlib`
+    - `conda install numpy`
+    - `conda install Pillow`
+    - `conda install docopt`
+    - [Go here for the latest TensorFlow install info](https://www.tensorflow.org/install/)
+    - The other requirements are part of Conda already
+
+- Allow Jupyter Notebook to see your Conda Environment
+    - `conda install ipykernel`
+    - `python -m ipykernel install --user --name myenv --display-name "Python (unity_ml_env)"`
+
+- Launch the *PPO.ipynb* notebook from the `python` sub-directory of the repository
+    - `jupyter notebook PPO.ipynb`
+    - Select the Conda Env you just worked so hard to make. *Kernel->Change kernel->Python (unity_ml_env)*
+    - If you cannot see your env in the list check the documentation [here](http://ipython.readthedocs.io/en/stable/install/kernel_install.html)
+
+- You're good to go!
+
+#### If You're NOT Using Conda
 To install dependencies, go into the `python` sub-directory of the repository, and run (depending on your python version) from the command line:
 
 `pip install .`
 
-or 
+or
 
 `pip3 install  .`
 
