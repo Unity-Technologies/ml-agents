@@ -77,15 +77,16 @@ class PPOModel(object):
     def create_recurrent_encoder(self, s_size, input_state):
         self.lstm_input_state = tf.reshape(input_state, shape = [-1, self.sequence_length, s_size])
         self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
-        rnn_cell = tf.contrib.rnn.BasicLSTMCell(self.m_size / 2)
-        lstm_state_in = tf.contrib.rnn.LSTMStateTuple(self.memory_in[:,:self.m_size/2], self.memory_in[:,self.m_size/2 :])
+        _half_point = int(self.m_size/2)
+        rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
+        lstm_state_in = tf.contrib.rnn.LSTMStateTuple(self.memory_in[:,:_half_point], self.memory_in[:,_half_point:])
         self.recurrent_state, self.lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, self.lstm_input_state,
                                    initial_state=lstm_state_in,
                                     time_major=False,
                                    dtype=tf.float32)
         self.memory_out = tf.concat([self.lstm_state_out.c,self.lstm_state_out.h], axis = 1)
         self.memory_out = tf.identity(self.memory_out, name = 'recurrent_out')
-        recurrent_state = tf.reshape(self.recurrent_state, shape = [-1, self.m_size/2])
+        recurrent_state = tf.reshape(self.recurrent_state, shape = [-1, _half_point])
         return recurrent_state
 
     def create_visual_encoder(self, o_size_h, o_size_w, bw, h_size, num_streams, activation, num_layers):
