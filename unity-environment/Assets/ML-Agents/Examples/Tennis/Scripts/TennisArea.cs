@@ -10,7 +10,7 @@ public class TennisArea : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        MatchReset();
 	}
 	
 	// Update is called once per frame
@@ -19,18 +19,19 @@ public class TennisArea : MonoBehaviour {
 	}
 
     public void MatchReset() {
-        float ballOut = Random.Range(4f, 11f);
+        float ballOut = Random.Range(6f, 8f);
         int flip = Random.Range(0, 2);
         if (flip == 0)
         {
-            ball.transform.position = new Vector3(-ballOut, 5f, 0f) + transform.position;
+            ball.transform.position = new Vector3(-ballOut, 6f, 0f) + transform.position;
         }
         else
         {
-            ball.transform.position = new Vector3(ballOut, 5f, 0f) + transform.position;
+            ball.transform.position = new Vector3(ballOut, 6f, 0f) + transform.position;
         }
         ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
         ball.transform.localScale = new Vector3(1, 1, 1);
+        ball.GetComponent<hitWall>().lastAgentHit = -1;
     }
 
     void FixedUpdate() {
