@@ -131,14 +131,10 @@ class PPOModel(object):
             self.normalized_state = self.state_in
         streams = []
         for i in range(num_streams):
-            # if temporal_depth > 1:
-            #    reshaped = tf.reshape(self.normalized_state, [-1, s_size/temporal_depth, temporal_depth])
-            #    conv_1d = tf.layers.conv1d(reshaped, 16, 1, 1, activation=activation, use_bias=False)
-            #    hidden = c_layers.flatten(conv_1d)
-            # else:
             hidden = self.normalized_state
             for j in range(num_layers):
-                hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
+                hidden = tf.layers.dense(hidden, h_size, activation=activation,
+                                         kernel_initializer=c_layers.variance_scaling_initializer(1.0))
             streams.append(hidden)
         return streams
 
@@ -242,15 +238,11 @@ class ContinuousControlModel(PPOModel):
 
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
 
-        self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
+        self.mu = tf.layers.dense(hidden_policy, a_size, activation=None,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
-        self.log_sigma_sq = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=True,
-                                            kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
-                                            bias_initializer=tf.zeros_initializer)
-
-        self.log_sigma_sq = tf.exp(tf.log(0.01 + 2 * tf.nn.sigmoid(self.log_sigma_sq)))
-
+        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32,
+                                            initializer=tf.zeros_initializer())
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='epsilon')
@@ -264,7 +256,8 @@ class ContinuousControlModel(PPOModel):
 
         self.entropy = tf.reduce_sum(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
 
-        self.value = tf.layers.dense(hidden_value, 1, activation=None, use_bias=False)
+        self.value = tf.layers.dense(hidden_value, 1, activation=None)
+
         self.value = tf.identity(self.value, name="value_estimate")
 
         self.old_probs = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='old_probabilities')
@@ -293,7 +286,8 @@ class DiscreteControlModel(PPOModel):
             s_size = brain.state_space_size * brain.stacked_states
             if brain.state_space_type == "continuous":
                 hidden_state = \
-                self.create_continuous_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers, brain.stacked_states)[0]
+                    self.create_continuous_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers,
+                                                         brain.stacked_states)[0]
             else:
                 hidden_state = self.create_discrete_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers)[0]
 
@@ -310,13 +304,12 @@ class DiscreteControlModel(PPOModel):
         a_size = brain.action_space_size
 
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
-        self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
+        self.policy = tf.layers.dense(hidden, a_size, activation=None,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
         self.probs = tf.nn.softmax(self.policy, name="action_probs")
         self.output = tf.multinomial(self.policy, 1)
         self.output = tf.identity(self.output, name="action")
-        self.value = tf.layers.dense(hidden, 1, activation=None, use_bias=False,
-                                     kernel_initializer=c_layers.variance_scaling_initializer(factor=1.0))
+        self.value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
 
         self.entropy = -tf.reduce_sum(self.probs * tf.log(self.probs + 1e-10), axis=1)
