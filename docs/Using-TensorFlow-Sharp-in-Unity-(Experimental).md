@@ -79,7 +79,7 @@ Put the file `your_name_graph.bytes` into Resources.
 In your C# script :
 At the top, add the line
 ```csharp
-using Tensorflow;
+using TensorFlow;
 ```
 If you will be building for android, you must add this block at the start of your code :
 ```csharp
