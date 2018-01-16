@@ -243,7 +243,7 @@ export_graph(model_path, graph_name, target_nodes=','.join(nodes))
 if len(trainers.keys()) > 1:
     print("List of available scopes :")
     for brain_name in trainers.keys():
-        print("\t" + trainers[brain_name].graph_scope + '/')
+        print("\t" + trainers[brain_name].graph_scope )
 print("List of nodes exported :")
 for n in nodes:
     print("\t" + n)  

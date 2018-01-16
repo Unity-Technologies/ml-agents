@@ -313,7 +313,7 @@ class Trainer(object):
                 else:
                     feed_dict[self.model.action_holder] = np.array(np.array(self.training_buffer.global_buffer['actions'][start:end]).reshape([-1]))
                 if self.use_states:
-                    if self.is_continuous:
+                    if self.brain.state_space_type == "continuous":
                         feed_dict[self.model.state_in] = np.array(np.array(self.training_buffer.global_buffer['states'][start:end]).reshape([-1,self.brain.state_space_size]))
                     else:
                         feed_dict[self.model.state_in] = np.array(np.array(self.training_buffer.global_buffer['states'][start:end]).reshape([-1,1]))

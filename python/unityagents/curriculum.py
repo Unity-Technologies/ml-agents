@@ -62,9 +62,8 @@ class Curriculum(object):
 
     def increment_lesson(self, progress):
         """
-        Returns the lesson that corresponds to the progress.
+        Increments the lesson number depending on the progree given.
         :param progress: Measure of progress (either reward or percentage steps completed).
-        :return: The lesson number.
         """
         if self.data is None or progress is None:
             return 
