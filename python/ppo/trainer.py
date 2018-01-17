@@ -57,7 +57,8 @@ class Trainer(object):
             epsi = np.random.randn(len(info.states), env.brains[brain_name].action_space_size)
             feed_dict[self.model.epsilon] = epsi
         if self.use_observations:
-            feed_dict[self.model.observation_in] = np.vstack(info.observations)
+            for i, _ in enumerate(info.observations):
+                feed_dict[self.model.observation_in[i]] = info.observations[i]
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
         if self.is_training and env.brains[brain_name].state_space_type == "continuous" and self.use_states and normalize:
@@ -91,7 +92,8 @@ class Trainer(object):
                 idx = info.agents.index(agent)
                 if not info.local_done[idx]:
                     if self.use_observations:
-                        history['observations'].append([info.observations[0][idx]])
+                        for i, _ in enumerate(info.observations):
+                            history['observations%d' % i].append([info.observations[i][idx]])
                     if self.use_states:
                         history['states'].append(info.states[idx])
                     if self.is_continuous:
@@ -120,7 +122,8 @@ class Trainer(object):
                 else:
                     feed_dict = {self.model.batch_size: len(info.states)}
                     if self.use_observations:
-                        feed_dict[self.model.observation_in] = np.vstack(info.observations)
+                        for i in range(self.info.observations):
+                            feed_dict[self.model.observation_in[i]] = info.observations[i]
                     if self.use_states:
                         feed_dict[self.model.state_in] = info.states
                     value_next = self.sess.run(self.model.value, feed_dict)[l]
@@ -176,7 +179,8 @@ class Trainer(object):
                 if self.use_states:
                     feed_dict[self.model.state_in] = np.vstack(training_buffer['states'][start:end])
                 if self.use_observations:
-                    feed_dict[self.model.observation_in] = np.vstack(training_buffer['observations'][start:end])
+                    for i, _ in enumerate(self.model.observation_in):
+                        feed_dict[self.model.observation_in[i]] = np.vstack(training_buffer['observations%d' % i][start:end])
                 v_loss, p_loss, _ = self.sess.run([self.model.value_loss, self.model.policy_loss,
                                                    self.model.update_batch], feed_dict=feed_dict)
                 total_v += v_loss
