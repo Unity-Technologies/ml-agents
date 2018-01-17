@@ -62,12 +62,11 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
 * Goal: The agents must bounce ball between one another while not dropping or sending ball out of bounds.
 * Agents: The environment contains two agent linked to a single brain.
 * Agent Reward Function (independent): 
-    * -0.1 To last agent to hit ball before going out of bounds or hitting ground/net (episode ends).
-    * +0.1 To agent when hitting ball after ball was hit by the other agent. 
-    * +0.1 To agent who didn't hit ball last when ball hits ground.
+    * +0.1 To agent when hitting ball over net.
+    * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
 * Brains: One brain with the following state/action space.
     * State space: (Continuous) 8 variables corresponding to position and velocity of ball and racket.
-    * Action space: (Discrete) Size of 4, corresponding to movement toward net, away from net, jumping, and no-movement.
+    * Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
     * Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
