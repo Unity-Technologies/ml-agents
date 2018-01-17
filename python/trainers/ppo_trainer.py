@@ -18,7 +18,6 @@ class Trainer(object):
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
-        #TODO: Might want to have multiple models here : Store them in a list ?
 
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.sequence_length = 1
@@ -26,10 +25,7 @@ class Trainer(object):
         if self.use_recurrent:
             self.m_size = env.brains[brain_name].memory_space_size
             self.sequence_length = trainer_parameters["sequence_length"]
-        # print("Is recurrent : "+str(trainer_parameters['use_recurrent']))
-        # print("Sequence Lenght : "+str(self.sequence_length))
-        # print("Memories : "+str(self.m_size))
-        self.variable_scope = trainer_parameters['graph_scope']#re.sub('[^0-9a-zA-Z]+', '-', brain_name)
+        self.variable_scope = trainer_parameters['graph_scope']
         with tf.variable_scope(self.variable_scope):
             self.model = create_agent_model(env.brains[brain_name], 
                    lr=trainer_parameters['learning_rate'],
@@ -48,18 +44,17 @@ class Trainer(object):
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
         self.stats = stats
         self.is_training = training
-        # TODO: Figure out if using this buffer makes sense
+
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
         self.episode_steps = {}
         self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_observations > 0)
         self.use_states = (env.brains[brain_name].state_space_size > 0)
-        # self.summary_path = './summaries/{}'.format(trainer_parameters['summary_path'])#+'_'+self.variable_scope)
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
-        #TODO: Some of these fields could be stored in a more efficient way
+
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self.brain_name = brain_name
         self.brain = env.brains[self.brain_name]
@@ -97,14 +92,12 @@ class Trainer(object):
         """
         Increment the step count of the trainer
         """
-        # TODO: Put this into the take_action method
         self.sess.run(self.model.increment_step)
 
     def update_last_reward(self):
         """
         Updates the last reward
         """
-        # TODO: Put this into the take_action method
         if len(self.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(self.stats['cumulative_reward'])
             self.sess.run(self.model.update_reward, feed_dict={self.model.new_reward: mean_reward})
@@ -147,7 +140,6 @@ class Trainer(object):
             feed_dict[self.model.state_in] = info.states
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = info.memories
-            # print info.memories
             run_list += [self.model.memory_out]
         if self.is_training and self.brain.state_space_type == "continuous" and self.use_states and self.trainer_parameters['normalize']:
             new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean,
@@ -170,11 +162,6 @@ class Trainer(object):
         self.stats['value_estimate'].append(value)
         self.stats['entropy'].append(ent)
         self.stats['learning_rate'].append(learn_rate)
-        #This cannot be in trainer
-        # new_info = env.step(actions, value={brain_name: value})[brain_name]
-        # self.add_experiences(info, new_info, epsi, actions, a_dist, value)
-        # memories = None
-        # print actions
         return (actions, memories, value, (actions, epsi, a_dist, value))
 
     def add_experiences(self, info, next_info, take_action_outputs):
@@ -227,10 +214,9 @@ class Trainer(object):
                     value_next = 0.0
                 else:
                     feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length :1}
-                    if self.use_observations: #not implemented
+                    if self.use_observations: 
                         feed_dict[self.model.observation_in] = np.vstack(info.observations)
                     if self.use_states:
-                        # feed_dict[self.model.state_in] = np.reshape(info.states, [len(info.states),1,self.brain.state_space_size])
                         feed_dict[self.model.state_in] = info.states
                     if self.use_recurrent:
                         feed_dict[self.model.memory_in] = info.memories
@@ -245,12 +231,9 @@ class Trainer(object):
                 self.training_buffer[agent_id]['discounted_returns'].set( \
                  self.training_buffer[agent_id]['advantages'].get_batch() \
                  + self.training_buffer[agent_id]['value_estimates'].get_batch())
-                #TODO: Figure out if this way of using the buffer makes sense
-                try:
-                    self.training_buffer.append_global(agent_id, batch_size = None, training_length=self.sequence_length)
-                except:
-                    print(self.training_buffer)
-                    raise
+
+                self.training_buffer.append_global(agent_id, batch_size = None, training_length=self.sequence_length)
+
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
                     self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
@@ -269,13 +252,11 @@ class Trainer(object):
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
 
-    # IsReadyForUpdate(self):
     def is_ready_update(self):
         """
         Returns wether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to wether or not update_model() can be run
         """
-        #TODO: Put this in update_model()
         return len(self.training_buffer.global_buffer['actions']) > self.trainer_parameters['buffer_size']
 
     def update_model(self):
@@ -287,23 +268,15 @@ class Trainer(object):
         num_epoch = self.trainer_parameters['num_epoch']
         batch_size = self.trainer_parameters['batch_size']
         total_v, total_p = 0, 0
-        # advantages = np.array([x[-1] for x in self.training_buffer.global_buffer['advantages'].get_batch()])
         advantages = self.training_buffer.global_buffer['advantages'].get_batch()
-        # print advantages
-        # advantages = advantages[:,-1]
         self.training_buffer.global_buffer['advantages'].set(
            (advantages - advantages.mean()) / advantages.std())
         for k in range(num_epoch):
-            # training_buffer = shuffle_buffer(self.training_buffer)
             self.training_buffer.global_buffer.shuffle()
             for l in range(len(self.training_buffer.global_buffer['actions']) // batch_size):
                 start = l * batch_size
                 end = (l + 1) * batch_size
 
-                # print(self.training_buffer)
-
-                # print(([x[-1] for x in self.training_buffer.global_buffer['discounted_returns'][start:end]]))
-                # print(self.training_buffer)
                 feed_dict = {self.model.batch_size:batch_size, self.model.sequence_length:self.sequence_length,
                              self.model.returns_holder: np.array(self.training_buffer.global_buffer['discounted_returns'][start:end]).reshape([-1]),
                              self.model.advantage: np.array(self.training_buffer.global_buffer['advantages'][start:end]).reshape([-1,1]),
@@ -323,7 +296,6 @@ class Trainer(object):
                     feed_dict[self.model.observation_in] = _obs.reshape([-1,_w,_h,_c])
                 #Memories are zeros
                 if self.use_recurrent:
-                    # feed_dict[self.model.memory_in] = np.array([x[0] for x in self.training_buffer.global_buffer['memory'][start:end]]).reshape([-1,32]) # HARD CODED VALUE
                     feed_dict[self.model.memory_in] = np.zeros([batch_size , self.m_size])
                 v_loss, p_loss, _ = self.sess.run([self.model.value_loss, self.model.policy_loss,
                                                    self.model.update_batch], feed_dict=feed_dict)
@@ -338,7 +310,6 @@ class Trainer(object):
         Saves training statistics to Tensorboard.
         :param lesson_number: The lesson the trainer is at.
         """
-        #TODO: Is there a way to remove lesson_number of make it a flexible structure?
         if self.get_step() % self.trainer_parameters['summary_freq'] == 0 and self.get_step() != 0 and self.is_training:
             steps = self.get_step()
             if len(self.stats['cumulative_reward']) > 0:

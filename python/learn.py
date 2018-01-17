@@ -103,9 +103,6 @@ default_trainer_parameters = {
     'use_recurrent':options['--use-recurrent'],
     'sequence_length':int(options['--sequence-length'])
     }
-# TODO: trainer parameters could contain a string for the type of trainer to use and a string for the 
-# TODO: add a string for the type of model to use ?
-# TODO: Find a better structure to store the trainer paramters
 
 env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
 env.curriculum.set_lesson_number(lesson)
@@ -116,7 +113,6 @@ tf.reset_default_graph()
 if not os.path.exists(model_path):
     os.makedirs(model_path)
 
-# TODO: Need to specify steps and last_reward here : Could be a sum of rewards or the min step ?
 def get_progress():
     if curriculum_file is not None:
         if env.curriculum.measure_type == "progress":
@@ -204,7 +200,6 @@ with tf.Session() as sess:
             info = new_info
             for brain_name, trainer in trainers.items():
                 trainer.process_experiences(info)
-                # TODO : Merge process_experiences with add_experiences
                 if trainer.is_ready_update() and train_model:
                     # Perform gradient descent with experience buffer
                     trainer.update_model()
@@ -215,7 +210,6 @@ with tf.Session() as sess:
                     trainer.increment_step()
                     trainer.update_last_reward()
             if global_step % save_freq == 0 and global_step != 0 and train_model:
-                #TODO: Figure out how to save the model in a more elegant way
                 # Save Tensorflow model
                 save_model(sess, model_path=model_path, steps=global_step, saver=saver)
 

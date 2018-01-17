@@ -178,7 +178,6 @@ class PPOModel(object):
         state_in = tf.reshape(self.state_in, [-1])
         state_onehot = c_layers.one_hot_encoding(state_in, s_size)
         streams = []
-        # hidden = state_onehot
         if self.use_recurrent:
             hidden = self.create_recurrent_encoder(s_size, state_onehot)
         else:
@@ -341,7 +340,6 @@ class DiscreteControlModel(PPOModel):
 
         a_size = brain.action_space_size
 
-        # self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
         self.probs = tf.nn.softmax(self.policy, name="action_probs")
