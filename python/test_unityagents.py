@@ -200,18 +200,20 @@ def test_curriculum():
         with pytest.raises(UnityEnvironmentException):
           curriculum = Curriculum('test_unityagents.py', {"param1":1,"param2":1})
         curriculum = Curriculum('test_unityagents.py', {"param1":1,"param2":1,"param3":1})
-        assert curriculum.get_lesson_number() == 0
+        assert curriculum.get_lesson_number == 0
         curriculum.set_lesson_number(1)
-        assert curriculum.get_lesson_number() == 1
-        curriculum.get_lesson(10)
-        assert curriculum.get_lesson_number() == 1
-        curriculum.get_lesson(30)
-        curriculum.get_lesson(30)
-        assert curriculum.get_lesson_number() == 1
+        assert curriculum.get_lesson_number == 1
+        curriculum.increment_lesson(10)
+        assert curriculum.get_lesson_number == 1
+        curriculum.increment_lesson(30)
+        curriculum.increment_lesson(30)
+        assert curriculum.get_lesson_number == 1
         assert curriculum.lesson_length == 3
-        assert curriculum.get_lesson(30) == {'param1': 0.3, 'param2': 20, 'param3': 0.7}
+        curriculum.increment_lesson(30)
+        assert curriculum.get_config() == {'param1': 0.3, 'param2': 20, 'param3': 0.7}
+        assert curriculum.get_config(0) == {"param1":0.7,"param2":100,"param3":0.2}
         assert curriculum.lesson_length == 0
-        assert curriculum.get_lesson_number() == 2
+        assert curriculum.get_lesson_number == 2
 
 
 

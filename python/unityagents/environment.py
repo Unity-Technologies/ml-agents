@@ -198,7 +198,7 @@ class UnityEnvironment(object):
         Number of External Brains : {2}
         Lesson number : {3}
         Reset Parameters :\n\t\t{4}'''.format(self._academy_name, str(self._num_brains),
-                                 str(self._num_external_brains), self._curriculum.get_lesson_number(),
+                                 str(self._num_external_brains), self._curriculum.get_lesson_number,
                                   "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
                                          for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])

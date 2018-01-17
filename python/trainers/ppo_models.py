@@ -1,9 +1,13 @@
+import logging
+
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
+
 from tensorflow.python.tools import freeze_graph
 from unityagents import UnityEnvironmentException
 
+logger = logging.getLogger("unityagents")
 
 
 def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6, normalize=False, use_recurrent = False, num_layers=2, m_size = None):
@@ -38,7 +42,7 @@ def save_model(sess, saver, model_path="./", steps=0):
     last_checkpoint = model_path + '/model-' + str(steps) + '.cptk'
     saver.save(sess, last_checkpoint)
     tf.train.write_graph(sess.graph_def, model_path, 'raw_graph_def.pb', as_text=False)
-    print("Saved Model")
+    logger.info("Saved Model")
 
 
 def export_graph(model_path, env_name="env", target_nodes="action,value_estimate,action_probs"):
@@ -75,6 +79,11 @@ class PPOModel(object):
         self.update_reward = tf.assign(self.last_reward, self.new_reward)
 
     def create_recurrent_encoder(self, s_size, input_state):
+        """
+        Builds a recurrent encoder for either state or observations (LSTM).
+        :param s_size: Dimension of the input tensor.
+        :param input_state: The input tensor to the LSTM cell.
+        """
         self.lstm_input_state = tf.reshape(input_state, shape = [-1, self.sequence_length, s_size])
         self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
         _half_point = int(self.m_size/2)

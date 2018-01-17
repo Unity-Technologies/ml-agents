@@ -1,23 +1,38 @@
 import numpy as np
 
-class BufferException(Exception):
+from .exception import UnityException
+
+class BufferException(UnityException):
     """
     Related to errors with the Buffer.
     """
     pass
 
 class Buffer(dict):
+	"""
+	Buffer contains a dictionary of AgentBuffer. The AgentBuffers are indexed by agent_id.
+	Buffer also contains an update_buffer that corresponds to the buffer used when updating the model.
+	"""
 	class AgentBuffer(dict):
+		"""
+		AgentBuffer contains a dictionary of AgentBufferFields. Each agent has his own AgentBuffer.
+		The keys correspond to the name of the field. Example: state, action
+		"""
 		class AgentBufferField(list):
+			"""
+			AgentBufferField is a list of numpy arrays. When an agent collects a field, you can add it to his 
+			AgentBufferField with the append method.
+			"""
 			def __str__(self):
 				return str(np.array(self).shape)
+
 			def extend(self, data):
 				"""
 				Ads a list of np.arrays to the end of the list of np.arrays.
 				:param data: The np.array list to append.
 				"""
-				#TODO: need to handle the case the data is not the right size
 				self += list(np.array(data))
+
 			def set(self, data):
 				"""
 				Sets the list of np.array to the input data
@@ -25,6 +40,7 @@ class Buffer(dict):
 				"""
 				self[:] = []
 				self[:] = list(np.array(data))
+
 			def get_batch(self, batch_size = None, training_length = None, sequential = True):
 				"""
 				Retrieve the last batch_size elements of length training_length
@@ -35,13 +51,14 @@ class Buffer(dict):
 				None: only takes one element.
 				:param sequential: If true and training_length is not None: the elements 
 				will not repeat in the sequence. [a,b,c,d,e] with training_length = 2 and
-				sequential=True gives [[a,b],[c,d],[0,e]]. If sequential=False gives
+				sequential=True gives [[0,a],[b,c],[d,e]]. If sequential=False gives
 				[[a,b],[b,c],[c,d],[d,e]]
 				"""
-				#TODO: Decide what to do if there enough points to retrieve 
 				if training_length is None:
+					# When the training length is None, the method returns a list of elements,
+					# not a list of sequences of elements.
 					if batch_size is None:
-						#return all of them
+						# If batch_size is None : All the elements of the AgentBufferField are returned.
 						return np.array(self)
 					else:
 						# return the batch_size last elements
@@ -49,10 +66,14 @@ class Buffer(dict):
 							raise BufferException("Batch size requested is too large")
 						return np.array(self[-batch_size:])
 				else:
+					# The training_length is not None, the method returns a list of SEQUENCES of elements
 					if not sequential:
+						# The sequences will have overlapping elements
 						if batch_size is None:
 							# retrieve the maximum number of elements
 							batch_size = len(self) - training_length + 1
+							# The number of sequences of length training_length taken from a list of len(self) elements
+							# with overlapping is equal to batch_size
 						if (len(self) - training_length + 1) < batch_size :
 							raise BufferException("The batch size and training length requested for get_batch where" 
 								" too large given the current number of data points.")
@@ -62,44 +83,51 @@ class Buffer(dict):
 							tmp_list += [np.array(self[end-training_length:end])]
 						return np.array(tmp_list)
 					if sequential:
-						# No padding at all
+						# The sequences will not have overlapping elements (this involves padding)
 						leftover = len(self) % training_length
+						# leftover is the number of elements in the first sequence (this sequence might need 0 padding)
 						if batch_size is None:
 							# retrieve the maximum number of elements
 							batch_size = len(self) // training_length +1 *(leftover != 0)
+							# The maximum number of sequences taken from a list of length len(self) without overlapping
+							# with padding is equal to batch_size
 						if batch_size > (len(self) // training_length +1 *(leftover != 0)):
 							raise BufferException("The batch size and training length requested for get_batch where" 
 								" too large given the current number of data points.")
 							return 
 						tmp_list = []
 						padding = np.array(self[-1]) * 0 
+						# The padding is made with zeros and its shape is given by the shape of the last element
 						for end in range(len(self), len(self) % training_length , -training_length)[:batch_size]:
 							tmp_list += [np.array(self[end-training_length:end])]
 						if (leftover != 0) and (len(tmp_list) < batch_size):
 							tmp_list +=[np.array([padding]*(training_length - leftover)+self[:leftover])]
+						tmp_list.reverse()
 						return np.array(tmp_list)
-					# TODO: decide if we need to reset the local buffer now ?	
+
 			def reset_field(self):
 				"""
 				Resets the AgentBufferField
 				"""
 				self[:] = []
+
+
+
 		def __str__(self):
 			return ", ".join(["'{0}' : {1}".format(k, str(self[k])) for k in self.keys()])
+
 		def reset_agent(self):
 			"""
 			Resets the AgentBuffer
 			"""
-			#TODO: There might be some garbage collection issues ?
 			for k in self.keys():
-				try:
-					self[k].reset_field()
-				except:
-					print(k)
+				self[k].reset_field()
+
 		def __getitem__(self, key):
 			if key not in self.keys():
 				self[key] = self.AgentBufferField()
 			return super(Buffer.AgentBuffer, self).__getitem__(key)
+
 		def check_length(self, key_list):
 			"""
 			Some methods will require that some fields have the same length.
@@ -117,6 +145,7 @@ class Buffer(dict):
 					return False
 				l = len(self[key])
 			return True
+
 		def shuffle(self, key_list = None):
 			"""
 			Shuffles the fields in key_list in a consistent way: The reordering will
@@ -132,47 +161,40 @@ class Buffer(dict):
 			np.random.shuffle(s)
 			for key in key_list:
 				self[key][:] = [self[key][i] for i in s]
-				#memory leak here ?
-				# with l as [self[key][i] for i in s]:
-				# 	self[key].reset_field()
-				# 	self[key] += l
-				# self[key] = Buffer.AgentBuffer.AgentBufferField([self[key][i] for i in s])
-				# self[key].reorder(s)
+
+
+
 	def __init__(self):
-		self.global_buffer = self.AgentBuffer() 
+		self.update_buffer = self.AgentBuffer() 
 		super(Buffer, self).__init__()
+
 	def __str__(self):
-		return "global buffer :\n\t{0}\nlocal_buffers :\n{1}".format(str(self.global_buffer), 
+		return "update buffer :\n\t{0}\nlocal_buffers :\n{1}".format(str(self.update_buffer), 
 			'\n'.join(['\tagent {0} :{1}'.format(k, str(self[k])) for k in self.keys()]))
+
 	def __getitem__(self, key):
 		if key not in self.keys():
 			self[key] = self.AgentBuffer()
 		return super(Buffer, self).__getitem__(key)
-	def append_BrainInfo(self, info):
+
+	def reset_update_buffer(self):
 		"""
-		Appends the information in a BrainInfo element to the buffer.
-		:param info: The BrainInfo from which the information will be extracted.
+		Resets the update buffer
 		"""
-		raise BufferException("This method is not yet implemented")
-		# TODO: Find how useful this would be
-		# TODO: Implementation
-	def reset_global(self):
-		"""
-		Resets the global buffer
-		"""
-		self.global_buffer.reset_agent()
+		self.update_buffer.reset_agent()
+
 	def reset_all(self):
 		"""
-		Resets the global buffer and all the local local_buffers
+		Resets the update buffer and all the local local_buffers
 		"""
-		# TODO: Need a better name
-		self.global_buffer.reset_agent()
+		self.update_buffer.reset_agent()
 		agent_ids = list(self.keys())
 		for k in agent_ids:
 			self[k].reset_agent()
-	def append_global(self, agent_id ,key_list = None,  batch_size = None, training_length = None):
+
+	def append_update_buffer(self, agent_id ,key_list = None,  batch_size = None, training_length = None):
 		"""
-		Appends the buffer of an agent to the global buffer.
+		Appends the buffer of an agent to the update buffer.
 		:param agent_id: The id of the agent which data will be appended
 		:param key_list: The fields that must be added. If None: all fields will be appended.
 		:param batch_size: The number of elements that must be appended. If None: All of them will be.
@@ -181,53 +203,25 @@ class Buffer(dict):
 		if key_list is None:
 			key_list = self[agent_id].keys()
 		if not self[agent_id].check_length(key_list):
-			raise BufferException("The length of the fields {0} for agent {1} where not of comparable length"
+			raise BufferException("The length of the fields {0} for agent {1} where not of same length"
 				.format(key_list, agent_id))
 		for field_key in key_list:
-			self.global_buffer[field_key].extend(
+			self.update_buffer[field_key].extend(
 				self[agent_id][field_key].get_batch(batch_size =batch_size, training_length =training_length)
 			)
-	def append_all_agent_batch_to_global(self, key_list = None,  batch_size = None, training_length = None):
+
+	def append_all_agent_batch_to_update_buffer(self, key_list = None,  batch_size = None, training_length = None):
 		"""
-		Appends the buffer of all agents to the global buffer.
+		Appends the buffer of all agents to the update buffer.
 		:param key_list: The fields that must be added. If None: all fields will be appended.
 		:param batch_size: The number of elements that must be appended. If None: All of them will be.
 		:param training_length: The length of the samples that must be appended. If None: only takes one element.
 		"""
-		#TODO: Maybe no batch_size, only training length and a flag corresponding to "get only last of training_length"
 		for agent_id in self.keys():
-			self.append_global(agent_id ,key_list,  batch_size, training_length)
+			self.append_update_buffer(agent_id ,key_list,  batch_size, training_length)
 
 
-#TODO: Put these functions into a utils class
-def discount_rewards(r, gamma=0.99, value_next=0.0):
-    """
-    Computes discounted sum of future rewards for use in updating value estimate.
-    :param r: List of rewards.
-    :param gamma: Discount factor.
-    :param value_next: T+1 value estimate for returns calculation.
-    :return: discounted sum of future rewards as list.
-    """
-    discounted_r = np.zeros_like(r)
-    running_add = value_next
-    for t in reversed(range(0, r.size)):
-        running_add = running_add * gamma + r[t]
-        discounted_r[t] = running_add
-    return discounted_r
 
 
-def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
-    """
-    Computes generalized advantage estimate for use in updating policy.
-    :param rewards: list of rewards for time-steps t to T.
-    :param value_next: Value estimate for time-step T+1.
-    :param value_estimates: list of value estimates for time-steps t to T.
-    :param gamma: Discount factor.
-    :param lambd: GAE weighing factor.
-    :return: list of advantage estimates for time-steps t to T.
-    """
-    value_estimates = np.asarray(value_estimates.tolist() + [value_next])
-    delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
-    advantage = discount_rewards(r=delta_t, gamma=gamma*lambd)
-    return advantage
+
 

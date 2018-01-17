@@ -1,15 +1,22 @@
-import numpy as np
-import tensorflow as tf
+# # Unity ML Agents
+# ## ML-Agent Learning (PPO)
+# Contains an implementation of PPO as described [here](https://arxiv.org/abs/1707.06347).
+
+import logging
 import os
 
-from trainers.buffer import *
+import numpy as np
+import tensorflow as tf
+
+from unityagents import Buffer
 from trainers.ppo_models import *
-import logging
+
 logger = logging.getLogger("unityagents")
 
 
 
-class Trainer(object):
+class PPOTrainer(object):
+    """The PPOTrainer is an implementation of the PPO algorythm."""
     def __init__(self, sess, env, brain_name, trainer_parameters, training):
         """
         Responsible for collecting experiences and training PPO model.
@@ -68,12 +75,15 @@ class Trainer(object):
     def graph_scope(self):
         return self.variable_scope
 
+    @property
     def get_max_steps(self):
         """
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
         """
         return self.trainer_parameters['max_steps']
+
+    @property
     def get_step(self):
         """
         Returns the number of steps the trainer has performed
@@ -81,6 +91,7 @@ class Trainer(object):
         """
         return self.sess.run(self.model.global_step)
 
+    @property
     def get_last_reward(self):
         """
         Returns the last reward the trainer has had
@@ -125,7 +136,7 @@ class Trainer(object):
         :return: a tupple containing action, memories, values and an object
         to be passed to add experiences
         """
-        steps = self.get_step()
+        steps = self.get_step
         info = info[self.brain_name]
         epsi = None
         feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
@@ -141,7 +152,8 @@ class Trainer(object):
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = info.memories
             run_list += [self.model.memory_out]
-        if self.is_training and self.brain.state_space_type == "continuous" and self.use_states and self.trainer_parameters['normalize']:
+        if (self.is_training and self.brain.state_space_type == "continuous" and 
+                self.use_states and self.trainer_parameters['normalize']):
             new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean,
                                                           self.model.running_variance)
             feed_dict[self.model.new_mean] = new_mean
@@ -207,8 +219,9 @@ class Trainer(object):
 
         info = info[self.brain_name]
         for l in range(len(info.agents)):
-            if (info.local_done[l] or len(self.training_buffer[info.agents[l]]['actions']) > self.trainer_parameters['time_horizon']) and len(
-                    self.training_buffer[info.agents[l]]['actions']) > 0:
+            if ((info.local_done[l] or 
+                    len(self.training_buffer[info.agents[l]]['actions']) > self.trainer_parameters['time_horizon']) 
+                    and len(self.training_buffer[info.agents[l]]['actions']) > 0):
 
                 if info.local_done[l]:
                     value_next = 0.0
@@ -226,13 +239,16 @@ class Trainer(object):
                     get_gae(
                         rewards=self.training_buffer[agent_id]['rewards'].get_batch(),
                         value_estimates=self.training_buffer[agent_id]['value_estimates'].get_batch(),
-                        value_next=value_next, gamma=self.trainer_parameters['gamma'], lambd=self.trainer_parameters['lambd'])
+                        value_next=value_next, 
+                        gamma=self.trainer_parameters['gamma'], 
+                        lambd=self.trainer_parameters['lambd'])
                 )
                 self.training_buffer[agent_id]['discounted_returns'].set( \
                  self.training_buffer[agent_id]['advantages'].get_batch() \
                  + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
-                self.training_buffer.append_global(agent_id, batch_size = None, training_length=self.sequence_length)
+                self.training_buffer.append_update_buffer(agent_id, 
+                    batch_size = None, training_length=self.sequence_length)
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
@@ -242,9 +258,10 @@ class Trainer(object):
                     self.episode_steps[agent_id] = 0
 
 
-    def reset_buffers(self):
+    def end_episode(self):
         """
-        A signal that the buffer must be reset. Get typically called when the academy resets.
+        A signal that the Episode has ended. The buffer must be reset. 
+        Get only called when the academy resets.
         """
         self.training_buffer.reset_all()
         for agent_id in self.cumulative_rewards:
@@ -257,41 +274,46 @@ class Trainer(object):
         Returns wether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to wether or not update_model() can be run
         """
-        return len(self.training_buffer.global_buffer['actions']) > self.trainer_parameters['buffer_size']
+        return len(self.training_buffer.update_buffer['actions']) > self.trainer_parameters['buffer_size']
 
     def update_model(self):
         """
         Uses training_buffer to update model.
-        :param batch_size: Size of each mini-batch update.
-        :param num_epoch: How many passes through data to update model for.
         """
         num_epoch = self.trainer_parameters['num_epoch']
         batch_size = self.trainer_parameters['batch_size']
         total_v, total_p = 0, 0
-        advantages = self.training_buffer.global_buffer['advantages'].get_batch()
-        self.training_buffer.global_buffer['advantages'].set(
+        advantages = self.training_buffer.update_buffer['advantages'].get_batch()
+        self.training_buffer.update_buffer['advantages'].set(
            (advantages - advantages.mean()) / advantages.std())
         for k in range(num_epoch):
-            self.training_buffer.global_buffer.shuffle()
-            for l in range(len(self.training_buffer.global_buffer['actions']) // batch_size):
+            self.training_buffer.update_buffer.shuffle()
+            for l in range(len(self.training_buffer.update_buffer['actions']) // batch_size):
                 start = l * batch_size
                 end = (l + 1) * batch_size
 
-                feed_dict = {self.model.batch_size:batch_size, self.model.sequence_length:self.sequence_length,
-                             self.model.returns_holder: np.array(self.training_buffer.global_buffer['discounted_returns'][start:end]).reshape([-1]),
-                             self.model.advantage: np.array(self.training_buffer.global_buffer['advantages'][start:end]).reshape([-1,1]),
-                             self.model.old_probs: np.array(self.training_buffer.global_buffer['action_probs'][start:end]).reshape([-1,self.brain.action_space_size])}
+                _buffer = self.training_buffer.update_buffer
+                feed_dict = {self.model.batch_size:batch_size,
+                     self.model.sequence_length: self.sequence_length,
+                     self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape([-1]),
+                     self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1,1]),
+                     self.model.old_probs: np.array(
+                        _buffer['action_probs'][start:end]).reshape([-1,self.brain.action_space_size])}
                 if self.is_continuous:
-                    feed_dict[self.model.epsilon] = np.array(np.array(self.training_buffer.global_buffer['epsilons'][start:end]).reshape([-1,self.brain.action_space_size]))
+                    feed_dict[self.model.epsilon] = np.array(
+                        np.array(_buffer['epsilons'][start:end]).reshape([-1,self.brain.action_space_size]))
                 else:
-                    feed_dict[self.model.action_holder] = np.array(np.array(self.training_buffer.global_buffer['actions'][start:end]).reshape([-1]))
+                    feed_dict[self.model.action_holder] = np.array(
+                        np.array(_buffer['actions'][start:end]).reshape([-1]))
                 if self.use_states:
                     if self.brain.state_space_type == "continuous":
-                        feed_dict[self.model.state_in] = np.array(np.array(self.training_buffer.global_buffer['states'][start:end]).reshape([-1,self.brain.state_space_size]))
+                        feed_dict[self.model.state_in] = np.array(
+                            np.array(_buffer['states'][start:end]).reshape([-1,self.brain.state_space_size]))
                     else:
-                        feed_dict[self.model.state_in] = np.array(np.array(self.training_buffer.global_buffer['states'][start:end]).reshape([-1,1]))
+                        feed_dict[self.model.state_in] = np.array(
+                            np.array(_buffer['states'][start:end]).reshape([-1,1]))
                 if self.use_observations:
-                    _obs = np.array(self.training_buffer.global_buffer['observations'][start:end])
+                    _obs = np.array(_buffer['observations'][start:end])
                     (_batch, _seq, _w, _h, _c) = _obs.shape
                     feed_dict[self.model.observation_in] = _obs.reshape([-1,_w,_h,_c])
                 #Memories are zeros
@@ -303,18 +325,18 @@ class Trainer(object):
                 total_p += p_loss
         self.stats['value_loss'].append(total_v)
         self.stats['policy_loss'].append(total_p)
-        self.training_buffer.reset_global()
+        self.training_buffer.reset_update_buffer()
 
     def write_summary(self, lesson_number):
         """
         Saves training statistics to Tensorboard.
         :param lesson_number: The lesson the trainer is at.
         """
-        if self.get_step() % self.trainer_parameters['summary_freq'] == 0 and self.get_step() != 0 and self.is_training:
-            steps = self.get_step()
+        if self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and self.is_training:
+            steps = self.get_step
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
-                print("{0} : Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
+                logger.info("{0} : Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
                       .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
             summary = tf.Summary()
             for key in self.stats:
@@ -326,7 +348,7 @@ class Trainer(object):
             self.summary_writer.add_summary(summary, steps)
             self.summary_writer.flush()
 
-    def write_text(self, key, input_dict):
+    def write_tensorboard_text(self, key, input_dict):
         """
         Saves text to Tensorboard.
         Note: Only works on tensorflow r1.2 or above.
@@ -338,9 +360,39 @@ class Trainer(object):
                     tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
                     )
             s = self.sess.run(s_op)
-            self.summary_writer.add_summary(s, self.get_step())
+            self.summary_writer.add_summary(s, self.get_step)
         except:
             logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
             pass
 
+def discount_rewards(r, gamma=0.99, value_next=0.0):
+    """
+    Computes discounted sum of future rewards for use in updating value estimate.
+    :param r: List of rewards.
+    :param gamma: Discount factor.
+    :param value_next: T+1 value estimate for returns calculation.
+    :return: discounted sum of future rewards as list.
+    """
+    discounted_r = np.zeros_like(r)
+    running_add = value_next
+    for t in reversed(range(0, r.size)):
+        running_add = running_add * gamma + r[t]
+        discounted_r[t] = running_add
+    return discounted_r
+
+
+def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
+    """
+    Computes generalized advantage estimate for use in updating policy.
+    :param rewards: list of rewards for time-steps t to T.
+    :param value_next: Value estimate for time-step T+1.
+    :param value_estimates: list of value estimates for time-steps t to T.
+    :param gamma: Discount factor.
+    :param lambd: GAE weighing factor.
+    :return: list of advantage estimates for time-steps t to T.
+    """
+    value_estimates = np.asarray(value_estimates.tolist() + [value_next])
+    delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
+    advantage = discount_rewards(r=delta_t, gamma=gamma*lambd)
+    return advantage
 

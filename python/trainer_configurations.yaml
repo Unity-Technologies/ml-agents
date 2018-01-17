@@ -1,0 +1,28 @@
+TurretBrain: ExampleBrain
+ExampleBrain :
+    batch_size: 2
+    beta: 2.5e-3
+    buffer_size: 2048
+    epsilon: 0.2
+    gamma: 0.99
+    hidden_units: 64
+    lambd: 0.95
+    learning_rate: 3e-4
+    max_steps: 1e6
+    normalize: false
+    num_epoch: 5
+    num_layers: 2
+    time_horizon: 2048
+    sequence_length: 32
+    summary_freq: 10000
+    use_recurrent: false
+ghost-HunterBrain:
+    brain_to_copy : HunterBrain
+    use_ghost : true
+    new_model_freq : 10000
+    max_num_models : 20
+ghost-HunteeBrain :
+    brain_to_copy : HunteeBrain
+    use_ghost : true
+    new_model_freq : 10000
+    max_num_models : 20

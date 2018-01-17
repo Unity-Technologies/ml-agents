@@ -53,6 +53,7 @@ class Curriculum(object):
     def measure(self):
         return self.measure_type
 
+    @property
     def get_lesson_number(self):
         return self.lesson_number
 
