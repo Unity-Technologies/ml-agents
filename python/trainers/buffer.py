@@ -1,6 +1,6 @@
 import numpy as np
 
-from .exception import UnityException
+from unityagents.exception import UnityException
 
 class BufferException(UnityException):
     """

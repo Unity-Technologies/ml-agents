@@ -8,7 +8,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from unityagents import Buffer
+from trainers.buffer import Buffer
 from trainers.ppo_models import *
 
 logger = logging.getLogger("unityagents")
