@@ -44,7 +44,6 @@ if __name__ == '__main__' :
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
-      --max-steps=<n>            Maximum number of steps to run environment [default: 1e6].
       --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo]. 
       --save-freq=<n>            Frequency at which to save model [default: 50000].
       --train                    Whether to train model, or only run inference [default: False].
@@ -67,7 +66,7 @@ if __name__ == '__main__' :
     if curriculum_file == "None":
         curriculum_file = None
     lesson = int(options['--lesson'])
-    slow_simulation = bool(options['--slow'])
+    fast_simulation = not bool(options['--slow'])
 
     env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
     env.curriculum.set_lesson_number(lesson)
@@ -140,15 +139,15 @@ if __name__ == '__main__' :
             sess.run(init)
         global_step = 0 # This is only for saving the model
         env.curriculum.increment_lesson(get_progress())
-        info = env.reset(train_mode=slow_simulation)
+        info = env.reset(train_mode= fast_simulation)
         if train_model:
             for brain_name, trainer in trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters', trainer.parameters) 
         try:
-            while any([t.get_step < t.get_max_steps for k, t in trainers.items()]) or not train_model:
+            while any([t.get_step <= t.get_max_steps for k, t in trainers.items()]) or not train_model:
                 if env.global_done:
                     env.curriculum.increment_lesson(get_progress())
-                    info = env.reset(train_mode=train_model)
+                    info = env.reset(train_mode=fast_simulation)
                     for brain_name, trainer in trainers.items():
                         trainer.end_episode()
                 # Decide and take an action
@@ -167,7 +166,7 @@ if __name__ == '__main__' :
                 info = new_info
                 for brain_name, trainer in trainers.items():
                     trainer.process_experiences(info)
-                    if trainer.is_ready_update() and train_model:
+                    if trainer.is_ready_update() and train_model and trainer.get_step <= trainer.get_max_steps:
                         # Perform gradient descent with experience buffer
                         trainer.update_model()
                     # Write training statistics to tensorboard.
@@ -175,7 +174,7 @@ if __name__ == '__main__' :
                     if train_model:
                         trainer.increment_step()
                         trainer.update_last_reward()
-                if train_model:
+                if train_model and trainer.get_step <= trainer.get_max_steps:
                     global_step += 1
                 if global_step % save_freq == 0 and global_step != 0 and train_model:
                     # Save Tensorflow model

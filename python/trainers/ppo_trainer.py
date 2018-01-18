@@ -78,7 +78,7 @@ class PPOTrainer(object):
 
     def __str__(self):
         return '''Hypermarameters for {0}: \n{1}'''.format(
-            self.brain_name, '\n'.join(['\t{0} :\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
+            self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
     def parameters(self):
@@ -94,7 +94,7 @@ class PPOTrainer(object):
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
         """
-        return self.trainer_parameters['max_steps']
+        return float(self.trainer_parameters['max_steps'])
 
     @property
     def get_step(self):
@@ -350,11 +350,12 @@ class PPOTrainer(object):
         Saves training statistics to Tensorboard.
         :param lesson_number: The lesson the trainer is at.
         """
-        if self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and self.is_training:
+        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
+         self.is_training and self.get_step <= self.get_max_steps):
             steps = self.get_step
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info("{0} : Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
+                logger.info(" {0}: Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
                       .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
             summary = tf.Summary()
             for key in self.stats:
