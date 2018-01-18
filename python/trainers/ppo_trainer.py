@@ -10,6 +10,7 @@ import tensorflow as tf
 
 from trainers.buffer import Buffer
 from trainers.ppo_models import *
+from unityagents import UnityEnvironmentException
 
 logger = logging.getLogger("unityagents")
 
@@ -25,6 +26,15 @@ class PPOTrainer(object):
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
+        self.param_keys = ['batch_size', 'beta','buffer_size','epsilon','gamma','hidden_units','lambd','learning_rate',
+            'max_steps','normalize','num_epoch','num_layers','time_horizon','sequence_length','summary_freq',
+            'use_recurrent','graph_scope','summary_path']
+
+        for k in self.param_keys:
+            if k not in trainer_parameters:
+                raise UnityEnvironmentException("The hyperparameter {0} could not be found for the PPO trainer of "
+                    "brain {1}.".format(k, brain_name))
+
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.sequence_length = 1
         self.m_size = None
@@ -67,11 +77,8 @@ class PPOTrainer(object):
         self.trainer_parameters = trainer_parameters
 
     def __str__(self):
-        param_keys = ['batch_size', 'beta','buffer_size','epsilon','gamma','hidden_units','lambd','learning_rate',
-            'max_steps','normalize','num_epoch','num_layers','time_horizon','sequence_length','summary_freq',
-            'use_recurrent','graph_scope','summary_path']
         return '''Hypermarameters for {0}: \n{1}'''.format(
-            self.brain_name, '\n'.join(['\t{0} :\t{1}'.format(x, self.trainer_parameters[x]) for x in param_keys]))
+            self.brain_name, '\n'.join(['\t{0} :\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
     def parameters(self):

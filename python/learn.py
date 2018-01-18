@@ -114,6 +114,10 @@ if __name__ == '__main__' :
             if 'is_ghost' not in trainer_parameters_dict[brain_name]:
                 trainer_parameters_dict[brain_name]['is_ghost'] = False
             if trainer_parameters_dict[brain_name]['is_ghost']:
+                if trainer_parameters_dict[brain_name]['brain_to_copy'] not in env.external_brain_names:
+                    raise UnityEnvironmentException("The external brain {0} could not be found in the environment "
+                      "even though the ghost trainer of brain {1} is trying to ghost it."
+                      .format(trainer_parameters_dict[brain_name]['brain_to_copy'], brain_name))
                 trainer_parameters_dict[brain_name]['original_brain_parameters'] = trainer_parameters_dict[
                     trainer_parameters_dict[brain_name]['brain_to_copy']]
                 trainers[brain_name] = GhostTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name], train_model)

@@ -31,3 +31,5 @@ ghost-Ball3DBrain:
     is_ghost : true
     new_model_freq : 10000
     max_num_models : 3
+Ball3DBrain:
+    is_imitation : true

@@ -19,8 +19,13 @@ class GhostTrainer(object):
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
+        self.param_keys = ['brain_to_copy', 'is_ghost', 'new_model_freq', 'max_num_models']
+        for k in self.param_keys:
+            if k not in trainer_parameters:
+                raise UnityEnvironmentException("The hyperparameter {0} could not be found for the PPO trainer of "
+                    "brain {1}.".format(k, brain_name))
 
-        # TODO: check validity of parameters
+
         self.brain_to_copy = trainer_parameters['brain_to_copy']
         self.variable_scope = trainer_parameters['graph_scope']
         self.original_brain_parameters = trainer_parameters['original_brain_parameters']
@@ -59,9 +64,8 @@ class GhostTrainer(object):
         self.trainer_parameters = trainer_parameters
 
     def __str__(self):
-        param_keys = ['brain_to_copy', 'is_ghost', 'new_model_freq', 'max_num_models']
         return '''Hypermarameters for {0}: \n{1}'''.format(
-            self.brain_name, '\n'.join(['\t{0} :\t{1}'.format(x, self.trainer_parameters[x]) for x in param_keys]))
+            self.brain_name, '\n'.join(['\t{0} :\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
 
     @property
