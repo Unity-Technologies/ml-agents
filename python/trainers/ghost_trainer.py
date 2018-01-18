@@ -20,7 +20,7 @@ class GhostTrainer(object):
         :param training: Whether the trainer is set for training.
         """
 
-        # TODO: Add a check on the equality of brain_parameters and original_brain_parameters
+        # TODO: check validity of parameters
         self.brain_to_copy = trainer_parameters['brain_to_copy']
         self.variable_scope = trainer_parameters['graph_scope']
         self.original_brain_parameters = trainer_parameters['original_brain_parameters']
@@ -32,14 +32,14 @@ class GhostTrainer(object):
         for i in range(self.max_num_models):
             with tf.variable_scope(self.variable_scope+'_'+str(i)):
                 self.models += [create_agent_model(env.brains[self.brain_to_copy], 
-                       lr=self.original_brain_parameters['learning_rate'],
-                       h_size=self.original_brain_parameters['hidden_units'],
-                       epsilon=self.original_brain_parameters['epsilon'],
-                       beta=self.original_brain_parameters['beta'], 
-                       max_step=self.original_brain_parameters['max_steps'],
+                       lr=float(self.original_brain_parameters['learning_rate']),
+                       h_size=int(self.original_brain_parameters['hidden_units']),
+                       epsilon=float(self.original_brain_parameters['epsilon']),
+                       beta=float(self.original_brain_parameters['beta']), 
+                       max_step=float(self.original_brain_parameters['max_steps']),
                        normalize=self.original_brain_parameters['normalize'],
                        use_recurrent=self.original_brain_parameters['use_recurrent'],
-                       num_layers=self.original_brain_parameters['num_layers'],
+                       num_layers=int(self.original_brain_parameters['num_layers']),
                        m_size = self.original_brain_parameters)]
         self.model = self.models[0]
 
@@ -58,7 +58,10 @@ class GhostTrainer(object):
         self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
 
-
+    def __str__(self):
+        param_keys = ['brain_to_copy', 'is_ghost', 'new_model_freq', 'max_num_models']
+        return '''Hypermarameters for {0}: \n{1}'''.format(
+            self.brain_name, '\n'.join(['\t{0} :\t{1}'.format(x, self.trainer_parameters[x]) for x in param_keys]))
 
 
     @property

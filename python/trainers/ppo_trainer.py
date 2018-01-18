@@ -25,7 +25,6 @@ class PPOTrainer(object):
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
-
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.sequence_length = 1
         self.m_size = None
@@ -35,14 +34,14 @@ class PPOTrainer(object):
         self.variable_scope = trainer_parameters['graph_scope']
         with tf.variable_scope(self.variable_scope):
             self.model = create_agent_model(env.brains[brain_name], 
-                   lr=trainer_parameters['learning_rate'],
-                   h_size=trainer_parameters['hidden_units'],
-                   epsilon=trainer_parameters['epsilon'],
-                   beta=trainer_parameters['beta'], 
-                   max_step=trainer_parameters['max_steps'],
+                   lr=float(trainer_parameters['learning_rate']),
+                   h_size=int(trainer_parameters['hidden_units']),
+                   epsilon=float(trainer_parameters['epsilon']),
+                   beta=float(trainer_parameters['beta']), 
+                   max_step=float(trainer_parameters['max_steps']),
                    normalize=trainer_parameters['normalize'],
                    use_recurrent=trainer_parameters['use_recurrent'],
-                   num_layers=trainer_parameters['num_layers'],
+                   num_layers=int(trainer_parameters['num_layers']),
                    m_size = self.m_size)
 
 
@@ -66,6 +65,13 @@ class PPOTrainer(object):
         self.brain_name = brain_name
         self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
+
+    def __str__(self):
+        param_keys = ['batch_size', 'beta','buffer_size','epsilon','gamma','hidden_units','lambd','learning_rate',
+            'max_steps','normalize','num_epoch','num_layers','time_horizon','sequence_length','summary_freq',
+            'use_recurrent','graph_scope','summary_path']
+        return '''Hypermarameters for {0}: \n{1}'''.format(
+            self.brain_name, '\n'.join(['\t{0} :\t{1}'.format(x, self.trainer_parameters[x]) for x in param_keys]))
 
     @property
     def parameters(self):

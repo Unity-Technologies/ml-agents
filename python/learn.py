@@ -39,29 +39,15 @@ if __name__ == '__main__' :
 
     Options:
       --help                     Show this message.
-      --batch-size=<n>           How many experiences per gradient descent update step [default: 64].
-      --beta=<n>                 Strength of entropy regularization [default: 2.5e-3].
-      --buffer-size=<n>          How large the experience buffer should be before gradient descent [default: 2048].
       --curriculum=<file>        Curriculum json file for environment [default: None].
-      --epsilon=<n>              Acceptable threshold around ratio of old and new policy probabilities [default: 0.2].
-      --gamma=<n>                Reward discount rate [default: 0.99].
-      --hidden-units=<n>         Number of units in hidden layer [default: 64].
+      --slow                     Whether to run the game at training speed [default: False].
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
-      --lambd=<n>                Lambda parameter for GAE [default: 0.95].
-      --learning-rate=<rate>     Model learning rate [default: 3e-4].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
       --max-steps=<n>            Maximum number of steps to run environment [default: 1e6].
-      --normalize                Whether to normalize the state input using running statistics [default: False].
-      --num-epoch=<n>            Number of gradient descent steps per batch of experiences [default: 5].
-      --num-layers=<n>           Number of hidden layers between state/observation and outputs [default: 2].
-      --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo].
+      --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo]. 
       --save-freq=<n>            Frequency at which to save model [default: 50000].
-      --sequence-length=<n>      The training length of states used for recurrent state encoding [default: 32]. 
-      --summary-freq=<n>         Frequency at which to save training statistics [default: 10000].
-      --time-horizon=<n>         How many steps to collect per agent before adding to buffer [default: 2048].
       --train                    Whether to train model, or only run inference [default: False].
-      --use-recurrent            Whether to use recurrent encoding of the state and observations [default: False].
       --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
     '''
 
@@ -71,7 +57,6 @@ if __name__ == '__main__' :
     # General parameters
     model_path = './models/{}'.format(str(options['--run-path']))
 
-    # summary_path = './summaries/{}'.format(str(options['--run-path']))
     load_model = options['--load']
     train_model = options['--train']
     save_freq = int(options['--save-freq'])
@@ -82,25 +67,7 @@ if __name__ == '__main__' :
     if curriculum_file == "None":
         curriculum_file = None
     lesson = int(options['--lesson'])
-
-    default_trainer_parameters = {
-        'max_steps':float(options['--max-steps']), 
-        'gamma':float(options['--gamma']),
-        'lambd':float(options['--lambd']), 
-        'time_horizon':int(options['--time-horizon']),
-        'beta':float(options['--beta']), 
-        'num_epoch':int(options['--num-epoch']), 
-        'epsilon':float(options['--epsilon']), 
-        'buffer_size':int(options['--buffer-size']),
-        'learning_rate':float(options['--learning-rate']), 
-        'hidden_units':int(options['--hidden-units']), 
-        'batch_size':int(options['--batch-size']),
-        'normalize':options['--normalize'], 
-        'summary_freq':int(options['--summary-freq']), 
-        'num_layers':int(options['--num-layers']),
-        'use_recurrent':options['--use-recurrent'],
-        'sequence_length':int(options['--sequence-length'])
-        }
+    slow_simulation = bool(options['--slow'])
 
     env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
     env.curriculum.set_lesson_number(lesson)
@@ -119,20 +86,20 @@ if __name__ == '__main__' :
         with open("trainer_configurations.yaml") as data_file:
             trainer_configurations = yaml.load(data_file)
     except IOError:
-        logger.info("The file {0} could not be found. Will use default Hyperparameters".format("trainer_configurations.yaml"))
-        trainer_configurations = {}
+        raise UnityEnvironmentException("The file {} could not be found. Will use default Hyperparameters"
+          .format("trainer_configurations.yaml"))
     except UnicodeDecodeError:
-        raise UnityEnvironmentException("There was an error decoding {}".format("trainer_configurations.json"))
+        raise UnityEnvironmentException("There was an error decoding {}".format("trainer_configurations.yaml"))
 
     with tf.Session() as sess:
         trainers = {}
         trainer_parameters_dict = {}
         for brain_name in env.external_brain_names:
-            trainer_parameters = default_trainer_parameters.copy()
+            trainer_parameters = trainer_configurations['default'].copy()
             if len(env.external_brain_names) > 1:
                 graph_scope = re.sub('[^0-9a-zA-Z]+', '-', brain_name)
                 trainer_parameters['graph_scope'] = graph_scope
-                trainer_parameters['summary_path'] = './summaries/{}'.format(str(options['--run-path']))+'__'+graph_scope
+                trainer_parameters['summary_path'] = './summaries/{}'.format(str(options['--run-path']))+'_'+graph_scope
             else :
                 trainer_parameters['graph_scope'] = ''
                 trainer_parameters['summary_path'] = './summaries/{}'.format(str(options['--run-path']))
@@ -142,8 +109,6 @@ if __name__ == '__main__' :
                     _brain_key = trainer_configurations[_brain_key]
                 for k in trainer_configurations[_brain_key]:
                     trainer_parameters[k] = trainer_configurations[_brain_key][k]
-            logger.info("Hyperparameters for {}:".format(brain_name))
-            logger.info(trainer_parameters)
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in env.external_brain_names:
             if 'is_ghost' not in trainer_parameters_dict[brain_name]:
@@ -154,6 +119,9 @@ if __name__ == '__main__' :
                 trainers[brain_name] = GhostTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name], train_model)
             else:
                 trainers[brain_name] = PPOTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name], train_model)
+
+        for k, t in trainers.items():
+            logger.info(t)
         init = tf.global_variables_initializer()
         saver = tf.train.Saver(max_to_keep=keep_checkpoints)
         # Instantiate model parameters
@@ -168,7 +136,7 @@ if __name__ == '__main__' :
             sess.run(init)
         global_step = 0 # This is only for saving the model
         env.curriculum.increment_lesson(get_progress())
-        info = env.reset(train_mode=train_model)
+        info = env.reset(train_mode=slow_simulation)
         if train_model:
             for brain_name, trainer in trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters', trainer.parameters) 
