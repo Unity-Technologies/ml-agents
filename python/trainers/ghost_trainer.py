@@ -130,7 +130,8 @@ class GhostTrainer(object):
             epsi = np.random.randn(len(info.states), self.brain.action_space_size)
             feed_dict[self.model.epsilon] = epsi
         if self.use_observations:
-            feed_dict[self.model.observation_in] = np.vstack(info.observations)
+            for i, _ in enumerate(info.observations):
+                feed_dict[self.model.observation_in[i]] = info.observations[i]
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
         if self.use_recurrent:

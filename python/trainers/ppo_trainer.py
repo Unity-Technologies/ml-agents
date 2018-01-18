@@ -146,7 +146,8 @@ class PPOTrainer(object):
             epsi = np.random.randn(len(info.states), self.brain.action_space_size)
             feed_dict[self.model.epsilon] = epsi
         if self.use_observations:
-            feed_dict[self.model.observation_in] = np.vstack(info.observations)
+            for i, _ in enumerate(info.observations):
+                feed_dict[self.model.observation_in[i]] = info.observations[i]
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
         if self.use_recurrent:
@@ -192,7 +193,9 @@ class PPOTrainer(object):
                 next_idx = next_info.agents.index(agent_id)
                 if not info.local_done[idx]:
                     if self.use_observations:
-                        self.training_buffer[agent_id]['observations'].append(info.observations[0][idx])
+                        # self.training_buffer[agent_id]['observations'].append(info.observations[0][idx])
+                        for i, _ in enumerate(info.observations):
+                            self.training_buffer[agent_id]['observations%d'%i].append(info.observations[i][idx])
                     if self.use_states:
                         self.training_buffer[agent_id]['states'].append(info.states[idx])
                     if self.use_recurrent:
@@ -228,7 +231,8 @@ class PPOTrainer(object):
                 else:
                     feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length :1}
                     if self.use_observations: 
-                        feed_dict[self.model.observation_in] = np.vstack(info.observations)
+                        for i in range(self.info.observations):
+                            feed_dict[self.model.observation_in[i]] = info.observations[i]
                     if self.use_states:
                         feed_dict[self.model.state_in] = info.states
                     if self.use_recurrent:
@@ -313,9 +317,10 @@ class PPOTrainer(object):
                         feed_dict[self.model.state_in] = np.array(
                             np.array(_buffer['states'][start:end]).reshape([-1,1]))
                 if self.use_observations:
-                    _obs = np.array(_buffer['observations'][start:end])
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.observation_in] = _obs.reshape([-1,_w,_h,_c])
+                    for i, _ in enumerate(self.model.observation_in):
+                        _obs = np.array(_buffer['observations%d'%i][start:end])
+                        (_batch, _seq, _w, _h, _c) = _obs.shape
+                        feed_dict[self.model.observation_in[i]] = _obs.reshape([-1,_w,_h,_c])
                 #Memories are zeros
                 if self.use_recurrent:
                     feed_dict[self.model.memory_in] = np.zeros([batch_size , self.m_size])

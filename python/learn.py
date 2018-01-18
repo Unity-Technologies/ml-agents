@@ -146,9 +146,9 @@ if __name__ == '__main__' :
             logger.info(trainer_parameters)
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in env.external_brain_names:
-            if 'use_ghost' not in trainer_parameters_dict[brain_name]:
-                trainer_parameters_dict[brain_name]['use_ghost'] = False
-            if trainer_parameters_dict[brain_name]['use_ghost']:
+            if 'is_ghost' not in trainer_parameters_dict[brain_name]:
+                trainer_parameters_dict[brain_name]['is_ghost'] = False
+            if trainer_parameters_dict[brain_name]['is_ghost']:
                 trainer_parameters_dict[brain_name]['original_brain_parameters'] = trainer_parameters_dict[
                     trainer_parameters_dict[brain_name]['brain_to_copy']]
                 trainers[brain_name] = GhostTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name], train_model)
@@ -213,7 +213,7 @@ if __name__ == '__main__' :
             if global_step != 0 and train_model:
                 save_model(sess, model_path=model_path, steps=global_step, saver=saver)
         except KeyboardInterrupt:
-          logger.info("\nLearning was interupted. Please wait while the graph is generated.")
+          logger.info("Learning was interupted. Please wait while the graph is generated.")
           save_model(sess, model_path=model_path, steps=global_step, saver=saver)
           pass
     env.close()

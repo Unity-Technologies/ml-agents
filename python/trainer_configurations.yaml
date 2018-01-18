@@ -18,11 +18,16 @@ ExampleBrain :
     use_recurrent: false
 ghost-HunterBrain:
     brain_to_copy : HunterBrain
-    use_ghost : true
+    is_ghost : true
     new_model_freq : 10000
     max_num_models : 20
 ghost-HunteeBrain :
     brain_to_copy : HunteeBrain
-    use_ghost : true
+    is_ghost : true
+    new_model_freq : 10000
+    max_num_models : 20
+ghost-Ball3DBrain:
+    brain_to_copy : Ball3DBrain
+    is_ghost : true
     new_model_freq : 10000
     max_num_models : 20
