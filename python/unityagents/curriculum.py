@@ -44,7 +44,7 @@ class Curriculum(object):
                         "The parameter {0} in Curriculum {1} must have {2} values "
                         "but {3} were found".format(key, location,
                                                     self.max_lesson_number + 1, len(parameters[key])))
-        self.set_lesson_number(lesson)
+            self.set_lesson_number(lesson)
 
     @property
     def measure(self):
