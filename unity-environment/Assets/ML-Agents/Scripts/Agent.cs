@@ -205,6 +205,7 @@ public abstract class Agent : MonoBehaviour
         memory = new float[brain.brainParameters.memorySize];
         stepCounter = 0;
         AgentReset();
+        CumulativeReward = -reward;
     }
 
     /// Do not modify : Is used by the brain to collect rewards.
