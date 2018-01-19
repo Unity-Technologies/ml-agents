@@ -64,7 +64,7 @@ class GhostTrainer(object):
         self.trainer_parameters = trainer_parameters
 
     def __str__(self):
-        return '''Hypermarameters for {0}: \n{1}'''.format(
+        return '''Hypermarameters for the Ghost Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
 

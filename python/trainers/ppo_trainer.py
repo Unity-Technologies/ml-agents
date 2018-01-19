@@ -77,7 +77,7 @@ class PPOTrainer(object):
         self.trainer_parameters = trainer_parameters
 
     def __str__(self):
-        return '''Hypermarameters for {0}: \n{1}'''.format(
+        return '''Hypermarameters for the PPO Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
@@ -206,7 +206,6 @@ class PPOTrainer(object):
                 next_idx = next_info.agents.index(agent_id)
                 if not info.local_done[idx]:
                     if self.use_observations:
-                        # self.training_buffer[agent_id]['observations'].append(info.observations[0][idx])
                         for i, _ in enumerate(info.observations):
                             self.training_buffer[agent_id]['observations%d'%i].append(info.observations[i][idx])
                     if self.use_states:
@@ -318,17 +317,17 @@ class PPOTrainer(object):
                         _buffer['action_probs'][start:end]).reshape([-1,self.brain.action_space_size])}
                 if self.is_continuous:
                     feed_dict[self.model.epsilon] = np.array(
-                        np.array(_buffer['epsilons'][start:end]).reshape([-1,self.brain.action_space_size]))
+                        _buffer['epsilons'][start:end]).reshape([-1,self.brain.action_space_size])
                 else:
                     feed_dict[self.model.action_holder] = np.array(
-                        np.array(_buffer['actions'][start:end]).reshape([-1]))
+                        _buffer['actions'][start:end]).reshape([-1])
                 if self.use_states:
                     if self.brain.state_space_type == "continuous":
                         feed_dict[self.model.state_in] = np.array(
-                            np.array(_buffer['states'][start:end]).reshape([-1,self.brain.state_space_size]))
+                            _buffer['states'][start:end]).reshape([-1,self.brain.state_space_size])
                     else:
                         feed_dict[self.model.state_in] = np.array(
-                            np.array(_buffer['states'][start:end]).reshape([-1,1]))
+                            _buffer['states'][start:end]).reshape([-1,1])
                 if self.use_observations:
                     for i, _ in enumerate(self.model.observation_in):
                         _obs = np.array(_buffer['observations%d'%i][start:end])
@@ -351,7 +350,7 @@ class PPOTrainer(object):
         :param lesson_number: The lesson the trainer is at.
         """
         if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-         self.is_training and self.get_step <= self.get_max_steps):
+                self.is_training and self.get_step <= self.get_max_steps):
             steps = self.get_step
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])

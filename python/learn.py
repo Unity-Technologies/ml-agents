@@ -12,6 +12,7 @@ from docopt import docopt
 from trainers.ghost_trainer import GhostTrainer
 from trainers.ppo_models import *
 from trainers.ppo_trainer import PPOTrainer
+from trainers.imitation_trainer import ImitationTrainer
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 def get_progress():
@@ -112,6 +113,8 @@ if __name__ == '__main__' :
         for brain_name in env.external_brain_names:
             if 'is_ghost' not in trainer_parameters_dict[brain_name]:
                 trainer_parameters_dict[brain_name]['is_ghost'] = False
+            if 'is_imitation' not in trainer_parameters_dict[brain_name]:
+                trainer_parameters_dict[brain_name]['is_imitation'] = False
             if trainer_parameters_dict[brain_name]['is_ghost']:
                 if trainer_parameters_dict[brain_name]['brain_to_copy'] not in env.external_brain_names:
                     raise UnityEnvironmentException("The external brain {0} could not be found in the environment "
@@ -120,6 +123,8 @@ if __name__ == '__main__' :
                 trainer_parameters_dict[brain_name]['original_brain_parameters'] = trainer_parameters_dict[
                     trainer_parameters_dict[brain_name]['brain_to_copy']]
                 trainers[brain_name] = GhostTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name], train_model)
+            elif trainer_parameters_dict[brain_name]['is_imitation']:
+                trainers[brain_name] = ImitationTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name], train_model)
             else:
                 trainers[brain_name] = PPOTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name], train_model)
 
@@ -171,7 +176,7 @@ if __name__ == '__main__' :
                         trainer.update_model()
                     # Write training statistics to tensorboard.
                     trainer.write_summary(env.curriculum.lesson_number)
-                    if train_model:
+                    if train_model and trainer.get_step <= trainer.get_max_steps:
                         trainer.increment_step()
                         trainer.update_last_reward()
                 if train_model and trainer.get_step <= trainer.get_max_steps:
@@ -184,31 +189,35 @@ if __name__ == '__main__' :
             if global_step != 0 and train_model:
                 save_model(sess, model_path=model_path, steps=global_step, saver=saver)
         except KeyboardInterrupt:
-          logger.info("Learning was interupted. Please wait while the graph is generated.")
-          save_model(sess, model_path=model_path, steps=global_step, saver=saver)
+          if train_model:
+              logger.info("Learning was interupted. Please wait while the graph is generated.")
+              save_model(sess, model_path=model_path, steps=global_step, saver=saver)
           pass
     env.close()
-    graph_name = (env_name.strip()
-          .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
-    graph_name = os.path.basename(os.path.normpath(graph_name))
-    nodes = []
-    scopes = []
-    for brain_name in trainers.keys():
-        if trainers[brain_name].graph_scope is not None:
-            scope = trainers[brain_name].graph_scope + '/'
-            if scope == '/':
-              scope = ''
-            scopes += [scope]
-            if not trainers[brain_name].parameters["use_recurrent"]:
-                nodes +=[scope + x for x in ["action","value_estimate","action_probs"]] 
-            else:
-                nodes +=[scope + x for x in ["action","value_estimate","action_probs","recurrent_out"]] 
-    export_graph(model_path, graph_name, target_nodes=','.join(nodes))
-    if len(scopes) > 1:
-        logger.info("List of available scopes :")
-        for scope in scopes:
-            logger.info("\t" + scope )
-    logger.info("List of nodes exported :")
-    for n in nodes:
-        logger.info("\t" + n)  
+    if train_model:
+        graph_name = (env_name.strip()
+              .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
+        graph_name = os.path.basename(os.path.normpath(graph_name))
+        nodes = []
+        scopes = []
+        for brain_name in trainers.keys():
+            if trainers[brain_name].graph_scope is not None:
+                scope = trainers[brain_name].graph_scope + '/'
+                if scope == '/':
+                  scope = ''
+                scopes += [scope]
+                if trainers[brain_name].parameters["is_imitation"]:
+                  nodes +=[scope + x for x in ["action"]] 
+                elif not trainers[brain_name].parameters["use_recurrent"]:
+                    nodes +=[scope + x for x in ["action","value_estimate","action_probs"]] 
+                else:
+                    nodes +=[scope + x for x in ["action","value_estimate","action_probs","recurrent_out"]] 
+        export_graph(model_path, graph_name, target_nodes=','.join(nodes))
+        if len(scopes) > 1:
+            logger.info("List of available scopes :")
+            for scope in scopes:
+                logger.info("\t" + scope )
+        logger.info("List of nodes exported :")
+        for n in nodes:
+            logger.info("\t" + n)  
 
