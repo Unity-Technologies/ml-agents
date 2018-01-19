@@ -215,11 +215,12 @@ class ContinuousControlModel(PPOModel):
 
         hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
         encoders = []
-        for i in range(brain.number_observations):
-            height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
-            bw = brain.camera_resolutions[i]['blackAndWhite']
-            encoders.append(self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers))
-        hidden_visual = tf.concat(encoders, axis=2)
+        if brain.number_observations > 0:
+            for i in range(brain.number_observations):
+                height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
+                bw = brain.camera_resolutions[i]['blackAndWhite']
+                encoders.append(self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers))
+            hidden_visual = tf.concat(encoders, axis=2)
         if brain.state_space_size > 0:
             s_size = brain.state_space_size
             if brain.state_space_type == "continuous":
@@ -278,12 +279,13 @@ class DiscreteControlModel(PPOModel):
         self.normalize = normalize
 
         hidden_state, hidden_visual, hidden = None, None, None
-        encoders = []
-        for i in range(brain.number_observations):
-            height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
-            bw = brain.camera_resolutions[i]['blackAndWhite']
-            encoders.append(self.create_visual_encoder(height_size, width_size, bw, h_size, 1, tf.nn.elu, num_layers)[0])
-        hidden_visual = tf.concat(encoders, axis=1)
+        if brain.number_observations > 0:
+            encoders = []
+            for i in range(brain.number_observations):
+                height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
+                bw = brain.camera_resolutions[i]['blackAndWhite']
+                encoders.append(self.create_visual_encoder(height_size, width_size, bw, h_size, 1, tf.nn.elu, num_layers)[0])
+            hidden_visual = tf.concat(encoders, axis=1)
         if brain.state_space_size > 0:
             s_size = brain.state_space_size
             if brain.state_space_type == "continuous":
