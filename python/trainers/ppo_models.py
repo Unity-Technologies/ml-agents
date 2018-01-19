@@ -10,7 +10,8 @@ from unityagents import UnityEnvironmentException
 logger = logging.getLogger("unityagents")
 
 
-def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6, normalize=False, use_recurrent = False, num_layers=2, m_size = None):
+def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6,
+                       normalize=False, use_recurrent = False, num_layers=2, m_size = None):
     """
     Takes a Unity environment and model-specific hyper-parameters and returns the
     appropriate PPO agent model for the environment.
@@ -21,6 +22,9 @@ def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_s
     :param beta: Strength of entropy regularization.
     :return: a sub-class of PPOAgent tailored to the environment.
     :param max_step: Total number of training steps.
+    :param normalize: Whether to normalize vector observation input.
+    :param use_recurrent: Whether to use an LSTM layer in the network.
+    :param num_layers Number of hidden layers between encoded input and policy & value layers
     """
 
     if num_layers < 1: num_layers = 1
@@ -108,6 +112,7 @@ class PPOModel(object):
         :param h_size: Hidden layer size.
         :param num_streams: Number of visual streams to construct.
         :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
         if bw:
@@ -136,13 +141,14 @@ class PPOModel(object):
             streams.append(hidden)
         return streams
 
-    def create_continuous_state_encoder(self, s_size, h_size, num_streams, activation, num_layers, temporal_depth):
+    def create_continuous_state_encoder(self, s_size, h_size, num_streams, activation, num_layers):
         """
         Builds a set of hidden state encoders.
         :param s_size: state input size.
         :param h_size: Hidden layer size.
         :param num_streams: Number of state streams to construct.
         :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
         self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
@@ -184,6 +190,7 @@ class PPOModel(object):
         :param h_size: Hidden layer size.
         :param num_streams: Number of state streams to construct.
         :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
         self.state_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='state')
@@ -242,7 +249,7 @@ class PPOModel(object):
 
 
 class ContinuousControlModel(PPOModel):
-    def __init__(self, lr, brain, h_size, epsilon, max_step, normalize, use_recurrent, num_layers,m_size):
+    def __init__(self, lr, brain, h_size, epsilon, max_step, normalize, use_recurrent, num_layers, m_size):
         """
         Creates Continuous Control Actor-Critic model.
         :param brain: State-space size
@@ -275,8 +282,7 @@ class ContinuousControlModel(PPOModel):
         if brain.state_space_size > 0:
             s_size = brain.state_space_size * brain.stacked_states
             if brain.state_space_type == "continuous":
-                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 2, tf.nn.tanh, num_layers,
-                                                                    brain.stacked_states)
+                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 2, tf.nn.tanh, num_layers)
             else:
                 hidden_state = self.create_discrete_state_encoder(s_size, h_size, 2, tf.nn.tanh, num_layers)
 
@@ -319,7 +325,7 @@ class ContinuousControlModel(PPOModel):
 
 
 class DiscreteControlModel(PPOModel):
-    def __init__(self, lr, brain, h_size, epsilon, beta, max_step, normalize,use_recurrent, num_layers,m_size):
+    def __init__(self, lr, brain, h_size, epsilon, beta, max_step, normalize, use_recurrent, num_layers, m_size):
         """
         Creates Discrete Control Actor-Critic model.
         :param brain: State-space size
