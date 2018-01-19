@@ -290,8 +290,8 @@ class PPOTrainer(Trainer):
 
     def is_ready_update(self):
         """
-        Returns wether or not the trainer has enough elements to run update model
-        :return: A boolean corresponding to wether or not update_model() can be run
+        Returns whether or not the trainer has enough elements to run update model
+        :return: A boolean corresponding to whether or not update_model() can be run
         """
         return len(self.training_buffer.update_buffer['actions']) > self.trainer_parameters['buffer_size']
 
@@ -310,7 +310,6 @@ class PPOTrainer(Trainer):
             for l in range(len(self.training_buffer.update_buffer['actions']) // batch_size):
                 start = l * batch_size
                 end = (l + 1) * batch_size
-
                 _buffer = self.training_buffer.update_buffer
                 feed_dict = {self.model.batch_size: batch_size,
                              self.model.sequence_length: self.sequence_length,
@@ -328,7 +327,8 @@ class PPOTrainer(Trainer):
                 if self.use_states:
                     if self.brain.state_space_type == "continuous":
                         feed_dict[self.model.state_in] = np.array(
-                            _buffer['states'][start:end]).reshape([-1, self.brain.state_space_size * self.brain.stacked_states])
+                            _buffer['states'][start:end]).reshape(
+                            [-1, self.brain.state_space_size * self.brain.stacked_states])
                     else:
                         feed_dict[self.model.state_in] = np.array(
                             _buffer['states'][start:end]).reshape([-1, 1])

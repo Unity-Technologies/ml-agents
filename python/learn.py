@@ -163,10 +163,7 @@ if __name__ == '__main__':
                     for brain_name, trainer in trainers.items():
                         trainer.end_episode()
                 # Decide and take an action
-                take_action_actions = {}
-                take_action_memories = {}
-                take_action_values = {}
-                take_action_outputs = {}
+                take_action_actions, take_action_memories, take_action_values, take_action_outputs = {}, {}, {}, {}
                 for brain_name, trainer in trainers.items():
                     (take_action_actions[brain_name],
                      take_action_memories[brain_name],
