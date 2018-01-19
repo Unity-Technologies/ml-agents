@@ -10,13 +10,13 @@ import tensorflow as tf
 
 from trainers.buffer import Buffer
 from trainers.ppo_models import *
-from unityagents import UnityEnvironmentException
+from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
 
 
-class PPOTrainer(object):
+class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorythm."""
     def __init__(self, sess, env, brain_name, trainer_parameters, training):
         """
@@ -32,8 +32,10 @@ class PPOTrainer(object):
 
         for k in self.param_keys:
             if k not in trainer_parameters:
-                raise UnityEnvironmentException("The hyperparameter {0} could not be found for the PPO trainer of "
+                raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
                     "brain {1}.".format(k, brain_name))
+
+        super(PPOTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.sequence_length = 1
@@ -55,11 +57,9 @@ class PPOTrainer(object):
                    m_size = self.m_size)
 
 
-        self.sess = sess
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
         self.stats = stats
-        self.is_training = training
 
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
@@ -72,9 +72,6 @@ class PPOTrainer(object):
             os.makedirs(self.summary_path)
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
-        self.brain_name = brain_name
-        self.brain = env.brains[self.brain_name]
-        self.trainer_parameters = trainer_parameters
 
     def __str__(self):
         return '''Hypermarameters for the PPO Trainer of brain {0}: \n{1}'''.format(
@@ -82,10 +79,16 @@ class PPOTrainer(object):
 
     @property
     def parameters(self):
+        """
+        Returns the trainer parameters of the trainer.
+        """
         return self.trainer_parameters
 
     @property
     def graph_scope(self):
+        """
+        Returns the graph scope of the trainer.
+        """
         return self.variable_scope
 
     @property
@@ -366,22 +369,22 @@ class PPOTrainer(object):
             self.summary_writer.add_summary(summary, steps)
             self.summary_writer.flush()
 
-    def write_tensorboard_text(self, key, input_dict):
-        """
-        Saves text to Tensorboard.
-        Note: Only works on tensorflow r1.2 or above.
-        :param key: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            s_op = tf.summary.text(key,
-                    tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
-                    )
-            s = self.sess.run(s_op)
-            self.summary_writer.add_summary(s, self.get_step)
-        except:
-            logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
-            pass
+    # def write_tensorboard_text(self, key, input_dict):
+    #     """
+    #     Saves text to Tensorboard.
+    #     Note: Only works on tensorflow r1.2 or above.
+    #     :param key: The name of the text.
+    #     :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
+    #     """
+    #     try:
+    #         s_op = tf.summary.text(key,
+    #                 tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
+    #                 )
+    #         s = self.sess.run(s_op)
+    #         self.summary_writer.add_summary(s, self.get_step)
+    #     except:
+    #         logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
+    #         pass
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
     """

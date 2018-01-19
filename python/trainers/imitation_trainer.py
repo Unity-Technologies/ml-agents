@@ -10,6 +10,7 @@ import tensorflow as tf
 
 from trainers.buffer import Buffer
 from trainers.ppo_models import *
+from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
@@ -41,7 +42,7 @@ class ImitationNN(object):
 
 
 
-class ImitationTrainer(object):
+class ImitationTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
     def __init__(self, sess, env, brain_name, trainer_parameters, training):
         """
@@ -56,22 +57,20 @@ class ImitationTrainer(object):
 
         for k in self.param_keys:
             if k not in trainer_parameters:
-                raise UnityEnvironmentException("The hyperparameter {0} could not be found for the Imitation trainer of "
+                raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                     "brain {1}.".format(k, brain_name))
+
+        super(ImitationTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
         self.variable_scope = trainer_parameters['graph_scope']
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batch_size = trainer_parameters['batch_size']
         self.step = 0
-        #check here if valid
         self.cumulative_rewards = {}
         self.episode_steps = {}
         
 
-        self.sess = sess
         self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward' : []}
-
-        self.is_training = training
 
         self.training_buffer = Buffer()
         self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
@@ -84,9 +83,6 @@ class ImitationTrainer(object):
             os.makedirs(self.summary_path)
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
-        self.brain_name = brain_name
-        self.brain = env.brains[self.brain_name]
-        self.trainer_parameters = trainer_parameters
         s_size = self.brain.state_space_size * 1#brain_parameters.stacked_states
         a_size = self.brain.action_space_size
         with tf.variable_scope(self.variable_scope):
@@ -99,15 +95,22 @@ class ImitationTrainer(object):
 
 
     def __str__(self):
+
         return '''Hypermarameters for the Imitation Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
     def parameters(self):
+        """
+        Returns the trainer parameters of the trainer.
+        """
         return self.trainer_parameters
 
     @property
     def graph_scope(self):
+        """
+        Returns the graph scope of the trainer.
+        """
         return self.variable_scope
 
     @property
@@ -307,21 +310,21 @@ class ImitationTrainer(object):
             self.summary_writer.add_summary(summary, steps)
             self.summary_writer.flush()
 
-    def write_tensorboard_text(self, key, input_dict):
-        """
-        Saves text to Tensorboard.
-        Note: Only works on tensorflow r1.2 or above.
-        :param key: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            s_op = tf.summary.text(key,
-                    tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
-                    )
-            s = self.sess.run(s_op)
-            self.summary_writer.add_summary(s, self.get_step)
-        except:
-            logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
-            pass
+    # def write_tensorboard_text(self, key, input_dict):
+    #     """
+    #     Saves text to Tensorboard.
+    #     Note: Only works on tensorflow r1.2 or above.
+    #     :param key: The name of the text.
+    #     :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
+    #     """
+    #     try:
+    #         s_op = tf.summary.text(key,
+    #                 tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
+    #                 )
+    #         s = self.sess.run(s_op)
+    #         self.summary_writer.add_summary(s, self.get_step)
+    #     except:
+    #         logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
+    #         pass
 
 

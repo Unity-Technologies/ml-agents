@@ -5,11 +5,12 @@ import numpy as np
 import tensorflow as tf
 
 from trainers.ppo_models import *
+from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
 #This works only with PPO
-class GhostTrainer(object):
+class GhostTrainer(Trainer):
     """Keeps copies of a PPOTrainer past graphs and uses them to other Trainers."""
     def __init__(self, sess, env, brain_name, trainer_parameters, training):
         """
@@ -22,9 +23,10 @@ class GhostTrainer(object):
         self.param_keys = ['brain_to_copy', 'is_ghost', 'new_model_freq', 'max_num_models']
         for k in self.param_keys:
             if k not in trainer_parameters:
-                raise UnityEnvironmentException("The hyperparameter {0} could not be found for the PPO trainer of "
+                raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
                     "brain {1}.".format(k, brain_name))
 
+        super(GhostTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
         self.brain_to_copy = trainer_parameters['brain_to_copy']
         self.variable_scope = trainer_parameters['graph_scope']
@@ -49,19 +51,12 @@ class GhostTrainer(object):
         self.model = self.models[0]
 
 
-        self.sess = sess
-
-        self.is_training = training
-
         self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_observations > 0)
         self.use_states = (env.brains[brain_name].state_space_size > 0)
         self.use_recurrent = self.original_brain_parameters["use_recurrent"]
         self.summary_path = trainer_parameters['summary_path']
 
-        self.brain_name = brain_name
-        self.brain = env.brains[self.brain_name]
-        self.trainer_parameters = trainer_parameters
 
     def __str__(self):
         return '''Hypermarameters for the Ghost Trainer of brain {0}: \n{1}'''.format(
@@ -70,10 +65,16 @@ class GhostTrainer(object):
 
     @property
     def parameters(self):
+        """
+        Returns the trainer parameters of the trainer.
+        """
         return self.trainer_parameters
 
     @property
     def graph_scope(self):
+        """
+        Returns the graph scope of the trainer.
+        """
         return None
 
     @property
@@ -199,21 +200,21 @@ class GhostTrainer(object):
         """
         return
 
-    def write_tensorboard_text(self, key, input_dict):
-        """
-        Saves text to Tensorboard.
-        Note: Only works on tensorflow r1.2 or above.
-        :param key: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            s_op = tf.summary.text(key,
-                    tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
-                    )
-            s = self.sess.run(s_op)
-            self.summary_writer.add_summary(s, self.get_step)
-        except:
-            logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
-            pass
+    # def write_tensorboard_text(self, key, input_dict):
+    #     """
+    #     Saves text to Tensorboard.
+    #     Note: Only works on tensorflow r1.2 or above.
+    #     :param key: The name of the text.
+    #     :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
+    #     """
+    #     try:
+    #         s_op = tf.summary.text(key,
+    #                 tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
+    #                 )
+    #         s = self.sess.run(s_op)
+    #         self.summary_writer.add_summary(s, self.get_step)
+    #     except:
+    #         logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
+    #         pass
 
 
