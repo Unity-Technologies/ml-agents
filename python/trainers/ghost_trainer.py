@@ -200,21 +200,5 @@ class GhostTrainer(Trainer):
         """
         return
 
-    # def write_tensorboard_text(self, key, input_dict):
-    #     """
-    #     Saves text to Tensorboard.
-    #     Note: Only works on tensorflow r1.2 or above.
-    #     :param key: The name of the text.
-    #     :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-    #     """
-    #     try:
-    #         s_op = tf.summary.text(key,
-    #                 tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
-    #                 )
-    #         s = self.sess.run(s_op)
-    #         self.summary_writer.add_summary(s, self.get_step)
-    #     except:
-    #         logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
-    #         pass
 
 
