@@ -1,20 +1,26 @@
 import logging
 logger = logging.getLogger("unityagents")
 
-class UnityEnvironmentException(Exception):
+class UnityException(Exception):
+    """
+    Any error related to ml-agents environment.
+    """
+    pass
+
+class UnityEnvironmentException(UnityException):
     """
     Related to errors starting and closing environment.
     """
     pass
 
 
-class UnityActionException(Exception):
+class UnityActionException(UnityException):
     """
     Related to errors with sending actions.
     """
     pass
 
-class UnityTimeOutException(Exception):
+class UnityTimeOutException(UnityException):
     """
     Related to errors with communication timeouts.
     """

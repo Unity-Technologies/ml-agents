@@ -35,6 +35,7 @@ public class ExternalCommunicator : Communicator
     private int comPort;
     Socket sender;
     byte[] messageHolder;
+    byte[] lengthHolder;
 
     const int messageLength = 12000;
 
@@ -122,6 +123,7 @@ public class ExternalCommunicator : Communicator
         logWriter.WriteLine(" ");
         logWriter.Close();
         messageHolder = new byte[messageLength];
+        lengthHolder = new byte[4];
 
         // Create a TCP/IP  socket.  
         sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -219,6 +221,20 @@ public class ExternalCommunicator : Communicator
         rMessage = Encoding.ASCII.GetString(messageHolder, 0, location);
     }
 
+    /// Receives a message and can reconstruct a message if was too long
+    private string ReceiveAll(){
+		sender.Receive(lengthHolder);
+        int totalLength = System.BitConverter.ToInt32(lengthHolder, 0);
+        int location = 0;
+        rMessage = "";
+        while (location != totalLength){
+            int fragment = sender.Receive(messageHolder);
+            location += fragment;
+            rMessage += Encoding.ASCII.GetString(messageHolder, 0, fragment);
+        }
+        return rMessage;
+    }
+
     /// Ends connection and closes environment
     private void OnApplicationQuit()
     {
@@ -309,7 +325,7 @@ public class ExternalCommunicator : Communicator
     {
         // TO MODIFY	--------------------------------------------
         sender.Send(Encoding.ASCII.GetBytes("STEPPING"));
-        Receive();
+        ReceiveAll();
         var agentMessage = JsonConvert.DeserializeObject<AgentMessage>(rMessage);
 
         foreach (Brain brain in brains)
