@@ -215,7 +215,6 @@ public abstract class Agent : MonoBehaviour
         stackedStates.Clear();
         stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
         stepCounter = 0;
-        CumulativeReward = 0f;
         AgentReset();
     }
 
@@ -227,7 +226,12 @@ public abstract class Agent : MonoBehaviour
 
     public void SetCumulativeReward()
     {
-        CumulativeReward += reward;
+        if (!done) {
+            CumulativeReward += reward;
+        }
+        else{
+            CumulativeReward = 0f;
+        }
     }
 
     /// Do not modify : Is used by the brain to collect done.

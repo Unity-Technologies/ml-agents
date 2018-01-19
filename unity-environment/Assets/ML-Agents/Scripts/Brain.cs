@@ -33,7 +33,8 @@ public enum BrainType
 public enum StateType
 {
     discrete,
-    continuous}
+    continuous
+}
 ;
 
 
@@ -205,7 +206,8 @@ public class Brain : MonoBehaviour
     }
 
 
-    public void CollectEverything() {
+    public void CollectEverything()
+    {
         currentStates.Clear();
         currentCameras.Clear();
         currentRewards.Clear();
@@ -393,7 +395,8 @@ public class Brain : MonoBehaviour
     /// which are not done
     public void Step()
     {
-        foreach (Agent agent in agents.Values)
+        var agentsToIterate = agents.Values.ToList();
+        foreach (Agent agent in agentsToIterate)
         {
             if (!agent.done)
             {
@@ -405,7 +408,8 @@ public class Brain : MonoBehaviour
     /// Is used by the Academy to reset the agents if they are done
     public void ResetIfDone()
     {
-        foreach (Agent agent in agents.Values)
+        var agentsToIterate = agents.Values.ToList();
+        foreach (Agent agent in agentsToIterate)
         {
             if (agent.done)
             {
