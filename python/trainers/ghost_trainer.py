@@ -9,9 +9,11 @@ from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
-#This works only with PPO
+
+# This works only with PPO
 class GhostTrainer(Trainer):
     """Keeps copies of a PPOTrainer past graphs and uses them to other Trainers."""
+
     def __init__(self, sess, env, brain_name, trainer_parameters, training):
         """
         Responsible for saving and reusing past models.
@@ -24,7 +26,7 @@ class GhostTrainer(Trainer):
         for k in self.param_keys:
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
-                    "brain {1}.".format(k, brain_name))
+                                            "brain {1}.".format(k, brain_name))
 
         super(GhostTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
@@ -37,19 +39,18 @@ class GhostTrainer(Trainer):
         self.max_num_models = trainer_parameters['max_num_models']
         self.last_model_replaced = 0
         for i in range(self.max_num_models):
-            with tf.variable_scope(self.variable_scope+'_'+str(i)):
-                self.models += [create_agent_model(env.brains[self.brain_to_copy], 
-                       lr=float(self.original_brain_parameters['learning_rate']),
-                       h_size=int(self.original_brain_parameters['hidden_units']),
-                       epsilon=float(self.original_brain_parameters['epsilon']),
-                       beta=float(self.original_brain_parameters['beta']), 
-                       max_step=float(self.original_brain_parameters['max_steps']),
-                       normalize=self.original_brain_parameters['normalize'],
-                       use_recurrent=self.original_brain_parameters['use_recurrent'],
-                       num_layers=int(self.original_brain_parameters['num_layers']),
-                       m_size = self.original_brain_parameters)]
+            with tf.variable_scope(self.variable_scope + '_' + str(i)):
+                self.models += [create_agent_model(env.brains[self.brain_to_copy],
+                                                   lr=float(self.original_brain_parameters['learning_rate']),
+                                                   h_size=int(self.original_brain_parameters['hidden_units']),
+                                                   epsilon=float(self.original_brain_parameters['epsilon']),
+                                                   beta=float(self.original_brain_parameters['beta']),
+                                                   max_step=float(self.original_brain_parameters['max_steps']),
+                                                   normalize=self.original_brain_parameters['normalize'],
+                                                   use_recurrent=self.original_brain_parameters['use_recurrent'],
+                                                   num_layers=int(self.original_brain_parameters['num_layers']),
+                                                   m_size=self.original_brain_parameters)]
         self.model = self.models[0]
-
 
         self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_observations > 0)
@@ -57,11 +58,9 @@ class GhostTrainer(Trainer):
         self.use_recurrent = self.original_brain_parameters["use_recurrent"]
         self.summary_path = trainer_parameters['summary_path']
 
-
     def __str__(self):
         return '''Hypermarameters for the Ghost Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
-
 
     @property
     def parameters(self):
@@ -117,7 +116,7 @@ class GhostTrainer(Trainer):
         from_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, from_scope)
         to_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, to_scope)
         op_holder = []
-        for from_var,to_var in zip(from_vars,to_vars):
+        for from_var, to_var in zip(from_vars, to_vars):
             op_holder.append(to_var.assign(from_var))
         return op_holder
 
@@ -128,7 +127,6 @@ class GhostTrainer(Trainer):
         :return: a tupple containing action, memories, values and an object
         to be passed to add experiences
         """
-
 
         epsi = None
         info = info[self.brain_name]
@@ -189,7 +187,7 @@ class GhostTrainer(Trainer):
         self.last_model_replaced = (self.last_model_replaced + 1) % self.max_num_models
         self.sess.run(self.update_target_graph(
             self.original_brain_parameters['graph_scope'],
-            self.variable_scope+'_'+str(self.last_model_replaced))
+            self.variable_scope + '_' + str(self.last_model_replaced))
         )
         return
 
@@ -199,6 +197,3 @@ class GhostTrainer(Trainer):
         :param lesson_number: The lesson the trainer is at.
         """
         return
-
-
-

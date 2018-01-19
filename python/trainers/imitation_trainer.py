@@ -83,7 +83,7 @@ class ImitationTrainer(Trainer):
             os.makedirs(self.summary_path)
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
-        s_size = self.brain.state_space_size * 1#brain_parameters.stacked_states
+        s_size = self.brain.state_space_size * self.brain.stacked_states
         a_size = self.brain.action_space_size
         with tf.variable_scope(self.variable_scope):
             self.network = ImitationNN(state_size = s_size,

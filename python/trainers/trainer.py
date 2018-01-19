@@ -7,6 +7,7 @@ from unityagents import UnityException
 
 logger = logging.getLogger("unityagents")
 
+
 class UnityTrainerException(UnityException):
     """
     Related to errors with the Trainer.
@@ -16,9 +17,10 @@ class UnityTrainerException(UnityException):
 
 class Trainer(object):
     """This class is the abstract class for the trainers"""
+
     def __init__(self, sess, env, brain_name, trainer_parameters, training):
         """
-        Responsible for collecting experiences and training PPO model.
+        Responsible for collecting experiences and training a neural network model.
         :param sess: Tensorflow session.
         :param env: The UnityEnvironment.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
@@ -29,7 +31,6 @@ class Trainer(object):
         self.trainer_parameters = trainer_parameters
         self.is_training = training
         self.sess = sess
-        
 
     def __str__(self):
         return '''Empty Trainer'''
@@ -110,7 +111,6 @@ class Trainer(object):
         """
         raise UnityTrainerException("The process_experiences method was not implemented.")
 
-
     def end_episode(self):
         """
         A signal that the Episode has ended. The buffer must be reset. 
@@ -147,13 +147,10 @@ class Trainer(object):
         """
         try:
             s_op = tf.summary.text(key,
-                    tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
-                    )
+                                   tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
+                                   )
             s = self.sess.run(s_op)
             self.summary_writer.add_summary(s, self.get_step)
         except:
             logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
             pass
-
-
-
