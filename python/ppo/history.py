@@ -1,6 +1,6 @@
 import numpy as np
 
-history_keys = ['states', 'observations', 'actions', 'rewards', 'action_probs', 'epsilons',
+history_keys = ['states', 'actions', 'rewards', 'action_probs', 'epsilons',
                 'value_estimates', 'advantages', 'discounted_returns']
 
 
@@ -44,6 +44,8 @@ def empty_local_history(agent_dict):
     """
     for key in history_keys:
         agent_dict[key] = []
+    for i, _ in enumerate(key for key in agent_dict.keys() if key.startswith('observations')):
+        agent_dict['observations%d' % i] = []
     return agent_dict
 
 
@@ -54,6 +56,8 @@ def vectorize_history(agent_dict):
     :return: dictionary of numpy arrays.
     """
     for key in history_keys:
+        agent_dict[key] = np.array(agent_dict[key])
+    for key in (key for key in agent_dict.keys() if key.startswith('observations')):
         agent_dict[key] = np.array(agent_dict[key])
     return agent_dict
 
@@ -70,6 +74,8 @@ def empty_all_history(agent_info):
         history_dict[agent] = empty_local_history(history_dict[agent])
         history_dict[agent]['cumulative_reward'] = 0
         history_dict[agent]['episode_steps'] = 0
+        for i, _ in enumerate(agent_info.observations):
+            history_dict[agent]['observations%d' % i] = []
     return history_dict
 
 
@@ -81,6 +87,8 @@ def append_history(global_buffer, local_buffer=None):
     :return: Global buffer with new experiences added.
     """
     for key in history_keys:
+        global_buffer[key] = np.concatenate([global_buffer[key], local_buffer[key]], axis=0)
+    for key in (key for key in local_buffer.keys() if key.startswith('observations')):
         global_buffer[key] = np.concatenate([global_buffer[key], local_buffer[key]], axis=0)
     return global_buffer
 
@@ -94,6 +102,8 @@ def set_history(global_buffer, local_buffer=None):
     """
     for key in history_keys:
         global_buffer[key] = np.copy(local_buffer[key])
+    for key in (key for key in local_buffer.keys() if key.startswith('observations')):
+        global_buffer[key] = np.array(local_buffer[key])
     return global_buffer
 
 
@@ -106,6 +116,9 @@ def shuffle_buffer(global_buffer):
     s = np.arange(global_buffer[history_keys[2]].shape[0])
     np.random.shuffle(s)
     for key in history_keys:
+        if len(global_buffer[key]) > 0:
+            global_buffer[key] = global_buffer[key][s]
+    for key in (key for key in global_buffer.keys() if key.startswith('observations')):
         if len(global_buffer[key]) > 0:
             global_buffer[key] = global_buffer[key][s]
     return global_buffer

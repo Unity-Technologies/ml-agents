@@ -61,6 +61,7 @@ def export_graph(model_path, env_name="env", target_nodes="action,value_estimate
 class PPOModel(object):
     def __init__(self):
         self.normalize = False
+        self.observation_in = []
 
     def create_global_steps(self):
         """Creates TF ops to track and increment global training step."""
@@ -89,11 +90,11 @@ class PPOModel(object):
         else:
             c_channels = 3
 
-        self.observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32,
-                                             name='observation_0')
+        self.observation_in.append(tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32,
+                                             name='observation_%d' % len(self.observation_in)))
         streams = []
         for i in range(num_streams):
-            self.conv1 = tf.layers.conv2d(self.observation_in, 16, kernel_size=[8, 8], strides=[4, 4],
+            self.conv1 = tf.layers.conv2d(self.observation_in[-1], 16, kernel_size=[8, 8], strides=[4, 4],
                                           use_bias=False, activation=activation)
             self.conv2 = tf.layers.conv2d(self.conv1, 32, kernel_size=[4, 4], strides=[2, 2],
                                           use_bias=False, activation=activation)
@@ -213,10 +214,12 @@ class ContinuousControlModel(PPOModel):
         self.create_reward_encoder()
 
         hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
-        if brain.number_observations > 0:
-            height_size, width_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']
-            bw = brain.camera_resolutions[0]['blackAndWhite']
-            hidden_visual = self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers)
+        encoders = []
+        for i in range(brain.number_observations):
+            height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
+            bw = brain.camera_resolutions[i]['blackAndWhite']
+            encoders.append(self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers))
+        hidden_visual = tf.concat(encoders, axis=2)
         if brain.state_space_size > 0:
             s_size = brain.state_space_size
             if brain.state_space_type == "continuous":
@@ -275,10 +278,12 @@ class DiscreteControlModel(PPOModel):
         self.normalize = normalize
 
         hidden_state, hidden_visual, hidden = None, None, None
-        if brain.number_observations > 0:
-            height_size, width_size = brain.camera_resolutions[0]['height'], brain.camera_resolutions[0]['width']
-            bw = brain.camera_resolutions[0]['blackAndWhite']
-            hidden_visual = self.create_visual_encoder(height_size, width_size, bw, h_size, 1, tf.nn.elu, num_layers)[0]
+        encoders = []
+        for i in range(brain.number_observations):
+            height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
+            bw = brain.camera_resolutions[i]['blackAndWhite']
+            encoders.append(self.create_visual_encoder(height_size, width_size, bw, h_size, 1, tf.nn.elu, num_layers)[0])
+        hidden_visual = tf.concat(encoders, axis=1)
         if brain.state_space_size > 0:
             s_size = brain.state_space_size
             if brain.state_space_type == "continuous":
