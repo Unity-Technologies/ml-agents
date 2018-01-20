@@ -238,16 +238,16 @@ class PPOTrainer(Trainer):
 
         info = info[self.brain_name]
         for l in range(len(info.agents)):
-            if ((info.local_done[l] or
-                         len(self.training_buffer[info.agents[l]]['actions']) > self.trainer_parameters['time_horizon'])
-                and len(self.training_buffer[info.agents[l]]['actions']) > 0):
+            agent_actions = self.training_buffer[info.agents[l]]['actions']
+            if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
+                    and len(agent_actions) > 0):
 
                 if info.local_done[l]:
                     value_next = 0.0
                 else:
                     feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
                     if self.use_observations:
-                        for i in range(self.info.observations):
+                        for i in range(info.observations):
                             feed_dict[self.model.observation_in[i]] = info.observations[i]
                     if self.use_states:
                         feed_dict[self.model.state_in] = info.states
