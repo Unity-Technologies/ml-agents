@@ -10,25 +10,32 @@ from unityagents import UnityEnvironmentException
 logger = logging.getLogger("unityagents")
 
 
-def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6, normalize=False, use_recurrent = False, num_layers=2, m_size = None):
+def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6,
+                       normalize=False, use_recurrent=False, num_layers=2, m_size=None):
     """
     Takes a Unity environment and model-specific hyper-parameters and returns the
     appropriate PPO agent model for the environment.
-    :param env: a Unity environment.
+    :param brain: BrainInfo used to generate specific network graph.
     :param lr: Learning rate.
     :param h_size: Size of hidden layers/
     :param epsilon: Value for policy-divergence threshold.
     :param beta: Strength of entropy regularization.
     :return: a sub-class of PPOAgent tailored to the environment.
     :param max_step: Total number of training steps.
+    :param normalize: Whether to normalize vector observation input.
+    :param use_recurrent: Whether to use an LSTM layer in the network.
+    :param num_layers Number of hidden layers between encoded input and policy & value layers
     """
 
-    if num_layers < 1: num_layers = 1
+    if num_layers < 1:
+        num_layers = 1
 
     if brain.action_space_type == "continuous":
-        return ContinuousControlModel(lr, brain, h_size, epsilon, max_step, normalize, use_recurrent, num_layers, m_size)
+        return ContinuousControlModel(lr, brain, h_size, epsilon, max_step, normalize, use_recurrent, num_layers,
+                                      m_size)
     if brain.action_space_type == "discrete":
-        return DiscreteControlModel(lr, brain, h_size, epsilon, beta, max_step, normalize, use_recurrent, num_layers, m_size)
+        return DiscreteControlModel(lr, brain, h_size, epsilon, beta, max_step, normalize, use_recurrent, num_layers,
+                                    m_size)
 
 
 def save_model(sess, saver, model_path="./", steps=0):
@@ -63,27 +70,40 @@ def export_graph(model_path, env_name="env", target_nodes="action,value_estimate
 
 
 class PPOModel(object):
-    def __init__(self):
+    def __init__(self, m_size, normalize, use_recurrent):
         self.normalize = False
         self.use_recurrent = False
         self.observation_in = []
+        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
+        self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
+        self.m_size = m_size
+        self.global_step, self.increment_step = self.create_global_steps()
+        self.last_reward, self.new_reward, self.update_reward = self.create_reward_encoder()
+        self.normalize = normalize
+        self.use_recurrent = use_recurrent
+        self.state_in = None
 
-    def create_global_steps(self):
+    @staticmethod
+    def create_global_steps():
         """Creates TF ops to track and increment global training step."""
-        self.global_step = tf.Variable(0, name="global_step", trainable=False, dtype=tf.int32)
-        self.increment_step = tf.assign(self.global_step, self.global_step + 1)
+        global_step = tf.Variable(0, name="global_step", trainable=False, dtype=tf.int32)
+        increment_step = tf.assign(global_step, tf.add(global_step, 1))
+        return global_step, increment_step
 
-    def create_reward_encoder(self):
+    @staticmethod
+    def create_reward_encoder():
         """Creates TF ops to track and increment recent average cumulative reward."""
-        self.last_reward = tf.Variable(0, name="last_reward", trainable=False, dtype=tf.float32)
-        self.new_reward = tf.placeholder(shape=[], dtype=tf.float32, name='new_reward')
-        self.update_reward = tf.assign(self.last_reward, self.new_reward)
+        last_reward = tf.Variable(0, name="last_reward", trainable=False, dtype=tf.float32)
+        new_reward = tf.placeholder(shape=[], dtype=tf.float32, name='new_reward')
+        update_reward = tf.assign(last_reward, new_reward)
+        return last_reward, new_reward, update_reward
 
     def create_recurrent_encoder(self, input_state, memory_in, name = 'lstm'):
         """
         Builds a recurrent encoder for either state or observations (LSTM).
-        :param s_size: Dimension of the input tensor.
         :param input_state: The input tensor to the LSTM cell.
+        :param memory_in: The input memory to the LSTM cell.
+        :param name: The scope of the LSTM cell.
         """
         s_size = input_state.get_shape().as_list()[1]
         m_size = memory_in.get_shape().as_list()[1]
@@ -108,6 +128,7 @@ class PPOModel(object):
         :param h_size: Hidden layer size.
         :param num_streams: Number of visual streams to construct.
         :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
         if bw:
@@ -116,19 +137,19 @@ class PPOModel(object):
             c_channels = 3
 
         self.observation_in.append(tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32,
-                                              name='observation_%d' % len(self.observation_in)))
+                                                  name='observation_%d' % len(self.observation_in)))
 
         streams = []
         for i in range(num_streams):
-            self.conv1 = tf.layers.conv2d(self.observation_in[-1], 16, kernel_size=[8, 8], strides=[4, 4],
-                                          use_bias=False, activation=activation)
-            self.conv2 = tf.layers.conv2d(self.conv1, 32, kernel_size=[4, 4], strides=[2, 2],
-                                          use_bias=False, activation=activation)
-        hidden = c_layers.flatten(self.conv2)
+            conv1 = tf.layers.conv2d(self.observation_in[-1], 16, kernel_size=[8, 8], strides=[4, 4],
+                                     activation=activation)
+            conv2 = tf.layers.conv2d(conv1, 32, kernel_size=[4, 4], strides=[2, 2],
+                                     activation=activation)
+            hidden = c_layers.flatten(conv2)
 
-        for j in range(num_layers):
-            hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
-            streams.append(hidden)
+            for j in range(num_layers):
+                hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
+                streams.append(hidden)
         return streams
 
     def create_continuous_state_encoder(self, s_size, h_size, num_streams, activation, num_layers):
@@ -138,6 +159,7 @@ class PPOModel(object):
         :param h_size: Hidden layer size.
         :param num_streams: Number of state streams to construct.
         :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
         self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
@@ -162,7 +184,8 @@ class PPOModel(object):
         for i in range(num_streams):
             hidden = self.normalized_state
             for j in range(num_layers):
-                hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
+                hidden = tf.layers.dense(hidden, h_size, activation=activation,
+                                         kernel_initializer=c_layers.variance_scaling_initializer(1.0))
             streams.append(hidden)
         return streams
 
@@ -173,6 +196,7 @@ class PPOModel(object):
         :param h_size: Hidden layer size.
         :param num_streams: Number of state streams to construct.
         :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
         self.state_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='state')
@@ -218,6 +242,7 @@ class PPOModel(object):
         decay_beta = tf.train.polynomial_decay(beta, self.global_step,
                                                max_step, 1e-5,
                                                power=1.0)
+
         self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(entropy)
 
         self.learning_rate = tf.train.polynomial_decay(lr, self.global_step,
@@ -228,25 +253,14 @@ class PPOModel(object):
 
 
 class ContinuousControlModel(PPOModel):
-    def __init__(self, lr, brain, h_size, epsilon, max_step, normalize, use_recurrent, num_layers,m_size):
+    def __init__(self, lr, brain, h_size, epsilon, max_step, normalize, use_recurrent, num_layers, m_size):
         """
         Creates Continuous Control Actor-Critic model.
         :param brain: State-space size
         :param h_size: Hidden layer size
         """
-        self.m_size = m_size
-        super(ContinuousControlModel, self).__init__()
-        s_size = brain.state_space_size
+        super(ContinuousControlModel, self).__init__(m_size, normalize, use_recurrent)
         a_size = brain.action_space_size
-
-        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
-
-        self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
-
-        self.normalize = normalize
-        self.use_recurrent = use_recurrent
-        self.create_global_steps()
-        self.create_reward_encoder()
 
         hidden_state, hidden_visual, hidden_policy, hidden_value = None, None, None, None
         if brain.number_observations > 0:
@@ -255,12 +269,13 @@ class ContinuousControlModel(PPOModel):
             for i in range(brain.number_observations):
                 height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
                 bw = brain.camera_resolutions[i]['blackAndWhite']
-                encoded_visual = self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers)
+                encoded_visual = self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh,
+                                                            num_layers)
                 visual_encoder_0.append(encoded_visual[0])
                 visual_encoder_1.append(encoded_visual[1])
             hidden_visual = [tf.concat(visual_encoder_0, axis=1), tf.concat(visual_encoder_1, axis=1)]
         if brain.state_space_size > 0:
-            s_size = brain.state_space_size
+            s_size = brain.state_space_size * brain.stacked_states
             if brain.state_space_type == "continuous":
                 hidden_state = self.create_continuous_state_encoder(s_size, h_size, 2, tf.nn.tanh, num_layers)
             else:
@@ -285,7 +300,9 @@ class ContinuousControlModel(PPOModel):
             self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1, name = 'recurrent_out')
         
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
+
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
+
         self.log_sigma_sq = tf.get_variable("log_sigma_squared", [a_size], dtype=tf.float32,
                                             initializer=tf.zeros_initializer())
         self.sigma_sq = tf.exp(self.log_sigma_sq)
@@ -301,7 +318,8 @@ class ContinuousControlModel(PPOModel):
 
         self.entropy = tf.reduce_sum(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
 
-        self.value = tf.layers.dense(hidden_value, 1, activation=None, use_bias=False)
+        self.value = tf.layers.dense(hidden_value, 1, activation=None)
+
         self.value = tf.identity(self.value, name="value_estimate")
 
         self.old_probs = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='old_probabilities')
@@ -310,22 +328,14 @@ class ContinuousControlModel(PPOModel):
 
 
 class DiscreteControlModel(PPOModel):
-    def __init__(self, lr, brain, h_size, epsilon, beta, max_step, normalize,use_recurrent, num_layers,m_size):
+    def __init__(self, lr, brain, h_size, epsilon, beta, max_step, normalize, use_recurrent, num_layers, m_size):
         """
         Creates Discrete Control Actor-Critic model.
         :param brain: State-space size
         :param h_size: Hidden layer size
         """
-        self.m_size = m_size
-        super(DiscreteControlModel, self).__init__()
-        self.create_global_steps()
-        self.create_reward_encoder()
-        self.normalize = normalize
-        self.use_recurrent = use_recurrent
-
-        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
-
-        self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
+        super(DiscreteControlModel, self).__init__(m_size, normalize, use_recurrent)
+        a_size = brain.action_space_size
 
         hidden_state, hidden_visual, hidden = None, None, None
         if brain.number_observations > 0:
@@ -333,12 +343,14 @@ class DiscreteControlModel(PPOModel):
             for i in range(brain.number_observations):
                 height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
                 bw = brain.camera_resolutions[i]['blackAndWhite']
-                visual_encoders.append(self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers)[0])
+                visual_encoders.append(
+                    self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers)[0])
             hidden_visual = [tf.concat(visual_encoders, axis=1)]
         if brain.state_space_size > 0:
-            s_size = brain.state_space_size
+            s_size = brain.state_space_size * brain.stacked_states
             if brain.state_space_type == "continuous":
-                hidden_state = self.create_continuous_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers)[0]
+                hidden_state = \
+                    self.create_continuous_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers)[0]
             else:
                 hidden_state = self.create_discrete_state_encoder(s_size, h_size, 1, tf.nn.elu, num_layers)[0]
 
@@ -360,12 +372,12 @@ class DiscreteControlModel(PPOModel):
         a_size = brain.action_space_size
 
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
+
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
         self.probs = tf.nn.softmax(self.policy, name="action_probs")
         self.output = tf.multinomial(self.policy, 1)
         self.output = tf.identity(self.output, name="action")
-        self.value = tf.layers.dense(hidden, 1, activation=None, use_bias=False,
-                                     kernel_initializer=c_layers.variance_scaling_initializer(factor=1.0))
+        self.value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
 
         self.entropy = -tf.reduce_sum(self.probs * tf.log(self.probs + 1e-10), axis=1)

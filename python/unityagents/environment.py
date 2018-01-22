@@ -279,14 +279,14 @@ class UnityEnvironment(object):
             n_agent = len(state_dict["agents"])
             try:
                 if self._brains[b].state_space_type == "continuous":
-                    states = np.array(state_dict["states"]).reshape((n_agent, self._brains[b].state_space_size))
+                    states = np.array(state_dict["states"]).reshape((n_agent, self._brains[b].state_space_size * self._brains[b].stacked_states))
                 else:
-                    states = np.array(state_dict["states"]).reshape((n_agent, 1))
+                    states = np.array(state_dict["states"]).reshape((n_agent, self._brains[b].stacked_states))
             except UnityActionException:
                 raise UnityActionException("Brain {0} has an invalid state. "
                                            "Expecting {1} {2} state but received {3}."
                                            .format(b, n_agent if self._brains[b].state_space_type == "discrete"
-                else str(self._brains[b].state_space_size * n_agent),
+                else str(self._brains[b].state_space_size * n_agent * self._brains[b].stacked_states),
                                                    self._brains[b].state_space_type,
                                                    len(state_dict["states"])))
             memories = np.array(state_dict["memories"]).reshape((n_agent, self._brains[b].memory_space_size))

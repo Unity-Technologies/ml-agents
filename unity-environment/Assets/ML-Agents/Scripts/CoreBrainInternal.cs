@@ -156,12 +156,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         if (hasState)
         {
             Dictionary<int, List<float>> states = brain.CollectStates();
-            inputState = new float[currentBatchSize, brain.brainParameters.stateSize];
+            inputState = new float[currentBatchSize, brain.brainParameters.stateSize * brain.brainParameters.stackedStates];
             var i = 0;
             foreach (int k in agentKeys)
             {
                 List<float> state_list = states[k];
-                for (int j = 0; j < brain.brainParameters.stateSize; j++)
+                for (int j = 0; j < brain.brainParameters.stateSize * brain.brainParameters.stackedStates; j++)
                 {
 
                     inputState[i, j] = state_list[j];

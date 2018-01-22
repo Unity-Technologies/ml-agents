@@ -21,6 +21,7 @@ class BrainParameters:
         """
         self.brain_name = brain_name
         self.state_space_size = brain_param["stateSize"]
+        self.stacked_states = brain_param["stackedStates"]
         self.number_observations = len(brain_param["cameraResolutions"])
         self.camera_resolutions = brain_param["cameraResolutions"]
         self.action_space_size = brain_param["actionSize"]
@@ -34,12 +35,14 @@ class BrainParameters:
         Number of observations (per agent): {1}
         State space type: {2}
         State space size (per agent): {3}
-        Action space type: {4}
-        Action space size (per agent): {5}
-        Memory space size (per agent): {6}
-        Action descriptions: {7}'''.format(self.brain_name,
+        Number of stacked states: {4}
+        Action space type: {5}
+        Action space size (per agent): {6}
+        Memory space size (per agent): {7}
+        Action descriptions: {8}'''.format(self.brain_name,
                                            str(self.number_observations), self.state_space_type,
-                                           str(self.state_space_size), self.action_space_type,
+                                           str(self.state_space_size), str(self.stacked_states),
+                                           self.action_space_type,
                                            str(self.action_space_size),
                                            str(self.memory_space_size),
                                            ', '.join(self.action_descriptions))

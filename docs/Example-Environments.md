@@ -31,6 +31,7 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * -1.0 if the ball falls from the platform.
 * Brains: One brain with the following state/action space.
     * State space: (Continuous) 8 variables corresponding to rotation of platform, and position, rotation, and velocity of ball.
+    * State space (Hard Version): (Continuous) 5 variables corresponding to rotation of platform and position and rotation of ball.
     * Action space: (Continuous) Size of 2, with one value corresponding to X-rotation, and the other to Z-rotation.
     * Observations: 0
 * Reset Parameters: None
@@ -61,12 +62,11 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
 * Goal: The agents must bounce ball between one another while not dropping or sending ball out of bounds.
 * Agents: The environment contains two agent linked to a single brain.
 * Agent Reward Function (independent): 
-    * -0.1 To last agent to hit ball before going out of bounds or hitting ground/net (episode ends).
-    * +0.1 To agent when hitting ball after ball was hit by the other agent. 
-    * +0.1 To agent who didn't hit ball last when ball hits ground.
+    * +0.1 To agent when hitting ball over net.
+    * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
 * Brains: One brain with the following state/action space.
     * State space: (Continuous) 8 variables corresponding to position and velocity of ball and racket.
-    * Action space: (Discrete) Size of 4, corresponding to movement toward net, away from net, jumping, and no-movement.
+    * Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
     * Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
@@ -138,4 +138,20 @@ Environments are located in `unity-environment/ML-Agents/Examples`.
     * State space: (Continuous) 117 variables corresponding to position, rotation, velocity, and angular velocities of each limb plus the acceleration and angular acceleration of the body.
     * Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
     * Observations: None
+* Reset Parameters: None
+
+## Banana Collector
+
+![Banana](../images/banana.png)
+
+* Set-up: A multi-agent environment where agents compete to collect bananas. 
+* Goal: The agents must learn to move to as many yellow bananas as possible while avoiding red bananas.
+* Agents: The environment contains 10 agents linked to a single brain.
+* Agent Reward Function (independent): 
+    * +1 for interaction with yellow banana
+    * -1 for interaction with red banana.
+* Brains: One brain with the following state/action space.
+    * State space: (Continuous) 51 corresponding to velocity of agent, plus ray-based perception of objects around agent's forward direction.
+    * Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
+    * Observations (Optional): First-person view for each agent. 
 * Reset Parameters: None

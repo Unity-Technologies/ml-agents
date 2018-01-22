@@ -65,6 +65,9 @@ public class BrainParameters
     /**< \brief If continuous : The length of the float vector that represents 
      * the state
      * <br> If discrete : The number of possible values the state can take*/
+    [Range(1, 10)]
+    public int stackedStates = 1;
+
     public int actionSize = 1;
     /**< \brief If continuous : The length of the float vector that represents the action
      * <br> If discrete : The number of possible values the action can take*/
@@ -216,12 +219,12 @@ public class Brain : MonoBehaviour
         {
             idAgent.Value.SetCumulativeReward();
             List<float> states = idAgent.Value.ClearAndCollectState();
-            if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous))
+            if ((states.Count != brainParameters.stateSize * brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.continuous))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
     Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
             }
-            if ((states.Count != 1) && (brainParameters.stateSpaceType == StateType.discrete))
+            if ((states.Count != brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.discrete))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
     Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
@@ -253,12 +256,12 @@ public class Brain : MonoBehaviour
         {
             idAgent.Value.SetCumulativeReward();
             List<float> states = idAgent.Value.ClearAndCollectState();
-            if ((states.Count != brainParameters.stateSize) && (brainParameters.stateSpaceType == StateType.continuous))
+            if ((states.Count != brainParameters.stateSize * brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.continuous))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
     Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
             }
-            if ((states.Count != 1) && (brainParameters.stateSpaceType == StateType.discrete))
+            if ((states.Count != brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.discrete))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
     Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
