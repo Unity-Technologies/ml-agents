@@ -45,6 +45,14 @@ class PPOTrainer(Trainer):
         if self.use_recurrent:
             self.m_size = env.brains[brain_name].memory_space_size
             self.sequence_length = trainer_parameters["sequence_length"]
+        if self.use_recurrent:
+            if (self.m_size == 0):
+                raise UnityTrainerException("The memory size for brain {0} is 0 even though the trainer uses recurrent."
+                                            .format(brain_name))
+            elif (self.m_size % 4 != 0):
+                raise UnityTrainerException("The memory size for brain {0} is {1} but it must be divisible by 4."
+                                            .format(brain_name, self.m_size))
+
         self.variable_scope = trainer_parameters['graph_scope']
         with tf.variable_scope(self.variable_scope):
             self.model = create_agent_model(env.brains[brain_name],
