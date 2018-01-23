@@ -3,27 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Agents-Editor-Interface.md#agent")]
 /** Generic functions for parent Agent class.
  * Contains all logic for Brain-Agent communication and Agent-Environment 
  * interaction.
  */
 public abstract class Agent : MonoBehaviour
 {
+    [Tooltip("The brain to register this agent to. Can be dragged into the inspector using the Editor.")]
     /**<  \brief  The brain that will control this agent. */
     /**< Use the inspector to drag the desired brain gameObject into
 	 * the Brain field */
     public Brain brain;
 
+    [Tooltip("A list of Cameras which will be used to generate observations.")]
     /**<  \brief  The list of the cameras the Agent uses as observations. */
     /**< These cameras will be used to generate the observations */
     public List<Camera> observations;
 
+    [Tooltip("The per-agent maximum number of steps.")]
     /**<  \brief  The number of steps the agent takes before being done. */
     /**< If set to 0, the agent can only be set to done via a script.
     * If set to any positive integer, the agent will be set to done after that
     * many steps each episode. */
     public int maxStep;
 
+    [Tooltip("If checked, the agent will reset on done. Else, AgentOnDone() will be called.")]
     /**<  \brief Determines the behaviour of the Agent when done.*/
     /**< If true, the agent will reset when done. 
 	 * If not, the agent will remain done, and no longer take actions.*/

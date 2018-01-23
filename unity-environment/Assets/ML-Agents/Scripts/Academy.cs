@@ -10,12 +10,17 @@ using UnityEngine;
 [System.Serializable]
 public class ScreenConfiguration
 {
+    [Tooltip("Width of the environment window in pixels.")]
     public int width;
+    [Tooltip("Height of the environment window in pixels")]
     public int height;
+    [Tooltip("Rendering quality of environment. (Higher is better quality)")]
     [Range(0, 5)]
     public int qualityLevel;
+    [Tooltip("Speed at which environment is run. (Higher is faster)")]
     [Range(1f, 100f)]
     public float timeScale;
+    [Tooltip("FPS engine attempts to maintain.")]
     public int targetFrameRate;
 
     public ScreenConfiguration(int w, int h, int q, float ts, int tf)
@@ -29,6 +34,7 @@ public class ScreenConfiguration
 }
 
 
+[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Agents-Editor-Interface.md#academy")]
 /** Create a child class to implement InitializeAcademy(), AcademyStep() 
  * and AcademyReset(). The child class script must be attached to an empty game
  * object in your scene, and there can only be one such object within the scene.
@@ -46,10 +52,15 @@ public abstract class Academy : MonoBehaviour
 
 
     [SerializeField]
+    [Tooltip("Total number of steps per episode. \n" +
+             "0 corresponds to episodes without a maximum number of steps. \n" +
+             "Once the step counter reaches maximum, the environment will reset.")]
     private int maxSteps;
     [SerializeField]
+    [Tooltip("How many steps of the environment to skip before asking Brains for decisions.")]
     private int frameToSkip;
     [SerializeField]
+    [Tooltip("How many seconds to wait between steps when running in Inference.")]
     private float waitTime;
     [HideInInspector]
     public bool isInference = true;
@@ -57,10 +68,13 @@ public abstract class Academy : MonoBehaviour
      * settings. */
     private bool _isCurrentlyInference;
     [SerializeField]
+    [Tooltip("The engine-level settings which correspond to rendering quality and engine speed during Training.")]
     private ScreenConfiguration trainingConfiguration = new ScreenConfiguration(80, 80, 1, 100.0f, -1);
     [SerializeField]
+    [Tooltip("The engine-level settings which correspond to rendering quality and engine speed during Inference.")]
     private ScreenConfiguration inferenceConfiguration = new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
     [SerializeField]
+    [Tooltip("List of custom parameters that can be changed in the environment on reset.")]
     private ResetParameter[] defaultResetParameters;
 
     /**< \brief Contains a mapping from parameter names to float values. */

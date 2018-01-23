@@ -95,7 +95,8 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     {
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
+		broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
+					  "If checked, the brain will broadcast states and actions to Python."), broadcast);
         if (brain.gameObject.GetComponent<Decision>() == null)
         {
             EditorGUILayout.HelpBox("You need to add a 'Decision' component to this gameObject", MessageType.Error);
