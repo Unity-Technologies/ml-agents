@@ -37,7 +37,6 @@ C - Content that needs to be consolidated into a different doc
  * N [Monitor Class  ](5-C#APIReference/Monitor.md)
  * C [Agents SDK Inspector Descriptions](5-C#APIReference/Agents-Editor-Interface.md)
  * E [Broadcast](5-C#APIReference/broadcast.md)
- * E [Monitor](5-C#APIReference/monitor.md)
  
 ## Python API
  * E [How to use the Python API](4-ExamplesAndTutorials/1-Python-API.md)
