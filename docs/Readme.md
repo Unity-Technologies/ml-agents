@@ -14,7 +14,7 @@ C - Content that needs to be consolidated into a different doc
  * N [Implementing a Learning Environment with ML Agents](2-RLInUnity/2-Implementing-a-Learning-Environment.md)
  * C [Best practices when creating an Environment](2-RLInUnity/best-practices.md)
  * C [Scene Organization](2-RLInUnity/Organizing-the-Scene.md)
- * C [Curriculum Learning](2-RLInUnity/curriculum.md)
+ * C [Curriculum Learning](3-Training/5-Curriculum-Training.md)
 
 ## Example Environments and Tutorials
  * E [Example Environments](4-ExamplesAndTutorials/1-Example-Environments.md)
