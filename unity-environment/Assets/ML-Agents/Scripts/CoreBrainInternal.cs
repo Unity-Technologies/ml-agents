@@ -68,6 +68,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     bool hasRecurrent;
     bool hasState;
     bool hasBatchSize;
+    bool hasValue;
     List<int> agentKeys;
     int currentBatchSize;
     float[,] inputState;
@@ -135,6 +136,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             if (graph[graphScope + StatePlacholderName] != null)
             {
                 hasState = true;
+            }
+            if (graph[graphScope + "value_estimate"] != null)
+            {
+                hasValue = true;
             }
         }
 #endif
@@ -285,6 +290,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
         }
 
+        if (hasValue)
+        {
+            runner.Fetch(graph[graphScope + "value_estimate"][0]);
+        }
+
         TFTensor[] networkOutput;
         try
         {
@@ -358,6 +368,28 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
         brain.SendActions(actions);
+
+        if (hasValue)
+        {
+            var values = new Dictionary<int, float>();
+            float[,] value_tensor;
+            if (hasRecurrent)
+            {
+                value_tensor = networkOutput[2].GetValue() as float[,];
+            }
+            else
+            {
+                value_tensor = networkOutput[1].GetValue() as float[,];
+            }
+            var i = 0;
+            foreach (int k in agentKeys)
+            {
+                var v = (float)(value_tensor[i, 0]);
+                values.Add(k, v);
+                i++;
+            }
+            brain.SendValues(values);
+        }
 
 #endif
     }
