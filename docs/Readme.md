@@ -16,6 +16,10 @@ C - Content that needs to be consolidated into a different doc
  * C [Scene Organization](2-RLInUnity/Organizing-the-Scene.md)
  * C [Curriculum Learning](2-RLInUnity/curriculum.md)
 
+## Example Environments and Tutorials
+ * E [Example Environments](4-ExamplesAndTutorials/1-Example-Environments.md)
+ * E [TensorflowSharp in Unity [Experimental]](4-ExamplesAndTutorials/2-Using-TensorFlow-Sharp-in-Unity.md)
+ 
 ## Training
  * N [Training ML Agents](3-Training/1-Training-ML-Agents.md)
  * N [Training with Proximal Policy Optimization](3-Training/2-Training-with-PPO.md)
@@ -24,10 +28,6 @@ C - Content that needs to be consolidated into a different doc
  * N [Using Tensorboard to Observe Training](3-Training/4-Using-Tensorboard.md)
  * N [Curriculum Learning](3-Training/5-Curriculum-Learning.md)
  * N [Imitation Learning](3-Training/6-Imitation-Learning.md)
- 
-## Example Environments and Tutorials
- * E [Example Environments](4-ExamplesAndTutorials/1-Example-Environments.md)
- * E [TensorflowSharp in Unity [Experimental]](4-ExamplesAndTutorials/2-Using-TensorFlow-Sharp-in-Unity.md)
  
 ## C# API and Components
  * N [Academy Class](5-C#APIReference/Academy.md)
