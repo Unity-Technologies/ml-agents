@@ -40,7 +40,7 @@ C - Content that needs to be consolidated into a different doc
 
  
 ## Python API
- * E [How to use the Python API](4-ExamplesAndTutorials/1-Python-API.md)
+ * E [How to use the Python API](6-PythonAPI/1-Python-API.md)
 ## Help
   * N Terminology 
   * E [Limitations & Common Issues](Limitations-&-Common-Issues.md)
