@@ -154,6 +154,15 @@ public class Brain : MonoBehaviour
             }
             CoreBrains = new_CoreBrains;
         }
+        // Check whether all CoreBrain are ready
+        else
+        {
+            foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
+            {
+                if (CoreBrains[(int)bt] != null) continue;
+                CoreBrains[(int)bt] = ScriptableObject.CreateInstance("CoreBrain" + bt.ToString());
+            }
+        }
 
         // If the stored instanceID does not match the current instanceID, 
         // this means that the Brain GameObject was duplicated, and
