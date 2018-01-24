@@ -30,13 +30,14 @@ C - Content that needs to be consolidated into a different doc
  * N [Imitation Learning](3-Training/6-Imitation-Learning.md)
  
 ## C# API and Components
- * N [Academy Class](5-C#APIReference/Academy.md)
- * N [Brain Class](5-C#APIReference/Brain.md)
- * N [Agent Class](5-C#APIReference/Agent.md)
- * N [Decision Class](5-C#APIReference/Decision.md)
- * N [Monitor Class  ](5-C#APIReference/Monitor.md)
+ * N [Academy Class](5-C#APIReference/1-Academy.md)
+ * N [Brain Class](5-C#APIReference/2-Brain.md)
+ * N [Agent Class](5-C#APIReference/3-Agent.md)
+ * N [Decision Class](5-C#APIReference/4-Decision.md)
+ * N [Monitor Class  ](5-C#APIReference/5-Monitor.md)
+ * E [Broadcast](5-C#APIReference/6-Broadcast.md)
  * C [Agents SDK Inspector Descriptions](5-C#APIReference/Agents-Editor-Interface.md)
- * E [Broadcast](5-C#APIReference/broadcast.md)
+
  
 ## Python API
  * E [How to use the Python API](4-ExamplesAndTutorials/1-Python-API.md)
