@@ -17,6 +17,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 {
 
     [SerializeField]
+    [Tooltip("If checked, the brain will broadcast states and actions to Python.")]
     private bool broadcast = true;
 
     [System.Serializable]
@@ -39,11 +40,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     ExternalCommunicator coord;
 
+    [Tooltip("This must be the bytes file corresponding to the pretrained Tensorflow graph.")]
     /// Modify only in inspector : Reference to the Graph asset
     public TextAsset graphModel;
+
     /// Modify only in inspector : If a scope was used when training the model, specify it here
     public string graphScope;
     [SerializeField]
+    [Tooltip("If your graph takes additional inputs that are fixed (example: noise level) you can specify them here.")]
     ///  Modify only in inspector : If your graph takes additional inputs that are fixed you can specify them here.
     private TensorFlowAgentPlaceholder[] graphPlaceholders;
     ///  Modify only in inspector : Name of the placholder of the batch size
@@ -395,7 +399,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
 #if ENABLE_TENSORFLOW && UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
+        broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
+                      "If checked, the brain will broadcast states and actions to Python."), broadcast);
         var serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
         var tfGraphModel = serializedBrain.FindProperty("graphModel");
@@ -409,28 +414,35 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
 
-        graphScope = EditorGUILayout.TextField("Graph Scope : ", graphScope);
+        graphScope = EditorGUILayout.TextField(new GUIContent("Graph Scope", "If you set a scope while training your tensorflow model, " +
+                           "all your placeholder name will have a prefix. You must specify that prefix here."), graphScope);
 
         if (BatchSizePlaceholderName == "")
         {
             BatchSizePlaceholderName = "batch_size";
         }
-        BatchSizePlaceholderName = EditorGUILayout.TextField("Batch Size Node Name", BatchSizePlaceholderName);
+        BatchSizePlaceholderName = EditorGUILayout.TextField(new GUIContent("Batch Size Node Name", "If the batch size is one of " +
+                            "the inputs of your graph, you must specify the name if the placeholder here."), BatchSizePlaceholderName);
         if (StatePlacholderName == "")
         {
             StatePlacholderName = "state";
         }
-        StatePlacholderName = EditorGUILayout.TextField("State Node Name", StatePlacholderName);
+        StatePlacholderName = EditorGUILayout.TextField(new GUIContent("State Node Name", "If your graph uses the state as an input, " +
+                            "you must specify the name if the placeholder here."), StatePlacholderName);
         if (RecurrentInPlaceholderName == "")
         {
             RecurrentInPlaceholderName = "recurrent_in";
         }
-        RecurrentInPlaceholderName = EditorGUILayout.TextField("Recurrent Input Node Name", RecurrentInPlaceholderName);
+        RecurrentInPlaceholderName = EditorGUILayout.TextField(new GUIContent("Recurrent Input Node Name", "If your graph uses a " +
+                          "recurrent input / memory as input and outputs new recurrent input / memory, " +
+                          "you must specify the name if the input placeholder here."), RecurrentInPlaceholderName);
         if (RecurrentOutPlaceholderName == "")
         {
             RecurrentOutPlaceholderName = "recurrent_out";
         }
-        RecurrentOutPlaceholderName = EditorGUILayout.TextField("Recurrent Output Node Name", RecurrentOutPlaceholderName);
+        RecurrentOutPlaceholderName = EditorGUILayout.TextField(new GUIContent("Recurrent Output Node Name", " If your graph uses a " +
+                           "recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if " +
+                           "the output placeholder here."), RecurrentOutPlaceholderName);
 
         if (brain.brainParameters.cameraResolutions != null)
         {
@@ -463,7 +475,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             ActionPlaceholderName = "action";
         }
-        ActionPlaceholderName = EditorGUILayout.TextField("Action Node Name", ActionPlaceholderName);
+        ActionPlaceholderName = EditorGUILayout.TextField(new GUIContent("Action Node Name", "Specify the name of the " +
+                         "placeholder corresponding to the actions of the brain in your graph. If the action space type is " +
+                         "continuous, the output must be a one dimensional tensor of float of length Action Space Size, " +
+                         "if the action space type is discrete, the output must be a one dimensional tensor of int " +
+                         "of length 1."), ActionPlaceholderName);
 
 
 

@@ -61,29 +61,41 @@ public struct resolution
 [System.Serializable]
 public class BrainParameters
 {
+    [Tooltip("Length of state vector for brain (In Continuous state space)." +
+             "Or number of possible values (in Discrete state space).")]
     public int stateSize = 1;
     /**< \brief If continuous : The length of the float vector that represents 
      * the state
      * <br> If discrete : The number of possible values the state can take*/
+    [Tooltip("Number of states that will be staked before beeing fed to the neural network.")]
     [Range(1, 10)]
     public int stackedStates = 1;
 
+    [Tooltip("Length of action vector for brain (In Continuous state space)." +
+             "Or number of possible values (in Discrete action space).")]
     public int actionSize = 1;
     /**< \brief If continuous : The length of the float vector that represents the action
      * <br> If discrete : The number of possible values the action can take*/
+    [Tooltip("Length of memory vector for brain. Used with Recurrent networks.")]
     public int memorySize = 0;
     /**< \brief The length of the float vector that holds the memory for the agent */
+    [Tooltip("Describes height, width, and whether to greyscale visual observations for the Brain.")]
     public resolution[] cameraResolutions;
     /**<\brief  The list of observation resolutions for the brain */
-
-    public string[] actionDescriptions;
+    [Tooltip("A list of strings used to name the available actions for the Brain.")]
+	public string[] actionDescriptions;
     /**< \brief The list of strings describing what the actions correpond to */
+    [Tooltip("Corresponds to whether state vector contains a single integer (Discrete) " +
+             "or a series of real-valued floats (Continuous).")]
     public StateType actionSpaceType = StateType.discrete;
     /**< \brief Defines if the action is discrete or continuous */
+    [Tooltip("Corresponds to whether action vector contains a single integer (Discrete)" +
+             " or a series of real-valued floats (Continuous).")]
     public StateType stateSpaceType = StateType.continuous;
     /**< \brief Defines if the state is discrete or continuous */
 }
 
+[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Agents-Editor-Interface.md#brain")]
 /**
  * Contains all high-level Brain logic. 
  * Add this component to an empty GameObject in your scene and drag this 
@@ -101,11 +113,14 @@ public class Brain : MonoBehaviour
     public Dictionary<int, float[]> currentActions = new Dictionary<int, float[]>(32);
     public Dictionary<int, float[]> currentMemories = new Dictionary<int, float[]>(32);
 
+	[Tooltip("Define state, observation, and action spaces for the Brain.")]
     /**< \brief Defines brain specific parameters such as the state size*/
     public BrainParameters brainParameters = new BrainParameters();
 
-    /**<  \brief Defines what is the type of the brain : 
+
+	/**<  \brief Defines what is the type of the brain : 
      * External / Internal / Player / Heuristic*/
+	[Tooltip("Describes how the Brain will decide actions.")]
     public BrainType brainType;
 
     [HideInInspector]
