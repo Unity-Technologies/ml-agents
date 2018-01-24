@@ -25,7 +25,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         public enum tensorType
         {
             Integer,
-            FloatingPoint}
+            FloatingPoint
+        }
 
         ;
 
@@ -57,18 +58,19 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public string[] ObservationPlaceholderName;
     /// Modify only in inspector : Name of the action node
     public string ActionPlaceholderName = "action";
-    #if ENABLE_TENSORFLOW
+#if ENABLE_TENSORFLOW
     TFGraph graph;
     TFSession session;
     bool hasRecurrent;
     bool hasState;
     bool hasBatchSize;
+    bool hasValue;
     List<int> agentKeys;
     int currentBatchSize;
     float[,] inputState;
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
-    #endif
+#endif
 
     /// Reference to the brain that uses this CoreBrainInternal
     public Brain brain;
@@ -113,7 +115,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
             session = new TFSession(graph);
 
-            if ((graphScope.Length > 1) && (graphScope[graphScope.Length - 1] != '/')){
+            if ((graphScope.Length > 1) && (graphScope[graphScope.Length - 1] != '/'))
+            {
                 graphScope = graphScope + '/';
             }
 
@@ -129,6 +132,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             if (graph[graphScope + StatePlacholderName] != null)
             {
                 hasState = true;
+            }
+            if (graph[graphScope + "value_estimate"] != null)
+            {
+                hasValue = true;
             }
         }
 #endif
@@ -197,7 +204,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             coord.giveBrainInfo(brain);
         }
-        #endif
+#endif
     }
 
 
@@ -219,7 +226,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         catch
         {
             throw new UnityAgentsException(string.Format(@"The node {0} could not be found. Please make sure the graphScope {1} is correct",
-					 graphScope + ActionPlaceholderName, graphScope));
+                     graphScope + ActionPlaceholderName, graphScope));
         }
 
         if (hasBatchSize)
@@ -274,11 +281,16 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
         if (hasRecurrent)
         {
-            runner.AddInput(graph[graphScope + "sequence_length"][0],  1 );
+            runner.AddInput(graph[graphScope + "sequence_length"][0], 1);
             runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
             runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
         }
-            
+
+        if (hasValue)
+        {
+            runner.Fetch(graph[graphScope + "value_estimate"][0]);
+        }
+
         TFTensor[] networkOutput;
         try
         {
@@ -290,8 +302,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             try
             {
                 errorMessage = string.Format(@"The tensorflow graph needs an input for {0} of type {1}",
-                    e.Message.Split(new string[]{ "Node: " }, 0)[1].Split('=')[0],
-                    e.Message.Split(new string[]{ "dtype=" }, 0)[1].Split(',')[0]);
+                    e.Message.Split(new string[] { "Node: " }, 0)[1].Split('=')[0],
+                    e.Message.Split(new string[] { "dtype=" }, 0)[1].Split(',')[0]);
             }
             finally
             {
@@ -352,6 +364,28 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
         brain.SendActions(actions);
+
+        if (hasValue)
+        {
+            var values = new Dictionary<int, float>();
+            float[,] value_tensor;
+            if (hasRecurrent)
+            {
+                value_tensor = networkOutput[2].GetValue() as float[,];
+            }
+            else
+            {
+                value_tensor = networkOutput[1].GetValue() as float[,];
+            }
+            var i = 0;
+            foreach (int k in agentKeys)
+            {
+                var v = (float)(value_tensor[i, 0]);
+                values.Add(k, v);
+                i++;
+            }
+            brain.SendValues(values);
+        }
 
 #endif
     }
