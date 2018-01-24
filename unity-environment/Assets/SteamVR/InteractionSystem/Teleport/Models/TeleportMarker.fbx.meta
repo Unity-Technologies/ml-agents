@@ -1,0 +1,238 @@
+fileFormatVersion: 2
+guid: 0e96081d793e1994086123e2505bcc0e
+timeCreated: 1447096547
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: jump_scenes_arrow_icon
+    100002: local_move_arrow_icon
+    100004: locked_icon
+    100006: //RootNode
+    100008: teleport_marker_icons
+    100010: teleport_marker_lookat_joint
+    100012: teleport_marker_mesh
+    100014: move_location_icon
+    100016: switch_scenes_icon
+    400000: jump_scenes_arrow_icon
+    400002: local_move_arrow_icon
+    400004: locked_icon
+    400006: //RootNode
+    400008: teleport_marker_icons
+    400010: teleport_marker_lookat_joint
+    400012: teleport_marker_mesh
+    400014: move_location_icon
+    400016: switch_scenes_icon
+    2300000: jump_scenes_arrow_icon
+    2300002: local_move_arrow_icon
+    2300004: locked_icon
+    2300006: teleport_marker_mesh
+    2300008: move_location_icon
+    2300010: switch_scenes_icon
+    3300000: jump_scenes_arrow_icon
+    3300002: local_move_arrow_icon
+    3300004: locked_icon
+    3300006: teleport_marker_mesh
+    3300008: move_location_icon
+    3300010: switch_scenes_icon
+    4300000: teleport_marker_mesh
+    4300002: jump_scenes_arrow_icon
+    4300004: local_move_arrow_icon
+    4300006: locked_icon
+    4300008: switch_scenes_icon
+    4300010: move_location_icon
+    7400000: switch_scenes_idle
+    7400002: move_location_idle
+    7400004: locked_idle
+    9500000: //RootNode
+    11100000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 1
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 2
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: switch_scenes_idle
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 50
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: teleport_marker_lookat_joint
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/jump_scenes_arrow_icon
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/local_move_arrow_icon
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/locked_icon
+        weight: 1
+      - path: teleport_marker_mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: move_location_idle
+      takeName: Take 001
+      firstFrame: 100
+      lastFrame: 150
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: teleport_marker_lookat_joint
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/jump_scenes_arrow_icon
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/local_move_arrow_icon
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/locked_icon
+        weight: 1
+      - path: teleport_marker_mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: locked_idle
+      takeName: Take 001
+      firstFrame: 200
+      lastFrame: 230.00002
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: teleport_marker_lookat_joint
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/jump_scenes_arrow_icon
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/local_move_arrow_icon
+        weight: 1
+      - path: teleport_marker_lookat_joint/teleport_marker_icons/locked_icon
+        weight: 1
+      - path: teleport_marker_mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

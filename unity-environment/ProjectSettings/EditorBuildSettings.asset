@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/ML-Agents/Examples/3DBall/Scene.unity
     guid: a83e830ec5bcd4b1db836428921d59b0
   - enabled: 0
@@ -14,3 +14,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/ML-Agents/Examples/Tennis/Tennis.unity
     guid: 25c0c9e81e55c4e129e1a5c0ac254100
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/RobotArm-Continuous/Scenes/RobotArm-Continuous.unity
+    guid: 5be8d315c71accc459849a9add897de7
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/5DofVR/Scenes/RobotArmVR.unity
+    guid: 0afb2db73c970f5408e7b5b36ad20848
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/RobotArm5Dof/Scenes/RobotArm5DOF.unity
+    guid: 6f2ed6329af9b544e949912164fba76e
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/RobotArm-Discrete/Scenes/RobotArm.unity
+    guid: b7cf82461aaf2a04aa6d6ce2b26094b2

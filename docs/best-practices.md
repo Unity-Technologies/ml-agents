@@ -20,6 +20,9 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 
 ![normalization](../images/normalization.png)
 
+### Implicit vs. Explicit State information
+Based on experiments with the Simple Robot Arm example, explicit information seems to be more useful than implicit information. For example: Adding the "hand" location to the state data provided a maximum mean reward 3x higher than just providing the angles of the joints. While the hand position is derrived from the joint angles, having the explicit information made for better training results.
+
 ## Actions
 * When using continuous control, action values should be clipped to an appropriate range.
 * Be sure to set the action-space-size to the number of used actions, and not greater, as doing the latter can interfere with the efficency of the training process.
