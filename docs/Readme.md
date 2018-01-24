@@ -26,7 +26,7 @@ C - Content that needs to be consolidated into a different doc
  * E [Training on the Cloud with Amazon Web Services](3-Training/3-Training-on-Amazon-Web-Service.md)
  * C [Best practices when training using PPO](3-Training/best-practices-ppo.md)
  * N [Using Tensorboard to Observe Training](3-Training/4-Using-Tensorboard.md)
- * N [Curriculum Learning](3-Training/5-Curriculum-Learning.md)
+ * N [Curriculum Learning](3-Training/5-Curriculum-Training.md)
  * N [Imitation Learning](3-Training/6-Imitation-Learning.md)
  
 ## C# API and Components
