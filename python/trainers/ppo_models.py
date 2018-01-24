@@ -295,9 +295,11 @@ class ContinuousControlModel(PPOModel):
         if self.use_recurrent:
             self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
             _half_point = int(self.m_size/2)
-            hidden_policy , memory_policy_out = self.create_recurrent_encoder( hidden_policy, self.memory_in[:, :_half_point ], name = 'lstm_policy')
-            hidden_value , memory_value_out = self.create_recurrent_encoder( hidden_value, self.memory_in[:, _half_point: ], name = 'lstm_value')
-            self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1, name = 'recurrent_out')
+            hidden_policy, memory_policy_out = self.create_recurrent_encoder(
+                hidden_policy, self.memory_in[:, :_half_point], name='lstm_policy')
+            hidden_value, memory_value_out = self.create_recurrent_encoder(
+                hidden_value, self.memory_in[:, _half_point:], name='lstm_value')
+            self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1, name='recurrent_out')
         
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
 
@@ -307,7 +309,7 @@ class ContinuousControlModel(PPOModel):
                                             initializer=tf.zeros_initializer())
         self.sigma_sq = tf.exp(self.log_sigma_sq)
 
-        self.epsilon = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name='epsilon')
+        self.epsilon = tf.random_normal(tf.shape(self.mu), dtype=tf.float32)
 
         self.output = self.mu + tf.sqrt(self.sigma_sq) * self.epsilon
         self.output = tf.identity(self.output, name='action')
@@ -368,8 +370,6 @@ class DiscreteControlModel(PPOModel):
             self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
             hidden, self.memory_out = self.create_recurrent_encoder( hidden, self.memory_in)
             self.memory_out = tf.identity(self.memory_out,  name = 'recurrent_out')
-
-        a_size = brain.action_space_size
 
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
 
