@@ -31,12 +31,12 @@ C - Content that needs to be consolidated into a different doc
  
 ## C# API and Components
  * N [Academy Class](5-C%23APIReference/1-Academy.md)
- * N [Brain Class](5-C#APIReference/2-Brain.md)
- * N [Agent Class](5-C#APIReference/3-Agent.md)
- * N [Decision Class](5-C#APIReference/4-Decision.md)
- * N [Monitor Class  ](5-C#APIReference/5-Monitor.md)
- * E [Broadcast](5-C#APIReference/6-Broadcast.md)
- * C [Agents SDK Inspector Descriptions](5-C#APIReference/Agents-Editor-Interface.md)
+ * N [Brain Class](5-C%23APIReference/2-Brain.md)
+ * N [Agent Class](5-C%23APIReference/3-Agent.md)
+ * N [Decision Class](5-C%23APIReference/4-Decision.md)
+ * N [Monitor Class](5-C%23APIReference/5-Monitor.md)
+ * E [Broadcast](5-C%23APIReference/6-Broadcast.md)
+ * C [Agents SDK Inspector Descriptions](5-C%23APIReference/Agents-Editor-Interface.md)
 
  
 ## Python API
