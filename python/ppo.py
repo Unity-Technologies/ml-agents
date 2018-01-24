@@ -106,8 +106,10 @@ def get_progress():
             return None
     else:
         return None
-
-with tf.Session() as sess:
+      
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+with tf.Session(config=config) as sess:
     # Instantiate model parameters
     if load_model:
         print('Loading Model...')
