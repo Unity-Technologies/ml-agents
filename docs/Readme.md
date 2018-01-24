@@ -30,7 +30,7 @@ C - Content that needs to be consolidated into a different doc
  * N [Imitation Learning](3-Training/6-Imitation-Learning.md)
  
 ## C# API and Components
- * N [Academy Class](5-C#APIReference/1-Academy.md)
+ * N [Academy Class](5-C%23APIReference/1-Academy.md)
  * N [Brain Class](5-C#APIReference/2-Brain.md)
  * N [Agent Class](5-C#APIReference/3-Agent.md)
  * N [Decision Class](5-C#APIReference/4-Decision.md)
