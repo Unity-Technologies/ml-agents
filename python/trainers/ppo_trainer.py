@@ -197,7 +197,7 @@ class PPOTrainer(Trainer):
             else:
                 actions, a_dist, value, ent, learn_rate = self.sess.run(run_list, feed_dict=feed_dict)
                 memories = None
-        self.stats['value_estimate'].append(value)
+        self.stats['value_estimate'].append(value.mean())
         self.stats['entropy'].append(ent)
         self.stats['learning_rate'].append(learn_rate)
         return actions, memories, value, (actions, epsi, a_dist, value)
