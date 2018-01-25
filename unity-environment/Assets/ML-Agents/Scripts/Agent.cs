@@ -57,6 +57,10 @@ public abstract class Agent : MonoBehaviour
     [HideInInspector]
     public bool done;
 
+    /**< \brief Whether or not the max step is reached*/
+    [HideInInspector]
+    public bool maxStepReached;
+
     /**< \brief The current value estimate of the agent */
     /**<  When using an External brain, you can pass value estimates to the
      * agent at every step using env.Step(actions, values).
@@ -220,6 +224,7 @@ public abstract class Agent : MonoBehaviour
         stackedStates.Clear();
         stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
         stepCounter = 0;
+        maxStepReached = false;
         AgentReset();
         CumulativeReward = -reward;
     }
@@ -260,6 +265,7 @@ public abstract class Agent : MonoBehaviour
         if ((stepCounter > maxStep) && (maxStep > 0))
         {
             done = true;
+            maxStepReached = true;
         }
     }
 

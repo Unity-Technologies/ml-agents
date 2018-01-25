@@ -293,6 +293,7 @@ class UnityEnvironment(object):
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
+            maxes = state_dict["maxes"]
             # actions = state_dict["actions"]
             if n_agent > 0:
                 actions = np.array(state_dict["actions"]).reshape((n_agent, -1))
@@ -307,7 +308,7 @@ class UnityEnvironment(object):
 
                 observations.append(np.array(obs_n))
 
-            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions)
+            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions, max_reached=maxes)
 
         try:
             self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'

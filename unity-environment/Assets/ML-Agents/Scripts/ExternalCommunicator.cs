@@ -30,6 +30,7 @@ public class ExternalCommunicator : Communicator
     List<float> concatenatedRewards = new List<float>(32);
     List<float> concatenatedMemories = new List<float>(1024);
     List<bool> concatenatedDones = new List<bool>(32);
+    List<bool> concatenatedMaxes = new List<bool>(32);
     List<float> concatenatedActions = new List<float>(1024);
 
     private int comPort;
@@ -55,6 +56,7 @@ public class ExternalCommunicator : Communicator
         public List<float> actions;
         public List<float> memories;
         public List<bool> dones;
+        public List<bool> maxes;
     }
 
     StepMessage sMessage;
@@ -271,6 +273,7 @@ public class ExternalCommunicator : Communicator
         concatenatedRewards.Clear();
         concatenatedMemories.Clear();
         concatenatedDones.Clear();
+        concatenatedMaxes.Clear();
         concatenatedActions.Clear();
 
         foreach (int id in current_agents[brainName])
@@ -279,6 +282,7 @@ public class ExternalCommunicator : Communicator
             concatenatedRewards.Add(brain.currentRewards[id]);
             concatenatedMemories.AddRange(brain.currentMemories[id].ToList());
             concatenatedDones.Add(brain.currentDones[id]);
+            concatenatedMaxes.Add(brain.currentMaxes[id]);
             concatenatedActions.AddRange(brain.currentActions[id].ToList());
         }
 
@@ -289,6 +293,7 @@ public class ExternalCommunicator : Communicator
         sMessage.actions = concatenatedActions;
         sMessage.memories = concatenatedMemories;
         sMessage.dones = concatenatedDones;
+        sMessage.maxes = concatenatedMaxes;
 
         sMessageString = JsonUtility.ToJson(sMessage);
         sender.Send(AppendLength(Encoding.ASCII.GetBytes(sMessageString)));

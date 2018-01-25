@@ -249,8 +249,7 @@ class PPOTrainer(Trainer):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
                     and len(agent_actions) > 0):
-
-                if info.local_done[l]:
+                if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
                     feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}

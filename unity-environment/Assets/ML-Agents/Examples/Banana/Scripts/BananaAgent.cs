@@ -6,6 +6,7 @@ public class BananaAgent : Agent
 {
     public GameObject area;
     bool frozen;
+    bool shoot;
     float frozenTime;
     Rigidbody agentRB;
     public float turnSpeed;
@@ -32,6 +33,8 @@ public class BananaAgent : Agent
         Vector3 localVelocity = transform.InverseTransformDirection(agentRB.velocity);
         state.Add(localVelocity.x);
         state.Add(localVelocity.z);
+        state.Add(System.Convert.ToInt32(frozen));
+        state.Add(System.Convert.ToInt32(shoot));
         return state;
     }
 
@@ -92,6 +95,8 @@ public class BananaAgent : Agent
 
     public void MoveAgent(float[] act)
     {
+        shoot = false;
+
         Monitor.Log("Bananas", bananas, MonitorType.text, gameObject.transform);
 
         if (Time.time > frozenTime + 4f) {
@@ -100,11 +105,10 @@ public class BananaAgent : Agent
 
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
-        bool shoot = false;
 
         if (!frozen)
         {
-            dirToGo = transform.forward * Mathf.Clamp(act[0], 0f, 1f);
+            dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
             if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f) { 
                 shoot = true;
@@ -156,6 +160,7 @@ public class BananaAgent : Agent
     public override void AgentReset()
     {
         Unfreeze();
+        shoot = false;
         agentRB.velocity = Vector3.zero;
         bananas = 0;
         myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
