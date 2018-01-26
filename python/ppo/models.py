@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
@@ -49,11 +50,15 @@ def export_graph(model_path, env_name="env", target_nodes="action,value_estimate
     :param target_nodes: Comma separated string of needed output nodes for embedded graph.
     """
     ckpt = tf.train.get_checkpoint_state(model_path)
+    output_graph_path = model_path + '/' + env_name + '.bytes'
+    output_graph_dir = os.path.dirname(output_graph_path)
+    if not os.path.exists(output_graph_dir):
+        os.makedirs(output_graph_dir)
     freeze_graph.freeze_graph(input_graph=model_path + '/raw_graph_def.pb',
                               input_binary=True,
                               input_checkpoint=ckpt.model_checkpoint_path,
                               output_node_names=target_nodes,
-                              output_graph=model_path + '/' + env_name + '.bytes',
+                              output_graph=output_graph_path,
                               clear_devices=True, initializer_nodes="", input_saver="",
                               restore_op_name="save/restore_all", filename_tensor_name="save/Const:0")
 
