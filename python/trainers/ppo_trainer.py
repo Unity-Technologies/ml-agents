@@ -168,8 +168,7 @@ class PPOTrainer(Trainer):
         run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
         if self.is_continuous:
-            epsi = np.random.randn(len(info.states), self.brain.action_space_size)
-            feed_dict[self.model.epsilon] = epsi
+            run_list.append(self.model.epsilon)
         if self.use_observations:
             for i, _ in enumerate(info.observations):
                 feed_dict[self.model.observation_in[i]] = info.observations[i]
@@ -185,22 +184,16 @@ class PPOTrainer(Trainer):
             feed_dict[self.model.new_mean] = new_mean
             feed_dict[self.model.new_variance] = new_variance
             run_list = run_list + [self.model.update_mean, self.model.update_variance]
-            # only ask for memories if use_recurrent
-            if self.use_recurrent:
-                actions, a_dist, value, ent, learn_rate, memories, _, _ = self.sess.run(run_list, feed_dict=feed_dict)
-            else:
-                actions, a_dist, value, ent, learn_rate, _, _ = self.sess.run(run_list, feed_dict=feed_dict)
-                memories = None
+
+        values = self.sess.run(run_list, feed_dict=feed_dict)
+        run_out = dict(zip(run_list, values))
+        self.stats['value_estimate'].append(run_out[self.model.value].mean())
+        self.stats['entropy'].append(run_out[self.model.entropy])
+        self.stats['learning_rate'].append(run_out[self.model.learning_rate])
+        if self.use_recurrent:
+            return run_out[self.model.output], run_out[self.model.memory_out], run_out[self.model.value], run_out
         else:
-            if self.use_recurrent:
-                actions, a_dist, value, ent, learn_rate, memories = self.sess.run(run_list, feed_dict=feed_dict)
-            else:
-                actions, a_dist, value, ent, learn_rate = self.sess.run(run_list, feed_dict=feed_dict)
-                memories = None
-        self.stats['value_estimate'].append(value)
-        self.stats['entropy'].append(ent)
-        self.stats['learning_rate'].append(learn_rate)
-        return actions, memories, value, (actions, epsi, a_dist, value)
+            return run_out[self.model.output], None, run_out[self.model.value], run_out
 
     def add_experiences(self, info, next_info, take_action_outputs):
         """
@@ -211,7 +204,12 @@ class PPOTrainer(Trainer):
         """
         info = info[self.brain_name]
         next_info = next_info[self.brain_name]
-        actions, epsi, a_dist, value = take_action_outputs
+        actions = take_action_outputs[self.model.output]
+        epsi = 0
+        if self.is_continuous:
+            epsi = take_action_outputs[self.model.epsilon]
+        a_dist = take_action_outputs[self.model.probs]
+        value = take_action_outputs[self.model.value]
         for agent_id in info.agents:
             if agent_id in next_info.agents:
                 idx = info.agents.index(agent_id)
