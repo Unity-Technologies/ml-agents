@@ -51,8 +51,7 @@ def save_model(sess, saver, model_path="./", steps=0):
     tf.train.write_graph(sess.graph_def, model_path, 'raw_graph_def.pb', as_text=False)
     logger.info("Saved Model")
 
-
-def export_graph(model_path, env_name="env", target_nodes="action,value_estimate,action_probs"):
+def export_graph(model_path, env_name="env", target_nodes="action,value_estimate,action_probs", checkpoint_step=None):
     """
     Exports latest saved model to .bytes format for Unity embedding.
     :param model_path: path of model checkpoints.
@@ -60,13 +59,28 @@ def export_graph(model_path, env_name="env", target_nodes="action,value_estimate
     :param target_nodes: Comma separated string of needed output nodes for embedded graph.
     """
     ckpt = tf.train.get_checkpoint_state(model_path)
+    saved_checkpoint = ckpt.model_checkpoint_path
+    if checkpoint_step is not None:
+        for checkpoint in ckpt.all_model_checkpoint_paths:
+            if checkpoint_step in checkpoint:
+                saved_checkpoint = checkpoint 
+                print("Found checkpoit {} at path : {}".format(checkpoint_step, saved_checkpoint))
+                break
+        else:
+            print("No checkpoint {} found, using latest checkpoint {} instead".format(checkpoint_step, saved_checkpoint))
+            checkpoint_step = "latest"
+    else:
+        print("No checkpoint_step specified, will use latest checkpoint {}".format(saved_checkpoint))
+        checkpoint_step = "latest"
+    
     freeze_graph.freeze_graph(input_graph=model_path + '/raw_graph_def.pb',
-                              input_binary=True,
-                              input_checkpoint=ckpt.model_checkpoint_path,
-                              output_node_names=target_nodes,
-                              output_graph=model_path + '/' + env_name + '.bytes',
-                              clear_devices=True, initializer_nodes="", input_saver="",
-                              restore_op_name="save/restore_all", filename_tensor_name="save/Const:0")
+                               input_binary=True,
+                               input_checkpoint=saved_checkpoint,
+                               output_node_names=target_nodes,
+                               output_graph=model_path + '/' + env_name + '-' + checkpoint_step + '.bytes',
+                               clear_devices=True, initializer_nodes="", input_saver="",
+                               restore_op_name="save/restore_all", filename_tensor_name="save/Const:0")
+
 
 
 class PPOModel(object):
