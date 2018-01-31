@@ -14,6 +14,7 @@ from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
+
 class ImitationNN(object):
     def __init__(self, state_size, action_size, h_size, lr, action_type, n_layers):
         self.state = tf.placeholder(shape=[None, state_size], dtype=tf.float32, name="state")
@@ -44,7 +45,7 @@ class ImitationNN(object):
 
 class ImitationTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
-    def __init__(self, sess, env, brain_name, trainer_parameters, training):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.

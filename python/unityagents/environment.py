@@ -22,7 +22,8 @@ logger = logging.getLogger("unityagents")
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005, curriculum=None):
+                 base_port=5005, curriculum=None,
+                 seed=-1):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -90,7 +91,8 @@ class UnityEnvironment(object):
             # Launch Unity environment
             proc1 = subprocess.Popen(
                 [launch_string,
-                 '--port', str(self.port)])
+                 '--port', str(self.port),
+                 '--seed', str(seed)])
 
         self._socket.settimeout(30)
         try:
@@ -294,7 +296,6 @@ class UnityEnvironment(object):
             dones = state_dict["dones"]
             agents = state_dict["agents"]
             maxes = state_dict["maxes"]
-            # actions = state_dict["actions"]
             if n_agent > 0:
                 actions = np.array(state_dict["actions"]).reshape((n_agent, -1))
             else:

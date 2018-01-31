@@ -224,7 +224,6 @@ public abstract class Agent : MonoBehaviour
         stackedStates.Clear();
         stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
         stepCounter = 0;
-        maxStepReached = false;
         AgentReset();
         CumulativeReward = -reward;
     }

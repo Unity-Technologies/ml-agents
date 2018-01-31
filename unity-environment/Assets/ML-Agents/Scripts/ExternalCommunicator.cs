@@ -33,7 +33,8 @@ public class ExternalCommunicator : Communicator
     List<bool> concatenatedMaxes = new List<bool>(32);
     List<float> concatenatedActions = new List<float>(1024);
 
-    private int comPort;
+    int comPort;
+    int randomSeed;
     Socket sender;
     byte[] messageHolder;
     byte[] lengthHolder;
@@ -198,15 +199,25 @@ public class ExternalCommunicator : Communicator
     {
         string[] args = System.Environment.GetCommandLineArgs();
         var inputPort = "";
+        var inputSeed = "";
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--port")
             {
                 inputPort = args[i + 1];
             }
+            if (args[i] == "--seed")
+            {
+                inputSeed = args[i + 1];
+            }
         }
 
         comPort = int.Parse(inputPort);
+        randomSeed = int.Parse(inputSeed);
+        if (randomSeed != -1)
+        {
+            Random.InitState(randomSeed);
+        }
     }
 
     /// Sends Academy parameters to external agent

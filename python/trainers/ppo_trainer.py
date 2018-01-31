@@ -18,7 +18,7 @@ logger = logging.getLogger("unityagents")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorythm."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -55,6 +55,7 @@ class PPOTrainer(Trainer):
 
         self.variable_scope = trainer_parameters['graph_scope']
         with tf.variable_scope(self.variable_scope):
+            tf.set_random_seed(seed)
             self.model = create_agent_model(env.brains[brain_name],
                                             lr=float(trainer_parameters['learning_rate']),
                                             h_size=int(trainer_parameters['hidden_units']),
@@ -247,8 +248,10 @@ class PPOTrainer(Trainer):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
                     and len(agent_actions) > 0):
+                # if info.local_done[l]:
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
+                    # print(self.sess.run(self.model.global_step))
                 else:
                     feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
                     if self.use_observations:
@@ -308,8 +311,9 @@ class PPOTrainer(Trainer):
         batch_size = self.trainer_parameters['batch_size']
         total_v, total_p = 0, 0
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
-        self.training_buffer.update_buffer['advantages'].set(
-            (advantages - advantages.mean()) / advantages.std())
+        # self.training_buffer.update_buffer['advantages'].set(
+        #    (advantages - advantages.mean()) / advantages.std())
+        self.training_buffer.update_buffer['advantages'].set(advantages / advantages.std())
         for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
             for l in range(len(self.training_buffer.update_buffer['actions']) // batch_size):
