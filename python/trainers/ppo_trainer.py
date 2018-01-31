@@ -311,9 +311,8 @@ class PPOTrainer(Trainer):
         batch_size = self.trainer_parameters['batch_size']
         total_v, total_p = 0, 0
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
-        # self.training_buffer.update_buffer['advantages'].set(
-        #    (advantages - advantages.mean()) / advantages.std())
-        self.training_buffer.update_buffer['advantages'].set(advantages / advantages.std())
+        self.training_buffer.update_buffer['advantages'].set(
+            (advantages - advantages.mean()) / advantages.std())
         for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
             for l in range(len(self.training_buffer.update_buffer['actions']) // batch_size):

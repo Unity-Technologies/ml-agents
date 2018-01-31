@@ -142,9 +142,9 @@ class PPOModel(object):
         streams = []
         for i in range(num_streams):
             conv1 = tf.layers.conv2d(self.observation_in[-1], 16, kernel_size=[8, 8], strides=[4, 4],
-                                     activation=activation)
+                                     activation=tf.nn.elu)
             conv2 = tf.layers.conv2d(conv1, 32, kernel_size=[4, 4], strides=[2, 2],
-                                     activation=activation)
+                                     activation=tf.nn.elu)
             hidden = c_layers.flatten(conv2)
 
             for j in range(num_layers):
@@ -346,7 +346,7 @@ class DiscreteControlModel(PPOModel):
                 height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
                 bw = brain.camera_resolutions[i]['blackAndWhite']
                 visual_encoders.append(
-                    self.create_visual_encoder(height_size, width_size, bw, h_size, 2, tf.nn.tanh, num_layers)[0])
+                    self.create_visual_encoder(height_size, width_size, bw, h_size, 1, tf.nn.elu, num_layers)[0])
             hidden_visual = [tf.concat(visual_encoders, axis=1)]
         if brain.state_space_size > 0:
             s_size = brain.state_space_size * brain.stacked_states
