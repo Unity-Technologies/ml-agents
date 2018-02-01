@@ -56,20 +56,16 @@ public class GridAgent : Agent
         if (blockTest.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
         {
             transform.position = targetPos;
-        }
-    }
-
-    void OnTriggerEnter(Collider col)
-    {
-        if (col.gameObject.CompareTag("goal"))
-        {
-            reward = 1f;
-            done = true;
-        }
-        if (col.gameObject.CompareTag("pit"))
-        {
-            reward = -1f;
-            done = true;
+            if (blockTest.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
+            {
+                done = true;
+                reward = 1;
+            }
+            if (blockTest.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
+            {
+                done = true;
+                reward = -1;
+            }
         }
     }
 

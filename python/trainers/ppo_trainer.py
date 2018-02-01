@@ -46,10 +46,10 @@ class PPOTrainer(Trainer):
             self.m_size = env.brains[brain_name].memory_space_size
             self.sequence_length = trainer_parameters["sequence_length"]
         if self.use_recurrent:
-            if (self.m_size == 0):
+            if self.m_size == 0:
                 raise UnityTrainerException("The memory size for brain {0} is 0 even though the trainer uses recurrent."
                                             .format(brain_name))
-            elif (self.m_size % 4 != 0):
+            elif self.m_size % 4 != 0:
                 raise UnityTrainerException("The memory size for brain {0} is {1} but it must be divisible by 4."
                                             .format(brain_name, self.m_size))
 
@@ -164,7 +164,6 @@ class PPOTrainer(Trainer):
         """
         steps = self.get_step
         info = info[self.brain_name]
-        epsi = None
         feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
         run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
@@ -247,11 +246,9 @@ class PPOTrainer(Trainer):
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
-                    and len(agent_actions) > 0):
-                # if info.local_done[l]:
+                and len(agent_actions) > 0):
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
-                    # print(self.sess.run(self.model.global_step))
                 else:
                     feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
                     if self.use_observations:

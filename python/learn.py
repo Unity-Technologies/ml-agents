@@ -1,5 +1,5 @@
 # # Unity ML Agents
-# ## ML-Agent Learning (PPO)
+# ## ML-Agent Learning
 # Launches trainers for each External Brains in a Unity Environemnt
 
 import logging
@@ -46,7 +46,7 @@ if __name__ == '__main__':
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
-      --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo]. 
+      --run-id=<path>            The sub-directory name for model and summary statistics [default: ppo]. 
       --save-freq=<n>            Frequency at which to save model [default: 50000].
       --seed=<n>                 Random seed used for training [default: -1].
       --slow                     Whether to run the game at training speed [default: False].

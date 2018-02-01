@@ -102,6 +102,12 @@ public abstract class Academy : MonoBehaviour
     [HideInInspector]
     public bool done;
 
+    /// <summary>
+    /// The max step reached.
+    /// </summary>
+    [HideInInspector]
+    public bool maxStepReached;
+
     /**< \brief Increments each time the environment is reset. */
     [HideInInspector]
     public int episodeCount;
@@ -213,6 +219,7 @@ public abstract class Academy : MonoBehaviour
             if (done)
             {
                 brain.SendDone();
+                brain.SendMaxReached();
             }
             brain.ResetIfDone();
 
@@ -288,6 +295,7 @@ public abstract class Academy : MonoBehaviour
         if ((currentStep >= maxSteps) && maxSteps > 0)
         {
             done = true;
+            maxStepReached;
         }
 
         if ((framesSinceAction > frameToSkip) || done)

@@ -410,6 +410,15 @@ public class Brain : MonoBehaviour
         }
     }
 
+    ///Sets all the agents which subscribe to the brain to maxStepReached
+    public void SendMaxReached()
+    {
+        foreach (KeyValuePair<int, Agent> idAgent in agents)
+        {
+            idAgent.Value.maxStepReached = true;
+        }
+    }
+
     /// Uses coreBrain to call SendState on the CoreBrain
     public void SendState()
     {

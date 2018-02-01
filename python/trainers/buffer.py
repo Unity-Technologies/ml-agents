@@ -12,53 +12,53 @@ class BufferException(UnityException):
 
 class Buffer(dict):
     """
-	Buffer contains a dictionary of AgentBuffer. The AgentBuffers are indexed by agent_id.
-	Buffer also contains an update_buffer that corresponds to the buffer used when updating the model.
-	"""
+    Buffer contains a dictionary of AgentBuffer. The AgentBuffers are indexed by agent_id.
+    Buffer also contains an update_buffer that corresponds to the buffer used when updating the model.
+    """
 
     class AgentBuffer(dict):
         """
-		AgentBuffer contains a dictionary of AgentBufferFields. Each agent has his own AgentBuffer.
-		The keys correspond to the name of the field. Example: state, action
-		"""
+        AgentBuffer contains a dictionary of AgentBufferFields. Each agent has his own AgentBuffer.
+        The keys correspond to the name of the field. Example: state, action
+        """
 
         class AgentBufferField(list):
             """
-			AgentBufferField is a list of numpy arrays. When an agent collects a field, you can add it to his 
-			AgentBufferField with the append method.
-			"""
+            AgentBufferField is a list of numpy arrays. When an agent collects a field, you can add it to his 
+            AgentBufferField with the append method.
+            """
 
             def __str__(self):
                 return str(np.array(self).shape)
 
             def extend(self, data):
                 """
-				Ads a list of np.arrays to the end of the list of np.arrays.
-				:param data: The np.array list to append.
-				"""
+                Ads a list of np.arrays to the end of the list of np.arrays.
+                :param data: The np.array list to append.
+                """
                 self += list(np.array(data))
 
             def set(self, data):
                 """
-				Sets the list of np.array to the input data
-				:param data: The np.array list to be set.
-				"""
+                Sets the list of np.array to the input data
+                :param data: The np.array list to be set.
+                """
                 self[:] = []
                 self[:] = list(np.array(data))
 
             def get_batch(self, batch_size=None, training_length=None, sequential=True):
                 """
-				Retrieve the last batch_size elements of length training_length
-				from the list of np.array
-				:param batch_size: The number of elements to retrieve. If None: 
-				All elements will be retrieved.
-				:param training_length: The length of the sequence to be retrieved. If
-				None: only takes one element.
-				:param sequential: If true and training_length is not None: the elements 
-				will not repeat in the sequence. [a,b,c,d,e] with training_length = 2 and
-				sequential=True gives [[0,a],[b,c],[d,e]]. If sequential=False gives
-				[[a,b],[b,c],[c,d],[d,e]]
-				"""
+                Retrieve the last batch_size elements of length training_length
+                from the list of np.array
+                :param batch_size: The number of elements to retrieve. If None: 
+                All elements will be retrieved.
+                :param training_length: The length of the sequence to be retrieved. If
+                None: only takes one element.
+                :param sequential: If true and training_length is not None: the elements 
+                will not repeat in the sequence. [a,b,c,d,e] with training_length = 2 and
+                sequential=True gives [[0,a],[b,c],[d,e]]. If sequential=False gives
+                [[a,b],[b,c],[c,d],[d,e]]
+                """
                 if training_length is None:
                     # When the training length is None, the method returns a list of elements,
                     # not a list of sequences of elements.
@@ -112,8 +112,8 @@ class Buffer(dict):
 
             def reset_field(self):
                 """
-				Resets the AgentBufferField
-				"""
+                Resets the AgentBufferField
+                """
                 self[:] = []
 
         def __str__(self):
@@ -121,8 +121,8 @@ class Buffer(dict):
 
         def reset_agent(self):
             """
-			Resets the AgentBuffer
-			"""
+            Resets the AgentBuffer
+            """
             for k in self.keys():
                 self[k].reset_field()
 
@@ -133,11 +133,11 @@ class Buffer(dict):
 
         def check_length(self, key_list):
             """
-			Some methods will require that some fields have the same length.
-			check_length will return true if the fields in key_list 
-			have the same length.
-			:param key_list: The fields which length will be compared
-			"""
+            Some methods will require that some fields have the same length.
+            check_length will return true if the fields in key_list 
+            have the same length.
+            :param key_list: The fields which length will be compared
+            """
             if len(key_list) < 2:
                 return True
             l = None
@@ -151,10 +151,10 @@ class Buffer(dict):
 
         def shuffle(self, key_list=None):
             """
-			Shuffles the fields in key_list in a consistent way: The reordering will
-			be the same accross fields.
-			:param key_list: The fields that must be shuffled.
-			"""
+            Shuffles the fields in key_list in a consistent way: The reordering will
+            be the same accross fields.
+            :param key_list: The fields that must be shuffled.
+            """
             if key_list is None:
                 key_list = list(self.keys())
             if not self.check_length(key_list):
@@ -182,27 +182,26 @@ class Buffer(dict):
 
     def reset_update_buffer(self):
         """
-		Resets the update buffer
-		"""
+        Resets the update buffer
+        """
         self.update_buffer.reset_agent()
 
     def reset_all(self):
         """
-		Resets the update buffer and all the local local_buffers
-		"""
-        # self.update_buffer.reset_agent()
+        Resets the update buffer and all the local local_buffers
+        """
         agent_ids = list(self.keys())
         for k in agent_ids:
             self[k].reset_agent()
 
     def append_update_buffer(self, agent_id, key_list=None, batch_size=None, training_length=None):
         """
-		Appends the buffer of an agent to the update buffer.
-		:param agent_id: The id of the agent which data will be appended
-		:param key_list: The fields that must be added. If None: all fields will be appended.
-		:param batch_size: The number of elements that must be appended. If None: All of them will be.
-		:param training_length: The length of the samples that must be appended. If None: only takes one element.
-		"""
+        Appends the buffer of an agent to the update buffer.
+        :param agent_id: The id of the agent which data will be appended
+        :param key_list: The fields that must be added. If None: all fields will be appended.
+        :param batch_size: The number of elements that must be appended. If None: All of them will be.
+        :param training_length: The length of the samples that must be appended. If None: only takes one element.
+        """
         if key_list is None:
             key_list = self[agent_id].keys()
         if not self[agent_id].check_length(key_list):
@@ -215,10 +214,10 @@ class Buffer(dict):
 
     def append_all_agent_batch_to_update_buffer(self, key_list=None, batch_size=None, training_length=None):
         """
-		Appends the buffer of all agents to the update buffer.
-		:param key_list: The fields that must be added. If None: all fields will be appended.
-		:param batch_size: The number of elements that must be appended. If None: All of them will be.
-		:param training_length: The length of the samples that must be appended. If None: only takes one element.
-		"""
+        Appends the buffer of all agents to the update buffer.
+        :param key_list: The fields that must be added. If None: all fields will be appended.
+        :param batch_size: The number of elements that must be appended. If None: All of them will be.
+        :param training_length: The length of the samples that must be appended. If None: only takes one element.
+        """
         for agent_id in self.keys():
             self.append_update_buffer(agent_id, key_list, batch_size, training_length)
