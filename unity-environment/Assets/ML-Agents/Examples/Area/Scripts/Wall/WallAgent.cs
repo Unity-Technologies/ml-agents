@@ -13,36 +13,34 @@ public class WallAgent : AreaAgent
 		base.InitializeAgent();
     }
 
-	public override List<float> CollectState()
+	public override void CollectObservations()
 	{
         Vector3 velocity = GetComponent<Rigidbody>().velocity;
-        state.Add((transform.position.x - area.transform.position.x));
-        state.Add((transform.position.y - area.transform.position.y));
-        state.Add((transform.position.z + 5 - area.transform.position.z));
+        AddVectorObs((transform.position.x - area.transform.position.x));
+        AddVectorObs((transform.position.y - area.transform.position.y));
+        AddVectorObs((transform.position.z + 5 - area.transform.position.z));
 
-        state.Add((goalHolder.transform.position.x - area.transform.position.x));
-        state.Add((goalHolder.transform.position.y - area.transform.position.y));
-        state.Add((goalHolder.transform.position.z + 5 - area.transform.position.z));
+        AddVectorObs((goalHolder.transform.position.x - area.transform.position.x));
+        AddVectorObs((goalHolder.transform.position.y - area.transform.position.y));
+        AddVectorObs((goalHolder.transform.position.z + 5 - area.transform.position.z));
 
-        state.Add((block.transform.position.x - area.transform.position.x));
-        state.Add((block.transform.position.y - area.transform.position.y));
-        state.Add((block.transform.position.z + 5 - area.transform.position.z));
+        AddVectorObs((block.transform.position.x - area.transform.position.x));
+        AddVectorObs((block.transform.position.y - area.transform.position.y));
+        AddVectorObs((block.transform.position.z + 5 - area.transform.position.z));
 
-		state.Add(wall.transform.localScale.y);
+		AddVectorObs(wall.transform.localScale.y);
 
-		state.Add(velocity.x);
-		state.Add(velocity.y);
-		state.Add(velocity.z);
+		AddVectorObs(velocity.x);
+		AddVectorObs(velocity.y);
+		AddVectorObs(velocity.z);
 
         Vector3 blockVelocity = block.GetComponent<Rigidbody>().velocity;
-		state.Add(blockVelocity.x);
-		state.Add(blockVelocity.y);
-		state.Add(blockVelocity.z);
-
-		return state;
+		AddVectorObs(blockVelocity.x);
+		AddVectorObs(blockVelocity.y);
+		AddVectorObs(blockVelocity.z);
 	}
 
-	public override void AgentStep(float[] act)
+	public override void AgentAction(float[] act)
 	{
         reward = -0.005f;
         MoveAgent(act);

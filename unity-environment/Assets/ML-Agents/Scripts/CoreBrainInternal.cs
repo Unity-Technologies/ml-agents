@@ -69,11 +69,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     bool hasState;
     bool hasBatchSize;
     bool hasValue;
-    List<int> agentKeys;
-    int currentBatchSize;
     float[,] inputState;
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
+    List<Texture2D> texturesHolder;
 #endif
 
     /// Reference to the brain that uses this CoreBrainInternal
@@ -142,22 +141,30 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 hasValue = true;
             }
         }
+        observationMatrixList = new List<float[,,,]>();
+        texturesHolder = new List<Texture2D>();
 #endif
     }
 
 
-    /// Collects information from the agents and store them
-    public void SendState()
+
+    /// Uses the stored information to run the tensorflow graph and generate 
+    /// the actions.
+    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
 #if ENABLE_TENSORFLOW
-        agentKeys = new List<int>(brain.agents.Keys);
-        currentBatchSize = brain.agents.Count;
+		if (coord != null)
+		{
+			coord.GiveBrainInfo(brain, agentInfo);
+		}
+        int currentBatchSize = agentInfo.Count();
+        List<Agent> agentList = agentInfo.Keys.ToList();
         if (currentBatchSize == 0)
         {
 
             if (coord != null)
             {
-                coord.giveBrainInfo(brain);
+                coord.GiveBrainInfo(brain, agentInfo);
             }
             return;
         }
@@ -166,12 +173,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            Dictionary<int, List<float>> states = brain.CollectStates();
             inputState = new float[currentBatchSize, brain.brainParameters.stateSize * brain.brainParameters.stackedStates];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
-                List<float> state_list = states[k];
+                List<float> state_list = agentInfo[agent].stakedVectorObservation;
                 for (int j = 0; j < brain.brainParameters.stateSize * brain.brainParameters.stackedStates; j++)
                 {
 
@@ -182,18 +188,26 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
 
-        // Create the observation tensors
-        observationMatrixList = brain.GetObservationMatrixList(agentKeys);
+
+        observationMatrixList.Clear();
+        for (int observationIndex = 0; observationIndex < brain.brainParameters.cameraResolutions.Count(); observationIndex++){
+            texturesHolder.Clear();
+            foreach (Agent agent in agentList){
+                texturesHolder.Add(agentInfo[agent].visualObservations[observationIndex]);
+            }
+            observationMatrixList.Add(
+                BatchVisualObservations(texturesHolder, brain.brainParameters.cameraResolutions[observationIndex].blackAndWhite));
+
+        }
 
         // Create the recurrent tensor
         if (hasRecurrent)
         {
-            Dictionary<int, float[]> old_memories = brain.CollectMemories();
             inputOldMemories = new float[currentBatchSize, brain.brainParameters.memorySize];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
-                float[] m = old_memories[k];
+                float[] m = agentInfo[agent].memories;
                 for (int j = 0; j < brain.brainParameters.memorySize; j++)
                 {
 
@@ -204,19 +218,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
 
-        if (coord != null)
-        {
-            coord.giveBrainInfo(brain);
-        }
-#endif
-    }
+		if (coord != null)
+		{
+			coord.GiveBrainInfo(brain, agentInfo);
+		}
 
-
-    /// Uses the stored information to run the tensorflow graph and generate 
-    /// the actions.
-    public void DecideAction()
-    {
-#if ENABLE_TENSORFLOW
         if (currentBatchSize == 0)
         {
             return;
@@ -277,7 +283,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             }
         }
 
-        // Create the observation tensors
+        //// Create the observation tensors
         for (int obs_number = 0; obs_number < brain.brainParameters.cameraResolutions.Length; obs_number++)
         {
             runner.AddInput(graph[graphScope + ObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);
@@ -324,18 +330,17 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
                 var m = new float[brain.brainParameters.memorySize];
                 for (int j = 0; j < brain.brainParameters.memorySize; j++)
                 {
                     m[j] = recurrent_tensor[i, j];
                 }
-                new_memories.Add(k, m);
+                agent.UpdateMemoriesAction(m);
                 i++;
             }
 
-            brain.SendMemories(new_memories);
         }
 
         var actions = new Dictionary<int, float[]>();
@@ -344,14 +349,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             var output = networkOutput[0].GetValue() as float[,];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
                 var a = new float[brain.brainParameters.actionSize];
                 for (int j = 0; j < brain.brainParameters.actionSize; j++)
                 {
                     a[j] = output[i, j];
                 }
-                actions.Add(k, a);
+                agent.UpdateVectorAction(a);
                 i++;
             }
         }
@@ -359,15 +364,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             long[,] output = networkOutput[0].GetValue() as long[,];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
                 var a = new float[1] { (float)(output[i, 0]) };
-                actions.Add(k, a);
+                agent.UpdateVectorAction(a);
                 i++;
             }
         }
 
-        brain.SendActions(actions);
 
         if (hasValue)
         {
@@ -382,13 +386,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 value_tensor = networkOutput[1].GetValue() as float[,];
             }
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
                 var v = (float)(value_tensor[i, 0]);
-                values.Add(k, v);
+                agent.UpdateValueAction(v);
                 i++;
             }
-            brain.SendValues(values);
         }
 
 #endif
@@ -489,5 +492,41 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         serializedBrain.ApplyModifiedProperties();
 #endif
     }
+
+    /// Contains logic to convert the agent's cameras into observation list
+    ///  (as list of float arrays)
+    public static float[,,,] BatchVisualObservations(List<Texture2D> textures, bool BlackAndWhite)
+    {
+        int batchSize = textures.Count();
+        int width = textures[0].width;
+        int height = textures[0].height;
+        int pixels = 0;
+        if (BlackAndWhite)
+            pixels = 1;
+        else
+            pixels = 3;
+        float[,,,] result = new float[batchSize, width, height, pixels];
+
+        for (int b = 0; b < batchSize; b++)
+            for (int w = 0; w < width; w++)
+            {
+                for (int h = 0; h < height; h++)
+                {
+                    Color c = textures[b].GetPixel(w, h);
+                    if (!BlackAndWhite)
+                    {
+                        result[b, textures[b].height - h - 1, w, 0] = c.r;
+                        result[b, textures[b].height - h - 1, w, 1] = c.g;
+                        result[b, textures[b].height - h - 1, w, 2] = c.b;
+                    }
+                    else
+                    {
+                        result[b, textures[b].height - h - 1, w, 0] = (c.r + c.g + c.b) / 3;
+                    }
+                }
+            }
+        return result;
+    }
+
 
 }

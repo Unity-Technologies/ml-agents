@@ -38,25 +38,16 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
 
     /// Uses the communicator to retrieve the actions, memories and values and
     ///  sends them to the agents
-    public void DecideAction()
+    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
         if (coord != null)
         {
-            brain.SendActions(coord.GetDecidedAction(brain.gameObject.name));
-            brain.SendMemories(coord.GetMemories(brain.gameObject.name));
-            brain.SendValues(coord.GetValues(brain.gameObject.name));
+            coord.GiveBrainInfo(brain, agentInfo);
         }
+        return ;
     }
 
-    /// Uses the communicator to send the states, observations, rewards and
-    ///  dones outside of Unity
-    public void SendState()
-    {
-        if (coord != null)
-        {
-            coord.giveBrainInfo(brain);
-        }
-    }
+
 
     /// Nothing needs to appear in the inspector 
     public void OnInspector()

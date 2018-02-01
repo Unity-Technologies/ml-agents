@@ -54,37 +54,36 @@ public class CrawlerAgentConfigurable: Agent
 
     }
 
-    public override List<float> CollectState()
-    {
-        state.Add(body.transform.rotation.eulerAngles.x);
-        state.Add(body.transform.rotation.eulerAngles.y);
-        state.Add(body.transform.rotation.eulerAngles.z);
+    public override void CollectObservations(){
+        AddVectorObs(body.transform.rotation.eulerAngles.x);
+        AddVectorObs(body.transform.rotation.eulerAngles.y);
+        AddVectorObs(body.transform.rotation.eulerAngles.z);
 
-        state.Add(body.gameObject.GetComponent<Rigidbody>().velocity.x);
-        state.Add(body.gameObject.GetComponent<Rigidbody>().velocity.y);
-        state.Add(body.gameObject.GetComponent<Rigidbody>().velocity.z);
+        AddVectorObs(body.gameObject.GetComponent<Rigidbody>().velocity.x);
+        AddVectorObs(body.gameObject.GetComponent<Rigidbody>().velocity.y);
+        AddVectorObs(body.gameObject.GetComponent<Rigidbody>().velocity.z);
 
-        state.Add((body.gameObject.GetComponent<Rigidbody>().velocity.x - past_velocity.x) / Time.fixedDeltaTime);
-        state.Add((body.gameObject.GetComponent<Rigidbody>().velocity.y - past_velocity.y) / Time.fixedDeltaTime);
-        state.Add((body.gameObject.GetComponent<Rigidbody>().velocity.z - past_velocity.z) / Time.fixedDeltaTime);
+        AddVectorObs((body.gameObject.GetComponent<Rigidbody>().velocity.x - past_velocity.x) / Time.fixedDeltaTime);
+        AddVectorObs((body.gameObject.GetComponent<Rigidbody>().velocity.y - past_velocity.y) / Time.fixedDeltaTime);
+        AddVectorObs((body.gameObject.GetComponent<Rigidbody>().velocity.z - past_velocity.z) / Time.fixedDeltaTime);
         past_velocity = body.gameObject.GetComponent<Rigidbody>().velocity;
 
         foreach (Transform t in limbs)
         {
-            state.Add(t.localPosition.x);
-            state.Add(t.localPosition.y);
-            state.Add(t.localPosition.z);
-            state.Add(t.localRotation.x);
-            state.Add(t.localRotation.y);
-            state.Add(t.localRotation.z);
-            state.Add(t.localRotation.w);
+            AddVectorObs(t.localPosition.x);
+            AddVectorObs(t.localPosition.y);
+            AddVectorObs(t.localPosition.z);
+            AddVectorObs(t.localRotation.x);
+            AddVectorObs(t.localRotation.y);
+            AddVectorObs(t.localRotation.z);
+            AddVectorObs(t.localRotation.w);
             Rigidbody rb = t.gameObject.GetComponent < Rigidbody >();
-            state.Add(rb.velocity.x);
-            state.Add(rb.velocity.y);
-            state.Add(rb.velocity.z);
-            state.Add(rb.angularVelocity.x);
-            state.Add(rb.angularVelocity.y);
-            state.Add(rb.angularVelocity.z);
+            AddVectorObs(rb.velocity.x);
+            AddVectorObs(rb.velocity.y);
+            AddVectorObs(rb.velocity.z);
+            AddVectorObs(rb.angularVelocity.x);
+            AddVectorObs(rb.angularVelocity.y);
+            AddVectorObs(rb.angularVelocity.z);
         }
 
 
@@ -94,24 +93,20 @@ public class CrawlerAgentConfigurable: Agent
         {
             if (leg_touching[index])
             {
-                state.Add(1.0f);
+                AddVectorObs(1.0f);
             }
             else
             {
-                state.Add(0.0f);
+                AddVectorObs(0.0f);
             }
             leg_touching[index] = false;
         }
 
 
 
-
-
-
-        return state;
     }
 
-    public override void AgentStep(float[] act)
+    public override void AgentAction(float[] act)
     {
         for (int k = 0; k < act.Length; k++)
         {

@@ -19,13 +19,13 @@ public class GridAgent : Agent
 
     }
 
-    public override List<float> CollectState()
+    public override void CollectObservations()
     {
-        return state;
+
     }
 
     // to be implemented by the developer
-    public override void AgentStep(float[] act)
+    public override void AgentAction(float[] act)
     {
         reward = -0.01f;
         int action = Mathf.FloorToInt(act[0]);
@@ -56,6 +56,7 @@ public class GridAgent : Agent
         if (blockTest.Where(col => col.gameObject.tag == "wall").ToArray().Length == 0)
         {
             transform.position = targetPos;
+
             if (blockTest.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
             {
                 done = true;
@@ -66,6 +67,7 @@ public class GridAgent : Agent
                 done = true;
                 reward = -1;
             }
+
         }
     }
 

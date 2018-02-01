@@ -15,7 +15,7 @@ public interface Decision
 	* @param memory The memories stored from the previous step with MakeMemory()
 	* @return The vector of actions the agent will take at the next step
 	*/
-    float[] Decide(List<float> state, List<Camera> observation, float reward, bool done, float[] memory);
+    float[] Decide(List<float> state, List<Texture2D> observation, float reward, bool done, float[] memory);
 
     /// \brief Implement this method to define the logic of memory making for 
     /// the CoreBrainHeuristic
@@ -27,5 +27,5 @@ public interface Decision
 	* @param memory The memories stored from the previous step with MakeMemory()
 	* @return The vector of memories the agent will use at the next step
 	*/
-    float[] MakeMemory(List<float> state, List<Camera> observation, float reward, bool done, float[] memory);
+    float[] MakeMemory(List<float> state, List<Texture2D> observation, float reward, bool done, float[] memory);
 }

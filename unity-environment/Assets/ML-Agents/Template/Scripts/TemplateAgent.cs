@@ -6,14 +6,12 @@ public class TemplateAgent : Agent {
 
 
 
-	public override List<float> CollectState()
+	public override void CollectObservations()
 	{
-		List<float> state = new List<float>();
 
-		return state;
 	}
 
-	public override void AgentStep(float[] act)
+	public override void AgentAction(float[] act)
 	{
 
 	}

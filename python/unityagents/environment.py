@@ -236,9 +236,11 @@ class UnityEnvironment(object):
         :return:
         """
         state = self._recv_bytes().decode('utf-8')
+        if state[:14] == "END_OF_MESSAGE":
+            return {}, state[15:] == 'True'
         self._conn.send(b"RECEIVED")
         state_dict = json.loads(state)
-        return state_dict
+        return state_dict, None
 
     def reset(self, train_mode=True, config=None, lesson=None):
         """
@@ -278,8 +280,14 @@ class UnityEnvironment(object):
         :return: a dictionary BrainInfo objects.
         """
         self._data = {}
-        for index in range(self._num_brains):
-            state_dict = self._get_state_dict()
+        while True:
+            state_dict, end_of_message = self._get_state_dict()
+            if end_of_message is not None:
+                self._global_done = end_of_message
+                for _b in self._brain_names:
+                    if _b not in self._data:
+                        self._data[_b] = BrainInfo([], np.array([]), np.array([]), [], [], [], np.array([]))
+                return self._data
             b = state_dict["brain_name"]
             n_agent = len(state_dict["agents"])
             try:
@@ -314,12 +322,12 @@ class UnityEnvironment(object):
 
             self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions, max_reached=maxes)
 
-        try:
-            self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
-        except socket.timeout as e:
-            raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
+        # try:
+        #     self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
+        # except socket.timeout as e:
+        #     raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
 
-        return self._data
+        # return self._data
 
     def _send_action(self, action, memory, value):
         """

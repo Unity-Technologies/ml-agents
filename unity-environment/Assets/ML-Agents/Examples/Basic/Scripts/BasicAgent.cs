@@ -13,13 +13,12 @@ public class BasicAgent : Agent
 	public int minPosition;
 	public int maxPosition;
 
-	public override List<float> CollectState()
+	public override void CollectObservations()
 	{
-		state.Add(position);
-		return state;
+		AddVectorObs(position);
 	}
 
-	public override void AgentStep(float[] act)
+	public override void AgentAction(float[] act)
 	{
 		float movement = act[0];
 		int direction = 0;

@@ -83,7 +83,7 @@ public class BrainParameters
     public resolution[] cameraResolutions;
     /**<\brief  The list of observation resolutions for the brain */
     [Tooltip("A list of strings used to name the available actions for the Brain.")]
-	public string[] actionDescriptions;
+    public string[] actionDescriptions;
     /**< \brief The list of strings describing what the actions correpond to */
     [Tooltip("Corresponds to whether state vector contains a single integer (Discrete) " +
              "or a series of real-valued floats (Continuous).")]
@@ -106,27 +106,25 @@ public class BrainParameters
 public class Brain : MonoBehaviour
 {
     // Current agent info
-    public Dictionary<int, List<float>> currentStates = new Dictionary<int, List<float>>(32);
-    public Dictionary<int, List<Camera>> currentCameras = new Dictionary<int, List<Camera>>(32);
-    public Dictionary<int, float> currentRewards = new Dictionary<int, float>(32);
-    public Dictionary<int, bool> currentDones = new Dictionary<int, bool>(32);
-    public Dictionary<int, bool> currentMaxes = new Dictionary<int, bool>(32);
-    public Dictionary<int, float[]> currentActions = new Dictionary<int, float[]>(32);
-    public Dictionary<int, float[]> currentMemories = new Dictionary<int, float[]>(32);
 
-	[Tooltip("Define state, observation, and action spaces for the Brain.")]
+    private Dictionary<Agent, AgentInfo> agentInfos = new Dictionary<Agent, AgentInfo>(1024);
+
+    //private int b;
+
+
+    [Tooltip("Define state, observation, and action spaces for the Brain.")]
     /**< \brief Defines brain specific parameters such as the state size*/
     public BrainParameters brainParameters = new BrainParameters();
 
 
-	/**<  \brief Defines what is the type of the brain : 
+    /**<  \brief Defines what is the type of the brain : 
      * External / Internal / Player / Heuristic*/
-	[Tooltip("Describes how the Brain will decide actions.")]
+    [Tooltip("Describes how the Brain will decide actions.")]
     public BrainType brainType;
 
-    [HideInInspector]
-    /**<  \brief Keeps track of the agents which subscribe to this brain*/
-    public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
+    //[HideInInspector]
+    ///**<  \brief Keeps track of the agents which subscribe to this brain*/
+    //public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
 
     [SerializeField]
     ScriptableObject[] CoreBrains;
@@ -222,368 +220,17 @@ public class Brain : MonoBehaviour
     }
 
 
-    public void CollectEverything()
+    public void SendState(Agent agent, AgentInfo info)
     {
-        currentStates.Clear();
-        currentCameras.Clear();
-        currentRewards.Clear();
-        currentDones.Clear();
-        currentMaxes.Clear();
-        currentActions.Clear();
-        currentMemories.Clear();
-
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            idAgent.Value.SetCumulativeReward();
-            List<float> states = idAgent.Value.ClearAndCollectState();
-            if ((states.Count != brainParameters.stateSize * brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.continuous))
-            {
-                throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
-    Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
-            }
-            if ((states.Count != brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.discrete))
-            {
-                throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
-    Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
-            }
-
-            List<Camera> observations = idAgent.Value.observations;
-            if (observations.Count < brainParameters.cameraResolutions.Count())
-            {
-                throw new UnityAgentsException(string.Format(@"The number of observations does not match for agent {0}:
-    Was expecting at least {1} observation but received {2}.", idAgent.Value.gameObject.name, brainParameters.cameraResolutions.Count(), observations.Count));
-            }
-
-            currentStates.Add(idAgent.Key, states);
-            currentCameras.Add(idAgent.Key, observations);
-            currentRewards.Add(idAgent.Key, idAgent.Value.reward);
-            currentDones.Add(idAgent.Key, idAgent.Value.done);
-            currentMaxes.Add(idAgent.Key, idAgent.Value.maxStepReached);
-            currentActions.Add(idAgent.Key, idAgent.Value.agentStoredAction);
-            currentMemories.Add(idAgent.Key, idAgent.Value.memory);
-        }
-    }
-
-
-    /// Collects the states of all the agents which subscribe to this brain 
-    /// and returns a dictionary {id -> state}
-    public Dictionary<int, List<float>> CollectStates()
-    {
-        currentStates.Clear();
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            idAgent.Value.SetCumulativeReward();
-            List<float> states = idAgent.Value.ClearAndCollectState();
-            if ((states.Count != brainParameters.stateSize * brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.continuous))
-            {
-                throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
-    Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
-            }
-            if ((states.Count != brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.discrete))
-            {
-                throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
-    Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
-            }
-            currentStates.Add(idAgent.Key, states);
-        }
-        return currentStates;
-    }
-
-    /// Collects the observations of all the agents which subscribe to this 
-    /// brain and returns a dictionary {id -> Camera}
-    public Dictionary<int, List<Camera>> CollectObservations()
-    {
-        currentCameras.Clear();
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            List<Camera> observations = idAgent.Value.observations;
-            if (observations.Count < brainParameters.cameraResolutions.Count())
-            {
-                throw new UnityAgentsException(string.Format(@"The number of observations does not match for agent {0}:
-	Was expecting at least {1} observation but received {2}.", idAgent.Value.gameObject.name, brainParameters.cameraResolutions.Count(), observations.Count));
-            }
-            currentCameras.Add(idAgent.Key, observations);
-        }
-        return currentCameras;
+        agentInfos.Add(agent, info);
 
     }
 
-    /// Collects the rewards of all the agents which subscribe to this brain
-    /// and returns a dictionary {id -> reward}
-    public Dictionary<int, float> CollectRewards()
-    {
-        currentRewards.Clear();
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            currentRewards.Add(idAgent.Key, idAgent.Value.reward);
-        }
-        return currentRewards;
-    }
-
-    /// Collects the done flag of all the agents which subscribe to this brain
-    ///  and returns a dictionary {id -> done}
-    public Dictionary<int, bool> CollectDones()
-    {
-        currentDones.Clear();
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            currentDones.Add(idAgent.Key, idAgent.Value.done);
-        }
-        return currentDones;
-    }
-
-    /// Collects the done flag of all the agents which subscribe to this brain
-    ///  and returns a dictionary {id -> done}
-    public Dictionary<int, bool> CollectMaxes()
-    {
-        currentMaxes.Clear();
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            currentMaxes.Add(idAgent.Key, idAgent.Value.maxStepReached);
-        }
-        return currentMaxes;
-    }
-
-
-    /// Collects the actions of all the agents which subscribe to this brain 
-    /// and returns a dictionary {id -> action}
-    public Dictionary<int, float[]> CollectActions()
-    {
-        currentActions.Clear();
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            currentActions.Add(idAgent.Key, idAgent.Value.agentStoredAction);
-        }
-        return currentActions;
-    }
-
-    /// Collects the memories of all the agents which subscribe to this brain 
-    /// and returns a dictionary {id -> memories}
-    public Dictionary<int, float[]> CollectMemories()
-    {
-        currentMemories.Clear();
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            currentMemories.Add(idAgent.Key, idAgent.Value.memory);
-        }
-        return currentMemories;
-    }
-
-    /// Takes a dictionary {id -> memories} and sends the memories to the 
-    /// corresponding agents
-    public void SendMemories(Dictionary<int, float[]> memories)
-    {
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            idAgent.Value.memory = memories[idAgent.Key];
-        }
-    }
-
-    /// Takes a dictionary {id -> actions} and sends the actions to the 
-    /// corresponding agents
-    public void SendActions(Dictionary<int, float[]> actions)
-    {
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            //Add a check here to see if the component was destroyed ?
-            idAgent.Value.UpdateAction(actions[idAgent.Key]);
-        }
-    }
-
-    /// Takes a dictionary {id -> values} and sends the values to the 
-    /// corresponding agents
-    public void SendValues(Dictionary<int, float> values)
-    {
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            //Add a check here to see if the component was destroyed ?
-            idAgent.Value.value = values[idAgent.Key];
-        }
-    }
-
-    ///Sets all the agents which subscribe to the brain to done
-    public void SendDone()
-    {
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            idAgent.Value.done = true;
-        }
-    }
-
-    ///Sets all the agents which subscribe to the brain to maxStepReached
-    public void SendMaxReached()
-    {
-        foreach (KeyValuePair<int, Agent> idAgent in agents)
-        {
-            idAgent.Value.maxStepReached = true;
-        }
-    }
-
-    /// Uses coreBrain to call SendState on the CoreBrain
-    public void SendState()
-    {
-        coreBrain.SendState();
-    }
-
-    /// Uses coreBrain to call decideAction on the CoreBrain
     public void DecideAction()
     {
-        coreBrain.DecideAction();
-    }
+        coreBrain.DecideAction(agentInfos);
+        agentInfos.Clear();
 
-    /// \brief Is used by the Academy to send a step message to all the agents 
-    /// which are not done
-    public void Step()
-    {
-        var agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
-        {
-            if (!agent.done)
-            {
-                agent.Step();
-            }
-        }
-    }
-
-    /// Is used by the Academy to reset the agents if they are done
-    public void ResetIfDone()
-    {
-        var agentsToIterate = agents.Values.ToList();
-        foreach (Agent agent in agentsToIterate)
-        {
-            if (agent.done)
-            {
-                if (!agent.resetOnDone)
-                {
-                    agent.AgentOnDone();
-                }
-                else
-                {
-                    agent.Reset();
-                }
-            }
-        }
-    }
-
-    /// Is used by the Academy to reset all agents 
-    public void Reset()
-    {
-        foreach (Agent agent in agents.Values)
-        {
-            agent.Reset();
-            agent.done = false;
-            agent.maxStepReached = false;
-        }
-    }
-
-    /// \brief Is used by the Academy reset the done flag and the rewards of the
-    /// agents that subscribe to the brain
-    public void ResetDoneAndReward()
-    {
-        foreach (Agent agent in agents.Values)
-        {
-            if (!agent.done || agent.resetOnDone)
-            {
-                agent.ResetReward();
-                agent.done = false;
-                agent.maxStepReached = false;
-            }
-        }
-    }
-
-    /** Contains logic for coverting a camera component into a Texture2D. */
-    public Texture2D ObservationToTex(Camera camera, int width, int height)
-    {
-        Camera cam = camera;
-        Rect oldRec = camera.rect;
-        cam.rect = new Rect(0f, 0f, 1f, 1f);
-        bool supportsAntialiasing = false;
-        bool needsRescale = false;
-        var depth = 24;
-        var format = RenderTextureFormat.Default;
-        var readWrite = RenderTextureReadWrite.Default;
-        var antiAliasing = (supportsAntialiasing) ? Mathf.Max(1, QualitySettings.antiAliasing) : 1;
-
-        var finalRT =
-            RenderTexture.GetTemporary(width, height, depth, format, readWrite, antiAliasing);
-        var renderRT = (!needsRescale) ? finalRT :
-            RenderTexture.GetTemporary(width, height, depth, format, readWrite, antiAliasing);
-        var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
-
-        var prevActiveRT = RenderTexture.active;
-        var prevCameraRT = cam.targetTexture;
-
-        // render to offscreen texture (readonly from CPU side)
-        RenderTexture.active = renderRT;
-        cam.targetTexture = renderRT;
-
-        cam.Render();
-
-        if (needsRescale)
-        {
-            RenderTexture.active = finalRT;
-            Graphics.Blit(renderRT, finalRT);
-            RenderTexture.ReleaseTemporary(renderRT);
-        }
-
-        tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-        tex.Apply();
-        cam.targetTexture = prevCameraRT;
-        cam.rect = oldRec;
-        RenderTexture.active = prevActiveRT;
-        RenderTexture.ReleaseTemporary(finalRT);
-        return tex;
-    }
-
-    /// Contains logic to convert the agent's cameras into observation list
-    ///  (as list of float arrays)
-    public List<float[,,,]> GetObservationMatrixList(List<int> agent_keys)
-    {
-        var observation_matrix_list = new List<float[,,,]>();
-        Dictionary<int, List<Camera>> observations = CollectObservations();
-        for (int obs_number = 0; obs_number < brainParameters.cameraResolutions.Length; obs_number++)
-        {
-            var width = brainParameters.cameraResolutions[obs_number].width;
-            var height = brainParameters.cameraResolutions[obs_number].height;
-            var bw = brainParameters.cameraResolutions[obs_number].blackAndWhite;
-            var pixels = 0;
-            if (bw)
-                pixels = 1;
-            else
-                pixels = 3;
-            float[,,,] observation_matrix = new float[agent_keys.Count
-            , height
-            , width
-            , pixels];
-            var i = 0;
-            foreach (int k in agent_keys)
-            {
-                Camera agent_obs = observations[k][obs_number];
-                Texture2D tex = ObservationToTex(agent_obs, width, height);
-                for (int w = 0; w < width; w++)
-                {
-                    for (int h = 0; h < height; h++)
-                    {
-                        Color c = tex.GetPixel(w, h);
-                        if (!bw)
-                        {
-                            observation_matrix[i, tex.height - h - 1, w, 0] = c.r;
-                            observation_matrix[i, tex.height - h - 1, w, 1] = c.g;
-                            observation_matrix[i, tex.height - h - 1, w, 2] = c.b;
-                        }
-                        else
-                        {
-                            observation_matrix[i, tex.height - h - 1, w, 0] = (c.r + c.g + c.b) / 3;
-                        }
-                    }
-                }
-                UnityEngine.Object.DestroyImmediate(tex);
-                Resources.UnloadUnusedAssets();
-                i++;
-            }
-            observation_matrix_list.Add(observation_matrix);
-        }
-        return observation_matrix_list;
     }
 
 }

@@ -13,9 +13,7 @@ public interface CoreBrain
     /// Implement this method to initialize CoreBrain
     void InitializeCoreBrain();
     /// Implement this method to define the logic for deciding actions
-    void DecideAction();
-    /// Implement this method to define the logic for sending the actions
-    void SendState();
+    void DecideAction(Dictionary<Agent, AgentInfo> agentInfo);
     /// Implement this method to define what should be displayed in the brain Inspector
     void OnInspector();
 

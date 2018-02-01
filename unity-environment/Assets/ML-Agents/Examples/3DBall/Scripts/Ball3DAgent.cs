@@ -6,21 +6,27 @@ public class Ball3DAgent : Agent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
+    public int timeSinceAction;
 
-    public override List<float> CollectState()
+    public override void InitializeAgent()
     {
-        state.Add(gameObject.transform.rotation.z);
-        state.Add(gameObject.transform.rotation.x);
-        state.Add((ball.transform.position.x - gameObject.transform.position.x));
-        state.Add((ball.transform.position.y - gameObject.transform.position.y));
-        state.Add((ball.transform.position.z - gameObject.transform.position.z));
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.x);
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.y);
-        state.Add(ball.transform.GetComponent<Rigidbody>().velocity.z);
-        return state;
+        timeSinceAction = (int)(Random.Range(0f, 3f));
     }
 
-    public override void AgentStep(float[] act)
+    public override void CollectObservations()
+    {
+        AddVectorObs(gameObject.transform.rotation.z);
+        AddVectorObs(gameObject.transform.rotation.x);
+        AddVectorObs((ball.transform.position.x - gameObject.transform.position.x));
+        AddVectorObs((ball.transform.position.y - gameObject.transform.position.y));
+        AddVectorObs((ball.transform.position.z - gameObject.transform.position.z));
+        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.x);
+        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.y);
+        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
+
+    }
+
+    public override void AgentAction(float[] act)
     {
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
@@ -48,6 +54,9 @@ public class Ball3DAgent : Agent
             done = true;
             reward = -1f;
         }
+        Monitor.Log("value", value, MonitorType.slider, gameObject.transform);
+
+
 
     }
 
@@ -58,5 +67,22 @@ public class Ball3DAgent : Agent
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f)) + gameObject.transform.position;
+		//requestAction = true;
+		//requestDecision = true;
+    }
+
+    public void FixedUpdate()
+    {
+        // In this example, the agent requests a decision at every step and a decision every 4 steps
+        if(timeSinceAction == 3)
+        {
+            
+            requestDecision = true;
+            timeSinceAction = 0;
+        }
+        else{
+            timeSinceAction += 1;
+        }
+        requestAction = true;
     }
 }

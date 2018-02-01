@@ -44,51 +44,40 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     }
 
     /// Uses the Decision Component to decide that action to take
-    public void DecideAction()
+    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-        if (decision == null)
+	    if (coord!=null)
+	    {
+            coord.GiveBrainInfo(brain, agentInfo);
+	    }
+		if (decision == null)
         {
             throw new UnityAgentsException("The Brain is set to Heuristic, but no decision script attached to it");
         }
 
-        var actions = new Dictionary<int, float[]>();
-        var new_memories = new Dictionary<int, float[]>();
-        Dictionary<int, List<float>> states = brain.CollectStates();
-        Dictionary<int, List<Camera>> observations = brain.CollectObservations();
-        Dictionary<int, float> rewards = brain.CollectRewards();
-        Dictionary<int, bool> dones = brain.CollectDones();
-        Dictionary<int, float[]> old_memories = brain.CollectMemories();
 
-        foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
+        foreach (Agent agent in agentInfo.Keys)
         {
-            actions.Add(idAgent.Key, decision.Decide(
-                states[idAgent.Key],
-                observations[idAgent.Key],
-                rewards[idAgent.Key],
-                dones[idAgent.Key],
-                old_memories[idAgent.Key]));
+			agent.UpdateVectorAction(decision.Decide(
+                agentInfo[agent].stakedVectorObservation,
+                agentInfo[agent].visualObservations,
+                agentInfo[agent].reward,
+                agentInfo[agent].done,
+                agentInfo[agent].memories));
+            
         }
-        foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
+        foreach (Agent agent in agentInfo.Keys)
         {
-            new_memories.Add(idAgent.Key, decision.MakeMemory(
-                states[idAgent.Key],
-                observations[idAgent.Key],
-                rewards[idAgent.Key],
-                dones[idAgent.Key],
-                old_memories[idAgent.Key]));
+            agent.UpdateMemoriesAction(decision.MakeMemory(
+				agentInfo[agent].stakedVectorObservation,
+				agentInfo[agent].visualObservations,
+				agentInfo[agent].reward,
+				agentInfo[agent].done,
+				agentInfo[agent].memories));
         }
-        brain.SendActions(actions);
-        brain.SendMemories(new_memories);
     }
 
-    /// Nothing needs to be implemented, the states are collected in DecideAction
-    public void SendState()
-    {
-        if (coord!=null)
-        {
-            coord.giveBrainInfo(brain);
-        }
-    }
+
 
     /// Displays an error if no decision component is attached to the brain
     public void OnInspector()

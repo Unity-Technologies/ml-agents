@@ -27,7 +27,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         public int index;
         public float value;
     }
-        
+
     ExternalCommunicator coord;
 
     [SerializeField]
@@ -35,7 +35,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// Contains the mapping from input to continuous actions
     private ContinuousPlayerAction[] continuousPlayerActions;
     [SerializeField]
-	[Tooltip("The list of keys and the value they correspond to for discrete control.")]
+    [Tooltip("The list of keys and the value they correspond to for discrete control.")]
     /// Contains the mapping from input to discrete actions
     private DiscretePlayerAction[] discretePlayerActions;
     [SerializeField]
@@ -67,67 +67,60 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 
     /// Uses the continuous inputs or dicrete inputs of the player to 
     /// decide action
-    public void DecideAction()
+    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
+		if (coord != null)
+		{
+			coord.GiveBrainInfo(brain, agentInfo);
+		}
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
-            var action = new float[brain.brainParameters.actionSize];
-            foreach (ContinuousPlayerAction cha in continuousPlayerActions)
+            foreach (Agent agent in agentInfo.Keys)
             {
-                if (Input.GetKey(cha.key))
+                var action = new float[brain.brainParameters.actionSize];
+                foreach (ContinuousPlayerAction cha in continuousPlayerActions)
                 {
-                    action[cha.index] = cha.value;
+                    if (Input.GetKey(cha.key))
+                    {
+                        action[cha.index] = cha.value;
+                    }
                 }
+
+                agent.UpdateVectorAction(action);
             }
-            var actions = new Dictionary<int, float[]>();
-            foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
-            {
-                actions.Add(idAgent.Key, action);
-            }
-            brain.SendActions(actions);
+
         }
         else
         {
-            var action = new float[1] { defaultAction };
-            foreach (DiscretePlayerAction dha in discretePlayerActions)
-            {
-                if (Input.GetKey(dha.key))
+            foreach (Agent agent in agentInfo.Keys)
+			{
+                var action = new float[1] { defaultAction };
+                foreach (DiscretePlayerAction dha in discretePlayerActions)
                 {
-                    action[0] = (float)dha.value;
-                    break;
+                    if (Input.GetKey(dha.key))
+                    {
+                        action[0] = (float)dha.value;
+                        break;
+                    }
                 }
+
+
+                agent.UpdateVectorAction(action);
+                
             }
-            var actions = new Dictionary<int, float[]>();
-            foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
-            {
-                actions.Add(idAgent.Key, action);
-            }
-            brain.SendActions(actions);
         }
+
     }
 
-    /// Nothing to implement, the Player does not use the state to make 
-    /// decisions
-    public void SendState()
-    {
-        if (coord != null)
-        {
-            coord.giveBrainInfo(brain);
-        }
-        else
-        {
-            //The states are collected in order to debug the CollectStates method.
-            brain.CollectStates();
-        }
-    }
+
 
     /// Displays continuous or discrete input mapping in the inspector
     public void OnInspector()
     {
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-		broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
-					  "If checked, the brain will broadcast states and actions to Python."), broadcast);
+        broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
+                      "If checked, the brain will broadcast states and actions to Python."), broadcast);
         var serializedBrain = new SerializedObject(this);
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {

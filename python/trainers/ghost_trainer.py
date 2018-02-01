@@ -38,6 +38,7 @@ class GhostTrainer(Trainer):
         self.models = []
         self.max_num_models = trainer_parameters['max_num_models']
         self.last_model_replaced = 0
+        self.current_number_models = 1
         for i in range(self.max_num_models):
             with tf.variable_scope(self.variable_scope + '_' + str(i)):
                 self.models += [create_agent_model(env.brains[self.brain_to_copy],
@@ -171,7 +172,9 @@ class GhostTrainer(Trainer):
         """
         A signal that the Episode has ended. We must use another version of the graph.
         """
-        self.model = self.models[np.random.randint(0, self.max_num_models)]
+
+        self.model = self.models[np.random.randint(0, self.current_number_models)]
+        print("new model")
 
     def is_ready_update(self):
         """
@@ -189,6 +192,8 @@ class GhostTrainer(Trainer):
             self.original_brain_parameters['graph_scope'],
             self.variable_scope + '_' + str(self.last_model_replaced))
         )
+        print(self.current_number_models)
+        self.current_number_models = min(self.current_number_models + 1, self.max_num_models)
         return
 
     def write_summary(self, lesson_number):

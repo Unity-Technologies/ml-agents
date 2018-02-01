@@ -161,6 +161,8 @@ class PPOTrainer(Trainer):
         :return: a tupple containing action, memories, values and an object
         to be passed to add experiences
         """
+        if len(info[self.brain_name].agents) == 0:
+            return [], [], [], None
         steps = self.get_step
         info = info[self.brain_name]
         feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
@@ -201,38 +203,86 @@ class PPOTrainer(Trainer):
         :param next_info: Next BrainInfo.
         :param take_action_outputs: The outputs of the take action method.
         """
+
         info = info[self.brain_name]
         next_info = next_info[self.brain_name]
-        actions = take_action_outputs[self.model.output]
-        epsi = 0
-        if self.is_continuous:
-            epsi = take_action_outputs[self.model.epsilon]
-        a_dist = take_action_outputs[self.model.probs]
-        value = take_action_outputs[self.model.value]
         for agent_id in info.agents:
-            if agent_id in next_info.agents:
-                idx = info.agents.index(agent_id)
+            idx = info.agents.index(agent_id)
+            self.training_buffer[agent_id].last_brain_info = info
+            self.training_buffer[agent_id].last_take_action_outputs = take_action_outputs
+
+
+        info = None #This is for debugging
+        take_action_outputs = None
+        for agent_id in next_info.agents:
+            stored_info = self.training_buffer[agent_id].last_brain_info
+            stored_take_action_outputs = self.training_buffer[agent_id].last_take_action_outputs
+            if stored_info == None:
+                continue
+            else:
+                idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
-                if not info.local_done[idx]:
+                if not stored_info.local_done[idx]:
                     if self.use_observations:
                         for i, _ in enumerate(info.observations):
-                            self.training_buffer[agent_id]['observations%d' % i].append(info.observations[i][idx])
+                            self.training_buffer[agent_id]['observations%d' % i].append(stored_info.observations[i][idx])
                     if self.use_states:
-                        self.training_buffer[agent_id]['states'].append(info.states[idx])
+                        self.training_buffer[agent_id]['states'].append(stored_info.states[idx])
                     if self.use_recurrent:
-                        self.training_buffer[agent_id]['memory'].append(info.memories[idx])
+                        self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
                     if self.is_continuous:
+                        epsi = stored_take_action_outputs[self.model.epsilon]
                         self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
+                    actions = stored_take_action_outputs[self.model.output]
+                    a_dist = stored_take_action_outputs[self.model.probs]
+                    value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
+
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
+
+
+
+
+        return
+
+        # actions = take_action_outputs[self.model.output]
+        # epsi = 0
+        # if self.is_continuous:
+        #     epsi = take_action_outputs[self.model.epsilon]
+        # a_dist = take_action_outputs[self.model.probs]
+        # value = take_action_outputs[self.model.value]
+        # for agent_id in info.agents:
+        #     if agent_id in next_info.agents:
+        #         idx = info.agents.index(agent_id)
+        #         next_idx = next_info.agents.index(agent_id)
+        #         if not info.local_done[idx]:
+        #             if self.use_observations:
+        #                 for i, _ in enumerate(info.observations):
+        #                     self.training_buffer[agent_id]['observations%d' % i].append(info.observations[i][idx])
+        #             if self.use_states:
+        #                 self.training_buffer[agent_id]['states'].append(info.states[idx])
+        #             if self.use_recurrent:
+        #                 self.training_buffer[agent_id]['memory'].append(info.memories[idx])
+        #             if self.is_continuous:
+        #                 self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
+        #             self.training_buffer[agent_id]['actions'].append(actions[idx])
+        #             self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
+        #             self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
+        #             self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
+        #             if agent_id not in self.cumulative_rewards:
+        #                 self.cumulative_rewards[agent_id] = 0
+        #             self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
+        #             if agent_id not in self.episode_steps:
+        #                 self.episode_steps[agent_id] = 0
+        #             self.episode_steps[agent_id] += 1
 
     def process_experiences(self, info):
         """

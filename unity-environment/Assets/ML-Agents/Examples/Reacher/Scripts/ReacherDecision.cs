@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ReacherDecision : MonoBehaviour, Decision {
 
-	public float[] Decide (List<float> state, List<Camera> observation, float reward, bool done, float[] memory)
+    public float[] Decide (List<float> state, List<Texture2D> observation, float reward, bool done, float[] memory)
 	{
         float[] action = new float[4];
         for (int i = 0; i < 4; i++) {
@@ -14,7 +14,7 @@ public class ReacherDecision : MonoBehaviour, Decision {
 
 	}
 
-	public float[] MakeMemory (List<float> state, List<Camera> observation, float reward, bool done, float[] memory)
+    public float[] MakeMemory (List<float> state, List<Texture2D> observation, float reward, bool done, float[] memory)
 	{
 		return default(float[]);
 		
