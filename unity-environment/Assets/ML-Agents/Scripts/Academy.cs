@@ -236,6 +236,7 @@ public abstract class Academy : MonoBehaviour
         currentStep = 0;
         episodeCount++;
         done = false;
+        maxStepReached = false;
         AcademyReset();
 
 
