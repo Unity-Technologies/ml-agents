@@ -14,7 +14,7 @@ logger = logging.getLogger("unityagents")
 class GhostTrainer(Trainer):
     """Keeps copies of a PPOTrainer past graphs and uses them to other Trainers."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
         """
         Responsible for saving and reusing past models.
         :param sess: Tensorflow session.

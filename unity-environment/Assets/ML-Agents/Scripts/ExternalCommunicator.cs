@@ -25,19 +25,23 @@ public class ExternalCommunicator : Communicator
     Dictionary<string, Dictionary<int, float[]>> storedMemories;
     Dictionary<string, Dictionary<int, float>> storedValues;
 
-    // For Messages
-    List<float> concatenatedStates = new List<float>(1024);
-    List<float> concatenatedRewards = new List<float>(32);
-    List<float> concatenatedMemories = new List<float>(1024);
-    List<bool> concatenatedDones = new List<bool>(32);
-    List<float> concatenatedActions = new List<float>(1024);
+    const int messageLength = 12000;
+    const int defaultNumAgents = 32;
+    const int defaultNumObservations = 32;
 
-    private int comPort;
+    // For Messages
+    List<float> concatenatedStates = new List<float>(defaultNumAgents*defaultNumObservations);
+    List<float> concatenatedRewards = new List<float>(defaultNumAgents);
+    List<float> concatenatedMemories = new List<float>(defaultNumAgents * defaultNumObservations);
+    List<bool> concatenatedDones = new List<bool>(defaultNumAgents);
+    List<bool> concatenatedMaxes = new List<bool>(defaultNumAgents);
+    List<float> concatenatedActions = new List<float>(defaultNumAgents * defaultNumObservations);
+
+    int comPort;
+    int randomSeed;
     Socket sender;
     byte[] messageHolder;
     byte[] lengthHolder;
-
-    const int messageLength = 12000;
 
     StreamWriter logWriter;
     string logPath;
@@ -55,6 +59,7 @@ public class ExternalCommunicator : Communicator
         public List<float> actions;
         public List<float> memories;
         public List<bool> dones;
+        public List<bool> maxes;
     }
 
     StepMessage sMessage;
@@ -196,15 +201,22 @@ public class ExternalCommunicator : Communicator
     {
         string[] args = System.Environment.GetCommandLineArgs();
         var inputPort = "";
+        var inputSeed = "";
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--port")
             {
                 inputPort = args[i + 1];
             }
+            if (args[i] == "--seed")
+            {
+                inputSeed = args[i + 1];
+            }
         }
 
         comPort = int.Parse(inputPort);
+        randomSeed = int.Parse(inputSeed);
+        Random.InitState(randomSeed);
     }
 
     /// Sends Academy parameters to external agent
@@ -271,6 +283,7 @@ public class ExternalCommunicator : Communicator
         concatenatedRewards.Clear();
         concatenatedMemories.Clear();
         concatenatedDones.Clear();
+        concatenatedMaxes.Clear();
         concatenatedActions.Clear();
 
         foreach (int id in current_agents[brainName])
@@ -279,6 +292,7 @@ public class ExternalCommunicator : Communicator
             concatenatedRewards.Add(brain.currentRewards[id]);
             concatenatedMemories.AddRange(brain.currentMemories[id].ToList());
             concatenatedDones.Add(brain.currentDones[id]);
+            concatenatedMaxes.Add(brain.currentMaxes[id]);
             concatenatedActions.AddRange(brain.currentActions[id].ToList());
         }
 
@@ -289,6 +303,7 @@ public class ExternalCommunicator : Communicator
         sMessage.actions = concatenatedActions;
         sMessage.memories = concatenatedMemories;
         sMessage.dones = concatenatedDones;
+        sMessage.maxes = concatenatedMaxes;
 
         sMessageString = JsonUtility.ToJson(sMessage);
         sender.Send(AppendLength(Encoding.ASCII.GetBytes(sMessageString)));

@@ -1,26 +1,39 @@
 default:
-    batch_size: 256
-    beta: 2.5e-3
-    buffer_size: 5000
+    batch_size: 32
+    beta: 5.0e-3
+    buffer_size: 512
     epsilon: 0.2
     gamma: 0.99
     hidden_units: 128
     lambd: 0.95
     learning_rate: 3.0e-4
-    max_steps: 1.0e6
-    normalize: false
+    max_steps: 5.0e4
+    normalize: true
     num_epoch: 5
     num_layers: 2
     time_horizon: 64
-    sequence_length: 32
+    sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
 
 Ball3DBrain:
     summary_freq: 1000
     normalize: true
-    batch_size: 1024
+    batch_size: 1000
+    buffer_size: 10000
+    hidden_units: 64
     max_steps: 1.0e4
+
+GridWorldBrain:
+    batch_size: 32
+    num_layers: 1
+    hidden_units: 256
+    beta: 5.0e-3
+    gamma: 0.9
+    buffer_size: 256
+    max_steps: 5.0e5
+    summary_freq: 2000
+    time_horizon: 5
 
 TurretBrain: ExampleBrain
 ghost-HunterBrain:

@@ -13,6 +13,7 @@ from .brain import BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
+from datetime import datetime
 from PIL import Image
 from sys import platform
 
@@ -22,7 +23,8 @@ logger = logging.getLogger("unityagents")
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005, curriculum=None):
+                 base_port=5005, curriculum=None,
+                 seed=None):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -32,6 +34,8 @@ class UnityEnvironment(object):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
+        if seed is None:
+            seed = datetime.now()
 
         atexit.register(self.close)
         self.port = base_port + worker_id
@@ -90,7 +94,8 @@ class UnityEnvironment(object):
             # Launch Unity environment
             proc1 = subprocess.Popen(
                 [launch_string,
-                 '--port', str(self.port)])
+                 '--port', str(self.port),
+                 '--seed', str(seed)])
 
         self._socket.settimeout(30)
         try:
@@ -293,7 +298,7 @@ class UnityEnvironment(object):
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
-            # actions = state_dict["actions"]
+            maxes = state_dict["maxes"]
             if n_agent > 0:
                 actions = np.array(state_dict["actions"]).reshape((n_agent, -1))
             else:
@@ -307,7 +312,7 @@ class UnityEnvironment(object):
 
                 observations.append(np.array(obs_n))
 
-            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions)
+            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions, max_reached=maxes)
 
         try:
             self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'

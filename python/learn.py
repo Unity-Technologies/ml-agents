@@ -1,5 +1,5 @@
 # # Unity ML Agents
-# ## ML-Agent Learning (PPO)
+# ## ML-Agent Learning
 # Launches trainers for each External Brains in a Unity Environemnt
 
 import logging
@@ -7,8 +7,8 @@ import os
 import re
 import yaml
 
+from datetime import datetime
 from docopt import docopt
-
 from trainers.ghost_trainer import GhostTrainer
 from trainers.ppo_models import *
 from trainers.ppo_trainer import PPOTrainer
@@ -43,12 +43,13 @@ if __name__ == '__main__':
     Options:
       --help                     Show this message.
       --curriculum=<file>        Curriculum json file for environment [default: None].
-      --slow                     Whether to run the game at training speed [default: False].
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
-      --run-path=<path>          The sub-directory name for model and summary statistics [default: ppo]. 
+      --run-path=<path>            The sub-directory name for model and summary statistics [default: ppo]. 
       --save-freq=<n>            Frequency at which to save model [default: 50000].
+      --seed=<n>                 Random seed used for training [default: None].
+      --slow                     Whether to run the game at training speed [default: False].
       --train                    Whether to train model, or only run inference [default: False].
       --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
     '''
@@ -59,6 +60,7 @@ if __name__ == '__main__':
     # General parameters
     model_path = './models/{}'.format(str(options['--run-path']))
 
+    seed = int(options['--seed'])
     load_model = options['--load']
     train_model = options['--train']
     save_freq = int(options['--save-freq'])
@@ -71,7 +73,12 @@ if __name__ == '__main__':
     lesson = int(options['--lesson'])
     fast_simulation = not bool(options['--slow'])
 
-    env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file)
+    if seed is None:
+        seed = datetime.now()
+    np.random.seed(seed)
+    tf.set_random_seed(seed)
+
+    env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file, seed=seed)
     env.curriculum.set_lesson_number(lesson)
     logger.info(str(env))
 
@@ -127,13 +134,13 @@ if __name__ == '__main__':
                 trainer_parameters_dict[brain_name]['original_brain_parameters'] = trainer_parameters_dict[
                     trainer_parameters_dict[brain_name]['brain_to_copy']]
                 trainers[brain_name] = GhostTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name],
-                                                    train_model)
+                                                    train_model, seed)
             elif trainer_parameters_dict[brain_name]['is_imitation']:
                 trainers[brain_name] = ImitationTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name],
-                                                        train_model)
+                                                        train_model, seed)
             else:
                 trainers[brain_name] = PPOTrainer(sess, env, brain_name, trainer_parameters_dict[brain_name],
-                                                  train_model)
+                                                  train_model, seed)
 
         for k, t in trainers.items():
             logger.info(t)
