@@ -25,21 +25,23 @@ public class ExternalCommunicator : Communicator
     Dictionary<string, Dictionary<int, float[]>> storedMemories;
     Dictionary<string, Dictionary<int, float>> storedValues;
 
+    const int messageLength = 12000;
+    const int defaultNumAgents = 32;
+    const int defaultNumObservations = 32;
+
     // For Messages
-    List<float> concatenatedStates = new List<float>(1024);
-    List<float> concatenatedRewards = new List<float>(32);
-    List<float> concatenatedMemories = new List<float>(1024);
-    List<bool> concatenatedDones = new List<bool>(32);
-    List<bool> concatenatedMaxes = new List<bool>(32);
-    List<float> concatenatedActions = new List<float>(1024);
+    List<float> concatenatedStates = new List<float>(defaultNumAgents*defaultNumObservations);
+    List<float> concatenatedRewards = new List<float>(defaultNumAgents);
+    List<float> concatenatedMemories = new List<float>(defaultNumAgents * defaultNumObservations);
+    List<bool> concatenatedDones = new List<bool>(defaultNumAgents);
+    List<bool> concatenatedMaxes = new List<bool>(defaultNumAgents);
+    List<float> concatenatedActions = new List<float>(defaultNumAgents * defaultNumObservations);
 
     int comPort;
     int randomSeed;
     Socket sender;
     byte[] messageHolder;
     byte[] lengthHolder;
-
-    const int messageLength = 12000;
 
     StreamWriter logWriter;
     string logPath;
@@ -214,10 +216,7 @@ public class ExternalCommunicator : Communicator
 
         comPort = int.Parse(inputPort);
         randomSeed = int.Parse(inputSeed);
-        if (randomSeed != -1)
-        {
-            Random.InitState(randomSeed);
-        }
+        Random.InitState(randomSeed);
     }
 
     /// Sends Academy parameters to external agent

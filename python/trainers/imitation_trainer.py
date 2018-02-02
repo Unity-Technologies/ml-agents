@@ -42,7 +42,6 @@ class ImitationNN(object):
         self.update = optimizer.minimize(self.loss)
 
 
-
 class ImitationTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
     def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
@@ -88,6 +87,7 @@ class ImitationTrainer(Trainer):
         s_size = self.brain.state_space_size * self.brain.stacked_states
         a_size = self.brain.action_space_size
         with tf.variable_scope(self.variable_scope):
+            tf.set_random_seed(seed)
             self.network = ImitationNN(state_size = s_size,
                      action_size = a_size, 
                      h_size = int(trainer_parameters['hidden_units']), 

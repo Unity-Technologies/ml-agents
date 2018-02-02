@@ -7,8 +7,8 @@ import os
 import re
 import yaml
 
+from datetime import datetime
 from docopt import docopt
-
 from trainers.ghost_trainer import GhostTrainer
 from trainers.ppo_models import *
 from trainers.ppo_trainer import PPOTrainer
@@ -46,9 +46,9 @@ if __name__ == '__main__':
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
-      --run-id=<path>            The sub-directory name for model and summary statistics [default: ppo]. 
+      --run-path=<path>            The sub-directory name for model and summary statistics [default: ppo]. 
       --save-freq=<n>            Frequency at which to save model [default: 50000].
-      --seed=<n>                 Random seed used for training [default: -1].
+      --seed=<n>                 Random seed used for training [default: None].
       --slow                     Whether to run the game at training speed [default: False].
       --train                    Whether to train model, or only run inference [default: False].
       --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
@@ -73,9 +73,10 @@ if __name__ == '__main__':
     lesson = int(options['--lesson'])
     fast_simulation = not bool(options['--slow'])
 
-    if seed != -1:
-        np.random.seed(seed)
-        tf.set_random_seed(seed)
+    if seed is None:
+        seed = datetime.now()
+    np.random.seed(seed)
+    tf.set_random_seed(seed)
 
     env = UnityEnvironment(file_name=env_name, worker_id=worker_id, curriculum=curriculum_file, seed=seed)
     env.curriculum.set_lesson_number(lesson)

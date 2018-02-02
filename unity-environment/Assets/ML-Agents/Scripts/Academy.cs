@@ -295,7 +295,7 @@ public abstract class Academy : MonoBehaviour
         if ((currentStep >= maxSteps) && maxSteps > 0)
         {
             done = true;
-            maxStepReached;
+            maxStepReached = true;
         }
 
         if ((framesSinceAction > frameToSkip) || done)
