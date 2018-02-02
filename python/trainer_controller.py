@@ -3,11 +3,13 @@
 # Launches trainers for each External Brains in a Unity Environment
 
 import logging
+import numpy as np
 import os
 import re
 import tensorflow as tf
 import yaml
 
+from datetime import datetime
 from tensorflow.python.tools import freeze_graph
 from trainers.ghost_trainer import GhostTrainer
 from trainers.ppo_trainer import PPOTrainer
@@ -17,7 +19,7 @@ from unityagents import UnityEnvironment, UnityEnvironmentException
 
 class TrainerController(object):
     def __init__(self, env_name, run_id, save_freq, curriculum_file, fast_simulation, load, train,
-                 worker_id, keep_checkpoints, lesson):
+                 worker_id, keep_checkpoints, lesson, seed):
         self.model_path = './models/{}'.format(run_id)
         self.logger = logging.getLogger("unityagents")
         self.run_id = run_id
@@ -30,7 +32,13 @@ class TrainerController(object):
         self.worker_id = worker_id
         self.keep_checkpoints = keep_checkpoints
         self.trainers = {}
-        self.env = UnityEnvironment(file_name=env_name, worker_id=self.worker_id, curriculum=self.curriculum_file)
+        if seed is None:
+            seed = datetime.now()
+        self.seed = seed
+        np.random.seed(self.seed)
+        tf.set_random_seed(self.seed)
+        self.env = UnityEnvironment(file_name=env_name, worker_id=self.worker_id,
+                                    curriculum=self.curriculum_file, seed=self.seed)
         self.env_name = (env_name.strip().replace('.app', '').replace('.exe', '').replace('.x86_64', '')
                          .replace('.x86', ''))
         self.env_name = os.path.basename(os.path.normpath(self.env_name))
@@ -138,14 +146,14 @@ class TrainerController(object):
                     trainer_parameters_dict[brain_name]['brain_to_copy']]
                 self.trainers[brain_name] = GhostTrainer(sess, self.env, brain_name,
                                                          trainer_parameters_dict[brain_name],
-                                                         self.train_model)
+                                                         self.train_model, self.seed)
             elif trainer_parameters_dict[brain_name]['is_imitation']:
                 self.trainers[brain_name] = ImitationTrainer(sess, self.env, brain_name,
                                                              trainer_parameters_dict[brain_name],
-                                                             self.train_model)
+                                                             self.train_model, self.seed)
             else:
                 self.trainers[brain_name] = PPOTrainer(sess, self.env, brain_name, trainer_parameters_dict[brain_name],
-                                                       self.train_model)
+                                                       self.train_model, self.seed)
 
     def start_learning(self):
         self.env.curriculum.set_lesson_number(self.lesson)

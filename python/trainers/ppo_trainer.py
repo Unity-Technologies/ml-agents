@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 from trainers.buffer import Buffer
-from trainers.ppo_models import *
+from trainers.ppo_models import create_agent_model
 from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
@@ -18,7 +18,7 @@ logger = logging.getLogger("unityagents")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorythm."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -46,15 +46,16 @@ class PPOTrainer(Trainer):
             self.m_size = env.brains[brain_name].memory_space_size
             self.sequence_length = trainer_parameters["sequence_length"]
         if self.use_recurrent:
-            if (self.m_size == 0):
+            if self.m_size == 0:
                 raise UnityTrainerException("The memory size for brain {0} is 0 even though the trainer uses recurrent."
                                             .format(brain_name))
-            elif (self.m_size % 4 != 0):
+            elif self.m_size % 4 != 0:
                 raise UnityTrainerException("The memory size for brain {0} is {1} but it must be divisible by 4."
                                             .format(brain_name, self.m_size))
 
         self.variable_scope = trainer_parameters['graph_scope']
         with tf.variable_scope(self.variable_scope):
+            tf.set_random_seed(seed)
             self.model = create_agent_model(env.brains[brain_name],
                                             lr=float(trainer_parameters['learning_rate']),
                                             h_size=int(trainer_parameters['hidden_units']),
@@ -137,7 +138,6 @@ class PPOTrainer(Trainer):
         if len(self.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(self.stats['cumulative_reward'])
             self.sess.run(self.model.update_reward, feed_dict={self.model.new_reward: mean_reward})
-            last_reward = self.sess.run(self.model.last_reward)
 
     def running_average(self, data, steps, running_mean, running_variance):
         """
@@ -163,7 +163,6 @@ class PPOTrainer(Trainer):
         """
         steps = self.get_step
         info = info[self.brain_name]
-        epsi = None
         feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
         run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
@@ -247,8 +246,7 @@ class PPOTrainer(Trainer):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
                     and len(agent_actions) > 0):
-
-                if info.local_done[l]:
+                if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
                     feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
@@ -269,8 +267,8 @@ class PPOTrainer(Trainer):
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd'])
                 )
-                self.training_buffer[agent_id]['discounted_returns'].set( \
-                    self.training_buffer[agent_id]['advantages'].get_batch() \
+                self.training_buffer[agent_id]['discounted_returns'].set(
+                    self.training_buffer[agent_id]['advantages'].get_batch()
                     + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
                 self.training_buffer.append_update_buffer(agent_id,

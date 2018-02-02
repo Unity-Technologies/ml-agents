@@ -110,6 +110,7 @@ public class Brain : MonoBehaviour
     public Dictionary<int, List<Camera>> currentCameras = new Dictionary<int, List<Camera>>(32);
     public Dictionary<int, float> currentRewards = new Dictionary<int, float>(32);
     public Dictionary<int, bool> currentDones = new Dictionary<int, bool>(32);
+    public Dictionary<int, bool> currentMaxes = new Dictionary<int, bool>(32);
     public Dictionary<int, float[]> currentActions = new Dictionary<int, float[]>(32);
     public Dictionary<int, float[]> currentMemories = new Dictionary<int, float[]>(32);
 
@@ -227,6 +228,7 @@ public class Brain : MonoBehaviour
         currentCameras.Clear();
         currentRewards.Clear();
         currentDones.Clear();
+        currentMaxes.Clear();
         currentActions.Clear();
         currentMemories.Clear();
 
@@ -256,6 +258,7 @@ public class Brain : MonoBehaviour
             currentCameras.Add(idAgent.Key, observations);
             currentRewards.Add(idAgent.Key, idAgent.Value.reward);
             currentDones.Add(idAgent.Key, idAgent.Value.done);
+            currentMaxes.Add(idAgent.Key, idAgent.Value.maxStepReached);
             currentActions.Add(idAgent.Key, idAgent.Value.agentStoredAction);
             currentMemories.Add(idAgent.Key, idAgent.Value.memory);
         }
@@ -329,6 +332,19 @@ public class Brain : MonoBehaviour
         return currentDones;
     }
 
+    /// Collects the done flag of all the agents which subscribe to this brain
+    ///  and returns a dictionary {id -> done}
+    public Dictionary<int, bool> CollectMaxes()
+    {
+        currentMaxes.Clear();
+        foreach (KeyValuePair<int, Agent> idAgent in agents)
+        {
+            currentMaxes.Add(idAgent.Key, idAgent.Value.maxStepReached);
+        }
+        return currentMaxes;
+    }
+
+
     /// Collects the actions of all the agents which subscribe to this brain 
     /// and returns a dictionary {id -> action}
     public Dictionary<int, float[]> CollectActions()
@@ -394,6 +410,15 @@ public class Brain : MonoBehaviour
         }
     }
 
+    ///Sets all the agents which subscribe to the brain to maxStepReached
+    public void SendMaxReached()
+    {
+        foreach (KeyValuePair<int, Agent> idAgent in agents)
+        {
+            idAgent.Value.maxStepReached = true;
+        }
+    }
+
     /// Uses coreBrain to call SendState on the CoreBrain
     public void SendState()
     {
@@ -447,6 +472,7 @@ public class Brain : MonoBehaviour
         {
             agent.Reset();
             agent.done = false;
+            agent.maxStepReached = false;
         }
     }
 
@@ -460,6 +486,7 @@ public class Brain : MonoBehaviour
             {
                 agent.ResetReward();
                 agent.done = false;
+                agent.maxStepReached = false;
             }
         }
     }

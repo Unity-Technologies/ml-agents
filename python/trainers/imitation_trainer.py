@@ -9,10 +9,10 @@ import numpy as np
 import tensorflow as tf
 
 from trainers.buffer import Buffer
-from trainers.ppo_models import *
 from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
+
 
 class ImitationNN(object):
     def __init__(self, state_size, action_size, h_size, lr, action_type, n_layers):
@@ -41,10 +41,10 @@ class ImitationNN(object):
         self.update = optimizer.minimize(self.loss)
 
 
-
 class ImitationTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
-    def __init__(self, sess, env, brain_name, trainer_parameters, training):
+
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -52,13 +52,13 @@ class ImitationTrainer(Trainer):
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
-        self.param_keys = [ 'is_imitation', 'brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope', 
-            'summary_freq', 'max_steps', 'batches_per_epoch']
+        self.param_keys = ['is_imitation', 'brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
+                           'summary_freq', 'max_steps', 'batches_per_epoch']
 
         for k in self.param_keys:
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
-                    "brain {1}.".format(k, brain_name))
+                                            "brain {1}.".format(k, brain_name))
 
         super(ImitationTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
@@ -69,15 +69,13 @@ class ImitationTrainer(Trainer):
         self.step = 0
         self.cumulative_rewards = {}
         self.episode_steps = {}
-        
-
-        self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward' : []}
+        self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
 
         self.training_buffer = Buffer()
         self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_observations > 0)
         if self.use_observations:
-            logger.log('Cannot use observations with imitation learning')
+            logger.info('Cannot use observations with imitation learning')
         self.use_states = (env.brains[brain_name].state_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
@@ -87,13 +85,13 @@ class ImitationTrainer(Trainer):
         s_size = self.brain.state_space_size * self.brain.stacked_states
         a_size = self.brain.action_space_size
         with tf.variable_scope(self.variable_scope):
-            self.network = ImitationNN(state_size = s_size,
-                     action_size = a_size, 
-                     h_size = int(trainer_parameters['hidden_units']), 
-                     lr = float(trainer_parameters['learning_rate']), 
-                     action_type = self.brain.action_space_type, 
-                     n_layers=int(trainer_parameters['num_layers']))
-
+            tf.set_random_seed(seed)
+            self.network = ImitationNN(state_size=s_size,
+                                       action_size=a_size,
+                                       h_size=int(trainer_parameters['hidden_units']),
+                                       lr=float(trainer_parameters['learning_rate']),
+                                       action_type=self.brain.action_space_type,
+                                       n_layers=int(trainer_parameters['num_layers']))
 
     def __str__(self):
 
@@ -153,7 +151,6 @@ class ImitationTrainer(Trainer):
         """
         return
 
-
     def take_action(self, info):
         """
         Decides actions given state/observation information, and takes them in environment.
@@ -164,7 +161,7 @@ class ImitationTrainer(Trainer):
         E = info[self.brain_name]
         agent_action = self.sess.run(self.network.sample_action, feed_dict={self.network.state: E.states})
 
-        return (agent_action, None, None, None)
+        return agent_action, None, None, None
 
     def add_experiences(self, info, next_info, take_action_outputs):
         """
@@ -206,12 +203,11 @@ class ImitationTrainer(Trainer):
 
         info_P = info[self.brain_to_imitate]
         for l in range(len(info_P.agents)):
-            if ((info_P.local_done[l] or 
-                    len(self.training_buffer[info_P.agents[l]]['actions']) > self.trainer_parameters['time_horizon']) 
+            if ((info_P.local_done[l] or
+                    len(self.training_buffer[info_P.agents[l]]['actions']) > self.trainer_parameters['time_horizon'])
                     and len(self.training_buffer[info_P.agents[l]]['actions']) > 0):
                 agent_id = info_P.agents[l]
-                self.training_buffer.append_update_buffer(agent_id, 
-                    batch_size = None, training_length=None)
+                self.training_buffer.append_update_buffer(agent_id, batch_size=None, training_length=None)
                 self.training_buffer[agent_id].reset_agent()
 
         info_E = info[self.brain_name]
@@ -222,10 +218,6 @@ class ImitationTrainer(Trainer):
                 self.stats['episode_length'].append(self.episode_steps[agent_id])
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
-
-               
-                
-
 
     def end_episode(self):
         """
@@ -251,21 +243,21 @@ class ImitationTrainer(Trainer):
         """
         batch_size = self.trainer_parameters['batch_size']
 
-
         self.training_buffer.update_buffer.shuffle()
         batch_losses = []
-        for j in range(min(len(self.training_buffer.update_buffer['actions']) // self.batch_size, self.batches_per_epoch)):
+        for j in range(
+                min(len(self.training_buffer.update_buffer['actions']) // self.batch_size, self.batches_per_epoch)):
             _buffer = self.training_buffer.update_buffer
             batch_states = np.array(_buffer['states'][j * batch_size:(j + 1) * batch_size])
             batch_actions = np.array(_buffer['actions'][j * batch_size:(j + 1) * batch_size])
             if not self.is_continuous:
                 feed_dict = {
-                    self.network.state: batch_states.reshape([-1, 1]), 
+                    self.network.state: batch_states.reshape([-1, 1]),
                     self.network.true_action: np.reshape(batch_actions, -1)
                 }
             else:
                 feed_dict = {
-                    self.network.state: batch_states.reshape([self.batch_size, -1]), 
+                    self.network.state: batch_states.reshape([self.batch_size, -1]),
                     self.network.true_action: batch_actions.reshape([self.batch_size, -1])
                 }
             loss, _ = self.sess.run([self.network.loss, self.network.update], feed_dict=feed_dict)
@@ -275,19 +267,18 @@ class ImitationTrainer(Trainer):
         else:
             self.stats['losses'].append(0)
 
-
     def write_summary(self, lesson_number):
         """
         Saves training statistics to Tensorboard.
         :param lesson_number: The lesson the trainer is at.
         """
         if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-            self.is_training and self.get_step <= self.get_max_steps):
+                self.is_training and self.get_step <= self.get_max_steps):
             steps = self.get_step
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
                 logger.info("{0} : Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
-                      .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
+                            .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
             summary = tf.Summary()
             for key in self.stats:
                 if len(self.stats[key]) > 0:
@@ -297,7 +288,3 @@ class ImitationTrainer(Trainer):
             summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
             self.summary_writer.add_summary(summary, steps)
             self.summary_writer.flush()
-
-
-
-
