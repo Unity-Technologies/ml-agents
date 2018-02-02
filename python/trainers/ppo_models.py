@@ -4,9 +4,6 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
-from tensorflow.python.tools import freeze_graph
-from unityagents import UnityEnvironmentException
-
 logger = logging.getLogger("unityagents")
 
 
@@ -36,37 +33,6 @@ def create_agent_model(brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_s
     if brain.action_space_type == "discrete":
         return DiscreteControlModel(lr, brain, h_size, epsilon, beta, max_step, normalize, use_recurrent, num_layers,
                                     m_size)
-
-
-def save_model(sess, saver, model_path="./", steps=0):
-    """
-    Saves current model to checkpoint folder.
-    :param sess: Current Tensorflow session.
-    :param model_path: Designated model path.
-    :param steps: Current number of steps in training process.
-    :param saver: Tensorflow saver for session.
-    """
-    last_checkpoint = model_path + '/model-' + str(steps) + '.cptk'
-    saver.save(sess, last_checkpoint)
-    tf.train.write_graph(sess.graph_def, model_path, 'raw_graph_def.pb', as_text=False)
-    logger.info("Saved Model")
-
-
-def export_graph(model_path, env_name="env", target_nodes="action,value_estimate,action_probs"):
-    """
-    Exports latest saved model to .bytes format for Unity embedding.
-    :param model_path: path of model checkpoints.
-    :param env_name: Name of associated Learning Environment.
-    :param target_nodes: Comma separated string of needed output nodes for embedded graph.
-    """
-    ckpt = tf.train.get_checkpoint_state(model_path)
-    freeze_graph.freeze_graph(input_graph=model_path + '/raw_graph_def.pb',
-                              input_binary=True,
-                              input_checkpoint=ckpt.model_checkpoint_path,
-                              output_node_names=target_nodes,
-                              output_graph=model_path + '/' + env_name + '.bytes',
-                              clear_devices=True, initializer_nodes="", input_saver="",
-                              restore_op_name="save/restore_all", filename_tensor_name="save/Const:0")
 
 
 class PPOModel(object):

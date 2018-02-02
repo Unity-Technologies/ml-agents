@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 from trainers.buffer import Buffer
-from trainers.ppo_models import *
+from trainers.ppo_models import create_agent_model
 from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
@@ -138,7 +138,6 @@ class PPOTrainer(Trainer):
         if len(self.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(self.stats['cumulative_reward'])
             self.sess.run(self.model.update_reward, feed_dict={self.model.new_reward: mean_reward})
-            last_reward = self.sess.run(self.model.last_reward)
 
     def running_average(self, data, steps, running_mean, running_variance):
         """
@@ -246,7 +245,7 @@ class PPOTrainer(Trainer):
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
-                and len(agent_actions) > 0):
+                    and len(agent_actions) > 0):
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
@@ -268,8 +267,8 @@ class PPOTrainer(Trainer):
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd'])
                 )
-                self.training_buffer[agent_id]['discounted_returns'].set( \
-                    self.training_buffer[agent_id]['advantages'].get_batch() \
+                self.training_buffer[agent_id]['discounted_returns'].set(
+                    self.training_buffer[agent_id]['advantages'].get_batch()
                     + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
                 self.training_buffer.append_update_buffer(agent_id,
