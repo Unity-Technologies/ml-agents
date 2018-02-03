@@ -4,7 +4,7 @@ import pytest
 import struct
 
 from trainers.buffer import Buffer
-from trainers.ppo_models import *
+from trainers.models import *
 from unityagents import UnityEnvironment, UnityEnvironmentException, UnityActionException, \
     BrainInfo, Curriculum
 

@@ -4,7 +4,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from trainers.ppo_models import *
+from trainers.models import *
 from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")

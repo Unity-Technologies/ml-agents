@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 from trainers.buffer import Buffer
-from trainers.ppo_models import create_agent_model
+from trainers.models import PPOModel
 from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
@@ -56,7 +56,7 @@ class PPOTrainer(Trainer):
         self.variable_scope = trainer_parameters['graph_scope']
         with tf.variable_scope(self.variable_scope):
             tf.set_random_seed(seed)
-            self.model = create_agent_model(env.brains[brain_name],
+            self.model = PPOModel(env.brains[brain_name],
                                             lr=float(trainer_parameters['learning_rate']),
                                             h_size=int(trainer_parameters['hidden_units']),
                                             epsilon=float(trainer_parameters['epsilon']),
@@ -320,7 +320,7 @@ class PPOTrainer(Trainer):
                              self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape(
                                  [-1]),
                              self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1, 1]),
-                             self.model.old_probs: np.array(
+                             self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.action_space_size])}
                 if self.is_continuous:
                     feed_dict[self.model.epsilon] = np.array(
