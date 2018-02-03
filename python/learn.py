@@ -20,7 +20,7 @@ if __name__ == '__main__':
       --load                     Whether to load the model or randomly initialize [default: False].
       --run-id=<path>            The sub-directory name for model and summary statistics [default: ppo]. 
       --save-freq=<n>            Frequency at which to save model [default: 50000].
-      --seed=<n>                 Random seed used for training [default: None].
+      --seed=<n>                 Random seed used for training [default: -1].
       --slow                     Whether to run the game at training speed [default: False].
       --train                    Whether to train model, or only run inference [default: False].
       --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
@@ -32,6 +32,8 @@ if __name__ == '__main__':
     # General parameters
     run_id = options['--run-id']
     seed = int(options['--seed'])
+    if seed ==-1:
+        seed = None
     load_model = options['--load']
     train_model = options['--train']
     save_freq = int(options['--save-freq'])

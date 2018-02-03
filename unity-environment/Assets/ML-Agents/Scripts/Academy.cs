@@ -256,7 +256,7 @@ public abstract class Academy : MonoBehaviour
         {
             if (agent.requestDecision)
             {
-				if (agent.done || agent.timeOut)
+                if (agent.done || agent.maxStepReached)
 				{
                     // Agent will only reset if an action is requested
 					if (agent.resetOnDone)
@@ -266,7 +266,7 @@ public abstract class Academy : MonoBehaviour
 				}
                 agent.SendStateToBrain();
                 agent.done = false;
-                agent.timeOut = false;
+                agent.maxStepReached = false;
                 agent.reward = 0f;
                 agent.requestDecision = false;
                 agent.requestAction = true; 

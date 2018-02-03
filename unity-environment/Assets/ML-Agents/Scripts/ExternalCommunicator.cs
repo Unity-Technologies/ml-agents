@@ -319,6 +319,7 @@ public class ExternalCommunicator : Communicator
             concatenatedMemories.Clear();
             concatenatedDones.Clear();
             concatenatedActions.Clear();
+            concatenatedMaxes.Clear();
 
             foreach (Agent agent in current_agents[brainName])
             {
@@ -328,7 +329,7 @@ public class ExternalCommunicator : Communicator
                 concatenatedMemories.AddRange(agentInfo[agent].memories.ToList());
                 concatenatedDones.Add(agentInfo[agent].done);
                 concatenatedActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
-
+                concatenatedMaxes.Add(agentInfo[agent].maxStepReached);
 
             }
 

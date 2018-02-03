@@ -7,6 +7,7 @@ import numpy as np
 import os
 import re
 import tensorflow as tf
+import time
 import yaml
 
 from datetime import datetime
@@ -33,7 +34,7 @@ class TrainerController(object):
         self.keep_checkpoints = keep_checkpoints
         self.trainers = {}
         if seed is None:
-            seed = datetime.now()
+            seed = int(time.time())
         self.seed = seed
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)

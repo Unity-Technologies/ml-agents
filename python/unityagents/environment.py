@@ -286,7 +286,7 @@ class UnityEnvironment(object):
                 self._global_done = end_of_message
                 for _b in self._brain_names:
                     if _b not in self._data:
-                        self._data[_b] = BrainInfo([], np.array([]), np.array([]), [], [], [], np.array([]))
+                        self._data[_b] = BrainInfo([], np.array([]), np.array([]), [], [], [], np.array([]), max_reached=[])
                 return self._data
             b = state_dict["brain_name"]
             n_agent = len(state_dict["agents"])

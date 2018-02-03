@@ -253,37 +253,6 @@ class PPOTrainer(Trainer):
 
         return
 
-        # actions = take_action_outputs[self.model.output]
-        # epsi = 0
-        # if self.is_continuous:
-        #     epsi = take_action_outputs[self.model.epsilon]
-        # a_dist = take_action_outputs[self.model.probs]
-        # value = take_action_outputs[self.model.value]
-        # for agent_id in info.agents:
-        #     if agent_id in next_info.agents:
-        #         idx = info.agents.index(agent_id)
-        #         next_idx = next_info.agents.index(agent_id)
-        #         if not info.local_done[idx]:
-        #             if self.use_observations:
-        #                 for i, _ in enumerate(info.observations):
-        #                     self.training_buffer[agent_id]['observations%d' % i].append(info.observations[i][idx])
-        #             if self.use_states:
-        #                 self.training_buffer[agent_id]['states'].append(info.states[idx])
-        #             if self.use_recurrent:
-        #                 self.training_buffer[agent_id]['memory'].append(info.memories[idx])
-        #             if self.is_continuous:
-        #                 self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
-        #             self.training_buffer[agent_id]['actions'].append(actions[idx])
-        #             self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
-        #             self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
-        #             self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
-        #             if agent_id not in self.cumulative_rewards:
-        #                 self.cumulative_rewards[agent_id] = 0
-        #             self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
-        #             if agent_id not in self.episode_steps:
-        #                 self.episode_steps[agent_id] = 0
-        #             self.episode_steps[agent_id] += 1
-
     def process_experiences(self, info):
         """
         Checks agent histories for processing condition, and processes them as necessary.
