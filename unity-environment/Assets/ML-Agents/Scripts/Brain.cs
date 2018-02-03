@@ -277,12 +277,12 @@ public class Brain : MonoBehaviour
             if ((states.Count != brainParameters.stateSize * brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.continuous))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
-    Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize, states.Count));
+    Was expecting {1} continuous states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stateSize * brainParameters.stackedStates, states.Count));
             }
             if ((states.Count != brainParameters.stackedStates) && (brainParameters.stateSpaceType == StateType.discrete))
             {
                 throw new UnityAgentsException(string.Format(@"The number of states does not match for agent {0}:
-    Was expecting 1 discrete states but received {1}.", idAgent.Value.gameObject.name, states.Count));
+    Was expecting {1} discrete states but received {2}.", idAgent.Value.gameObject.name, brainParameters.stackedStates, states.Count));
             }
             currentStates.Add(idAgent.Key, states);
         }
