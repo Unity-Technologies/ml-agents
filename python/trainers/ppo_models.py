@@ -313,7 +313,7 @@ class DiscreteControlModel(PPOModel):
                 bw = brain.camera_resolutions[i]['blackAndWhite']
                 visual_encoders.append(
                     self.create_visual_encoder(height_size, width_size, bw, h_size, 1, tf.nn.elu, num_layers)[0])
-            hidden_visual = [tf.concat(visual_encoders, axis=1)]
+            hidden_visual = tf.concat(visual_encoders, axis=1)
         if brain.state_space_size > 0:
             s_size = brain.state_space_size * brain.stacked_states
             if brain.state_space_type == "continuous":
