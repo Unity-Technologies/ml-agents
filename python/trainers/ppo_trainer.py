@@ -212,7 +212,7 @@ class PPOTrainer(Trainer):
             self.training_buffer[agent_id].last_take_action_outputs = take_action_outputs
 
 
-        info = None #This is for debugging
+        info = None 
         take_action_outputs = None
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info

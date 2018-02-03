@@ -158,6 +158,8 @@ class ImitationTrainer(Trainer):
         :return: a tupple containing action, memories, values and an object
         to be passed to add experiences
         """
+        if len(info[self.brain_name].agents) == 0:
+            return [], [], [], None
         E = info[self.brain_name]
         agent_action = self.sess.run(self.network.sample_action, feed_dict={self.network.state: E.states})
 
@@ -173,26 +175,46 @@ class ImitationTrainer(Trainer):
         info_P = info[self.brain_to_imitate]
         next_info_P = next_info[self.brain_to_imitate]
         for agent_id in info_P.agents:
-            if agent_id in next_info_P.agents:
-                idx = info_P.agents.index(agent_id)
-                next_idx = next_info_P.agents.index(agent_id)
-                if not info_P.local_done[idx]:
-                    self.training_buffer[agent_id]['states'].append(info_P.states[idx])
-                    self.training_buffer[agent_id]['actions'].append(next_info_P.previous_actions[next_idx])
-                    # self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
+            idx = info_P.agents.index(agent_id)
+            self.training_buffer[agent_id].last_brain_info = info_P
+            self.training_buffer[agent_id].last_take_action_outputs = take_action_outputs
 
-        info_E = next_info[self.brain_name]
+        info_P = None
+        take_action_outputs = None
+        for agent_id in next_info_P.agents:
+            stored_info = self.training_buffer[agent_id].last_brain_info
+            stored_take_action_outputs = self.training_buffer[agent_id].last_take_action_outputs
+            if stored_info == None:
+                continue
+            else:
+                idx = stored_info.agents.index(agent_id)
+                next_idx = next_info_P.agents.index(agent_id)
+                if not stored_info.local_done[idx]:
+                    self.training_buffer[agent_id]['states'].append(stored_info.states[idx])
+                    self.training_buffer[agent_id]['actions'].append(next_info_P.previous_actions[next_idx])
+
+        info_E = info[self.brain_name]
         next_info_E = next_info[self.brain_name]
         for agent_id in info_E.agents:
             idx = info_E.agents.index(agent_id)
-            next_idx = next_info_E.agents.index(agent_id)
-            if not info_E.local_done[idx]:
-                if agent_id not in self.cumulative_rewards:
-                    self.cumulative_rewards[agent_id] = 0
-                self.cumulative_rewards[agent_id] += next_info_E.rewards[next_idx]
-                if agent_id not in self.episode_steps:
-                    self.episode_steps[agent_id] = 0
-                self.episode_steps[agent_id] += 1
+            self.training_buffer[agent_id].last_brain_info = info_E
+        
+        info_E = None
+        for agent_id in next_info_E.agents:
+            stored_info = self.training_buffer[agent_id].last_brain_info
+            if stored_info == None:
+                continue
+            else:
+                idx = stored_info.agents.index(agent_id)
+                next_idx = next_info_E.agents.index(agent_id)
+                if not stored_info.local_done[idx]:
+                    if agent_id not in self.cumulative_rewards:
+                        self.cumulative_rewards[agent_id] = 0
+                    self.cumulative_rewards[agent_id] += next_info_E.rewards[next_idx]
+                    if agent_id not in self.episode_steps:
+                        self.episode_steps[agent_id] = 0
+                    self.episode_steps[agent_id] += 1
+                
 
     def process_experiences(self, info):
         """
