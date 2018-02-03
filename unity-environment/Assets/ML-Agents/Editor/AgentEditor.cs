@@ -17,7 +17,7 @@ public class AgentEditor : Editor
 	{
         Agent myAgent = (Agent)target;
         //EditorGUILayout.HelpBox("Erroblahr", MessageType.Error);
-        myAgent.done = EditorGUILayout.Toggle("done", myAgent.done);
+        //myAgent.done = EditorGUILayout.Toggle("done", myAgent.done);
 		base.OnInspectorGUI();
 
 	}

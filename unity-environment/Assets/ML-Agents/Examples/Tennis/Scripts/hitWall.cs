@@ -23,11 +23,11 @@ public class hitWall : MonoBehaviour
 		{
 			if (lastAgentHit == 0)
 			{
-				agentA.reward += 0.1f;
+                agentA.AddReward( 0.1f);
 			}
 			else
 			{
-				agentB.reward += 0.1f;
+                agentB.AddReward(0.1f);
 			}
 			lastAgentHit = 0;
 
@@ -46,14 +46,14 @@ public class hitWall : MonoBehaviour
 			{
 				if (lastAgentHit == 0)
 				{
-					agentA.reward = -0.01f;
-					agentB.reward = 0;
+                    agentA.AddReward( -0.01f);
+                    agentB.SetReward(0);
 					agentB.score += 1;
 				}
 				else
 				{
-					agentA.reward = 0;
-					agentB.reward = -0.01f;
+					agentA.SetReward(0);
+                    agentB.AddReward(-0.01f);
 					agentA.score += 1;
 				}
 			}
@@ -61,14 +61,14 @@ public class hitWall : MonoBehaviour
 			{
 				if (lastAgentHit == 0)
 				{
-					agentA.reward = -0.01f;
-					agentB.reward = 0;
+                    agentA.AddReward( -0.01f);
+                    agentB.SetReward(0);
 					agentB.score += 1;
 				}
 				else
 				{
-					agentA.reward = 0;
-					agentB.reward = -0.01f;
+					agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
 					agentA.score += 1;
 				}
 			}
@@ -76,14 +76,14 @@ public class hitWall : MonoBehaviour
 			{
 				if (lastAgentHit == 0 || lastAgentHit == -1)
 				{
-					agentA.reward = -0.01f;
-					agentB.reward = 0;
+                    agentA.AddReward( -0.01f);
+					agentB.SetReward(0);
 					agentB.score += 1;
 				}
 				else
 				{
-					agentA.reward = -0.01f;
-					agentB.reward = 0.0f;
+                    agentA.AddReward( -0.01f);
+					agentB.SetReward(0);
 					agentB.score += 1;
 
 				}
@@ -92,14 +92,14 @@ public class hitWall : MonoBehaviour
 			{
 				if (lastAgentHit == 1 || lastAgentHit == -1)
 				{
-					agentA.reward = 0.0f;
-					agentB.reward = -0.01f;
+					agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
 					agentA.score += 1;
 				}
 				else
 				{
-					agentA.reward = 0;
-					agentB.reward = -0.01f;
+					agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
 					agentA.score += 1;
 				}
 			}
@@ -107,19 +107,19 @@ public class hitWall : MonoBehaviour
 			{
 				if (lastAgentHit == 0)
 				{
-					agentA.reward = -0.01f;
-					agentB.reward = 0.0f;
+                    agentA.AddReward( -0.01f);
+					agentB.SetReward(0);
 					agentB.score += 1;
 				}
 				else
 				{
-					agentA.reward = 0.0f;
-					agentB.reward = -0.01f;
+					agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
 					agentA.score += 1;
 				}
 			}
-			agentA.done = true;
-			agentB.done = true;
+            agentA.Done();
+			agentB.Done();
 			area.MatchReset();
 		}
 

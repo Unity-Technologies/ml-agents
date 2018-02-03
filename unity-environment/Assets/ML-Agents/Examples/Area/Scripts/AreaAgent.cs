@@ -67,14 +67,14 @@ public class AreaAgent : Agent
 
 	public override void AgentAction(float[] act)
 	{
-		reward = -0.005f;
+        AddReward(-0.005f);
         MoveAgent(act);
 
 		if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
             Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
 		{
-			done = true;
-			reward = -1f;
+            Done();
+            AddReward(-1f);
 		}
 	}
 

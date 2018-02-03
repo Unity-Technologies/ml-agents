@@ -31,18 +31,18 @@ public class BasicAgent : Agent
 
 		gameObject.transform.position = new Vector3(position, 0f, 0f);
 
-        reward -= 0.01f;
+        AddReward( 0.01f);
 
 		if (position == smallGoalPosition)
 		{
-			done = true;
-			reward = 0.1f;
+            Done();
+            AddReward( 0.1f);
 		}
 
 		if (position == largeGoalPosition)
 		{
-			done = true;
-			reward = 1f;
+            Done();
+            AddReward(1f);
 		}
 	}
 

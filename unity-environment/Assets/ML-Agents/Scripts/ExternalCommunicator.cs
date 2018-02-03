@@ -19,7 +19,6 @@ public class ExternalCommunicator : Communicator
     Dictionary<string, List<Agent>> current_agents;
 
     List<Brain> brains;
-
     Dictionary<string, bool> hasSentState;
     Dictionary<string, bool> triedSendState;
 
@@ -161,6 +160,15 @@ public class ExternalCommunicator : Communicator
         SendParameters(accParamerters);
 
         sMessage = new StepMessage();
+
+        //Initialize the list of brains the Communicator must listen to
+        // Issue : This assumes all brains are broadcasting.
+        foreach(string k in accParamerters.brainNames){
+            current_agents[k] = new List<Agent>();
+            hasSentState[k] = false;
+            triedSendState[k] = false;
+        }
+
     }
 
     void HandleLog(string logString, string stackTrace, LogType type)
@@ -301,10 +309,6 @@ public class ExternalCommunicator : Communicator
         triedSendState[brainName] = true;
 
 
-        if (!current_agents.ContainsKey(brainName))
-        {
-            current_agents[brainName] = new List<Agent>();
-        }
         current_agents[brainName].Clear();
         foreach (Agent agent in agentInfo.Keys)
         {
@@ -363,7 +367,7 @@ public class ExternalCommunicator : Communicator
             if (hasSentState.Values.Any(x => x))
             {
                 // if all the brains listed have sent their state
-                sender.Send(AppendLength(Encoding.ASCII.GetBytes("END_OF_MESSAGE:" + (academy.done ? "True" : "False"))));
+                sender.Send(AppendLength(Encoding.ASCII.GetBytes("END_OF_MESSAGE:" + (academy.IsDone() ? "True" : "False"))));
 
 
                 UpdateCommand();
@@ -382,6 +386,15 @@ public class ExternalCommunicator : Communicator
         }
 
     }
+
+    public Dictionary<string, bool> GetHasTried(){
+        return triedSendState;
+    }
+
+	public Dictionary<string, bool> GetSent()
+	{
+        return hasSentState;
+	}
 
     /// Listens for actions, memories, and values and sends them 
     /// to the corrensponding brains.

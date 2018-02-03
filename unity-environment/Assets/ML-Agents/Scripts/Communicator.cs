@@ -73,4 +73,8 @@ public interface Communicator
     Dictionary<string, float> GetResetParameters();
 
 
+
+    Dictionary<string, bool> GetHasTried();
+    Dictionary<string, bool> GetSent();
+
 }

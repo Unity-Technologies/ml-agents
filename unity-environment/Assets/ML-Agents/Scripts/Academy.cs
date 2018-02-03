@@ -84,14 +84,12 @@ public abstract class Academy : MonoBehaviour
     /**< When set to true, the Academy will call AcademyReset() instead of 
     * AcademyStep() at step time.
     * If true, all agents done flags will be set to true.*/
-    [HideInInspector]
-    public bool done;
+    private bool done;
 
     /// <summary>
     /// The max step reached.
     /// </summary>
-    [HideInInspector]
-    public bool maxStepReached;
+    private bool maxStepReached;
 
 
     /**< \brief Increments each time the environment is reset. */
@@ -199,6 +197,21 @@ public abstract class Academy : MonoBehaviour
 
     }
 
+    public void MaxStepReached(){
+        maxStepReached = true;
+        Done();
+    }
+    public void Done(){
+        done = true;
+    }
+    public bool IsMaxStepR4eached(){
+        return maxStepReached;
+    }
+    public bool IsDone(){
+        return done;
+    }
+
+
 
     // Called after AcademyStep().
     internal void _AcademyStep()
@@ -238,40 +251,41 @@ public abstract class Academy : MonoBehaviour
         }
 
         if  ((stepsSinceReset >= maxSteps) && maxSteps > 0){
-            maxStepReached = true;
-            done = true;
+            MaxStepReached();
         }
         if (done)
             _AcademyReset();
         foreach (Agent agent in agents)
         {
             if (maxStepReached)
-                agent.maxStepReached = true;
+                agent.MaxStepReached();
             if (done)
-                agent.done = true;
+                agent.Done();
         }
         agentsTerminate.Clear();
 
         foreach (Agent agent in agents)
         {
-            if (agent.requestDecision)
+            // If an agent is done, then it will also request for a decision and an action
+			if (agent.IsDone())
+			{
+				if (agent.resetOnDone)
+					agent._AgentReset();
+				else
+					agentsTerminate.Add(agent);
+			}
+        }
+
+        foreach (Agent agent in agents)
+        {
+            if (agent.HasRequestedDecision())
             {
-                if (agent.done || agent.maxStepReached)
-				{
-                    // Agent will only reset if an action is requested
-					if (agent.resetOnDone)
-						agent._AgentReset();
-					else
-						agentsTerminate.Add(agent);
-				}
+                
                 agent.SendStateToBrain();
-                agent.done = false;
-                agent.maxStepReached = false;
-                agent.reward = 0f;
-                agent.requestDecision = false;
-                agent.requestAction = true; 
-                // You need to act if you asked for a decision
-                // We could put this logic into agent
+                agent._ClearDone();
+                agent._ClearMaxStepReached();
+                agent.SetReward(0f);
+                agent._ClearRequestDecision();
             }
 
         }
@@ -280,9 +294,9 @@ public abstract class Academy : MonoBehaviour
             brain.DecideAction();
         }
 
-
         foreach (Agent agent in agentsTerminate)
         {
+            agent._ClearRequestAction();
             agent.AgentOnDone();
             UnRegisterAgent(agent);
 

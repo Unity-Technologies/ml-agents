@@ -161,11 +161,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         List<Agent> agentList = agentInfo.Keys.ToList();
         if (currentBatchSize == 0)
         {
-
-            if (coord != null)
-            {
-                coord.GiveBrainInfo(brain, agentInfo);
-            }
             return;
         }
 
@@ -217,16 +212,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             }
         }
 
-
-		if (coord != null)
-		{
-			coord.GiveBrainInfo(brain, agentInfo);
-		}
-
-        if (currentBatchSize == 0)
-        {
-            return;
-        }
 
         var runner = session.GetRunner();
         try

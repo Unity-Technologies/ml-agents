@@ -171,13 +171,13 @@ public class BananaAgent : Agent
         if (collision.gameObject.CompareTag("banana"))
         {
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
-            reward += 1f;
+            AddReward(1f);
             bananas += 1;
         }
         if (collision.gameObject.CompareTag("badBanana"))
         {
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
-            reward -= 1f;
+            AddReward(1f);
         }
     }
 

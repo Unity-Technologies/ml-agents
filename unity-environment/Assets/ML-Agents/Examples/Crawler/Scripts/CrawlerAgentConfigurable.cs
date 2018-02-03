@@ -135,10 +135,10 @@ public class CrawlerAgentConfigurable: Agent
                          + act[4] * act[4] + act[5] * act[5] + act[6] * act[6] + act[7] * act[7]
                          + act[8] * act[8] + act[9] * act[9] + act[10] * act[10] + act[11] * act[11];
 
-        if (!done)
+        if (!IsDone())
         {
 
-            reward = (0
+            SetReward (0
             - 0.01f * torque_penalty
             + 1.0f * body.GetComponent<Rigidbody>().velocity.x
             - 0.05f * Mathf.Abs(body.transform.position.z - body.transform.parent.transform.position.z)
@@ -147,12 +147,12 @@ public class CrawlerAgentConfigurable: Agent
         }
         if (fell)
         {
-            done = true;
-            reward = -1;
+            Done();
+            AddReward(-1);
             fell = false;
         }
 
-        Monitor.Log("Reward", reward, MonitorType.slider, body.gameObject.transform);
+        Monitor.Log("Reward", GetReward(), MonitorType.slider, body.gameObject.transform);
         Transform[] allChildren = GetComponentsInChildren<Transform>();
         foreach (Transform child in allChildren)
         {

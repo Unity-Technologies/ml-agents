@@ -42,19 +42,18 @@ public class Ball3DAgent : Agent
             {
                 gameObject.transform.Rotate(new Vector3(1, 0, 0), action_x);
             }
-            if (!done)
-            {
-                reward = 0.1f;
-            }
+
+             AddReward(0.1f);
+            
         }
         if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
             Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
             Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
         {
-            done = true;
-            reward = -1f;
+            Done();
+            SetReward(-1f);
         }
-        Monitor.Log("value", value, MonitorType.slider, gameObject.transform);
+        Monitor.Log("value", GetValue(), MonitorType.slider, gameObject.transform);
 
 
 
@@ -77,12 +76,12 @@ public class Ball3DAgent : Agent
         if(timeSinceAction == 3)
         {
             
-            requestDecision = true;
+            RequestDecision();
             timeSinceAction = 0;
         }
         else{
             timeSinceAction += 1;
         }
-        requestAction = true;
+        RequestAction();
     }
 }

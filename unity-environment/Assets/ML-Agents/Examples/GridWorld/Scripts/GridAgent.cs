@@ -27,7 +27,7 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void AgentAction(float[] act)
     {
-        reward = -0.01f;
+        AddReward(-0.01f);
         int action = Mathf.FloorToInt(act[0]);
 
         // 0 - Forward, 1 - Backward, 2 - Left, 3 - Right
@@ -59,13 +59,13 @@ public class GridAgent : Agent
 
             if (blockTest.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
             {
-                done = true;
-                reward = 1;
+                Done();
+                SetReward(1f);
             }
             if (blockTest.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
             {
-                done = true;
-                reward = -1;
+                Done();
+                SetReward(-1f);
             }
 
         }

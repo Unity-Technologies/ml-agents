@@ -72,48 +72,39 @@ public abstract class Agent : MonoBehaviour
     * Should be set to positive to reinforcement desired behavior, and
     * set to a negative value to punish undesireable behavior.
     * Additionally, the magnitude of the reward should not exceed 1.0 */
-    [HideInInspector]
-    public float reward;
+    private float reward;
 
+    /**< \brief Whether or not the agent is requests an action*/
+    private bool requestAction;
 
-    //TODO : Will be required for event based simulation
-    [HideInInspector]
-    public bool requestAction;
-    [HideInInspector]
-    public bool requestDecision;
+    /**< \brief Whether or not the agent is requests a decision*/
+    private bool requestDecision;
 
     /**< \brief Whether or not the agent is done*/
     /**< Set to true when the agent has acted in some way which ends the 
      * episode for the given agent. */
-    [HideInInspector]
-    public bool done;
+    private bool done;
 
     /**< \brief Whether or not the max step is reached*/
-    [HideInInspector]
-    public bool maxStepReached;
+    private bool maxStepReached;
 
     /**< \brief The current value estimate of the agent */
     /**<  When using an External brain, you can pass value estimates to the
      * agent at every step using env.Step(actions, values).
      * If AgentMonitor is attached to the Agent, this value will be displayed.*/
-    [HideInInspector]
-    public float value;
 
     /**< \brief Do not modify: This keeps track of the cumulative reward.*/
-    [HideInInspector]
-    public float CumulativeReward;
+    private float CumulativeReward;
 
     /**< \brief Do not modify: This keeps track of the number of steps taken by
      * the agent each episode.*/
-    [HideInInspector]
-    public int stepCounter;
+    private int stepCounter;
 
 
-    /**< \brief Do not modify : This is the unique Identifier each agent 
+    /**< \brief This is the unique Identifier each agent 
      * receives at initialization. It is used by the brain to identify
      * the agent.*/
-    [HideInInspector]
-    public int id;
+    private int id;
 
     private void OnEnable()
     {
@@ -158,6 +149,64 @@ public abstract class Agent : MonoBehaviour
 
     }
 
+    public void SetReward(float f)
+    {
+        reward = f;
+    }
+    public void AddReward(float f)
+    {
+        reward += f;
+    }
+    public float GetReward(){
+        return reward;
+    }
+    public float GetValue(){
+        return _action.value;
+    }
+    public void MaxStepReached()
+    {
+        maxStepReached =true;
+        Done();
+    }
+    public void Done()
+    {
+        done = true;
+        RequestDecision();
+    }
+	public void RequestDecision()
+	{
+        requestDecision = true;
+		RequestAction();
+	}
+	public void RequestAction()
+	{
+		requestAction = true;
+	}
+    public void _ClearMaxStepReached(){
+        maxStepReached = false;
+    }
+    public void _ClearDone(){
+        done = false;
+    }
+    public void _ClearRequestDecision(){
+        requestDecision = false;
+    }
+    public void _ClearRequestAction(){
+        requestAction = false;
+    }
+    public bool IsMaxStepReached(){
+        return maxStepReached;
+    }
+    public bool IsDone(){
+        return done;
+    }
+    public bool HasRequestedDecision(){
+        return requestDecision;
+    }
+    public bool HasRequestedAction(){
+        return requestAction;
+    }
+
     internal void ResetState()
     {
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
@@ -200,6 +249,8 @@ public abstract class Agent : MonoBehaviour
     public void SendStateToBrain()
     {
         SetCumulativeReward();
+        _info.StoredVectorActions = _action.vectorActions;
+        _info.StoredTextActions = _action.textActions;
         _info.vectorObservation.Clear();
         _info.textObservation = "";
         CollectObservations();
@@ -220,10 +271,10 @@ public abstract class Agent : MonoBehaviour
         {
             if (_info.vectorObservation.Count != 1)
             {
-				throw new UnityAgentsException(string.Format(@"Vector Observation size mismatch between discreete agent {0} and
+                throw new UnityAgentsException(string.Format(@"Vector Observation size mismatch between discrete agent {0} and
                     brain {1}. Was Expecting {2} but received {3}. ",
                     gameObject.name, brain.gameObject.name,
-					1, _info.vectorObservation.Count));
+                    1, _info.vectorObservation.Count));
             }
             _info.stakedVectorObservation.RemoveRange(0, 1);
             _info.stakedVectorObservation.AddRange(_info.vectorObservation);
@@ -355,17 +406,14 @@ public abstract class Agent : MonoBehaviour
 
         if (requestAction)
         {
-            requestAction = false;
+            _ClearRequestAction();
             AgentAction(_action.vectorActions);
         }
 
         stepCounter += 1;
         if ((stepCounter > maxStep) && (maxStep > 0))
         {
-            maxStepReached = true;
-            // This is temporary :
-            done = true;
-            maxStepReached = true;
+            MaxStepReached();
         }
     }
 

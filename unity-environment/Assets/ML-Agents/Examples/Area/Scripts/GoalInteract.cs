@@ -23,8 +23,8 @@ public class GoalInteract : MonoBehaviour
         if (collision.gameObject == myObject)
         {
             Agent agent = myAgent.GetComponent<Agent>();
-            agent.done = true;
-            agent.reward = 1f;
+            agent.Done();
+            agent.AddReward(1f);
         }
 	}
 
