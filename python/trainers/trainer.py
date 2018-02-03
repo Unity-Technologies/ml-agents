@@ -120,7 +120,7 @@ class Trainer(object):
 
     def is_ready_update(self):
         """
-        Returns wether or not the trainer has enough elements to run update model
+        Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to wether or not update_model() can be run
         """
         raise UnityTrainerException("The is_ready_update method was not implemented.")

@@ -64,7 +64,7 @@ class PPOModel(object):
         update_reward = tf.assign(last_reward, new_reward)
         return last_reward, new_reward, update_reward
 
-    def create_recurrent_encoder(self, input_state, memory_in, name = 'lstm'):
+    def create_recurrent_encoder(self, input_state, memory_in, name='lstm'):
         """
         Builds a recurrent encoder for either state or observations (LSTM).
         :param input_state: The input tensor to the LSTM cell.
@@ -73,17 +73,17 @@ class PPOModel(object):
         """
         s_size = input_state.get_shape().as_list()[1]
         m_size = memory_in.get_shape().as_list()[1]
-        lstm_input_state = tf.reshape(input_state, shape = [-1, self.sequence_length, s_size])
-        _half_point = int(m_size/2)
+        lstm_input_state = tf.reshape(input_state, shape=[-1, self.sequence_length, s_size])
+        _half_point = int(m_size / 2)
         with tf.variable_scope(name):
             rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
-            lstm_state_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:,:_half_point], memory_in[:,_half_point:])
+            lstm_state_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :_half_point], memory_in[:, _half_point:])
             recurrent_state, lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, lstm_input_state,
-                                       initial_state=lstm_state_in,
-                                        time_major=False,
-                                       dtype=tf.float32)
-        recurrent_state = tf.reshape(recurrent_state, shape = [-1, _half_point])
-        return recurrent_state, tf.concat([lstm_state_out.c, lstm_state_out.h], axis = 1)
+                                                                initial_state=lstm_state_in,
+                                                                time_major=False,
+                                                                dtype=tf.float32)
+        recurrent_state = tf.reshape(recurrent_state, shape=[-1, _half_point])
+        return recurrent_state, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     def create_visual_encoder(self, o_size_h, o_size_w, bw, h_size, num_streams, activation, num_layers):
         """
@@ -259,14 +259,14 @@ class ContinuousControlModel(PPOModel):
             hidden_value = tf.concat([hidden_visual[1], hidden_state[1]], axis=1)
 
         if self.use_recurrent:
-            self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
-            _half_point = int(self.m_size/2)
+            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
+            _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = self.create_recurrent_encoder(
                 hidden_policy, self.memory_in[:, :_half_point], name='lstm_policy')
             hidden_value, memory_value_out = self.create_recurrent_encoder(
                 hidden_value, self.memory_in[:, _half_point:], name='lstm_value')
             self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1, name='recurrent_out')
-        
+
         self.mu = tf.layers.dense(hidden_policy, a_size, activation=None, use_bias=False,
 
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
@@ -326,16 +326,16 @@ class DiscreteControlModel(PPOModel):
             raise Exception("No valid network configuration possible. "
                             "There are no states or observations in this brain")
         elif hidden_visual is not None and hidden_state is None:
-            hidden = hidden_visual[0]
+            hidden = hidden_visual
         elif hidden_visual is None and hidden_state is not None:
             hidden = hidden_state
         elif hidden_visual is not None and hidden_state is not None:
-            hidden = tf.concat([hidden_visual[0], hidden_state], axis=1)
+            hidden = tf.concat([hidden_visual, hidden_state], axis=1)
 
         if self.use_recurrent:
-            self.memory_in = tf.placeholder(shape=[None, self.m_size],dtype=tf.float32, name='recurrent_in')
-            hidden, self.memory_out = self.create_recurrent_encoder( hidden, self.memory_in)
-            self.memory_out = tf.identity(self.memory_out,  name = 'recurrent_out')
+            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
+            hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
+            self.memory_out = tf.identity(self.memory_out, name='recurrent_out')
 
         self.policy = tf.layers.dense(hidden, a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))

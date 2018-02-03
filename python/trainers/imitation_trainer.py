@@ -95,7 +95,7 @@ class ImitationTrainer(Trainer):
 
     def __str__(self):
 
-        return '''Hypermarameters for the Imitation Trainer of brain {0}: \n{1}'''.format(
+        return '''Hyperparameters for the Imitation Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
@@ -158,9 +158,8 @@ class ImitationTrainer(Trainer):
         :return: a tupple containing action, memories, values and an object
         to be passed to add experiences
         """
-        E = info[self.brain_name]
-        agent_action = self.sess.run(self.network.sample_action, feed_dict={self.network.state: E.states})
-
+        agent_brain = info[self.brain_name]
+        agent_action = self.sess.run(self.network.sample_action, feed_dict={self.network.state: agent_brain.states})
         return agent_action, None, None, None
 
     def add_experiences(self, info, next_info, take_action_outputs):
@@ -170,26 +169,25 @@ class ImitationTrainer(Trainer):
         :param next_info: Next BrainInfo.
         :param take_action_outputs: The outputs of the take action method.
         """
-        info_P = info[self.brain_to_imitate]
-        next_info_P = next_info[self.brain_to_imitate]
-        for agent_id in info_P.agents:
-            if agent_id in next_info_P.agents:
-                idx = info_P.agents.index(agent_id)
-                next_idx = next_info_P.agents.index(agent_id)
-                if not info_P.local_done[idx]:
-                    self.training_buffer[agent_id]['states'].append(info_P.states[idx])
-                    self.training_buffer[agent_id]['actions'].append(next_info_P.previous_actions[next_idx])
-                    # self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
+        info_expert = info[self.brain_to_imitate]
+        next_info_expert = next_info[self.brain_to_imitate]
+        for agent_id in info_expert.agents:
+            if agent_id in next_info_expert.agents:
+                idx = info_expert.agents.index(agent_id)
+                next_idx = next_info_expert.agents.index(agent_id)
+                if not info_expert.local_done[idx]:
+                    self.training_buffer[agent_id]['states'].append(info_expert.states[idx])
+                    self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_actions[next_idx])
 
-        info_E = next_info[self.brain_name]
-        next_info_E = next_info[self.brain_name]
-        for agent_id in info_E.agents:
-            idx = info_E.agents.index(agent_id)
-            next_idx = next_info_E.agents.index(agent_id)
-            if not info_E.local_done[idx]:
+        info_student = next_info[self.brain_name]
+        next_info_student = next_info[self.brain_name]
+        for agent_id in info_student.agents:
+            idx = info_student.agents.index(agent_id)
+            next_idx = next_info_student.agents.index(agent_id)
+            if not info_student.local_done[idx]:
                 if agent_id not in self.cumulative_rewards:
                     self.cumulative_rewards[agent_id] = 0
-                self.cumulative_rewards[agent_id] += next_info_E.rewards[next_idx]
+                self.cumulative_rewards[agent_id] += next_info_student.rewards[next_idx]
                 if agent_id not in self.episode_steps:
                     self.episode_steps[agent_id] = 0
                 self.episode_steps[agent_id] += 1
@@ -201,19 +199,19 @@ class ImitationTrainer(Trainer):
         :param info: Current BrainInfo
         """
 
-        info_P = info[self.brain_to_imitate]
-        for l in range(len(info_P.agents)):
-            if ((info_P.local_done[l] or
-                    len(self.training_buffer[info_P.agents[l]]['actions']) > self.trainer_parameters['time_horizon'])
-                    and len(self.training_buffer[info_P.agents[l]]['actions']) > 0):
-                agent_id = info_P.agents[l]
+        info_expert = info[self.brain_to_imitate]
+        for l in range(len(info_expert.agents)):
+            if ((info_expert.local_done[l] or
+                len(self.training_buffer[info_expert.agents[l]]['actions']) > self.trainer_parameters['time_horizon'])
+                    and len(self.training_buffer[info_expert.agents[l]]['actions']) > 0):
+                agent_id = info_expert.agents[l]
                 self.training_buffer.append_update_buffer(agent_id, batch_size=None, training_length=None)
                 self.training_buffer[agent_id].reset_agent()
 
-        info_E = info[self.brain_name]
-        for l in range(len(info_E.agents)):
-            if info_E.local_done[l]:
-                agent_id = info_E.agents[l]
+        info_student = info[self.brain_name]
+        for l in range(len(info_student.agents)):
+            if info_student.local_done[l]:
+                agent_id = info_student.agents[l]
                 self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
                 self.stats['episode_length'].append(self.episode_steps[agent_id])
                 self.cumulative_rewards[agent_id] = 0
@@ -232,7 +230,7 @@ class ImitationTrainer(Trainer):
 
     def is_ready_update(self):
         """
-        Returns wether or not the trainer has enough elements to run update model
+        Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to wether or not update_model() can be run
         """
         return len(self.training_buffer.update_buffer['actions']) > self.batch_size
@@ -253,13 +251,11 @@ class ImitationTrainer(Trainer):
             if not self.is_continuous:
                 feed_dict = {
                     self.network.state: batch_states.reshape([-1, 1]),
-                    self.network.true_action: np.reshape(batch_actions, -1)
-                }
+                    self.network.true_action: np.reshape(batch_actions, -1)}
             else:
                 feed_dict = {
                     self.network.state: batch_states.reshape([self.batch_size, -1]),
-                    self.network.true_action: batch_actions.reshape([self.batch_size, -1])
-                }
+                    self.network.true_action: batch_actions.reshape([self.batch_size, -1])}
             loss, _ = self.sess.run([self.network.loss, self.network.update], feed_dict=feed_dict)
             batch_losses.append(loss)
         if len(batch_losses) > 0:
