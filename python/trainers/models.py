@@ -76,7 +76,7 @@ class LearningModel(object):
         return hidden
 
     def create_vector_input(self, s_size):
-        if brain.state_space_type == "continuous":
+        if self.brain.state_space_type == "continuous":
             self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
             if self.normalize:
                 self.running_mean = tf.get_variable("running_mean", [s_size], trainable=False, dtype=tf.float32,
