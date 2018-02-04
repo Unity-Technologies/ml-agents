@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
+/// <summary>
+/// Agent info.The agent will send an instance of this class to the brain.
+/// </summary>
 public class AgentInfo
 {
     public List<float> vectorObservation;
@@ -20,12 +22,27 @@ public class AgentInfo
     public int id;
 }
 
+/// <summary>
+/// Agent action. The brain will send an instance of this class to the agent
+///  when taking a decision.
+/// </summary>
 public class AgentAction
 {
     public float[] vectorActions;
     public string textActions;
     public float[] memories;
-    public float value;
+    public float valueEstimate;
+}
+
+[System.Serializable]
+public class AgentParameters
+{
+    public List<Camera> agentCameras;
+    public int maxStep;
+    public bool resetOnDone = true;
+	public bool eventBased;
+	public int numberOfStepsBetweenActions;
+	public int numberOfActionsBetweenDecisions;
 }
 
 
@@ -34,37 +51,46 @@ public class AgentAction
  * Contains all logic for Brain-Agent communication and Agent-Environment 
  * interaction.
  */
+[System.Serializable]
 public abstract class Agent : MonoBehaviour
 {
-    [Tooltip("The brain to register this agent to. Can be dragged into the inspector using the Editor.")]
     /**<  \brief  The brain that will control this agent. */
     /**< Use the inspector to drag the desired brain gameObject into
 	 * the Brain field */
+    [HideInInspector]
+    //[SerializeField]
     public Brain brain;
 
-    [Tooltip("A list of Cameras which will be used to generate observations.")]
     /**<  \brief  The list of the cameras the Agent uses as observations. */
     /**< These cameras will be used to generate the observations */
-    public List<Camera> agentCameras;
+    //[HideInInspector]
+    //[SerializeField]
+    //public List<Camera> agentCameras;
 
-    [Tooltip("The per-agent maximum number of steps.")]
-    /**<  \brief  The number of steps the agent takes before being done. */
-    /**< If set to 0, the agent can only be set to done via a script.
+	/**<  \brief  The number of steps the agent takes before being done. */
+	/**< If set to 0, the agent can only be set to done via a script.
     * If set to any positive integer, the agent will be set to done after that
     * many steps each episode. */
-    public int maxStep;
+	//[HideInInspector]
+    //[SerializeField]
+    //public int maxStep;
 
-    [Tooltip("If checked, the agent will reset on done. Else, AgentOnDone() will be called.")]
     /**<  \brief Determines the behaviour of the Agent when done.*/
     /**< If true, the agent will reset when done. 
 	 * If not, the agent will remain done, and no longer take actions.*/
-    public bool resetOnDone = true;
+    //[HideInInspector]
+    //[SerializeField]
+    //public bool resetOnDone = true;
 
-
+    /// <summary>
+    /// The info. This is the placeholder for the information the agent will send
+    /// to the brain.
+    /// </summary>
     private AgentInfo _info = new AgentInfo();
+    /// <summary>
+    /// The action. This is the placeholder for the actions the agent will receive.
+    /// </summary>
     private AgentAction _action = new AgentAction();
-
-
 
     /**< \brief Describes the reward for the given step of the agent.*/
     /**< It is reset to 0 at the beginning of every step. 
@@ -75,10 +101,10 @@ public abstract class Agent : MonoBehaviour
     private float reward;
 
     /**< \brief Whether or not the agent is requests an action*/
-    private bool requestAction;
+    public bool requestAction;
 
     /**< \brief Whether or not the agent is requests a decision*/
-    private bool requestDecision;
+    public bool requestDecision;
 
     /**< \brief Whether or not the agent is done*/
     /**< Set to true when the agent has acted in some way which ends the 
@@ -88,11 +114,6 @@ public abstract class Agent : MonoBehaviour
     /**< \brief Whether or not the max step is reached*/
     private bool maxStepReached;
 
-    /**< \brief The current value estimate of the agent */
-    /**<  When using an External brain, you can pass value estimates to the
-     * agent at every step using env.Step(actions, values).
-     * If AgentMonitor is attached to the Agent, this value will be displayed.*/
-
     /**< \brief Do not modify: This keeps track of the cumulative reward.*/
     private float CumulativeReward;
 
@@ -100,17 +121,38 @@ public abstract class Agent : MonoBehaviour
      * the agent each episode.*/
     private int stepCounter;
 
+	public int stepsSinceAction;
+	public int actionsSinceDecision;
+
+    //[HideInInspector]
+    //[SerializeField]
+    //public bool eventBased;
+    //[HideInInspector]
+    //[SerializeField]
+    //public int numberOfStepsBetweenActions;
+    //[HideInInspector]
+    //[SerializeField]
+    //public int numberOfActionsBetweenDecisions;
+    //[SerializeField]
+    [HideInInspector]
+    public AgentParameters agentParameters;
 
     /**< \brief This is the unique Identifier each agent 
      * receives at initialization. It is used by the brain to identify
      * the agent.*/
     private int id;
 
+    /// <summary>
+    /// Unity method called when the agent is istanciated or set to active.
+    /// </summary>
     private void OnEnable()
     {
         _InitializeAgent();
     }
 
+    /// <summary>
+    /// Is called when the agent is initialized. 
+    /// </summary>
     void _InitializeAgent()
     {
         id = gameObject.GetInstanceID();
@@ -125,6 +167,9 @@ public abstract class Agent : MonoBehaviour
         InitializeAgent();
     }
 
+    /// <summary>
+    /// Is called when the agent is disabled. 
+    /// </summary>
     void _DisableAgent()
     {
         Academy aca = Object.FindObjectOfType<Academy>() as Academy;
@@ -132,6 +177,9 @@ public abstract class Agent : MonoBehaviour
             aca.UnRegisterAgent(this);
     }
 
+    /// <summary>
+    /// Unity Method. Gets called when the agent is destroyed or is set inactive.
+    /// </summary>
     void OnDisable()
     {
         _DisableAgent();
@@ -149,35 +197,65 @@ public abstract class Agent : MonoBehaviour
 
     }
 
-    public void SetReward(float f)
+    /// <summary>
+    /// Use this method to overrite the current reward of the agent.
+    /// </summary>
+    /// <param name="newValue">The new value of the reward</param>
+    public void SetReward(float newValue)
     {
-        reward = f;
+        reward = newValue;
     }
-    public void AddReward(float f)
+    /// <summary>
+    /// Use this method to increment the current reward of the agent.
+    /// </summary>
+    /// <param name="increment">The value by which the reward will
+    /// be incremented</param>
+    public void AddReward(float increment)
     {
-        reward += f;
+        reward += increment;
     }
+    /// <summary>
+    /// Gets the reward of the agent.
+    /// </summary>
+    /// <returns>The reward.</returns>
     public float GetReward(){
         return reward;
     }
+    /// <summary>
+    /// Gets the value estimate of the agent.
+    /// </summary>
+    /// <returns>The value estimate.</returns>
     public float GetValue(){
-        return _action.value;
+        return _action.valueEstimate;
     }
+    /// <summary>
+    /// Is called when the agent reaches the maximum number of steps.
+    /// </summary>
     public void MaxStepReached()
     {
         maxStepReached =true;
-        Done();
+		// When the maxStepReached flag is set, the done flag must also be set.
+		Done();
     }
+    /// <summary>
+    /// Is called then the agent is done. Either game-over, victory or timeout.
+    /// </summary>
     public void Done()
     {
         done = true;
-        RequestDecision();
     }
+    /// <summary>
+    /// Is called when the agent must request the brain for a new decision.
+    /// </summary>
 	public void RequestDecision()
 	{
         requestDecision = true;
+        // When the agent requests  decision, it must also request an action.
 		RequestAction();
 	}
+    /// <summary>
+    /// Is called then the agent must perform a new action.
+    /// </summary>
 	public void RequestAction()
 	{
 		requestAction = true;
@@ -194,22 +272,46 @@ public abstract class Agent : MonoBehaviour
     public void _ClearRequestAction(){
         requestAction = false;
     }
+    /// <summary>
+    /// Indicates if the agent has reached his maximum number of steps.
+    /// </summary>
+    /// <returns><c>true</c>, if max step reached was reached,
+    ///  <c>false</c> otherwise.</returns>
     public bool IsMaxStepReached(){
         return maxStepReached;
     }
+    /// <summary>
+    /// Indicates if the agent is done
+    /// </summary>
+    /// <returns><c>true</c>, if the agent is done,
+    ///  <c>false</c> otherwise.</returns>
     public bool IsDone(){
         return done;
     }
+    /// <summary>
+    /// Indicates if the agent has requested a decision
+    /// </summary>
+    /// <returns><c>true</c>, if the agent has requested a decision,
+    ///  <c>false</c> otherwise.</returns>
     public bool HasRequestedDecision(){
         return requestDecision;
     }
+    /// <summary>
+    /// Indicates if the agent has requested an action
+    /// </summary>
+    /// <returns><c>true</c>, if the agent has requested an action,
+    ///  <c>false</c> otherwise.</returns>
     public bool HasRequestedAction(){
         return requestAction;
     }
 
+    /// <summary>
+    /// Resets the info and action fields of the agent. Is called when the agent
+    /// resets or changes brain.
+    /// </summary>
     internal void ResetState()
     {
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+		if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
             _action.vectorActions = new float[brain.brainParameters.actionSize];
             _info.StoredVectorActions = new float[brain.brainParameters.actionSize];
@@ -224,8 +326,10 @@ public abstract class Agent : MonoBehaviour
         if (brain.brainParameters.stateSpaceType == StateType.continuous)
         {
             _info.vectorObservation = new List<float>(brain.brainParameters.stateSize);
-            _info.stakedVectorObservation = new List<float>(brain.brainParameters.stateSize * brain.brainParameters.stackedStates);
-            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
+            _info.stakedVectorObservation = new List<float>(brain.brainParameters.stateSize 
+                                                            * brain.brainParameters.stackedStates);
+            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.stateSize 
+                                                             * brain.brainParameters.stackedStates]);
         }
         else
         {
@@ -246,8 +350,12 @@ public abstract class Agent : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Sends the state to brain.
+    /// </summary>
     public void SendStateToBrain()
     {
+        actionsSinceDecision = 0;
         SetCumulativeReward();
         _info.StoredVectorActions = _action.vectorActions;
         _info.StoredTextActions = _action.textActions;
@@ -280,17 +388,17 @@ public abstract class Agent : MonoBehaviour
             _info.stakedVectorObservation.AddRange(_info.vectorObservation);
         }
         _info.visualObservations.Clear();
-        if (brain.brainParameters.cameraResolutions.Length > agentCameras.Count)
+        if (brain.brainParameters.cameraResolutions.Length > agentParameters.agentCameras.Count)
         {
             throw new UnityAgentsException(string.Format(@"Not enough cameras for agent {0} : 
                 Bain {1} expecting at least {2} cameras but only {3} were present.",
                 gameObject.name, brain.gameObject.name,
-                brain.brainParameters.cameraResolutions.Length, agentCameras.Count));
+                brain.brainParameters.cameraResolutions.Length, agentParameters.agentCameras.Count));
         }
         for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
         {
             _info.visualObservations.Add(ObservationToTexture(
-                agentCameras[i],
+                agentParameters.agentCameras[i],
                 brain.brainParameters.cameraResolutions[i].width,
                 brain.brainParameters.cameraResolutions[i].height));
         }
@@ -310,9 +418,14 @@ public abstract class Agent : MonoBehaviour
         // The develloper will use AddVectorObs()
     }
 
-    internal void AddVectorObs(float v)
+    /// <summary>
+    /// Adds a vector observation. Note that the number of vector observation to add
+    /// must be the same at each CollectObservations call.
+    /// </summary>
+    /// <param name="observation">The float value to add to the vector observation.</param>
+    internal void AddVectorObs(float observation)
     {
-        _info.vectorObservation.Add(v);
+        _info.vectorObservation.Add(observation);
     }
     internal void AddTextObs(string s)
     {
@@ -359,8 +472,16 @@ public abstract class Agent : MonoBehaviour
     {
         ResetState();
         stepCounter = 0;
+        //stepsSinceAction = 0;
+        //actionsSinceDecision = 0;
         AgentReset();
     }
+
+    public void _resetCounters(){
+		stepCounter = 0;
+		stepsSinceAction = 0;
+		actionsSinceDecision = 0;
+	}
 
 
     public void SetCumulativeReward()
@@ -391,7 +512,7 @@ public abstract class Agent : MonoBehaviour
     }
     public void UpdateValueAction(float v)
     {
-        _action.value = v;
+        _action.valueEstimate = v;
     }
     public void UpdatevTextAction(string t)
     {
@@ -402,18 +523,36 @@ public abstract class Agent : MonoBehaviour
     /// Do not modify : Is used by the brain to make the agent perform a step.
     public void _AgentStep()
     {
+        
         //AgentStep(_action.vectorActions);
 
         if (requestAction)
         {
             _ClearRequestAction();
             AgentAction(_action.vectorActions);
+            stepsSinceAction = 0;
+            actionsSinceDecision += 1;
         }
-
+        stepsSinceAction += 1;
         stepCounter += 1;
-        if ((stepCounter > maxStep) && (maxStep > 0))
+        if ((stepCounter > agentParameters.maxStep) && (agentParameters.maxStep > 0))
         {
             MaxStepReached();
+        }
+        MakeRequests();
+    }
+    /// <summary>
+    /// Is called after every step, contains the logic to decide if the agent
+    /// will request a decision at the next step.
+    /// </summary>
+    public void MakeRequests(){
+        if(!agentParameters.eventBased){
+            if (stepsSinceAction > agentParameters.numberOfStepsBetweenActions){
+                RequestAction();
+            }
+            if (actionsSinceDecision > agentParameters.numberOfActionsBetweenDecisions){
+                RequestDecision();
+            }
         }
     }
 

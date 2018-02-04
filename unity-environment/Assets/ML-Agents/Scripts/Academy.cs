@@ -197,17 +197,21 @@ public abstract class Academy : MonoBehaviour
 
     }
 
-    public void MaxStepReached(){
+    public void MaxStepReached()
+    {
         maxStepReached = true;
         Done();
     }
-    public void Done(){
+    public void Done()
+    {
         done = true;
     }
-    public bool IsMaxStepR4eached(){
+    public bool IsMaxStepR4eached()
+    {
         return maxStepReached;
     }
-    public bool IsDone(){
+    public bool IsDone()
+    {
         return done;
     }
 
@@ -250,7 +254,8 @@ public abstract class Academy : MonoBehaviour
             }
         }
 
-        if  ((stepsSinceReset >= maxSteps) && maxSteps > 0){
+        if ((stepsSinceReset >= maxSteps) && maxSteps > 0)
+        {
             MaxStepReached();
         }
         if (done)
@@ -264,23 +269,38 @@ public abstract class Academy : MonoBehaviour
         }
         agentsTerminate.Clear();
 
+
         foreach (Agent agent in agents)
         {
             // If an agent is done, then it will also request for a decision and an action
-			if (agent.IsDone())
-			{
-				if (agent.resetOnDone)
-					agent._AgentReset();
-				else
-					agentsTerminate.Add(agent);
-			}
+            if (agent.IsDone())
+            {
+                if (agent.agentParameters.resetOnDone) 
+                {
+                    if (agent.agentParameters.eventBased)
+                    {
+                        //If event based, the agent can reset as soon as it is done
+                        agent._AgentReset();
+                    }
+                    else if (agent.HasRequestedDecision()){
+                        // If not event based, the agent must wait to request a decsion
+                        // before reseting to keep multiple agents in sync.
+                        agent._AgentReset();
+                    }
+                }
+                else
+                {
+                    agentsTerminate.Add(agent);
+                    agent.RequestDecision();
+                }
+            }
         }
 
         foreach (Agent agent in agents)
         {
             if (agent.HasRequestedDecision())
             {
-                
+
                 agent.SendStateToBrain();
                 agent._ClearDone();
                 agent._ClearMaxStepReached();
@@ -318,11 +338,11 @@ public abstract class Academy : MonoBehaviour
         maxStepReached = false;
         AcademyReset();
 
-        //The list might change while iterating. Consider MAking a copy.
+        //The list might change while iterating. Consider Making a copy.
         foreach (Agent agent in agents)
         {
             agent._AgentReset();
-
+            agent._resetCounters();
         }
 
     }

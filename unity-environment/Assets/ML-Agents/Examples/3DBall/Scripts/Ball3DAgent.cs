@@ -6,11 +6,12 @@ public class Ball3DAgent : Agent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
-    public int timeSinceAction;
+    //public int timeSinceAction;
 
     public override void InitializeAgent()
     {
-        timeSinceAction = (int)(Random.Range(0f, 3f));
+        //timeSinceAction = (int)(Random.Range(0f, 3f));
+        //Debug.Log(brain);
     }
 
     public override void CollectObservations()
@@ -70,18 +71,18 @@ public class Ball3DAgent : Agent
 		//requestDecision = true;
     }
 
-    public void FixedUpdate()
-    {
-        // In this example, the agent requests a decision at every step and a decision every 4 steps
-        if(timeSinceAction == 3)
-        {
+//    public void FixedUpdate()
+//    {
+//        // In this example, the agent requests a decision at every step and a decision every 4 steps
+//        if(timeSinceAction == 3)
+//        {
             
-            RequestDecision();
-            timeSinceAction = 0;
-        }
-        else{
-            timeSinceAction += 1;
-        }
-        RequestAction();
-    }
+//            RequestDecision();
+//            timeSinceAction = 0;
+//        }
+//        else{
+//            timeSinceAction += 1;
+//        }
+//        RequestAction();
+//    }
 }

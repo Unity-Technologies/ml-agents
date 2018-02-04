@@ -161,7 +161,7 @@ public class ResetParameterDrawer : PropertyDrawer
 
     private void AddNewItem()
     {
-        string key = "Param";
+        string key = "Param-"+_Dictionary.Count.ToString();
         var value = default(float);
         try
         {
