@@ -101,10 +101,10 @@ public abstract class Agent : MonoBehaviour
     private float reward;
 
     /**< \brief Whether or not the agent is requests an action*/
-    public bool requestAction;
+    private bool requestAction;
 
     /**< \brief Whether or not the agent is requests a decision*/
-    public bool requestDecision;
+    private bool requestDecision;
 
     /**< \brief Whether or not the agent is done*/
     /**< Set to true when the agent has acted in some way which ends the 
@@ -121,8 +121,8 @@ public abstract class Agent : MonoBehaviour
      * the agent each episode.*/
     private int stepCounter;
 
-	public int stepsSinceAction;
-	public int actionsSinceDecision;
+	private int stepsSinceAction;
+	private int actionsSinceDecision;
 
     //[HideInInspector]
     //[SerializeField]
