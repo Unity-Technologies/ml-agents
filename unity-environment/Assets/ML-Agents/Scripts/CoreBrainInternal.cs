@@ -73,6 +73,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
     List<Texture2D> texturesHolder;
+    int memorySize;
 #endif
 
     /// Reference to the brain that uses this CoreBrainInternal
@@ -130,6 +131,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             if ((graph[graphScope + RecurrentInPlaceholderName] != null) && (graph[graphScope + RecurrentOutPlaceholderName] != null))
             {
                 hasRecurrent = true;
+                var runner = session.GetRunner();
+                runner.Fetch(graph[graphScope + "memory_size"][0]);
+                var networkOutput = runner.Run()[0].GetValue();
+                memorySize = (int)networkOutput;
 
             }
             if (graph[graphScope + StatePlacholderName] != null)
@@ -198,15 +203,17 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the recurrent tensor
         if (hasRecurrent)
         {
-            inputOldMemories = new float[currentBatchSize, brain.brainParameters.memorySize];
+            // Need to have variable memory size
+            inputOldMemories = new float[currentBatchSize, memorySize];
             var i = 0;
             foreach (Agent agent in agentList)
             {
-                float[] m = agentInfo[agent].memories;
-                for (int j = 0; j < brain.brainParameters.memorySize; j++)
+                float[] m = agentInfo[agent].memories.ToArray();
+                for (int j = 0; j < m.Count(); j++)
                 {
 
                     inputOldMemories[i, j] = m[j];
+
                 }
                 i++;
             }
@@ -317,12 +324,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             var i = 0;
             foreach (Agent agent in agentList)
             {
-                var m = new float[brain.brainParameters.memorySize];
-                for (int j = 0; j < brain.brainParameters.memorySize; j++)
+                var m = new float[memorySize];
+                for (int j = 0; j < memorySize; j++)
                 {
                     m[j] = recurrent_tensor[i, j];
                 }
-                agent.UpdateMemoriesAction(m);
+                agent.UpdateMemoriesAction(m.ToList());
                 i++;
             }
 

@@ -259,6 +259,7 @@ class ContinuousControlModel(PPOModel):
             hidden_value = tf.concat([hidden_visual[1], hidden_state[1]], axis=1)
 
         if self.use_recurrent:
+            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = self.create_recurrent_encoder(
@@ -333,6 +334,7 @@ class DiscreteControlModel(PPOModel):
             hidden = tf.concat([hidden_visual, hidden_state], axis=1)
 
         if self.use_recurrent:
+            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
             self.memory_out = tf.identity(self.memory_out, name='recurrent_out')

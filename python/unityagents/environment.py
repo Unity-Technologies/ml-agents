@@ -302,7 +302,8 @@ class UnityEnvironment(object):
                 else str(self._brains[b].state_space_size * n_agent * self._brains[b].stacked_states),
                                                    self._brains[b].state_space_type,
                                                    len(state_dict["states"])))
-            memories = np.array(state_dict["memories"]).reshape((n_agent, self._brains[b].memory_space_size))
+
+            memories = self._pad_array([x["memory"] for x in  state_dict["memories"]])
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
@@ -322,12 +323,15 @@ class UnityEnvironment(object):
 
             self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions, max_reached=maxes)
 
-        # try:
-        #     self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
-        # except socket.timeout as e:
-        #     raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
+    def _pad_array(self, m):
+        """
+        Converts a list of lists of variable length into a 2d numpy array by padding the shortest lists with zeros
+        :param m: a list of list of floats
+        :return: a 2d numpy array
+        """
+        m_size = max(len(x) for x in m)
+        return np.asarray([x + [0]*(m_size-len(x)) for x in m])
 
-        # return self._data
 
     def _send_action(self, action, memory, value):
         """
@@ -427,10 +431,10 @@ class UnityEnvironment(object):
                     raise UnityActionException("You need to input an action for the brain {0}".format(b))
                 action[b] = self._flatten(action[b])
                 if b not in memory:
-                    memory[b] = [0.0] * self._brains[b].memory_space_size * n_agent
+                    memory[b] = []
                 else:
                     if memory[b] is None:
-                        memory[b] = [0.0] * self._brains[b].memory_space_size * n_agent
+                        memory[b] = []
                     else:
                         memory[b] = self._flatten(memory[b])
                 if b not in value:
@@ -444,11 +448,6 @@ class UnityEnvironment(object):
                     raise UnityActionException(
                         "There was a mismatch between the provided value and environment's expectation: "
                         "The brain {0} expected {1} value but was given {2}".format(b, n_agent, len(value[b])))
-                if not (len(memory[b]) == self._brains[b].memory_space_size * n_agent):
-                    raise UnityActionException(
-                        "There was a mismatch between the provided memory and environment's expectation: "
-                        "The brain {0} expected {1} memories but was given {2}"
-                            .format(b, self._brains[b].memory_space_size * n_agent, len(memory[b])))
                 if not ((self._brains[b].action_space_type == "discrete" and len(action[b]) == n_agent) or
                             (self._brains[b].action_space_type == "continuous" and len(
                                 action[b]) == self._brains[b].action_space_size * n_agent)):

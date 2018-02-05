@@ -35,7 +35,7 @@ public class ExternalCommunicator : Communicator
     List<int> concatenatedAgentId = new List<int>(defaultNumAgents);
     List<float> concatenatedStates = new List<float>(defaultNumAgents*defaultNumObservations);
     List<float> concatenatedRewards = new List<float>(defaultNumAgents);
-    List<float> concatenatedMemories = new List<float>(defaultNumAgents * defaultNumObservations);
+    List<MemoryMessage> concatenatedMemories = new List<MemoryMessage>(defaultNumAgents);
     List<bool> concatenatedDones = new List<bool>(defaultNumAgents);
     List<bool> concatenatedMaxes = new List<bool>(defaultNumAgents);
     List<float> concatenatedActions = new List<float>(defaultNumAgents * defaultNumObservations);
@@ -53,6 +53,7 @@ public class ExternalCommunicator : Communicator
 
     /// Placeholder for state information to send.
     [System.Serializable]
+    [HideInInspector]
     public struct StepMessage
     {
         public string brain_name;
@@ -60,11 +61,20 @@ public class ExternalCommunicator : Communicator
         public List<float> states;
         public List<float> rewards;
         public List<float> actions;
-        public List<float> memories;
+        public List<MemoryMessage> memories;
         public List<bool> dones;
         public List<bool> maxes;
     }
 
+    [System.Serializable]
+    [HideInInspector]
+    // This is required because JsonUtility does not support List<List<floats>>
+    public struct MemoryMessage
+    {
+        public List<float> memory;
+    }
+
+    MemoryMessage mMessage;
     StepMessage sMessage;
     string sMessageString;
 
@@ -160,6 +170,7 @@ public class ExternalCommunicator : Communicator
         SendParameters(accParamerters);
 
         sMessage = new StepMessage();
+		mMessage = new MemoryMessage();
 
         //Initialize the list of brains the Communicator must listen to
         // Issue : This assumes all brains are broadcasting.
@@ -330,7 +341,8 @@ public class ExternalCommunicator : Communicator
                 concatenatedAgentId.Add(agentInfo[agent].id);
                 concatenatedStates.AddRange(agentInfo[agent].stakedVectorObservation);
                 concatenatedRewards.Add(agentInfo[agent].reward);
-                concatenatedMemories.AddRange(agentInfo[agent].memories.ToList());
+                mMessage.memory = agentInfo[agent].memories;
+                concatenatedMemories.Add(mMessage);
                 concatenatedDones.Add(agentInfo[agent].done);
                 concatenatedActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
                 concatenatedMaxes.Add(agentInfo[agent].maxStepReached);
@@ -410,6 +422,7 @@ public class ExternalCommunicator : Communicator
             {
                 var brainName = brain.gameObject.name;
 
+                var memorySize = agentMessage.memory[brainName].Count() / current_agents[brainName].Count();
 
                 for (int i = 0; i < current_agents[brainName].Count(); i++)
                 {
@@ -424,7 +437,8 @@ public class ExternalCommunicator : Communicator
 
                     }
 
-                    agent.UpdateMemoriesAction(agentMessage.memory[brainName].GetRange(i * brain.brainParameters.memorySize, brain.brainParameters.memorySize).ToArray());
+                    // Need to figure out how to remove brainParamters.memroySize
+                    agent.UpdateMemoriesAction(agentMessage.memory[brainName].GetRange(i * memorySize, memorySize));
 
 
                     agent.UpdateValueAction(agentMessage.value[brainName][i]);

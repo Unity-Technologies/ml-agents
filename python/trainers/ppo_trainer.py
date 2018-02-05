@@ -30,7 +30,7 @@ class PPOTrainer(Trainer):
                            'learning_rate',
                            'max_steps', 'normalize', 'num_epoch', 'num_layers', 'time_horizon', 'sequence_length',
                            'summary_freq',
-                           'use_recurrent', 'graph_scope', 'summary_path']
+                           'use_recurrent', 'graph_scope', 'summary_path', 'memory_size']
 
         for k in self.param_keys:
             if k not in trainer_parameters:
@@ -43,7 +43,7 @@ class PPOTrainer(Trainer):
         self.sequence_length = 1
         self.m_size = None
         if self.use_recurrent:
-            self.m_size = env.brains[brain_name].memory_space_size
+            self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
         if self.use_recurrent:
             if self.m_size == 0:
@@ -176,6 +176,8 @@ class PPOTrainer(Trainer):
         if self.use_states:
             feed_dict[self.model.state_in] = info.states
         if self.use_recurrent:
+            if info.memories.shape[1] == 0:
+                info.memories = np.zeros((len(info.states), self.m_size))
             feed_dict[self.model.memory_in] = info.memories
             run_list += [self.model.memory_out]
         if (self.is_training and self.brain.state_space_type == "continuous" and
@@ -229,6 +231,8 @@ class PPOTrainer(Trainer):
                     if self.use_states:
                         self.training_buffer[agent_id]['states'].append(stored_info.states[idx])
                     if self.use_recurrent:
+                        if stored_info.memories.shape[1] == 0:
+                            stored_info.memories = np.zeros((len(info.states), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
                     if self.is_continuous:
                         epsi = stored_take_action_outputs[self.model.epsilon]
@@ -275,6 +279,8 @@ class PPOTrainer(Trainer):
                     if self.use_states:
                         feed_dict[self.model.state_in] = info.states
                     if self.use_recurrent:
+                        if info.memories.shape[1] == 0:
+                            info.memories = np.zeros((len(info.states), self.m_size))
                         feed_dict[self.model.memory_in] = info.memories
                     value_next = self.sess.run(self.model.value, feed_dict)[l]
                 agent_id = info.agents[l]

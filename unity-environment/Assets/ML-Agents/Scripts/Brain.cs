@@ -76,9 +76,6 @@ public class BrainParameters
     public int actionSize = 1;
     /**< \brief If continuous : The length of the float vector that represents the action
      * <br> If discrete : The number of possible values the action can take*/
-    [Tooltip("Length of memory vector for brain. Used with Recurrent networks.")]
-    public int memorySize = 0;
-    /**< \brief The length of the float vector that holds the memory for the agent */
     [Tooltip("Describes height, width, and whether to greyscale visual observations for the Brain.")]
     public resolution[] cameraResolutions;
     /**<\brief  The list of observation resolutions for the brain */

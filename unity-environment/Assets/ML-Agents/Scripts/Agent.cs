@@ -11,7 +11,7 @@ public class AgentInfo
     public List<float> vectorObservation;
     public List<float> stakedVectorObservation;
     public List<Texture2D> visualObservations;
-    public float[] memories;
+    public List<float> memories;
     public string textObservation;
     public float[] StoredVectorActions;
     public string StoredTextActions;
@@ -30,7 +30,7 @@ public class AgentAction
 {
     public float[] vectorActions;
     public string textActions;
-    public float[] memories;
+    public List<float> memories;
     public float valueEstimate;
 }
 
@@ -322,7 +322,8 @@ public abstract class Agent : MonoBehaviour
             _info.StoredVectorActions = new float[1];
         }
         _action.textActions = "";
-        _info.memories = new float[brain.brainParameters.memorySize];
+        _info.memories = new List<float>();
+        _action.memories = new List<float>();
         if (brain.brainParameters.stateSpaceType == StateType.continuous)
         {
             _info.vectorObservation = new List<float>(brain.brainParameters.stateSize);
@@ -357,6 +358,7 @@ public abstract class Agent : MonoBehaviour
     {
         actionsSinceDecision = 0;
         SetCumulativeReward();
+        _info.memories = _action.memories;
         _info.StoredVectorActions = _action.vectorActions;
         _info.StoredTextActions = _action.textActions;
         _info.vectorObservation.Clear();
@@ -506,7 +508,7 @@ public abstract class Agent : MonoBehaviour
     {
         _action.vectorActions = v;
     }
-    public void UpdateMemoriesAction(float[] v)
+    public void UpdateMemoriesAction(List<float> v)
     {
         _action.memories = v;
     }

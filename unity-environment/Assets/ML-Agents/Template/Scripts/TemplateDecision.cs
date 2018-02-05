@@ -5,15 +5,15 @@ using UnityEngine;
 public class TemplateDecision : MonoBehaviour, Decision
 {
 
-    public float[] Decide(List<float> state, List<Texture2D> observation, float reward, bool done, float[] memory)
+    public float[] Decide(List<float> state, List<Texture2D> observation, float reward, bool done, List<float> memory)
     {
         return new float[0];
 
     }
 
-    public float[] MakeMemory(List<float> state, List<Texture2D> observation, float reward, bool done, float[] memory)
+    public List<float> MakeMemory(List<float> state, List<Texture2D> observation, float reward, bool done, List<float> memory)
     {
-        return new float[0];
+        return new List<float>();
 		
     }
 }
