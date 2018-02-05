@@ -39,6 +39,7 @@ public class ExternalCommunicator : Communicator
     List<bool> concatenatedDones = new List<bool>(defaultNumAgents);
     List<bool> concatenatedMaxes = new List<bool>(defaultNumAgents);
     List<float> concatenatedActions = new List<float>(defaultNumAgents * defaultNumObservations);
+    List<string> concatenatedTextObservations = new List<string>();
 
     int comPort;
     int randomSeed;
@@ -62,6 +63,7 @@ public class ExternalCommunicator : Communicator
         public List<float> rewards;
         public List<float> actions;
         public List<MemoryMessage> memories;
+        public List<string> textObservations;
         public List<bool> dones;
         public List<bool> maxes;
     }
@@ -346,6 +348,7 @@ public class ExternalCommunicator : Communicator
                 concatenatedDones.Add(agentInfo[agent].done);
                 concatenatedActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
                 concatenatedMaxes.Add(agentInfo[agent].maxStepReached);
+                concatenatedTextObservations.Add(agentInfo[agent].textObservation);
 
             }
 
@@ -357,6 +360,7 @@ public class ExternalCommunicator : Communicator
             sMessage.memories = concatenatedMemories;
             sMessage.dones = concatenatedDones;
             sMessage.maxes = concatenatedMaxes;
+            sMessage.textObservations = concatenatedTextObservations;
 
             sMessageString = JsonUtility.ToJson(sMessage);
             sender.Send(AppendLength(Encoding.ASCII.GetBytes(sMessageString)));

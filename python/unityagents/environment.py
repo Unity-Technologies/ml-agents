@@ -286,7 +286,7 @@ class UnityEnvironment(object):
                 self._global_done = end_of_message
                 for _b in self._brain_names:
                     if _b not in self._data:
-                        self._data[_b] = BrainInfo([], np.array([]), np.array([]), [], [], [], np.array([]), max_reached=[])
+                        self._data[_b] = BrainInfo([], np.array([]),[] , np.array([]), [], [], [], np.array([]), max_reached=[])
                 return self._data
             b = state_dict["brain_name"]
             n_agent = len(state_dict["agents"])
@@ -304,6 +304,7 @@ class UnityEnvironment(object):
                                                    len(state_dict["states"])))
 
             memories = self._pad_array([x["memory"] for x in  state_dict["memories"]])
+            text_obs = state_dict["textObservations"]
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
@@ -321,7 +322,7 @@ class UnityEnvironment(object):
 
                 observations.append(np.array(obs_n))
 
-            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions, max_reached=maxes)
+            self._data[b] = BrainInfo(observations, states, text_obs, memories, rewards, agents, dones, actions, max_reached=maxes)
 
     def _pad_array(self, m):
         """
