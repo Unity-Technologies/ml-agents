@@ -10,8 +10,8 @@ C - Content that needs to be consolidated into a different doc
  * E [Making a new Unity Environment](1-GettingStarted/4-Making-a-New-Unity-Environment.md)
 
 ## Reinforcement Learning in Unity
- * N [Designing a Learning Environment](2-RLInUnity/1-Designing-a-Learning-Environment.md)
- * N [Implementing a Learning Environment with ML Agents](2-RLInUnity/2-Implementing-a-Learning-Environment.md)
+ * N [Designing a Learning Environment](2-RLInUnity/1-Reinforcement-Learning-in-Unity.md)
+ * N [Implementing a Learning Environment with ML Agents](2-RLInUnity/2-Agents.md)
  * C [Best practices when creating an Environment](2-RLInUnity/best-practices.md)
  * C [Scene Organization](2-RLInUnity/Organizing-the-Scene.md)
  * C [Curriculum Learning](3-Training/5-Curriculum-Training.md)
