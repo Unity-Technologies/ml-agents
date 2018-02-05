@@ -11,7 +11,7 @@
 * numpy
 * Pillow
 * Python (2 or 3)
-* Tensorflow (1.0+)
+* Tensorflow (1.4)
 
 ### Installing Dependencies
 To install dependencies, run:
