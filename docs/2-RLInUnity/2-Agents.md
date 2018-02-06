@@ -23,13 +23,14 @@ For agents using a continuous state space, you create a feature vector to repres
 
 The observation must include all the information an agent needs to accomplish its task. Without sufficient and relevant information, an agent may learn poorly or may not learn at all. A reasonable approach for determining what information should be included is to consider what you would need to calculate an analytical solution to the problem. 
 
-For examples of various state observation functions, you can look at the [Examples](link) included in the ML AGents SDK.  For instance, the 3DBall example uses the rotation of the platform, the relative position of the ball, and the velocity of the ball as its state observation:
+For examples of various state observation functions, you can look at the [Examples](link) included in the ML Agents SDK.  For instance, the 3DBall example uses the rotation of the platform, the relative position of the ball, and the velocity of the ball as its state observation. As an experiment, you can remove the velocity components from the observation and retrain the 3DBall agent. While it will learn to balance the ball reasonably well, the performance of the agent without using velocity is noticeably worse.
 
     public GameObject ball;
-
+    
+    private List<float> state = new List<float>();
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
+        state.Clear();
         state.Add(gameObject.transform.rotation.z);
         state.Add(gameObject.transform.rotation.x);
         state.Add((ball.transform.position.x - gameObject.transform.position.x));
@@ -66,12 +67,22 @@ For entities like positions and rotations, you can add their components to the f
     state.Add(speed.y);
     state.Add(speed.z);
 
-Type enumerations should be encoded in the _one-hot_ style. That is, add an element to the feature vector for each element of enumeration. Set the element representing the observed member to one and set the rest to zero. For example, if your enumeration contains \[Sword, Shield, Bow\] and the agent observes a Bow, you would add the elements: 0, 0, 1 to the feature vector.
+Type enumerations should be encoded in the _one-hot_ style. That is, add an element to the feature vector for each element of enumeration, setting the element representing the observed member to one and set the rest to zero. For example, if your enumeration contains \[Sword, Shield, Bow\] and the agent observes that the current item is a Bow, you would add the elements: 0, 0, 1 to the feature vector. The following code example illustrates how to add 
 
-    [code example]
+    enum CarriedItems {Sword, Shield, Bow, LastItem}
+    private List<float> state = new List<float>();
+    public override List<float> CollectState()
+    {
+        state.Clear();
+        for(int ci = 0; ci < (int)CarriedItems.LastItem; ci++){
+            state.Add((int)currentItem == ci ? 1.0f : 0.0f);            
+        }
+        return state;
+    }
+
 
 <!-- 
-How to handle things like large numbers of strings or symbols? A very long one-hot vector? A single index into a table? 
+How to handle things like large numbers of words or symbols? Should you use a very long one-hot vector? Or a single index into a table? 
 Colors? Better to use a single color number or individual components?
 -->
 
@@ -83,12 +94,14 @@ To normalize a value to [0, 1], you can use the following formula:
 
     normalizedValue = (currentValue - minValue)/(maxValue - minValue)
 
-Rotations should also be normalized. First, make sure that the components are in a standard range (like 0 to 360 or -180 to +180), and then normalize:
+Rotations and angles should also be normalized. For angles between 0 and 360 degrees, you can use the following formulas:
 
     Quaternion rotation = transform.rotation;
-    Vector3 normalized = rotation.eulerAngles/180.0f - Vector3.one; //(-1..1)
-    Vector3 normalized = rotation.eulerAngles/360.0f; //(0..1)
+    Vector3 normalized = rotation.eulerAngles/180.0f - Vector3.one; //[-1,1]
+    Vector3 normalized = rotation.eulerAngles/360.0f; //[0,1]
   
+ For angles that can be outside the range [0,360], you can either reduce the angle, or, if the number of turns is significant, increase the maximum value used in your normalization formula.
+ 
 #### Camera Observations
 
 Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network.
@@ -105,21 +118,72 @@ More generally, the discrete state identifier could be an index into a table of 
 
 To implement a discrete state observation, implement the [CollectState()](link) method of your Agent subclass and return a `List` containing a single number representing the state:
 
+    private List<float> state = new List<float>();
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
-        state.Add(stateIndex); //stateIndex is the state identifier
+        state[0] = stateIndex; //stateIndex is the state identifier
         return state;
     }
+
+### Actions
+
+An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's [AgentStep()](link) function. When you specify that the action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Action Size` property.  When you specify a **Discrete** action space, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** action space, the `Action Size` is the number of elements in your action table. Set the `Action Space` and `Action Size` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
+
+Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentStep()` function. You simply specify the type of action space, and, for the coninuous action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionStep()`.
+
+For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete actions. In the continuous case, you would set the action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would set the action size to four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to four.  
+
+Note that when you are programming actions for an agent, it is often helpful to test your action logic using a **Player** brain, which lets you map keyboard commands to actions. See [Agent Brains](link).
+
+The [3DBall](link) and [Area](link) example projects are set up to use either the continuous or the discrete action spaces. 
+
+#### Continuous Action Space
+
+When an agent uses a brain set to the **Continuous** action space, the action parameter passed to the agent's `AgentStep()` function is an array with length equal to the Brain object's `Action Size` property value.  The individual values in the array have whatever meanings that you ascribe to them. If you assign an element in the array as the speed of an agent, for example, the training process learns to control the speed of the agent though this parameter. 
+
+The [Reacher](link) example defines a continuous action space with four control values. 
+
+[screenshot of reacher]
+
+These control values are applied as torque forces to the joints making up the arm :
+
+    public override void AgentStep(float[] act)
+    {
+        float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
+        float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
+        rbA.AddTorque(new Vector3(torque_x, 0f, torque_z));
+    
+        torque_x = Mathf.Clamp(act[2], -1, 1) * 100f;
+        torque_z = Mathf.Clamp(act[3], -1, 1) * 100f;
+        rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
+    }
+
+You should clamp continuous action values to a reasonable value (typically [-1,1]) to avoid introducing instability while training the agent with the PPO algorithm. As shown above, you can scale the control values as needed after clamping them. 
+ 
+#### Discrete Action Space
+
+When an agent uses a brain set to the **Discrete** action space, the action parameter passed to the agent's `AgentStep()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete action space, `Action Size` represents the number of actions in your action table.
+
+The [Area](link) example defines five actions for the discrete action space: a jump action and one action for each cardinal direction:
+
+    // Get the action index
+    int movement = Mathf.FloorToInt(act[0]); 
+    // Look up the index in the action list:
+    if (movement == 1) { directionX = -1; }
+    if (movement == 2) { directionX = 1; }
+    if (movement == 3) { directionZ = -1; }
+    if (movement == 4) { directionZ = 1; }
+    if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+    
+    // Apply the action results to move the agent
+    gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(directionX * 40f, directionY * 300f, directionZ * 40f));
+
+Note that the above code example is a simplified extract from the AreaAgent class, which provides alternate implementations for both the discrete and the continuous action spaces.
 
 ### Rewards
 
 
-### Actions
 
-#### Continuous Action Space
-
-#### Discrete Action Space
 
 ### Agent Brains
 
