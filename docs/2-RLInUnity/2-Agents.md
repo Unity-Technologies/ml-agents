@@ -107,9 +107,7 @@ Rotations and angles should also be normalized. For angles between 0 and 360 deg
 Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network.
  
  Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
- 
-You can set up the cameras you use for observations in a variety of ways. 
- 
+  
 #### Discrete State Space: Table Lookup
 
 You can use the discrete state space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](link) in the ML Agent SDK defines an agent with a discrete state space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
@@ -145,7 +143,7 @@ The [Reacher](link) example defines a continuous action space with four control 
 
 [screenshot of reacher]
 
-These control values are applied as torque forces to the joints making up the arm :
+These control values are applied as torques to the bodies making up the arm :
 
     public override void AgentStep(float[] act)
     {
@@ -182,13 +180,59 @@ Note that the above code example is a simplified extract from the AreaAgent clas
 
 ### Rewards
 
+A reward is a signal that the agent has done something right. The PPO reinforcement learning algorithm works by optimizing the choices an agent makes such that the agent earns the highest cumulative reward over time. The better your reward mechanism, the better your agent will learn.
 
+Perhaps the best advice is to start simple and only add complexity as needed. In general, you should reward results rather than actions you think will lead to the desired results. To help develop your rewards, you can use the [Monitor](link) class to display the cumulative reward recieved by an agent. You can even use a Player brain to control the agent while watching how it accumulates rewards.
 
+Allocate rewards to an agent by setting the agent's `reward` property in the `AgentStep()` function. The reward assigned in any step should be in the range [-1,1].  Values outside this range can lead to unstable training. The `reward` value is reset to zero at every step. 
 
-### Agent Brains
+**Examples**
 
-A Heuristic brain provides a hand-programmed decision making process, for example you could program a decision tree. You can use agents with heuristic brains as part of an environment, to help test an environment, to compare a trained agent to a hard-coded agent. You can even use a hybrid system where you use a heuristic brain in some states and a trained brain in others. 
+You can examine the `AgentStep()` functions defined in the [Examples](link) to see how those projects allocate rewards.
 
-A Player brain maps actions to keyboard keys so that a human can control an agent directly. Player brains are useful when testing an environment before training.
+The `GridAgent` class in the [GridWorld](link) example uses a very simple reward system:
 
-### Implementing an Agent Subclass
+    Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position, new Vector3(0.3f, 0.3f, 0.3f));
+    if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
+    {
+        reward = 1f;
+        done = true;
+    }
+    if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
+    {
+        reward = -1f;
+        done = true;
+    }
+
+The agent receives a positive reward when it reaches the goal and a negative reward when it falls into the pit. Otherwise, it gets no rewards. This is an example of a _sparse_ reward system. The agent must explore a lot to find the infrequent reward.
+
+In contrast, the `AreaAgent` in the [Area]() example gets a small negative reward every step. In order to get the maximum reward, the agent must finish its task of reaching the goal square as quickly as possible:
+
+	reward = -0.005f;
+    MoveAgent(act);
+    
+	if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
+        Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
+	{
+		done = true;
+		reward = -1f;
+	}
+
+The agent also gets a larger negative penalty if it falls off the playing surface.
+
+The `Ball3DAgent` in the [3DBall](link) takes a similar approach, but allocates a small positive reward as long as the agent balances the ball. The agent can maximize its rewards by keeping the ball on the platform:
+
+    if (done == false)
+    {
+        reward = 0.1f;
+    }
+    
+    if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
+        Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
+        Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
+    {
+        done = true;
+        reward = -1f;
+    }
+
+The `Ball3DAgent` also assigns a negative penalty when the ball falls off the platfrom.
