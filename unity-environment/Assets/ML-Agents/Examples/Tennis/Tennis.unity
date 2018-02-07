@@ -524,7 +524,6 @@ MonoBehaviour:
     stateSize: 8
     stackedStates: 3
     actionSize: 2
-    memorySize: 0
     cameraResolutions: []
     actionDescriptions:
     - 
@@ -1103,8 +1102,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSteps: 25000
-  frameToSkip: 4
-  waitTime: 0
   isInference: 0
   trainingConfiguration:
     width: 300
@@ -1118,10 +1115,10 @@ MonoBehaviour:
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
-  defaultResetParameters: []
-  done: 0
+  resetParameters:
+    resetParameters: []
   episodeCount: 0
-  currentStep: 0
+  stepsSinceReset: 0
 --- !u!114 &1042398561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2030,7 +2027,6 @@ MonoBehaviour:
     stateSize: 8
     stackedStates: 3
     actionSize: 2
-    memorySize: 0
     cameraResolutions: []
     actionDescriptions:
     - 

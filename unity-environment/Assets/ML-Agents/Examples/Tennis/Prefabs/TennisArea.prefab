@@ -1086,19 +1086,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  observations: []
-  maxStep: 5000
-  resetOnDone: 1
-  state: []
-  stackedStates: []
-  reward: 0
-  done: 0
-  value: 0
-  CumulativeReward: 0
-  stepCounter: 0
-  agentStoredAction: []
-  memory: []
-  id: 0
+  agentParameters:
+    agentCameras: []
+    maxStep: 0
+    resetOnDone: 1
+    eventBased: 0
+    numberOfStepsBetweenActions: 5
+    numberOfActionsBetweenDecisions: 0
   ball: {fileID: 1766663729253338}
   invertX: 1
   invertMult: -1
@@ -1118,19 +1112,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  observations: []
-  maxStep: 5000
-  resetOnDone: 1
-  state: []
-  stackedStates: []
-  reward: 0
-  done: 0
-  value: 0
-  CumulativeReward: 0
-  stepCounter: 0
-  agentStoredAction: []
-  memory: []
-  id: 0
+  agentParameters:
+    agentCameras: []
+    maxStep: 0
+    resetOnDone: 1
+    eventBased: 0
+    numberOfStepsBetweenActions: 5
+    numberOfActionsBetweenDecisions: 0
   ball: {fileID: 1766663729253338}
   invertX: 0
   invertMult: 1

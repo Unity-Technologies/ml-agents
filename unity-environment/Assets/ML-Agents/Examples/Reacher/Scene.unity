@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 762086411}
-  m_IndirectSpecularColor: {r: 0.4465934, g: 0.49642956, b: 0.5748249, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465785, g: 0.49641252, b: 0.574817, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -379,6 +379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
   m_Name: (Clone)
   m_EditorClassIdentifier: 
+  broadcast: 1
   graphModel: {fileID: 4900000, guid: 8db6173148a6f4e7fa654ed627c88d7a, type: 3}
   graphScope: 
   graphPlaceholders:
@@ -1091,6 +1092,20 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
+  m_FalloffTable:
+    m_Table[0]: 0
+    m_Table[1]: 0
+    m_Table[2]: 0
+    m_Table[3]: 0
+    m_Table[4]: 0
+    m_Table[5]: 0
+    m_Table[6]: 0
+    m_Table[7]: 0
+    m_Table[8]: 0
+    m_Table[9]: 0
+    m_Table[10]: 0
+    m_Table[11]: 0
+    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
@@ -1363,8 +1378,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainParameters:
     stateSize: 26
+    stackedStates: 1
     actionSize: 4
-    memorySize: 0
     cameraResolutions: []
     actionDescriptions:
     - 
@@ -1462,6 +1477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
   m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
+  broadcast: 1
   brain: {fileID: 0}
 --- !u!1001 &1065008966
 Prefab:
@@ -1738,6 +1754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
   m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
+  broadcast: 1
   continuousPlayerActions: []
   discretePlayerActions: []
   defaultAction: -1
@@ -2054,8 +2071,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSteps: 0
-  frameToSkip: 0
-  waitTime: 0
+  isInference: 0
   trainingConfiguration:
     width: 80
     height: 80
@@ -2068,16 +2084,10 @@ MonoBehaviour:
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
-  defaultResetParameters:
-  - key: goal_size
-    value: 5
-  - key: goal_speed
-    value: 0.5
-  done: 0
+  resetParameters:
+    resetParameters: []
   episodeCount: 1
-  currentStep: 0
-  isInference: 0
-  windowResize: 0
+  stepsSinceReset: 0
   goalSize: 5
   goalSpeed: 0.5
 --- !u!4 &1574236049

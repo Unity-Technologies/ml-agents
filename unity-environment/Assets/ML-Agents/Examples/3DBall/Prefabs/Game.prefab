@@ -307,20 +307,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  agentCameras: []
-  maxStep: 1000
-  resetOnDone: 1
-  reward: 0
-  requestAction: 0
-  requestDecision: 0
-  done: 0
-  maxStepReached: 0
-  value: 0
-  CumulativeReward: 0
-  stepCounter: 0
-  id: 0
+  agentParameters:
+    agentCameras: []
+    maxStep: 5000
+    resetOnDone: 1
+    eventBased: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 5
   ball: {fileID: 1536511242562482}
-  timeSinceAction: 0
 --- !u!135 &135537954369514846
 SphereCollider:
   m_ObjectHideFlags: 1
