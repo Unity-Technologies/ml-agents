@@ -18,7 +18,7 @@ C - Content that needs to be consolidated into a different doc
 
 ## Example Environments and Tutorials
  * E [Example Environments](4-ExamplesAndTutorials/1-Example-Environments.md)
- * E [TensorflowSharp in Unity [Experimental]](4-ExamplesAndTutorials/2-Using-TensorFlow-Sharp-in-Unity.md)
+ * E [TensorflowSharp in Unity (Experimental)](4-ExamplesAndTutorials/2-Using-TensorFlow-Sharp-in-Unity.md)
  
 ## Training
  * N [Training ML Agents](3-Training/1-Training-ML-Agents.md)
@@ -30,17 +30,18 @@ C - Content that needs to be consolidated into a different doc
  * N [Imitation Learning](3-Training/6-Imitation-Learning.md)
  
 ## C# API and Components
- * N [Academy Class](5-C%23APIReference/1-Academy.md)
- * N [Brain Class](5-C%23APIReference/2-Brain.md)
- * N [Agent Class](5-C%23APIReference/3-Agent.md)
- * N [Decision Class](5-C%23APIReference/4-Decision.md)
- * N [Monitor Class](5-C%23APIReference/5-Monitor.md)
- * E [Broadcast](5-C%23APIReference/6-Broadcast.md)
- * C [Agents SDK Inspector Descriptions](5-C%23APIReference/Agents-Editor-Interface.md)
+ * N [Academy Class](5-CSharpAPI/1-Academy.md)
+ * N [Brain Class](5-CSharpAPI/2-Brain.md)
+ * N [Agent Class](5-CSharpAPI/3-Agent.md)
+ * N [Decision Class](5-CSharpAPI/4-Decision.md)
+ * N [Monitor Class](5-CSharpAPI/5-Monitor.md)
+ * E [Broadcast](5-CSharpAPI/6-Broadcast.md)
+ * C [Agents SDK Inspector Descriptions](5-CSharpAPI/Agents-Editor-Interface.md)
 
  
 ## Python API
  * E [How to use the Python API](6-PythonAPI/1-Python-API.md)
+ 
 ## Help
   * N Terminology 
-  * E [Limitations & Common Issues](Limitations-&-Common-Issues.md)
+  * E [Limitations & Common Issues](Limitations-and-Common-Issues.md)
