@@ -47,7 +47,10 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
         return ;
     }
 
-
+    public bool IsBroadcasting()
+    {
+        return true;
+    }
 
     /// Nothing needs to appear in the inspector 
     public void OnInspector()

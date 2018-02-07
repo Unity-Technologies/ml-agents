@@ -112,7 +112,10 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 
     }
 
-
+    public bool IsBroadcasting()
+    {
+        return coord != null;
+    }
 
     /// Displays continuous or discrete input mapping in the inspector
     public void OnInspector()

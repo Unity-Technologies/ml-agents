@@ -62,7 +62,7 @@ public class ExternalCommunicator : Communicator
     string sMessageString;
 
     AgentMessage rMessage;
-    StringBuilder rMessageString = new StringBuilder();
+    StringBuilder rMessageString = new StringBuilder(messageLength);
 
     /// Placeholder for returned message.
     struct AgentMessage
@@ -138,11 +138,14 @@ public class ExternalCommunicator : Communicator
         accParamerters.logPath = logPath;
         foreach (Brain b in brains)
         {
-            accParamerters.brainParameters.Add(b.brainParameters);
-            accParamerters.brainNames.Add(b.gameObject.name);
-            if (b.brainType == BrainType.External)
+            if (b.IsBroadcasting())
             {
-                accParamerters.externalBrainNames.Add(b.gameObject.name);
+                accParamerters.brainParameters.Add(b.brainParameters);
+                accParamerters.brainNames.Add(b.gameObject.name);
+                if (b.brainType == BrainType.External)
+                {
+                    accParamerters.externalBrainNames.Add(b.gameObject.name);
+                }
             }
         }
         accParamerters.AcademyName = academy.gameObject.name;
@@ -416,7 +419,6 @@ public class ExternalCommunicator : Communicator
 
                 for (int i = 0; i < current_agents[brainName].Count(); i++)
                 {
-                    //Agent agent = current_agents[brainName][i];
                     if (brain.brainParameters.actionSpaceType == StateType.continuous)
                     {
                         current_agents[brainName][i].UpdateVectorAction(rMessage.action[brainName].GetRange(i * brain.brainParameters.actionSize, brain.brainParameters.actionSize).ToArray());

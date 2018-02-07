@@ -229,4 +229,8 @@ public class Brain : MonoBehaviour
 
     }
 
+    public bool IsBroadcasting(){
+        return coreBrain.IsBroadcasting();
+    }
+
 }
