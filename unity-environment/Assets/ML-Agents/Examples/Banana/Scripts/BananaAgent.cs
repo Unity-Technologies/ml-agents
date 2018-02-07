@@ -5,6 +5,7 @@ using UnityEngine;
 public class BananaAgent : Agent
 {
     public GameObject area;
+    BananaArea myArea;
     bool frozen;
     bool shoot;
     float frozenTime;
@@ -14,6 +15,8 @@ public class BananaAgent : Agent
     public float yForce;
     public float zForce;
     public Material normalMaterial;
+    public Material badMaterial;
+    public Material goodMaterial;
     int bananas;
     public GameObject myLazer;
 
@@ -22,6 +25,7 @@ public class BananaAgent : Agent
         base.InitializeAgent();
         agentRB = GetComponent<Rigidbody>(); //cache the RB
         Monitor.verticalOffset = 1f;
+        myArea = area.GetComponent<BananaArea>();
     }
 
     public override List<float> CollectState()
@@ -113,6 +117,7 @@ public class BananaAgent : Agent
             if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f) { 
                 shoot = true;
                 dirToGo *= 0.5f;
+                agentRB.velocity *= 0.75f;
             }
             agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
             transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
@@ -152,6 +157,22 @@ public class BananaAgent : Agent
         gameObject.GetComponent<Renderer>().material.color = Color.black;
     }
 
+    public void Poison() {
+        gameObject.tag = "frozenAgent";
+        frozen = true;
+        frozenTime = Time.time;
+        gameObject.GetComponent<Renderer>().material = badMaterial;
+    }
+
+    public void Satisfy()
+    {
+        gameObject.tag = "frozenAgent";
+        frozen = true;
+        frozenTime = Time.time;
+        gameObject.GetComponent<Renderer>().material = goodMaterial;
+    }
+
+
     public override void AgentStep(float[] act)
     {
         MoveAgent(act);
@@ -164,23 +185,30 @@ public class BananaAgent : Agent
         agentRB.velocity = Vector3.zero;
         bananas = 0;
         myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
+        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 2f, Random.Range(-myArea.range, myArea.range)) + area.transform.position;
+        transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("banana"))
         {
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             reward += 1f;
             bananas += 1;
+            Satisfy();
         }
         if (collision.gameObject.CompareTag("badBanana"))
         {
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             reward -= 1f;
+            Poison();
+        }
+        if (collision.gameObject.CompareTag("wall"))
+        {
+            done = true;
         }
     }
-
 
     public override void AgentOnDone()
     {

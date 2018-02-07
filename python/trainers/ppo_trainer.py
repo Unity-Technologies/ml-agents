@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 from trainers.buffer import Buffer
-from trainers.models import PPOModel
+from trainers.ppo_models import PPOModel
 from trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")

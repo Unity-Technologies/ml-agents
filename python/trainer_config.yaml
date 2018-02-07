@@ -57,3 +57,12 @@ Player:
     max_steps: 10000
     summary_freq: 1000
 
+StudentBrain:
+    is_imitation: true
+    max_steps: 10000
+    summary_freq: 1000
+    brain_to_imitate: ExpertBrain
+    batch_size: 32
+    batches_per_epoch: 10
+    num_layers: 4
+    hidden_units: 64

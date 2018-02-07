@@ -11,12 +11,13 @@ public class BananaArea : Area
     public int numBananas;
     public int numBadBananas;
     public bool respawnBananas;
-
+    public float range;
     // Use this for initialization
     void Start()
     {
         aca = GameObject.Find("Academy").GetComponent<BananaAcademy>();
         aca.listArea.Add(this);
+        range = 45f;
     }
 
     // Update is called once per frame
@@ -27,8 +28,6 @@ public class BananaArea : Area
 
     public override void ResetArea()
     {
-        float range = 45f;
-
         foreach (GameObject agent in aca.agents)
         {
             if (agent.transform.parent == gameObject.transform)

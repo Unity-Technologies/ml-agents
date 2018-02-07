@@ -69,9 +69,6 @@ public class Monitor : MonoBehaviour
         MonitorType displayType = MonitorType.text,
         Transform target = null)
     {
-
-
-
         if (!isInstanciated)
         {
             InstanciateCanvas();
@@ -181,10 +178,9 @@ public class Monitor : MonoBehaviour
             canvas.AddComponent<Monitor>();
         }
         displayTransformValues = new Dictionary<Transform, Dictionary< string , DisplayValue>>();
-
     }
 
-    private float[] ToFloatArray(object input)
+    float[] ToFloatArray(object input)
     {
         try
         {
@@ -193,6 +189,7 @@ public class Monitor : MonoBehaviour
         }
         catch
         {
+            
         }
         try
         {
@@ -203,6 +200,7 @@ public class Monitor : MonoBehaviour
         }
         catch
         {
+            
         }
 
         return new float[0];
@@ -352,9 +350,8 @@ public class Monitor : MonoBehaviour
         }
     }
 
-    private void Initialize()
+    void Initialize()
     {
-
         keyStyle = GUI.skin.label;
         valueStyle = GUI.skin.label;
         valueStyle.clipping = TextClipping.Overflow;
@@ -373,5 +370,4 @@ public class Monitor : MonoBehaviour
         greenStyle = colorStyle[3];
         redStyle = colorStyle[5];
     }
-
 }
