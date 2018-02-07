@@ -303,7 +303,7 @@ class UnityEnvironment(object):
                                                    self._brains[b].state_space_type,
                                                    len(state_dict["states"])))
 
-            memories = self._pad_array([x["memory"] for x in  state_dict["memories"]])
+            memories = np.array(state_dict["memories"]).reshape((n_agent, -1))
             text_obs = state_dict["textObservations"]
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
@@ -323,15 +323,6 @@ class UnityEnvironment(object):
                 observations.append(np.array(obs_n))
 
             self._data[b] = BrainInfo(observations, states, text_obs, memories, rewards, agents, dones, actions, max_reached=maxes)
-
-    def _pad_array(self, m):
-        """
-        Converts a list of lists of variable length into a 2d numpy array by padding the shortest lists with zeros
-        :param m: a list of list of floats
-        :return: a 2d numpy array
-        """
-        m_size = max(len(x) for x in m)
-        return np.asarray([x + [0]*(m_size-len(x)) for x in m])
 
 
     def _send_action(self, action, memory, value):

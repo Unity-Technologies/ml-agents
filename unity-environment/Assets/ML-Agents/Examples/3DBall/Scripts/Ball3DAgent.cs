@@ -6,12 +6,10 @@ public class Ball3DAgent : Agent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
-    //public int timeSinceAction;
 
     public override void InitializeAgent()
     {
-        //timeSinceAction = (int)(Random.Range(0f, 3f));
-        //Debug.Log(brain);
+
     }
 
     public override void CollectObservations()
@@ -45,7 +43,7 @@ public class Ball3DAgent : Agent
                 gameObject.transform.Rotate(new Vector3(1, 0, 0), action_x);
             }
 
-             AddReward(0.1f);
+             SetReward(0.1f);
             
         }
         if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
@@ -68,22 +66,7 @@ public class Ball3DAgent : Agent
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f)) + gameObject.transform.position;
-		//requestAction = true;
-		//requestDecision = true;
+
     }
 
-//    public void FixedUpdate()
-//    {
-//        // In this example, the agent requests a decision at every step and a decision every 4 steps
-//        if(timeSinceAction == 3)
-//        {
-            
-//            RequestDecision();
-//            timeSinceAction = 0;
-//        }
-//        else{
-//            timeSinceAction += 1;
-//        }
-//        RequestAction();
-//    }
 }

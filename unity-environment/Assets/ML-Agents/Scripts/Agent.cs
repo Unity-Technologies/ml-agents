@@ -536,11 +536,12 @@ public abstract class Agent : MonoBehaviour
             actionsSinceDecision += 1;
         }
         stepsSinceAction += 1;
-        stepCounter += 1;
+
         if ((stepCounter > agentParameters.maxStep) && (agentParameters.maxStep > 0))
         {
             MaxStepReached();
         }
+        stepCounter += 1;
         MakeRequests();
     }
     /// <summary>
@@ -549,10 +550,10 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public void MakeRequests(){
         if(!agentParameters.eventBased){
-            if (stepsSinceAction > agentParameters.numberOfStepsBetweenActions){
+            if (stepsSinceAction >= agentParameters.numberOfStepsBetweenActions){
                 RequestAction();
             }
-            if (actionsSinceDecision > agentParameters.numberOfActionsBetweenDecisions){
+            if (actionsSinceDecision >= agentParameters.numberOfActionsBetweenDecisions){
                 RequestDecision();
             }
         }
