@@ -547,8 +547,8 @@ MonoBehaviour:
     maxStep: 2000
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 0
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 1
   pendulumA: {fileID: 1644872085946016}
   pendulumB: {fileID: 1053261483945176}
   hand: {fileID: 1654288206095398}

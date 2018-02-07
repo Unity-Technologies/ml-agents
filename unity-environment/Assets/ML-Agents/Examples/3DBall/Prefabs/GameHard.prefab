@@ -312,8 +312,8 @@ MonoBehaviour:
     maxStep: 5000
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 5
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 5
   ball: {fileID: 1943673078433006}
 --- !u!135 &135765715237510820
 SphereCollider:

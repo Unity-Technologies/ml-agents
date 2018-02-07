@@ -1263,10 +1263,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 1657514749044530, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_Name
-      value: trueAgent
-      objectReference: {fileID: 0}
     - target: {fileID: 114309355800912544, guid: 628960e910f094ad1909ecc88cc8016d,
         type: 2}
       propertyPath: brain
@@ -1277,6 +1273,10 @@ Prefab:
       propertyPath: academy
       value: 
       objectReference: {fileID: 2047663}
+    - target: {fileID: 1657514749044530, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_Name
+      value: trueAgent
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
   m_IsPrefabParent: 0

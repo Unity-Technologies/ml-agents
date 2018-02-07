@@ -892,8 +892,8 @@ MonoBehaviour:
     maxStep: 1000
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 5
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 5
   strength: 40
   leg_touching: 
   fell: 0

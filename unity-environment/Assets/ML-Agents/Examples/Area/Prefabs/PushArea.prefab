@@ -604,11 +604,11 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 1000
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 5
-    numberOfActionsBetweenDecisions: 1000
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1279120735226386}
   goalHolder: {fileID: 1576612233868982}
   block: {fileID: 1493483966197088}

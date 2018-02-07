@@ -977,8 +977,8 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 4
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 4
   area: {fileID: 0}
   turnSpeed: 150
   xForce: 125

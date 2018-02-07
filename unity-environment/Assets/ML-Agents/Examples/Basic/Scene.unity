@@ -203,17 +203,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 846768605}
-  observations: []
-  maxStep: 0
-  resetOnDone: 1
-  reward: 0
-  done: 0
-  value: 0
-  CummulativeReward: 0
-  stepCounter: 0
-  agentStoredAction: []
-  memory: []
-  id: 0
+  agentParameters:
+    agentCameras: []
+    maxStep: 0
+    resetOnDone: 1
+    eventBased: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 1
   position: 0
   smallGoalPosition: -3
   largeGoalPosition: 7
@@ -232,6 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
   m_Name: (Clone)
   m_EditorClassIdentifier: 
+  broadcast: 1
   brain: {fileID: 0}
 --- !u!114 &577874698
 MonoBehaviour:
@@ -244,6 +241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
   m_Name: (Clone)
   m_EditorClassIdentifier: 
+  broadcast: 1
   continuousPlayerActions: []
   discretePlayerActions:
   - key: 97
@@ -300,6 +298,20 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
+  m_FalloffTable:
+    m_Table[0]: 0
+    m_Table[1]: 0
+    m_Table[2]: 0
+    m_Table[3]: 0
+    m_Table[4]: 0
+    m_Table[5]: 0
+    m_Table[6]: 0
+    m_Table[7]: 0
+    m_Table[8]: 0
+    m_Table[9]: 0
+    m_Table[10]: 0
+    m_Table[11]: 0
+    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
@@ -359,8 +371,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainParameters:
     stateSize: 1
+    stackedStates: 1
     actionSize: 2
-    memorySize: 0
     cameraResolutions: []
     actionDescriptions:
     - Left
@@ -577,8 +589,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSteps: 0
-  frameToSkip: 0
-  waitTime: 0.5
+  isInference: 0
   trainingConfiguration:
     width: 80
     height: 80
@@ -591,12 +602,10 @@ MonoBehaviour:
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
-  defaultResetParameters: []
-  done: 0
+  resetParameters:
+    resetParameters: []
   episodeCount: 1
-  currentStep: 0
-  isInference: 0
-  windowResize: 0
+  stepsSinceReset: 0
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0

@@ -1091,8 +1091,8 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 5
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 5
   ball: {fileID: 1766663729253338}
   invertX: 1
   invertMult: -1
@@ -1117,8 +1117,8 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 5
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 5
   ball: {fileID: 1766663729253338}
   invertX: 0
   invertMult: 1

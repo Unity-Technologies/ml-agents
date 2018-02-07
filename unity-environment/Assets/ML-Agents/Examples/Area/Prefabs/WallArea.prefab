@@ -718,8 +718,8 @@ MonoBehaviour:
     maxStep: 1000
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 5
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1718829686919056}
   goalHolder: {fileID: 1960504220667788}
   block: {fileID: 1312874949203312}

@@ -426,6 +426,6 @@ MonoBehaviour:
     maxStep: 100
     resetOnDone: 1
     eventBased: 0
-    numberOfStepsBetweenActions: 0
-    numberOfActionsBetweenDecisions: 0
+    numberOfStepsBetweenActions: 1
+    numberOfActionsBetweenDecisions: 1
   academy: {fileID: 0}
