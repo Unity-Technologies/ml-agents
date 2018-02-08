@@ -1,4 +1,4 @@
-# ML Agents Overview                                                                   {#mainpage}
+# ML Agents Overview
 
 <!-- 
 Temp outline 
@@ -14,7 +14,7 @@ The ML Agents project makes machine-learning-based artifical intelligence availa
 
 As illustrated below, ML Agents uses a few classes to orchestrate the behavior of one or more agents in a scene.   
 
-![diagram](../images/agents_diagram.png)
+![diagram](images/agents_diagram.png)
 
 _An example of how a scene containing agents might be configured._
 
