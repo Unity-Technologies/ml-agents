@@ -40,11 +40,24 @@
 	border-width: thin;	
 }
 
+.ui-resizable-e {
+  background-image:none;
+  background-size:100%;
+  background-repeat:no-repeat;
+  background-attachment: scroll;
+  cursor:ew-resize;
+  height:100%;
+  right:0;
+  top:0;
+  width:6px;
+}
+
 /****************************************
   ==== RESETS & EXTRAS
 ****************************************/
 
-html,body,div,ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,pre,form,p,blockquote,input,figure { margin: 0; padding: 0; }
+html,body,div { margin: 0; padding: 0; }
+dl,dt,dd,h1,h2,h3,h4,h5,h6,pre,form,p,blockquote,input,figure { margin: 0 0 0 10px; padding: 0; }
 h1,h2,h3,h4,h5,h6,pre,code,cite,code,th { font-size: 1em; font-weight: normal; font-style: normal; }
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, video { display: block; }
 iframe { border: none; } caption,th { text-align: left; } table { border-collapse: collapse; border-spacing: 0; }
@@ -131,16 +144,16 @@ h1 { font-size: 2em; line-height: 1em; color: #1b2229; font-weight: 700; margin:
 h1.inherit { margin: 0 15px 5px 0; }
 h1 a { text-decoration: underline; color: #1b2229; }
 h1 a:hover { text-decoration: none; color: #1b2229; }
-h2 { font-size: 1.5em; line-height: 1em; color: #1b2229; font-weight: 700; margin: 0 0 15px 0; }
+h2 { font-size: 1.5em; line-height: 1em; color: #1b2229; font-weight: 700; margin: 20px 0 5px 10px; }
 div.subsection div.subsection h2 { font-size: 1.125em; color: #455463; }
-h3 { font-size: 1.25em; line-height: 1.2em; font-weight: bold; margin: 0 0 10px 0; color: #455463; }
-h4 { font-size: 1em; line-height: 1em; font-weight: bold; margin: 0 0 10px 0; color: #455463; }
-p { max-width: 1100px; font-size: 0.875em; margin: 0 0 15px 0; }
+h3 { font-size: 1.25em; line-height: 1.2em; font-weight: bold; margin: 10px 0 10px 10px; color: #455463; }
+h4 { font-size: 1em; line-height: 1em; font-weight: bold; margin: 10px 0 10px 10px; color: #455463; }
+p { max-width: 1100px; font-size: 0.875em; margin: 0 0 15px 10px; }
 a { color: #b83c82; text-decoration: underline; outline: none; cursor: pointer; }
 a:hover, a:focus, a:active { color: #b83c82; text-decoration: none; outline: none; }
 .cn { color: #455463; } .cn:hover { color: #455463; } .b, strong { font-weight: 700; }
 ul.l { list-style-type: none; }
-ul.l li { padding: 0 0 4px 20px; background: none; position: relative; font-size: 0.875em; }
+ul.l li { padding: 0 0 4px 30px; background: none; position: relative; font-size: 0.875em; }
 ul.l li:before { content: "\2022"; font-size: 1.8em; position: absolute; top: 0; left: 0; color: #455463; }
 ul.l li a { color: #333; }
 

@@ -1,1 +1,0 @@
-# Academy Class

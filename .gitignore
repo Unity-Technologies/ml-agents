@@ -53,8 +53,7 @@
 /unity-environment/Assets/ML-Agents/Plugins/System*
 
 # Generated doc folders
-/docs/doxygen/xml
-/docs/doxygen/html
+/docs/html
 
 # Mac hidden files
 *.DS_Store
