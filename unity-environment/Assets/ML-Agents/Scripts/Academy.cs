@@ -340,7 +340,6 @@ public abstract class Academy : MonoBehaviour
 
     internal void _AcademyReset()
     {
-        Debug.Log("Academy.reset");
         stepsSinceReset = 0;
         episodeCount++;
         done = false;

@@ -158,7 +158,7 @@ public abstract class Agent : MonoBehaviour
         id = gameObject.GetInstanceID();
         Academy aca = Object.FindObjectOfType<Academy>() as Academy;
         if (aca == null)
-            Debug.Log("No Academy Object could be found");
+            throw new UnityAgentsException("No Academy Component could be found in the scene.");
         aca.RegisterAgent(this);
         if (brain != null)
         {
