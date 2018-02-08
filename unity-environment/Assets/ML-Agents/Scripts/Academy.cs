@@ -80,6 +80,8 @@ public abstract class Academy : MonoBehaviour
 
     private List<Agent> agentsTerminate = new List<Agent>();
 
+    private List<Agent> agentsHasAlreadyReset = new List<Agent>();
+
     /**< \brief The done flag of the Academy. */
     /**< When set to true, the Academy will call AcademyReset() instead of 
     * AcademyStep() at step time.
@@ -279,8 +281,12 @@ public abstract class Academy : MonoBehaviour
                 {
                     if (agent.agentParameters.eventBased)
                     {
-                        //If event based, the agent can reset as soon as it is done
-                        agent._AgentReset();
+                        if (!agentsHasAlreadyReset.Contains(agent))
+                        {
+                            //If event based, the agent can reset as soon as it is done
+                            agent._AgentReset();
+                            agentsHasAlreadyReset.Add(agent);
+                        }
                     }
                     else if (agent.HasRequestedDecision()){
                         // If not event based, the agent must wait to request a decsion
@@ -300,12 +306,14 @@ public abstract class Academy : MonoBehaviour
         {
             if (agent.HasRequestedDecision())
             {
-
                 agent.SendStateToBrain();
                 agent._ClearDone();
                 agent._ClearMaxStepReached();
                 agent.SetReward(0f);
                 agent._ClearRequestDecision();
+                if(agentsHasAlreadyReset.Contains(agent)){
+                    agentsHasAlreadyReset.Remove(agent);
+                }
             }
 
         }
@@ -332,6 +340,7 @@ public abstract class Academy : MonoBehaviour
 
     internal void _AcademyReset()
     {
+        Debug.Log("Academy.reset");
         stepsSinceReset = 0;
         episodeCount++;
         done = false;
