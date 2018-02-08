@@ -7,7 +7,7 @@ using UnityEngine;
  * Contains all logic for Brain-Agent communication and Agent-Environment 
  * interaction.
  *
- * See Also: \ref agents-man
+ * See Also: \ref Agents.md
  */
 public abstract class Agent : MonoBehaviour
 {

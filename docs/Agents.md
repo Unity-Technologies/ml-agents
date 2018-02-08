@@ -1,11 +1,11 @@
-# Creating Agents                                                                   {#agents-man}
+# Creating Agents
 
 An agent is an actor that can observe its environment and decide on the best course of action using those observations. Create agents in Unity by extending the [Agent](link) class. The most important aspects of creating agents that can successfully learn are the observations the agent collects and the reward you assign to estimate the value of the agent's current state toward accomplishing its tasks.
 
 In the ML Agents framework, an agent passes its observations to its brain at each simulation step. The brain, then, makes a decision and passes the chosen action back to the agent. The agent code executes the action, for example, it moves the agent in one direction or another, and also calculates a reward based on the current state. In training, the reward is used to discover the optimal decision-making policy. (The reward is not used by already trained agents.)
 
 The Brain class abstracts out the decision making logic from the agent itself so that you can use the same brain in multiple agents. 
-How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. During training, the ML Agents [reinforcement learning](Creating-Learning-Environments/Reinforcement-Learning-in_Unity) algorithm adjusts its internal policy parameters to make decisions that optimize the rewards received over time. An Internal brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Agent Brains](link).
+How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. During training, the ML Agents [reinforcement learning](Reinforcement-Learning-in_Unity) algorithm adjusts its internal policy parameters to make decisions that optimize the rewards received over time. An Internal brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Agent Brains](link).
   
 ## Observations and State
 
@@ -15,7 +15,7 @@ To make decisions, an agent must observe its environment to determine its curren
 * **Discrete** — an index into a state table (typically only useful for the simplest of environments).
 * **Camera** — one or more camera images.
 
-When you use the **Continuous** or **Discrete** state space for an agent, implement the [CollectState()](link) method to create the feature vector or state index. When you use camera observations, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectState()` method.
+When you use the **Continuous** or **Discrete** state space for an agent, implement the `Agent.CollectState()` method to create the feature vector or state index. When you use camera observations, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectState()` method.
 
 ### Continuous State Space: Feature Vectors
 
@@ -23,7 +23,7 @@ For agents using a continuous state space, you create a feature vector to repres
 
 The observation must include all the information an agent needs to accomplish its task. Without sufficient and relevant information, an agent may learn poorly or may not learn at all. A reasonable approach for determining what information should be included is to consider what you would need to calculate an analytical solution to the problem. 
 
-For examples of various state observation functions, you can look at the [Examples](link) included in the ML Agents SDK.  For instance, the 3DBall example uses the rotation of the platform, the relative position of the ball, and the velocity of the ball as its state observation. As an experiment, you can remove the velocity components from the observation and retrain the 3DBall agent. While it will learn to balance the ball reasonably well, the performance of the agent without using velocity is noticeably worse.
+For examples of various state observation functions, you can look at the [Examples](Example-Environments.md) included in the ML Agents SDK.  For instance, the 3DBall example uses the rotation of the platform, the relative position of the ball, and the velocity of the ball as its state observation. As an experiment, you can remove the velocity components from the observation and retrain the 3DBall agent. While it will learn to balance the ball reasonably well, the performance of the agent without using velocity is noticeably worse.
 
     public GameObject ball;
     
@@ -114,7 +114,7 @@ You can use the discrete state space when an agent only has a limited number of 
 
 More generally, the discrete state identifier could be an index into a table of the possible states. However, tables quickly become unwieldy as the environment becomes more complex. For example, even a simple game like [tic-tac-toe has 765 possible states](https://en.wikipedia.org/wiki/Game_complexity) (far more if you don't reduce the number of states by combining those that are rotations or reflections of each other).
 
-To implement a discrete state observation, implement the [CollectState()](link) method of your Agent subclass and return a `List` containing a single number representing the state:
+To implement a discrete state observation, implement the `CollectState()` method of your Agent subclass and return a `List` containing a single number representing the state:
 
     private List<float> state = new List<float>();
     public override List<float> CollectState()
@@ -125,7 +125,7 @@ To implement a discrete state observation, implement the [CollectState()](link) 
 
 ## Actions
 
-An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's [AgentStep()](link) function. When you specify that the action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Action Size` property.  When you specify a **Discrete** action space, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** action space, the `Action Size` is the number of elements in your action table. Set the `Action Space` and `Action Size` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
+An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentStep()` function. When you specify that the action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Action Size` property.  When you specify a **Discrete** action space, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** action space, the `Action Size` is the number of elements in your action table. Set the `Action Space` and `Action Size` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
 
 Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentStep()` function. You simply specify the type of action space, and, for the coninuous action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionStep()`.
 
@@ -133,13 +133,13 @@ For example, if you designed an agent to move in two dimensions, you could use e
 
 Note that when you are programming actions for an agent, it is often helpful to test your action logic using a **Player** brain, which lets you map keyboard commands to actions. See [Agent Brains](link).
 
-The [3DBall](link) and [Area](link) example projects are set up to use either the continuous or the discrete action spaces. 
+The [3DBall and Area example projects](Example-Environments.md) are set up to use either the continuous or the discrete action spaces. 
 
 ### Continuous Action Space
 
 When an agent uses a brain set to the **Continuous** action space, the action parameter passed to the agent's `AgentStep()` function is an array with length equal to the Brain object's `Action Size` property value.  The individual values in the array have whatever meanings that you ascribe to them. If you assign an element in the array as the speed of an agent, for example, the training process learns to control the speed of the agent though this parameter. 
 
-The [Reacher](link) example defines a continuous action space with four control values. 
+The [Reacher example](Example-Environments.md) defines a continuous action space with four control values. 
 
 [screenshot of reacher]
 
@@ -162,7 +162,7 @@ You should clamp continuous action values to a reasonable value (typically [-1,1
 
 When an agent uses a brain set to the **Discrete** action space, the action parameter passed to the agent's `AgentStep()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete action space, `Action Size` represents the number of actions in your action table.
 
-The [Area](link) example defines five actions for the discrete action space: a jump action and one action for each cardinal direction:
+The [Area example](Example-Environments.md) defines five actions for the discrete action space: a jump action and one action for each cardinal direction:
 
     // Get the action index
     int movement = Mathf.FloorToInt(act[0]); 
@@ -182,7 +182,7 @@ Note that the above code example is a simplified extract from the AreaAgent clas
 
 A reward is a signal that the agent has done something right. The PPO reinforcement learning algorithm works by optimizing the choices an agent makes such that the agent earns the highest cumulative reward over time. The better your reward mechanism, the better your agent will learn.
 
-Perhaps the best advice is to start simple and only add complexity as needed. In general, you should reward results rather than actions you think will lead to the desired results. To help develop your rewards, you can use the [Monitor](link) class to display the cumulative reward recieved by an agent. You can even use a Player brain to control the agent while watching how it accumulates rewards.
+Perhaps the best advice is to start simple and only add complexity as needed. In general, you should reward results rather than actions you think will lead to the desired results. To help develop your rewards, you can use the Monitor class to display the cumulative reward recieved by an agent. You can even use a Player brain to control the agent while watching how it accumulates rewards.
 
 Allocate rewards to an agent by setting the agent's `reward` property in the `AgentStep()` function. The reward assigned in any step should be in the range [-1,1].  Values outside this range can lead to unstable training. The `reward` value is reset to zero at every step. 
 
@@ -190,7 +190,7 @@ Allocate rewards to an agent by setting the agent's `reward` property in the `Ag
 
 You can examine the `AgentStep()` functions defined in the [Examples](link) to see how those projects allocate rewards.
 
-The `GridAgent` class in the [GridWorld](link) example uses a very simple reward system:
+The `GridAgent` class in the [GridWorld example](Example-Environments.md) uses a very simple reward system:
 
     Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position, new Vector3(0.3f, 0.3f, 0.3f));
     if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
@@ -206,7 +206,7 @@ The `GridAgent` class in the [GridWorld](link) example uses a very simple reward
 
 The agent receives a positive reward when it reaches the goal and a negative reward when it falls into the pit. Otherwise, it gets no rewards. This is an example of a _sparse_ reward system. The agent must explore a lot to find the infrequent reward.
 
-In contrast, the `AreaAgent` in the [Area]() example gets a small negative reward every step. In order to get the maximum reward, the agent must finish its task of reaching the goal square as quickly as possible:
+In contrast, the `AreaAgent` in the [Area example](Example-Environments.md) gets a small negative reward every step. In order to get the maximum reward, the agent must finish its task of reaching the goal square as quickly as possible:
 
 	reward = -0.005f;
     MoveAgent(act);
@@ -220,13 +220,14 @@ In contrast, the `AreaAgent` in the [Area]() example gets a small negative rewar
 
 The agent also gets a larger negative penalty if it falls off the playing surface.
 
-The `Ball3DAgent` in the [3DBall](link) takes a similar approach, but allocates a small positive reward as long as the agent balances the ball. The agent can maximize its rewards by keeping the ball on the platform:
+The `Ball3DAgent` in the [3DBall](Example-Environments.md) takes a similar approach, but allocates a small positive reward as long as the agent balances the ball. The agent can maximize its rewards by keeping the ball on the platform:
 
     if (done == false)
     {
         reward = 0.1f;
     }
     
+    //When ball falls mark agent as done and give a negative penalty
     if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
         Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
         Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)

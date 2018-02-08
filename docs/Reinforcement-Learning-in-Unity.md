@@ -1,4 +1,4 @@
-# Reinforcement Learning in Unity                                                                   {#rl-unity}
+# Reinforcement Learning in Unity
 
 Reinforcement learning is an artificial intelligence technique that trains _agents_ to perform tasks by rewarding desirable behavior. During reinforcement learning, an agent explores its environment, observes the state of things, and, based on those observations, takes an action. If the action leads to a better state, the agent receives a positive reward. If it leads to a less desirable state, then the agent receives no reward or a negative reward (punishment). As the agent learns during training, it optimizes its decision making so that it receives the maximum reward over time.
 
@@ -69,7 +69,7 @@ Your implementations of these functions determine how the properties of the Brai
  
 You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentStep()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. The Academy waits until all agents are done, or the Academy reaches its own `Max Steps` count before starting the next episode. 
 
-See [Agents](Creating-Learning-Environments/Agents.md) for detailed information on creating agents.
+See [Creating Agents](Agents.md) for detailed information about programing your own agents.
 
 ## Environments
 
@@ -105,7 +105,7 @@ With the Unity ML Agents SDK, you can create a variety of different kinds of tra
 
 ML Agents supports the following alternate learning schemes:
 
-* **Curriculum Learning** — It is often difficult for agents to learn a complex task at the beginning of the training process. Curriculum learning is the process of gradually increasing the difficulty of a task to allow more efficient learning. ML Agents supports setting custom environment parameters every time the environment is reset. This allows elements of the environment related to difficulty or complexity to be dynamically adjusted based on training progress. See [Curriculum Learning](link) for more information.
+* **Curriculum Learning** — It is often difficult for agents to learn a complex task at the beginning of the training process. Curriculum learning is the process of gradually increasing the difficulty of a task to allow more efficient learning. ML Agents supports setting custom environment parameters every time the environment is reset. This allows elements of the environment related to difficulty or complexity to be dynamically adjusted based on training progress. See [Curriculum Learning](Curriculum-Training.md) for more information.
 
-* **Imitation Learning** — It is often more intuitive to simply demonstrate the behavior you want an agent to perform, rather than attempting to have it learn via trial-and-error methods. Imitation learning provides the ability to record all state/action/reward information for use in supervised learning scenarios. You can provide demonstrations of how an agent should behave in an environment and then utilize those demonstrations to train an agent in either a standalone fashion, or as a first-step in a reinforcement learning process. Imitation Learning will be available in a future version of ML Agents.
+* **Imitation Learning** — It is often more intuitive to simply demonstrate the behavior you want an agent to perform, rather than attempting to have it learn via trial-and-error methods. Imitation learning provides the ability to record all state/action/reward information for use in supervised learning scenarios. You can provide demonstrations of how an agent should behave in an environment and then utilize those demonstrations to train an agent in either a standalone fashion, or as a first-step in a reinforcement learning process. Imitation Learning will be available in a future version of ML Agents. See [Imitation Learning](Imitation-Learning.md) for more information.
 

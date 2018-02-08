@@ -1,4 +1,4 @@
-# Installation & Set-up                                                                   {#installation}
+# Installation & Set-up
 
 ## Install **Unity 2017.1** or later (required)
 
