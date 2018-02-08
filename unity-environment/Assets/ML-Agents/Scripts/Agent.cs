@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// Agent info.The agent will send an instance of this class to the brain.
 /// </summary>
-public class AgentInfo
+public struct AgentInfo
 {
     public List<float> vectorObservation;
     public List<float> stakedVectorObservation;
@@ -26,7 +26,7 @@ public class AgentInfo
 /// Agent action. The brain will send an instance of this class to the agent
 ///  when taking a decision.
 /// </summary>
-public class AgentAction
+public struct AgentAction
 {
     public float[] vectorActions;
     public string textActions;
