@@ -1,4 +1,4 @@
-# Training on Amazon Web Service
+# Training on Amazon Web Service                                                                   {#training-aws}
 
 This page contains instructions for setting up an EC2 instance on Amazon Web Service for use in training ML-Agents environments. Current limitations of the Unity Engine require that a screen be available to render to. In order to make this possible when training on a remote server, a virtual screen is required. We can do this by installing Xorg and creating a virtual screen. Once installed and created, we can display the Unity environment in the virtual environment, and train as we would on a local machine. 
 

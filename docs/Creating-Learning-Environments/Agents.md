@@ -1,13 +1,13 @@
-# Agents
+# Creating Agents                                                                   {#agents-man}
 
 An agent is an actor that can observe its environment and decide on the best course of action using those observations. Create agents in Unity by extending the [Agent](link) class. The most important aspects of creating agents that can successfully learn are the observations the agent collects and the reward you assign to estimate the value of the agent's current state toward accomplishing its tasks.
 
 In the ML Agents framework, an agent passes its observations to its brain at each simulation step. The brain, then, makes a decision and passes the chosen action back to the agent. The agent code executes the action, for example, it moves the agent in one direction or another, and also calculates a reward based on the current state. In training, the reward is used to discover the optimal decision-making policy. (The reward is not used by already trained agents.)
 
 The Brain class abstracts out the decision making logic from the agent itself so that you can use the same brain in multiple agents. 
-How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. During training, the ML Agents [reinforcement learning](1-Reinforcement-Learning-in_Unity) algorithm adjusts its internal policy parameters to make decisions that optimize the rewards received over time. An Internal brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Agent Brains](link).
+How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. During training, the ML Agents [reinforcement learning](Creating-Learning-Environments/Reinforcement-Learning-in_Unity) algorithm adjusts its internal policy parameters to make decisions that optimize the rewards received over time. An Internal brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Agent Brains](link).
   
-### Observations and State
+## Observations and State
 
 To make decisions, an agent must observe its environment to determine its current state. A state observation can take the following forms:
 
@@ -17,7 +17,7 @@ To make decisions, an agent must observe its environment to determine its curren
 
 When you use the **Continuous** or **Discrete** state space for an agent, implement the [CollectState()](link) method to create the feature vector or state index. When you use camera observations, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectState()` method.
 
-#### Continuous State Space: Feature Vectors
+### Continuous State Space: Feature Vectors
 
 For agents using a continuous state space, you create a feature vector to represent the agent's observation at each step of the simulation. The Brain class calls the `CollectState()` method of each of its agents. Your implementation of this function returns the feature vector observation as a `List<float>` object. 
 
@@ -86,7 +86,7 @@ How to handle things like large numbers of words or symbols? Should you use a ve
 Colors? Better to use a single color number or individual components?
 -->
 
-##### Normalization
+#### Normalization
 
 For the best results when training, you should normalize the components of your feature vector to the range [-1, +1] or [0, 1]. When you normalize the values, the PPO neural network can often converge to a solution faster. Note that it isn't always necessary to normalize to these recommended ranges, but it is considered a best practice when using neural networks. The greater the variation in ranges between the components of your observation, the more likely that training will be affected.
 
@@ -102,13 +102,13 @@ Rotations and angles should also be normalized. For angles between 0 and 360 deg
   
  For angles that can be outside the range [0,360], you can either reduce the angle, or, if the number of turns is significant, increase the maximum value used in your normalization formula.
  
-#### Camera Observations
+### Camera Observations
 
 Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network.
  
  Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
   
-#### Discrete State Space: Table Lookup
+### Discrete State Space: Table Lookup
 
 You can use the discrete state space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](link) in the ML Agent SDK defines an agent with a discrete state space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
 
@@ -123,7 +123,7 @@ To implement a discrete state observation, implement the [CollectState()](link) 
         return state;
     }
 
-### Actions
+## Actions
 
 An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's [AgentStep()](link) function. When you specify that the action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Action Size` property.  When you specify a **Discrete** action space, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** action space, the `Action Size` is the number of elements in your action table. Set the `Action Space` and `Action Size` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
 
@@ -135,7 +135,7 @@ Note that when you are programming actions for an agent, it is often helpful to 
 
 The [3DBall](link) and [Area](link) example projects are set up to use either the continuous or the discrete action spaces. 
 
-#### Continuous Action Space
+### Continuous Action Space
 
 When an agent uses a brain set to the **Continuous** action space, the action parameter passed to the agent's `AgentStep()` function is an array with length equal to the Brain object's `Action Size` property value.  The individual values in the array have whatever meanings that you ascribe to them. If you assign an element in the array as the speed of an agent, for example, the training process learns to control the speed of the agent though this parameter. 
 
@@ -158,7 +158,7 @@ These control values are applied as torques to the bodies making up the arm :
 
 You should clamp continuous action values to a reasonable value (typically [-1,1]) to avoid introducing instability while training the agent with the PPO algorithm. As shown above, you can scale the control values as needed after clamping them. 
  
-#### Discrete Action Space
+### Discrete Action Space
 
 When an agent uses a brain set to the **Discrete** action space, the action parameter passed to the agent's `AgentStep()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete action space, `Action Size` represents the number of actions in your action table.
 
@@ -178,7 +178,7 @@ The [Area](link) example defines five actions for the discrete action space: a j
 
 Note that the above code example is a simplified extract from the AreaAgent class, which provides alternate implementations for both the discrete and the continuous action spaces.
 
-### Rewards
+## Rewards
 
 A reward is a signal that the agent has done something right. The PPO reinforcement learning algorithm works by optimizing the choices an agent makes such that the agent earns the highest cumulative reward over time. The better your reward mechanism, the better your agent will learn.
 
@@ -236,3 +236,4 @@ The `Ball3DAgent` in the [3DBall](link) takes a similar approach, but allocates 
     }
 
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the platfrom.
+

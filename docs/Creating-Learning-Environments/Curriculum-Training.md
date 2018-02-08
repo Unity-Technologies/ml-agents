@@ -1,4 +1,4 @@
-# Training with Curriculum Learning
+# Training with Curriculum Learning                                                                   {#curriculum}
 
 ## Background
 

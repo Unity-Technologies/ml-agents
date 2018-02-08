@@ -1,4 +1,4 @@
-# Python API
+# Python API                                                                   {#python-api}
 
 _Notice: Currently communication between Unity and Python takes place over an open socket without authentication. As such, please make sure that the network where training takes place is secure. This will be addressed in a future release._
 

@@ -1,4 +1,4 @@
-# Getting Started with the Balance Ball Example
+# Getting Started with the Balance Ball Example                                                                   {#balance-ball}
 
 ![Balance Ball](../images/balance.png)
 

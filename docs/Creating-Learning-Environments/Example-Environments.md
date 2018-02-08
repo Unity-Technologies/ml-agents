@@ -1,4 +1,4 @@
-# Example Learning Environments
+# Example Learning Environments                                                                   {#examples}
 
 ### About Example Environments
 Unity ML Agents contains a set of example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 

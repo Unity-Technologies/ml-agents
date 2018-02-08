@@ -1,18 +1,18 @@
-# Reinforcement Learning in Unity
+# Reinforcement Learning in Unity                                                                   {#rl-unity}
 
 Reinforcement learning is an artificial intelligence technique that trains _agents_ to perform tasks by rewarding desirable behavior. During reinforcement learning, an agent explores its environment, observes the state of things, and, based on those observations, takes an action. If the action leads to a better state, the agent receives a positive reward. If it leads to a less desirable state, then the agent receives no reward or a negative reward (punishment). As the agent learns during training, it optimizes its decision making so that it receives the maximum reward over time.
 
 ML Agents uses a reinforcement learning technique called [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/). PPO uses a neural network to approximate the ideal function that maps an agent's observations to the best action an agent can take in a given state. The ML Agents PPO algorithm is implemented in TensorFlow and runs in a separate Python process (communicating with the running Unity application over a socket). 
 
-**Note:** if you aren't studying machine and reinforcement learning as a subject and just want to train agents to accomplish tasks, you can treat PPO training as a _black box_. There are a few training-related parameters to adjust inside Unity as well as on the Python training side, but you do not need in-depth knowledge of the algorithm itself to successfully create and train agents. Step-by-step procedures for running the training process are provided in the [Training section](1-Training-ML-Agents.md). 
+**Note:** if you aren't studying machine and reinforcement learning as a subject and just want to train agents to accomplish tasks, you can treat PPO training as a _black box_. There are a few training-related parameters to adjust inside Unity as well as on the Python training side, but you do not need in-depth knowledge of the algorithm itself to successfully create and train agents. Step-by-step procedures for running the training process are provided in the [Training section](Training/Training-ML-Agents.md). 
 
 ## The Simulation and Training Process
 
-Training and simulation proceed in steps orchestrated by the ML Agents [Academy](link) class. The Academy works with Agent and Brain objects in the scene to step through the simulation. When either the Academy has reached its maximum number of steps or all agents in the scene are _done_, one training episode is finished. 
+Training and simulation proceed in steps orchestrated by the ML Agents Academy class. The Academy works with Agent and Brain objects in the scene to step through the simulation. When either the Academy has reached its maximum number of steps or all agents in the scene are _done_, one training episode is finished. 
 
 During training, the external Python PPO process communicates with the Academy to run a series of episodes while it collects data and optimizes its neural network model. The type of Brain assigned to an agent determines whether it participates in training or not. The **External** brain commmunicates with the external process to train the TensorFlow model. When training is completed successfully, you can add the trained model file to your Unity project for use with an **Internal** brain.
 
-The ML Agents [Academy](link) class orchestrates the agent simulation loop as follows:
+The ML Agents Academy class orchestrates the agent simulation loop as follows:
 
 1. Calls your Academy subclass's `AcademyReset()` function.
 2. Calls the `AgentReset()` function for each agent in the scene.
@@ -23,13 +23,13 @@ The ML Agents [Academy](link) class orchestrates the agent simulation loop as fo
 7. Calls the agent's `AgentOnDone()` function if the agent has reached its `Max Step` count or has otherwise marked itself as `done`. Optionally, you can set an agent to restart if it finishes before the end of an episode. In this case, the Academy calls the `AgentReset()` function.
 8. When the Academy reaches its own `Max Step` count, it starts the next episode again by calling your Academy subclass's `AcademyReset()` function.
 
-To create a training environment, extend the Academy and Agent classes to implement the above methods. The [Agent.CollectState()](link) and [Agent.AgentStep()](link) functions are required; the other methods are optional — whether you need to implement them or not depends on your specific scenario.
+To create a training environment, extend the Academy and Agent classes to implement the above methods. The `Agent.CollectState()` and `Agent.AgentStep()` functions are required; the other methods are optional — whether you need to implement them or not depends on your specific scenario.
   
-**Note:** The API used by the Python PPO training process to communicate with and control the Academy during training can be used for other purposes as well. For example, you could use the API to use Unity as the simulation engine for your own machine learning algorithms. See [External ML API](link) for more information.
+**Note:** The API used by the Python PPO training process to communicate with and control the Academy during training can be used for other purposes as well. For example, you could use the API to use Unity as the simulation engine for your own machine learning algorithms. See [External ML API](Python-API.md) for more information.
 
 ## Organizing the Unity Scene
 
-To train and use ML Agents in a Unity scene, the scene must contain a single [Academy](link) subclass along with as many [Brain](link) objects and [Agent](link) subclasses as you need. Any Brain instances in the scene must be attached to GameObjects that are children of the Academy in the Unity Scene Hierarchy. Agent instances should be attached to the GameObject representing that agent.
+To train and use ML Agents in a Unity scene, the scene must contain a single [Academy](link) subclass along with as many Brain objects and Agent subclasses as you need. Any Brain instances in the scene must be attached to GameObjects that are children of the Academy in the Unity Scene Hierarchy. Agent instances should be attached to the GameObject representing that agent.
 
 [Screenshot of scene hierarchy]
 
@@ -37,7 +37,7 @@ You must assign a brain to every agent, but you can share brains between multipl
 
 **Academy**
 
-The [Academy](link) object orchestrates agents and their decision making processes. Only place a single Academy object in a scene. 
+The Academy object orchestrates agents and their decision making processes. Only place a single Academy object in a scene. 
 
 You must create a subclass of the Academy class (since the base class is abstract). When you create your Academy subclass, implement the following methods:
 
@@ -46,16 +46,16 @@ You must create a subclass of the Academy class (since the base class is abstrac
 
   The base Academy classes also defines several important properties that you can set in the Unity Editor Inspector. For training, the most important of these properties is `Max Steps`, which determines how long each training episode lasts. Once the Academy's step counter reaches this value, it calls the `AcademyReset()` function to start the next episode. 
   
-  See [Academy Topic](link) for a complete list of the Academy properties and their uses.  
+  See [Academy](Agents-Editor-Interface.md) for a complete list of the Academy properties and their uses.  
 
 **Brain** 
 The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. 
 
-Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. See [Brain topic](link) for details on using the different types of brains. You can extend the [CoreBrain class](link) to create different brain types if the four built-in types don't do what you need.
+Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. See [Brain topic](link) for details on using the different types of brains. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
 
 The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `State Size` property must match the length of the feature vector created by an agent exactly. See [Agent topic]() for information about creating agents and setting up a Brain instance correctly.
 
-See [Brains](link) for a complete list of the Brain properties.
+See [Brains](Agents-Editor-Interface.md) for a complete list of the Brain properties.
 
 **Agent**
 The Agent class represents an actor in the scene that collects observations and carries out actions. The Agent class is typically attached to the GameObject in the scene that otherwise represents the actor — for example, to a player object in a football game or a car object in a vehicle simulation. Every Agent must be assigned a Brain.  
@@ -69,7 +69,7 @@ Your implementations of these functions determine how the properties of the Brai
  
 You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentStep()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. The Academy waits until all agents are done, or the Academy reaches its own `Max Steps` count before starting the next episode. 
 
-See [Agents](link) for detailed information on creating agents.
+See [Agents](Creating-Learning-Environments/Agents.md) for detailed information on creating agents.
 
 ## Environments
 
