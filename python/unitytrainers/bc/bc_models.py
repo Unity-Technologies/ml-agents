@@ -3,7 +3,7 @@ import tensorflow.contrib.layers as c_layers
 from unitytrainers.models import LearningModel
 
 
-class ImitationModel(LearningModel):
+class BehavioralCloningModel(LearningModel):
     def __init__(self, h_size, lr, n_layers, m_size, normalize, use_recurrent, brain):
         LearningModel.__init__(self, m_size, normalize, use_recurrent, brain)
 

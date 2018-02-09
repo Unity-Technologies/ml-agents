@@ -12,7 +12,7 @@ import yaml
 from datetime import datetime
 from tensorflow.python.tools import freeze_graph
 from unitytrainers.ppo.ppo_trainer import PPOTrainer
-from unitytrainers.bc.imitation_trainer import ImitationTrainer
+from unitytrainers.bc.bc_trainer import BehavioralCloningTrainer
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 
@@ -131,7 +131,7 @@ class TrainerController(object):
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.env.external_brain_names:
             if trainer_parameters_dict[brain_name]['trainer'] == "imitation":
-                self.trainers[brain_name] = ImitationTrainer(sess, self.env, brain_name,
+                self.trainers[brain_name] = BehavioralCloningTrainer(sess, self.env, brain_name,
                                                              trainer_parameters_dict[brain_name],
                                                              self.train_model, self.seed)
             elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":

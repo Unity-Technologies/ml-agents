@@ -1,6 +1,6 @@
 # # Unity ML Agents
 # ## ML-Agent Learning (Imitation)
-# Contains an implementation of Imitation Learning
+# Contains an implementation of Behavioral Cloning Algorithm
 
 import logging
 import os
@@ -8,14 +8,14 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from unitytrainers.bc.imitation_models import ImitationModel
+from unitytrainers.bc.bc_models import BehavioralCloningModel
 from unitytrainers.buffer import Buffer
 from unitytrainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
 
-class ImitationTrainer(Trainer):
+class BehavioralCloningTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
     def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
@@ -35,7 +35,7 @@ class ImitationTrainer(Trainer):
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain_name))
 
-        super(ImitationTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
+        super(BehavioralCloningTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
         self.variable_scope = trainer_parameters['graph_scope']
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
@@ -59,7 +59,7 @@ class ImitationTrainer(Trainer):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         with tf.variable_scope(self.variable_scope):
             tf.set_random_seed(seed)
-            self.model = ImitationModel(
+            self.model = BehavioralCloningModel(
                 h_size=int(trainer_parameters['hidden_units']),
                 lr=float(trainer_parameters['learning_rate']),
                 n_layers=int(trainer_parameters['num_layers']),
