@@ -18,9 +18,9 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
 
     /// Generates the communicator for the Academy if none was present and
     ///  subscribe to ExternalCommunicator if it was present.
-    public void InitializeCoreBrain()
+    public void InitializeCoreBrain(Communicator communicator)
     {
-        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if (communicator == null)
         {
             coord = null;
             throw new UnityAgentsException(string.Format("The brain {0} was set to" +
@@ -28,9 +28,9 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
                 " but Unity was unable to read the" +
                 " arguments passed at launch.", brain.gameObject.name));
         }
-        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        else if (communicator is ExternalCommunicator)
         {
-            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord = (ExternalCommunicator)communicator;
             coord.SubscribeBrain(brain);
         }
 

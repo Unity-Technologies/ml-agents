@@ -74,13 +74,13 @@ public abstract class Academy : MonoBehaviour
     [Tooltip("List of custom parameters that can be changed in the environment on reset.")]
     public ResetParameters resetParameters;
 
-    private List<Brain> brains = new List<Brain>();
-
     private List<Agent> agents = new List<Agent>();
 
     private List<Agent> agentsTerminate = new List<Agent>();
 
     private List<Agent> agentsHasAlreadyReset = new List<Agent>();
+
+    public event System.Action OnDecideAction;
 
     /**< \brief The done flag of the Academy. */
     /**< When set to true, the Academy will call AcademyReset() instead of 
@@ -100,7 +100,6 @@ public abstract class Academy : MonoBehaviour
     [HideInInspector]
     public int stepsSinceReset;
 
-    ExternalCommand externalCommand;
     /**< \brief Do not modify : pointer to the communicator currently in 
      * use by the Academy. */
     public Communicator communicator;
@@ -109,8 +108,12 @@ public abstract class Academy : MonoBehaviour
 
     void Awake()
     {
+        _InitializeAcademy();
+    }
+    void _InitializeAcademy()
+    {
 
-        GetBrains(gameObject, brains);
+        List<Brain> brains = GetBrains(gameObject);
         InitializeAcademy();
 
         communicator = new ExternalCommunicator(this);
@@ -121,14 +124,12 @@ public abstract class Academy : MonoBehaviour
 
         foreach (Brain brain in brains)
         {
-            brain.InitializeBrain();
+            brain.InitializeBrain(this, communicator);
         }
         if (communicator != null)
         {
             communicator.InitializeCommunicator();
             communicator.UpdateCommand();
-
-            externalCommand = communicator.GetCommand();
         }
 
         isInference = (communicator == null);
@@ -313,10 +314,12 @@ public abstract class Academy : MonoBehaviour
             }
 
         }
-        foreach (Brain brain in brains)
-        {
-            brain.DecideAction();
-        }
+        //foreach (Brain brain in brains)
+        //{
+        //    brain.DecideAction();
+        //}
+        OnDecideAction();
+
 
         foreach (Agent agent in agentsTerminate)
         {
@@ -358,8 +361,9 @@ public abstract class Academy : MonoBehaviour
     }
 
 
-    private static void GetBrains(GameObject gameObject, List<Brain> brains)
+    private static List<Brain> GetBrains(GameObject gameObject)
     {
+        List<Brain> brains = new List<Brain>();
         var transform = gameObject.transform;
 
         for (var i = 0; i < transform.childCount; i++)
@@ -370,5 +374,6 @@ public abstract class Academy : MonoBehaviour
             if (brain != null && child.gameObject.activeSelf)
                 brains.Add(brain);
         }
+        return brains;
     }
 }

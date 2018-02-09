@@ -209,11 +209,11 @@ public class Brain : MonoBehaviour
     }
 
     /// This is called by the Academy at the start of the environemnt.
-    public void InitializeBrain()
+    public void InitializeBrain(Academy aca, Communicator communicator)
     {
         UpdateCoreBrains();
-        coreBrain.InitializeCoreBrain();
-
+        coreBrain.InitializeCoreBrain(communicator);
+        aca.OnDecideAction += DecideAction;
     }
 
     public void SendState(Agent agent, AgentInfo info)
@@ -222,7 +222,7 @@ public class Brain : MonoBehaviour
 
     }
 
-    public void DecideAction()
+    void DecideAction()
     {
         coreBrain.DecideAction(agentInfos);
         agentInfos.Clear();

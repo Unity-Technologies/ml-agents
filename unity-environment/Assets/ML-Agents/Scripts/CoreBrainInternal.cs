@@ -86,7 +86,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     }
 
     /// Loads the tensorflow graph model to generate a TFGraph object
-    public void InitializeCoreBrain()
+    public void InitializeCoreBrain(Communicator communicator)
     {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID
@@ -99,14 +99,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 			
 		}
 #endif
-        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((communicator == null)
         || (!broadcast))
         {
             coord = null;
         }
-        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        else if (communicator is ExternalCommunicator)
         {
-            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord = (ExternalCommunicator)communicator;
             coord.SubscribeBrain(brain);
         }
 
@@ -317,8 +317,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the recurrent tensor
         if (hasRecurrent)
         {
-            var new_memories = new Dictionary<int, float[]>();
-
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
             var i = 0;
@@ -334,8 +332,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             }
 
         }
-
-        var actions = new Dictionary<int, float[]>();
 
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
@@ -367,7 +363,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
         if (hasValue)
         {
-            var values = new Dictionary<int, float>();
             float[,] value_tensor;
             if (hasRecurrent)
             {

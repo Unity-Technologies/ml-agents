@@ -21,7 +21,6 @@ public class AgentEditor : Editor
         SerializedProperty brain = serializedAgent.FindProperty("brain");
 
         SerializedProperty actionsPerDecision = serializedAgent.FindProperty("agentParameters.numberOfActionsBetweenDecisions");
-        SerializedProperty stepsPerAction = serializedAgent.FindProperty("agentParameters.numberOfStepsBetweenActions");
         SerializedProperty maxSteps = serializedAgent.FindProperty("agentParameters.maxStep");
         SerializedProperty isResetOnDone = serializedAgent.FindProperty("agentParameters.resetOnDone");
         SerializedProperty isEBS = serializedAgent.FindProperty("agentParameters.eventBased");
@@ -49,11 +48,10 @@ public class AgentEditor : Editor
                                 		"The per-agent maximum number of steps."));
         EditorGUILayout.PropertyField(isResetOnDone, new GUIContent("Reset On Done",
                          "If checked, the agent will reset on done. Else, AgentOnDone() will be called."));
-        EditorGUILayout.PropertyField(isEBS, new GUIContent("Event Based Only."));
+        EditorGUILayout.PropertyField(isEBS, new GUIContent("Event Based Only"));
         if (!isEBS.boolValue)
         {
-            EditorGUILayout.PropertyField(stepsPerAction, new GUIContent("Steps per Action"));
-            EditorGUILayout.PropertyField(actionsPerDecision, new GUIContent("Actions per Decision"));
+            EditorGUILayout.PropertyField(actionsPerDecision, new GUIContent("Decision Frequency"));
         }
 
 		serializedAgent.ApplyModifiedProperties();

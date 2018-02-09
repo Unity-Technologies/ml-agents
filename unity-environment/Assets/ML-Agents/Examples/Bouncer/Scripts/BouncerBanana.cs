@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BouncerBanana : MonoBehaviour {
-    Rigidbody rb;
+
 
     void Start(){
-        rb = gameObject.GetComponent<Rigidbody>();
+
     }
 	
 	// Update is called once per frame

@@ -51,16 +51,16 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     }
 
     /// Nothing to implement
-    public void InitializeCoreBrain()
+    public void InitializeCoreBrain(Communicator communicator)
     {
-        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((communicator == null)
             || (!broadcast))
         {
             coord = null;
         }
-        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        else if (communicator is ExternalCommunicator)
         {
-            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord = (ExternalCommunicator)communicator;
             coord.SubscribeBrain(brain);
         }
     }

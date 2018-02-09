@@ -41,7 +41,6 @@ public class AgentParameters
     public int maxStep;
     public bool resetOnDone = true;
 	public bool eventBased;
-	public int numberOfStepsBetweenActions;
 	public int numberOfActionsBetweenDecisions;
 }
 
@@ -550,9 +549,7 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public void MakeRequests(){
         if(!agentParameters.eventBased){
-            if (stepsSinceAction >= agentParameters.numberOfStepsBetweenActions){
-                RequestAction();
-            }
+            RequestAction();
             if (actionsSinceDecision >= agentParameters.numberOfActionsBetweenDecisions){
                 RequestDecision();
             }

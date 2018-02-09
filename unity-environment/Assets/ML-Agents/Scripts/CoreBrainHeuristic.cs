@@ -27,18 +27,18 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     }
 
     /// Create the reference to decision
-    public void InitializeCoreBrain()
+    public void InitializeCoreBrain(Communicator communicator)
     {
         decision = brain.gameObject.GetComponent<Decision>();
 
-        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((communicator == null)
             || (!broadcast))
         {
             coord = null;
         }
-        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        else if (communicator is ExternalCommunicator)
         {
-            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord = (ExternalCommunicator)communicator;
             coord.SubscribeBrain(brain);
         }
     }
