@@ -208,10 +208,6 @@ public abstract class Academy : MonoBehaviour
     {
         done = true;
     }
-    public bool IsMaxStepR4eached()
-    {
-        return maxStepReached;
-    }
     public bool IsDone()
     {
         return done;
