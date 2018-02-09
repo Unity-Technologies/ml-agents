@@ -8,9 +8,9 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from trainers.imitation_models import ImitationModel
-from trainers.buffer import Buffer
-from trainers.trainer import UnityTrainerException, Trainer
+from unitytrainers.bc.imitation_models import ImitationModel
+from unitytrainers.buffer import Buffer
+from unitytrainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
@@ -26,7 +26,7 @@ class ImitationTrainer(Trainer):
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
-        self.param_keys = ['is_imitation', 'brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
+        self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
                            'summary_freq', 'max_steps', 'batches_per_epoch', 'use_recurrent', 'hidden_units',
                            'num_layers']
 

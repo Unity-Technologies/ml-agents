@@ -8,9 +8,9 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from trainers.buffer import Buffer
-from trainers.ppo_models import PPOModel
-from trainers.trainer import UnityTrainerException, Trainer
+from unitytrainers.buffer import Buffer
+from unitytrainers.ppo.ppo_models import PPOModel
+from unitytrainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 

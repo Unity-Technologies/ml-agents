@@ -29,27 +29,6 @@ class LearningModel(object):
         increment_step = tf.assign(global_step, tf.add(global_step, 1))
         return global_step, increment_step
 
-    def create_recurrent_encoder(self, input_state, memory_in, name='lstm'):
-        """
-        Builds a recurrent encoder for either state or observations (LSTM).
-        :param input_state: The input tensor to the LSTM cell.
-        :param memory_in: The input memory to the LSTM cell.
-        :param name: The scope of the LSTM cell.
-        """
-        s_size = input_state.get_shape().as_list()[1]
-        m_size = memory_in.get_shape().as_list()[1]
-        lstm_input_state = tf.reshape(input_state, shape=[-1, self.sequence_length, s_size])
-        _half_point = int(m_size / 2)
-        with tf.variable_scope(name):
-            rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
-            lstm_state_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :_half_point], memory_in[:, _half_point:])
-            recurrent_state, lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, lstm_input_state,
-                                                                initial_state=lstm_state_in,
-                                                                time_major=False,
-                                                                dtype=tf.float32)
-        recurrent_state = tf.reshape(recurrent_state, shape=[-1, _half_point])
-        return recurrent_state, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
-
     @staticmethod
     def create_visual_input(o_size_h, o_size_w, bw):
         if bw:
@@ -59,20 +38,6 @@ class LearningModel(object):
 
         observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32)
         return observation_in
-
-    def create_continuous_state_encoder(self, h_size, activation, num_layers):
-        """
-        Builds a set of hidden state encoders.
-        :param h_size: Hidden layer size.
-        :param activation: What type of activation function to use for layers.
-        :param num_layers: number of hidden layers to create.
-        :return: List of hidden layer tensors.
-        """
-        hidden = self.normalized_state
-        for j in range(num_layers):
-            hidden = tf.layers.dense(hidden, h_size, activation=activation,
-                                     kernel_initializer=c_layers.variance_scaling_initializer(1.0))
-        return hidden
 
     def create_vector_input(self, s_size):
         if self.brain.state_space_type == "continuous":
@@ -95,6 +60,20 @@ class LearningModel(object):
 
         else:
             self.state_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='state')
+
+    def create_continuous_state_encoder(self, h_size, activation, num_layers):
+        """
+        Builds a set of hidden state encoders.
+        :param h_size: Hidden layer size.
+        :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
+        :return: List of hidden layer tensors.
+        """
+        hidden = self.normalized_state
+        for j in range(num_layers):
+            hidden = tf.layers.dense(hidden, h_size, activation=activation,
+                                     kernel_initializer=c_layers.variance_scaling_initializer(1.0))
+        return hidden
 
     def create_visual_encoder(self, h_size, activation, num_layers):
         """
@@ -170,7 +149,28 @@ class LearningModel(object):
             final_hiddens.append(final_hidden)
         return final_hiddens
 
-    def create_dc_model(self, h_size, num_layers):
+    def create_recurrent_encoder(self, input_state, memory_in, name='lstm'):
+        """
+        Builds a recurrent encoder for either state or observations (LSTM).
+        :param input_state: The input tensor to the LSTM cell.
+        :param memory_in: The input memory to the LSTM cell.
+        :param name: The scope of the LSTM cell.
+        """
+        s_size = input_state.get_shape().as_list()[1]
+        m_size = memory_in.get_shape().as_list()[1]
+        lstm_input_state = tf.reshape(input_state, shape=[-1, self.sequence_length, s_size])
+        _half_point = int(m_size / 2)
+        with tf.variable_scope(name):
+            rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
+            lstm_state_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :_half_point], memory_in[:, _half_point:])
+            recurrent_state, lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, lstm_input_state,
+                                                                initial_state=lstm_state_in,
+                                                                time_major=False,
+                                                                dtype=tf.float32)
+        recurrent_state = tf.reshape(recurrent_state, shape=[-1, _half_point])
+        return recurrent_state, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
+
+    def create_dc_actor_critic(self, h_size, num_layers):
         num_streams = 1
         hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
         hidden = hidden_streams[0]
@@ -192,7 +192,7 @@ class LearningModel(object):
         self.probs = tf.reduce_sum(self.probs * self.selected_actions, axis=1)
         self.old_probs = tf.reduce_sum(self.old_probs * self.selected_actions, axis=1)
 
-    def create_cc_model(self, h_size, num_layers):
+    def create_cc_actor_critic(self, h_size, num_layers):
         num_streams = 2
         hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
 

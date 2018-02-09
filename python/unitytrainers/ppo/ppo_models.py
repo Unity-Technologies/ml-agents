@@ -1,7 +1,7 @@
 import logging
 
 import tensorflow as tf
-from trainers.models import LearningModel
+from unitytrainers.models import LearningModel
 
 logger = logging.getLogger("unityagents")
 
@@ -29,9 +29,9 @@ class PPOModel(LearningModel):
             num_layers = 1
         self.last_reward, self.new_reward, self.update_reward = self.create_reward_encoder()
         if brain.action_space_type == "continuous":
-            self.create_cc_model(h_size, num_layers)
+            self.create_cc_actor_critic(h_size, num_layers)
         else:
-            self.create_dc_model(h_size, num_layers)
+            self.create_dc_actor_critic(h_size, num_layers)
         self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
 

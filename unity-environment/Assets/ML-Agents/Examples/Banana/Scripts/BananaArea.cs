@@ -17,7 +17,7 @@ public class BananaArea : Area
     {
         aca = GameObject.Find("Academy").GetComponent<BananaAcademy>();
         aca.listArea.Add(this);
-        range = 45f;
+        range = 20f;
     }
 
     // Update is called once per frame

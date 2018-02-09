@@ -1,6 +1,6 @@
 # # Unity ML Agents
 # ## ML-Agent Learning
-# Launches trainers for each External Brains in a Unity Environment
+# Launches unitytrainers for each External Brains in a Unity Environment
 
 import logging
 import numpy as np
@@ -11,9 +11,8 @@ import yaml
 
 from datetime import datetime
 from tensorflow.python.tools import freeze_graph
-from trainers.ghost_trainer import GhostTrainer
-from trainers.ppo_trainer import PPOTrainer
-from trainers.imitation_trainer import ImitationTrainer
+from unitytrainers.ppo.ppo_trainer import PPOTrainer
+from unitytrainers.bc.imitation_trainer import ImitationTrainer
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 
@@ -32,8 +31,8 @@ class TrainerController(object):
         self.worker_id = worker_id
         self.keep_checkpoints = keep_checkpoints
         self.trainers = {}
-        if seed is None:
-            seed = datetime.now()
+        if seed == -1:
+            seed = np.random.randint(0, 999999)
         self.seed = seed
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
@@ -131,29 +130,16 @@ class TrainerController(object):
                     trainer_parameters[k] = trainer_config[_brain_key][k]
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.env.external_brain_names:
-            if 'is_ghost' not in trainer_parameters_dict[brain_name]:
-                trainer_parameters_dict[brain_name]['is_ghost'] = False
-            if 'is_imitation' not in trainer_parameters_dict[brain_name]:
-                trainer_parameters_dict[brain_name]['is_imitation'] = False
-            if trainer_parameters_dict[brain_name]['is_ghost']:
-                if trainer_parameters_dict[brain_name]['brain_to_copy'] not in self.env.external_brain_names:
-                    raise UnityEnvironmentException(
-                        "The external brain {0} could not be found in the environment "
-                        "even though the ghost trainer of brain {1} is trying to ghost it."
-                        .format(trainer_parameters_dict[brain_name]['brain_to_copy'],
-                                brain_name))
-                trainer_parameters_dict[brain_name]['original_brain_parameters'] = trainer_parameters_dict[
-                    trainer_parameters_dict[brain_name]['brain_to_copy']]
-                self.trainers[brain_name] = GhostTrainer(sess, self.env, brain_name,
-                                                         trainer_parameters_dict[brain_name],
-                                                         self.train_model, self.seed)
-            elif trainer_parameters_dict[brain_name]['is_imitation']:
+            if trainer_parameters_dict[brain_name]['trainer'] == "imitation":
                 self.trainers[brain_name] = ImitationTrainer(sess, self.env, brain_name,
                                                              trainer_parameters_dict[brain_name],
                                                              self.train_model, self.seed)
-            else:
+            elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(sess, self.env, brain_name, trainer_parameters_dict[brain_name],
                                                        self.train_model, self.seed)
+            else:
+                raise UnityEnvironmentException("The trainer config contains an unknown trainer type for brain {}"
+                                                .format(brain_name))
 
     def start_learning(self):
         self.env.curriculum.set_lesson_number(self.lesson)

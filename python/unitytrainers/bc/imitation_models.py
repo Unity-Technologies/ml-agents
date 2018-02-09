@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
-from trainers.models import LearningModel
+from unitytrainers.models import LearningModel
 
 
 class ImitationModel(LearningModel):

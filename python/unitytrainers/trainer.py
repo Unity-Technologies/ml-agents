@@ -16,7 +16,7 @@ class UnityTrainerException(UnityException):
 
 
 class Trainer(object):
-    """This class is the abstract class for the trainers"""
+    """This class is the abstract class for the unitytrainers"""
 
     def __init__(self, sess, env, brain_name, trainer_parameters, training):
         """
