@@ -335,7 +335,7 @@ class PPOTrainer(Trainer):
                             [-1, self.brain.state_space_size * self.brain.stacked_states])
                     else:
                         feed_dict[self.model.state_in] = np.array(
-                            _buffer['states'][start:end]).reshape([-1, 1])
+                            _buffer['states'][start:end]).reshape([-1, self.brain.stacked_states])
                 if self.use_observations:
                     for i, _ in enumerate(self.model.observation_in):
                         _obs = np.array(_buffer['observations%d' % i][start:end])

@@ -1,12 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BananaAcademy : Academy {
     [HideInInspector]
     public GameObject[] agents;
-	[HideInInspector]
+    [HideInInspector]
     public List<BananaArea> listArea;
+
+    public int totalScore;
+    public Text scoreText;
 	public override void AcademyReset()
 	{
         ClearObjects(GameObject.FindGameObjectsWithTag("banana"));
@@ -17,6 +21,7 @@ public class BananaAcademy : Academy {
             ba.ResetArea();
         }
 
+        totalScore = 0;
 	}
 
     void ClearObjects(GameObject[] objects) {
@@ -28,7 +33,7 @@ public class BananaAcademy : Academy {
 
 	public override void AcademyStep()
 	{
-
+        scoreText.text = string.Format(@"Score: {0}", totalScore);
 	}
 
 }

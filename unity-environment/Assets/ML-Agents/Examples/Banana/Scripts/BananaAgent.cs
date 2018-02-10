@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BananaAgent : Agent
 {
+    public GameObject myAcademyObj;
+    BananaAcademy myAcademy;
     public GameObject area;
     BananaArea myArea;
     bool frozen;
@@ -22,6 +24,7 @@ public class BananaAgent : Agent
     public Material goodMaterial;
     int bananas;
     public GameObject myLazer;
+    public bool contribute;
 
     public override void InitializeAgent()
     {
@@ -29,6 +32,7 @@ public class BananaAgent : Agent
         agentRB = GetComponent<Rigidbody>(); //cache the RB
         Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<BananaArea>();
+        myAcademy = myAcademyObj.GetComponent<BananaAcademy>();
     }
 
     public override List<float> CollectState()
@@ -222,12 +226,16 @@ public class BananaAgent : Agent
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             reward += 1f;
             bananas += 1;
+            if (contribute)
+                myAcademy.totalScore += 1;
         }
         if (collision.gameObject.CompareTag("badBanana"))
         {
             Poison();
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             reward -= 1f;
+            if (contribute)
+                myAcademy.totalScore -= 1;
         }
         if (collision.gameObject.CompareTag("wall"))
         {

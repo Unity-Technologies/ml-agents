@@ -112,6 +112,11 @@ class LearningModel(object):
     def create_new_obs(self, num_streams, h_size, num_layers):
         brain = self.brain
         s_size = brain.state_space_size * brain.stacked_states
+        if brain.action_space_type == "continuous":
+            activation_fn = tf.nn.tanh
+        else:
+            activation_fn = tf.nn.elu
+
         self.observation_in = []
         for i in range(brain.number_observations):
             height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
@@ -127,16 +132,16 @@ class LearningModel(object):
             hidden_state, hidden_visual = None, None
             if brain.number_observations > 0:
                 for j in range(brain.number_observations):
-                    encoded_visual = self.create_visual_encoder(h_size, tf.nn.tanh, num_layers)
+                    encoded_visual = self.create_visual_encoder(h_size, activation_fn, num_layers)
                     visual_encoders.append(encoded_visual)
-                hidden_visual = tf.concat(visual_encoders[i], axis=1)
+                hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.state_space_size > 0:
                 s_size = brain.state_space_size * brain.stacked_states
                 if brain.state_space_type == "continuous":
-                    hidden_state = self.create_continuous_state_encoder(h_size, tf.nn.tanh, num_layers)
+                    hidden_state = self.create_continuous_state_encoder(h_size, activation_fn, num_layers)
                 else:
                     hidden_state = self.create_discrete_state_encoder(s_size, h_size,
-                                                                      tf.nn.tanh, num_layers)
+                                                                      activation_fn, num_layers)
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
             elif hidden_state is None and hidden_visual is not None:
