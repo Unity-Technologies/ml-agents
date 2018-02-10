@@ -213,7 +213,7 @@ public class Brain : MonoBehaviour
     {
         UpdateCoreBrains();
         coreBrain.InitializeCoreBrain(communicator);
-        aca.OnDecideAction += DecideAction;
+        aca.BrainDecideAction += DecideAction;
     }
 
     public void SendState(Agent agent, AgentInfo info)

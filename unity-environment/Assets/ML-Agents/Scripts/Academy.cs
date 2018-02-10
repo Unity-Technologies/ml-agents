@@ -42,9 +42,6 @@ public class ScreenConfiguration
 public abstract class Academy : MonoBehaviour
 {
 
-
-
-
     [SerializeField]
     [Tooltip("Total number of steps per episode. \n" +
              "0 corresponds to episodes without a maximum number of steps. \n" +
@@ -74,13 +71,12 @@ public abstract class Academy : MonoBehaviour
     [Tooltip("List of custom parameters that can be changed in the environment on reset.")]
     public ResetParameters resetParameters;
 
-    private List<Agent> agents = new List<Agent>();
-
-    private List<Agent> agentsTerminate = new List<Agent>();
-
-    private List<Agent> agentsHasAlreadyReset = new List<Agent>();
-
-    public event System.Action OnDecideAction;
+    public event System.Action BrainDecideAction;
+    public event System.Action<bool, bool> AgentSetStatus;
+    public event System.Action AgentResetIfDone;
+    public event System.Action AgentSendState;
+    public event System.Action AgentAct;
+    public event System.Action AgentForceReset;
 
     /**< \brief The done flag of the Academy. */
     /**< When set to true, the Academy will call AcademyReset() instead of 
@@ -135,18 +131,15 @@ public abstract class Academy : MonoBehaviour
         isInference = (communicator == null);
         _isCurrentlyInference = !isInference;
         done = true;
+
+        BrainDecideAction += () => {};
+        AgentSetStatus += (m, d) => { };
+        AgentResetIfDone += () => { };
+        AgentSendState += () => { };
+        AgentAct += () => { };
+        AgentForceReset += () => { };
     }
 
-    public void RegisterAgent(Agent a)
-    {
-        agents.Add(a);
-    }
-
-    public void UnRegisterAgent(Agent a)
-    {
-        if (agents.Contains(a))
-            agents.Remove(a);
-    }
 
     /// Environment specific initialization.
     /**
@@ -200,11 +193,7 @@ public abstract class Academy : MonoBehaviour
 
     }
 
-    public void MaxStepReached()
-    {
-        maxStepReached = true;
-        Done();
-    }
+   
     public void Done()
     {
         done = true;
@@ -215,8 +204,6 @@ public abstract class Academy : MonoBehaviour
     }
 
 
-
-    // Called after AcademyStep().
     internal void _AcademyStep()
     {
 
@@ -234,104 +221,33 @@ public abstract class Academy : MonoBehaviour
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
-                foreach (Agent agent in agents)
-                {
-                    // TODO : Should all agents be asking for a decision now ?
-                    //agent.requestDecision = false;
-                    //agent.requestAction = false;
-                    //This reset is forced : No flags are set
-
-                }
                 _AcademyReset();
                 communicator.SetCommand(ExternalCommand.STEP);
-                //return;
             }
             if (communicator.GetCommand() == ExternalCommand.QUIT)
             {
                 Application.Quit();
-                //return;
             }
         }
 
         if ((stepsSinceReset >= maxSteps) && maxSteps > 0)
         {
-            MaxStepReached();
+            maxStepReached = true;
+            Done();
         }
         if (done)
             _AcademyReset();
-        foreach (Agent agent in agents)
-        {
-            if (maxStepReached)
-                agent.MaxStepReached();
-            if (done)
-                agent.Done();
-        }
-        agentsTerminate.Clear();
 
+        AgentSetStatus(maxStepReached, done);
 
-        foreach (Agent agent in agents)
-        {
-            // If an agent is done, then it will also request for a decision and an action
-            if (agent.IsDone())
-            {
-                if (agent.agentParameters.resetOnDone) 
-                {
-                    if (agent.agentParameters.eventBased)
-                    {
-                        if (!agentsHasAlreadyReset.Contains(agent))
-                        {
-                            //If event based, the agent can reset as soon as it is done
-                            agent._AgentReset();
-                            agentsHasAlreadyReset.Add(agent);
-                        }
-                    }
-                    else if (agent.HasRequestedDecision()){
-                        // If not event based, the agent must wait to request a decsion
-                        // before reseting to keep multiple agents in sync.
-                        agent._AgentReset();
-                    }
-                }
-                else
-                {
-                    agentsTerminate.Add(agent);
-                    agent.RequestDecision();
-                }
-            }
-        }
+        AgentResetIfDone();
 
-        foreach (Agent agent in agents)
-        {
-            if (agent.HasRequestedDecision())
-            {
-                agent.SendStateToBrain();
-                agent._ClearDone();
-                agent._ClearMaxStepReached();
-                agent.SetReward(0f);
-                agent._ClearRequestDecision();
-                if(agentsHasAlreadyReset.Contains(agent)){
-                    agentsHasAlreadyReset.Remove(agent);
-                }
-            }
+        AgentSendState();
 
-        }
-        //foreach (Brain brain in brains)
-        //{
-        //    brain.DecideAction();
-        //}
-        OnDecideAction();
+        BrainDecideAction();
 
+        AgentAct();
 
-        foreach (Agent agent in agentsTerminate)
-        {
-            agent._ClearRequestAction();
-            agent.AgentOnDone();
-            UnRegisterAgent(agent);
-
-        }
-        foreach (Agent agent in agents)
-        {
-            agent._AgentStep();
-        }
         stepsSinceReset += 1;
 
 
@@ -345,12 +261,7 @@ public abstract class Academy : MonoBehaviour
         maxStepReached = false;
         AcademyReset();
 
-        //The list might change while iterating. Consider Making a copy.
-        foreach (Agent agent in agents)
-        {
-            agent._AgentReset();
-            agent._resetCounters();
-        }
+        AgentForceReset();
 
     }
 

@@ -34,6 +34,9 @@ public struct AgentAction
     public float valueEstimate;
 }
 
+/// <summary>
+/// Agent parameters. Reflect the user's settings for the agents of the inspector.
+/// </summary>
 [System.Serializable]
 public class AgentParameters
 {
@@ -53,33 +56,13 @@ public class AgentParameters
 [System.Serializable]
 public abstract class Agent : MonoBehaviour
 {
-    /**<  \brief  The brain that will control this agent. */
-    /**< Use the inspector to drag the desired brain gameObject into
-	 * the Brain field */
+    /// <summary>
+    /// The brain that will control this agent. 
+    /// Use the inspector to drag the desired brain gameObject into
+	/// the Brain field.
+    ///</summary>
     [HideInInspector]
-    //[SerializeField]
     public Brain brain;
-
-    /**<  \brief  The list of the cameras the Agent uses as observations. */
-    /**< These cameras will be used to generate the observations */
-    //[HideInInspector]
-    //[SerializeField]
-    //public List<Camera> agentCameras;
-
-	/**<  \brief  The number of steps the agent takes before being done. */
-	/**< If set to 0, the agent can only be set to done via a script.
-    * If set to any positive integer, the agent will be set to done after that
-    * many steps each episode. */
-	//[HideInInspector]
-    //[SerializeField]
-    //public int maxStep;
-
-    /**<  \brief Determines the behaviour of the Agent when done.*/
-    /**< If true, the agent will reset when done. 
-	 * If not, the agent will remain done, and no longer take actions.*/
-    //[HideInInspector]
-    //[SerializeField]
-    //public bool resetOnDone = true;
 
     /// <summary>
     /// The info. This is the placeholder for the information the agent will send
@@ -91,54 +74,51 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private AgentAction _action = new AgentAction();
 
-    /**< \brief Describes the reward for the given step of the agent.*/
-    /**< It is reset to 0 at the beginning of every step. 
-    * Modify in AgentStep(). 
-    * Should be set to positive to reinforcement desired behavior, and
-    * set to a negative value to punish undesireable behavior.
-    * Additionally, the magnitude of the reward should not exceed 1.0 */
+    /// <summary>
+    /// The reward. Describes the reward for the given step of the agent.
+    /// It is reset to 0 at the beginning of every step. 
+    /// Modify in AgentStep(). 
+    /// Should be set to positive to reinforcement desired behavior, and
+    /// set to a negative value to punish undesireable behavior.
+    /// Additionally, the magnitude of the reward should not exceed 1.0
+    ///</summary>
     private float reward;
 
-    /**< \brief Whether or not the agent is requests an action*/
+    /// Whether or not the agent is requests an action
     private bool requestAction;
 
-    /**< \brief Whether or not the agent is requests a decision*/
+    /// Whether or not the agent is requests a decision
     private bool requestDecision;
 
-    /**< \brief Whether or not the agent is done*/
-    /**< Set to true when the agent has acted in some way which ends the 
-     * episode for the given agent. */
+    /// <summary> 
+    /// Whether or not the agent is done
+    /// Set to true when the agent has acted in some way which ends the 
+    /// episode for the given agent. 
+    ///</summary>
     private bool done;
 
-    /**< \brief Whether or not the max step is reached*/
+    /// Whether or not the max step is reached
     private bool maxStepReached;
 
-    /**< \brief Do not modify: This keeps track of the cumulative reward.*/
+    /// Do not modify: This keeps track of the cumulative reward.
     private float CumulativeReward;
 
-    /**< \brief Do not modify: This keeps track of the number of steps taken by
-     * the agent each episode.*/
+    /// This keeps track of the number of steps taken by the agent each episode.
     private int stepCounter;
 
 	private int stepsSinceAction;
 	private int actionsSinceDecision;
 
-    //[HideInInspector]
-    //[SerializeField]
-    //public bool eventBased;
-    //[HideInInspector]
-    //[SerializeField]
-    //public int numberOfStepsBetweenActions;
-    //[HideInInspector]
-    //[SerializeField]
-    //public int numberOfActionsBetweenDecisions;
-    //[SerializeField]
+    private bool hasAlreadyReset;
+    private bool terminate;
+
     [HideInInspector]
     public AgentParameters agentParameters;
 
-    /**< \brief This is the unique Identifier each agent 
-     * receives at initialization. It is used by the brain to identify
-     * the agent.*/
+    /// <summary> This is the unique Identifier each agent 
+    /// receives at initialization. It is used by the brain to identify
+    /// the agent.
+    /// </summary>
     private int id;
 
     /// <summary>
@@ -146,19 +126,24 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        _InitializeAgent();
+        id = gameObject.GetInstanceID();
+        Academy aca = Object.FindObjectOfType<Academy>() as Academy;
+        _InitializeAgent(aca);
     }
 
     /// <summary>
     /// Is called when the agent is initialized. 
     /// </summary>
-    void _InitializeAgent()
+    void _InitializeAgent(Academy aca)
     {
-        id = gameObject.GetInstanceID();
-        Academy aca = Object.FindObjectOfType<Academy>() as Academy;
         if (aca == null)
             throw new UnityAgentsException("No Academy Component could be found in the scene.");
-        aca.RegisterAgent(this);
+        aca.AgentSetStatus += SetStatus;
+        aca.AgentResetIfDone += ResetIfDone;
+        aca.AgentSendState += SendState;
+        aca.AgentAct += _AgentStep;
+        aca.AgentForceReset += ForceReset;
+
         if (brain != null)
         {
             ResetState();
@@ -169,11 +154,16 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Is called when the agent is disabled. 
     /// </summary>
-    void _DisableAgent()
+    void _DisableAgent(Academy aca)
     {
-        Academy aca = Object.FindObjectOfType<Academy>() as Academy;
         if (aca != null)
-            aca.UnRegisterAgent(this);
+        {
+            aca.AgentSetStatus -= SetStatus;
+            aca.AgentResetIfDone -= ResetIfDone;
+            aca.AgentSendState -= SendState;
+            aca.AgentAct -= _AgentStep;
+            aca.AgentForceReset -= ForceReset;
+        }
     }
 
     /// <summary>
@@ -181,14 +171,16 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     void OnDisable()
     {
-        _DisableAgent();
+        Academy aca = Object.FindObjectOfType<Academy>() as Academy;
+        _DisableAgent(aca);
     }
 
-    /// When GiveBrain is called, the agent unsubscribes from its 
+    /// <summary>
+    ///  When GiveBrain is called, the agent unsubscribes from its 
     /// previous brain and subscribes to the one passed in argument.
-    /** Use this method to provide a brain to the agent via script. 
-	 * Do not modify brain directly.
-	@param b The Brain component the agent will subscribe to.*/
+    /// Use this method to provide a brain to the agent via script. 
+	///<param name= "b" > The Brain component the agent will subscribe to.</param>
+    /// <summary>
     public void GiveBrain(Brain b)
     {
         brain = b;
@@ -228,15 +220,6 @@ public abstract class Agent : MonoBehaviour
         return _action.valueEstimate;
     }
     /// <summary>
-    /// Is called when the agent reaches the maximum number of steps.
-    /// </summary>
-    public void MaxStepReached()
-    {
-        maxStepReached =true;
-		// When the maxStepReached flag is set, the done flag must also be set.
-		Done();
-    }
-    /// <summary>
     /// Is called then the agent is done. Either game-over, victory or timeout.
     /// </summary>
     public void Done()
@@ -249,7 +232,6 @@ public abstract class Agent : MonoBehaviour
 	public void RequestDecision()
 	{
         requestDecision = true;
-        // When the agent requests  decision, it must also request an action.
 		RequestAction();
 	}
     /// <summary>
@@ -259,18 +241,6 @@ public abstract class Agent : MonoBehaviour
 	{
 		requestAction = true;
 	}
-    public void _ClearMaxStepReached(){
-        maxStepReached = false;
-    }
-    public void _ClearDone(){
-        done = false;
-    }
-    public void _ClearRequestDecision(){
-        requestDecision = false;
-    }
-    public void _ClearRequestAction(){
-        requestAction = false;
-    }
     /// <summary>
     /// Indicates if the agent has reached his maximum number of steps.
     /// </summary>
@@ -287,28 +257,12 @@ public abstract class Agent : MonoBehaviour
     public bool IsDone(){
         return done;
     }
-    /// <summary>
-    /// Indicates if the agent has requested a decision
-    /// </summary>
-    /// <returns><c>true</c>, if the agent has requested a decision,
-    ///  <c>false</c> otherwise.</returns>
-    public bool HasRequestedDecision(){
-        return requestDecision;
-    }
-    /// <summary>
-    /// Indicates if the agent has requested an action
-    /// </summary>
-    /// <returns><c>true</c>, if the agent has requested an action,
-    ///  <c>false</c> otherwise.</returns>
-    public bool HasRequestedAction(){
-        return requestAction;
-    }
 
     /// <summary>
     /// Resets the info and action fields of the agent. Is called when the agent
     /// resets or changes brain.
     /// </summary>
-    internal void ResetState()
+    private void ResetState()
     {
 		if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
@@ -341,10 +295,11 @@ public abstract class Agent : MonoBehaviour
     }
 
 
+    /// <summary>
     /// Initialize the agent with this method
-    /** Must be implemented in agent-specific child class.
-	 *  This method called only once when the agent is enabled.
-	*/
+    /// Must be implemented in agent-specific child class.
+	/// This method called only once when the agent is enabled.
+    /// </summary>
     public virtual void InitializeAgent()
     {
 
@@ -413,10 +368,12 @@ public abstract class Agent : MonoBehaviour
         brain.SendState(this, _info);
 
     }
-
+    /// <summary>
+    /// Collects the observations. Must be implemented by the developer.
+    /// </summary>
     public virtual void CollectObservations()
     {
-        // The develloper will use AddVectorObs()
+        
     }
 
     /// <summary>
@@ -433,59 +390,66 @@ public abstract class Agent : MonoBehaviour
         _info.textObservation += s;
     }
 
-
+    /// <summary>
     /// Defines agent-specific behavior at every step depending on the action.
-    /** Must be implemented in agent-specific child class.
-	 *  Note: If your state is discrete, you need to convert your 
-	 *  state into a list of float with length 1.
-	 *  @param action The action the agent receives from the brain. 
-	*/
+    /// Must be implemented in agent-specific child class.
+    /// Note: If your state is discrete, you need to convert your 
+    /// state into a list of float with length 1.
+    /// </summary>
+    /// <param name="action">The action the agent receives from the brain.</param>
     public virtual void AgentAction(float[] action)
     {
         //Is it needed to pass the action since the developer has access directly to action ?
 
     }
 
-
+    /// <summary>
     /// Defines agent-specific behaviour when done
-    /** Must be implemented in agent-specific child class. 
-	 *  Is called when the Agent is done if ResetOneDone is false.
-	 *  The agent will remain done.
-	 *  You can use this method to remove the agent from the scene. 
-	*/
+    /// Must be implemented in agent-specific child class. 
+    /// Is called when the Agent is done if ResetOneDone is false.
+    /// The agent will remain done.
+    /// You can use this method to remove the agent from the scene. 
+    /// </summary>
     public virtual void AgentOnDone()
     {
 
     }
 
+
+    /// <summary>
     /// Defines agent-specific reset logic
-    /** Must be implemented in agent-specific child class. 
-	 *  Is called when the academy is done.  
-	 *  Is called when the Agent is done if ResetOneDone is true.
-	*/
+    /// Must be implemented in agent-specific child class. 
+    /// Is called when the academy is done.  
+    /// Is called when the Agent is done if ResetOneDone is true.
+    /// </summary>
     public virtual void AgentReset()
     {
 
     }
 
-    /// Do not modify : Is used by the brain to reset the agent.
+    /// <summary>
+    /// Is called when the agent resets.
+    /// </summary>
     public void _AgentReset()
     {
         ResetState();
         stepCounter = 0;
-        //stepsSinceAction = 0;
-        //actionsSinceDecision = 0;
         AgentReset();
     }
 
-    public void _resetCounters(){
+    /// <summary>
+    /// Resets the counters.
+    /// </summary>
+    private void _resetCounters(){
 		stepCounter = 0;
 		stepsSinceAction = 0;
 		actionsSinceDecision = 0;
 	}
 
-
-    public void SetCumulativeReward()
+    /// <summary>
+    /// Sets the cumulative reward.
+    /// </summary>
+    private void SetCumulativeReward()
     {
         if (!done)
         {
@@ -498,7 +462,7 @@ public abstract class Agent : MonoBehaviour
     }
 
 
-    /// Do not modify : Is used by the brain give new action to the agent.
+    /// Is used by the brain give new action to the agent.
     public void UpdateAction(AgentAction action)
     {
         _action = action;
@@ -520,16 +484,88 @@ public abstract class Agent : MonoBehaviour
         _action.textActions = t;
     }
 
+    /// <summary>
+    /// Sets the status of the agent.
+    /// </summary>
+    /// <param name="acaMaxStep">If set to <c>true</c> The agent must set maxStepReached.</param>
+    /// <param name="acaDone">If set to <c>true</c> The agent must set done.</param>
+    private void SetStatus(bool acaMaxStep, bool acaDone){
+        if (acaMaxStep)
+            maxStepReached = true;
+        if (acaDone) 
+            Done();
+    }
 
-    /// Do not modify : Is used by the brain to make the agent perform a step.
-    public void _AgentStep()
+    /// <summary>
+    /// Signals the agent that it must reset if its done flag is set to true.
+    /// </summary>
+    private void ResetIfDone(){
+        // If an agent is done, then it will also request for a decision and an action
+        if (IsDone())
+        {
+            if (agentParameters.resetOnDone)
+            {
+                if (agentParameters.eventBased)
+                {
+                    if (!hasAlreadyReset)
+                    {
+                        //If event based, the agent can reset as soon as it is done
+                        _AgentReset();
+                        hasAlreadyReset = true;
+                    }
+                }
+                else if (requestDecision)
+                {
+                    // If not event based, the agent must wait to request a decsion
+                    // before reseting to keep multiple agents in sync.
+                    _AgentReset();
+                }
+            }
+            else
+            {
+                terminate = true;
+                RequestDecision();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Signals the agent that it must sent its decision to the brain.
+    /// </summary>
+    private void SendState(){
+        if (requestDecision)
+        {
+            SendStateToBrain();
+            done = false;
+            maxStepReached = false;
+            SetReward(0f);
+            requestDecision = false;
+
+            hasAlreadyReset = false;
+        }
+    }
+
+    ///  Is used by the brain to make the agent perform a step.
+    private void _AgentStep()
     {
-        
-        //AgentStep(_action.vectorActions);
+        if (terminate)
+        {
+            terminate = false;
+            done = false;
+            maxStepReached = false;
+            SetReward(0f);
+            requestDecision = false;
+            requestAction = false;
+
+            hasAlreadyReset = false;
+            OnDisable();
+            AgentOnDone();
+        }
+
 
         if (requestAction)
         {
-            _ClearRequestAction();
+            requestAction = false;
             AgentAction(_action.vectorActions);
             stepsSinceAction = 0;
             actionsSinceDecision += 1;
@@ -538,7 +574,8 @@ public abstract class Agent : MonoBehaviour
 
         if ((stepCounter > agentParameters.maxStep) && (agentParameters.maxStep > 0))
         {
-            MaxStepReached();
+            maxStepReached = true;
+            Done();
         }
         stepCounter += 1;
         MakeRequests();
@@ -547,7 +584,7 @@ public abstract class Agent : MonoBehaviour
     /// Is called after every step, contains the logic to decide if the agent
     /// will request a decision at the next step.
     /// </summary>
-    public void MakeRequests(){
+    private void MakeRequests(){
         if(!agentParameters.eventBased){
             RequestAction();
             if (actionsSinceDecision >= agentParameters.numberOfActionsBetweenDecisions){
@@ -556,13 +593,21 @@ public abstract class Agent : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Signals the agent that the academy expects it to be reset.
+    /// </summary>
+    private void ForceReset(){
+        _AgentReset();
+        _resetCounters();
+    }
 
 
-    /** Contains logic for coverting a camera component into a Texture2D. */
-    public Texture2D ObservationToTexture(Camera camera, int width, int height)
+
+    /// Contains logic for coverting a camera component into a Texture2D. 
+    private Texture2D ObservationToTexture(Camera agentCamera, int width, int height)
     {
-        Camera cam = camera;
-        Rect oldRec = camera.rect;
+        Camera cam = agentCamera;
+        Rect oldRec = agentCamera.rect;
         cam.rect = new Rect(0f, 0f, 1f, 1f);
         bool supportsAntialiasing = false;
         bool needsRescale = false;
