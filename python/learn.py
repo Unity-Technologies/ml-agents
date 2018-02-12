@@ -2,7 +2,6 @@
 # ## ML-Agent Learning
 
 import logging
-import time
 
 from docopt import docopt
 
