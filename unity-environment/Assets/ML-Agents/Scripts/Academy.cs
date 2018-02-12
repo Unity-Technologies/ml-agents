@@ -72,7 +72,7 @@ public abstract class Academy : MonoBehaviour
     public ResetParameters resetParameters;
 
     public event System.Action BrainDecideAction;
-    public event System.Action<bool, bool> AgentSetStatus;
+    public event System.Action<bool, bool, int> AgentSetStatus;
     public event System.Action AgentResetIfDone;
     public event System.Action AgentSendState;
     public event System.Action AgentAct;
@@ -132,8 +132,8 @@ public abstract class Academy : MonoBehaviour
         _isCurrentlyInference = !isInference;
         done = true;
 
-        BrainDecideAction += () => {};
-        AgentSetStatus += (m, d) => { };
+        BrainDecideAction += () => { };
+        AgentSetStatus += (m, d, i) => { };
         AgentResetIfDone += () => { };
         AgentSendState += () => { };
         AgentAct += () => { };
@@ -238,7 +238,7 @@ public abstract class Academy : MonoBehaviour
         if (done)
             _AcademyReset();
 
-        AgentSetStatus(maxStepReached, done);
+        AgentSetStatus(maxStepReached, done, stepsSinceReset);
 
         AgentResetIfDone();
 

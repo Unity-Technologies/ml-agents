@@ -106,9 +106,6 @@ public abstract class Agent : MonoBehaviour
     /// This keeps track of the number of steps taken by the agent each episode.
     private int stepCounter;
 
-	private int stepsSinceAction;
-	private int actionsSinceDecision;
-
     private bool hasAlreadyReset;
     private bool terminate;
 
@@ -142,7 +139,7 @@ public abstract class Agent : MonoBehaviour
         aca.AgentResetIfDone += ResetIfDone;
         aca.AgentSendState += SendState;
         aca.AgentAct += _AgentStep;
-        aca.AgentForceReset += ForceReset;
+        aca.AgentForceReset += _AgentReset;
 
         if (brain != null)
         {
@@ -162,7 +159,7 @@ public abstract class Agent : MonoBehaviour
             aca.AgentResetIfDone -= ResetIfDone;
             aca.AgentSendState -= SendState;
             aca.AgentAct -= _AgentStep;
-            aca.AgentForceReset -= ForceReset;
+            aca.AgentForceReset -= _AgentReset;
         }
     }
 
@@ -310,7 +307,6 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public void SendStateToBrain()
     {
-        actionsSinceDecision = 0;
         SetCumulativeReward();
         _info.memories = _action.memories;
         _info.StoredVectorActions = _action.vectorActions;
@@ -438,15 +434,6 @@ public abstract class Agent : MonoBehaviour
     }
 
     /// <summary>
-    /// Resets the counters.
-    /// </summary>
-    private void _resetCounters(){
-		stepCounter = 0;
-		stepsSinceAction = 0;
-		actionsSinceDecision = 0;
-	}
-
-    /// <summary>
     /// Sets the cumulative reward.
     /// </summary>
     private void SetCumulativeReward()
@@ -489,7 +476,8 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     /// <param name="acaMaxStep">If set to <c>true</c> The agent must set maxStepReached.</param>
     /// <param name="acaDone">If set to <c>true</c> The agent must set done.</param>
-    private void SetStatus(bool acaMaxStep, bool acaDone){
+    private void SetStatus(bool acaMaxStep, bool acaDone, int acaStepCounter){
+        MakeRequests(acaStepCounter);
         if (acaMaxStep)
             maxStepReached = true;
         if (acaDone) 
@@ -533,6 +521,7 @@ public abstract class Agent : MonoBehaviour
     /// Signals the agent that it must sent its decision to the brain.
     /// </summary>
     private void SendState(){
+
         if (requestDecision)
         {
             SendStateToBrain();
@@ -548,6 +537,7 @@ public abstract class Agent : MonoBehaviour
     ///  Is used by the brain to make the agent perform a step.
     private void _AgentStep()
     {
+
         if (terminate)
         {
             terminate = false;
@@ -567,10 +557,7 @@ public abstract class Agent : MonoBehaviour
         {
             requestAction = false;
             AgentAction(_action.vectorActions);
-            stepsSinceAction = 0;
-            actionsSinceDecision += 1;
         }
-        stepsSinceAction += 1;
 
         if ((stepCounter > agentParameters.maxStep) && (agentParameters.maxStep > 0))
         {
@@ -578,27 +565,18 @@ public abstract class Agent : MonoBehaviour
             Done();
         }
         stepCounter += 1;
-        MakeRequests();
     }
     /// <summary>
     /// Is called after every step, contains the logic to decide if the agent
     /// will request a decision at the next step.
     /// </summary>
-    private void MakeRequests(){
+    private void MakeRequests(int acaStepCounter){
         if(!agentParameters.eventBased){
             RequestAction();
-            if (actionsSinceDecision >= agentParameters.numberOfActionsBetweenDecisions){
+            if (acaStepCounter % agentParameters.numberOfActionsBetweenDecisions == 0){
                 RequestDecision();
             }
         }
-    }
-
-    /// <summary>
-    /// Signals the agent that the academy expects it to be reset.
-    /// </summary>
-    private void ForceReset(){
-        _AgentReset();
-        _resetCounters();
     }
 
 
