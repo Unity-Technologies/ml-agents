@@ -68,7 +68,7 @@ class TrainerController(object):
                 if scope == '/':
                     scope = ''
                 scopes += [scope]
-                if self.trainers[brain_name].parameters["is_imitation"]:
+                if self.trainers[brain_name].parameters["trainer"] == "imitation":
                     nodes += [scope + x for x in ["action"]]
                 elif not self.trainers[brain_name].parameters["use_recurrent"]:
                     nodes += [scope + x for x in ["action", "value_estimate", "action_probs"]]

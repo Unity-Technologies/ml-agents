@@ -35,5 +35,4 @@ public class BananaAcademy : Academy {
 	{
         scoreText.text = string.Format(@"Score: {0}", totalScore);
 	}
-
 }
