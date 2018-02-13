@@ -4,7 +4,7 @@ This page contains an explanation of the use of each of the inspector panels rel
 
 ## Academy
 
-![Academy Inspector](../images/academy.png)
+![Academy Inspector](images/academy.png)
 
 * `Max Steps` - Total number of steps per-episode. `0` corresponds to episodes without a maximum number
 of steps. Once the step counter reaches maximum, the environment will reset.
@@ -20,7 +20,7 @@ of steps. Once the step counter reaches maximum, the environment will reset.
 
 ## Brain
 
-![Brain Inspector](../images/brain.png)
+![Brain Inspector](images/brain.png)
 
 * `Brain Parameters` - Define state, observation, and action spaces for the Brain.
     * `State Size` - Length of state vector for brain (In _Continuous_ state space). Or number of possible
@@ -40,7 +40,7 @@ values (in _Discrete_ action space).
 
 ### Internal Brain
 
-![Internal Brain Inspector](../images/internal_brain.png)
+![Internal Brain Inspector](images/internal_brain.png)
 
    *  `Graph Model` : This must be the `bytes` file corresponding to the pretrained Tensorflow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
    *  `Graph Scope` : If you set a scope while training your tensorflow model, all your placeholder name will have a prefix. You must specify that prefix here.
@@ -58,13 +58,13 @@ values (in _Discrete_ action space).
 
 ### Player Brain
 
-![Player Brain Inspector](../images/player_brain.png)
+![Player Brain Inspector](images/player_brain.png)
 
 If the action space is discrete, you must map input keys to their corresponding integer values. If the action space is continuous, you must map input keys to their corresponding indices and float values.
 
 ## Agent
 
-![Agent Inspector](../images/agent.png)
+![Agent Inspector](images/agent.png)
 
 * `Brain` - The brain to register this agent to. Can be dragged into the inspector using the Editor.
 * `Observations` - A list of `Cameras` which will be used to generate observations.

@@ -1,6 +1,6 @@
 # Creating Agents
 
-An agent is an actor that can observe its environment and decide on the best course of action using those observations. Create agents in Unity by extending the [Agent](link) class. The most important aspects of creating agents that can successfully learn are the observations the agent collects and the reward you assign to estimate the value of the agent's current state toward accomplishing its tasks.
+An agent is an actor that can observe its environment and decide on the best course of action using those observations. Create agents in Unity by extending the Agent class. The most important aspects of creating agents that can successfully learn are the observations the agent collects and the reward you assign to estimate the value of the agent's current state toward accomplishing its tasks.
 
 In the ML Agents framework, an agent passes its observations to its brain at each simulation step. The brain, then, makes a decision and passes the chosen action back to the agent. The agent code executes the action, for example, it moves the agent in one direction or another, and also calculates a reward based on the current state. In training, the reward is used to discover the optimal decision-making policy. (The reward is not used by already trained agents.)
 

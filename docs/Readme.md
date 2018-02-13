@@ -2,23 +2,23 @@
  
 ## Getting Started
  * [Unity ML Agents Overview](Unity-Agents-Overview.md)
- * [Installation & Set-up](Getting-Started/Installation.md)
- * [Getting Started with the Balance Ball Environment](Getting-Started/Getting-Started-with-Balance-Ball.md)
- * [Making a new Unity Environment](Getting-Started/Making-a-New-Unity-Environment.md)
+ * [Installation & Set-up](Installation.md)
+ * [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
+ * [Making a new Unity Environment](Making-a-New-Unity-Environment.md)
 
 ## Creating Learning Environments
- * [Designing a Learning Environment](Creating-Learning-Environments/Reinforcement-Learning-in-Unity.md)
- * [Agents](Creating-Learning-Environments/Agents.md)
- * [Curriculum Learning](Creating-Learning-Environments/Curriculum-Training.md)
- * [Imitation Learning](Creating-Learning-Environments/Imitation-Learning.md)
- * [Example Environments](Creating-Learning-Environments/Example-Environments.md)
- * [TensorflowSharp in Unity (Experimental)](Creating-Learning-Environments/Using-TensorFlow-Sharp-in-Unity.md)
+ * [Designing a Learning Environment](Reinforcement-Learning-in-Unity.md)
+ * [Agents](Agents.md)
+ * [Curriculum Learning](Curriculum-Training.md)
+ * [Imitation Learning](Imitation-Learning.md)
+ * [Example Environments](Example-Environments.md)
+ * [TensorflowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
  
 ## Training
- * [Training ML Agents](Training/Training-ML-Agents.md)
- * [Training with Proximal Policy Optimization](Training/Training-with-PPO.md)
- * [Training on the Cloud with Amazon Web Services](Training/Training-on-Amazon-Web-Service.md)
- * [Using Tensorboard to Observe Training](Training/Using-Tensorboard.md)
+ * [Training ML Agents](Training-ML-Agents.md)
+ * [Training with Proximal Policy Optimization](Training-with-PPO.md)
+ * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
+ * [Using Tensorboard to Observe Training](Using-Tensorboard.md)
  
 ## C# API and Components
  * Academy

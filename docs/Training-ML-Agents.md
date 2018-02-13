@@ -1,1 +1,1 @@
-# Training ML Agents                                                                   {#training-agents}
+# Training ML Agents

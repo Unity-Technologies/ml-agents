@@ -1,4 +1,4 @@
-# Making a new Learning Environment                                                                   {#new-environments}
+# Making a new Learning Environment
 
 This tutorial walks through the process of creating a Unity Environment. A Unity Environment is an application built using the Unity Engine which can be used to train Reinforcement Learning agents.
 

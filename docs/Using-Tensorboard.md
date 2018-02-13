@@ -1,1 +1,1 @@
-# Using Tensorboard to Observe Training                                                                   {#tensorboard}
+# Using Tensorboard to Observe Training

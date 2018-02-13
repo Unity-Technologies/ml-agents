@@ -19,7 +19,7 @@ The ML Agents Academy class orchestrates the agent simulation loop as follows:
 3. Calls the  `CollectState()` function for each agent in the scene.
 4. Uses each agent's Brain class to decide on the agent's next action. 
 5. Calls your subclass's `AcademyStep()` function.
-6. Calls the  `AgentStep()` function for each agent in the scene, passing in the action chosen by the agent's brain. (This function is not called if the agent is done.)
+6. Calls the `AgentStep()` function for each agent in the scene, passing in the action chosen by the agent's brain. (This function is not called if the agent is done.)
 7. Calls the agent's `AgentOnDone()` function if the agent has reached its `Max Step` count or has otherwise marked itself as `done`. Optionally, you can set an agent to restart if it finishes before the end of an episode. In this case, the Academy calls the `AgentReset()` function.
 8. When the Academy reaches its own `Max Step` count, it starts the next episode again by calling your Academy subclass's `AcademyReset()` function.
 
@@ -35,12 +35,13 @@ To train and use ML Agents in a Unity scene, the scene must contain a single [Ac
 
 You must assign a brain to every agent, but you can share brains between multiple agents. Each agent will make its own observations and act independently, but will use the same decision-making logic and, for **Internal** brains, the same trained TensorFlow model. 
 
-**Academy**
+### Academy
 
 The Academy object orchestrates agents and their decision making processes. Only place a single Academy object in a scene. 
 
 You must create a subclass of the Academy class (since the base class is abstract). When you create your Academy subclass, implement the following methods:
 
+* `InitializeAcademy()` — Prepare the environment the first time it launches.
 * `AcademyReset()` — Prepare the environment and agents for the next training episode. Use this function to place and initialize entities in the scene as necessary.
 * `AcademyStep()` — Prepare the environment for the next simulation step. The base Academy class calls this function before calling any `AgentStep()` methods for the current step. You can use this function to update other objects in the scene before the agents take their actions. Note that the agents have already collected their observations and chosen an action before the Academy invokes this method.
 
@@ -48,7 +49,8 @@ You must create a subclass of the Academy class (since the base class is abstrac
   
   See [Academy](Agents-Editor-Interface.md) for a complete list of the Academy properties and their uses.  
 
-**Brain** 
+### Brain
+ 
 The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. 
 
 Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. See [Brain topic](link) for details on using the different types of brains. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
@@ -57,7 +59,8 @@ The Brain class has several important properties that you can set using the Insp
 
 See [Brains](Agents-Editor-Interface.md) for a complete list of the Brain properties.
 
-**Agent**
+### Agent
+
 The Agent class represents an actor in the scene that collects observations and carries out actions. The Agent class is typically attached to the GameObject in the scene that otherwise represents the actor — for example, to a player object in a football game or a car object in a vehicle simulation. Every Agent must be assigned a Brain.  
 
 To create an agent, extend the Agent class and implement the essential `CollectState()` and `AgentStep()` methods:

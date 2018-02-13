@@ -1,1 +1,1 @@
-# Training with Proximal Policy Optimization                                                                   {#training-ppo}
+# Training with Proximal Policy Optimization
