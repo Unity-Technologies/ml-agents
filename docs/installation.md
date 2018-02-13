@@ -24,6 +24,10 @@ If you are a Windows user who is new to Python/TensorFlow, follow [this guide](h
 * docopt (Training)
 * TensorFlow (1.0+) (Training)
 
+## Docker-based Installation (experimental)
+
+If you’d like to use Docker for ML Agents, please follow [this guide](Using-Docker.md).
+
 ### Installing Dependencies
 To install dependencies, go into the `python` sub-directory of the repositroy, and run (depending on your python version) from the command line:
 
