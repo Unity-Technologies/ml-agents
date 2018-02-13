@@ -49,7 +49,9 @@ public class BananaAgent : Agent
         return state;
     }
 
-    public List<float> RayPerception(List<float> state, float rayDistance, float[] rayAngles, string[] detectableObjects) {
+    public List<float> RayPerception(List<float> state, float rayDistance, 
+                                     float[] rayAngles, string[] detectableObjects)
+    {
         foreach (float angle in rayAngles)
         {
             float noise = 0f;
@@ -86,7 +88,8 @@ public class BananaAgent : Agent
         return new Vector3(x, -0.1f, z);
     }
 
-    public float DegreeToRadian(float degree){
+    public float DegreeToRadian(float degree)
+    {
         return degree * Mathf.PI / 180f;
     }
 
@@ -102,12 +105,12 @@ public class BananaAgent : Agent
     {
         shoot = false;
 
-        //Monitor.Log("Bananas", bananas, MonitorType.text, gameObject.transform);
-
-        if (Time.time > frozenTime + 4f  && frozen) {
+        if (Time.time > frozenTime + 4f && frozen)
+        {
             Unfreeze();
         }
-        if (Time.time > effectTime + 0.5f) {
+        if (Time.time > effectTime + 0.5f)
+        {
             if (poisioned)
             {
                 Unpoison();
@@ -125,12 +128,14 @@ public class BananaAgent : Agent
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-            if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f) { 
+            if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f)
+            {
                 shoot = true;
                 dirToGo *= 0.5f;
                 agentRB.velocity *= 0.75f;
             }
-            agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
+            agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), 
+                             ForceMode.Acceleration);
             transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
         }
 
@@ -139,7 +144,8 @@ public class BananaAgent : Agent
             agentRB.velocity *= 0.95f;
         }
 
-        if (shoot) {
+        if (shoot)
+        {
             myLazer.transform.localScale = new Vector3(1f, 1f, 1f);
             Vector3 position = transform.TransformDirection(GiveCatersian(25f, 90f));
             Debug.DrawRay(transform.position, position, Color.red, 0f, true);
@@ -152,47 +158,50 @@ public class BananaAgent : Agent
                 }
             }
         }
-        else {
+        else
+        {
             myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
 
         }
 
     }
 
-    public void Freeze() {
+    void Freeze()
+    {
         gameObject.tag = "frozenAgent";
         frozen = true;
         frozenTime = Time.time;
         gameObject.GetComponent<Renderer>().material.color = Color.black;
     }
 
-    public void Unfreeze()
+    void Unfreeze()
     {
         frozen = false;
         gameObject.tag = "agent";
         gameObject.GetComponent<Renderer>().material = normalMaterial;
     }
 
-    public void Poison() {
+    void Poison()
+    {
         poisioned = true;
         effectTime = Time.time;
         gameObject.GetComponent<Renderer>().material = badMaterial;
     }
 
-    public void Unpoison()
+    void Unpoison()
     {
         poisioned = false;
         gameObject.GetComponent<Renderer>().material = normalMaterial;
     }
 
-    public void Satiate()
+    void Satiate()
     {
         satiated = true;
         effectTime = Time.time;
         gameObject.GetComponent<Renderer>().material = goodMaterial;
     }
 
-    public void Unsatiate()
+    void Unsatiate()
     {
         satiated = false;
         gameObject.GetComponent<Renderer>().material = normalMaterial;
@@ -214,7 +223,9 @@ public class BananaAgent : Agent
         agentRB.velocity = Vector3.zero;
         bananas = 0;
         myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
-        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 2f, Random.Range(-myArea.range, myArea.range)) + area.transform.position;
+        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 
+                                         2f, Random.Range(-myArea.range, myArea.range)) 
+            + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
     }
 
@@ -227,7 +238,9 @@ public class BananaAgent : Agent
             reward += 1f;
             bananas += 1;
             if (contribute)
+            {
                 myAcademy.totalScore += 1;
+            }
         }
         if (collision.gameObject.CompareTag("badBanana"))
         {
@@ -235,7 +248,9 @@ public class BananaAgent : Agent
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             reward -= 1f;
             if (contribute)
+            {
                 myAcademy.totalScore -= 1;
+            }
         }
         if (collision.gameObject.CompareTag("wall"))
         {
