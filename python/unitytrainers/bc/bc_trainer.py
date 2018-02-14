@@ -1,6 +1,6 @@
 # # Unity ML Agents
 # ## ML-Agent Learning (Imitation)
-# Contains an implementation of Imitation Learning
+# Contains an implementation of Behavioral Cloning Algorithm
 
 import logging
 import os
@@ -8,40 +8,14 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from trainers.buffer import Buffer
-from trainers.trainer import UnityTrainerException, Trainer
+from unitytrainers.bc.bc_models import BehavioralCloningModel
+from unitytrainers.buffer import Buffer
+from unitytrainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
 
 
-class ImitationNN(object):
-    def __init__(self, state_size, action_size, h_size, lr, action_type, n_layers):
-        self.state = tf.placeholder(shape=[None, state_size], dtype=tf.float32, name="state")
-        hidden = tf.layers.dense(self.state, h_size, activation=tf.nn.elu)
-        for i in range(n_layers):
-            hidden = tf.layers.dense(hidden, h_size, activation=tf.nn.elu)
-        hidden_drop = tf.layers.dropout(hidden, 0.5)
-        self.output = tf.layers.dense(hidden_drop, action_size, activation=None)
-
-        if action_type == "discrete":
-            self.action_probs = tf.nn.softmax(self.output)
-            self.sample_action = tf.multinomial(self.output, 1, name="action")
-            self.true_action = tf.placeholder(shape=[None], dtype=tf.int32)
-            self.action_oh = tf.one_hot(self.true_action, action_size)
-            self.loss = tf.reduce_sum(-tf.log(self.action_probs + 1e-10) * self.action_oh)
-
-            self.action_percent = tf.reduce_mean(tf.cast(
-                tf.equal(tf.cast(tf.argmax(self.action_probs, axis=1), tf.int32), self.sample_action), tf.float32))
-        else:
-            self.sample_action = tf.identity(self.output, name="action")
-            self.true_action = tf.placeholder(shape=[None, action_size], dtype=tf.float32)
-            self.loss = tf.reduce_sum(tf.squared_difference(self.true_action, self.sample_action))
-
-        optimizer = tf.train.AdamOptimizer(learning_rate=lr)
-        self.update = optimizer.minimize(self.loss)
-
-
-class ImitationTrainer(Trainer):
+class BehavioralCloningTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
     def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
@@ -52,21 +26,28 @@ class ImitationTrainer(Trainer):
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
-        self.param_keys = ['is_imitation', 'brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
-                           'summary_freq', 'max_steps', 'batches_per_epoch']
+        self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
+                           'summary_freq', 'max_steps', 'batches_per_epoch', 'use_recurrent', 'hidden_units',
+                           'num_layers', 'sequence_length']
 
         for k in self.param_keys:
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain_name))
 
-        super(ImitationTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
+        super(BehavioralCloningTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
         self.variable_scope = trainer_parameters['graph_scope']
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batch_size = trainer_parameters['batch_size']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
+        self.use_recurrent = trainer_parameters['use_recurrent']
         self.step = 0
+        self.sequence_length = 1
+        self.m_size = None
+        if self.use_recurrent:
+            self.m_size = env.brains[brain_name].memory_space_size
+            self.sequence_length = trainer_parameters["sequence_length"]
         self.cumulative_rewards = {}
         self.episode_steps = {}
         self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
@@ -82,16 +63,16 @@ class ImitationTrainer(Trainer):
             os.makedirs(self.summary_path)
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
-        s_size = self.brain.state_space_size * self.brain.stacked_states
-        a_size = self.brain.action_space_size
         with tf.variable_scope(self.variable_scope):
             tf.set_random_seed(seed)
-            self.network = ImitationNN(state_size=s_size,
-                                       action_size=a_size,
-                                       h_size=int(trainer_parameters['hidden_units']),
-                                       lr=float(trainer_parameters['learning_rate']),
-                                       action_type=self.brain.action_space_type,
-                                       n_layers=int(trainer_parameters['num_layers']))
+            self.model = BehavioralCloningModel(
+                h_size=int(trainer_parameters['hidden_units']),
+                lr=float(trainer_parameters['learning_rate']),
+                n_layers=int(trainer_parameters['num_layers']),
+                m_size=self.brain.memory_space_size,
+                normalize=False,
+                use_recurrent=trainer_parameters['use_recurrent'],
+                brain=self.brain)
 
     def __str__(self):
 
@@ -151,15 +132,29 @@ class ImitationTrainer(Trainer):
         """
         return
 
-    def take_action(self, info):
+    def take_action(self, all_brain_info):
         """
         Decides actions given state/observation information, and takes them in environment.
         :param info: Current BrainInfo from environment.
         :return: a tupple containing action, memories, values and an object
         to be passed to add experiences
         """
-        agent_brain = info[self.brain_name]
-        agent_action = self.sess.run(self.network.sample_action, feed_dict={self.network.state: agent_brain.states})
+        agent_brain = all_brain_info[self.brain_name]
+        feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
+        run_list = [self.model.sample_action]
+        if self.use_observations:
+            for i, _ in enumerate(agent_brain.observations):
+                feed_dict[self.model.observation_in[i]] = agent_brain.observations[i]
+        if self.use_states:
+            feed_dict[self.model.state_in] = agent_brain.states
+        if self.use_recurrent:
+            feed_dict[self.model.memory_in] = agent_brain.memories
+            run_list += [self.model.memory_out]
+        if self.use_recurrent:
+            agent_action, memories = self.sess.run(run_list, feed_dict)
+            return agent_action, memories, None, None
+        else:
+            agent_action = self.sess.run(run_list, feed_dict)
         return agent_action, None, None, None
 
     def add_experiences(self, info, next_info, take_action_outputs):
@@ -176,7 +171,13 @@ class ImitationTrainer(Trainer):
                 idx = info_expert.agents.index(agent_id)
                 next_idx = next_info_expert.agents.index(agent_id)
                 if not info_expert.local_done[idx]:
-                    self.training_buffer[agent_id]['states'].append(info_expert.states[idx])
+                    if self.use_observations:
+                        for i, _ in enumerate(info.observations):
+                            self.training_buffer[agent_id]['observations%d' % i].append(info_expert.observations[i][idx])
+                    if self.use_states:
+                        self.training_buffer[agent_id]['states'].append(info_expert.states[idx])
+                    if self.use_recurrent:
+                        self.training_buffer[agent_id]['memory'].append(info_expert.memories[idx])
                     self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_actions[next_idx])
 
         info_student = next_info[self.brain_name]
@@ -198,14 +199,14 @@ class ImitationTrainer(Trainer):
         Processing involves calculating value and advantage targets for model updating step.
         :param info: Current BrainInfo
         """
-
         info_expert = info[self.brain_to_imitate]
         for l in range(len(info_expert.agents)):
             if ((info_expert.local_done[l] or
-                len(self.training_buffer[info_expert.agents[l]]['actions']) > self.trainer_parameters['time_horizon'])
+                 len(self.training_buffer[info_expert.agents[l]]['actions']) > self.trainer_parameters[
+                 'time_horizon'])
                     and len(self.training_buffer[info_expert.agents[l]]['actions']) > 0):
                 agent_id = info_expert.agents[l]
-                self.training_buffer.append_update_buffer(agent_id, batch_size=None, training_length=None)
+                self.training_buffer.append_update_buffer(agent_id, batch_size=None, training_length=self.sequence_length)
                 self.training_buffer[agent_id].reset_agent()
 
         info_student = info[self.brain_name]
@@ -231,7 +232,7 @@ class ImitationTrainer(Trainer):
     def is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
-        :return: A boolean corresponding to wether or not update_model() can be run
+        :return: A boolean corresponding to whether or not update_model() can be run
         """
         return len(self.training_buffer.update_buffer['actions']) > self.batch_size
 
@@ -246,17 +247,28 @@ class ImitationTrainer(Trainer):
         for j in range(
                 min(len(self.training_buffer.update_buffer['actions']) // self.batch_size, self.batches_per_epoch)):
             _buffer = self.training_buffer.update_buffer
-            batch_states = np.array(_buffer['states'][j * batch_size:(j + 1) * batch_size])
-            batch_actions = np.array(_buffer['actions'][j * batch_size:(j + 1) * batch_size])
+            start = j * batch_size
+            end = (j + 1) * batch_size
+            batch_states = np.array(_buffer['states'][start:end])
+            batch_actions = np.array(_buffer['actions'][start:end])
+            feed_dict = {self.model.true_action: batch_actions.reshape([-1, self.brain.action_space_size]),
+                         self.model.dropout_rate: 0.5,
+                         self.model.batch_size: batch_size,
+                         self.model.sequence_length: self.sequence_length}
             if not self.is_continuous:
-                feed_dict = {
-                    self.network.state: batch_states.reshape([-1, 1]),
-                    self.network.true_action: np.reshape(batch_actions, -1)}
+                feed_dict[self.model.state_in] = batch_states.reshape([-1, 1])
             else:
-                feed_dict = {
-                    self.network.state: batch_states.reshape([self.batch_size, -1]),
-                    self.network.true_action: batch_actions.reshape([self.batch_size, -1])}
-            loss, _ = self.sess.run([self.network.loss, self.network.update], feed_dict=feed_dict)
+                feed_dict[self.model.state_in] = batch_states.reshape([-1, self.brain.state_space_size *
+                                                                       self.brain.stacked_states])
+            if self.use_observations:
+                for i, _ in enumerate(self.model.observation_in):
+                    _obs = np.array(_buffer['observations%d' % i][start:end])
+                    (_batch, _seq, _w, _h, _c) = _obs.shape
+                    feed_dict[self.model.observation_in[i]] = _obs.reshape([-1, _w, _h, _c])
+            if self.use_recurrent:
+                feed_dict[self.model.memory_in] = np.zeros([batch_size, self.m_size])
+
+            loss, _ = self.sess.run([self.model.loss, self.model.update], feed_dict=feed_dict)
             batch_losses.append(loss)
         if len(batch_losses) > 0:
             self.stats['losses'].append(np.mean(batch_losses))

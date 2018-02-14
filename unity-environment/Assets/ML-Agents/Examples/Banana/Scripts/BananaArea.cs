@@ -11,7 +11,7 @@ public class BananaArea : Area
     public int numBananas;
     public int numBadBananas;
     public bool respawnBananas;
-
+    public float range;
     // Use this for initialization
     void Start()
     {
@@ -25,29 +25,32 @@ public class BananaArea : Area
 
     }
 
+    void CreateBanana(int numBana, GameObject bananaType)
+    {
+        for (int i = 0; i < numBana; i++)
+        {
+            GameObject bana = Instantiate(bananaType, new Vector3(Random.Range(-range, range), 1f,
+                                                              Random.Range(-range, range)) + transform.position,
+                                          Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 90f)));
+            bana.GetComponent<BananaLogic>().respawn = respawnBananas;
+            bana.GetComponent<BananaLogic>().myArea = this;
+        }
+    }
+
     public override void ResetArea()
     {
-        float range = 45f;
-
         foreach (GameObject agent in aca.agents)
         {
             if (agent.transform.parent == gameObject.transform)
             {
-                agent.transform.position = new Vector3(Random.Range(-range, range), 2f, Random.Range(-range, range)) + transform.position;
+                agent.transform.position = new Vector3(Random.Range(-range, range), 2f,
+                                                       Random.Range(-range, range))
+                    + transform.position;
                 agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
             }
         }
 
-        for (int i = 0; i < numBananas; i++)
-        {
-            GameObject bana = Instantiate(banana, new Vector3(Random.Range(-range, range), 1f, Random.Range(-range, range)) + transform.position, banana.gameObject.transform.rotation);
-            bana.GetComponent<BananaLogic>().respawn = respawnBananas;
-        }
-        for (int i = 0; i < numBadBananas; i++)
-        {
-            GameObject bana = Instantiate(badBanana, new Vector3(Random.Range(-range, range), 1f, Random.Range(-range, range)) + transform.position, banana.gameObject.transform.rotation);
-            bana.GetComponent<BananaLogic>().respawn = respawnBananas;
-        }
+        CreateBanana(numBananas, banana);
+        CreateBanana(numBadBananas, badBanana);
     }
-
 }

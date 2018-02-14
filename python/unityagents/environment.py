@@ -24,7 +24,7 @@ logger = logging.getLogger("unityagents")
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
                  base_port=5005, curriculum=None,
-                 seed=None):
+                 seed=0):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -34,9 +34,6 @@ class UnityEnvironment(object):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
-        if seed is None:
-            seed = datetime.now()
-
         atexit.register(self.close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
