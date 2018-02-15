@@ -2,9 +2,10 @@
 # ## ML-Agent Learning
 
 import logging
-from trainer_controller import TrainerController
 
 from docopt import docopt
+
+from unitytrainers.trainer_controller import TrainerController
 
 if __name__ == '__main__':
     logger = logging.getLogger("unityagents")
@@ -32,8 +33,6 @@ if __name__ == '__main__':
     # General parameters
     run_id = options['--run-id']
     seed = int(options['--seed'])
-    if seed ==-1:
-        seed = None
     load_model = options['--load']
     train_model = options['--train']
     save_freq = int(options['--save-freq'])

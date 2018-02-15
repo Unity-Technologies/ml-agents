@@ -169,6 +169,7 @@ public abstract class Academy : MonoBehaviour
             QualitySettings.SetQualityLevel(inferenceConfiguration.qualityLevel, true);
             Time.timeScale = inferenceConfiguration.timeScale;
             Application.targetFrameRate = inferenceConfiguration.targetFrameRate;
+            Monitor.SetActive(true);
         }
     }
 
@@ -284,6 +285,7 @@ public abstract class Academy : MonoBehaviour
 
             if (brain != null && child.gameObject.activeSelf)
                 brains.Add(brain);
+
         }
         return brains;
     }

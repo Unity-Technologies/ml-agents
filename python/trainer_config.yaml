@@ -1,4 +1,5 @@
 default:
+    trainer: ppo
     batch_size: 32
     beta: 5.0e-3
     buffer_size: 512
@@ -8,6 +9,7 @@ default:
     lambd: 0.95
     learning_rate: 3.0e-4
     max_steps: 5.0e4
+    memory_size: 256
     normalize: true
     num_epoch: 5
     num_layers: 2
@@ -35,25 +37,15 @@ GridWorldBrain:
     summary_freq: 2000
     time_horizon: 5
 
-TurretBrain: ExampleBrain
-ghost-HunterBrain:
-    brain_to_copy : HunterBrain
-    is_ghost : true
-    new_model_freq : 10000
-    max_num_models : 20
-ghost-HunteeBrain :
-    brain_to_copy : HunteeBrain
-    is_ghost : true
-    new_model_freq : 10000
-    max_num_models : 20
-ghost-Ball3DBrain:
-    brain_to_copy : Ball3DBrain
-    is_ghost : true
-    new_model_freq : 10000
-    max_num_models : 3
-
-Player:
-    # is_imitation : true
+StudentBrain:
+    trainer: imitation
     max_steps: 10000
     summary_freq: 1000
-
+    brain_to_imitate: ExpertBrain
+    batch_size: 16
+    batches_per_epoch: 10
+    num_layers: 4
+    hidden_units: 64
+    use_recurrent: false
+    sequence_length: 16
+    buffer_size: 128

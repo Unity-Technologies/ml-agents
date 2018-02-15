@@ -4,24 +4,35 @@ using UnityEngine;
 
 public class BananaAgent : Agent
 {
+    public GameObject myAcademyObj;
+    BananaAcademy myAcademy;
     public GameObject area;
+    BananaArea myArea;
     bool frozen;
+    bool poisioned;
+    bool satiated;
     bool shoot;
     float frozenTime;
+    float effectTime;
     Rigidbody agentRB;
     public float turnSpeed;
     public float xForce;
     public float yForce;
     public float zForce;
     public Material normalMaterial;
+    public Material badMaterial;
+    public Material goodMaterial;
     int bananas;
     public GameObject myLazer;
+    public bool contribute;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
         agentRB = GetComponent<Rigidbody>(); //cache the RB
         Monitor.verticalOffset = 1f;
+        myArea = area.GetComponent<BananaArea>();
+        myAcademy = myAcademyObj.GetComponent<BananaAcademy>();
     }
 
     public override void CollectObservations()
@@ -37,6 +48,7 @@ public class BananaAgent : Agent
         AddVectorObs(System.Convert.ToInt32(shoot));
 
     }
+
 
     public void RayPerception(float rayDistance, float[] rayAngles, string[] detectableObjects) {
         foreach (float angle in rayAngles)
@@ -75,7 +87,8 @@ public class BananaAgent : Agent
         return new Vector3(x, -0.1f, z);
     }
 
-    public float DegreeToRadian(float degree){
+    public float DegreeToRadian(float degree)
+    {
         return degree * Mathf.PI / 180f;
     }
 
@@ -87,20 +100,24 @@ public class BananaAgent : Agent
         return new Color32(R, G, B, 255);
     }
 
-    public void Unfreeze() {
-        frozen = false;
-        gameObject.tag = "agent";
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
-    }
-
     public void MoveAgent(float[] act)
     {
         shoot = false;
 
-        Monitor.Log("Bananas", bananas, MonitorType.text, gameObject.transform);
-
-        if (Time.time > frozenTime + 4f) {
+        if (Time.time > frozenTime + 4f && frozen)
+        {
             Unfreeze();
+        }
+        if (Time.time > effectTime + 0.5f)
+        {
+            if (poisioned)
+            {
+                Unpoison();
+            }
+            if (satiated)
+            {
+                Unsatiate();
+            }
         }
 
         Vector3 dirToGo = Vector3.zero;
@@ -110,13 +127,15 @@ public class BananaAgent : Agent
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-            if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f) { 
+            if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f)
+            {
                 shoot = true;
                 dirToGo *= 0.5f;
+                agentRB.velocity *= 0.75f;
             }
-            agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), ForceMode.Acceleration);
+            agentRB.AddForce(new Vector3(dirToGo.x * xForce, dirToGo.y * yForce, dirToGo.z * zForce), 
+                             ForceMode.Acceleration);
             transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
-
         }
 
         if (agentRB.velocity.sqrMagnitude > 25f) //slow it down
@@ -124,9 +143,9 @@ public class BananaAgent : Agent
             agentRB.velocity *= 0.95f;
         }
 
-        if (shoot) {
+        if (shoot)
+        {
             myLazer.transform.localScale = new Vector3(1f, 1f, 1f);
-
             Vector3 position = transform.TransformDirection(GiveCatersian(25f, 90f));
             Debug.DrawRay(transform.position, position, Color.red, 0f, true);
             RaycastHit hit;
@@ -138,19 +157,57 @@ public class BananaAgent : Agent
                 }
             }
         }
-        else {
+        else
+        {
             myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
 
         }
 
     }
 
-    public void Freeze() {
+    void Freeze()
+    {
         gameObject.tag = "frozenAgent";
         frozen = true;
         frozenTime = Time.time;
         gameObject.GetComponent<Renderer>().material.color = Color.black;
     }
+
+
+    void Unfreeze()
+    {
+        frozen = false;
+        gameObject.tag = "agent";
+        gameObject.GetComponent<Renderer>().material = normalMaterial;
+    }
+
+    void Poison()
+    {
+        poisioned = true;
+        effectTime = Time.time;
+        gameObject.GetComponent<Renderer>().material = badMaterial;
+    }
+
+    void Unpoison()
+    {
+        poisioned = false;
+        gameObject.GetComponent<Renderer>().material = normalMaterial;
+    }
+
+    void Satiate()
+    {
+        satiated = true;
+        effectTime = Time.time;
+        gameObject.GetComponent<Renderer>().material = goodMaterial;
+    }
+
+    void Unsatiate()
+    {
+        satiated = false;
+        gameObject.GetComponent<Renderer>().material = normalMaterial;
+    }
+
+
 
     public override void AgentAction(float[] act)
     {
@@ -160,27 +217,47 @@ public class BananaAgent : Agent
     public override void AgentReset()
     {
         Unfreeze();
+        Unpoison();
+        Unsatiate();
         shoot = false;
         agentRB.velocity = Vector3.zero;
         bananas = 0;
         myLazer.transform.localScale = new Vector3(0f, 0f, 0f);
+        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 
+                                         2f, Random.Range(-myArea.range, myArea.range)) 
+            + area.transform.position;
+        transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("banana"))
         {
+            Satiate();
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             AddReward(1f);
             bananas += 1;
+            if (contribute)
+            {
+                myAcademy.totalScore += 1;
+            }
         }
         if (collision.gameObject.CompareTag("badBanana"))
         {
+            Poison();
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
-            AddReward(1f);
+
+            AddReward(-1f);
+            if (contribute)
+            {
+                myAcademy.totalScore -= 1;
+            }
+        }
+        if (collision.gameObject.CompareTag("wall"))
+        {
+            Done();
         }
     }
-
 
     public override void AgentOnDone()
     {

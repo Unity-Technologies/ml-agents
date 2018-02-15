@@ -571,6 +571,8 @@ public abstract class Agent : MonoBehaviour
     /// will request a decision at the next step.
     /// </summary>
     private void MakeRequests(int acaStepCounter){
+        agentParameters.numberOfActionsBetweenDecisions = Mathf.Max(1, agentParameters.numberOfActionsBetweenDecisions);
+        // TODO : This needs to be checked earlier.
         if(!agentParameters.eventBased){
             RequestAction();
             if (acaStepCounter % agentParameters.numberOfActionsBetweenDecisions == 0){
