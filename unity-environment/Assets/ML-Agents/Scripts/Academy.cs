@@ -222,6 +222,7 @@ public abstract class Academy : MonoBehaviour
                     resetParameters[kv.Key] = kv.Value;
                 }
                 _AcademyReset();
+                AgentForceReset();
                 communicator.SetCommand(ExternalCommand.STEP);
             }
             if (communicator.GetCommand() == ExternalCommand.QUIT)
@@ -235,11 +236,12 @@ public abstract class Academy : MonoBehaviour
             maxStepReached = true;
             Done();
         }
-        if (done)
-            _AcademyReset();
 
         AgentSetStatus(maxStepReached, done, stepsSinceReset);
 
+        if (done)
+            _AcademyReset();
+        
         AgentResetIfDone();
 
         AgentSendState();
@@ -260,8 +262,6 @@ public abstract class Academy : MonoBehaviour
         done = false;
         maxStepReached = false;
         AcademyReset();
-
-        AgentForceReset();
 
     }
 
