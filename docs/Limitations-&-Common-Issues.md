@@ -29,7 +29,7 @@ On Windows, you can find instructions [here](https://technet.microsoft.com/en-us
 ### Environment Connection Timeout
 
 If you are able to launch the environment from `UnityEnvironment` but then recieve a timeout error, there may be a number of possible causes.
- * _Cause_: There may be no Brains in your environment which are set to `External`.  In this case, the environment will not attempt to communicate with python. _Solution_: Set the train you wish to externally control through the Python API to `External` from the Unity Editor, and rebuild the environment.
+ * _Cause_: There may be no Brains in your environment which are set to `External`.  In this case, the environment will not attempt to communicate with python. _Solution_: Set the brain you wish to externally control through the Python API to `External` from the Unity Editor, and rebuild the environment.
  * _Cause_: On OSX, the firewall may be preventing communication with the environment. _Solution_: Add the built environment binary to the list of exceptions on the firewall by following instructions [here](https://support.apple.com/en-us/HT201642). 
 
 ### Filename not found
