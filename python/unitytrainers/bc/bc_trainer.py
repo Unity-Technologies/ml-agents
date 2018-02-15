@@ -151,6 +151,8 @@ class BehavioralCloningTrainer(Trainer):
         if self.use_states:
             feed_dict[self.model.state_in] = agent_brain.states
         if self.use_recurrent:
+            if agent_brain.memories.shape[1] == 0:
+                agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
             feed_dict[self.model.memory_in] = agent_brain.memories
             run_list += [self.model.memory_out]
         if self.use_recurrent:
@@ -190,6 +192,8 @@ class BehavioralCloningTrainer(Trainer):
                     if self.use_states:
                         self.training_buffer[agent_id]['states'].append(stored_info_expert.states[idx])
                     if self.use_recurrent:
+                        if stored_info_expert.memories.shape[1] == 0:
+                            stored_info_expert.memories = np.zeros((len(stored_info_expert.agents), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info_expert.memories[idx])
                     self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_actions[next_idx])
 

@@ -177,7 +177,7 @@ class PPOTrainer(Trainer):
             feed_dict[self.model.state_in] = info.states
         if self.use_recurrent:
             if info.memories.shape[1] == 0:
-                info.memories = np.zeros((len(info.states), self.m_size))
+                info.memories = np.zeros((len(info.agents), self.m_size))
             feed_dict[self.model.memory_in] = info.memories
             run_list += [self.model.memory_out]
         if (self.is_training and self.brain.state_space_type == "continuous" and
@@ -232,7 +232,7 @@ class PPOTrainer(Trainer):
                         self.training_buffer[agent_id]['states'].append(stored_info.states[idx])
                     if self.use_recurrent:
                         if stored_info.memories.shape[1] == 0:
-                            stored_info.memories = np.zeros((len(info.states), self.m_size))
+                            stored_info.memories = np.zeros((len(stored_info.agents), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
                     if self.is_continuous:
                         epsi = stored_take_action_outputs[self.model.epsilon]
