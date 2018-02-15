@@ -1,0 +1,42 @@
+# Creating an Academy
+
+An Academy orchestrates all the Agent and Brain objects in a Unity scene. Every scene containing agents must contain a single Academy. To use an Academy, you must create your own subclass. However, all the methods you can override are optional. 
+
+Use the Academy methods to:
+
+* Initialize the environment after the scene loads
+* Reset the environment
+* Change things in the environment at each simulation step
+
+See [Reinforcement Learning in Unity](Reinforcement-Learning-in-Unity.md) for a description of the timing of these method calls during a simulation.
+
+## Initializing an Academy
+
+Initialization is performed once in an Academy object's lifecycle. Use the `InitializeAcademy()` method for any logic you would normally perform in the standard Unity `Start()` or `Awake()` methods. 
+
+**Note:** Because the base Academy implements a `Awake()` function, you must not implement your own. Because of the way the Unity MonoBehaviour class is defined, implementing your own `Awake()` function hides the base class version and Unity will call yours instead. Likewise, do not implement a `FixedUpdate()` function in your Academy subclass.
+
+## Resetting an Environment
+
+Implement an `AcademyReset()` function to alter the environment at the start of each episode. For example, you might want to reset an agent to its starting position or move a goal to a random position. 
+
+An environment resets when the Academy `Max Steps` count is reached or all agents in the environment are done. (Each Agent can have its own `Max Steps` count or you can mark an agent as done in code.) 
+
+## Controlling an Environment
+
+The `AcademyStep()` function is called at every step in the simulation before any agents are updated. Use this function to update objects in the environment at every step or during the episode between environment resets. For example, if you add elements to the environment at random intervals, you put the logic for creating them in `AcademyStep()`.
+
+## Academy Properties
+
+![Academy Inspector](images/academy.png)
+
+* `Max Steps` - Total number of steps per-episode. `0` corresponds to episodes without a maximum number of steps. Once the step counter reaches maximum, the environment will reset.
+* `Frames To Skip` - How many steps of the environment to skip before asking Brains for decisions.
+* `Wait Time` - How many seconds to wait between steps when running in `Inference`.
+* `Configuration` - The engine-level settings which correspond to rendering quality and engine speed.
+    * `Width` - Width of the environment window in pixels.
+    * `Height` - Width of the environment window in pixels.
+    * `Quality Level` - Rendering quality of environment. (Higher is better)
+    * `Time Scale` - Speed at which environment is run. (Higher is faster)
+    * `Target Frame Rate` - FPS engine attempts to maintain. 
+* `Default Reset Parameters` - List of custom parameters that can be changed in the environment on reset.

@@ -39,7 +39,7 @@ You must assign a brain to every agent, but you can share brains between multipl
 
 The Academy object orchestrates agents and their decision making processes. Only place a single Academy object in a scene. 
 
-You must create a subclass of the Academy class (since the base class is abstract). When you create your Academy subclass, implement the following methods:
+You must create a subclass of the Academy class (since the base class is abstract). When you create your Academy subclass, you can implement the following methods (all are optional):
 
 * `InitializeAcademy()` — Prepare the environment the first time it launches.
 * `AcademyReset()` — Prepare the environment and agents for the next training episode. Use this function to place and initialize entities in the scene as necessary.
@@ -85,7 +85,7 @@ When you create a training environment in Unity, you must set up the scene so th
 * The training scene must start automatically when your Unity application is launched by the training process.
 * The scene must include at least one **External** brain.
 * The Academy must reset the scene to a valid starting point for each episode of training.
-* A training episode must have a definite end — either using `Max Steps` or by each agent setting itslef to `done`.
+* A training episode must have a definite end — either using `Max Steps` or by each agent setting itself to `done`.
 
 ## Types of Training Scenarios
 

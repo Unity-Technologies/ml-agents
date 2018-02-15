@@ -104,7 +104,7 @@ Rotations and angles should also be normalized. For angles between 0 and 360 deg
  
 ### Camera Observations
 
-Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network.
+Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network. You can use camera observations and either continuous feature vector or discrete state observations at the same time.
  
  Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
   
@@ -238,3 +238,10 @@ The `Ball3DAgent` in the [3DBall](Example-Environments.md) takes a similar appro
 
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the platfrom.
 
+## Agent Properties
+
+![Agent Inspector](images/agent.png)
+
+* `Brain` - The brain to register this agent to. Can be dragged into the inspector using the Editor.
+* `Observations` - A list of `Cameras` which will be used to generate observations.
+* `Max Step` - The per-agent maximum number of steps. Once this number is reached, the agent will be reset if `Reset On Done` is checked.
