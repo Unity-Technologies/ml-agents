@@ -122,7 +122,7 @@ class Trainer(object):
                 else:
                     feed_dict = {self.model.batch_size: len(info.states)}
                     if self.use_observations:
-                        for i in range(self.info.observations):
+                        for i in range(len(info.observations)):
                             feed_dict[self.model.observation_in[i]] = info.observations[i]
                     if self.use_states:
                         feed_dict[self.model.state_in] = info.states
