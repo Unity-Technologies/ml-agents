@@ -1,73 +1,43 @@
-﻿// From https://forum.unity.com/threads/finally-a-serializable-dictionary-for-unity-extracted-from-system-collections-generic.335797/
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
-
-
-
-
+using System.Linq;
 
 [CustomPropertyDrawer(typeof(ResetParameters))]
 public class ResetParameterDrawer : PropertyDrawer
 {
     private ResetParameters _Dictionary;
-    private bool _Foldout;
-    private const float kButtonWidth = 18f;
+    private const float lineHeight = 17f;
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         CheckInitialize(property, label);
-        if (_Foldout)
-            return (_Dictionary.Count + 1) * 17f;
-        return 17f;
+        return (_Dictionary.Count + 2) * lineHeight;
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         CheckInitialize(property, label);
+        position.height = lineHeight;
+        EditorGUI.LabelField(position, label);
 
-        position.height = 17f;
-
-        var foldoutRect = position;
-        foldoutRect.width -= 2 * kButtonWidth;
-        EditorGUI.BeginChangeCheck();
-        _Foldout = EditorGUI.Foldout(foldoutRect, _Foldout, label, true);
-        if (EditorGUI.EndChangeCheck())
-            EditorPrefs.SetBool(label.text, _Foldout);
-
-        var buttonRect = position;
-        buttonRect.x = position.width - kButtonWidth + position.x;
-        buttonRect.width = kButtonWidth + 2;
-
-        if (GUI.Button(buttonRect, new GUIContent("+", "Add item"), EditorStyles.miniButton))
-        {
-            AddNewItem();
-        }
-
-        buttonRect.x -= kButtonWidth;
-
-        if (GUI.Button(buttonRect, new GUIContent("X", "Clear dictionary"), EditorStyles.miniButtonRight))
-        {
-            ClearDictionary();
-        }
-
-        if (!_Foldout)
-            return;
-
+        EditorGUI.BeginProperty(position, label, property);
         foreach (var item in _Dictionary)
         {
             var key = item.Key;
             var value = item.Value;
 
-            position.y += 17f;
+            position.y += lineHeight;
 
+            // This is the rectangle for the key
             var keyRect = position;
+            keyRect.x += 20;
             keyRect.width /= 2;
-            keyRect.width -= 4;
+            keyRect.width -= 24;
             EditorGUI.BeginChangeCheck();
-            var newKey = DoField(keyRect, typeof(string), key);
+            var newKey = EditorGUI.TextField(keyRect, key);
             if (EditorGUI.EndChangeCheck())
             {
                 try
@@ -82,31 +52,43 @@ public class ResetParameterDrawer : PropertyDrawer
                 break;
             }
 
+            // This is the Rectangle for the value
             var valueRect = position;
             valueRect.x = position.width / 2 + 15;
-            valueRect.width = keyRect.width - kButtonWidth;
+            valueRect.width = keyRect.width - 18;
             EditorGUI.BeginChangeCheck();
-            value = DoField(valueRect, typeof(float), value);
+            value = EditorGUI.FloatField(valueRect, value);
             if (EditorGUI.EndChangeCheck())
             {
                 _Dictionary[key] = value;
                 break;
             }
-
-            var removeRect = valueRect;
-            removeRect.x = valueRect.xMax + 2;
-            removeRect.width = kButtonWidth;
-            if (GUI.Button(removeRect, new GUIContent("x", "Remove item"), EditorStyles.miniButtonRight))
-            {
-                RemoveItem(key);
-                break;
-            }
         }
-    }
 
-    private void RemoveItem(string key)
-    {
-        _Dictionary.Remove(key);
+        // This is the rectangle for the Add button
+        position.y += lineHeight;
+        var AddButtonRect = position;
+        AddButtonRect.x += 20;
+        AddButtonRect.width /= 2;
+        AddButtonRect.width -= 24;
+        if (GUI.Button(AddButtonRect, new GUIContent("Add New",
+                  "Add a new item to the default reset paramters"), EditorStyles.miniButton))
+        {
+            AddNewItem();
+        }
+
+        // This is the rectangle for the Remove button
+        var RemoveButtonRect = position;
+        RemoveButtonRect.x = position.width / 2 + 15;
+        RemoveButtonRect.width = AddButtonRect.width - 18;
+        if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
+                 "Remove the last item to the default reset paramters"), EditorStyles.miniButton))
+        {
+            RemoveLastItem();
+        }
+
+
+        EditorGUI.EndProperty();
     }
 
     private void CheckInitialize(SerializedProperty property, GUIContent label)
@@ -120,48 +102,26 @@ public class ResetParameterDrawer : PropertyDrawer
                 _Dictionary = new ResetParameters();
                 fieldInfo.SetValue(target, _Dictionary);
             }
-
-            _Foldout = EditorPrefs.GetBool(label.text);
         }
     }
 
-    private static readonly Dictionary<Type, Func<Rect, object, object>> _Fields =
-        new Dictionary<Type, Func<Rect, object, object>>()
-        {
-            { typeof(int), (rect, value) => EditorGUI.IntField(rect, (int)value) },
-            { typeof(float), (rect, value) => EditorGUI.FloatField(rect, (float)value) },
-            { typeof(string), (rect, value) => EditorGUI.TextField(rect, (string)value) },
-            { typeof(bool), (rect, value) => EditorGUI.Toggle(rect, (bool)value) },
-            { typeof(Vector2), (rect, value) => EditorGUI.Vector2Field(rect, GUIContent.none, (Vector2)value) },
-            { typeof(Vector3), (rect, value) => EditorGUI.Vector3Field(rect, GUIContent.none, (Vector3)value) },
-            { typeof(Bounds), (rect, value) => EditorGUI.BoundsField(rect, (Bounds)value) },
-            { typeof(Rect), (rect, value) => EditorGUI.RectField(rect, (Rect)value) },
-        };
-
-    private static T DoField<T>(Rect rect, Type type, T value)
-    {
-        Func<Rect, object, object> field;
-        if (_Fields.TryGetValue(type, out field))
-            return (T)field(rect, value);
-
-        if (type.IsEnum)
-            return (T)(object)EditorGUI.EnumPopup(rect, (Enum)(object)value);
-
-        if (typeof(UnityEngine.Object).IsAssignableFrom(type))
-            return (T)(object)EditorGUI.ObjectField(rect, (UnityEngine.Object)(object)value, type, true);
-
-        Debug.Log("Type is not supported: " + type);
-        return value;
-    }
-
-    private void ClearDictionary()
+    private void ClearResetParamters()
     {
         _Dictionary.Clear();
     }
 
+    private void RemoveLastItem()
+    {
+        if (_Dictionary.Count > 0)
+        {
+            string key = _Dictionary.Keys.ToList()[_Dictionary.Count - 1];
+            _Dictionary.Remove(key);
+        }
+    }
+
     private void AddNewItem()
     {
-        string key = "Param-"+_Dictionary.Count.ToString();
+        string key = "Param-" + _Dictionary.Count.ToString();
         var value = default(float);
         try
         {

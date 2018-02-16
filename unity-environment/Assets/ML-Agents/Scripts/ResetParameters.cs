@@ -7,45 +7,45 @@ using UnityEngine;
 public class ResetParameters : Dictionary<string, float>, ISerializationCallbackReceiver
 {
 
-	[System.Serializable]
-	public struct ResetParameter
-	{
-		public string key;
-		public float value;
-	}
-	[SerializeField]
-	private List<ResetParameter> resetParameters = new List<ResetParameter>();
+    [System.Serializable]
+    public struct ResetParameter
+    {
+        public string key;
+        public float value;
+    }
+    [SerializeField]
+    private List<ResetParameter> resetParameters = new List<ResetParameter>();
 
-	public void OnBeforeSerialize()
-	{
-		resetParameters.Clear();
+    public void OnBeforeSerialize()
+    {
+        resetParameters.Clear();
 
-		foreach (KeyValuePair<string, float> pair in this)
-		{
-			ResetParameter rp = new ResetParameter();
-			rp.key = pair.Key;
-			rp.value = pair.Value;
-			resetParameters.Add(rp);
-		}
+        foreach (KeyValuePair<string, float> pair in this)
+        {
+            ResetParameter rp = new ResetParameter();
+            rp.key = pair.Key;
+            rp.value = pair.Value;
+            resetParameters.Add(rp);
+        }
 
-	}
+    }
 
-	public void OnAfterDeserialize()
-	{
-		this.Clear();
+    public void OnAfterDeserialize()
+    {
+        this.Clear();
 
 
 
-		for (int i = 0; i < resetParameters.Count; i++)
-		{
-			if (this.ContainsKey(resetParameters[i].key))
-			{
-				this.Add("param" + i.ToString(), resetParameters[i].value);
-			}
-			else
-			{
-				this.Add(resetParameters[i].key, resetParameters[i].value);
-			}
-		}
-	}
+        for (int i = 0; i < resetParameters.Count; i++)
+        {
+            if (this.ContainsKey(resetParameters[i].key))
+            {
+                Debug.LogError("The ResetParameters contains the same key twice");
+            }
+            else
+            {
+                this.Add(resetParameters[i].key, resetParameters[i].value);
+            }
+        }
+    }
 }
