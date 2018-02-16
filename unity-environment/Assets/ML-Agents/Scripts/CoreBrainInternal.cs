@@ -381,16 +381,23 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             }
         }
 
+#else
+        if (agentInfo.Count > 0)
+        {
+            throw new UnityAgentsException(string.Format(@"The brain {0} was set to Internal but the Tensorflow 
+                        library is not present in the Unity project.",
+                        brain.gameObject.name));
+        }
 #endif
     }
 
     /// Displays the parameters of the CoreBrainInternal in the Inspector 
     public void OnInspector()
     {
-#if ENABLE_TENSORFLOW && UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
                       "If checked, the brain will broadcast states and actions to Python."), broadcast);
+#if ENABLE_TENSORFLOW && UNITY_EDITOR
         var serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
         var tfGraphModel = serializedBrain.FindProperty("graphModel");
@@ -477,6 +484,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         serializedBrain.Update();
         EditorGUILayout.PropertyField(tfPlaceholders, true);
         serializedBrain.ApplyModifiedProperties();
+#endif
+        #if !ENABLE_TENSORFLOW && UNITY_EDITOR
+        EditorGUILayout.HelpBox (@"You need to install the TensorflowSharp plugin in order to use the internal brain.", MessageType.Error);
 #endif
     }
 

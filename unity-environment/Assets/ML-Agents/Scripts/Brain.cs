@@ -9,7 +9,7 @@ using System.Linq;
 
 // Class contains all necessary environment parameters
 // to be defined and sent to external agent
-#if ENABLE_TENSORFLOW
+
 public enum BrainType
 {
     Player,
@@ -17,18 +17,6 @@ public enum BrainType
     External,
     Internal
 }
-
-#else
-public enum BrainType
-{
-    Player,
-    Heuristic,
-    External,
-}
-#endif
-
-
-
 
 public enum StateType
 {
