@@ -2,126 +2,249 @@
 
 This tutorial walks through the process of creating a Unity Environment. A Unity Environment is an application built using the Unity Engine which can be used to train Reinforcement Learning agents.
 
-## Setting up the Unity Project
+## Setting up ML Agents
 
-1. Open an existing Unity project, or create a new one and import the RL interface package:
- * [ML-Agents package without TensorflowSharp](https://s3.amazonaws.com/unity-agents/0.2/ML-AgentsNoPlugin.unitypackage)
- * [ML-Agents package with TensorflowSharp](https://s3.amazonaws.com/unity-agents/0.2/ML-AgentsWithPlugin.unitypackage)
+To use ML Agents, follow the [installation instructions](Installation.md) and then do the following in your Unity project:
 
-2. Rename `TemplateAcademy.cs` (and the contained class name) to the desired name of your new academy class. All Template files are in the folder `Assets -> Template -> Scripts`. Typical naming convention is `YourNameAcademy`.
+1. Create an environment for your agents to live in. An environment can range from a simple physical simulation containing a few objects to an entire game or ecosystem.
+2. Implement an Academy subclass and add it to a GameObject in the Unity scene containing the environment. This GameObject will serve as the parent for any Brain objects in the scene. Your Academy class can implement a few optional methods to update the scene independently of any agents. For example, you can add, move, or delete agents and other entities in the environment.
+3. Add one or more Brain objects to the scene as children of the Academy.
+4. Implement your Agent subclasses. An Agent subclass defines the code an agent uses to observe its environment, to carry out assigned actions, and to calculate the rewards used for reinforcement training. You can also implement optional methods to reset the agent when it has finished or failed its task.
+5. Add your Agent subclasses to appropriate GameObjects, typically, the object in the scene that represents the agent in the simulation. Each Agent object must be assigned a Brain object.
+6. If training, set the Brain type to External and [run the training process](Training-with-PPO.md).  
 
-3. Attach `YourNameAcademy.cs` to a new empty game object in the currently opened scene (`Unity` -> `GameObject` -> `Create Empty`) and rename this game object to `YourNameAcademy`. Since `YourNameAcademy` will be used to control all the environment logic, ensure the attached-to object is one which will remain in the scene regardless of the environment resetting, or other within-environment behavior.
 
-4. Attach `Brain.cs` to a new empty game object and rename this game object to `YourNameBrain1`. Set this game object as a child of `YourNameAcademy` (Drag `YourNameBrain1` into `YourNameAcademy`). Note that you can have multiple brains in the Academy but they all must have different names.
+**Note:** If you are unfamiliar with Unity, refer to [Learning th interface](https://docs.unity3d.com/Manual/LearningtheInterface.html) in the Unity Manual if an Editor task isn't explained sufficiently in this tutorial.
 
-5. Disable Window Resolution dialogue box and Splash Screen.
-    1. Go to `Edit` -> `Project Settings` -> `Player` -> `Resolution and Presentation`.
-    2. Set `Display Resolution Dialogue` to `Disabled`.
-    3.Check `Run In Background`.
-    4. Click `Splash Image`.
-    5. Uncheck `Show Splash Screen` _(Unity Pro only)_.
+## Set Up the Unity Project
 
-6. If you will be using Tensorflow Sharp in Unity, you must:
-	1. Make sure you are using Unity 2017.1 or newer.
-	2. Make sure the TensorflowSharp [plugin](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage) is in your Asset folder.
-	3. Go to `Edit` -> `Project Settings` -> `Player`
-	4. For each of the platforms you target (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
-		1. Go into `Other Settings`.
-		2. Select `Scripting Runtime Version` to `Experimental (.NET 4.6 Equivalent)`
-		3. In `Scripting Defined Symbols`, add the flag `ENABLE_TENSORFLOW`
-	5. Note that some of these changes will require a Unity Restart
+The first task to accomplish is simply creating a new Unity project and importing the ML Agents assets into it:
 
-# Implementing `YourNameAcademy`
+1. Launch the Unity Editor and create a new project named "RollerBall".
+2. If necessary, clone the ML Agents repository with the `git` command:
 
-1. Click on the game object **`YourNameAcademy`**.
+    git clone git@github.com:Unity-Technologies/ml-agents.git
+    
+3. In a file system window, navigate to the folder containing your cloned ML Agents repository. 
 
-2. In the inspector tab, you can modify the characteristics of the academy:
- * **`Max Steps`** Maximum length of each episode (set to 0 if you do not want the environment to reset after a certain time).
- * **`Wait Time`** Real-time between steps when running environment in test-mode.
- * **`Frames To Skip`** Number of frames (or physics updates) to skip between steps. The agents will act at every frame but get new actions only at every step.
- * **`Training Configuration`** and **`Inference Configuration`** The first defines the configuration of the Engine at training time and the second at test / inference time. The training mode corresponds only to external training when the reset parameter `train_model` was set to True. The adjustable parameters are as follows:
-    * `Width` and `Height` Correspond to the width and height in pixels of the window (must be both greater than 0). Typically set it to a small size during training, and a larger size for visualization during inference.
-    * `Quality Level` Determines how mesh rendering is performed. Typically set to small value during training and higher value for visualization during inference.
-    * `Time Scale` Physics speed. If environment utilized physics calculations, increase this during training, and set to `1.0f` during inference. Otherwise, set it to `1.0f`.
-    * `Target Frame Rate` Frequency of frame rendering. If environment utilizes observations, increase this during training, and set to `60` during inference. If no observations are used, this can be set to `1` during training.
- * **`Default Reset Parameters`** You can set the default configuration to be passed at reset. This will be a mapping from strings to float values that you can call in the academy with `resetParameters["YourDefaultParameter"]`
+4. Drag the `ML-Agents` folder from `unity-environments/Assets` to the Unity Editor Project window.
 
-3. Within **`InitializeAcademy()`**, you can define the initialization of the Academy. Note that this command is ran only once at the beginning of the training session. Do **not** use `Awake()`, `Start()` or `OnEnable()`
+Your Unity **Project** window should contain the following assets:
 
-3. Within **`AcademyStep()`**, you can define the environment logic each step. Use this function to modify the environment for the agents that will live in it.
+![Project window](images/mlagents-NewProject.png)
 
-4. Within **`AcademyReset()`**, you can reset the environment for a new episode. It should contain environment-specific code for setting up the environment. Note that `AcademyReset()` is called at the beginning of the training session to ensure the first episode is similar to the others.
+## Create the Environment:
 
-## Implementing `YourNameBrain`
-For each Brain game object in your academy :
+Next, we will create a very simple scene to act as our ML Agents environment. The "physical" components of the environment include a Plane to act as the floor for the agent to move around on, a Cube to act as the goal or target for the agent to seek, and a Sphere to represent the agent itself. 
 
-1. Click on the game object `YourNameBrain`
+**Create the floor plane:**
 
-2. In the inspector tab, you can modify the characteristics of the brain in  **`Brain Parameters`**
-    * `State Size` Number of variables within the state provided to the agent(s).
-    * `Action Size` The number of possible actions for each individual agent to take.
-    * `Memory Size` The number of floats the agents will remember each step.
-    * `Camera Resolutions` A list of flexible length that contains resolution parameters : `height` and `width` define the number dimensions of the camera outputs in pixels. Check `Black And White` if you want the camera outputs to be black and white.
-    * `Action Descriptions` A list describing in human-readable language the meaning of each available action.
-    * `State Space Type` and `Action Space Type`. Either `discrete` or `continuous`.
-        * `discrete` corresponds to describing the action space with an `int`.
-        * `continuous` corresponds to describing the action space with an array of `float`.
+1. Right click in Hierarchy window, select 3D Object > Plane.
+2. Name the GameObject "Floor."
+3. Select Plane to view its properties in the Inspector window.
+4. Set Transform to Position = (0,0,0), Rotation = (0,0,0), Scale = (1,1,1).
+5. On the Plane's Mesh Renderer, expand the Materials property and change the default-material to *floor*.
 
-3. You can choose what kind of brain you want `YourNameBrain` to be. There are four possibilities:
- * `External` : You need at least one of your brains to be external if you wish to interact with your environment from python.
- * `Player` : To control your agents manually. If the action space is discrete, you must map input keys to their corresponding integer values. If the action space is continuous, you must map input keys to their corresponding indices and float values.
- * `Heuristic` : You can have your brain automatically react to the observations and states in a customizable way. You will need to drag a `Decision` script into `YourNameBrain`. To create a custom reaction, you must :
-   *  Rename `TemplateDecision.cs` (and the contained class name) to the desired name of your new reaction. Typical naming convention is `YourNameDecision`.
-   *  Implement `Decide`: Given the state, observation and memory of an agent, this function must return an array of floats corresponding to the actions taken by the agent. If the action space type is discrete, the array must be of size 1.
-   *  Optionally, implement `MakeMemory`: Given the state, observation and memory of an agent, this function must return an array of floats corresponding to the new memories of the agent.
- * `Internal` : Note that you must have Tensorflow Sharp setup (see top of this page). Here are the fields that must be completed:
-   *  `Graph Model` : This must be the `bytes` file corresponding to the pretrained Tensorflow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
-   *  `Graph Scope` : If you set a scope while training your tensorflow model, all your placeholder name will have a prefix. You must specify that prefix here.
-   *  `Batch Size Node Name` : If the batch size is one of the inputs of your graph, you must specify the name if the placeholder here. The brain will make the batch size equal to the number of agents connected to the brain automatically.
-   *  `State Node Name` : If your graph uses the state as an input, you must specify the name if the placeholder here.
-   *  `Recurrent Input Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the input placeholder here.
-   *  `Recurrent Output Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the output placeholder here.
-   * `Observation Placeholder Name` : If your graph uses observations as input, you must specify it here. Note that the number of observations is equal to the length of `Camera Resolutions` in the brain parameters.
-   * `Action Node Name` : Specify the name of the placeholder corresponding to the actions of the brain in your graph. If the action space type is continuous, the output must be a one dimensional tensor of float of length `Action Space Size`, if the action space type is discrete, the output must be a one dimensional tensor of int of length 1.
-   * `Graph Placeholder` : If your graph takes additional inputs that are fixed (example: noise level) you can specify them here. Note that in your graph, these must correspond to one dimensional tensors of int or float of size 1.
-     * `Name` : Corresponds to the name of the placeholder.
-     * `Value Type` : Either Integer or Floating Point.
-     * `Min Value` and 'Max Value' : Specify the minimum and maximum values (included) the placeholder can take. The value will be sampled from the uniform distribution at each step. If you want this value to be fixed, set both `Min Value` and `Max Value` to the same number.
+(To set a new material, click the small circle icon next to the current material name. This opens the **Object Picker** dialog so that you can choose the a different material from the list of all materials currently in the project.)
 
-## Implementing `YourNameAgent`
+![The Floor in the Inspector window](images/mlagent-NewTutFloor.png)
 
-1. Rename `TemplateAgent.cs` (and the contained class name) to the desired name of your new agent. Typical naming convention is `YourNameAgent`.
+**Add the Target Cube**
 
-2. Attach `YourNameAgent.cs` to the game object that represents your agent. (Example: if you want to make a self-driving car, attach `YourNameAgent.cs` to a car looking game object)
+1. Right click in Hierarchy window, select 3D Object > Cube.
+2. Name the GameObject "Target"
+3. Select Target to view its properties in the Inspector window.
+4. Set Transform to Position = (3,0.5,3), Rotation = (0,0,0), Scale = (1,1,1).
+5. On the Cube's Mesh Renderer, expand the Materials property and change the default-material to *block*.
 
-3. In the inspector menu of your agent, drag the brain game object you want to use with this agent into the corresponding `Brain` box. Please note that you can have multiple agents with the same brain. If you want to give an agent a brain or change his brain via script, please use the method `ChangeBrain()`.
+![The Target Cube in the Inspector window](images/mlagent-NewTutBlock.png)
 
-4. In the inspector menu of your agent, you can specify what cameras, your agent will use as its observations. To do so, drag the desired number of cameras into the `Observations` field. Note that if you want a camera to move along your agent, you can set this camera as a child of your agent
+**Add the Agent Sphere**
 
-5. If `Reset On Done` is checked, `Reset()` will be called when the agent is done. Else, `AgentOnDone()` will be called. Note that if `Reset On Done` is unchecked, the agent will remain "done" until the Academy resets. This means that it will not take actions in the environment.
+1. Right click in Hierarchy window, select 3D Object > Sphere.
+2. Name the GameObject "RollerAgent"
+3. Select Target to view its properties in the Inspector window.
+4. Set Transform to Position = (0,0.5,0), Rotation = (0,0,0), Scale = (1,1,1).
+5. On the Sphere's Mesh Renderer, expand the Materials property and change the default-material to *checker 1*.
+6. Click **Add Component**.
+7. Add the Physics/Rigidbody component to the Sphere. (Adding a Rigidbody ) 
 
-6. Implement the following functions in `YourNameAgent.cs` :
- * `InitializeAgent()` : Use this method to initialize your agent. This method is called when the agent is created. Do **not** use `Awake()`, `Start()` or `OnEnable()`.
- * `CollectState()` : Must return a list of floats corresponding to the state the agent is in. If the state space type is discrete, return a list of length 1 containing the float equivalent of your state.
- * `AgentStep()` : This function will be called every frame, you must define what your agent will do given the input actions. You must also specify the rewards and whether or not the agent is done. To do so, modify the public fields of the agent `reward` and `done`.
- * `AgentReset()` : This function is called at start, when the Academy resets and when the agent is done (if `Reset On Done` is checked).
- * `AgentOnDone()` : If `Reset On Done` is not checked, this function will be called when the agent is done. `Reset()` will only be called when the Academy resets.
+![The Target Cube in the Inspector window](images/mlagent-NewTutSphere.png)
 
-If you create Agents via script, we recommend you save them as prefabs and instantiate them either during steps or resets. If you do, you can use `GiveBrain(brain)` to have the agent subscribe to a specific brain. You can also use `RemoveBrain()` to unsubscribe from a brain.
+Note that we will create an Agent subclass to add to this GameObject as a component later in the tutorial.
 
-# Defining the reward function
-The reward function is the set of circumstances and event which we want to reward or punish the agent for making happen. Here are some examples of positive and negative rewards:
-* Positive
-    * Reaching a goal
-    * Staying alive
-    * Defeating an enemy
-    * Gaining health
-    * Finishing a level
-* Negative
-    * Taking damage
-    * Failing a level
-    * The agent’s death
+**Add Empty GameObjects to Hold the Academy and Brain**
 
-Small negative rewards are also typically used each step in scenarios where the optimal agent behavior is to complete an episode as quickly as possible.
+1. Right click in Hierarchy window, select Create Empty.
+2. Name the GameObject "Academy"
+3. Right-click on the Academy GameObject and select Create Empty.
+4. Name this child of the Academy, "Brain".
 
-Note that the reward is reset to 0 at every step, you must add to the reward (`reward += rewardIncrement`). If you use `skipFrame` in the Academy and set your rewards instead of incrementing them, you might lose information since the reward is sent at every step, not at every frame.
+![The scene hierarchy](images/mlagent-NewTutHierarchy.png)
+
+You can adjust the camera angles to give a bettwer view of the scene at runtime. The next steps will be to create and add the ML Agent components.
+
+## Implement an Academy
+
+The Academy object coordinates the ML Agents in the scene and drives the decision-making portion of the simulation loop. Every ML Agent scene needs one Academy instance. Since the base Academy classis abstract, you must make your own subclass even if you don't need to use any of the methods for a particular environment.
+
+First, add a New Script component to the Academy GameObject created earlier: 
+1. Select the Academy GameObject to view it in the Inspector window.
+2. Click **Add Component**.
+3. Click **New Script** in the list of components (at the bottom).
+4. Name the script "RollerAcademy".
+5. Click **Create and Add**.
+
+Next, edit the new `RollerAcademy` script:
+1. In the Unity Project window, double-click the `RollerAcademy` script to open it in your code editor. (By default new scripts are placed directly in the **Assets** folder.)
+2. In the editor, change the base class from `MonoBehaviour` to `Academy`.
+3. Delete the `Start()` and `Update()` methods that were added by default.
+
+In such a basic scene, we don't need the Academy to initialize, reset, or otherwise control any objects in the environment so we have the simplest possible Academy implementation:
+ 
+    using UnityEngine;
+
+    public class RollerAcademy : Academy {}
+     
+
+The default settings for the Academy properties are also fine for this environment, so we don't need to change anything for the RollerAcademy component in the Inspector window.
+
+![The Academy properties](images/mlagent-NewTutAcademy.png)
+
+## Add a Brain
+
+To Add a Brain:
+
+1. Right-click the Academy GameObject in the Hierarchy window and choose *Create Empty* to add a child GameObject.
+2. Name the new GameObject, "Brain".
+3. Select the Brain to show its properties in the Inspector window.
+4. Click **Add Component**.
+5. Select the **Scripts/Brain** component to add it to the GameObject.
+
+We will come back to the Brain properties later, but leave the Brain Type as **Player** for now.
+
+![The Brain default properties](images/mlagent-NewTutBrain.png)
+
+## Implement an Agent
+
+To create the Agent:
+
+1. Select the RollerAgent GameObject to view it in the Inspector window.
+2. Click **Add Component**.
+3. Click **New Script** in the list of components (at the bottom).
+4. Name the script "RollerAgent".
+5. Click **Create and Add**.
+
+Then, edit the new `RollerAgent` script:
+
+1. In the Unity Project window, double-click the `RollerAgent` script to open it in your code editor. 
+2. In the editor, change the base class from `MonoBehaviour` to `Agent`.
+3. Delete the `Update()` method, but we will use the `Start()` function, so leave it alone for now.
+
+So far, these are the basic steps that you would use to add ML Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube.
+
+In this simple scenario, we don't need the Academy object do do anything special. If we wanted to change the environment, for example change the size of the floor or add or remove agents or other objects before or during the simulation, we could implement the appropriate methods in the Academy. Instead, we will have the Agent do all the work of resetting itself and the target when it succeeds or falls trying. 
+
+When agent reaches its target, it marks itself done and its agent reset function moves the target to a random location. In addition, if the agent rolls off the platform, the reset function puts it back onto the floor.
+
+To move the target GameObject, we need a reference to its Transform (which stores a GameObject's position, orientation and scale in the 3D world). To get this reference, add a public field of type `Transform` to the RollerAgent class.  Public fields of a component in Unity get displayed in the Inspector window, allowing you to choose which GameObject to use as the target in the Unity Editor. Our `AgentReset()` function looks like:
+
+    public Transform Target;
+    public override void AgentReset()
+    {
+        if(this.transform.position.y < -1.0){ //The agent fell
+            this.transform.position = Vector3.zero;
+            this.rBody.angularVelocity = Vector3.zero;
+            this.rBody.velocity = Vector3.zero;
+        }
+        else { //move the target to a new spot
+            Target.position = new Vector3(Random.value * 8 - 4,
+                                          0.5f,
+                                          Random.value * 8 - 4);
+        }
+    }
+
+Next let's implement the Agent.CollectState() function. The Agent sends the information we collect to the Brain, which uses it to make a decision. When you train the agent using the PPO training algorithm, the data is fed into a neural network as a feature vector. 
+
+We want the  position as well as the position of the target. In general, it is better to use the relative position of other objects rather than the absolute position for more generalizable training.  That means the state observation contains 5 values and we need to use the continuous state space type when we get around to setting the Brain properties:
+
+    //Observations
+    List<float> observation = new List<float>();
+    public override List<float> CollectState()
+    {
+        //Calculate relative position and angle:
+        Vector3 relativePosition = this.transform.position - Target.position;
+        float angleToTarget = Vector3.Angle(this.transform.forward, relativePosition);
+                                     
+        observation.Clear();
+        observation.Add(this.transform.position.x/5); //Dividing by 5 to normalize positions to range [-1,1]
+        observation.Add(this.transform.position.z/5);
+        observation.Add(relativePosition.x/5);
+        observation.Add(relativePosition.z/5);
+        observation.Add(angleToTarget);
+
+        return observation;
+    }
+
+The next bit we need to program for the Agent is the action function. We will use the continuous action space, so we need two action control values one to specify how much force to apply along the x axis, and one to apply a force in the z direction. . 
+
+Finally we need to program the reward system so that we can train the Agent to roll to the targets and avoid falling off the platform. The main rewards are:
+
+* Reaching the target = +1
+* Falling from the platform = -1
+
+
+Rewards are also assigned in the AgentStep() function, so the final version of the function looks like:
+
+    public override void AgentStep(float[] act)
+    {
+        float distanceToTarget = Vector3.Distance(this.transform.position, Target.position);
+        if( distanceToTarget < 1.7f){
+            this.done = true;
+            reward += 1.0f;
+        }
+        if(this.transform.position.y < -1.0){
+            this.done = true;
+            reward += -1.0f;
+        }
+        if(act[0] > 0){
+            reward += 0.01f;
+        }
+        reward += -0.1f;
+
+        //Action Size = 2
+        chanController.AgentVerticalInput = Mathf.Clamp(act[0], -1, 1); 
+        chanController.AgentHorizontalInput = Mathf.Clamp(act[1], -1, 1);
+    }
+    
+
+
+Now, let's setup the brain so we can test the Agent using direct keyboard control:
+
+Select the Brain GameObject so that the Brain shows in the Inspector window. Set these properties:
+
+State Size = 5
+Action Size = 2
+Action Space Type = Continuous
+State Space Type = Continuous
+Brain Type = Player
+
+Next let's hook up the keyboard controls. Click the triangle icon next to Continuous Player Actions to reveal the Size field. Set size to 4. Although we only have two action variables, we will use one key to specify positive values (i.e. forward) and one to specify negative values (i.e. backward) for each axis.
+
+
+The Index value corresponds to the index of the action (act[]) array passed to AgentStep() function. Value is assigned to act[Index] when Key is pressed.
+
+Some final changes:
+
+Select RollerAgent so that you can see the  component in the Inspector.
+Drag the Brain GameObject to the RollerAgent Brain field.
+
+## Test the Environment
+
+Drag the Target GameObject to the RollerAgent Target field.
+
+
+Press Play to run the scene and use the WASD keys to test.
+
+Now we can train the Agent. To get ready, we have to change the Brain Type from Player to **External**. From there the process is the same as described in Getting Started with the 3D Balance Ball Environment.
+

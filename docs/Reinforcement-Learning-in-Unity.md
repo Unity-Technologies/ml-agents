@@ -29,7 +29,7 @@ To create a training environment, extend the Academy and Agent classes to implem
 
 ## Organizing the Unity Scene
 
-To train and use ML Agents in a Unity scene, the scene must contain a single [Academy](link) subclass along with as many Brain objects and Agent subclasses as you need. Any Brain instances in the scene must be attached to GameObjects that are children of the Academy in the Unity Scene Hierarchy. Agent instances should be attached to the GameObject representing that agent.
+To train and use ML Agents in a Unity scene, the scene must contain a single Academy subclass along with as many Brain objects and Agent subclasses as you need. Any Brain instances in the scene must be attached to GameObjects that are children of the Academy in the Unity Scene Hierarchy. Agent instances should be attached to the GameObject representing that agent.
 
 [Screenshot of scene hierarchy]
 
@@ -57,7 +57,7 @@ Use the Brain class directly, rather than a subclass. Brain behavior is determin
 
 The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `State Size` property must match the length of the feature vector created by an agent exactly. See [Agent topic]() for information about creating agents and setting up a Brain instance correctly.
 
-See [Brains](Agents-Editor-Interface.md) for a complete list of the Brain properties.
+See [Brains](Brains.md) for a complete list of the Brain properties.
 
 ### Agent
 
@@ -72,7 +72,7 @@ Your implementations of these functions determine how the properties of the Brai
  
 You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentStep()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. When the Academy reaches its own `Max Steps` count, it starts the next episode. If you set an agent's RestOnDone property to true, then the agent can attempt its task several times in one episode. (Use the `Agent.AgentReset()` function to prepare the agent to start again.) 
 
-See [Creating Agents](Agents.md) for detailed information about programing your own agents.
+See [Agents](Agents.md) for detailed information about programing your own agents.
 
 ## Environments
 
@@ -86,29 +86,4 @@ When you create a training environment in Unity, you must set up the scene so th
 * The scene must include at least one **External** brain.
 * The Academy must reset the scene to a valid starting point for each episode of training.
 * A training episode must have a definite end — either using `Max Steps` or by each agent setting itself to `done`.
-
-## Types of Training Scenarios
-
-With the Unity ML Agents SDK, you can create a variety of different kinds of training scenarios, depending on how you connect agents, brains, and rewards. For those new to training intelligent agents, here are a few examples that can serve as inspiration:
-
-* **Single-Agent** — A single agent linked to a single brain. This is the traditional way of training an agent. An example is any single-player game, such as Chicken. [Video Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
-
-* **Simultaneous Single-Agent** — Multiple independent agents with independent reward functions linked to a single brain. This parallelized version of the traditional training scenario can speed-up and stabilize the training process. An example of this scenario is training a dozen robot-arms to each open a door simultaneously. [Video Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
-
-* **Adversarial Self-Play** — Two interacting agents with inverse reward functions linked to a single brain. In two-player games, adversarial self-play can allow an agent to become increasingly more skilled, while always having the perfectly matched opponent: itself. This was the strategy employed when training AlphaGo, and more recently used by OpenAI to train a human-beating 1v1 Dota 2 agent.
-
-* **Cooperative Multi-Agent** — Multiple interacting agents with a shared reward function linked to either a single or multiple different brains. In this scenario, all agents must work together to accomplish a task than couldn’t be done alone. Examples include environments where each agent only has access to partial information, which needs to be shared in order to accomplish the task or  collaboratively solve a puzzle. 
-
-* **Competitive Multi-Agent** — Multiple interacting agents with inverse reward functions linked either to a single brain or to multiple, different brains. In this scenario, agents must compete with one another to either win a competition, or obtain some limited set of resources. All team sports fall into this scenario. 
-
-* **Ecosystem** — Multiple interacting agents with independent reward functions linked to the same or different brains. This scenario can be thought of as creating a small world in which animals with different goals all interact, such as a savanna in which there might be zebras, elephants, and giraffes, or an autonomous driving simulation within an urban environment.
-
-
-## Alternate Learning schemes
-
-ML Agents supports the following alternate learning schemes:
-
-* **Curriculum Learning** — It is often difficult for agents to learn a complex task at the beginning of the training process. Curriculum learning is the process of gradually increasing the difficulty of a task to allow more efficient learning. ML Agents supports setting custom environment parameters every time the environment is reset. This allows elements of the environment related to difficulty or complexity to be dynamically adjusted based on training progress. See [Curriculum Learning](Curriculum-Training.md) for more information.
-
-* **Imitation Learning** — It is often more intuitive to simply demonstrate the behavior you want an agent to perform, rather than attempting to have it learn via trial-and-error methods. Imitation learning provides the ability to record all state/action/reward information for use in supervised learning scenarios. You can provide demonstrations of how an agent should behave in an environment and then utilize those demonstrations to train an agent in either a standalone fashion, or as a first-step in a reinforcement learning process. Imitation Learning will be available in a future version of ML Agents. See [Imitation Learning](Imitation-Learning.md) for more information.
 

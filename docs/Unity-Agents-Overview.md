@@ -31,16 +31,5 @@ The main objects within any ML Agents environment are:
 
 The states and observations of all agents with brains set to **External** are collected by the External Communicator, and communicated to an external process. By setting multiple agents to a single brain, actions can be decided in a batch fashion, taking advantage of the inherently parallel computations of neural networks. For more information on how these objects work together within a scene, see [Reinforcement Learning in Unity](Reinforcement-Learning-in-Unity.md).
 
-## Setting up ML Agents
-
-To use ML Agents, follow the [installation instructions](Installation.md) and then do the following in your Unity project:
-
-1. Create an environment for your agents to live in. An environment can range from a simple physical simulation containing a few objects to an entire game or ecosystem.
-2. Implement an Academy subclass and add it to a GameObject in the Unity scene containing the environment. This GameObject will serve as the parent for any Brain objects in the scene. Your Academy class can implement a few optional methods to update the scene independently of any agents. For example, you can add, move, or delete agents and other entities in the environment.
-3. Add one or more Brain objects to the scene as children of the Academy.
-4. Implement your Agent subclasses. An Agent subclass defines the code an agent uses to observe its environment, to carry out assigned actions, and to calculate the rewards used for reinforcement training. You can also implement optional methods to reset the agent when it has finished or failed its task.
-5. Add your Agent subclasses to appropriate GameObjects, typically, the object in the scene that represents the agent in the simulation. Each Agent object must be assigned a Brain object.
-6. If training, set the Brain type to External and [run the training process](Training-with-PPO.md).  
-
 For a walk through of the setup and training process, see [Getting Started](Getting-Started-with-Balance-Ball.md) and [Making a new Unity Environment](Making-a-New-Unity-Environment). For more in-depth look at how to create trainable agents, see [Reinforcement Learning in Unity](Reinforcement-Learning-in-Unity.md) and to learn about the training process itself, see [Training](Training-ML-Agents.md).  
 

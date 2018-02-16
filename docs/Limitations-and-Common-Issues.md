@@ -1,4 +1,4 @@
-# Limitations and Common Issues                                                                   {#limitations}
+# Limitations and Common Issues 
 
 ## Unity SDK
 ### Headless Mode

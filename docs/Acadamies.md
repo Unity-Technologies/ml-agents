@@ -24,7 +24,7 @@ When you reset an environment, consider the factors that should change so that t
 
 ## Controlling an Environment
 
-The `AcademyStep()` function is called at every step in the simulation before any agents are updated. Use this function to update objects in the environment at every step or during the episode between environment resets. For example, if you add elements to the environment at random intervals, you can put the logic for creating them in the `AcademyStep()` function.
+The `AcademyStep()` function is called at every step in the simulation before any agents are updated. Use this function to update objects in the environment at every step or during the episode between environment resets. For example, if you want to add elements to the environment at random intervals, you can put the logic for creating them in the `AcademyStep()` function.
 
 ## Academy Properties
 

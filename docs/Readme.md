@@ -9,6 +9,8 @@
 ## Creating Learning Environments
  * [Designing a Learning Environment](Reinforcement-Learning-in-Unity.md)
  * [Agents](Agents.md)
+ * [Academies](Academies.md)
+ * [Brains](Brains.md)
  * [Curriculum Learning](Curriculum-Training.md)
  * [Imitation Learning](Imitation-Learning.md)
  * [Example Environments](Example-Environments.md)
@@ -24,14 +26,14 @@
  * Academy
  * Brain
  * Agent
+ * CoreBrain
  * Decision
  * Monitor
- * [Agents SDK Inspector Descriptions](Agents-Editor-Interface.md)
 
 ## Python API
  * [How to use the Python API](Python-API.md)
  
 ## Help
- * Terminology 
+ <!-- * Terminology -->
  * [Limitations & Common Issues](Limitations-and-Common-Issues.md)
 

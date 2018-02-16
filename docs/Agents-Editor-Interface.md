@@ -1,4 +1,4 @@
-# ML Agents Editor Interface                                                                   {#inspector}
+# ML Agents Editor Interface
 
 This page contains an explanation of the use of each of the inspector panels relating to the `Academy`, `Brain`, and `Agent` objects.
 
