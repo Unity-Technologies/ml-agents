@@ -18,13 +18,13 @@ Initialization is performed once in an Academy object's lifecycle. Use the `Init
 
 ## Resetting an Environment
 
-Implement an `AcademyReset()` function to alter the environment at the start of each episode. For example, you might want to reset an agent to its starting position or move a goal to a random position. 
+Implement an `AcademyReset()` function to alter the environment at the start of each episode. For example, you might want to reset an agent to its starting position or move a goal to a random position. An environment resets when the Academy `Max Steps` count is reached. 
 
-An environment resets when the Academy `Max Steps` count is reached or all agents in the environment are done. (Each Agent can have its own `Max Steps` count or you can mark an agent as done in code.) 
+When you reset an environment, consider the factors that should change so that training is generalizable to different conditions. For example, if you were training a maze-solving agent, you would probably want to change the maze itself for each training episode. Otherwise, the agent would probably on learn to solve one, particular maze, not mazes in general.
 
 ## Controlling an Environment
 
-The `AcademyStep()` function is called at every step in the simulation before any agents are updated. Use this function to update objects in the environment at every step or during the episode between environment resets. For example, if you add elements to the environment at random intervals, you put the logic for creating them in `AcademyStep()`.
+The `AcademyStep()` function is called at every step in the simulation before any agents are updated. Use this function to update objects in the environment at every step or during the episode between environment resets. For example, if you add elements to the environment at random intervals, you can put the logic for creating them in the `AcademyStep()` function.
 
 ## Academy Properties
 

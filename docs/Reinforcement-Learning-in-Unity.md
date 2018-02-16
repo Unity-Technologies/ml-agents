@@ -70,7 +70,7 @@ To create an agent, extend the Agent class and implement the essential `CollectS
 
 Your implementations of these functions determine how the properties of the Brain assigned to this agent must be set.
  
-You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentStep()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. The Academy waits until all agents are done, or the Academy reaches its own `Max Steps` count before starting the next episode. 
+You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentStep()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. When the Academy reaches its own `Max Steps` count, it starts the next episode. If you set an agent's RestOnDone property to true, then the agent can attempt its task several times in one episode. (Use the `Agent.AgentReset()` function to prepare the agent to start again.) 
 
 See [Creating Agents](Agents.md) for detailed information about programing your own agents.
 
