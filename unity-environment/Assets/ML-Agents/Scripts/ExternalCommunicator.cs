@@ -96,6 +96,7 @@ public class ExternalCommunicator : Communicator
     public void SubscribeBrain(Brain brain)
     {
         brains.Add(brain);
+        triedSendState[brain.gameObject.name] = false;
         hasSentState[brain.gameObject.name] = false;
     }
 
@@ -138,14 +139,11 @@ public class ExternalCommunicator : Communicator
         accParamerters.logPath = logPath;
         foreach (Brain b in brains)
         {
-            if (b.IsBroadcasting())
+            accParamerters.brainParameters.Add(b.brainParameters);
+            accParamerters.brainNames.Add(b.gameObject.name);
+            if (b.brainType == BrainType.External)
             {
-                accParamerters.brainParameters.Add(b.brainParameters);
-                accParamerters.brainNames.Add(b.gameObject.name);
-                if (b.brainType == BrainType.External)
-                {
-                    accParamerters.externalBrainNames.Add(b.gameObject.name);
-                }
+                accParamerters.externalBrainNames.Add(b.gameObject.name);
             }
         }
         accParamerters.AcademyName = academy.gameObject.name;

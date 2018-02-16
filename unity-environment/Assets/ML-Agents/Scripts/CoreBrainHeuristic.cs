@@ -77,11 +77,6 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
         }
     }
 
-    public bool IsBroadcasting()
-    {
-        return coord != null;
-    }
-
     /// Displays an error if no decision component is attached to the brain
     public void OnInspector()
     {

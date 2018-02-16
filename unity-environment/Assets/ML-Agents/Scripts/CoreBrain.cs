@@ -16,6 +16,4 @@ public interface CoreBrain
     void DecideAction(Dictionary<Agent, AgentInfo> agentInfo);
     /// Implement this method to define what should be displayed in the brain Inspector
     void OnInspector();
-    /// Implement this method to determine if the brain is currently broadcasting
-    bool IsBroadcasting();
 }

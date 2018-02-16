@@ -384,11 +384,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 #endif
     }
 
-    public bool IsBroadcasting()
-    {
-        return coord != null;
-    }
-
     /// Displays the parameters of the CoreBrainInternal in the Inspector 
     public void OnInspector()
     {
