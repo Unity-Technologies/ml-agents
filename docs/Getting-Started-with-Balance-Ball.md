@@ -83,7 +83,7 @@ The first step is to open the Unity scene containing the 3D Balance Ball environ
 4. In the `Project` window, navigate to the folder `Assets/ML-Agents/Examples/3DBall/`.
 5. Double-click the `Scene` file to load the scene containing the Balance Ball environment.
 
-![3DBall Scene](images/mlagents-3DBall.png)
+![3DBall Scene](images/mlagents-Open3DBall.png)
 
 Since we are going to build this environment to conduct training, we need to set the brain used by the agents to **External**. This allows the agents to communicate with the external training process when making their decisions.
 
