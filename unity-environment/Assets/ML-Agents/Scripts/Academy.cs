@@ -130,7 +130,6 @@ public abstract class Academy : MonoBehaviour
 
         isInference = (communicator == null);
         _isCurrentlyInference = !isInference;
-        done = true;
 
         BrainDecideAction += () => { };
         AgentSetStatus += (m, d, i) => { };
