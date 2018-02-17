@@ -190,12 +190,12 @@ class LearningModel(object):
         self.output = tf.identity(self.output, name="action")
         self.value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
-        self.entropy = -tf.reduce_sum(self.probs * tf.log(self.probs + 1e-10), axis=1)
-        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
+        self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
+        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32, name="action_input")
         self.selected_actions = c_layers.one_hot_encoding(self.action_holder, self.a_size)
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
-        self.probs = tf.reduce_sum(self.probs * self.selected_actions, axis=1)
-        self.old_probs = tf.reduce_sum(self.old_probs * self.selected_actions, axis=1)
+        self.probs = tf.reduce_sum(self.all_probs * self.selected_actions, axis=1)
+        self.old_probs = tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1)
 
     def create_cc_actor_critic(self, h_size, num_layers):
         num_streams = 2
