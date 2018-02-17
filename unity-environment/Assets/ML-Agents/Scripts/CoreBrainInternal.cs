@@ -394,9 +394,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     /// Displays the parameters of the CoreBrainInternal in the Inspector 
     public void OnInspector()
     {
+#if  UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
                       "If checked, the brain will broadcast states and actions to Python."), broadcast);
+#endif
 #if ENABLE_TENSORFLOW && UNITY_EDITOR
         var serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
@@ -485,7 +487,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         EditorGUILayout.PropertyField(tfPlaceholders, true);
         serializedBrain.ApplyModifiedProperties();
 #endif
-        #if !ENABLE_TENSORFLOW && UNITY_EDITOR
+#if !ENABLE_TENSORFLOW && UNITY_EDITOR
         EditorGUILayout.HelpBox (@"You need to install the TensorflowSharp plugin in order to use the internal brain.", MessageType.Error);
 #endif
     }
