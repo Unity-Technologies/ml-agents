@@ -84,7 +84,7 @@ Typical range: `1` - `3`
 
 ## Training Statistics
 
-To view training statistics, use Tensorboard. For information on launching and using Tensorboard, see [here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
+To view training statistics, use TensorBoard. For information on launching and using TensorBoard, see [here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
 
 ### Cumulative Reward
 

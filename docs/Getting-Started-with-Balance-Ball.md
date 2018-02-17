@@ -28,7 +28,7 @@ The first thing you may notice after opening the 3D Balance Ball scene is that i
 
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When you look at an Academy component in the inspector, you can see several properties that control how the environment works. For example, the __Training__ and __Inference Configuration__  properties set the graphics and timescale properties for the Unity application. The Academy uses the __Training Configuration__  during training and the __Inference Configuration__ when not training. (*Inference* means that the agent is using a trained model or heuristics or direct control — in other words, whenever **not** training.) Typically, you set low graphics quality and a high time scale for the **Training configuration** and a high graphics quality and the timescale to `1.0` for the **Inference Configuration** .
 
-**Note:** if you want to observe the enviornment during training, you can adjust the __Inference Configuration__ settings to use a larger window and a timescale closer to 1:1. Be sure to set these parameters back when training in earnest; otherwise, training can take a very long time.
+**Note:** if you want to observe the environment during training, you can adjust the __Inference Configuration__ settings to use a larger window and a timescale closer to 1:1. Be sure to set these parameters back when training in earnest; otherwise, training can take a very long time.
 
 Another aspect of an environment to look at is the Academy implementation.  Since the base Academy class is abstract, you must always define a subclass. There are three functions you can implement, though they are all optional:
 
@@ -125,29 +125,29 @@ In order to train the agents within the Ball Balance environment:
 1. Open `python/PPO.ipynb` notebook from Jupyter.
 2. Set `env_name` to the name of your environment file earlier.
 3. (optional) In order to get the best results quickly, set `max_steps` to 50000, set `buffer_size` to 5000, and set `batch_size` to 512.  For this exercise, this will train the model in approximately ~5-10 minutes.
-4. (optional) Set `run_path` directory to your choice. When using Tensorboard to observe the training statistics, it helps to set this to a sequential value for each training run. In other words, "BalanceBall1" for the first run, "BalanceBall2" or the second, and so on. If you don't, the summaries for every training run are saved to the same directory and will all be included on the same graph.
+4. (optional) Set `run_path` directory to your choice. When using TensorBoard to observe the training statistics, it helps to set this to a sequential value for each training run. In other words, "BalanceBall1" for the first run, "BalanceBall2" or the second, and so on. If you don't, the summaries for every training run are saved to the same directory and will all be included on the same graph.
 5. Run all cells of notebook with the exception of the last one under "Export the trained Tensorflow graph."
 
 ### Observing Training Progress
-In order to observe the training process in more detail, you can use Tensorboard.
+In order to observe the training process in more detail, you can use TensorBoard.
 In your command line, enter into `python` directory and then run :
 
 `tensorboard --logdir=summaries`
 
 Then navigate to `localhost:6006`.
 
-From Tensorboard, you will see the summary statistics:
+From TensorBoard, you will see the summary statistics:
 
 * Lesson - only interesting when performing [curriculum training](link). This is not used in the 3d Balance Ball environment. 
 * Cumulative Reward - The mean cumulative episode reward over all agents. Should increase during a successful training session.
 * Entropy - How random the decisions of the model are. Should slowly decrease during a successful training process. If it decreases too quickly, the `beta` hyperparameter should be increased.
 * Episode Length - The mean length of each episode in the environment for all agents.
-* Learning Rate - How large a step the training algorithmn takes as it searches for the optimal policy. Should decrease over time.
+* Learning Rate - How large a step the training algorithm takes as it searches for the optimal policy. Should decrease over time.
 * Policy Loss - The mean loss of the policy function update. Correlates to how much the policy (process for deciding actions) is changing. The magnitude of this should decrease during a successful training session.
 * Value Estimate - The mean value estimate for all states visited by the agent. Should increase during a successful training session.
 * Value Loss - The mean loss of the value function update. Correlates to how well the model is able to predict the value of each state. This should decrease during a successful training session.
 
-![Example Tensorboard Run](images/mlagents-TensorBoard.png)
+![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 
 ## Embedding the Trained Brain into the Unity Environment _[Experimental]_
 

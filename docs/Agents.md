@@ -60,7 +60,7 @@ Integers can be be added directly to the state vector, relying on implicit conve
 
     state.Add(isTrueOrFalse ? 1 : 0);
 
-For entities like positions and rotations, you can add their components to the feaure list individually.  For example:
+For entities like positions and rotations, you can add their components to the feature list individually.  For example:
 
     Vector3 speed = ball.transform.GetComponent<Rigidbody>().velocity;
     state.Add(speed.x);
@@ -127,7 +127,7 @@ To implement a discrete state observation, implement the `CollectState()` method
 
 An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentStep()` function. When you specify that the action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Action Size` property.  When you specify a **Discrete** action space, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** action space, the `Action Size` is the number of elements in your action table. Set the `Action Space` and `Action Size` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
 
-Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentStep()` function. You simply specify the type of action space, and, for the coninuous action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionStep()`.
+Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentStep()` function. You simply specify the type of action space, and, for the continuous action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionStep()`.
 
 For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete actions. In the continuous case, you would set the action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would set the action size to four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to four.  
 
@@ -182,7 +182,7 @@ Note that the above code example is a simplified extract from the AreaAgent clas
 
 A reward is a signal that the agent has done something right. The PPO reinforcement learning algorithm works by optimizing the choices an agent makes such that the agent earns the highest cumulative reward over time. The better your reward mechanism, the better your agent will learn.
 
-Perhaps the best advice is to start simple and only add complexity as needed. In general, you should reward results rather than actions you think will lead to the desired results. To help develop your rewards, you can use the Monitor class to display the cumulative reward recieved by an agent. You can even use a Player brain to control the agent while watching how it accumulates rewards.
+Perhaps the best advice is to start simple and only add complexity as needed. In general, you should reward results rather than actions you think will lead to the desired results. To help develop your rewards, you can use the Monitor class to display the cumulative reward received by an agent. You can even use a Player brain to control the agent while watching how it accumulates rewards.
 
 Allocate rewards to an agent by setting the agent's `reward` property in the `AgentStep()` function. The reward assigned in any step should be in the range [-1,1].  Values outside this range can lead to unstable training. The `reward` value is reset to zero at every step. 
 

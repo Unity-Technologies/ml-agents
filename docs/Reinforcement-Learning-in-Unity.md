@@ -10,7 +10,7 @@ ML Agents uses a reinforcement learning technique called [Proximal Policy Optimi
 
 Training and simulation proceed in steps orchestrated by the ML Agents Academy class. The Academy works with Agent and Brain objects in the scene to step through the simulation. When either the Academy has reached its maximum number of steps or all agents in the scene are _done_, one training episode is finished. 
 
-During training, the external Python PPO process communicates with the Academy to run a series of episodes while it collects data and optimizes its neural network model. The type of Brain assigned to an agent determines whether it participates in training or not. The **External** brain commmunicates with the external process to train the TensorFlow model. When training is completed successfully, you can add the trained model file to your Unity project for use with an **Internal** brain.
+During training, the external Python PPO process communicates with the Academy to run a series of episodes while it collects data and optimizes its neural network model. The type of Brain assigned to an agent determines whether it participates in training or not. The **External** brain communicates with the external process to train the TensorFlow model. When training is completed successfully, you can add the trained model file to your Unity project for use with an **Internal** brain.
 
 The ML Agents Academy class orchestrates the agent simulation loop as follows:
 

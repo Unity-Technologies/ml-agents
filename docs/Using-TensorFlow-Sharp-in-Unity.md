@@ -1,6 +1,6 @@
 # Using TensorFlowSharp in Unity
 
-Unity now offers the possibility to use pretrained TensorFlow graphs inside of the game engine. This was made possible thanks to [the TensorFlowSharp project](https://github.com/migueldeicaza/TensorFlowSharp).
+Unity now offers the possibility to use pre-trained Tensorflow graphs inside of the game engine. This was made possible thanks to [the TensorFlowSharp project](https://github.com/migueldeicaza/TensorFlowSharp).
 
 _Notice: This feature is still experimental. While it is possible to embed trained models into Unity games, Unity Technologies does not officially support this use-case for production games at this time. As such, no guarantees are provided regarding the quality of experience. If you encounter issues regarding battery life, or general performance (especially on mobile), please let us know._
 
@@ -16,7 +16,7 @@ _Notice: This feature is still experimental. While it is possible to embed train
 
 * Unity 2017.1 or above
 * Unity Tensorflow Plugin ([Download here](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage))
-# Using TensorflowSharp with ML-Agents
+# Using TensorFlowSharp with ML-Agents
 
 In order to bring a fully trained agent back into Unity, you will need to make sure the nodes of your graph have appropriate names. You can give names to nodes in Tensorflow :
 ```python
@@ -66,7 +66,7 @@ Set the Brain you used for training to `Internal`. Drag `your_name_graph.bytes` 
   * Type `-force_load`
   * Drag the library `libtensorflow-core.a` from the `Project Navigator` on the left under `Libraries/ML-Agents/Plugins/iOS` into the flag list.
 
-# Using TensorflowSharp without ML-Agents
+# Using TensorFlowSharp without ML-Agents
 
 Beyond controlling an in-game agent, you may desire to use TensorFlowSharp for more general computation. The below instructions describe how to generally embed Tensorflow models without using the ML-Agents framework.
 

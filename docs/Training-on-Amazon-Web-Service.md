@@ -50,4 +50,4 @@ from unityagents import UnityEnvironment
 env = UnityEnvironment(your_env)
 ```
 
-You should receive a message confirming that the environment was loaded succesfully.
+You should receive a message confirming that the environment was loaded successfully.
