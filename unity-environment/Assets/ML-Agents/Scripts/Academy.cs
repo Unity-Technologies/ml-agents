@@ -248,6 +248,8 @@ public abstract class Academy : MonoBehaviour
 
         BrainDecideAction();
 
+        AcademyStep();
+
         AgentAct();
 
         stepsSinceReset += 1;

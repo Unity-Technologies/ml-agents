@@ -43,8 +43,8 @@ public class AgentParameters
     public List<Camera> agentCameras;
     public int maxStep;
     public bool resetOnDone = true;
-	public bool eventBased;
-	public int numberOfActionsBetweenDecisions;
+    public bool eventBased;
+    public int numberOfActionsBetweenDecisions;
 }
 
 
@@ -68,11 +68,11 @@ public abstract class Agent : MonoBehaviour
     /// The info. This is the placeholder for the information the agent will send
     /// to the brain.
     /// </summary>
-    private AgentInfo _info = new AgentInfo();
+    private AgentInfo _info;
     /// <summary>
     /// The action. This is the placeholder for the actions the agent will receive.
     /// </summary>
-    private AgentAction _action = new AgentAction();
+    private AgentAction _action;
 
     /// <summary>
     /// The reward. Describes the reward for the given step of the agent.
@@ -133,6 +133,9 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     void _InitializeAgent(Academy aca)
     {
+        _info = new AgentInfo();
+        _action = new AgentAction();
+
         if (aca == null)
             throw new UnityAgentsException("No Academy Component could be found in the scene.");
         aca.AgentSetStatus += SetStatus;
@@ -206,14 +209,16 @@ public abstract class Agent : MonoBehaviour
     /// Gets the reward of the agent.
     /// </summary>
     /// <returns>The reward.</returns>
-    public float GetReward(){
+    public float GetReward()
+    {
         return reward;
     }
     /// <summary>
     /// Gets the value estimate of the agent.
     /// </summary>
     /// <returns>The value estimate.</returns>
-    public float GetValue(){
+    public float GetValue()
+    {
         return _action.valueEstimate;
     }
     /// <summary>
@@ -227,23 +232,24 @@ public abstract class Agent : MonoBehaviour
     /// Is called when the agent must request the brain for a new decision.
     /// </summary>
 	public void RequestDecision()
-	{
+    {
         requestDecision = true;
-		RequestAction();
-	}
+        RequestAction();
+    }
     /// <summary>
     /// Is called then the agent must perform a new action.
     /// </summary>
 	public void RequestAction()
-	{
-		requestAction = true;
-	}
+    {
+        requestAction = true;
+    }
     /// <summary>
     /// Indicates if the agent has reached his maximum number of steps.
     /// </summary>
     /// <returns><c>true</c>, if max step reached was reached,
     ///  <c>false</c> otherwise.</returns>
-    public bool IsMaxStepReached(){
+    public bool IsMaxStepReached()
+    {
         return maxStepReached;
     }
     /// <summary>
@@ -251,7 +257,8 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     /// <returns><c>true</c>, if the agent is done,
     ///  <c>false</c> otherwise.</returns>
-    public bool IsDone(){
+    public bool IsDone()
+    {
         return done;
     }
 
@@ -261,7 +268,7 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private void ResetState()
     {
-		if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
             _action.vectorActions = new float[brain.brainParameters.actionSize];
             _info.StoredVectorActions = new float[brain.brainParameters.actionSize];
@@ -277,9 +284,9 @@ public abstract class Agent : MonoBehaviour
         if (brain.brainParameters.stateSpaceType == StateType.continuous)
         {
             _info.vectorObservation = new List<float>(brain.brainParameters.stateSize);
-            _info.stakedVectorObservation = new List<float>(brain.brainParameters.stateSize 
+            _info.stakedVectorObservation = new List<float>(brain.brainParameters.stateSize
                                                             * brain.brainParameters.stackedStates);
-            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.stateSize 
+            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.stateSize
                                                              * brain.brainParameters.stackedStates]);
         }
         else
@@ -369,7 +376,7 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public virtual void CollectObservations()
     {
-        
+
     }
 
     /// <summary>
@@ -476,18 +483,20 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     /// <param name="acaMaxStep">If set to <c>true</c> The agent must set maxStepReached.</param>
     /// <param name="acaDone">If set to <c>true</c> The agent must set done.</param>
-    private void SetStatus(bool acaMaxStep, bool acaDone, int acaStepCounter){
+    private void SetStatus(bool acaMaxStep, bool acaDone, int acaStepCounter)
+    {
         MakeRequests(acaStepCounter);
         if (acaMaxStep)
             maxStepReached = true;
-        if (acaDone) 
+        if (acaDone)
             Done();
     }
 
     /// <summary>
     /// Signals the agent that it must reset if its done flag is set to true.
     /// </summary>
-    private void ResetIfDone(){
+    private void ResetIfDone()
+    {
         // If an agent is done, then it will also request for a decision and an action
         if (IsDone())
         {
@@ -520,7 +529,8 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Signals the agent that it must sent its decision to the brain.
     /// </summary>
-    private void SendState(){
+    private void SendState()
+    {
 
         if (requestDecision)
         {
@@ -570,12 +580,15 @@ public abstract class Agent : MonoBehaviour
     /// Is called after every step, contains the logic to decide if the agent
     /// will request a decision at the next step.
     /// </summary>
-    private void MakeRequests(int acaStepCounter){
+    private void MakeRequests(int acaStepCounter)
+    {
         agentParameters.numberOfActionsBetweenDecisions = Mathf.Max(1, agentParameters.numberOfActionsBetweenDecisions);
         // TODO : This needs to be checked earlier.
-        if(!agentParameters.eventBased){
+        if (!agentParameters.eventBased)
+        {
             RequestAction();
-            if (acaStepCounter % agentParameters.numberOfActionsBetweenDecisions == 0){
+            if (acaStepCounter % agentParameters.numberOfActionsBetweenDecisions == 0)
+            {
                 RequestDecision();
             }
         }
