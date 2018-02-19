@@ -9,7 +9,7 @@
     * [Background: Jupyter Notebooks](Background-Jupyter.md)
     * [Docker Set-up (Experimental)](Installation-Docker.md)
  * [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
- * [Example Environments](Example-Environments.md)
+ * [Example Environments](Learning-Environment-Examples.md)
 
 ## Creating Learning Environments
  * [Making a new Learning Environment](Learning-Environment-Create-New.md)

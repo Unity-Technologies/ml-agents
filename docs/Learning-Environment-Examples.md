@@ -1,9 +1,19 @@
 # Example Learning Environments
 
-### About Example Environments
-Unity ML-Agents contains a set of example environments which demonstrate various features of the platform. In the coming months more will be added. We are also actively open to adding community contributed environments as examples, as long as they are small, simple, demonstrate a unique feature of the platform, and provide a unique non-trivial challenge to modern RL algorithms. Feel free to submit these environments with a Pull-Request explaining the nature of the environment and task. 
+Unity ML-Agents contains an expanding set of example environments which
+demonstrate various features of the platform. Environments are located in 
+`unity-environment/Assets/ML-Agents/Examples` and summarised below. 
+Additionally, our 
+[first ML Challenge](https://connect.unity.com/challenges/ml-agents-1)
+contains environments created by the community.
 
-Environments are located in `unity-environment/ML-Agents/Examples`.
+This page only overviews the example environments we provide. To learn more
+on how to design and build your own environments see our 
+[Making a new Learning Environment](Learning-Environment-Create-New.md)
+page.
+
+If you would like to contribute environments, please see our 
+[contribution guidelines](Contribution-Guidelines.md) page. 
 
 ## Basic
 
