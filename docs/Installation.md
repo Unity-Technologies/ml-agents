@@ -1,6 +1,6 @@
 # Installation & Set-up
 
-To install and use ML Agents, you need install Unity, clone this repository
+To install and use ML-Agents, you need install Unity, clone this repository
 and install Python with additional dependencies. Each of the subsections
 below overviews each step, in addition to an experimental Docker set-up.
 
@@ -10,7 +10,7 @@ below overviews each step, in addition to an experimental Docker set-up.
 
 ## Clone the ml-agents Repository
 
-Once installed, you will want to clone the ML Agents GitHub repository. 
+Once installed, you will want to clone the ML-Agents GitHub repository. 
 
     git clone git@github.com:Unity-Technologies/ml-agents.git
 
@@ -20,7 +20,7 @@ Both directories are located at the root of the repository.
 
 ## Install Python
 
-In order to use ML Agents, you need Python (2 or 3; 64 bit required) along with
+In order to use ML-Agents, you need Python (2 or 3; 64 bit required) along with
 the dependencies listed in the [requirements file](../python/requirements.txt).
 Some of the primary dependencies include:
 - [TensorFlow](https://www.tensorflow.org/)
@@ -50,18 +50,19 @@ or
 
 ## Docker-based Installation _[Experimental]_
 
-If you'd like to use Docker for ML Agents, please follow [this guide](Docker.md). 
+If you'd like to use Docker for ML-Agents, please follow 
+[this guide](Installation-Docker.md). 
 
 ## Help
 
-If you run into any problems installing ML Agents, 
+If you run into any problems installing ML-Agents, 
 [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
 make sure to cite relevant information on OS, Python version, and
 exact error message (whenever possible). 
 
 ### Using TensorFlow (and TensorBoard)
 
-TensorFlow is used for training the machine learning models in ML Agents. 
+TensorFlow is used for training the machine learning models in ML-Agents. 
 Unless you are implementing new algorithms, the use of TensorFlow
 is mostly abstracted away and behind the scenes. However, as you will come
 across later, one component of training models with TensorFlow is setting the
