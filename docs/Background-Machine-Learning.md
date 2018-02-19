@@ -17,7 +17,7 @@ overview each of these classes and provide introductory examples.
 
 ## Unsupervised Learning
 
-The goal in unsupervised learning, is to group or cluster a data set. 
+The goal in unsupervised learning is to group or cluster a data set. 
 For example, consider the players of a game. We may want to group the players
 depending on how engaged they are with the game. This could enable us to 
 target different groups (e.g. for highly-engaged players we would
@@ -74,25 +74,34 @@ machine learning algorithms, and arguably the one most relevant for ML-Agents.
 
 Reinforcement learning can be viewed as a form of learning for sequential
 decision making that is typically associated with controlling robots (but is,
-in fact, much more general). Consider a firefighting autonomous robot that is
+in fact, much more general). Consider an autonomous firefighting robot that is
 tasked with navigating into an area, finding the fire and neutralizing it. At
 every instance the robot perceives the environment through its sensors (e.g.
 camera, heat, touch), processes this information and produces an action (e.g.
 move to the left, rotate the water hose, turn on the water). In other words,
 it is continuously making decisions about how to interact in this environment
-given its view of the world (i.e. sensors input) and objective (in this case
+given its view of the world (i.e. sensors input) and objective (i.e.
 neutralizing the fire). Teaching a robot to be a successful firefighting
 machine is precisely what reinforcement learning is designed to do. 
 
 More specifically, the goal of reinforcement learning is to learn a **policy**, 
 which is essentially a mapping from **observations** to **actions**. An 
-observation is what the robot can measure from its environment (in this 
-case, all its sensory inputs) and an action, in its most raw form, is a 
-configuration of the robot (e.g. position of its base, relative position of
-its fire hose and whether the hose is on or off). The last remaining piece
+observation is what the robot can measure from its **environment** (in this 
+case, all its sensory inputs) and an action, in its most raw form, is a change
+to the configuration of the robot (e.g. position of its base, position of
+its water hose and whether the hose is on or off). It is common to confuse a
+robot's observation with the environment **state**. The environment state 
+represents information about all the entities within the environment. The 
+robot's observation, however, only contains information that the robot can
+measure or perceive about its environment and is typically a subset of the 
+environment state. For example, the location of the fire cannot be part of
+the robot's observation if it has not even entered the area yet, but it is
+part of the environment state.
+
+The last remaining piece
 of the reinforcement learning task is the **reward signal**. When training a
 robot to be a mean firefighting machine, we provide it with rewards (positive 
-and negative) indicating how well it is doing on completing the objective.
+and negative) indicating how well it is doing on completing the task.
 Note that the objective itself is not fully specified for the robot, but the 
 fact that it receives a large positive reward when it puts out the fire and a 
 small negative reward for every passing second is all the input the robot
@@ -131,6 +140,14 @@ learning demo showcasing training character behaviors using ML-Agents.
     </a>
 </p>
 
+Similar to both unsupervised and supervised learning, reinforcement learning
+is also faced with two tasks: attribute selection and model selection.
+Attribute selection is defining the set of observations for the robot
+that best help it complete its objective, while model selection is defining
+the form of the policy (mapping from observations to actions) and its
+parameters. In practice, training behaviors is an iterative process that may
+require changing the attribute and model choices.
+
 ## Training and Inference
 
 One common aspect of all three branches of machine learning is that they
@@ -150,3 +167,7 @@ policy is learned and the inference phase is when the agent starts
 interacting in the wild using its learned policy.
 
 ## Deep Learning
+
+To be completed.
+
+Link to TensorFlow background page.
