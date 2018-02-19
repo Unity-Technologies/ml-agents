@@ -1,27 +1,8 @@
 # Training with Curriculum Learning
 
-## Background
+## Sample Environment
 
-Curriculum learning is a way of training a machine learning model where more difficult 
-aspects of a problem are gradually introduced in such a way that the model is always 
-optimally challenged. Here is a link to the original paper which introduces the ideal 
-formally. More generally, this idea has been around much longer, for it is how we humans 
-typically learn. If you imagine any childhood primary school education, there is an 
-ordering of classes and topics. Arithmetic is taught before algebra, for example. 
-Likewise, algebra is taught before calculus. The skills and knowledge learned in the 
-earlier subjects provide a scaffolding for later lessons. The same principle can be 
-applied to machine learning, where training on easier tasks can provide a scaffolding 
-for harder tasks in the future. 
-
-![Math](images/math.png)
-
-_Example of a mathematics curriculum. Lessons progress from simpler topics to more 
-complex ones, with each building on the last._
-
-When we think about how Reinforcement Learning actually works, the primary learning 
-signal is a scalar reward received occasionally throughout training. In more complex 
-or difficult tasks, this reward can often be sparse, and rarely achieved. For example, 
-imagine a task in which an agent needs to scale a wall to arrive at a goal. The starting 
+Imagine a task in which an agent needs to scale a wall to arrive at a goal. The starting 
 point when training an agent to accomplish this task will be a random policy. That 
 starting policy will have the agent running in circles, and will likely never, or very 
 rarely scale the wall properly to the achieve the reward. If we start with a simpler 
