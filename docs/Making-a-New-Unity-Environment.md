@@ -2,13 +2,13 @@
 
 This tutorial walks through the process of creating a Unity Environment. A Unity Environment is an application built using the Unity Engine which can be used to train Reinforcement Learning agents.
 
-![A simple ML Agents environment](images/mlagents-NewTutSplash.png)
+![A simple ML-Agents environment](images/mlagents-NewTutSplash.png)
 
 In this example, we will train a ball to roll to a randomly placed cube. The ball also learns to avoid falling off the platform.
 
 ## Overview
 
-Using ML Agents in a Unity project involves the following basic steps:
+Using ML-Agents in a Unity project involves the following basic steps:
 
 1. Create an environment for your agents to live in. An environment can range from a simple physical simulation containing a few objects to an entire game or ecosystem.
 2. Implement an Academy subclass and add it to a GameObject in the Unity scene containing the environment. This GameObject will serve as the parent for any Brain objects in the scene. Your Academy class can implement a few optional methods to update the scene independently of any agents. For example, you can add, move, or delete agents and other entities in the environment.
@@ -24,11 +24,11 @@ If you haven't already, follow the [installation instructions](Installation.md).
 
 ## Set Up the Unity Project
 
-The first task to accomplish is simply creating a new Unity project and importing the ML Agents assets into it:
+The first task to accomplish is simply creating a new Unity project and importing the ML-Agents assets into it:
 
 1. Launch the Unity Editor and create a new project named "RollerBall".
 
-2. In a file system window, navigate to the folder containing your cloned ML Agents repository. 
+2. In a file system window, navigate to the folder containing your cloned ML-Agents repository. 
 
 3. Drag the `ML-Agents` folder from `unity-environments/Assets` to the Unity Editor Project window.
 
@@ -38,7 +38,7 @@ Your Unity **Project** window should contain the following assets:
 
 ## Create the Environment:
 
-Next, we will create a very simple scene to act as our ML Agents environment. The "physical" components of the environment include a Plane to act as the floor for the agent to move around on, a Cube to act as the goal or target for the agent to seek, and a Sphere to represent the agent itself. 
+Next, we will create a very simple scene to act as our ML-Agents environment. The "physical" components of the environment include a Plane to act as the floor for the agent to move around on, a Cube to act as the goal or target for the agent to seek, and a Sphere to represent the agent itself. 
 
 **Create the floor plane:**
 
@@ -85,11 +85,11 @@ Note that we will create an Agent subclass to add to this GameObject as a compon
 
 ![The scene hierarchy](images/mlagents-NewTutHierarchy.png)
 
-You can adjust the camera angles to give a better view of the scene at runtime. The next steps will be to create and add the ML Agent components.
+You can adjust the camera angles to give a better view of the scene at runtime. The next steps will be to create and add the ML-Agent components.
 
 ## Implement an Academy
 
-The Academy object coordinates the ML Agents in the scene and drives the decision-making portion of the simulation loop. Every ML Agent scene needs one Academy instance. Since the base Academy classis abstract, you must make your own subclass even if you don't need to use any of the methods for a particular environment.
+The Academy object coordinates the ML-Agents in the scene and drives the decision-making portion of the simulation loop. Every ML-Agent scene needs one Academy instance. Since the base Academy classis abstract, you must make your own subclass even if you don't need to use any of the methods for a particular environment.
 
 First, add a New Script component to the Academy GameObject created earlier: 
 
@@ -145,7 +145,7 @@ Then, edit the new `RollerAgent` script:
 2. In the editor, change the base class from `MonoBehaviour` to `Agent`.
 3. Delete the `Update()` method, but we will use the `Start()` function, so leave it alone for now.
 
-So far, these are the basic steps that you would use to add ML Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube.
+So far, these are the basic steps that you would use to add ML-Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube.
 
 In this simple scenario, we don't need the Academy object do do anything special. If we wanted to change the environment, for example change the size of the floor or add or remove agents or other objects before or during the simulation, we could implement the appropriate methods in the Academy. Instead, we will have the Agent do all the work of resetting itself and the target when it succeeds or falls trying. 
 
@@ -323,7 +323,7 @@ Note the `speed` and `previousDistance` class variables defined before the funct
 
 ## Final Editor Setup
 
-Now, that all the GameObjects and ML Agent components are in place, it is time to connect everything together in the Unity Editor. This involves assigning the Brain object to the Agent and setting the Brain properties so that they are compatible with our agent code. 
+Now, that all the GameObjects and ML-Agent components are in place, it is time to connect everything together in the Unity Editor. This involves assigning the Brain object to the Agent and setting the Brain properties so that they are compatible with our agent code. 
 
 1. Expand the Academy GameObject in the Hierarchy window, so that the Brain object is visible.
 2. Select the RollerAgent GameObject to show its properties in the Inspector window.
@@ -362,7 +362,7 @@ It is always a good idea to test your environment manually before embarking on a
 
 The **Index** value corresponds to the index of the action array passed to `AgentStep()` function. **Value** is assigned to action[Index] when **Key** is pressed.
 
-Press **Play** to run the scene and use the WASD keys to move the agent around the platform. Make sure that there are no errors displayed in the Unity editor Console window and that the agent resets when it reaches its target or falls from the platform. Note that for more involved debugging, the ML Agents SDK includes a convenient Monitor class that you can use to easily display agent status information in the Game window.
+Press **Play** to run the scene and use the WASD keys to move the agent around the platform. Make sure that there are no errors displayed in the Unity editor Console window and that the agent resets when it reaches its target or falls from the platform. Note that for more involved debugging, the ML-Agents SDK includes a convenient Monitor class that you can use to easily display agent status information in the Game window.
 
 Now you can train the Agent. To get ready for training, you must first to change the **Brain Type** from **Player** to **External**. From there the process is the same as described in [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md).
 
