@@ -9,7 +9,7 @@ the goal of this section is to overview terminologies to facilitate the
 understanding of ML-Agents.
 
 Machine learning is a branch of artificial intelligence that is focused
-on learning patterns and (mathematical) functions from data. There are three
+on learning patterns from data. There are three
 classes of machine learning algorithms: unsupervised learning, supervised
 learning and reinforcement learning. What separates each of these classes is
 the type of data available to learn from. In the following paragraphs we
@@ -17,9 +17,8 @@ overview each of these classes and provide introductory examples.
 
 ## Unsupervised Learning
 
-In unsupervised learning, we have
-unlabeled data that we wish to group or cluster together. For example,
-consider the players of a game. We may want to group the players
+The goal in unsupervised learning, is to group or cluster a data set. 
+For example, consider the players of a game. We may want to group the players
 depending on how engaged they are with the game. This could enable us to 
 target different groups (e.g. for highly-engaged players we would
 invite them to be beta testers for new features, while for unengaged players
@@ -36,8 +35,8 @@ group would semantically represent the unengaged players. Note that we did
 not specify what semantic groups we wanted, but by defining the appropriate
 attributes, these semantic groupings are a by-product. We consider this
 data set unlabeled because for each player we did not provide any
-ground-truth label. In the next paragraph we overview supervised learning,
-which accepts as input labels in addition to attributes.
+ground-truth assignment or label. In the next paragraph we overview 
+supervised learning, which accepts as input labels in addition to attributes.
 
 ## Supervised Learning
 
@@ -66,7 +65,9 @@ selecting how we wish to represent the entity of interest, in this case, the
 player. Model selection, on the other hand, pertains to selecting the
 algorithm (and its parameters) that perform the task well. Both of these
 tasks are active areas of machine learning research and in practice require
-several iterations. We now switch to reinforcement learning, the third class of
+several iterations. 
+
+We now switch to reinforcement learning, the third class of
 machine learning algorithms, and arguably the one most relevant for ML-Agents.
 
 ## Reinforcement Learning
@@ -121,7 +122,7 @@ in many ways, one can view a non-playable character (NPC) as a virtual
 robot, with its own observations about the environment, its own set of actions
 and a specific objective. Thus it is natural to explore how we can
 train behaviors within Unity using reinforcement learning. This is precisely
-what ML-Agents offers. The video linked below include a reinforcement
+what ML-Agents offers. The video linked below includes a reinforcement
 learning demo showcasing training character behaviors using ML-Agents.
 
 <p align="center">
