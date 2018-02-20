@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSteps: 0
   frameToSkip: 0
-  waitTime: 0.2
+  waitTime: 0
   isInference: 0
   trainingConfiguration:
     width: 84
@@ -471,8 +471,6 @@ GameObject:
   m_Component:
   - component: {fileID: 489340224}
   - component: {fileID: 489340228}
-  - component: {fileID: 489340227}
-  - component: {fileID: 489340226}
   m_Layer: 0
   m_Name: agentCam
   m_TagString: Untagged
@@ -493,20 +491,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!92 &489340226
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 489340223}
-  m_Enabled: 1
---- !u!124 &489340227
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 489340223}
-  m_Enabled: 1
 --- !u!20 &489340228
 Camera:
   m_ObjectHideFlags: 0
@@ -533,11 +517,11 @@ Camera:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 8400000, guid: 77202bedf914b42c38c535a151d2580f, type: 2}
+  m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1

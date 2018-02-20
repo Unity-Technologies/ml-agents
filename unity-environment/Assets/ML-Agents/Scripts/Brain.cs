@@ -500,7 +500,7 @@ public class Brain : MonoBehaviour
         var format = RenderTextureFormat.Default;
         var readWrite = RenderTextureReadWrite.Default;
 
-        var finalRT =
+        var tempRT =
             RenderTexture.GetTemporary(width, height, depth, format, readWrite);
         var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
 
@@ -508,8 +508,8 @@ public class Brain : MonoBehaviour
         var prevCameraRT = cam.targetTexture;
 
         // render to offscreen texture (readonly from CPU side)
-        RenderTexture.active = finalRT;
-        cam.targetTexture = finalRT;
+        RenderTexture.active = tempRT;
+        cam.targetTexture = tempRT;
 
         cam.Render();
 
@@ -518,8 +518,9 @@ public class Brain : MonoBehaviour
         cam.targetTexture = prevCameraRT;
         cam.rect = oldRec;
         RenderTexture.active = prevActiveRT;
-        RenderTexture.ReleaseTemporary(finalRT);
+        RenderTexture.ReleaseTemporary(tempRT);
         return tex;
+
     }
 
     /// Contains logic to convert the agent's cameras into observation list
@@ -545,7 +546,7 @@ public class Brain : MonoBehaviour
             foreach (int k in agent_keys)
             {
                 Camera agent_obs = observations[k][obs_number];
-                Texture2D tex = ObservationToTex(agent_obs, width, height);
+                var tex = ObservationToTex(agent_obs, width, height);
                 Color32[] cc = tex.GetPixels32();
                 int texHeight = tex.height;
                 for (int w = 0; w < width; w++)
