@@ -29,8 +29,8 @@
  * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Help
- * [ML-Agents Glossary](Help-Glossary.md)
- * [Limitations & Common Issues](Help-Limitations-and-Common-Issues.md)
+ * [ML-Agents Glossary](Glossary.md)
+ * [Limitations & Common Issues](Limitations-and-Common-Issues.md)
  
 ## C# API and Components
  * Academy

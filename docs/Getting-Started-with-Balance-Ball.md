@@ -4,7 +4,7 @@ This tutorial walks through the end-to-end process of opening an ML-Agents
 example environment in Unity, building the Unity executable, training an agent 
 in it, and finally embedding the trained model into the Unity environment. 
 
-ML-Agents includes a number of [example environments](Example-Environments.md) 
+ML-Agents includes a number of [example environments](Learning-Environment-Examples.md) 
 which you can examine to help understand the different ways in which ML-Agents 
 can be used. These environments can also serve as templates for new 
 environments or as ways to test new ML algorithms. After reading this tutorial, 
@@ -25,7 +25,7 @@ Let's get started!
 ## Installation
 
 In order to install and set up ML-Agents, the Python dependencies and Unity, 
-see the [installation instructions](installation.md).
+see the [installation instructions](Installation.md).
 
 ## Understanding a Unity Environment (Balance Ball)
 
@@ -272,7 +272,8 @@ Then navigate to `localhost:6006`.
 
 From TensorBoard, you will see the summary statistics:
 
-* Lesson - only interesting when performing [curriculum training](link). 
+* Lesson - only interesting when performing
+[curriculum training](Training-Curriculum-Learning.md). 
 This is not used in the 3d Balance Ball environment. 
 * Cumulative Reward - The mean cumulative episode reward over all agents. 
 Should increase during a successful training session.

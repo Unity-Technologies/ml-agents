@@ -8,7 +8,7 @@ Use the Academy methods to:
 * Reset the environment
 * Change things in the environment at each simulation step
 
-See [Reinforcement Learning in Unity](Reinforcement-Learning-in-Unity.md) for a description of the timing of these method calls during a simulation.
+See [Reinforcement Learning in Unity](Learning-Environment-Design.md) for a description of the timing of these method calls during a simulation.
 
 ## Initializing an Academy
 

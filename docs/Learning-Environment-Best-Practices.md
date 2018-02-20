@@ -2,7 +2,7 @@
 
 ## General
 * It is often helpful to start with the simplest version of the problem, to ensure the agent can learn it. From there increase
-complexity over time. This can either be done manually, or via Curriculum Learning, where a set of lessons which progressively increase in difficulty are presented to the agent ([learn more here](../docs/curriculum.md)).
+complexity over time. This can either be done manually, or via Curriculum Learning, where a set of lessons which progressively increase in difficulty are presented to the agent ([learn more here](Training-Curriculum-Learning.md)).
 * When possible, it is often helpful to ensure that you can complete the task by using a Player Brain to control the agent.
 
 ## Rewards
@@ -18,7 +18,7 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 * Besides encoding non-numeric values, all inputs should be normalized to be in the range 0 to +1 (or -1 to 1). For example rotation information on GameObjects should be recorded as `state.Add(transform.rotation.eulerAngles.y/180.0f-1.0f);` rather than `state.Add(transform.rotation.y);`. See the equation below for one approach of normaliztaion. 
 * Positional information of relevant GameObjects should be encoded in relative coordinates wherever possible. This is often relative to the agent position.
 
-![normalization](../images/normalization.png)
+![normalization](images/normalization.png)
 
 ## Actions
 * When using continuous control, action values should be clipped to an appropriate range.

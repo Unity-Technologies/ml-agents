@@ -4,7 +4,7 @@ Reinforcement learning is an artificial intelligence technique that trains _agen
 
 ML-Agents uses a reinforcement learning technique called [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/). PPO uses a neural network to approximate the ideal function that maps an agent's observations to the best action an agent can take in a given state. The ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate Python process (communicating with the running Unity application over a socket). 
 
-**Note:** if you aren't studying machine and reinforcement learning as a subject and just want to train agents to accomplish tasks, you can treat PPO training as a _black box_. There are a few training-related parameters to adjust inside Unity as well as on the Python training side, but you do not need in-depth knowledge of the algorithm itself to successfully create and train agents. Step-by-step procedures for running the training process are provided in the [Training section](Training/Training-ML-Agents.md). 
+**Note:** if you aren't studying machine and reinforcement learning as a subject and just want to train agents to accomplish tasks, you can treat PPO training as a _black box_. There are a few training-related parameters to adjust inside Unity as well as on the Python training side, but you do not need in-depth knowledge of the algorithm itself to successfully create and train agents. Step-by-step procedures for running the training process are provided in the [Training section](Training-ML-Agents.md). 
 
 ## The Simulation and Training Process
 
@@ -47,17 +47,17 @@ You must create a subclass of the Academy class (since the base class is abstrac
 
   The base Academy classes also defines several important properties that you can set in the Unity Editor Inspector. For training, the most important of these properties is `Max Steps`, which determines how long each training episode lasts. Once the Academy's step counter reaches this value, it calls the `AcademyReset()` function to start the next episode. 
   
-  See [Academy](Agents-Editor-Interface.md) for a complete list of the Academy properties and their uses.  
+  See [Academy](Learning-Environment-Design-Academy.md) for a complete list of the Academy properties and their uses.  
 
 ### Brain
  
 The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. 
 
-Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. See [Brain topic](link) for details on using the different types of brains. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
+Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. See [Brain topic](Learning-Environment-Design-Brains.md) for details on using the different types of brains. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
 
 The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `State Size` property must match the length of the feature vector created by an agent exactly. See [Agent topic]() for information about creating agents and setting up a Brain instance correctly.
 
-See [Brains](Brains.md) for a complete list of the Brain properties.
+See [Brains](Learning-Environment-Design-Brains.md) for a complete list of the Brain properties.
 
 ### Agent
 
@@ -72,7 +72,7 @@ Your implementations of these functions determine how the properties of the Brai
  
 You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentStep()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. When the Academy reaches its own `Max Steps` count, it starts the next episode. If you set an agent's RestOnDone property to true, then the agent can attempt its task several times in one episode. (Use the `Agent.AgentReset()` function to prepare the agent to start again.) 
 
-See [Agents](Agents.md) for detailed information about programing your own agents.
+See [Agents](Learning-Environment-Design-Agents.md) for detailed information about programing your own agents.
 
 ## Environments
 

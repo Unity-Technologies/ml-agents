@@ -15,7 +15,7 @@ Using ML-Agents in a Unity project involves the following basic steps:
 3. Add one or more Brain objects to the scene as children of the Academy.
 4. Implement your Agent subclasses. An Agent subclass defines the code an agent uses to observe its environment, to carry out assigned actions, and to calculate the rewards used for reinforcement training. You can also implement optional methods to reset the agent when it has finished or failed its task.
 5. Add your Agent subclasses to appropriate GameObjects, typically, the object in the scene that represents the agent in the simulation. Each Agent object must be assigned a Brain object.
-6. If training, set the Brain type to External and [run the training process](Training-with-PPO.md).  
+6. If training, set the Brain type to External and [run the training process](Training-PPO.md).  
 
 
 **Note:** If you are unfamiliar with Unity, refer to [Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html) in the Unity Manual if an Editor task isn't explained sufficiently in this tutorial.
