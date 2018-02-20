@@ -137,6 +137,12 @@ public abstract class Academy : MonoBehaviour
         AgentSendState += () => { };
         AgentAct += () => { };
         AgentForceReset += () => { };
+
+        if (communicator == null)
+        {
+            _AcademyReset();
+            AgentForceReset();
+        }
     }
 
 

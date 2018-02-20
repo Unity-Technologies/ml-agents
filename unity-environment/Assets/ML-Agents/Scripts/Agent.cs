@@ -40,7 +40,7 @@ public struct AgentAction
 [System.Serializable]
 public class AgentParameters
 {
-    public List<Camera> agentCameras;
+    public List<Camera> agentCameras = new List<Camera>();
     public int maxStep;
     public bool resetOnDone = true;
     public bool eventBased;
@@ -104,7 +104,7 @@ public abstract class Agent : MonoBehaviour
     private float CumulativeReward;
 
     /// This keeps track of the number of steps taken by the agent each episode.
-    private int stepCounter;
+    public int stepCounter;
 
     private bool hasAlreadyReset;
     private bool terminate;
@@ -485,11 +485,18 @@ public abstract class Agent : MonoBehaviour
     /// <param name="acaDone">If set to <c>true</c> The agent must set done.</param>
     private void SetStatus(bool acaMaxStep, bool acaDone, int acaStepCounter)
     {
+        if (acaDone)
+            acaStepCounter = 0;
         MakeRequests(acaStepCounter);
         if (acaMaxStep)
             maxStepReached = true;
         if (acaDone)
+        {
             Done();
+            hasAlreadyReset = false; 
+            // If the Academy needs to reset, the agent should reset 
+            // even if it reseted recently.
+        }
     }
 
     /// <summary>
