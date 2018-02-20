@@ -101,7 +101,7 @@ public abstract class Agent : MonoBehaviour
     private bool maxStepReached;
 
     /// Do not modify: This keeps track of the cumulative reward.
-    private float CumulativeReward;
+    private float cumulativeReward;
 
     /// This keeps track of the number of steps taken by the agent each episode.
     public int stepCounter;
@@ -187,13 +187,24 @@ public abstract class Agent : MonoBehaviour
         ResetState();
 
     }
-
+    /// <summary>
+    /// Resets the reward of the agent
+    /// </summary>
+    public void ResetReward()
+    {
+        reward = 0f;
+        if (done)
+        {
+            cumulativeReward = 0f;
+        }
+    }
     /// <summary>
     /// Use this method to overrite the current reward of the agent.
     /// </summary>
     /// <param name="newValue">The new value of the reward</param>
     public void SetReward(float newValue)
     {
+        cumulativeReward += newValue - reward;
         reward = newValue;
     }
     /// <summary>
@@ -204,6 +215,7 @@ public abstract class Agent : MonoBehaviour
     public void AddReward(float increment)
     {
         reward += increment;
+        cumulativeReward += increment;
     }
     /// <summary>
     /// Gets the reward of the agent.
@@ -212,6 +224,13 @@ public abstract class Agent : MonoBehaviour
     public float GetReward()
     {
         return reward;
+    }
+    /// <summary>
+    /// Gets the cumulative reward.
+    /// </summary>
+    public float GetCumulativeReward()
+    {
+        return cumulativeReward;
     }
     /// <summary>
     /// Gets the value estimate of the agent.
@@ -314,7 +333,6 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public void SendStateToBrain()
     {
-        SetCumulativeReward();
         _info.memories = _action.memories;
         _info.StoredVectorActions = _action.vectorActions;
         _info.StoredTextActions = _action.textActions;
@@ -440,22 +458,6 @@ public abstract class Agent : MonoBehaviour
         AgentReset();
     }
 
-    /// <summary>
-    /// Sets the cumulative reward.
-    /// </summary>
-    private void SetCumulativeReward()
-    {
-        if (!done)
-        {
-            CumulativeReward += reward;
-        }
-        else
-        {
-            CumulativeReward = 0f;
-        }
-    }
-
-
     /// Is used by the brain give new action to the agent.
     public void UpdateAction(AgentAction action)
     {
@@ -538,13 +540,12 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private void SendState()
     {
-
         if (requestDecision)
         {
             SendStateToBrain();
+            ResetReward();
             done = false;
             maxStepReached = false;
-            SetReward(0f);
             requestDecision = false;
 
             hasAlreadyReset = false;
@@ -558,9 +559,9 @@ public abstract class Agent : MonoBehaviour
         if (terminate)
         {
             terminate = false;
+            ResetReward();
             done = false;
             maxStepReached = false;
-            SetReward(0f);
             requestDecision = false;
             requestAction = false;
 
@@ -576,7 +577,7 @@ public abstract class Agent : MonoBehaviour
             AgentAction(_action.vectorActions);
         }
 
-        if ((stepCounter > agentParameters.maxStep) && (agentParameters.maxStep > 0))
+        if (((stepCounter+1) >= agentParameters.maxStep) && (agentParameters.maxStep > 0))
         {
             maxStepReached = true;
             Done();
