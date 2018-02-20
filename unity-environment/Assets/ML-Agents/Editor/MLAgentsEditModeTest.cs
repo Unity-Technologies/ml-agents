@@ -570,12 +570,12 @@ namespace MLAgentsTests
                     }
                     else
                     {
-                        if ((i % 100) % 20 == 0)
+                        if ((i % 100) % 21 == 0)
                         {
                             agent1StepSinceReset = 1;
                             numberAgent1Reset += 1;
                         }
-                        if ((i % 100) % 30 == 0)
+                        if ((i % 100) % 31 == 0)
                         {
                             agent2StepSinceReset = 1;
                             numberAgent2Reset += 1;
@@ -660,11 +660,11 @@ namespace MLAgentsTests
                 if (agent2ResetOnDone == 0)
                     agent2StepSinceReset += 1;
 
-                if ((i > 2) && (i % 20 == 0)){
+                if ((i > 2) && (i % 21 == 0)){
                     agent1ResetOnDone = 1;
                 }
 
-                if (i == 30)
+                if (i == 31)
                 {
                     agent2ResetOnDone = 1;
                     agent2.Done();

@@ -577,7 +577,7 @@ public abstract class Agent : MonoBehaviour
             AgentAction(_action.vectorActions);
         }
 
-        if (((stepCounter+1) >= agentParameters.maxStep) && (agentParameters.maxStep > 0))
+        if ((stepCounter >= agentParameters.maxStep) && (agentParameters.maxStep > 0))
         {
             maxStepReached = true;
             Done();
