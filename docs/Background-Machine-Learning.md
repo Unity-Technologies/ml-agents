@@ -12,60 +12,70 @@ Machine learning is a branch of artificial intelligence that is focused
 on learning patterns from data. There are three
 classes of machine learning algorithms: unsupervised learning, supervised
 learning and reinforcement learning. What separates each of these classes is
-the type of data available to learn from. In the following paragraphs we
+the type of data used to learn from. In the following paragraphs we
 overview each of these classes and provide introductory examples. 
 
 ## Unsupervised Learning
 
-The goal in unsupervised learning is to group or cluster a data set. 
-For example, consider the players of a game. We may want to group the players
-depending on how engaged they are with the game. This could enable us to 
-target different groups (e.g. for highly-engaged players we would
+The goal of unsupervised learning is to group or cluster similar items in a 
+data set. For example, consider the players of a game. We may want to group 
+the players depending on how engaged they are with the game. This would enable
+us to target different groups (e.g. for highly-engaged players we might
 invite them to be beta testers for new features, while for unengaged players
-we would email them helpful tutorials). Say,
-for simplicity, that we wish to split our players into two groups. We would
-first define basic attributes of the players, such as number of hours
-played, total money spent on in-app purchases and
-number of levels completed. We can then feed this data set (three
-attributes for every player)
-to an unsupervised learning algorithm where we specify the number of groups
-to be two. The output would be a split of all the players into two groups,
-where one group would semantically represent the engaged players and the second
-group would semantically represent the unengaged players. Note that we did
-not specify what semantic groups we wanted, but by defining the appropriate
-attributes, these semantic groupings are a by-product. We consider this
-data set unlabeled because for each player we did not provide any
-ground-truth assignment or label. In the next paragraph we overview 
-supervised learning, which accepts as input labels in addition to attributes.
+we might email them helpful tutorials). Say that we wish to split our players 
+into two groups. We would first define basic attributes of the players, such 
+as the number of hours played, total money spent on in-app purchases and
+number of levels completed. We can then feed this data set (three attributes 
+for every player) to an unsupervised learning algorithm where we specify the 
+number of groups to be two. The algorithm would then split the data set of
+players into two groups where the players within each group would be similar
+to each other. Given the attributes we used to describe each player, in this
+case, the output would be a split of all the players into two groups, where 
+one group would semantically represent the engaged players and the second
+group would semantically represent the unengaged players.
+
+With unsupervised learning, we did not provide specific examples of which
+players are considered engaged and which are considered unengaged. We just
+defined the appropriate attributes and relied on the algorithm to uncover
+the two groups on its own. This type of data set is typically called an 
+unlabeled data set as it is lacking these direct labels. Consequently, 
+unsupervised learning can be helpful in situations where these labels can be
+expensive or hard to produce. In the next paragraph, we overview supervised 
+learning algorithms which accept input labels in addition to attributes.
 
 ## Supervised Learning
 
-In supervised learning we wish to learn an input to output mapping between
-the attributes and corresponding labels. Returning to our earlier example of
+In supervised learning, we do not want to just group similar items but directly
+learn a mapping from each item to the group (or class) that it belongs to.
+Returning to our earlier example of
 clustering players, let's say we now wish to predict which of our players are
-about to churn (that is stop playing the game for the next 30 days). In this
-case, we can look into our historical records and create a data set that
+about to churn (that is stop playing the game for the next 30 days). We 
+can look into our historical records and create a data set that
 contains attributes of our players in addition to a label indicating whether
 they have churned or not. Note that the player attributes we use for this
 churn prediction task may be different from the ones we used for our earlier
 clustering task. We can then feed this data set (attributes **and** label for
-each player) into a supervised
-learning algorithm which would learn a mapping from the player attributes
-to a binary label indicating whether that player will churn or not.
+each player) into a supervised learning algorithm which would learn a mapping 
+from the player attributes to a label indicating whether that player 
+will churn or not. The intuition is that the supervised learning algorithm
+will learn which values of these attributes typically correspond to players
+who have churned and not churned (for example, it may learn that players
+who spend very little and play for very short periods will most likely churn).
 Now given this learned model, we can provide it the attributes of a
 new player (one that recently started playing the game) and it would output
-a binary label which serves as a prediction for whether this player will
-churn or not. We can now use these predictions to target the players
+a _predicted_ label for that player. This prediction is the algorithms
+expectation of whether the player will churn or not.
+We can now use these predictions to target the players
 who are expected to churn and entice them to continue playing the game.
 
-As you may have noticed, for both supervised and unsupervised learning there
+As you may have noticed, for both supervised and unsupervised learning, there
 are two tasks that need to be performed: attribute selection and model
 selection. Attribute selection (also called feature selection) pertains to
 selecting how we wish to represent the entity of interest, in this case, the
 player. Model selection, on the other hand, pertains to selecting the
 algorithm (and its parameters) that perform the task well. Both of these
-tasks are active areas of machine learning research and in practice require
-several iterations. 
+tasks are active areas of machine learning research and, in practice, require
+several iterations to achieve good performance.
 
 We now switch to reinforcement learning, the third class of
 machine learning algorithms, and arguably the one most relevant for ML-Agents.
@@ -141,7 +151,7 @@ learning demo showcasing training character behaviors using ML-Agents.
 </p>
 
 Similar to both unsupervised and supervised learning, reinforcement learning
-is also faced with two tasks: attribute selection and model selection.
+also involves two tasks: attribute selection and model selection.
 Attribute selection is defining the set of observations for the robot
 that best help it complete its objective, while model selection is defining
 the form of the policy (mapping from observations to actions) and its
@@ -151,20 +161,31 @@ require changing the attribute and model choices.
 ## Training and Inference
 
 One common aspect of all three branches of machine learning is that they
-both include a **training phase** and an **inference phase**. While the
+all involve a **training phase** and an **inference phase**. While the
 details of the training and inference phases are different for each of the
-three classes, at a high-level, the training phase involves building a model
+three, at a high-level, the training phase involves building a model
 using the provided data, while the inference phase involves applying this
-model to new, previously unseen, data. From our unsupervised learning
-example above, the training phase is the one where we cluster the players
+model to new, previously unseen, data. More specifically:
+* For our unsupervised learning
+example, the training phase is the one where we cluster the players
 into the two groups, while the inference phase is when we assign a new player 
-to one of the two clusters. From our supervised learning example, the 
+to one of the two clusters. 
+* For our supervised learning example, the 
 training phase is when the mapping from player attributes to player label
 (whether they churned or not) is learned, and the inference phase is
 when that learned mapping is used to predict whether a new player will churn
-or not. Lastly, for reinforcement learning, the training phase is when the
+or not. 
+* For our reinforcement learning example, the training phase is when the
 policy is learned and the inference phase is when the agent starts
 interacting in the wild using its learned policy.
+
+To briefly summarize: all three classes of algorithms involve training
+and inference phases in addition to attribute and model selections. What
+ultimately separates them is the type of data available to learn from. In
+unsupervised learning our data set was a collection of attributes, in
+supervised learning our data set was a collection of attribute-label pairs, 
+and, lastly, in reinforcement learning our data set was a collection of 
+observation-action-reward tuples.
 
 ## Deep Learning
 
