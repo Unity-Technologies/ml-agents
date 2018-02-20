@@ -1,5 +1,7 @@
 # Contribution Guidelines
 
+Reference code of conduct.
+
 ## GitHub Workflow
 
 ## Environments
