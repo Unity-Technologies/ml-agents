@@ -13,7 +13,6 @@ from .brain import BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
-from datetime import datetime
 from PIL import Image
 from sys import platform
 

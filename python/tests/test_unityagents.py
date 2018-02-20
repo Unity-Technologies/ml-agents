@@ -194,11 +194,11 @@ def test_curriculum():
             mock_open.return_value = 0
             mock_load.return_value = bad_curriculum
             with pytest.raises(UnityEnvironmentException):
-                Curriculum('test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
+                Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
             mock_load.return_value = dummy_curriculum
             with pytest.raises(UnityEnvironmentException):
-                Curriculum('test_unityagents.py', {"param1": 1, "param2": 1})
-            curriculum = Curriculum('test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
+                Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1})
+            curriculum = Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
             assert curriculum.get_lesson_number == 0
             curriculum.set_lesson_number(1)
             assert curriculum.get_lesson_number == 1

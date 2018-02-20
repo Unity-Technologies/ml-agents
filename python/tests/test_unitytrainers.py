@@ -115,7 +115,7 @@ def test_load_config():
         with mock.patch(open_name, create=True) as mock_open:
             mock_open.return_value = 0
             mock_load.return_value = dummy_config
-            config = TrainerController._load_config("test_unitytrainers.py")
+            config = TrainerController._load_config("tests/test_unitytrainers.py")
             assert(len(config) == 1)
             assert(config['default']['trainer'] == "ppo")
 
@@ -136,7 +136,7 @@ def test_initialize_trainers():
 
                         # Test for PPO trainer
                         mock_load.return_value = dummy_config
-                        config = tc._load_config("test_unitytrainers.py")
+                        config = tc._load_config("tests/test_unitytrainers.py")
                         tf.reset_default_graph()
                         with tf.Session() as sess:
                             tc._initialize_trainers(config, sess)
@@ -145,7 +145,7 @@ def test_initialize_trainers():
 
                         # Test for Behavior Cloning Trainer
                         mock_load.return_value = dummy_bc_config
-                        config = tc._load_config("test_unitytrainers.py")
+                        config = tc._load_config("tests/test_unitytrainers.py")
                         tf.reset_default_graph()
                         with tf.Session() as sess:
                             tc._initialize_trainers(config, sess)
@@ -153,7 +153,7 @@ def test_initialize_trainers():
 
                         # Test for proper exception when trainer name is incorrect
                         mock_load.return_value = dummy_bad_config
-                        config = tc._load_config("test_unitytrainers.py")
+                        config = tc._load_config("tests/test_unitytrainers.py")
                         tf.reset_default_graph()
                         with tf.Session() as sess:
                             with pytest.raises(UnityEnvironmentException):
