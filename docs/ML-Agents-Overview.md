@@ -5,9 +5,9 @@ that enables games and simulations to serve as environments for training
 intelligent agents. Agents can be trained using reinforcement learning,
 imitation learning, neuroevolution, or other machine learning methods through
 a simple-to-use Python API. We also provide implementations (based on
-TensorFlow) for several state-of-the-art algorithms to enable game developers
+TensorFlow) of state-of-the-art algorithms to enable game developers
 and hobbyists to easily train intelligent agents for 2D, 3D and VR/AR games.
-These trained agents could then be leveraged in multiple scenarios, including
+These trained agents can be used for multiple purposes, including
 controlling NPC behavior (in a variety of settings such as multi-agent and
 adversarial), automated testing of game builds and evaluating different game
 design decisions pre-release. ML-Agents is mutually beneficial for both game
@@ -57,7 +57,7 @@ prone to errors.
 
 With ML-Agents, it is possible to _train_ the behaviors of such NPCs 
 (called **agents**) using a variety of methods. The basic idea is quite simple. 
-We need to define three entities at every instance of the game 
+We need to define three entities at every moment of the game 
 (called **environment**):
 - What the medic perceives about the environment (called **observations**).
 Observations can be numeric and/or visual. Numeric observations measure 
@@ -90,7 +90,7 @@ good or bad. For example, it can receive a large negative reward if it dies,
 a modest positive reward whenever it revives a wounded team member, and a
 modest negative reward when a wounded team member dies due to lack of
 assistance. Note that the reward signal is how the objectives of the task
-are communicated to the agent, so they need to be set-up in a manner where
+are communicated to the agent, so they need to be set up in a manner where
 maximizing reward generates the desired optimal behavior.
 
 By defining these three entities (called a **reinforcement learning task**), 

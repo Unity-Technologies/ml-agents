@@ -7,9 +7,9 @@ that enables games and simulations to serve as environments for training
 intelligent agents. Agents can be trained using reinforcement learning,
 imitation learning, neuroevolution, or other machine learning methods through
 a simple-to-use Python API. We also provide implementations (based on
-TensorFlow) for several state-of-the-art algorithms to enable game developers
+TensorFlow) of state-of-the-art algorithms to enable game developers
 and hobbyists to easily train intelligent agents for 2D, 3D and VR/AR games.
-These trained agents could then be leveraged in multiple scenarios, including
+These trained agents can be used for multiple purposes, including
 controlling NPC behavior (in a variety of settings such as multi-agent and
 adversarial), automated testing of game builds and evaluating different game
 design decisions pre-release. ML-Agents is mutually beneficial for both game
@@ -44,7 +44,7 @@ and [Q-learning](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-lea
 - [Post](https://blogs.unity3d.com/2018/01/23/designing-safer-cities-through-simulations/)
 overviewing how Unity can be leveraged as a simulator to design safer cities.
 
-In addition to our own documentation, there are several articles that we'd like to reference:
+In addition to our own documentation, here are some additional, relevant articles:
 - [Unity AI - Unity 3D Artificial Intelligence](https://www.youtube.com/watch?v=bqsfkGbBU6k)
 - [A Game Developer Learns Machine Learning](https://mikecann.co.uk/machine-learning/a-game-developer-learns-machine-learning-intent/)
 - [Unity3D Machine Learning – Setting up the environment & TensorFlow for AgentML on Windows 10](https://unity3d.college/2017/10/25/machine-learning-in-unity3d-setting-up-the-environment-tensorflow-for-agentml-on-windows-10/)

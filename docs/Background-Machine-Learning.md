@@ -5,15 +5,14 @@
 We will not attempt to provide a thorough treatment of machine learning
 as there are fantastic resources online. However, given that a number
 of users of ML-Agents might not have a formal machine learning background,
-the goal of this section is to overview terminologies to facilitate the
+this section provides an overview of terminology to facilitate the
 understanding of ML-Agents.
 
-Machine learning is a branch of artificial intelligence that is focused
-on learning patterns from data. There are three
-classes of machine learning algorithms: unsupervised learning, supervised
-learning and reinforcement learning. What separates each of these classes is
-the type of data used to learn from. In the following paragraphs we
-overview each of these classes and provide introductory examples. 
+Machine learning, a branch of artificial intelligence, focuses on learning patterns 
+from data. The three main classes of machine learning algorithms include: 
+unsupervised learning, supervised learning and reinforcement learning. 
+Each class of algorithm learns from a different type of data. The following paragraphs 
+provide an overview for each of these classes of machine learning, as well as introductory examples. 
 
 ## Unsupervised Learning
 
@@ -83,10 +82,10 @@ machine learning algorithms, and arguably the one most relevant for ML-Agents.
 ## Reinforcement Learning
 
 Reinforcement learning can be viewed as a form of learning for sequential
-decision making that is typically associated with controlling robots (but is,
+decision making that is commonly associated with controlling robots (but is,
 in fact, much more general). Consider an autonomous firefighting robot that is
 tasked with navigating into an area, finding the fire and neutralizing it. At
-every instance the robot perceives the environment through its sensors (e.g.
+any given moment, the robot perceives the environment through its sensors (e.g.
 camera, heat, touch), processes this information and produces an action (e.g.
 move to the left, rotate the water hose, turn on the water). In other words,
 it is continuously making decisions about how to interact in this environment
@@ -99,37 +98,28 @@ which is essentially a mapping from **observations** to **actions**. An
 observation is what the robot can measure from its **environment** (in this 
 case, all its sensory inputs) and an action, in its most raw form, is a change
 to the configuration of the robot (e.g. position of its base, position of
-its water hose and whether the hose is on or off). It is common to confuse a
-robot's observation with the environment **state**. The environment state 
-represents information about all the entities within the environment. The 
-robot's observation, however, only contains information that the robot can
-measure or perceive about its environment and is typically a subset of the 
-environment state. For example, the location of the fire cannot be part of
-the robot's observation if it has not even entered the area yet, but it is
-part of the environment state.
+its water hose and whether the hose is on or off). 
 
 The last remaining piece
 of the reinforcement learning task is the **reward signal**. When training a
 robot to be a mean firefighting machine, we provide it with rewards (positive 
 and negative) indicating how well it is doing on completing the task.
-Note that the objective itself is not fully specified for the robot, but the 
-fact that it receives a large positive reward when it puts out the fire and a 
-small negative reward for every passing second is all the input the robot
-should need to learn that its objective is to put out the fire in the 
-shortest amount of time. The fact that rewards are sparse (i.e. may not be
-provided at every step, but only when a robot arrives at a success or failure
-situation), is a defining characteristic of reinforcement learning and
-precisely why learning good policies can be difficult (and/or time-consuming)
-for complex environments. 
+Note that the robot does not _know_ how to put out fires before it is trained. 
+It learns the objective because it receives a large positive reward when it puts 
+out the fire and a small negative reward for every passing second. The fact that 
+rewards are sparse (i.e. may not be provided at every step, but only when a 
+robot arrives at a success or failure situation), is a defining characteristic of 
+reinforcement learning and precisely why learning good policies can be difficult 
+(and/or time-consuming) for complex environments. 
 
 <p align="center">
   <img src="images/rl_cycle.png" alt="The reinforcement learning cycle."/>
 </p>
 
 [Learning a policy](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/)
-is usually achieved through many trials and iterative
-policy updates. More specifically, the robot will be placed in several
-fire situations and over time will learn an optimal policy which allows it
+usually requires many trials and iterative
+policy updates. More specifically, the robot is placed in several
+fire situations and over time learns an optimal policy which allows it
 to put our fires more effectively. Obviously, we cannot expect to train a
 robot repeatedly in the real world, particularly when fires are involved. This
 is precisely why the use of 
@@ -167,17 +157,16 @@ three, at a high-level, the training phase involves building a model
 using the provided data, while the inference phase involves applying this
 model to new, previously unseen, data. More specifically:
 * For our unsupervised learning
-example, the training phase is the one where we cluster the players
-into the two groups, while the inference phase is when we assign a new player 
-to one of the two clusters. 
+example, the training phase learns the optimal two clusters based 
+on the data describing existing players, while the inference phase assigns a 
+new player to one of these two clusters. 
 * For our supervised learning example, the 
-training phase is when the mapping from player attributes to player label
-(whether they churned or not) is learned, and the inference phase is
-when that learned mapping is used to predict whether a new player will churn
-or not. 
-* For our reinforcement learning example, the training phase is when the
-policy is learned and the inference phase is when the agent starts
-interacting in the wild using its learned policy.
+training phase learns the mapping from player attributes to player label
+(whether they churned or not), and the inference phase predicts whether 
+a new player will churn or not based on that learned mapping. 
+* For our reinforcement learning example, the training phase learns the
+optimal policy through guided trials, and in the inference phase, the agent
+observes and tales actions in the wild using its learned policy.
 
 To briefly summarize: all three classes of algorithms involve training
 and inference phases in addition to attribute and model selections. What
