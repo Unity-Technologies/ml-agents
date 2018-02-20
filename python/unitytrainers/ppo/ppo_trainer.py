@@ -164,7 +164,7 @@ class PPOTrainer(Trainer):
         steps = self.get_step
         info = info[self.brain_name]
         feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
-        run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
+        run_list = [self.model.output, self.model.all_probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
         if self.is_continuous:
             run_list.append(self.model.epsilon)
@@ -207,7 +207,7 @@ class PPOTrainer(Trainer):
         epsi = 0
         if self.is_continuous:
             epsi = take_action_outputs[self.model.epsilon]
-        a_dist = take_action_outputs[self.model.probs]
+        a_dist = take_action_outputs[self.model.all_probs]
         value = take_action_outputs[self.model.value]
         for agent_id in info.agents:
             if agent_id in next_info.agents:
