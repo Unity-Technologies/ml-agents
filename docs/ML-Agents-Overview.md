@@ -85,11 +85,13 @@ freely then using two continuous actions (one for direction and another
 for speed) is more appropriate.
 - A scalar value indicating how well the medic is doing
 (called **reward signals**). Note that the reward signal need not be 
-provided at every instance,
-but when the medic performs an action that is good or bad. For example, it can
-receive a large negative reward if it dies, a modest positive reward
-whenever it revives a wounded team member, and a modest negative reward when a
-wounded team member dies due to lack of assistance.
+provided at every instance, but when the medic performs an action that is 
+good or bad. For example, it can receive a large negative reward if it dies, 
+a modest positive reward whenever it revives a wounded team member, and a
+modest negative reward when a wounded team member dies due to lack of
+assistance. Note that the reward signal is how the objectives of the task
+are communicated to the agent, so they need to be set-up in a manner where
+maximizing reward generates the desired optimal behavior.
 
 By defining these three entities (called a **reinforcement learning task**), 
 we can now _train_ the medic's behavior. This is achieved by simulating the
@@ -156,9 +158,9 @@ of observations and actions are similar. This does not mean that at each
 instance they will have identical observation and action _values_. In other
 words, the Brain defines the space of all possible observations and actions, 
 while the Agents connected to it (in this case the medics) can each have
-their own, unique observation and action values. If we expanded
-our game to include tank driver NPCs, then the Agent attached to those
-characters cannot share a Brain with the Agent linked to the medics.
+their own, unique observation and action values. If we expanded our game 
+to include tank driver NPCs, then the Agent attached to those characters 
+cannot share a Brain with the Agent linked to the medics.
 
 <p align="center">
     <img src="images/learning_environment_example.png" 
@@ -211,6 +213,11 @@ shortly, this enables additional training modes.
 
 _An example of how a scene containing multiple Agents and Brains might be 
 configured._
+
+ML-Agents includes several
+[example environments](Learning-Environment-Examples.md) and a 
+[Making a new Learning Environment](Learning-Environment-Create-New.md) 
+tutorial to help you get started.
 
 ## Training Modes
 
