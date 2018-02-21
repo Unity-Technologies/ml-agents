@@ -54,7 +54,7 @@ In addition to our own documentation, here are some additional, relevant article
 
 ML-Agents is an open-source project and we encourage and welcome contributions.
 If you wish to contribute, be sure to review our 
-[contribution guidelines](CONTRIBUTION_GUIDELINES.md) and 
+[contribution guidelines](docs/Contribution-Guidelines.md) and 
 [code of conduct](CODE_OF_CONDUCT.md).
 
 You can connect with us and the broader community
