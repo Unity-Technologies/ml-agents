@@ -328,25 +328,26 @@ class PPOTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return len(self.training_buffer.update_buffer['actions']) > self.trainer_parameters['buffer_size']
+        return len(self.training_buffer.update_buffer['actions']) > \
+               max(int(self.trainer_parameters['buffer_size'] / self.trainer_parameters['sequence_length']), 1)
 
     def update_model(self):
         """
         Uses training_buffer to update model.
         """
         num_epoch = self.trainer_parameters['num_epoch']
-        batch_size = self.trainer_parameters['batch_size']
+        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.trainer_parameters['sequence_length']), 1)
         total_v, total_p = 0, 0
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / advantages.std())
         for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
-            for l in range(len(self.training_buffer.update_buffer['actions']) // batch_size):
-                start = l * batch_size
-                end = (l + 1) * batch_size
+            for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
+                start = l * n_sequences
+                end = (l + 1) * n_sequences
                 _buffer = self.training_buffer.update_buffer
-                feed_dict = {self.model.batch_size: batch_size,
+                feed_dict = {self.model.batch_size: n_sequences,
                              self.model.sequence_length: self.sequence_length,
                              self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape(
                                  [-1]),
@@ -374,7 +375,7 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.observation_in[i]] = _obs.reshape([-1, _w, _h, _c])
                 # Memories are zeros
                 if self.use_recurrent:
-                    feed_dict[self.model.memory_in] = np.zeros([batch_size, self.m_size])
+                    feed_dict[self.model.memory_in] = np.zeros([n_sequences, self.m_size])
                 v_loss, p_loss, _ = self.sess.run([self.model.value_loss, self.model.policy_loss,
                                                    self.model.update_batch], feed_dict=feed_dict)
                 total_v += v_loss

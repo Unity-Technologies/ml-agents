@@ -39,7 +39,6 @@ class BehavioralCloningTrainer(Trainer):
 
         self.variable_scope = trainer_parameters['graph_scope']
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
-        self.batch_size = trainer_parameters['batch_size']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.use_recurrent = trainer_parameters['use_recurrent']
         self.step = 0
@@ -48,6 +47,7 @@ class BehavioralCloningTrainer(Trainer):
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
+        self.n_sequences = max(int(trainer_parameters['batch_size'] / self.sequence_length), 1)
         self.cumulative_rewards = {}
         self.episode_steps = {}
         self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
@@ -180,7 +180,7 @@ class BehavioralCloningTrainer(Trainer):
         take_action_outputs = None
         for agent_id in next_info_expert.agents:
             stored_info_expert = self.training_buffer[agent_id].last_brain_info
-            if stored_info_expert == None:
+            if stored_info_expert is None:
                 continue
             else:
                 idx = stored_info_expert.agents.index(agent_id)
@@ -206,7 +206,7 @@ class BehavioralCloningTrainer(Trainer):
         info_student = None
         for agent_id in next_info_student.agents:
             stored_info_student = self.training_buffer[agent_id].last_brain_info
-            if stored_info_student == None:
+            if stored_info_student is None:
                 continue
             else:
                 idx = stored_info_student.agents.index(agent_id)
@@ -260,26 +260,25 @@ class BehavioralCloningTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return len(self.training_buffer.update_buffer['actions']) > self.batch_size
+        return len(self.training_buffer.update_buffer['actions']) > self.n_sequences
 
     def update_model(self):
         """
         Uses training_buffer to update model.
         """
-        batch_size = self.trainer_parameters['batch_size']
 
         self.training_buffer.update_buffer.shuffle()
         batch_losses = []
         for j in range(
-                min(len(self.training_buffer.update_buffer['actions']) // self.batch_size, self.batches_per_epoch)):
+                min(len(self.training_buffer.update_buffer['actions']) // self.n_sequences, self.batches_per_epoch)):
             _buffer = self.training_buffer.update_buffer
-            start = j * batch_size
-            end = (j + 1) * batch_size
+            start = j * self.n_sequences
+            end = (j + 1) * self.n_sequences
             batch_states = np.array(_buffer['states'][start:end])
             batch_actions = np.array(_buffer['actions'][start:end])
             feed_dict = {self.model.true_action: batch_actions.reshape([-1, self.brain.vector_action_space_size]),
                          self.model.dropout_rate: 0.5,
-                         self.model.batch_size: batch_size,
+                         self.model.batch_size: self.n_sequences,
                          self.model.sequence_length: self.sequence_length}
             if not self.is_continuous:
                 feed_dict[self.model.state_in] = batch_states.reshape([-1, 1])
@@ -292,7 +291,7 @@ class BehavioralCloningTrainer(Trainer):
                     (_batch, _seq, _w, _h, _c) = _obs.shape
                     feed_dict[self.model.observation_in[i]] = _obs.reshape([-1, _w, _h, _c])
             if self.use_recurrent:
-                feed_dict[self.model.memory_in] = np.zeros([batch_size, self.m_size])
+                feed_dict[self.model.memory_in] = np.zeros([self.n_sequences, self.m_size])
 
             loss, _ = self.sess.run([self.model.loss, self.model.update], feed_dict=feed_dict)
             batch_losses.append(loss)
