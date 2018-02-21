@@ -59,7 +59,7 @@ With ML-Agents, it is possible to _train_ the behaviors of such NPCs
 (called **agents**) using a variety of methods. The basic idea is quite simple. 
 We need to define three entities at every moment of the game 
 (called **environment**):
-- What the medic perceives about the environment (called **observations**).
+- **Observations** - what the medic perceives about the environment.
 Observations can be numeric and/or visual. Numeric observations measure 
 attributes of the environment from the point of view of the agent. For
 our medic this would be attributes of the scene that are visible to it.
@@ -75,7 +75,7 @@ entire scene containing all the game characters. The agents observation,
 however, only contains information that the agent is aware of and is typically 
 a subset of the environment state. For example, the medic observation cannot
 include information about an enemy in hiding that the medic is unaware of.
-- What actions the medic can take (conveniently called **actions**). Similar
+- **Actions** - what actions the medic can take. Similar
 to observations, actions can either be continuous or discrete depending
 on the complexity of the environment and agent. In the case of the medic,
 if the environment is a simple grid world where only their location matters,
@@ -83,8 +83,8 @@ then a discrete action taking on one of four values (north, south, east, west)
 suffices. However, if the environment is more complex and the medic can move
 freely then using two continuous actions (one for direction and another
 for speed) is more appropriate.
-- A scalar value indicating how well the medic is doing
-(called **reward signals**). Note that the reward signal need not be 
+- **Reward signals** - a scalar value indicating how well the medic is doing.
+Note that the reward signal need not be 
 provided at every instance, but when the medic performs an action that is 
 good or bad. For example, it can receive a large negative reward if it dies, 
 a modest positive reward whenever it revives a wounded team member, and a
