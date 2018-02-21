@@ -52,7 +52,7 @@ public class BrainEditor : Editor
 
 
             SerializedProperty bpNumStakedVectorObs = serializedBrain.FindProperty("brainParameters.numStackedVectorObservations");
-            EditorGUILayout.PropertyField(bpNumStakedVectorObs, new GUIContent("Staked Vectors", "Number of states that" +
+            EditorGUILayout.PropertyField(bpNumStakedVectorObs, new GUIContent("Stacked Vectors", "Number of states that" +
                               " will be staked before beeing fed to the neural network."));
 
             EditorGUI.indentLevel--;
@@ -74,7 +74,7 @@ public class BrainEditor : Editor
                              "Or number of possible values (In Discrete action space)."));
 
             SerializedProperty bpVectorActionDescription = serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
-            EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent("Action Description", "A list of strings used to name" +
+            EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent("Action Descriptions", "A list of strings used to name" +
                             " the available actions for the Brain."), true);
 
         }
