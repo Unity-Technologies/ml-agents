@@ -166,7 +166,7 @@ class PPOTrainer(Trainer):
         steps = self.get_step
         info = info[self.brain_name]
         feed_dict = {self.model.batch_size: len(info.vector_observations), self.model.sequence_length: 1}
-        run_list = [self.model.output, self.model.probs, self.model.value, self.model.entropy,
+        run_list = [self.model.output, self.model.all_probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
         if self.is_continuous:
             run_list.append(self.model.epsilon)
@@ -225,14 +225,14 @@ class PPOTrainer(Trainer):
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
             stored_take_action_outputs = self.training_buffer[agent_id].last_take_action_outputs
-            if stored_info == None:
+            if stored_info is None:
                 continue
             else:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
                 if not stored_info.local_done[idx]:
                     if self.use_observations:
-                        for i, _ in enumerate(info.visual_observations):
+                        for i, _ in enumerate(stored_info.visual_observations):
                             self.training_buffer[agent_id]['observations%d' % i].append(stored_info.visual_observations[i][idx])
                     if self.use_states:
                         self.training_buffer[agent_id]['states'].append(stored_info.vector_observations[idx])
@@ -244,7 +244,7 @@ class PPOTrainer(Trainer):
                         epsi = stored_take_action_outputs[self.model.epsilon]
                         self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
                     actions = stored_take_action_outputs[self.model.output]
-                    a_dist = stored_take_action_outputs[self.model.probs]
+                    a_dist = stored_take_action_outputs[self.model.all_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
