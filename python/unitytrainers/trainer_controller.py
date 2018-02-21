@@ -10,8 +10,8 @@ import tensorflow as tf
 import yaml
 
 from tensorflow.python.tools import freeze_graph
-from unitytrainers.ppo.ppo_trainer import PPOTrainer
-from unitytrainers.bc.bc_trainer import BehavioralCloningTrainer
+from unitytrainers.ppo.trainer import PPOTrainer
+from unitytrainers.bc.trainer import BehavioralCloningTrainer
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 

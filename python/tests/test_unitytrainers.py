@@ -5,8 +5,8 @@ import pytest
 from unitytrainers.trainer_controller import TrainerController
 from unitytrainers.buffer import Buffer
 from unitytrainers.models import *
-from unitytrainers.ppo.ppo_trainer import PPOTrainer
-from unitytrainers.bc.bc_trainer import BehavioralCloningTrainer
+from unitytrainers.ppo.trainer import PPOTrainer
+from unitytrainers.bc.trainer import BehavioralCloningTrainer
 from unityagents import UnityEnvironmentException
 
 dummy_start = '''{

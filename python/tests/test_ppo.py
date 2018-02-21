@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import tensorflow as tf
 
-from unitytrainers.ppo.ppo_models import PPOModel
+from unitytrainers.ppo.models import PPOModel
 from unityagents import UnityEnvironment
 
 

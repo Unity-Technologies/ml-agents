@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import tensorflow as tf
 
-from unitytrainers.bc.bc_models import BehavioralCloningModel
+from unitytrainers.bc.models import BehavioralCloningModel
 from unityagents import UnityEnvironment
 
 

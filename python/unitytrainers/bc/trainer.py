@@ -8,7 +8,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from unitytrainers.bc.bc_models import BehavioralCloningModel
+from unitytrainers.bc.models import BehavioralCloningModel
 from unitytrainers.buffer import Buffer
 from unitytrainers.trainer import UnityTrainerException, Trainer
 
