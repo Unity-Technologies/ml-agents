@@ -69,12 +69,13 @@ For entities like positions and rotations, you can add their components to the f
 
 Type enumerations should be encoded in the _one-hot_ style. That is, add an element to the feature vector for each element of enumeration, setting the element representing the observed member to one and set the rest to zero. For example, if your enumeration contains \[Sword, Shield, Bow\] and the agent observes that the current item is a Bow, you would add the elements: 0, 0, 1 to the feature vector. The following code example illustrates how to add 
 
-    enum CarriedItems {Sword, Shield, Bow, LastItem}
+    enum CarriedItems { Sword, Shield, Bow, LastItem }
     private List<float> state = new List<float>();
     public override List<float> CollectState()
     {
         state.Clear();
-        for(int ci = 0; ci < (int)CarriedItems.LastItem; ci++){
+        for (int ci = 0; ci < (int)CarriedItems.LastItem; ci++)
+        {
             state.Add((int)currentItem == ci ? 1.0f : 0.0f);            
         }
         return state;
@@ -97,8 +98,8 @@ To normalize a value to [0, 1], you can use the following formula:
 Rotations and angles should also be normalized. For angles between 0 and 360 degrees, you can use the following formulas:
 
     Quaternion rotation = transform.rotation;
-    Vector3 normalized = rotation.eulerAngles/180.0f - Vector3.one; //[-1,1]
-    Vector3 normalized = rotation.eulerAngles/360.0f; //[0,1]
+    Vector3 normalized = rotation.eulerAngles/180.0f - Vector3.one;  // [-1,1]
+    Vector3 normalized = rotation.eulerAngles/360.0f;  // [0,1]
   
  For angles that can be outside the range [0,360], you can either reduce the angle, or, if the number of turns is significant, increase the maximum value used in your normalization formula.
  
@@ -119,7 +120,7 @@ To implement a discrete state observation, implement the `CollectState()` method
     private List<float> state = new List<float>();
     public override List<float> CollectState()
     {
-        state[0] = stateIndex; //stateIndex is the state identifier
+        state[0] = stateIndex;  // stateIndex is the state identifier
         return state;
     }
 
@@ -166,6 +167,7 @@ The [Area example](Learning-Environment-Examples.md) defines five actions for th
 
     // Get the action index
     int movement = Mathf.FloorToInt(act[0]); 
+    
     // Look up the index in the action list:
     if (movement == 1) { directionX = -1; }
     if (movement == 2) { directionX = 1; }
@@ -174,7 +176,9 @@ The [Area example](Learning-Environment-Examples.md) defines five actions for th
     if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
     
     // Apply the action results to move the agent
-    gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(directionX * 40f, directionY * 300f, directionZ * 40f));
+    gameObject.GetComponent<Rigidbody>().AddForce(
+        new Vector3(
+            directionX * 40f, directionY * 300f, directionZ * 40f));
 
 Note that the above code example is a simplified extract from the AreaAgent class, which provides alternate implementations for both the discrete and the continuous action spaces.
 
@@ -192,7 +196,8 @@ You can examine the `AgentStep()` functions defined in the [Examples](Learning-E
 
 The `GridAgent` class in the [GridWorld example](Learning-Environment-Examples.md) uses a very simple reward system:
 
-    Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position, new Vector3(0.3f, 0.3f, 0.3f));
+    Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position, 
+                                               new Vector3(0.3f, 0.3f, 0.3f));
     if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
     {
         reward = 1f;
@@ -211,7 +216,8 @@ In contrast, the `AreaAgent` in the [Area example](Learning-Environment-Examples
 	reward = -0.005f;
     MoveAgent(act);
     
-	if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
+	if (gameObject.transform.position.y < 0.0f || 
+        Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
         Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
 	{
 		done = true;

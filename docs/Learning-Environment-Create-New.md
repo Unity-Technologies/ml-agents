@@ -107,7 +107,7 @@ Next, edit the new `RollerAcademy` script:
 
 In such a basic scene, we don't need the Academy to initialize, reset, or otherwise control any objects in the environment so we have the simplest possible Academy implementation:
  
-    public class RollerAcademy : Academy {}
+    public class RollerAcademy : Academy { }
 
 The default settings for the Academy properties are also fine for this environment, so we don't need to change anything for the RollerAcademy component in the Inspector window.
 
@@ -158,12 +158,16 @@ To move the target GameObject, we need a reference to its Transform (which store
     public Transform Target;
     public override void AgentReset()
     {
-        if(this.transform.position.y < -1.0){ //The agent fell
+        if(this.transform.position.y < -1.0)
+        {  
+            // The agent fell
             this.transform.position = Vector3.zero;
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
         }
-        else { //move the target to a new spot
+        else
+        { 
+            // Move the target to a new spot
             Target.position = new Vector3(Random.value * 8 - 4,
                                           0.5f,
                                           Random.value * 8 - 4);
@@ -180,23 +184,24 @@ In our case, the information our agent collects includes:
 
 * Position of the target. In general, it is better to use the relative position of other objects rather than the absolute position for more generalizable training. Note that the agent only collects the x and z coordinates since the floor is aligned with the xz plane and the y component of the target's position never changes.
 
-        //Calculate relative position
+        // Calculate relative position
         Vector3 relativePosition = Target.position - this.transform.position;
-        //Relative position
+        
+        // Relative position
         observation.Add(relativePosition.x/5);
         observation.Add(relativePosition.z/5);
 
 * Position of the agent itself within the confines of the floor. This data is collected as the agent's distance from each edge of the floor.
 
-        //Distance to edges of platform
-        observation.Add((this.transform.position.x + 5)/5);
-        observation.Add((this.transform.position.x - 5)/5);
-        observation.Add((this.transform.position.z + 5)/5);
-        observation.Add((this.transform.position.z - 5)/5);
+        // Distance to edges of platform
+        observation.Add((this.transform.position.x + 5) / 5);
+        observation.Add((this.transform.position.x - 5) / 5);
+        observation.Add((this.transform.position.z + 5) / 5);
+        observation.Add((this.transform.position.z - 5) / 5);
 
 * The velocity of the agent. This helps the agent learn to control its speed so it doesn't overshoot the target and roll off the platform.
 
-        //Agent velocity
+        // Agent velocity
         observation.Add(rBody.velocity.x/5);
         observation.Add(rBody.velocity.z/5);
 
@@ -207,19 +212,23 @@ In total, the state observation contains 8 values and we need to use the continu
     List<float> observation = new List<float>();
     public override List<float> CollectState()
     {
-        //Remove last step's observations from the list
+        // Remove last step's observations from the list
         observation.Clear();
-        //Calculate relative position
+        
+        // Calculate relative position
         Vector3 relativePosition = Target.position - this.transform.position;
-        //Relative position
+        
+        // Relative position
         observation.Add(relativePosition.x/5);
         observation.Add(relativePosition.z/5);
-        //Distance to edges of platform
+        
+        // Distance to edges of platform
         observation.Add((this.transform.position.x + 5)/5);
         observation.Add((this.transform.position.x - 5)/5);
         observation.Add((this.transform.position.z + 5)/5);
         observation.Add((this.transform.position.z - 5)/5);
-        //Agent velocity
+        
+        // Agent velocity
         observation.Add(rBody.velocity.x/5);
         observation.Add(rBody.velocity.z/5);
         return observation;
@@ -234,7 +243,8 @@ The decision of the Brain comes in the form of an action array passed to the `Ag
 Before we can add a force to the agent, we need a reference to its Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) A good place to set references to other components of the same GameObject is in the standard Unity `Start()` method:
 
     Rigidbody rBody;
-    void Start () {
+    void Start () 
+    {
         rBody = GetComponent<Rigidbody>();
     }
 
@@ -253,9 +263,11 @@ Rewards are also assigned in the AgentStep() function. The learning algorithm us
 
 The RollerAgent calculates the distance to detect when it reaches the target. When it does, the code increments the Agent.reward variable by 1.0 and marks the agent as finished by setting the Agent.done variable to `true`. 
 
-    float distanceToTarget = Vector3.Distance(this.transform.position, Target.position);
-    //Reached target
-    if( distanceToTarget < 1.42f){
+    float distanceToTarget = Vector3.Distance(this.transform.position,
+                                              Target.position);
+    // Reached target
+    if (distanceToTarget < 1.42f)
+    {
         this.done = true;
         reward += 1.0f;
     }
@@ -264,20 +276,22 @@ The RollerAgent calculates the distance to detect when it reaches the target. Wh
 
 To encourage the agent along, we also reward it for getting closer to the target (saving the previous distance measurement between steps):
 
-    //Getting closer
-    if( distanceToTarget < previousDistance){
+    // Getting closer
+    if( distanceToTarget < previousDistance)
+    {
         reward += 0.1f;
     }
 
 It can also encourage an agent to finish a task more quickly to assign a negative reward at each step:
 
-    //Time penalty
+    // Time penalty
     reward += -0.05f;
 
 Finally, to punish the agent for falling off the platform, assign a large negative reward and, of course, set the agent to done so that it resets itself in the next step:
 
-    //Fell off platform
-    if(this.transform.position.y < -1.0){
+    // Fell off platform
+    if (this.transform.position.y < -1.0)
+    {
         this.done = true;
         reward += -1.0f;
     }
@@ -291,28 +305,35 @@ With the action and reward logic outlined above, the final version of the `Agent
     
     public override void AgentStep(float[] action)
     {
-        //Rewards
-        float distanceToTarget = Vector3.Distance(this.transform.position, Target.position);
-        //Reached target
-        if( distanceToTarget < 1.42f){
+        // Rewards
+        float distanceToTarget = Vector3.Distance(this.transform.position, 
+                                                  Target.position);
+        
+        // Reached target
+        if (distanceToTarget < 1.42f)
+        {
             this.done = true;
             reward += 1.0f;
         }
-        //Getting closer
-        if( distanceToTarget < previousDistance){
+        
+        // Getting closer
+        if (distanceToTarget < previousDistance)
+        {
             reward += 0.1f;
         }
-        //Time penalty
+   
+        // Time penalty
         reward += -0.05f;
 
-        //Fell off platform
-        if(this.transform.position.y < -1.0){
+        // Fell off platform
+        if (this.transform.position.y < -1.0)
+        {
             this.done = true;
             reward += -1.0f;
         }
         previousDistance = distanceToTarget;
 
-        //Actions, size = 2
+        // Actions, size = 2
         Vector3 controlSignal = Vector3.zero;
         controlSignal.x = Mathf.Clamp(action[0], -1, 1);
         controlSignal.z = Mathf.Clamp(action[1], -1, 1);
