@@ -158,7 +158,7 @@ To move the target GameObject, we need a reference to its Transform (which store
     public Transform Target;
     public override void AgentReset()
     {
-        if(this.transform.position.y < -1.0)
+        if (this.transform.position.y < -1.0)
         {  
             // The agent fell
             this.transform.position = Vector3.zero;
@@ -277,7 +277,7 @@ The RollerAgent calculates the distance to detect when it reaches the target. Wh
 To encourage the agent along, we also reward it for getting closer to the target (saving the previous distance measurement between steps):
 
     // Getting closer
-    if( distanceToTarget < previousDistance)
+    if (distanceToTarget < previousDistance)
     {
         reward += 0.1f;
     }
