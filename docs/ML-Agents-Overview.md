@@ -226,8 +226,8 @@ inference can proceed.
 
 ### Built-in Training and Inference
 
-As mentioned previously, ML-Agents ships with several implementations
-of state-of-the-art algorithms for training behaviors. In this mode, the 
+As mentioned previously, ML-Agents ships with several implementations of 
+state-of-the-art algorithms for training intelligent agents. In this mode, the 
 Brain type is set to External during training and Internal during inference. 
 More specifically, during training, all the medics in the scene send their
 observations to the Python API through the External Communicator (this is the 
@@ -237,7 +237,7 @@ are mostly exploratory to help the Python API learn the best policy for each
 medic. Once training concludes, the learned policy for each medic can be 
 exported. Given that all our implementations are based on TensorFlow, the 
 learned policy is just a TensorFlow model file. Then during the inference 
-phase, we switch the Brain type to Internal and embed the TensorFlow model 
+phase, we switch the Brain type to Internal and include the TensorFlow model 
 generated from the training phase. Now during the inference phase, the medics 
 still  continue to generate their observations, but instead of being sent to
 the Python API, they will be fed into their (internal, embedded) model to
@@ -293,8 +293,8 @@ can provide a scaffolding for harder tasks in the future.
 _Example of a mathematics curriculum. Lessons progress from simpler topics to more 
 complex ones, with each building on the last._
 
-When we think about how reinforcement learning actually works, the primary 
-learning signal is a scalar reward received occasionally throughout training. 
+When we think about how reinforcement learning actually works, the 
+learning signal is reward received occasionally throughout training. 
 The starting point when training an agent to accomplish this task will be a 
 random policy. That starting policy will have the agent running in circles,
 and will likely never, or very rarely achieve the reward for complex
