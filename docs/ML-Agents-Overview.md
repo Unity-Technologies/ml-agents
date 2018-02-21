@@ -30,14 +30,14 @@ documentation pages provide examples of _how_ to use ML-Agents.
 
 ## Running Example: Training NPC Behaviors
 
-To help ground the material and terminology in this page, we'll first introduce
-a running example that will be referenced throughout. We will explore the
+To help explain the material and terminology in this page, we'll use a
+hypothetical, running example throughout. We will explore the
 problem of training the behavior of a non-playable character (NPC) in a game.
 (An NPC is a game character that is never controlled by a human player and
 its behavior is pre-defined by the game developer.) More specifically, let's
-assume we're building a multi-player war themed game where the players control 
-the soldiers. In this game, we have a single NPC that is the medic, whose goal 
-is to find wounded players and revive them. Lastly, let us assume that there
+assume we're building a multi-player, war-themed game in which players control 
+the soldiers. In this game, we have a single NPC who serves as a medic, finding 
+and reviving wounded players. Lastly, let us assume that there
 are two teams, each with five players and one NPC medic.
 
 The behavior of a medic is quite complex. It first needs to avoid getting
@@ -62,8 +62,8 @@ We need to define three entities at every moment of the game
 - **Observations** - what the medic perceives about the environment.
 Observations can be numeric and/or visual. Numeric observations measure 
 attributes of the environment from the point of view of the agent. For
-our medic this would be attributes of the scene that are visible to it.
-Observations can either be discrete or continuous depending on the complexity
+our medic this would be attributes of the battlefield that are visible to it.
+Observations can either be _discrete_ or _continuous_ depending on the complexity
 of the game and agent. For most interesting environments, an agent will require 
 several continuous numeric observations, while for simple environments with 
 a small number of unique configurations, a discrete observation will suffice. 
@@ -85,7 +85,7 @@ freely then using two continuous actions (one for direction and another
 for speed) is more appropriate.
 - **Reward signals** - a scalar value indicating how well the medic is doing.
 Note that the reward signal need not be 
-provided at every instance, but when the medic performs an action that is 
+provided at every moment, but only when the medic performs an action that is 
 good or bad. For example, it can receive a large negative reward if it dies, 
 a modest positive reward whenever it revives a wounded team member, and a
 modest negative reward when a wounded team member dies due to lack of
@@ -93,10 +93,10 @@ assistance. Note that the reward signal is how the objectives of the task
 are communicated to the agent, so they need to be set up in a manner where
 maximizing reward generates the desired optimal behavior.
 
-By defining these three entities (called a **reinforcement learning task**), 
+After defining these three entities (called a **reinforcement learning task**), 
 we can now _train_ the medic's behavior. This is achieved by simulating the
 environment for many trials where the medic, over time, learns what is the 
-optimal action to take for every observation it measures in order to maximize 
+optimal action to take for every observation it measures by maximizing 
 its future reward. The key is that by learning the actions that maximize its
 reward, the medic is learning the behaviors that make it a good medic (i.e.
 one who saves the most number of lives). In **reinforcement learning**
