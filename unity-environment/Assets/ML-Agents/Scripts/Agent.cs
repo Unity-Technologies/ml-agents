@@ -43,7 +43,7 @@ public class AgentParameters
     public List<Camera> agentCameras = new List<Camera>();
     public int maxStep;
     public bool resetOnDone = true;
-    public bool eventBased;
+    public bool onDemandDecision;
     public int numberOfActionsBetweenDecisions;
 }
 
@@ -511,7 +511,7 @@ public abstract class Agent : MonoBehaviour
         {
             if (agentParameters.resetOnDone)
             {
-                if (agentParameters.eventBased)
+                if (agentParameters.onDemandDecision)
                 {
                     if (!hasAlreadyReset)
                     {
@@ -592,7 +592,7 @@ public abstract class Agent : MonoBehaviour
     {
         agentParameters.numberOfActionsBetweenDecisions = Mathf.Max(1, agentParameters.numberOfActionsBetweenDecisions);
         // TODO : This needs to be checked earlier.
-        if (!agentParameters.eventBased)
+        if (!agentParameters.onDemandDecision)
         {
             RequestAction();
             if (acaStepCounter % agentParameters.numberOfActionsBetweenDecisions == 0)

@@ -228,10 +228,10 @@ namespace MLAgentsTests
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.eventBased = false;
+            agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.eventBased = true;
+            agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             brain.brainParameters.stateSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
@@ -349,10 +349,10 @@ namespace MLAgentsTests
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.eventBased = false;
+            agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.eventBased = true;
+            agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             brain.brainParameters.stateSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
@@ -516,10 +516,10 @@ namespace MLAgentsTests
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.eventBased = false;
+            agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 1;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.eventBased = true;
+            agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
             agent2.agentParameters.maxStep = 30;
@@ -621,10 +621,10 @@ namespace MLAgentsTests
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.eventBased = false;
+            agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 1;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.eventBased = true;
+            agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
             agent1.agentParameters.resetOnDone = false;
@@ -706,10 +706,10 @@ namespace MLAgentsTests
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.eventBased = false;
+            agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 3;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.eventBased = true;
+            agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
             brain.brainParameters.stateSize = 0;
