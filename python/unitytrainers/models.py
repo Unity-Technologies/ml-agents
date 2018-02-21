@@ -20,7 +20,7 @@ class LearningModel(object):
         self.m_size = m_size
         self.normalize = normalize
         self.use_recurrent = use_recurrent
-        self.a_size = brain.action_space_size
+        self.a_size = brain.vector_action_space_size
 
     @staticmethod
     def create_global_steps():
@@ -40,7 +40,7 @@ class LearningModel(object):
         return observation_in
 
     def create_vector_input(self, s_size):
-        if self.brain.state_space_type == "continuous":
+        if self.brain.vector_observation_space_type == "continuous":
             self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
             if self.normalize:
                 self.running_mean = tf.get_variable("running_mean", [s_size], trainable=False, dtype=tf.float32,
@@ -111,14 +111,14 @@ class LearningModel(object):
 
     def create_new_obs(self, num_streams, h_size, num_layers):
         brain = self.brain
-        s_size = brain.state_space_size * brain.stacked_states
-        if brain.action_space_type == "continuous":
+        s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
+        if brain.vector_action_space_type == "continuous":
             activation_fn = tf.nn.tanh
         else:
             activation_fn = tf.nn.elu
 
         self.observation_in = []
-        for i in range(brain.number_observations):
+        for i in range(brain.number_visual_observations):
             height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
             bw = brain.camera_resolutions[i]['blackAndWhite']
             visual_input = self.create_visual_input(height_size, width_size, bw)
@@ -130,14 +130,14 @@ class LearningModel(object):
         for i in range(num_streams):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
-            if brain.number_observations > 0:
-                for j in range(brain.number_observations):
+            if brain.number_visual_observations > 0:
+                for j in range(brain.number_visual_observations):
                     encoded_visual = self.create_visual_encoder(h_size, activation_fn, num_layers)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
-            if brain.state_space_size > 0:
-                s_size = brain.state_space_size * brain.stacked_states
-                if brain.state_space_type == "continuous":
+            if brain.vector_observation_space_size > 0:
+                s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
+                if brain.vector_observation_space_type == "continuous":
                     hidden_state = self.create_continuous_state_encoder(h_size, activation_fn, num_layers)
                 else:
                     hidden_state = self.create_discrete_state_encoder(s_size, h_size,
@@ -190,12 +190,12 @@ class LearningModel(object):
         self.output = tf.identity(self.output, name="action")
         self.value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
-        self.entropy = -tf.reduce_sum(self.probs * tf.log(self.probs + 1e-10), axis=1)
-        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
+        self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
+        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32, name="action_input")
         self.selected_actions = c_layers.one_hot_encoding(self.action_holder, self.a_size)
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
-        self.probs = tf.reduce_sum(self.probs * self.selected_actions, axis=1)
-        self.old_probs = tf.reduce_sum(self.old_probs * self.selected_actions, axis=1)
+        self.probs = tf.reduce_sum(self.all_probs * self.selected_actions, axis=1)
+        self.old_probs = tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1)
 
     def create_cc_actor_critic(self, h_size, num_layers):
         num_streams = 2

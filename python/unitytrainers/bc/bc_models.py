@@ -19,7 +19,7 @@ class BehavioralCloningModel(LearningModel):
         self.policy = tf.layers.dense(hidden_reg, self.a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
-        if brain.action_space_type == "discrete":
+        if brain.vector_action_space_type == "discrete":
             self.action_probs = tf.nn.softmax(self.policy)
             self.sample_action = tf.multinomial(self.policy, 1, name="action")
             self.true_action = tf.placeholder(shape=[None], dtype=tf.int32)

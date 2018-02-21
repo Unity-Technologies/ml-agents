@@ -637,12 +637,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
+  stepCounter: 0
   agentParameters:
     agentCameras: []
     maxStep: 10000
     resetOnDone: 1
-    eventBased: 1
-    numberOfStepsBetweenActions: 0
+    onDemandDecision: 1
     numberOfActionsBetweenDecisions: 0
   banana: {fileID: 1315103508890282}
 --- !u!135 &135808408544031652

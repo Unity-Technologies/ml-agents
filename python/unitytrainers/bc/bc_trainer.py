@@ -53,11 +53,11 @@ class BehavioralCloningTrainer(Trainer):
         self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
 
         self.training_buffer = Buffer()
-        self.is_continuous = (env.brains[brain_name].action_space_type == "continuous")
-        self.use_observations = (env.brains[brain_name].number_observations > 0)
+        self.is_continuous = (env.brains[brain_name].vector_action_space_type == "continuous")
+        self.use_observations = (env.brains[brain_name].number_visual_observations > 0)
         if self.use_observations:
             logger.info('Cannot use observations with imitation learning')
-        self.use_states = (env.brains[brain_name].state_space_size > 0)
+        self.use_states = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
@@ -146,10 +146,10 @@ class BehavioralCloningTrainer(Trainer):
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
         run_list = [self.model.sample_action]
         if self.use_observations:
-            for i, _ in enumerate(agent_brain.observations):
-                feed_dict[self.model.observation_in[i]] = agent_brain.observations[i]
+            for i, _ in enumerate(agent_brain.visual_observations):
+                feed_dict[self.model.observation_in[i]] = agent_brain.visual_observations[i]
         if self.use_states:
-            feed_dict[self.model.state_in] = agent_brain.states
+            feed_dict[self.model.state_in] = agent_brain.vector_observations
         if self.use_recurrent:
             if agent_brain.memories.shape[1] == 0:
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
@@ -187,10 +187,10 @@ class BehavioralCloningTrainer(Trainer):
                 next_idx = next_info_expert.agents.index(agent_id)
                 if not stored_info_expert.local_done[idx]:
                     if self.use_observations:
-                        for i, _ in enumerate(info.observations):
-                            self.training_buffer[agent_id]['observations%d' % i].append(stored_info_expert.observations[i][idx])
+                        for i, _ in enumerate(info.visual_observations):
+                            self.training_buffer[agent_id]['observations%d' % i].append(stored_info_expert.visual_observations[i][idx])
                     if self.use_states:
-                        self.training_buffer[agent_id]['states'].append(stored_info_expert.states[idx])
+                        self.training_buffer[agent_id]['states'].append(stored_info_expert.vector_observations[idx])
                     if self.use_recurrent:
                         if stored_info_expert.memories.shape[1] == 0:
                             stored_info_expert.memories = np.zeros((len(stored_info_expert.agents), self.m_size))
@@ -277,15 +277,15 @@ class BehavioralCloningTrainer(Trainer):
             end = (j + 1) * batch_size
             batch_states = np.array(_buffer['states'][start:end])
             batch_actions = np.array(_buffer['actions'][start:end])
-            feed_dict = {self.model.true_action: batch_actions.reshape([-1, self.brain.action_space_size]),
+            feed_dict = {self.model.true_action: batch_actions.reshape([-1, self.brain.vector_action_space_size]),
                          self.model.dropout_rate: 0.5,
                          self.model.batch_size: batch_size,
                          self.model.sequence_length: self.sequence_length}
             if not self.is_continuous:
                 feed_dict[self.model.state_in] = batch_states.reshape([-1, 1])
             else:
-                feed_dict[self.model.state_in] = batch_states.reshape([-1, self.brain.state_space_size *
-                                                                       self.brain.stacked_states])
+                feed_dict[self.model.state_in] = batch_states.reshape([-1, self.brain.vector_observation_space_size *
+                                                                       self.brain.num_stacked_vector_observations])
             if self.use_observations:
                 for i, _ in enumerate(self.model.observation_in):
                     _obs = np.array(_buffer['observations%d' % i][start:end])

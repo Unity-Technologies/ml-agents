@@ -6,6 +6,7 @@ from .exception import UnityEnvironmentException
 import logging
 logger = logging.getLogger("unityagents")
 
+
 class Curriculum(object):
     def __init__(self, location, default_reset_parameters):
         """
@@ -84,8 +85,6 @@ class Curriculum(object):
                 logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
                             .format(self.lesson_number,
                             ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
-
-
 
     def get_config(self, lesson = None):
         """

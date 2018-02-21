@@ -73,11 +73,11 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 		{
 			coord.GiveBrainInfo(brain, agentInfo);
 		}
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             foreach (Agent agent in agentInfo.Keys)
             {
-                var action = new float[brain.brainParameters.actionSize];
+                var action = new float[brain.brainParameters.vectorActionSize];
                 foreach (ContinuousPlayerAction cha in continuousPlayerActions)
                 {
                     if (Input.GetKey(cha.key))
@@ -120,9 +120,9 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
                       "If checked, the brain will broadcast states and actions to Python."), broadcast);
         var serializedBrain = new SerializedObject(this);
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
-            GUILayout.Label("Edit the continuous inputs for you actions", EditorStyles.boldLabel);
+            GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
             var chas = serializedBrain.FindProperty("continuousPlayerActions");
             serializedBrain.Update();
             EditorGUILayout.PropertyField(chas, true);
@@ -133,17 +133,17 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
             }
             foreach (ContinuousPlayerAction cha in continuousPlayerActions)
             {
-                if (cha.index >= brain.brainParameters.actionSize)
+                if (cha.index >= brain.brainParameters.vectorActionSize)
                 {
                     EditorGUILayout.HelpBox(string.Format("Key {0} is assigned to index {1} but the action size is only of size {2}"
-                        , cha.key.ToString(), cha.index.ToString(), brain.brainParameters.actionSize.ToString()), MessageType.Error);
+                        , cha.key.ToString(), cha.index.ToString(), brain.brainParameters.vectorActionSize.ToString()), MessageType.Error);
                 }
             }
 
         }
         else
         {
-            GUILayout.Label("Edit the discrete inputs for you actions", EditorStyles.boldLabel);
+            GUILayout.Label("Edit the discrete inputs for your actions", EditorStyles.boldLabel);
             defaultAction = EditorGUILayout.IntField("Default Action", defaultAction);
             var dhas = serializedBrain.FindProperty("discretePlayerActions");
             serializedBrain.Update();

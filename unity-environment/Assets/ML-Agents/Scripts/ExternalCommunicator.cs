@@ -22,10 +22,6 @@ public class ExternalCommunicator : Communicator
     Dictionary<string, bool> hasSentState;
     Dictionary<string, bool> triedSendState;
 
-    Dictionary<string, Dictionary<Agent, float[]>> storedActions;
-    Dictionary<string, Dictionary<Agent, float[]>> storedMemories;
-    Dictionary<string, Dictionary<Agent, float>> storedValues;
-
     const int messageLength = 12000;
     const int defaultNumAgents = 32;
     const int defaultNumObservations = 32;
@@ -49,9 +45,9 @@ public class ExternalCommunicator : Communicator
     {
         public string brain_name;
         public List<int> agents;
-        public List<float> states;
+        public List<float> vectorObservations;
         public List<float> rewards;
-        public List<float> actions;
+        public List<float> vectorActions;
         public List<float> memories;
         public List<string> textObservations;
         public List<bool> dones;
@@ -67,9 +63,9 @@ public class ExternalCommunicator : Communicator
     /// Placeholder for returned message.
     struct AgentMessage
     {
-        public Dictionary<string, List<float>> action { get; set; }
+        public Dictionary<string, List<float>> vector_action { get; set; }
         public Dictionary<string, List<float>> memory { get; set; }
-        public Dictionary<string, List<float>> value { get; set; }
+        public Dictionary<string, List<string>> text_action { get; set; }
     }
 
     /// Placeholder for reset parameter message
@@ -153,11 +149,11 @@ public class ExternalCommunicator : Communicator
 
         sMessage = new StepMessage();
         sMessage.agents = new List<int>(defaultNumAgents);
-        sMessage.states = new List<float>(defaultNumAgents * defaultNumObservations);
+        sMessage.vectorObservations = new List<float>(defaultNumAgents * defaultNumObservations);
         sMessage.rewards = new List<float>(defaultNumAgents);
         sMessage.memories= new List<float>(defaultNumAgents * defaultNumObservations);
         sMessage.dones = new List<bool>(defaultNumAgents);
-        sMessage.actions = new List<float>(defaultNumAgents * defaultNumObservations);
+        sMessage.vectorActions = new List<float>(defaultNumAgents * defaultNumObservations);
         sMessage.maxes= new List<bool>(defaultNumAgents);
         sMessage.textObservations = new List<string>(defaultNumAgents);
 
@@ -319,11 +315,11 @@ public class ExternalCommunicator : Communicator
             hasSentState[brainName] = true;
             sMessage.brain_name = brainName;
             sMessage.agents.Clear();
-            sMessage.states.Clear();
+            sMessage.vectorObservations.Clear();
             sMessage.rewards.Clear();
             sMessage.memories.Clear();
             sMessage.dones.Clear();
-            sMessage.actions.Clear();
+            sMessage.vectorActions.Clear();
             sMessage.maxes.Clear();
             sMessage.textObservations.Clear();
 
@@ -336,13 +332,13 @@ public class ExternalCommunicator : Communicator
             foreach (Agent agent in current_agents[brainName])
             {
                 sMessage.agents.Add(agentInfo[agent].id);
-                sMessage.states.AddRange(agentInfo[agent].stakedVectorObservation);
+                sMessage.vectorObservations.AddRange(agentInfo[agent].stakedVectorObservation);
                 sMessage.rewards.Add(agentInfo[agent].reward);
                 sMessage.memories.AddRange(agentInfo[agent].memories);
                 for (int j = 0; j < memorySize - agentInfo[agent].memories.Count; j++ )
                     sMessage.memories.Add(0f);
                 sMessage.dones.Add(agentInfo[agent].done);
-                sMessage.actions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
+                sMessage.vectorActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
                 sMessage.maxes.Add(agentInfo[agent].maxStepReached);
                 sMessage.textObservations.Add(agentInfo[agent].textObservation);
 
@@ -417,21 +413,22 @@ public class ExternalCommunicator : Communicator
 
                 for (int i = 0; i < current_agents[brainName].Count(); i++)
                 {
-                    if (brain.brainParameters.actionSpaceType == StateType.continuous)
+                    if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
                     {
-                        current_agents[brainName][i].UpdateVectorAction(rMessage.action[brainName].GetRange(i * brain.brainParameters.actionSize, brain.brainParameters.actionSize).ToArray());
+                        current_agents[brainName][i].UpdateVectorAction(rMessage.vector_action[brainName].GetRange(
+                            i * brain.brainParameters.vectorActionSize, brain.brainParameters.vectorActionSize).ToArray());
                     }
                     else
                     {
-                        current_agents[brainName][i].UpdateVectorAction(rMessage.action[brainName].GetRange(i, 1).ToArray());
+                        current_agents[brainName][i].UpdateVectorAction(rMessage.vector_action[brainName].GetRange(i, 1).ToArray());
 
                     }
 
                     current_agents[brainName][i].UpdateMemoriesAction(
                         rMessage.memory[brainName].GetRange(i * memorySize, memorySize));
 
-
-                    current_agents[brainName][i].UpdateValueAction(rMessage.value[brainName][i]);
+                    if (rMessage.text_action[brainName].Count > 0)
+                        current_agents[brainName][i].UpdateTextAction(rMessage.text_action[brainName][i]);
 
                 }
 

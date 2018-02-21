@@ -23,8 +23,8 @@ public class BrainEditor : Editor
 		}
 
 		BrainParameters parameters = myBrain.brainParameters;
-		if (parameters.actionDescriptions == null || parameters.actionDescriptions.Length != parameters.actionSize)
-			parameters.actionDescriptions = new string[parameters.actionSize];
+        if (parameters.vectorActionDescriptions == null || parameters.vectorActionDescriptions.Length != parameters.vectorActionSize)
+            parameters.vectorActionDescriptions = new string[parameters.vectorActionSize];
 		
 		serializedBrain.Update();
 		

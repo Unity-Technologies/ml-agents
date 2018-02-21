@@ -175,12 +175,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            inputState = new float[currentBatchSize, brain.brainParameters.stateSize * brain.brainParameters.stackedStates];
+            inputState = new float[currentBatchSize, brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations];
             var i = 0;
             foreach (Agent agent in agentList)
             {
                 List<float> state_list = agentInfo[agent].stakedVectorObservation;
-                for (int j = 0; j < brain.brainParameters.stateSize * brain.brainParameters.stackedStates; j++)
+                for (int j = 0; j < brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations; j++)
                 {
 
                     inputState[i, j] = state_list[j];
@@ -262,7 +262,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            if (brain.brainParameters.stateSpaceType == StateType.discrete)
+            if (brain.brainParameters.vectorObservationSpaceType == StateType.discrete)
             {
                 var discreteInputState = new int[currentBatchSize, 1];
                 for (int i = 0; i < currentBatchSize; i++)
@@ -335,14 +335,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
         }
 
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             var output = networkOutput[0].GetValue() as float[,];
             var i = 0;
             foreach (Agent agent in agentList)
             {
-                var a = new float[brain.brainParameters.actionSize];
-                for (int j = 0; j < brain.brainParameters.actionSize; j++)
+                var a = new float[brain.brainParameters.vectorActionSize];
+                for (int j = 0; j < brain.brainParameters.vectorActionSize; j++)
                 {
                     a[j] = output[i, j];
                 }
@@ -350,7 +350,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 i++;
             }
         }
-        else if (brain.brainParameters.actionSpaceType == StateType.discrete)
+        else if (brain.brainParameters.vectorActionSpaceType == StateType.discrete)
         {
             long[,] output = networkOutput[0].GetValue() as long[,];
             var i = 0;

@@ -195,14 +195,14 @@ class TrainerController(object):
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
-                    take_action_actions, take_action_memories, take_action_values, take_action_outputs = {}, {}, {}, {}
+                    take_action_vector, take_action_memories, take_action_text, take_action_outputs = {}, {}, {}, {}
                     for brain_name, trainer in self.trainers.items():
-                        (take_action_actions[brain_name],
+                        (take_action_vector[brain_name],
                          take_action_memories[brain_name],
-                         take_action_values[brain_name],
+                         take_action_text[brain_name],
                          take_action_outputs[brain_name]) = trainer.take_action(info)
-                    new_info = self.env.step(action=take_action_actions, memory=take_action_memories,
-                                             value=take_action_values)
+                    new_info = self.env.step(vector_action=take_action_vector, memory=take_action_memories,
+                                             text_action=take_action_text)
                     for brain_name, trainer in self.trainers.items():
                         trainer.add_experiences(info, new_info, take_action_outputs[brain_name])
                     info = new_info

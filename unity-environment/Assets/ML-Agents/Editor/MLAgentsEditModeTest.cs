@@ -134,7 +134,7 @@ namespace MLAgentsTests
             brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
             brain.brainParameters = new BrainParameters();
-            brain.brainParameters.stateSize = 0;
+            brain.brainParameters.vectorObservationSize = 0;
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 
@@ -233,7 +233,7 @@ namespace MLAgentsTests
             // agent1 will take an action at every step and request a decision every 2 steps
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
-            brain.brainParameters.stateSize = 0;
+            brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
@@ -354,7 +354,7 @@ namespace MLAgentsTests
             // agent1 will take an action at every step and request a decision every 2 steps
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
-            brain.brainParameters.stateSize = 0;
+            brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
@@ -523,7 +523,7 @@ namespace MLAgentsTests
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
             agent2.agentParameters.maxStep = 30;
-            brain.brainParameters.stateSize = 0;
+            brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
@@ -629,7 +629,7 @@ namespace MLAgentsTests
             agent1.agentParameters.maxStep = 20;
             agent1.agentParameters.resetOnDone = false;
             agent2.agentParameters.resetOnDone = false; //Here we specify that the agent does not reset when done
-            brain.brainParameters.stateSize = 0;
+            brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
@@ -712,7 +712,7 @@ namespace MLAgentsTests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
-            brain.brainParameters.stateSize = 0;
+            brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);

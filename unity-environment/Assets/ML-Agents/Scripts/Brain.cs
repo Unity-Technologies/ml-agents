@@ -51,32 +51,32 @@ public class BrainParameters
 {
     [Tooltip("Length of state vector for brain (In Continuous state space)." +
              "Or number of possible values (in Discrete state space).")]
-    public int stateSize = 1;
+    public int vectorObservationSize = 1;
     /**< \brief If continuous : The length of the float vector that represents 
      * the state
      * <br> If discrete : The number of possible values the state can take*/
     [Tooltip("Number of states that will be staked before beeing fed to the neural network.")]
     [Range(1, 10)]
-    public int stackedStates = 1;
+    public int numStackedVectorObservations = 1;
 
     [Tooltip("Length of action vector for brain (In Continuous state space)." +
              "Or number of possible values (in Discrete action space).")]
-    public int actionSize = 1;
+    public int vectorActionSize = 1;
     /**< \brief If continuous : The length of the float vector that represents the action
      * <br> If discrete : The number of possible values the action can take*/
     [Tooltip("Describes height, width, and whether to greyscale visual observations for the Brain.")]
     public resolution[] cameraResolutions;
     /**<\brief  The list of observation resolutions for the brain */
     [Tooltip("A list of strings used to name the available actions for the Brain.")]
-    public string[] actionDescriptions;
+    public string[] vectorActionDescriptions;
     /**< \brief The list of strings describing what the actions correpond to */
     [Tooltip("Corresponds to whether state vector contains a single integer (Discrete) " +
              "or a series of real-valued floats (Continuous).")]
-    public StateType actionSpaceType = StateType.discrete;
+    public StateType vectorActionSpaceType = StateType.discrete;
     /**< \brief Defines if the action is discrete or continuous */
     [Tooltip("Corresponds to whether action vector contains a single integer (Discrete)" +
              " or a series of real-valued floats (Continuous).")]
-    public StateType stateSpaceType = StateType.continuous;
+    public StateType vectorObservationSpaceType = StateType.continuous;
     /**< \brief Defines if the state is discrete or continuous */
 }
 

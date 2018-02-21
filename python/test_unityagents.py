@@ -21,13 +21,13 @@ dummy_start = '''{
   "logPath":"RealFakePath",
   "apiNumber":"API-2",
   "brainParameters": [{
-      "stateSize": 3,
-      "actionSize": 2,
+      "vectorObservationSize": 3,
+      "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [],
-      "actionDescriptions": ["",""],
-      "actionSpaceType": 1,
-      "stateSpaceType": 1
+      "vectorActionDescriptions": ["",""],
+      "vectorActionSpaceType": 1,
+      "vectorObservationSpaceType": 1
       }]
 }'''.encode()
 
@@ -106,11 +106,11 @@ def test_reset():
                 assert not env.global_done
                 assert isinstance(brain_info, dict)
                 assert isinstance(brain_info['RealFakeBrain'], BrainInfo)
-                assert isinstance(brain_info['RealFakeBrain'].observations, list)
-                assert isinstance(brain_info['RealFakeBrain'].states, np.ndarray)
-                assert len(brain_info['RealFakeBrain'].observations) == brain.number_observations
-                assert brain_info['RealFakeBrain'].states.shape[0] == len(brain_info['RealFakeBrain'].agents)
-                assert brain_info['RealFakeBrain'].states.shape[1] == brain.state_space_size
+                assert isinstance(brain_info['RealFakeBrain'].visual_observations, list)
+                assert isinstance(brain_info['RealFakeBrain'].vector_observations, np.ndarray)
+                assert len(brain_info['RealFakeBrain'].visual_observations) == brain.number_visual_observations
+                assert brain_info['RealFakeBrain'].vector_observations.shape[0] == len(brain_info['RealFakeBrain'].agents)
+                assert brain_info['RealFakeBrain'].vector_observations.shape[1] == brain.vector_observation_space_size
 
 
 def test_step():
@@ -125,21 +125,21 @@ def test_step():
                 mock_socket.recv.side_effect = dummy_reset
                 brain_info = env.reset()
                 mock_socket.recv.side_effect = dummy_step
-                brain_info = env.step([0] * brain.action_space_size * len(brain_info['RealFakeBrain'].agents))
+                brain_info = env.step([0] * brain.vector_action_space_size * len(brain_info['RealFakeBrain'].agents))
                 with pytest.raises(UnityActionException):
                     env.step([0])
-                brain_info = env.step([0] * brain.action_space_size * len(brain_info['RealFakeBrain'].agents))
+                brain_info = env.step([0] * brain.vector_action_space_size * len(brain_info['RealFakeBrain'].agents))
                 with pytest.raises(UnityActionException):
-                    env.step([0] * brain.action_space_size * len(brain_info['RealFakeBrain'].agents))
+                    env.step([0] * brain.vector_action_space_size * len(brain_info['RealFakeBrain'].agents))
                 env.close()
                 assert env.global_done
                 assert isinstance(brain_info, dict)
                 assert isinstance(brain_info['RealFakeBrain'], BrainInfo)
-                assert isinstance(brain_info['RealFakeBrain'].observations, list)
-                assert isinstance(brain_info['RealFakeBrain'].states, np.ndarray)
-                assert len(brain_info['RealFakeBrain'].observations) == brain.number_observations
-                assert brain_info['RealFakeBrain'].states.shape[0] == len(brain_info['RealFakeBrain'].agents)
-                assert brain_info['RealFakeBrain'].states.shape[1] == brain.state_space_size
+                assert isinstance(brain_info['RealFakeBrain'].visual_observations, list)
+                assert isinstance(brain_info['RealFakeBrain'].vector_observations, np.ndarray)
+                assert len(brain_info['RealFakeBrain'].visual_observations) == brain.number_visual_observations
+                assert brain_info['RealFakeBrain'].vector_observations.shape[0] == len(brain_info['RealFakeBrain'].agents)
+                assert brain_info['RealFakeBrain'].vector_observations.shape[1] == brain.vector_observation_space_size
                 assert not brain_info['RealFakeBrain'].local_done[0]
                 assert brain_info['RealFakeBrain'].local_done[2]
 
@@ -220,13 +220,13 @@ c_action_c_state_start = '''{
   "logPath":"RealFakePath",
   "apiNumber":"API-2",
   "brainParameters": [{
-      "stateSize": 3,
-      "actionSize": 2,
+      "vectorObservationSize": 3,
+      "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [],
-      "actionDescriptions": ["",""],
-      "actionSpaceType": 1,
-      "stateSpaceType": 1
+      "vectorActionDescriptions": ["",""],
+      "vectorActionSpaceType": 1,
+      "vectorObservationSpaceType": 1
       }]
 }'''.encode()
 
@@ -267,13 +267,13 @@ d_action_c_state_start = '''{
   "logPath":"RealFakePath",
   "apiNumber":"API-2",
   "brainParameters": [{
-      "stateSize": 3,
-      "actionSize": 2,
+      "vectorObservationSize": 3,
+      "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [{"width":30,"height":40,"blackAndWhite":false}],
-      "actionDescriptions": ["",""],
-      "actionSpaceType": 0,
-      "stateSpaceType": 1
+      "vectorActionDescriptions": ["",""],
+      "vectorActionSpaceType": 0,
+      "vectorObservationSpaceType": 1
       }]
 }'''.encode()
 

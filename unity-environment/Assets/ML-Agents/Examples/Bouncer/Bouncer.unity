@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465785, g: 0.49641252, b: 0.574817, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -160,6 +160,10 @@ Prefab:
       propertyPath: m_Name
       value: Ground (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
@@ -258,6 +262,10 @@ Prefab:
       propertyPath: m_Name
       value: Ground (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
@@ -308,6 +316,10 @@ Prefab:
     - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
       propertyPath: m_Name
       value: Ground (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
@@ -360,21 +372,13 @@ Prefab:
       propertyPath: m_Name
       value: Ground (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &863238563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 1319880098}
 --- !u!1001 &950406124
 Prefab:
   m_ObjectHideFlags: 0
@@ -423,9 +427,41 @@ Prefab:
       propertyPath: m_Name
       value: Ground (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &973485307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  continuousPlayerActions:
+  - key: 97
+    index: 0
+    value: -1
+  - key: 100
+    index: 0
+    value: 1
+  - key: 119
+    index: 1
+    value: 1
+  - key: 115
+    index: 1
+    value: -1
+  discretePlayerActions: []
+  defaultAction: 0
+  brain: {fileID: 1319880098}
 --- !u!1001 &990254208
 Prefab:
   m_ObjectHideFlags: 0
@@ -474,9 +510,38 @@ Prefab:
       propertyPath: m_Name
       value: Ground (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &1138825117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 1319880098}
+--- !u!114 &1176356748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 0}
 --- !u!1 &1319880096
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,22 +583,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainParameters:
-    stateSize: 4
-    stackedStates: 1
-    actionSize: 2
+    vectorObservationSize: 4
+    numStackedVectorObservations: 1
+    vectorActionSize: 2
     cameraResolutions: []
-    actionDescriptions:
+    vectorActionDescriptions:
     - 
     - 
-    actionSpaceType: 1
-    stateSpaceType: 1
+    vectorActionSpaceType: 1
+    vectorObservationSpaceType: 1
   brainType: 2
   CoreBrains:
-  - {fileID: 1599655134}
-  - {fileID: 2086299878}
-  - {fileID: 863238563}
-  - {fileID: 1689260384}
-  instanceID: 19738
+  - {fileID: 973485307}
+  - {fileID: 1176356748}
+  - {fileID: 1138825117}
+  - {fileID: 1773297366}
+  instanceID: 104222
 --- !u!1 &1453982293
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,37 +706,13 @@ Prefab:
       propertyPath: m_Name
       value: Ground (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1599655134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  continuousPlayerActions:
-  - key: 97
-    index: 0
-    value: -1
-  - key: 100
-    index: 0
-    value: 1
-  - key: 119
-    index: 1
-    value: 1
-  - key: 115
-    index: 1
-    value: -1
-  discretePlayerActions: []
-  defaultAction: 0
-  brain: {fileID: 1319880098}
 --- !u!1001 &1689260383
 Prefab:
   m_ObjectHideFlags: 0
@@ -720,10 +761,14 @@ Prefab:
       propertyPath: m_Name
       value: Ground (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1689260384
+--- !u!114 &1773297366
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -732,7 +777,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
   graphModel: {fileID: 4900000, guid: 1cd7f0238a77844289743688a85f8bff, type: 3}
@@ -939,19 +984,10 @@ Prefab:
       propertyPath: m_Name
       value: Ground (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 1680241239607220, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6e61e9f3ef64d4ffe86950d8a0311f91, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &2086299878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 0}

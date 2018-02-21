@@ -31,7 +31,6 @@ public struct AgentAction
     public float[] vectorActions;
     public string textActions;
     public List<float> memories;
-    public float valueEstimate;
 }
 
 /// <summary>
@@ -233,14 +232,6 @@ public abstract class Agent : MonoBehaviour
         return cumulativeReward;
     }
     /// <summary>
-    /// Gets the value estimate of the agent.
-    /// </summary>
-    /// <returns>The value estimate.</returns>
-    public float GetValue()
-    {
-        return _action.valueEstimate;
-    }
-    /// <summary>
     /// Is called then the agent is done. Either game-over, victory or timeout.
     /// </summary>
     public void Done()
@@ -287,10 +278,10 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private void ResetState()
     {
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
-            _action.vectorActions = new float[brain.brainParameters.actionSize];
-            _info.StoredVectorActions = new float[brain.brainParameters.actionSize];
+            _action.vectorActions = new float[brain.brainParameters.vectorActionSize];
+            _info.StoredVectorActions = new float[brain.brainParameters.vectorActionSize];
         }
         else
         {
@@ -300,19 +291,19 @@ public abstract class Agent : MonoBehaviour
         _action.textActions = "";
         _info.memories = new List<float>();
         _action.memories = new List<float>();
-        if (brain.brainParameters.stateSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
         {
-            _info.vectorObservation = new List<float>(brain.brainParameters.stateSize);
-            _info.stakedVectorObservation = new List<float>(brain.brainParameters.stateSize
-                                                            * brain.brainParameters.stackedStates);
-            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.stateSize
-                                                             * brain.brainParameters.stackedStates]);
+            _info.vectorObservation = new List<float>(brain.brainParameters.vectorObservationSize);
+            _info.stakedVectorObservation = new List<float>(brain.brainParameters.vectorObservationSize
+                                                            * brain.brainParameters.numStackedVectorObservations);
+            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.vectorObservationSize
+                                                             * brain.brainParameters.numStackedVectorObservations]);
         }
         else
         {
             _info.vectorObservation = new List<float>(1);
-            _info.stakedVectorObservation = new List<float>(brain.brainParameters.stackedStates);
-            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.stackedStates]);
+            _info.stakedVectorObservation = new List<float>(brain.brainParameters.numStackedVectorObservations);
+            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.numStackedVectorObservations]);
         }
         _info.visualObservations = new List<Texture2D>();
     }
@@ -340,16 +331,16 @@ public abstract class Agent : MonoBehaviour
         _info.textObservation = "";
         CollectObservations();
 
-        if (brain.brainParameters.stateSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
         {
-            if (_info.vectorObservation.Count != brain.brainParameters.stateSize)
+            if (_info.vectorObservation.Count != brain.brainParameters.vectorObservationSize)
             {
                 throw new UnityAgentsException(string.Format(@"Vector Observation size mismatch between continuous agent {0} and
                     brain {1}. Was Expecting {2} but received {3}. ",
                     gameObject.name, brain.gameObject.name,
-                    brain.brainParameters.stateSize, _info.vectorObservation.Count));
+                    brain.brainParameters.vectorObservationSize, _info.vectorObservation.Count));
             }
-            _info.stakedVectorObservation.RemoveRange(0, brain.brainParameters.stateSize);
+            _info.stakedVectorObservation.RemoveRange(0, brain.brainParameters.vectorObservationSize);
             _info.stakedVectorObservation.AddRange(_info.vectorObservation);
         }
         else
@@ -471,11 +462,7 @@ public abstract class Agent : MonoBehaviour
     {
         _action.memories = v;
     }
-    public void UpdateValueAction(float v)
-    {
-        _action.valueEstimate = v;
-    }
-    public void UpdatevTextAction(string t)
+    public void UpdateTextAction(string t)
     {
         _action.textActions = t;
     }

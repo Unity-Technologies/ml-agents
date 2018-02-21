@@ -18,7 +18,7 @@ public class Ball3DHardAgent : Agent
 
     public override void AgentAction(float[] act)
     {
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             float action_z = 2f * Mathf.Clamp(act[0], -1f, 1f);
             if ((gameObject.transform.rotation.z < 0.25f && action_z > 0f) ||
