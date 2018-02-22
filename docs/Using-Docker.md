@@ -13,7 +13,7 @@ We are currently offering an experimental solution for people who'd like to do t
 
 - Docker typically runs a container sharing a (linux) kernel with the host machine, this means that the 
 Unity environment **has** to be built for the **linux platform**. Please select the architecture to be `x86_64` and choose the build to be `headless` (_this is important because we are running it in a container that does not have graphics drivers installed_). 
-Save the generated environment in the directory to be mounted (e.g. we have conveniently created an empty directory called at the top level `unity-volume`). Ensure that  
+Save the generated environment in the directory to be mounted (e.g. we have conveniently created an empty directory in the `ml-agents` repository called `unity-volume`). Ensure that  
 `unity-volume/<environment-name>.x86_64` and `unity-volume/environment-name_Data`. So for example, `<environment_name>` might be `3Dball` and you might want to ensure that `unity-volume/3Dball.x86_64` and `unity-volume/3Dball_Data` are both present in the directory `unity-volume`.
 
 
@@ -39,6 +39,16 @@ docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
 	 --train --run-id=<run-id>
 ```
 
-**Note** The docker target volume name, `unity-volume` must be passed to ML-Agents as an argument using the `--docker-target-name` option. The output will be stored in mounted directory. 
+**Notes On Mount Argumentss** 
+
+- `source` : Reference to the path in your host OS where you will store the Unity executable. 
+- `target`: Tells docker to mount the `source` path as a disk with this name. 
+- `docker-target-name`: Tells the ML-Agents python package what the name of the disk where it can read the Unity executable and store the graph.*This should therefore be identical to the `target`.
+- `train`: Argument passed to `learn.py` to run ML-Agents in trainer mode.
+- `run-id`: Argument passed to `learn.py` for a unique identifier for an experiment.
+
+For more details on docker mounts, look at [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
+
+
 
 
