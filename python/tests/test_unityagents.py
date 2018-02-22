@@ -41,14 +41,14 @@ dummy_reset = [
           "brain_name": "RealFakeBrain",
           "agents": [1,2],
           "vectorObservations": [1,2,3,4,5,6,1,2,3,4,5,6],
-          "textObservations" :["",""],
           "rewards": [1,2],
           "vectorActions": [1,2,3,4],
           "memories": [],
           "dones": [false, false],
-          "maxes": [false, false]
+          "maxes": [false, false],
+          "textObservations" :[" "," "]
         }'''),
-    'False'.encode()]
+    append_length('END_OF_MESSAGE:False')]
 
 dummy_step = ['actions'.encode(),
               append_length('''
@@ -56,28 +56,28 @@ dummy_step = ['actions'.encode(),
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
   "vectorObservations": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
-  "textObservations" :["","",""],
   "rewards": [1,2,3],
   "vectorActions": [1,2,3,4,5,6],
   "memories": [],
   "dones": [false, false, false],
-  "maxes": [false, false, false]
+  "maxes": [false, false, false],
+  "textObservations" :[" "," ", " "]
 }'''),
-              'False'.encode(),
+    append_length('END_OF_MESSAGE:False'),
               'actions'.encode(),
               append_length('''
 {
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
   "vectorObservations": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
-  "textObservations" :["","",""],
   "rewards": [1,2,3],
   "vectorActions": [1,2,3,4,5,6],
   "memories": [],
   "dones": [false, false, true],
-  "maxes": [false, false, false]
+  "maxes": [false, false, false],
+  "textObservations" :[" "," ", " "]
 }'''),
-              'True'.encode()]
+    append_length('END_OF_MESSAGE:True')]
 
 dummy_curriculum = json.loads('''{
     "measure" : "reward",
@@ -142,8 +142,10 @@ def test_reset():
                 assert isinstance(brain_info['RealFakeBrain'].visual_observations, list)
                 assert isinstance(brain_info['RealFakeBrain'].vector_observations, np.ndarray)
                 assert len(brain_info['RealFakeBrain'].visual_observations) == brain.number_visual_observations
-                assert brain_info['RealFakeBrain'].vector_observations.shape[0] == len(brain_info['RealFakeBrain'].agents)
-                assert brain_info['RealFakeBrain'].vector_observations.shape[1] == brain.vector_observation_space_size
+                assert brain_info['RealFakeBrain'].vector_observations.shape[0] == \
+                       len(brain_info['RealFakeBrain'].agents)
+                assert brain_info['RealFakeBrain'].vector_observations.shape[1] == \
+                       brain.vector_observation_space_size * brain.num_stacked_vector_observations
 
 
 
@@ -172,8 +174,10 @@ def test_step():
                 assert isinstance(brain_info['RealFakeBrain'].visual_observations, list)
                 assert isinstance(brain_info['RealFakeBrain'].vector_observations, np.ndarray)
                 assert len(brain_info['RealFakeBrain'].visual_observations) == brain.number_visual_observations
-                assert brain_info['RealFakeBrain'].vector_observations.shape[0] == len(brain_info['RealFakeBrain'].agents)
-                assert brain_info['RealFakeBrain'].vector_observations.shape[1] == brain.vector_observation_space_size
+                assert brain_info['RealFakeBrain'].vector_observations.shape[0] == \
+                       len(brain_info['RealFakeBrain'].agents)
+                assert brain_info['RealFakeBrain'].vector_observations.shape[1] == \
+                       brain.vector_observation_space_size * brain.num_stacked_vector_observations
                 assert not brain_info['RealFakeBrain'].local_done[0]
                 assert brain_info['RealFakeBrain'].local_done[2]
 
@@ -220,139 +224,5 @@ def test_curriculum():
             assert curriculum.get_lesson_number == 2
 
 
-c_action_c_state_start = '''{
-  "AcademyName": "RealFakeAcademy",
-  "resetParameters": {},
-  "brainNames": ["RealFakeBrain"],
-  "externalBrainNames": ["RealFakeBrain"],
-  "logPath":"RealFakePath",
-  "apiNumber":"API-2",
-  "brainParameters": [{
-      "vectorObservationSize": 3,
-      "numStackedVectorObservations" : 2,
-      "vectorActionSize": 2,
-      "memorySize": 0,
-      "cameraResolutions": [],
-      "vectorActionDescriptions": ["",""],
-      "vectorActionSpaceType": 1,
-      "vectorObservationSpaceType": 1
-      }]
-}'''.encode()
-
-
-def test_ppo_model_continuous():
-    tf.reset_default_graph()
-    with mock.patch('subprocess.Popen') as mock_subproc_popen:
-        with mock.patch('socket.socket') as mock_socket:
-            with mock.patch('glob.glob') as mock_glob:
-                # End of mock
-                with tf.Session() as sess:
-                    with tf.variable_scope("FakeGraphScope"):
-                        mock_glob.return_value = ['FakeLaunchPath']
-                        mock_socket.return_value.accept.return_value = (mock_socket, 0)
-                        mock_socket.recv.return_value.decode.return_value = c_action_c_state_start
-                        env = UnityEnvironment(' ')
-
-                        model = create_agent_model(env.brains["RealFakeBrain"])
-                        init = tf.global_variables_initializer()
-                        sess.run(init)
-
-                        run_list = [model.output, model.probs, model.value, model.entropy,
-                                    model.learning_rate]
-                        feed_dict = {model.batch_size: 2,
-                                     model.sequence_length: 1,
-                                     model.state_in: np.array([[1, 2, 3], [3, 4, 5]]),
-                                     model.epsilon: np.random.randn(2, 2)
-                                     }
-                        sess.run(run_list, feed_dict=feed_dict)
-                        env.close()
-
-
-d_action_c_state_start = '''{
-  "AcademyName": "RealFakeAcademy",
-  "resetParameters": {},
-  "brainNames": ["RealFakeBrain"],
-  "externalBrainNames": ["RealFakeBrain"],
-  "logPath":"RealFakePath",
-  "apiNumber":"API-2",
-  "brainParameters": [{
-      "vectorObservationSize": 3,
-      "numStackedVectorObservations" : 2,
-      "vectorActionSize": 2,
-      "memorySize": 0,
-      "cameraResolutions": [{"width":30,"height":40,"blackAndWhite":false}],
-      "vectorActionDescriptions": ["",""],
-      "vectorActionSpaceType": 0,
-      "vectorObservationSpaceType": 1
-      }]
-}'''.encode()
-
-
-def test_ppo_model_discrete():
-    tf.reset_default_graph()
-    with mock.patch('subprocess.Popen') as mock_subproc_popen:
-        with mock.patch('socket.socket') as mock_socket:
-            with mock.patch('glob.glob') as mock_glob:
-                # End of mock
-                with tf.Session() as sess:
-                    with tf.variable_scope("FakeGraphScope"):
-                        mock_glob.return_value = ['FakeLaunchPath']
-                        mock_socket.return_value.accept.return_value = (mock_socket, 0)
-                        mock_socket.recv.return_value.decode.return_value = d_action_c_state_start
-                        env = UnityEnvironment(' ')
-                        model = create_agent_model(env.brains["RealFakeBrain"])
-                        init = tf.global_variables_initializer()
-                        sess.run(init)
-
-                        run_list = [model.output, model.probs, model.value, model.entropy,
-                                    model.learning_rate]
-                        feed_dict = {model.batch_size: 2,
-                                     model.sequence_length: 1,
-                                     model.state_in: np.array([[1, 2, 3], [3, 4, 5]]),
-                                     model.observation_in[0]: np.ones([2, 40, 30, 3])
-                                     }
-                        sess.run(run_list, feed_dict=feed_dict)
-                        env.close()
-
-
-def assert_array(a, b):
-    assert a.shape == b.shape
-    la = list(a.flatten())
-    lb = list(b.flatten())
-    for i in range(len(la)):
-        assert la[i] == lb[i]
-
-
-def test_buffer():
-    b = Buffer()
-    for fake_agent_id in range(4):
-        for i in range(9):
-            b[fake_agent_id]['state'].append(
-                [100 * fake_agent_id + 10 * i + 1, 100 * fake_agent_id + 10 * i + 2, 100 * fake_agent_id + 10 * i + 3]
-            )
-            b[fake_agent_id]['action'].append([100 * fake_agent_id + 10 * i + 4, 100 * fake_agent_id + 10 * i + 5])
-    a = b[1]['state'].get_batch(batch_size=2, training_length=None, sequential=True)
-    assert_array(a, np.array([[171, 172, 173], [181, 182, 183]]))
-    a = b[2]['state'].get_batch(batch_size=2, training_length=3, sequential=True)
-    assert_array(a, np.array([
-        [[231, 232, 233], [241, 242, 243], [251, 252, 253]],
-        [[261, 262, 263], [271, 272, 273], [281, 282, 283]]
-    ]))
-    a = b[2]['state'].get_batch(batch_size=2, training_length=3, sequential=False)
-    assert_array(a, np.array([
-        [[251, 252, 253], [261, 262, 263], [271, 272, 273]],
-        [[261, 262, 263], [271, 272, 273], [281, 282, 283]]
-    ]))
-    b[4].reset_agent()
-    assert len(b[4]) == 0
-    b.append_update_buffer(3,
-                           batch_size=None, training_length=2)
-    b.append_update_buffer(2,
-                           batch_size=None, training_length=2)
-    assert len(b.update_buffer['action']) == 10
-    assert np.array(b.update_buffer['action']).shape == (10, 2, 2)
-
-
 if __name__ == '__main__':
     pytest.main()
-

@@ -314,7 +314,6 @@ class UnityEnvironment(object):
                 vector_actions = np.array(state_dict["vectorActions"]).reshape((n_agent, -1))
             else:
                 vector_actions = np.array([])
-
             observations = []
             for o in range(self._brains[b].number_visual_observations):
                 obs_n = []
@@ -322,7 +321,6 @@ class UnityEnvironment(object):
                     obs_n.append(self._get_state_image(self._brains[b].camera_resolutions[o]['blackAndWhite']))
 
                 observations.append(np.array(obs_n))
-
             self._data[b] = BrainInfo(observations, vector_obs, text_obs, memories, rewards,
                                       agents, dones, vector_actions, max_reached=maxes)
 
