@@ -58,7 +58,7 @@ class UnityEnvironment(object):
         file_name = (file_name.strip()
                      .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
         true_filename = os.path.basename(os.path.normpath(file_name))
-        logger.info('The true file name is {}'.format(true_filename))
+        logger.debug('The true file name is {}'.format(true_filename))
         launch_string = None
         if platform == "linux" or platform == "linux2":
             candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
@@ -89,7 +89,7 @@ class UnityEnvironment(object):
                                             "Provided filename does not match any environments."
                                             .format(true_filename))
         else:
-            logger.info("This is the launch string {}".format(launch_string))
+            logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
             proc1 = subprocess.Popen(
                 [launch_string,
