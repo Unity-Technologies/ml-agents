@@ -10,6 +10,8 @@
 # Tensorflow Model Info
 /models
 /summaries
+python/models
+python/summaries
 
 # Environemnt logfile
 *unity-environment.log
