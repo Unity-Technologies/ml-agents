@@ -109,6 +109,19 @@ public abstract class Agent : MonoBehaviour
             }
             memory = new float[brain.brainParameters.memorySize];
         }
+
+        state = new List<float>(brain.brainParameters.stateSize);
+        if (brain.brainParameters.stateSpaceType == StateType.continuous)
+        {
+            stackedStates = new List<float>(brain.brainParameters.stateSize * brain.brainParameters.stackedStates);
+            stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
+        }
+        else
+        {
+            stackedStates = new List<float>(brain.brainParameters.stackedStates);
+            stackedStates.AddRange(new float[brain.brainParameters.stackedStates]);
+        }
+
         InitializeAgent();
     }
 
@@ -157,17 +170,7 @@ public abstract class Agent : MonoBehaviour
 	*/
     public virtual void InitializeAgent()
     {
-        state = new List<float>(brain.brainParameters.stateSize);
-        if (brain.brainParameters.stateSpaceType == StateType.continuous)
-        {
-            stackedStates = new List<float>(brain.brainParameters.stateSize * brain.brainParameters.stackedStates);
-            stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
-        }
-        else
-        {
-            stackedStates = new List<float>(brain.brainParameters.stackedStates);
-            stackedStates.AddRange(new float[brain.brainParameters.stackedStates]);
-        }
+
     }
 
     /// Collect the states of the agent with this method
