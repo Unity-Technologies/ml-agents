@@ -19,7 +19,6 @@ public class ResetParameters : Dictionary<string, float>, ISerializationCallback
 
     public void OnBeforeSerialize()
     {
-        //Debug.Log("SERIALIZATION");
         resetParameters.Clear();
 
         foreach (KeyValuePair<string, float> pair in this)
@@ -29,11 +28,6 @@ public class ResetParameters : Dictionary<string, float>, ISerializationCallback
 
             rp.value = pair.Value;
             resetParameters.Add(rp);
-        }
-
-        foreach (ResetParameter rp in resetParameters)
-        {
-            Debug.Log(rp.key + "  " + rp.value);
         }
 
     }
