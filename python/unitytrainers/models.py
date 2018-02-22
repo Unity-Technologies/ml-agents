@@ -109,7 +109,7 @@ class LearningModel(object):
             hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
         return hidden
 
-    def create_new_obs(self, num_streams, h_size, num_layers):
+    def create_new_obs(self, num_streams, h_size, num_layers, activation_fn):
         brain = self.brain
         s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
         if brain.vector_action_space_type == "continuous":
@@ -177,29 +177,36 @@ class LearningModel(object):
 
     def create_dc_actor_critic(self, h_size, num_layers):
         num_streams = 1
-        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
+        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers, tf.nn.elu)
         hidden = hidden_streams[0]
+
         if self.use_recurrent:
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
             self.memory_out = tf.identity(self.memory_out, name='recurrent_out')
+
         self.policy = tf.layers.dense(hidden, self.a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
+
         self.all_probs = tf.nn.softmax(self.policy, name="action_probs")
         self.output = tf.multinomial(self.policy, 1)
         self.output = tf.identity(self.output, name="action")
+
         self.value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
+
         self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
+
         self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32, name="action_input")
         self.selected_actions = c_layers.one_hot_encoding(self.action_holder, self.a_size)
+
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
         self.probs = tf.reduce_sum(self.all_probs * self.selected_actions, axis=1)
         self.old_probs = tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1)
 
     def create_cc_actor_critic(self, h_size, num_layers):
         num_streams = 2
-        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
+        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers, tf.nn.tanh)
 
         if self.use_recurrent:
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')

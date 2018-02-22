@@ -3,14 +3,14 @@ import mock
 import pytest
 import struct
 
-from unitytrainers.buffer import Buffer
-from unitytrainers.models import *
+import numpy as np
+
 from unityagents import UnityEnvironment, UnityEnvironmentException, UnityActionException, \
     BrainInfo, Curriculum
 
 
-def append_length(input):
-    return struct.pack("I", len(input.encode())) + input.encode()
+def append_length(partial_string):
+    return struct.pack("I", len(partial_string.encode())) + partial_string.encode()
 
 
 dummy_start = '''{
@@ -22,6 +22,7 @@ dummy_start = '''{
   "apiNumber":"API-2",
   "brainParameters": [{
       "vectorObservationSize": 3,
+      "numStackedVectorObservations": 2
       "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [],
@@ -38,11 +39,12 @@ dummy_reset = [
         {
           "brain_name": "RealFakeBrain",
           "agents": [1,2],
-          "states": [1,2,3,4,5,6],
+          "states": [1,2,3,4,5,6,1,2,3,4,5,6],
           "rewards": [1,2],
           "actions": [1,2,3,4],
           "memories": [],
-          "dones": [false, false]
+          "dones": [false, false],
+          "maxes": [false, false]
         }'''),
     'False'.encode()]
 
@@ -51,11 +53,12 @@ dummy_step = ['actions'.encode(),
 {
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
-  "states": [1,2,3,4,5,6,7,8,9],
+  "states": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
   "rewards": [1,2,3],
   "actions": [1,2,3,4,5,6],
   "memories": [],
-  "dones": [false, false, false]
+  "dones": [false, false, false],
+  "maxes": [false, false, false]
 }'''),
               'False'.encode(),
               'actions'.encode(),
@@ -63,13 +66,39 @@ dummy_step = ['actions'.encode(),
 {
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
-  "states": [1,2,3,4,5,6,7,8,9],
+  "states": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
   "rewards": [1,2,3],
   "actions": [1,2,3,4,5,6],
   "memories": [],
-  "dones": [false, false, true]
+  "dones": [false, false, true],
+  "maxes": [false, false, false]
 }'''),
               'True'.encode()]
+
+dummy_curriculum = json.loads('''{
+    "measure" : "reward",
+    "thresholds" : [10, 20, 50],
+    "min_lesson_length" : 3,
+    "signal_smoothing" : true, 
+    "parameters" : 
+    {
+        "param1" : [0.7, 0.5, 0.3, 0.1],
+        "param2" : [100, 50, 20, 15],
+        "param3" : [0.2, 0.3, 0.7, 0.9]
+    }
+}''')
+bad_curriculum = json.loads('''{
+    "measure" : "reward",
+    "thresholds" : [10, 20, 50],
+    "min_lesson_length" : 3,
+    "signal_smoothing" : false, 
+    "parameters" : 
+    {
+        "param1" : [0.7, 0.5, 0.3, 0.1],
+        "param2" : [100, 50, 20],
+        "param3" : [0.2, 0.3, 0.7, 0.9]
+    }
+}''')
 
 
 def test_handles_bad_filename():
@@ -78,7 +107,7 @@ def test_handles_bad_filename():
 
 
 def test_initialization():
-    with mock.patch('subprocess.Popen') as mock_subproc_popen:
+    with mock.patch('subprocess.Popen'):
         with mock.patch('socket.socket') as mock_socket:
             with mock.patch('glob.glob') as mock_glob:
                 mock_glob.return_value = ['FakeLaunchPath']
@@ -92,7 +121,7 @@ def test_initialization():
 
 
 def test_reset():
-    with mock.patch('subprocess.Popen') as mock_subproc_popen:
+    with mock.patch('subprocess.Popen'):
         with mock.patch('socket.socket') as mock_socket:
             with mock.patch('glob.glob') as mock_glob:
                 mock_glob.return_value = ['FakeLaunchPath']
@@ -113,8 +142,9 @@ def test_reset():
                 assert brain_info['RealFakeBrain'].vector_observations.shape[1] == brain.vector_observation_space_size
 
 
+
 def test_step():
-    with mock.patch('subprocess.Popen') as mock_subproc_popen:
+    with mock.patch('subprocess.Popen'):
         with mock.patch('socket.socket') as mock_socket:
             with mock.patch('glob.glob') as mock_glob:
                 mock_glob.return_value = ['FakeLaunchPath']
@@ -145,7 +175,7 @@ def test_step():
 
 
 def test_close():
-    with mock.patch('subprocess.Popen') as mock_subproc_popen:
+    with mock.patch('subprocess.Popen'):
         with mock.patch('socket.socket') as mock_socket:
             with mock.patch('glob.glob') as mock_glob:
                 mock_glob.return_value = ['FakeLaunchPath']
@@ -158,32 +188,6 @@ def test_close():
                 mock_socket.close.assert_called_once()
 
 
-dummy_curriculum = json.loads('''{
-    "measure" : "reward",
-    "thresholds" : [10, 20, 50],
-    "min_lesson_length" : 3,
-    "signal_smoothing" : true, 
-    "parameters" : 
-    {
-        "param1" : [0.7, 0.5, 0.3, 0.1],
-        "param2" : [100, 50, 20, 15],
-        "param3" : [0.2, 0.3, 0.7, 0.9]
-    }
-}''')
-bad_curriculum = json.loads('''{
-    "measure" : "reward",
-    "thresholds" : [10, 20, 50],
-    "min_lesson_length" : 3,
-    "signal_smoothing" : false, 
-    "parameters" : 
-    {
-        "param1" : [0.7, 0.5, 0.3, 0.1],
-        "param2" : [100, 50, 20],
-        "param3" : [0.2, 0.3, 0.7, 0.9]
-    }
-}''')
-
-
 def test_curriculum():
     open_name = '%s.open' % __name__
     with mock.patch('json.load') as mock_load:
@@ -191,11 +195,11 @@ def test_curriculum():
             mock_open.return_value = 0
             mock_load.return_value = bad_curriculum
             with pytest.raises(UnityEnvironmentException):
-                curriculum = Curriculum('test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
+                Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
             mock_load.return_value = dummy_curriculum
             with pytest.raises(UnityEnvironmentException):
-                curriculum = Curriculum('test_unityagents.py', {"param1": 1, "param2": 1})
-            curriculum = Curriculum('test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
+                Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1})
+            curriculum = Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
             assert curriculum.get_lesson_number == 0
             curriculum.set_lesson_number(1)
             assert curriculum.get_lesson_number == 1
@@ -345,3 +349,4 @@ def test_buffer():
 
 if __name__ == '__main__':
     pytest.main()
+

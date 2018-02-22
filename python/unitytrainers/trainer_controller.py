@@ -10,10 +10,9 @@ import tensorflow as tf
 import time
 import yaml
 
-from datetime import datetime
 from tensorflow.python.tools import freeze_graph
-from unitytrainers.ppo.ppo_trainer import PPOTrainer
-from unitytrainers.bc.bc_trainer import BehavioralCloningTrainer
+from unitytrainers.ppo.trainer import PPOTrainer
+from unitytrainers.bc.trainer import BehavioralCloningTrainer
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 
@@ -42,16 +41,16 @@ class TrainerController(object):
         self.env_name = (env_name.strip().replace('.app', '').replace('.exe', '').replace('.x86_64', '')
                          .replace('.x86', ''))
         self.env_name = os.path.basename(os.path.normpath(self.env_name))
+        self.logger.info(str(self.env))
 
     def _get_progress(self):
         if self.curriculum_file is not None:
+            progress = 0
             if self.env.curriculum.measure_type == "progress":
-                progress = 0
                 for brain_name in self.env.external_brain_names:
                     progress += self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
                 return progress / len(self.env.external_brain_names)
             elif self.env.curriculum.measure_type == "reward":
-                progress = 0
                 for brain_name in self.env.external_brain_names:
                     progress += self.trainers[brain_name].get_last_reward
                 return progress
@@ -113,6 +112,7 @@ class TrainerController(object):
 
     def _initialize_trainers(self, trainer_config, sess):
         trainer_parameters_dict = {}
+        self.trainers = {}
         for brain_name in self.env.external_brain_names:
             trainer_parameters = trainer_config['default'].copy()
             if len(self.env.external_brain_names) > 1:
@@ -133,8 +133,8 @@ class TrainerController(object):
         for brain_name in self.env.external_brain_names:
             if trainer_parameters_dict[brain_name]['trainer'] == "imitation":
                 self.trainers[brain_name] = BehavioralCloningTrainer(sess, self.env, brain_name,
-                                                             trainer_parameters_dict[brain_name],
-                                                             self.train_model, self.seed)
+                                                                     trainer_parameters_dict[brain_name],
+                                                                     self.train_model, self.seed)
             elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(sess, self.env, brain_name, trainer_parameters_dict[brain_name],
                                                        self.train_model, self.seed)
@@ -142,28 +142,34 @@ class TrainerController(object):
                 raise UnityEnvironmentException("The trainer config contains an unknown trainer type for brain {}"
                                                 .format(brain_name))
 
-    def start_learning(self):
-        self.env.curriculum.set_lesson_number(self.lesson)
-        self.logger.info(str(self.env))
-
-        tf.reset_default_graph()
-
+    @staticmethod
+    def _load_config(config_filename):
         try:
-            with open("trainer_config.yaml") as data_file:
+            with open(config_filename) as data_file:
                 trainer_config = yaml.load(data_file)
+                return trainer_config
         except IOError:
             raise UnityEnvironmentException("The file {} could not be found. Will use default Hyperparameters"
                                             .format("trainer_config.yaml"))
         except UnicodeDecodeError:
             raise UnityEnvironmentException("There was an error decoding {}".format("trainer_config.yaml"))
 
+    @staticmethod
+    def _create_model_path(model_path):
         try:
-            if not os.path.exists(self.model_path):
-                os.makedirs(self.model_path)
+            if not os.path.exists(model_path):
+                os.makedirs(model_path)
         except Exception:
             raise UnityEnvironmentException("The folder {} containing the generated model could not be accessed."
                                             " Please make sure the permissions are set correctly."
-                                            .format(self.model_path))
+                                            .format(model_path))
+
+    def start_learning(self):
+        self.env.curriculum.set_lesson_number(self.lesson)
+        trainer_config = self._load_config("trainer_config.yaml")
+        self._create_model_path(self.model_path)
+
+        tf.reset_default_graph()
 
         with tf.Session() as sess:
             self._initialize_trainers(trainer_config, sess)

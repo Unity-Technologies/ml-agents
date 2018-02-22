@@ -143,10 +143,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             {
                 hasState = true;
             }
-            if (graph[graphScope + "value_estimate"] != null)
-            {
-                hasValue = true;
-            }
         }
         observationMatrixList = new List<float[,,,]>();
         texturesHolder = new List<Texture2D>();
@@ -175,14 +171,19 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            inputState = new float[currentBatchSize, brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations];
+            int stateLength = 1;
+            if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+            {
+                stateLength = brain.brainParameters.vectorObservationSize;
+            }
+            inputState = new float[currentBatchSize, stateLength * brain.brainParameters.numStackedVectorObservations];
+
             var i = 0;
             foreach (Agent agent in agentList)
             {
                 List<float> state_list = agentInfo[agent].stakedVectorObservation;
                 for (int j = 0; j < brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations; j++)
                 {
-
                     inputState[i, j] = state_list[j];
                 }
                 i++;
@@ -363,25 +364,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
 
-        if (hasValue)
-        {
-            float[,] value_tensor;
-            if (hasRecurrent)
-            {
-                value_tensor = networkOutput[2].GetValue() as float[,];
-            }
-            else
-            {
-                value_tensor = networkOutput[1].GetValue() as float[,];
-            }
-            var i = 0;
-            foreach (Agent agent in agentList)
-            {
-                var v = (float)(value_tensor[i, 0]);
-                agent.UpdateValueAction(v);
-                i++;
-            }
-        }
+
 
 #else
         if (agentInfo.Count > 0)
@@ -508,25 +491,27 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         float[,,,] result = new float[batchSize, width, height, pixels];
 
         for (int b = 0; b < batchSize; b++)
+        {
+            Color32[] cc = textures[b].GetPixels32();
             for (int w = 0; w < width; w++)
             {
                 for (int h = 0; h < height; h++)
                 {
-                    Color c = textures[b].GetPixel(w, h);
+                    Color32 currentPixel = cc[h * width + w];
                     if (!BlackAndWhite)
                     {
-                        result[b, textures[b].height - h - 1, w, 0] = c.r;
-                        result[b, textures[b].height - h - 1, w, 1] = c.g;
-                        result[b, textures[b].height - h - 1, w, 2] = c.b;
+                        result[b, textures[b].height - h - 1, w, 0] = currentPixel.r;
+                        result[b, textures[b].height - h - 1, w, 1] = currentPixel.g;
+                        result[b, textures[b].height - h - 1, w, 2] = currentPixel.b;
                     }
                     else
                     {
-                        result[b, textures[b].height - h - 1, w, 0] = (c.r + c.g + c.b) / 3;
+                        result[b, textures[b].height - h - 1, w, 0] = (currentPixel.r + currentPixel.g + currentPixel.b) / 3;
                     }
                 }
             }
+        }
         return result;
     }
-
 
 }

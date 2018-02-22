@@ -147,6 +147,7 @@ public abstract class Agent : MonoBehaviour
         {
             ResetState();
         }
+
         InitializeAgent();
     }
 
@@ -385,7 +386,7 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public virtual void CollectObservations()
     {
-
+        
     }
 
     /// <summary>
@@ -589,50 +590,36 @@ public abstract class Agent : MonoBehaviour
         }
     }
 
-
-
-    /// Contains logic for coverting a camera component into a Texture2D. 
-    private Texture2D ObservationToTexture(Camera agentCamera, int width, int height)
+    /** Contains logic for coverting a camera component into a Texture2D. */
+    public Texture2D ObservationToTexture(Camera cam, int width, int height)
     {
-        Camera cam = agentCamera;
-        Rect oldRec = agentCamera.rect;
+        Rect oldRec = cam.rect;
         cam.rect = new Rect(0f, 0f, 1f, 1f);
-        bool supportsAntialiasing = false;
-        bool needsRescale = false;
         var depth = 24;
         var format = RenderTextureFormat.Default;
         var readWrite = RenderTextureReadWrite.Default;
-        var antiAliasing = (supportsAntialiasing) ? Mathf.Max(1, QualitySettings.antiAliasing) : 1;
 
-        var finalRT =
-            RenderTexture.GetTemporary(width, height, depth, format, readWrite, antiAliasing);
-        var renderRT = (!needsRescale) ? finalRT :
-            RenderTexture.GetTemporary(width, height, depth, format, readWrite, antiAliasing);
+        var tempRT =
+            RenderTexture.GetTemporary(width, height, depth, format, readWrite);
         var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
 
         var prevActiveRT = RenderTexture.active;
         var prevCameraRT = cam.targetTexture;
 
         // render to offscreen texture (readonly from CPU side)
-        RenderTexture.active = renderRT;
-        cam.targetTexture = renderRT;
+        RenderTexture.active = tempRT;
+        cam.targetTexture = tempRT;
 
         cam.Render();
-
-        if (needsRescale)
-        {
-            RenderTexture.active = finalRT;
-            Graphics.Blit(renderRT, finalRT);
-            RenderTexture.ReleaseTemporary(renderRT);
-        }
 
         tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
         tex.Apply();
         cam.targetTexture = prevCameraRT;
         cam.rect = oldRec;
         RenderTexture.active = prevActiveRT;
-        RenderTexture.ReleaseTemporary(finalRT);
+        RenderTexture.ReleaseTemporary(tempRT);
         return tex;
+
     }
 
 

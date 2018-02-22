@@ -1,9 +1,9 @@
 import json
-import numpy as np
 
 from .exception import UnityEnvironmentException
 
 import logging
+
 logger = logging.getLogger("unityagents")
 
 
@@ -68,7 +68,7 @@ class Curriculum(object):
         :param progress: Measure of progress (either reward or percentage steps completed).
         """
         if self.data is None or progress is None:
-            return 
+            return
         if self.data["signal_smoothing"]:
             progress = self.smoothing_value * 0.25 + 0.75 * progress
             self.smoothing_value = progress
@@ -84,9 +84,15 @@ class Curriculum(object):
                     config[key] = parameters[key][self.lesson_number]
                 logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
                             .format(self.lesson_number,
+<<<<<<< HEAD
                             ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
 
     def get_config(self, lesson = None):
+=======
+                                    ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
+
+    def get_config(self, lesson=None):
+>>>>>>> origin/development-0.3
         """
         Returns reset parameters which correspond to the lesson.
         :param lesson: The lesson you want to get the config of. If None, the current lesson is returned.

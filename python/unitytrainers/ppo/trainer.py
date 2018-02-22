@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 from unitytrainers.buffer import Buffer
-from unitytrainers.ppo.ppo_models import PPOModel
+from unitytrainers.ppo.models import PPOModel
 from unitytrainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
@@ -57,15 +57,15 @@ class PPOTrainer(Trainer):
         with tf.variable_scope(self.variable_scope):
             tf.set_random_seed(seed)
             self.model = PPOModel(env.brains[brain_name],
-                                            lr=float(trainer_parameters['learning_rate']),
-                                            h_size=int(trainer_parameters['hidden_units']),
-                                            epsilon=float(trainer_parameters['epsilon']),
-                                            beta=float(trainer_parameters['beta']),
-                                            max_step=float(trainer_parameters['max_steps']),
-                                            normalize=trainer_parameters['normalize'],
-                                            use_recurrent=trainer_parameters['use_recurrent'],
-                                            num_layers=int(trainer_parameters['num_layers']),
-                                            m_size=self.m_size)
+                                  lr=float(trainer_parameters['learning_rate']),
+                                  h_size=int(trainer_parameters['hidden_units']),
+                                  epsilon=float(trainer_parameters['epsilon']),
+                                  beta=float(trainer_parameters['beta']),
+                                  max_step=float(trainer_parameters['max_steps']),
+                                  normalize=trainer_parameters['normalize'],
+                                  use_recurrent=trainer_parameters['use_recurrent'],
+                                  num_layers=int(trainer_parameters['num_layers']),
+                                  m_size=self.m_size)
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
@@ -214,6 +214,7 @@ class PPOTrainer(Trainer):
 
         info = info[self.brain_name]
         next_info = next_info[self.brain_name]
+
         for agent_id in info.agents:
             idx = info.agents.index(agent_id)
             self.training_buffer[agent_id].last_brain_info = info
@@ -258,9 +259,6 @@ class PPOTrainer(Trainer):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-
-
-
         return
 
     def process_experiences(self, info):
@@ -274,7 +272,7 @@ class PPOTrainer(Trainer):
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
-                    and len(agent_actions) > 0):
+                and len(agent_actions) > 0):
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
