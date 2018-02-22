@@ -70,7 +70,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     bool hasRecurrent;
     bool hasState;
     bool hasBatchSize;
-    bool hasValue;
     float[,] inputState;
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
@@ -181,7 +180,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             var i = 0;
             foreach (Agent agent in agentList)
             {
-                List<float> state_list = agentInfo[agent].stakedVectorObservation;
+                List<float> state_list = agentInfo[agent].stackedVectorObservation;
                 for (int j = 0; j < brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations; j++)
                 {
                     inputState[i, j] = state_list[j];
@@ -289,11 +288,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             runner.AddInput(graph[graphScope + "sequence_length"][0], 1);
             runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
             runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
-        }
-
-        if (hasValue)
-        {
-            runner.Fetch(graph[graphScope + "value_estimate"][0]);
         }
 
         TFTensor[] networkOutput;
@@ -444,7 +438,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                     if ((ObservationPlaceholderName[obs_number] == "") || (ObservationPlaceholderName[obs_number] == null))
                     {
 
-                        ObservationPlaceholderName[obs_number] = "observation_" + obs_number;
+                        ObservationPlaceholderName[obs_number] = "visual_observation_" + obs_number;
                     }
                 }
                 var opn = serializedBrain.FindProperty("ObservationPlaceholderName");

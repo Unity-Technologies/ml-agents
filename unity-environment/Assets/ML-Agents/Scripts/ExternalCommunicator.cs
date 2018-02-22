@@ -332,7 +332,7 @@ public class ExternalCommunicator : Communicator
             foreach (Agent agent in current_agents[brainName])
             {
                 sMessage.agents.Add(agentInfo[agent].id);
-                sMessage.vectorObservations.AddRange(agentInfo[agent].stakedVectorObservation);
+                sMessage.vectorObservations.AddRange(agentInfo[agent].stackedVectorObservation);
                 sMessage.rewards.Add(agentInfo[agent].reward);
                 sMessage.memories.AddRange(agentInfo[agent].memories);
                 for (int j = 0; j < memorySize - agentInfo[agent].memories.Count; j++ )

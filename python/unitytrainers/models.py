@@ -30,13 +30,13 @@ class LearningModel(object):
         return global_step, increment_step
 
     @staticmethod
-    def create_visual_input(o_size_h, o_size_w, bw):
+    def create_visual_input(o_size_h, o_size_w, bw, name):
         if bw:
             c_channels = 1
         else:
             c_channels = 3
 
-        observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32)
+        observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name)
         return observation_in
 
     def create_vector_input(self, s_size):
@@ -117,8 +117,7 @@ class LearningModel(object):
         for i in range(brain.number_visual_observations):
             height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
             bw = brain.camera_resolutions[i]['blackAndWhite']
-            visual_input = self.create_visual_input(height_size, width_size, bw)
-            visual_input = tf.identity(visual_input, name="observation_in_" + str(i))
+            visual_input = self.create_visual_input(height_size, width_size, bw, name="visual_observation_" + str(i))
             self.observation_in.append(visual_input)
         self.create_vector_input(s_size)
 

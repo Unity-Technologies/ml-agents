@@ -59,7 +59,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
         foreach (Agent agent in agentInfo.Keys)
         {
 			agent.UpdateVectorAction(decision.Decide(
-                agentInfo[agent].stakedVectorObservation,
+                agentInfo[agent].stackedVectorObservation,
                 agentInfo[agent].visualObservations,
                 agentInfo[agent].reward,
                 agentInfo[agent].done,
@@ -69,7 +69,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
         foreach (Agent agent in agentInfo.Keys)
         {
             agent.UpdateMemoriesAction(decision.MakeMemory(
-				agentInfo[agent].stakedVectorObservation,
+				agentInfo[agent].stackedVectorObservation,
 				agentInfo[agent].visualObservations,
 				agentInfo[agent].reward,
 				agentInfo[agent].done,

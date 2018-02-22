@@ -7,7 +7,6 @@ import numpy as np
 import os
 import re
 import tensorflow as tf
-import time
 import yaml
 
 from tensorflow.python.tools import freeze_graph
@@ -32,7 +31,7 @@ class TrainerController(object):
         self.keep_checkpoints = keep_checkpoints
         self.trainers = {}
         if seed == -1:
-            seed = int(time.time())
+            seed = np.random.randint(0, 999999)
         self.seed = seed
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)

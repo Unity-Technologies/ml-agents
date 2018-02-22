@@ -51,9 +51,9 @@ public class BrainEditor : Editor
                               "Or number of possible values (in Discrete state space)."));
 
 
-            SerializedProperty bpNumStakedVectorObs = serializedBrain.FindProperty("brainParameters.numStackedVectorObservations");
-            EditorGUILayout.PropertyField(bpNumStakedVectorObs, new GUIContent("Stacked Vectors", "Number of states that" +
-                              " will be staked before beeing fed to the neural network."));
+            SerializedProperty bpNumStackedVectorObs = serializedBrain.FindProperty("brainParameters.numStackedVectorObservations");
+            EditorGUILayout.PropertyField(bpNumStackedVectorObs, new GUIContent("Stacked Vectors", "Number of states that" +
+                              " will be stacked before beeing fed to the neural network."));
 
             EditorGUI.indentLevel--;
             SerializedProperty bpCamResol = serializedBrain.FindProperty("brainParameters.cameraResolutions");

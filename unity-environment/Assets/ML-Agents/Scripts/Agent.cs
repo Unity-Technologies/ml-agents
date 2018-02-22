@@ -9,7 +9,7 @@ using UnityEngine;
 public struct AgentInfo
 {
     public List<float> vectorObservation;
-    public List<float> stakedVectorObservation;
+    public List<float> stackedVectorObservation;
     public List<Texture2D> visualObservations;
     public List<float> memories;
     public string textObservation;
@@ -295,16 +295,16 @@ public abstract class Agent : MonoBehaviour
         if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
         {
             _info.vectorObservation = new List<float>(brain.brainParameters.vectorObservationSize);
-            _info.stakedVectorObservation = new List<float>(brain.brainParameters.vectorObservationSize
+            _info.stackedVectorObservation = new List<float>(brain.brainParameters.vectorObservationSize
                                                             * brain.brainParameters.numStackedVectorObservations);
-            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.vectorObservationSize
+            _info.stackedVectorObservation.AddRange(new float[brain.brainParameters.vectorObservationSize
                                                              * brain.brainParameters.numStackedVectorObservations]);
         }
         else
         {
             _info.vectorObservation = new List<float>(1);
-            _info.stakedVectorObservation = new List<float>(brain.brainParameters.numStackedVectorObservations);
-            _info.stakedVectorObservation.AddRange(new float[brain.brainParameters.numStackedVectorObservations]);
+            _info.stackedVectorObservation = new List<float>(brain.brainParameters.numStackedVectorObservations);
+            _info.stackedVectorObservation.AddRange(new float[brain.brainParameters.numStackedVectorObservations]);
         }
         _info.visualObservations = new List<Texture2D>();
     }
@@ -341,8 +341,8 @@ public abstract class Agent : MonoBehaviour
                     gameObject.name, brain.gameObject.name,
                     brain.brainParameters.vectorObservationSize, _info.vectorObservation.Count));
             }
-            _info.stakedVectorObservation.RemoveRange(0, brain.brainParameters.vectorObservationSize);
-            _info.stakedVectorObservation.AddRange(_info.vectorObservation);
+            _info.stackedVectorObservation.RemoveRange(0, brain.brainParameters.vectorObservationSize);
+            _info.stackedVectorObservation.AddRange(_info.vectorObservation);
         }
         else
         {
@@ -353,8 +353,8 @@ public abstract class Agent : MonoBehaviour
                     gameObject.name, brain.gameObject.name,
                     1, _info.vectorObservation.Count));
             }
-            _info.stakedVectorObservation.RemoveRange(0, 1);
-            _info.stakedVectorObservation.AddRange(_info.vectorObservation);
+            _info.stackedVectorObservation.RemoveRange(0, 1);
+            _info.stackedVectorObservation.AddRange(_info.vectorObservation);
         }
         _info.visualObservations.Clear();
         if (brain.brainParameters.cameraResolutions.Length > agentParameters.agentCameras.Count)
