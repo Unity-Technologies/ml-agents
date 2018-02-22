@@ -166,13 +166,18 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
+            int stateLength = 1;
+            if (brain.brainParameters.stateSpaceType == StateType.continuous)
+            {
+                stateLength = brain.brainParameters.stateSize;
+            }
             Dictionary<int, List<float>> states = brain.CollectStates();
-            inputState = new float[currentBatchSize, brain.brainParameters.stateSize * brain.brainParameters.stackedStates];
+            inputState = new float[currentBatchSize, stateLength * brain.brainParameters.stackedStates];
             var i = 0;
             foreach (int k in agentKeys)
             {
                 List<float> state_list = states[k];
-                for (int j = 0; j < brain.brainParameters.stateSize * brain.brainParameters.stackedStates; j++)
+                for (int j = 0; j < stateLength * brain.brainParameters.stackedStates; j++)
                 {
 
                     inputState[i, j] = state_list[j];

@@ -158,8 +158,16 @@ public abstract class Agent : MonoBehaviour
     public virtual void InitializeAgent()
     {
         state = new List<float>(brain.brainParameters.stateSize);
-        stackedStates = new List<float>(brain.brainParameters.stateSize * brain.brainParameters.stackedStates);
-        stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
+        if (brain.brainParameters.stateSpaceType == StateType.continuous)
+        {
+            stackedStates = new List<float>(brain.brainParameters.stateSize * brain.brainParameters.stackedStates);
+            stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
+        }
+        else
+        {
+            stackedStates = new List<float>(brain.brainParameters.stackedStates);
+            stackedStates.AddRange(new float[brain.brainParameters.stackedStates]);
+        }
     }
 
     /// Collect the states of the agent with this method
@@ -174,7 +182,14 @@ public abstract class Agent : MonoBehaviour
     public List<float> ClearAndCollectState() {
         state.Clear();
         CollectState();
-        stackedStates.RemoveRange(0, brain.brainParameters.stateSize);
+        if (brain.brainParameters.stateSpaceType == StateType.continuous)
+        {
+            stackedStates.RemoveRange(0, brain.brainParameters.stateSize);
+        }
+        else
+        {
+            stackedStates.RemoveRange(0, 1);
+        }
         stackedStates.AddRange(state);
         return stackedStates;
     }
@@ -222,7 +237,15 @@ public abstract class Agent : MonoBehaviour
     {
         memory = new float[brain.brainParameters.memorySize];
         stackedStates.Clear();
-        stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
+        if (brain.brainParameters.stateSpaceType == StateType.continuous) 
+        {
+            stackedStates.AddRange(new float[brain.brainParameters.stateSize * 
+                                             brain.brainParameters.stackedStates]);
+        }
+        else
+        {
+            stackedStates.AddRange(new float[brain.brainParameters.stackedStates]);
+        }
         stepCounter = 0;
         AgentReset();
         CumulativeReward = -reward;
