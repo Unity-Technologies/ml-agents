@@ -327,14 +327,14 @@ class PPOTrainer(Trainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         return len(self.training_buffer.update_buffer['actions']) > \
-               max(int(self.trainer_parameters['buffer_size'] / self.trainer_parameters['sequence_length']), 1)
+               max(int(self.trainer_parameters['buffer_size'] / self.sequence_length), 1)
 
     def update_model(self):
         """
         Uses training_buffer to update model.
         """
         num_epoch = self.trainer_parameters['num_epoch']
-        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.trainer_parameters['sequence_length']), 1)
+        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
         total_v, total_p = 0, 0
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(

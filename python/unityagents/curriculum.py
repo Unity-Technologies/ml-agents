@@ -84,15 +84,10 @@ class Curriculum(object):
                     config[key] = parameters[key][self.lesson_number]
                 logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
                             .format(self.lesson_number,
-<<<<<<< HEAD
-                            ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
-
-    def get_config(self, lesson = None):
-=======
                                     ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
 
     def get_config(self, lesson=None):
->>>>>>> origin/development-0.3
+
         """
         Returns reset parameters which correspond to the lesson.
         :param lesson: The lesson you want to get the config of. If None, the current lesson is returned.

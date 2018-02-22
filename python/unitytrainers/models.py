@@ -112,10 +112,6 @@ class LearningModel(object):
     def create_new_obs(self, num_streams, h_size, num_layers, activation_fn):
         brain = self.brain
         s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
-        if brain.vector_action_space_type == "continuous":
-            activation_fn = tf.nn.tanh
-        else:
-            activation_fn = tf.nn.elu
 
         self.observation_in = []
         for i in range(brain.number_visual_observations):

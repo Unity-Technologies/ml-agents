@@ -3,7 +3,8 @@ import mock
 import pytest
 import struct
 
-import numpy as np
+from unitytrainers.buffer import Buffer
+from unitytrainers.models import *
 
 from unityagents import UnityEnvironment, UnityEnvironmentException, UnityActionException, \
     BrainInfo, Curriculum
@@ -22,7 +23,7 @@ dummy_start = '''{
   "apiNumber":"API-2",
   "brainParameters": [{
       "vectorObservationSize": 3,
-      "numStackedVectorObservations": 2
+      "numStackedVectorObservations": 2,
       "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [],
@@ -39,9 +40,10 @@ dummy_reset = [
         {
           "brain_name": "RealFakeBrain",
           "agents": [1,2],
-          "states": [1,2,3,4,5,6,1,2,3,4,5,6],
+          "vectorObservations": [1,2,3,4,5,6,1,2,3,4,5,6],
+          "textObservations" :["",""],
           "rewards": [1,2],
-          "actions": [1,2,3,4],
+          "vectorActions": [1,2,3,4],
           "memories": [],
           "dones": [false, false],
           "maxes": [false, false]
@@ -53,9 +55,10 @@ dummy_step = ['actions'.encode(),
 {
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
-  "states": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
+  "vectorObservations": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
+  "textObservations" :["","",""],
   "rewards": [1,2,3],
-  "actions": [1,2,3,4,5,6],
+  "vectorActions": [1,2,3,4,5,6],
   "memories": [],
   "dones": [false, false, false],
   "maxes": [false, false, false]
@@ -66,9 +69,10 @@ dummy_step = ['actions'.encode(),
 {
   "brain_name": "RealFakeBrain",
   "agents": [1,2,3],
-  "states": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
+  "vectorObservations": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
+  "textObservations" :["","",""],
   "rewards": [1,2,3],
-  "actions": [1,2,3,4,5,6],
+  "vectorActions": [1,2,3,4,5,6],
   "memories": [],
   "dones": [false, false, true],
   "maxes": [false, false, false]
@@ -225,6 +229,7 @@ c_action_c_state_start = '''{
   "apiNumber":"API-2",
   "brainParameters": [{
       "vectorObservationSize": 3,
+      "numStackedVectorObservations" : 2,
       "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [],
@@ -272,6 +277,7 @@ d_action_c_state_start = '''{
   "apiNumber":"API-2",
   "brainParameters": [{
       "vectorObservationSize": 3,
+      "numStackedVectorObservations" : 2,
       "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [{"width":30,"height":40,"blackAndWhite":false}],
