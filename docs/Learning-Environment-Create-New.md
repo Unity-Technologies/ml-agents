@@ -147,30 +147,44 @@ Then, edit the new `RollerAgent` script:
 
 So far, these are the basic steps that you would use to add ML-Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube.
 
-In this simple scenario, we don't need the Academy object to do anything special. If we wanted to change the environment, for example change the size of the floor or add or remove agents or other objects before or during the simulation, we could implement the appropriate methods in the Academy. Instead, we will have the Agent do all the work of resetting itself and the target when it succeeds or falls trying. 
+In this simple scenario, we don't use the Academy object to control the environment. If we wanted to change the environment, for example change the size of the floor or add or remove agents or other objects before or during the simulation, we could implement the appropriate methods in the Academy. Instead, we will have the Agent do all the work of resetting itself and the target when it succeeds or falls trying. 
 
 **Initialization and Resetting the Agent**
 
 When the agent reaches its target, it marks itself done and its agent reset function moves the target to a random location. In addition, if the agent rolls off the platform, the reset function puts it back onto the floor.
 
-To move the target GameObject, we need a reference to its Transform (which stores a GameObject's position, orientation and scale in the 3D world). To get this reference, add a public field of type `Transform` to the RollerAgent class.  Public fields of a component in Unity get displayed in the Inspector window, allowing you to choose which GameObject to use as the target in the Unity Editor. Our `AgentReset()` function looks like:
+To move the target GameObject, we need a reference to its Transform (which stores a GameObject's position, orientation and scale in the 3D world). To get this reference, add a public field of type `Transform` to the RollerAgent class.  Public fields of a component in Unity get displayed in the Inspector window, allowing you to choose which GameObject to use as the target in the Unity Editor. To reset the agent's velocity (and later to apply force to move the agent) we need a reference to the Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) Since the Rigidbody component is on the same GameObject as our Agent script, the best way to get this reference is using `GameObject.GetComponent<T>()`, which we can call in our script's `Start()` method.
 
-    public Transform Target;
-    public override void AgentReset()
+So far, our RollerAgent script looks like: 
+
+    using System.Collections.Generic;
+    using UnityEngine;
+    
+    public class RollerAgent : Agent 
     {
-        if (this.transform.position.y < -1.0)
-        {  
-            // The agent fell
-            this.transform.position = Vector3.zero;
-            this.rBody.angularVelocity = Vector3.zero;
-            this.rBody.velocity = Vector3.zero;
+        
+        Rigidbody rBody;
+        void Start () {
+            rBody = GetComponent<Rigidbody>();
         }
-        else
-        { 
-            // Move the target to a new spot
-            Target.position = new Vector3(Random.value * 8 - 4,
-                                          0.5f,
-                                          Random.value * 8 - 4);
+    
+        public Transform Target;
+        public override void AgentReset()
+        {
+            if (this.transform.position.y < -1.0)
+            {  
+                // The agent fell
+                this.transform.position = Vector3.zero;
+                this.rBody.angularVelocity = Vector3.zero;
+                this.rBody.velocity = Vector3.zero;
+            }
+            else
+            { 
+                // Move the target to a new spot
+                Target.position = new Vector3(Random.value * 8 - 4,
+                                              0.5f,
+                                              Random.value * 8 - 4);
+            }
         }
     }
 
@@ -242,11 +256,6 @@ The decision of the Brain comes in the form of an action array passed to the `Ag
 
 Before we can add a force to the agent, we need a reference to its Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) A good place to set references to other components of the same GameObject is in the standard Unity `Start()` method:
 
-    Rigidbody rBody;
-    void Start () 
-    {
-        rBody = GetComponent<Rigidbody>();
-    }
 
 With the reference to the Rigidbody, the agent can apply the values from the action[] array using the `Rigidbody.AddForce` function:
 
