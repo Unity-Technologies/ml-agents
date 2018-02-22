@@ -176,6 +176,7 @@ public abstract class Academy : MonoBehaviour
             Time.timeScale = trainingConfiguration.timeScale;
             Application.targetFrameRate = trainingConfiguration.targetFrameRate;
             QualitySettings.vSyncCount = 0;
+            Time.captureFramerate = 60;
             Monitor.SetActive(false);
         }
         else
@@ -184,6 +185,7 @@ public abstract class Academy : MonoBehaviour
             QualitySettings.SetQualityLevel(inferenceConfiguration.qualityLevel, true);
             Time.timeScale = inferenceConfiguration.timeScale;
             Application.targetFrameRate = inferenceConfiguration.targetFrameRate;
+            Time.captureFramerate = 60;
             Monitor.SetActive(true);
         }
     }
