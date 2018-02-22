@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
+using UnityEditor.SceneManagement;
 
 [CustomPropertyDrawer(typeof(ResetParameters))]
 public class ResetParameterDrawer : PropertyDrawer
@@ -19,6 +18,7 @@ public class ResetParameterDrawer : PropertyDrawer
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
+
         CheckInitialize(property, label);
         position.height = lineHeight;
         EditorGUI.LabelField(position, label);
@@ -28,7 +28,6 @@ public class ResetParameterDrawer : PropertyDrawer
         {
             var key = item.Key;
             var value = item.Value;
-
             position.y += lineHeight;
 
             // This is the rectangle for the key
@@ -40,6 +39,7 @@ public class ResetParameterDrawer : PropertyDrawer
             var newKey = EditorGUI.TextField(keyRect, key);
             if (EditorGUI.EndChangeCheck())
             {
+                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
                 try
                 {
                     _Dictionary.Remove(key);
@@ -60,6 +60,7 @@ public class ResetParameterDrawer : PropertyDrawer
             value = EditorGUI.FloatField(valueRect, value);
             if (EditorGUI.EndChangeCheck())
             {
+                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
                 _Dictionary[key] = value;
                 break;
             }
@@ -74,6 +75,7 @@ public class ResetParameterDrawer : PropertyDrawer
         if (GUI.Button(AddButtonRect, new GUIContent("Add New",
                   "Add a new item to the default reset paramters"), EditorStyles.miniButton))
         {
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             AddNewItem();
         }
 
@@ -84,11 +86,13 @@ public class ResetParameterDrawer : PropertyDrawer
         if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
                  "Remove the last item to the default reset paramters"), EditorStyles.miniButton))
         {
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             RemoveLastItem();
         }
 
 
         EditorGUI.EndProperty();
+
     }
 
     private void CheckInitialize(SerializedProperty property, GUIContent label)

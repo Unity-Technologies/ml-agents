@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 
 [System.Serializable]
@@ -18,14 +19,21 @@ public class ResetParameters : Dictionary<string, float>, ISerializationCallback
 
     public void OnBeforeSerialize()
     {
+        //Debug.Log("SERIALIZATION");
         resetParameters.Clear();
 
         foreach (KeyValuePair<string, float> pair in this)
         {
             ResetParameter rp = new ResetParameter();
             rp.key = pair.Key;
+
             rp.value = pair.Value;
             resetParameters.Add(rp);
+        }
+
+        foreach (ResetParameter rp in resetParameters)
+        {
+            Debug.Log(rp.key + "  " + rp.value);
         }
 
     }

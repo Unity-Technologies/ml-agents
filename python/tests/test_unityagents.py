@@ -3,8 +3,7 @@ import mock
 import pytest
 import struct
 
-from unitytrainers.buffer import Buffer
-from unitytrainers.models import *
+import numpy as np
 
 from unityagents import UnityEnvironment, UnityEnvironmentException, UnityActionException, \
     BrainInfo, Curriculum

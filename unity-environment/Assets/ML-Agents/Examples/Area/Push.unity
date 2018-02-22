@@ -1672,7 +1672,7 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     resetParameters:
-    - key: goal_size
+    - key: goal_sizeZZZ
       value: 1
     - key: block_size
       value: 1

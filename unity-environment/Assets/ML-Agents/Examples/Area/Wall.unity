@@ -1533,9 +1533,9 @@ MonoBehaviour:
   resetParameters:
     resetParameters:
     - key: min_wall_height
-      value: 0
+      value: 5
     - key: max_wall_height
-      value: 0
+      value: 6
   episodeCount: 1
   stepsSinceReset: 0
   minWallHeight: 5
