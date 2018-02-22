@@ -43,4 +43,17 @@ docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
 	 --train --run-id=<run-id>
 ```
 
-**Note** The docker target volume name, `unity-volume` must be passed to ML-Agents as an argument using the `--docker-target-name` option. The output will be stored in mounted directory. 
+
+**Notes on argument values** 
+
+- `source` : Reference to the path in your host OS where you will store the Unity executable. 
+- `target`: Tells docker to mount the `source` path as a disk with this name. 
+- `docker-target-name`: Tells the ML-Agents python package what the name of the disk where it can read the Unity executable and store the graph.*This should therefore be identical to the `target`.
+- `train`, `run-id`: ML-Agents arguments passed to `learn.py`. `train` trains the algorithm, `run-id` is used to tag each experiment with a unique id. 
+
+
+For more details on docker mounts, look at [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
+
+
+
+
