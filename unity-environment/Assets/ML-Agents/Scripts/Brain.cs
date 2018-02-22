@@ -492,56 +492,45 @@ public class Brain : MonoBehaviour
     }
 
     /** Contains logic for coverting a camera component into a Texture2D. */
-    public Texture2D ObservationToTex(Camera camera, int width, int height)
+    public Texture2D ObservationToTex(Camera cam, int width, int height)
     {
-        Camera cam = camera;
-        Rect oldRec = camera.rect;
+        Rect oldRec = cam.rect;
         cam.rect = new Rect(0f, 0f, 1f, 1f);
-        bool supportsAntialiasing = false;
-        bool needsRescale = false;
         var depth = 24;
         var format = RenderTextureFormat.Default;
         var readWrite = RenderTextureReadWrite.Default;
-        var antiAliasing = (supportsAntialiasing) ? Mathf.Max(1, QualitySettings.antiAliasing) : 1;
 
-        var finalRT =
-            RenderTexture.GetTemporary(width, height, depth, format, readWrite, antiAliasing);
-        var renderRT = (!needsRescale) ? finalRT :
-            RenderTexture.GetTemporary(width, height, depth, format, readWrite, antiAliasing);
+        var tempRT =
+            RenderTexture.GetTemporary(width, height, depth, format, readWrite);
         var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
 
         var prevActiveRT = RenderTexture.active;
         var prevCameraRT = cam.targetTexture;
 
         // render to offscreen texture (readonly from CPU side)
-        RenderTexture.active = renderRT;
-        cam.targetTexture = renderRT;
+        RenderTexture.active = tempRT;
+        cam.targetTexture = tempRT;
 
         cam.Render();
-
-        if (needsRescale)
-        {
-            RenderTexture.active = finalRT;
-            Graphics.Blit(renderRT, finalRT);
-            RenderTexture.ReleaseTemporary(renderRT);
-        }
 
         tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
         tex.Apply();
         cam.targetTexture = prevCameraRT;
         cam.rect = oldRec;
         RenderTexture.active = prevActiveRT;
-        RenderTexture.ReleaseTemporary(finalRT);
+        RenderTexture.ReleaseTemporary(tempRT);
         return tex;
+
     }
 
     /// Contains logic to convert the agent's cameras into observation list
     ///  (as list of float arrays)
     public List<float[,,,]> GetObservationMatrixList(List<int> agent_keys)
     {
-        var observation_matrix_list = new List<float[,,,]>();
+        int numImageObservations = brainParameters.cameraResolutions.Length;
+        var observationMatrixList = new List<float[,,,]>(numImageObservations);
         Dictionary<int, List<Camera>> observations = CollectObservations();
-        for (int obs_number = 0; obs_number < brainParameters.cameraResolutions.Length; obs_number++)
+        for (int obs_number = 0; obs_number < numImageObservations; obs_number++)
         {
             var width = brainParameters.cameraResolutions[obs_number].width;
             var height = brainParameters.cameraResolutions[obs_number].height;
@@ -551,39 +540,39 @@ public class Brain : MonoBehaviour
                 pixels = 1;
             else
                 pixels = 3;
-            float[,,,] observation_matrix = new float[agent_keys.Count
-            , height
-            , width
-            , pixels];
+            var observationMatrix = new float[agent_keys.Count, height,
+                                              width, pixels];
             var i = 0;
             foreach (int k in agent_keys)
             {
                 Camera agent_obs = observations[k][obs_number];
-                Texture2D tex = ObservationToTex(agent_obs, width, height);
+                var tex = ObservationToTex(agent_obs, width, height);
+                Color32[] cc = tex.GetPixels32();
+                int texHeight = tex.height;
                 for (int w = 0; w < width; w++)
                 {
                     for (int h = 0; h < height; h++)
                     {
-                        Color c = tex.GetPixel(w, h);
+                        Color32 currentPixel = cc[h * width + w];
                         if (!bw)
                         {
-                            observation_matrix[i, tex.height - h - 1, w, 0] = c.r;
-                            observation_matrix[i, tex.height - h - 1, w, 1] = c.g;
-                            observation_matrix[i, tex.height - h - 1, w, 2] = c.b;
+                            observationMatrix[i, texHeight - h - 1, w, 0] = currentPixel.r;
+                            observationMatrix[i, texHeight - h - 1, w, 1] = currentPixel.g;
+                            observationMatrix[i, texHeight - h - 1, w, 2] = currentPixel.b;
                         }
                         else
                         {
-                            observation_matrix[i, tex.height - h - 1, w, 0] = (c.r + c.g + c.b) / 3;
+                            observationMatrix[i, texHeight - h - 1, w, 0] = (currentPixel.r + currentPixel.g + currentPixel.b) / 3;
                         }
                     }
                 }
-                UnityEngine.Object.DestroyImmediate(tex);
+                DestroyImmediate(tex);
                 Resources.UnloadUnusedAssets();
                 i++;
             }
-            observation_matrix_list.Add(observation_matrix);
+            observationMatrixList.Add(observationMatrix);
         }
-        return observation_matrix_list;
+        return observationMatrixList;
     }
 
 }
