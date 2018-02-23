@@ -24,7 +24,7 @@ Save the generated environment in the directory to be mounted (e.g. we have conv
 
 docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
 	 <tag-name>:latest <environment-name> \
-	 --docker-target-name=unity-volume 
+	 --docker-target-name=unity-volume \
 	 --train --run-id=<run-id>
 ```
 
@@ -35,7 +35,7 @@ For our balance ball, example this would be:
 
 docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
 	 balance.ball.v0.1:latest 3Dball \
-	 --docker-target-name=unity-volume 
+	 --docker-target-name=unity-volume \
 	 --train --run-id=<run-id>
 ```
 
