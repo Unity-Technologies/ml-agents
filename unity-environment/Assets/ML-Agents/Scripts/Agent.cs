@@ -103,6 +103,7 @@ public abstract class Agent : MonoBehaviour
     private float cumulativeReward;
 
     /// This keeps track of the number of steps taken by the agent each episode.
+    [HideInInspector]
     public int stepCounter;
 
     private bool hasAlreadyReset;
@@ -136,7 +137,8 @@ public abstract class Agent : MonoBehaviour
         _action = new AgentAction();
 
         if (aca == null)
-            throw new UnityAgentsException("No Academy Component could be found in the scene.");
+            throw new UnityAgentsException("No Academy Component could be" +
+                                           "found in the scene.");
         aca.AgentSetStatus += SetStatus;
         aca.AgentResetIfDone += ResetIfDone;
         aca.AgentSendState += SendState;
@@ -146,6 +148,13 @@ public abstract class Agent : MonoBehaviour
         if (brain != null)
         {
             ResetState();
+        }
+        else
+        {
+            Debug.Log(
+                string.Format("The Agent component attached to the " +
+                            "GameObject {0} was initialized without a brain."
+                              , gameObject.name));
         }
 
         InitializeAgent();
@@ -167,7 +176,7 @@ public abstract class Agent : MonoBehaviour
     }
 
     /// <summary>
-    /// Unity Method. Gets called when the agent is destroyed or is set inactive.
+    /// Gets called when the agent is destroyed or is set inactive.
     /// </summary>
     void OnDisable()
     {
@@ -176,10 +185,10 @@ public abstract class Agent : MonoBehaviour
     }
 
     /// <summary>
-    ///  When GiveBrain is called, the agent unsubscribes from its 
+    /// When GiveBrain is called, the agent unsubscribes from its 
     /// previous brain and subscribes to the one passed in argument.
     /// Use this method to provide a brain to the agent via script. 
-	///<param name= "b" > The Brain component the agent will subscribe to.</param>
+	///<param name= "b" >The Brain the agent will subscribe to.</param>
     /// <summary>
     public void GiveBrain(Brain b)
     {
@@ -279,10 +288,14 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private void ResetState()
     {
-        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+        if (brain == null)
+            return;
+
+        BrainParameters param = brain.brainParameters;
+        if (param.vectorActionSpaceType == StateType.continuous)
         {
-            _action.vectorActions = new float[brain.brainParameters.vectorActionSize];
-            _info.StoredVectorActions = new float[brain.brainParameters.vectorActionSize];
+            _action.vectorActions = new float[param.vectorActionSize];
+            _info.StoredVectorActions = new float[param.vectorActionSize];
         }
         else
         {
@@ -292,19 +305,24 @@ public abstract class Agent : MonoBehaviour
         _action.textActions = "";
         _info.memories = new List<float>();
         _action.memories = new List<float>();
-        if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
+        if (param.vectorObservationSpaceType == StateType.continuous)
         {
-            _info.vectorObservation = new List<float>(brain.brainParameters.vectorObservationSize);
-            _info.stackedVectorObservation = new List<float>(brain.brainParameters.vectorObservationSize
-                                                            * brain.brainParameters.numStackedVectorObservations);
-            _info.stackedVectorObservation.AddRange(new float[brain.brainParameters.vectorObservationSize
-                                                             * brain.brainParameters.numStackedVectorObservations]);
+            _info.vectorObservation =
+                new List<float>(param.vectorObservationSize);
+            _info.stackedVectorObservation =
+                new List<float>(param.vectorObservationSize
+                        * brain.brainParameters.numStackedVectorObservations);
+            _info.stackedVectorObservation.AddRange(
+                new float[param.vectorObservationSize
+                          * param.numStackedVectorObservations]);
         }
         else
         {
             _info.vectorObservation = new List<float>(1);
-            _info.stackedVectorObservation = new List<float>(brain.brainParameters.numStackedVectorObservations);
-            _info.stackedVectorObservation.AddRange(new float[brain.brainParameters.numStackedVectorObservations]);
+            _info.stackedVectorObservation =
+                new List<float>(param.numStackedVectorObservations);
+            _info.stackedVectorObservation.AddRange(
+                new float[param.numStackedVectorObservations]);
         }
         _info.visualObservations = new List<Texture2D>();
     }
@@ -325,6 +343,8 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public void SendStateToBrain()
     {
+        if (brain == null)
+            return;
         _info.memories = _action.memories;
         _info.StoredVectorActions = _action.vectorActions;
         _info.StoredTextActions = _action.textActions;
@@ -332,24 +352,30 @@ public abstract class Agent : MonoBehaviour
         _info.textObservation = "";
         CollectObservations();
 
-        if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
+        BrainParameters param = brain.brainParameters;
+        if (param.vectorObservationSpaceType == StateType.continuous)
         {
-            if (_info.vectorObservation.Count != brain.brainParameters.vectorObservationSize)
+            if (_info.vectorObservation.Count != param.vectorObservationSize)
             {
-                throw new UnityAgentsException(string.Format(@"Vector Observation size mismatch between continuous agent {0} and
-                    brain {1}. Was Expecting {2} but received {3}. ",
+                throw new UnityAgentsException(string.Format(
+                    "Vector Observation size mismatch between continuous " +
+                    "agent {0} and brain {1}. " +
+                    "Was Expecting {2} but received {3}. ",
                     gameObject.name, brain.gameObject.name,
-                    brain.brainParameters.vectorObservationSize, _info.vectorObservation.Count));
+                    brain.brainParameters.vectorObservationSize,
+                    _info.vectorObservation.Count));
             }
-            _info.stackedVectorObservation.RemoveRange(0, brain.brainParameters.vectorObservationSize);
+            _info.stackedVectorObservation.RemoveRange(
+                0, param.vectorObservationSize);
             _info.stackedVectorObservation.AddRange(_info.vectorObservation);
         }
         else
         {
             if (_info.vectorObservation.Count != 1)
             {
-                throw new UnityAgentsException(string.Format(@"Vector Observation size mismatch between discrete agent {0} and
-                    brain {1}. Was Expecting {2} but received {3}. ",
+                throw new UnityAgentsException(string.Format(
+                    "Vector Observation size mismatch between discrete agent" +
+                    " {0} and brain {1}. Was Expecting {2} but received {3}. ",
                     gameObject.name, brain.gameObject.name,
                     1, _info.vectorObservation.Count));
             }
@@ -357,19 +383,21 @@ public abstract class Agent : MonoBehaviour
             _info.stackedVectorObservation.AddRange(_info.vectorObservation);
         }
         _info.visualObservations.Clear();
-        if (brain.brainParameters.cameraResolutions.Length > agentParameters.agentCameras.Count)
+        if (param.cameraResolutions.Length > agentParameters.agentCameras.Count)
         {
-            throw new UnityAgentsException(string.Format(@"Not enough cameras for agent {0} : 
-                Bain {1} expecting at least {2} cameras but only {3} were present.",
+            throw new UnityAgentsException(string.Format(
+                "Not enough cameras for agent {0} : Bain {1} expecting at " +
+                "least {2} cameras but only {3} were present.",
                 gameObject.name, brain.gameObject.name,
-                brain.brainParameters.cameraResolutions.Length, agentParameters.agentCameras.Count));
+                brain.brainParameters.cameraResolutions.Length,
+                agentParameters.agentCameras.Count));
         }
         for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
         {
             _info.visualObservations.Add(ObservationToTexture(
                 agentParameters.agentCameras[i],
-                brain.brainParameters.cameraResolutions[i].width,
-                brain.brainParameters.cameraResolutions[i].height));
+                param.cameraResolutions[i].width,
+                param.cameraResolutions[i].height));
         }
 
         _info.reward = reward;
@@ -386,21 +414,23 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     public virtual void CollectObservations()
     {
-        
+
     }
 
     /// <summary>
-    /// Adds a vector observation. Note that the number of vector observation to add
+    /// Adds a vector observation. 
+    /// Note that the number of vector observation to add
     /// must be the same at each CollectObservations call.
     /// </summary>
-    /// <param name="observation">The float value to add to the vector observation.</param>
+    /// <param name="observation">The float value to add to 
+    /// the vector observation.</param>
     internal void AddVectorObs(float observation)
     {
         _info.vectorObservation.Add(observation);
     }
-    internal void AddTextObs(string s)
+    internal void SetTextObs(string s)
     {
-        _info.textObservation += s;
+        _info.textObservation = s;
     }
 
     /// <summary>
@@ -409,10 +439,10 @@ public abstract class Agent : MonoBehaviour
     /// Note: If your state is discrete, you need to convert your 
     /// state into a list of float with length 1.
     /// </summary>
-    /// <param name="action">The action the agent receives from the brain.</param>
+    /// <param name="action">The action the agent receives 
+    /// from the brain.</param>
     public virtual void AgentAction(float[] action)
     {
-        //Is it needed to pass the action since the developer has access directly to action ?
 
     }
 
@@ -471,8 +501,10 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Sets the status of the agent.
     /// </summary>
-    /// <param name="acaMaxStep">If set to <c>true</c> The agent must set maxStepReached.</param>
-    /// <param name="acaDone">If set to <c>true</c> The agent must set done.</param>
+    /// <param name="acaMaxStep">If set to <c>true</c> 
+    /// The agent must set maxStepReached.</param>
+    /// <param name="acaDone">If set to <c>true</c> 
+    /// The agent must set done.</param>
     private void SetStatus(bool acaMaxStep, bool acaDone, int acaStepCounter)
     {
         if (acaDone)
@@ -483,7 +515,7 @@ public abstract class Agent : MonoBehaviour
         if (acaDone)
         {
             Done();
-            hasAlreadyReset = false; 
+            hasAlreadyReset = false;
             // If the Academy needs to reset, the agent should reset 
             // even if it reseted recently.
         }
@@ -494,7 +526,8 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private void ResetIfDone()
     {
-        // If an agent is done, then it will also request for a decision and an action
+        // If an agent is done, then it will also 
+        // request for a decision and an action
         if (IsDone())
         {
             if (agentParameters.resetOnDone)
@@ -503,15 +536,16 @@ public abstract class Agent : MonoBehaviour
                 {
                     if (!hasAlreadyReset)
                     {
-                        //If event based, the agent can reset as soon as it is done
+                        //If event based, the agent can reset as soon
+                        // as it is done
                         _AgentReset();
                         hasAlreadyReset = true;
                     }
                 }
                 else if (requestDecision)
                 {
-                    // If not event based, the agent must wait to request a decsion
-                    // before reseting to keep multiple agents in sync.
+                    // If not event based, the agent must wait to request a
+                    // decsion before reseting to keep multiple agents in sync.
                     _AgentReset();
                 }
             }
@@ -559,13 +593,14 @@ public abstract class Agent : MonoBehaviour
         }
 
 
-        if (requestAction)
+        if ((requestAction) && (brain != null))
         {
             requestAction = false;
             AgentAction(_action.vectorActions);
         }
 
-        if ((stepCounter >= agentParameters.maxStep) && (agentParameters.maxStep > 0))
+        if ((stepCounter >= agentParameters.maxStep)
+            && (agentParameters.maxStep > 0))
         {
             maxStepReached = true;
             Done();
@@ -578,12 +613,13 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     private void MakeRequests(int acaStepCounter)
     {
-        agentParameters.numberOfActionsBetweenDecisions = Mathf.Max(1, agentParameters.numberOfActionsBetweenDecisions);
-        // TODO : This needs to be checked earlier.
+        agentParameters.numberOfActionsBetweenDecisions =
+    Mathf.Max(agentParameters.numberOfActionsBetweenDecisions, 1);
         if (!agentParameters.onDemandDecision)
         {
             RequestAction();
-            if (acaStepCounter % agentParameters.numberOfActionsBetweenDecisions == 0)
+            if (acaStepCounter %
+                agentParameters.numberOfActionsBetweenDecisions == 0)
             {
                 RequestDecision();
             }

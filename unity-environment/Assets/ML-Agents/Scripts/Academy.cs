@@ -45,7 +45,8 @@ public abstract class Academy : MonoBehaviour
     [SerializeField]
     [Tooltip("Total number of steps per episode. \n" +
              "0 corresponds to episodes without a maximum number of steps. \n" +
-             "Once the step counter reaches maximum, the environment will reset.")]
+             "Once the step counter reaches maximum, " +
+             "the environment will reset.")]
     private int maxSteps;
 
     [SerializeField]
@@ -55,11 +56,15 @@ public abstract class Academy : MonoBehaviour
      * settings. */
     private bool _isCurrentlyInference;
     [SerializeField]
-    [Tooltip("The engine-level settings which correspond to rendering quality and engine speed during Training.")]
-    private ScreenConfiguration trainingConfiguration = new ScreenConfiguration(80, 80, 1, 100.0f, -1);
+    [Tooltip("The engine-level settings which correspond to rendering quality" +
+             " and engine speed during Training.")]
+    private ScreenConfiguration trainingConfiguration =
+        new ScreenConfiguration(80, 80, 1, 100.0f, -1);
     [SerializeField]
-    [Tooltip("The engine-level settings which correspond to rendering quality and engine speed during Inference.")]
-    private ScreenConfiguration inferenceConfiguration = new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
+    [Tooltip("The engine-level settings which correspond to rendering quality" +
+             " and engine speed during Inference.")]
+    private ScreenConfiguration inferenceConfiguration =
+        new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
 
     /**< \brief Contains a mapping from parameter names to float values. */
     /**< You can specify the Default Reset Parameters in the Inspector of the
@@ -68,7 +73,8 @@ public abstract class Academy : MonoBehaviour
      * in your AcademyReset() or AcademyStep() to modify elements in your 
      * environment at reset time. */
     [SerializeField]
-    [Tooltip("List of custom parameters that can be changed in the environment on reset.")]
+    [Tooltip("List of custom parameters that can be changed in the " +
+             "environment on reset.")]
     public ResetParameters resetParameters;
 
     public event System.Action BrainDecideAction;
@@ -161,20 +167,30 @@ public abstract class Academy : MonoBehaviour
     {
         if ((!isInference))
         {
-            Screen.SetResolution(trainingConfiguration.width, trainingConfiguration.height, false);
-            QualitySettings.SetQualityLevel(trainingConfiguration.qualityLevel, true);
+            Screen.SetResolution(
+                trainingConfiguration.width,
+                trainingConfiguration.height,
+                false);
+            QualitySettings.SetQualityLevel(
+                trainingConfiguration.qualityLevel, true);
             Time.timeScale = trainingConfiguration.timeScale;
-            Application.targetFrameRate = trainingConfiguration.targetFrameRate;
+            Application.targetFrameRate =
+                trainingConfiguration.targetFrameRate;
             QualitySettings.vSyncCount = 0;
             Time.captureFramerate = 60;
             Monitor.SetActive(false);
         }
         else
         {
-            Screen.SetResolution(inferenceConfiguration.width, inferenceConfiguration.height, false);
-            QualitySettings.SetQualityLevel(inferenceConfiguration.qualityLevel, true);
+            Screen.SetResolution(
+                inferenceConfiguration.width,
+                inferenceConfiguration.height,
+                false);
+            QualitySettings.SetQualityLevel(
+                inferenceConfiguration.qualityLevel, true);
             Time.timeScale = inferenceConfiguration.timeScale;
-            Application.targetFrameRate = inferenceConfiguration.targetFrameRate;
+            Application.targetFrameRate =
+                inferenceConfiguration.targetFrameRate;
             Time.captureFramerate = 60;
             Monitor.SetActive(true);
         }
@@ -201,7 +217,7 @@ public abstract class Academy : MonoBehaviour
 
     }
 
-   
+
     public void Done()
     {
         done = true;
@@ -224,7 +240,8 @@ public abstract class Academy : MonoBehaviour
         {
             if (communicator.GetCommand() == ExternalCommand.RESET)
             {
-                Dictionary<string, float> NewResetParameters = communicator.GetResetParameters();
+                Dictionary<string, float> NewResetParameters =
+                    communicator.GetResetParameters();
                 foreach (KeyValuePair<string, float> kv in NewResetParameters)
                 {
                     resetParameters[kv.Key] = kv.Value;
@@ -249,7 +266,7 @@ public abstract class Academy : MonoBehaviour
 
         if (done)
             _AcademyReset();
-        
+
         AgentResetIfDone();
 
         AgentSendState();

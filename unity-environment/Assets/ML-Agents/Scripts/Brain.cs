@@ -58,7 +58,8 @@ public class BrainParameters
     public int numStackedVectorObservations = 1;
 
     public int vectorActionSize = 1;
-    /**< \brief If continuous : The length of the float vector that represents the action
+    /**< \brief If continuous : The length of the float vector that represents
+     * the action
      * <br> If discrete : The number of possible values the action can take*/
 
     public resolution[] cameraResolutions;
@@ -84,12 +85,9 @@ public class BrainParameters
  */
 public class Brain : MonoBehaviour
 {
-    // Current agent info
 
-    private Dictionary<Agent, AgentInfo> agentInfos = new Dictionary<Agent, AgentInfo>(1024);
-
-    //private int b;
-
+    private Dictionary<Agent, AgentInfo> agentInfos =
+        new Dictionary<Agent, AgentInfo>(1024);
 
     [Tooltip("Define state, observation, and action spaces for the Brain.")]
     /**< \brief Defines brain specific parameters such as the state size*/
@@ -126,10 +124,13 @@ public class Brain : MonoBehaviour
         // instanciated and we create instances of each CoreBrain
         if (CoreBrains == null)
         {
-            CoreBrains = new ScriptableObject[System.Enum.GetValues(typeof(BrainType)).Length];
+            int numCoreBrains = System.Enum.GetValues(typeof(BrainType)).Length;
+            CoreBrains = new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
-                CoreBrains[(int)bt] = ScriptableObject.CreateInstance("CoreBrain" + bt.ToString());
+                CoreBrains[(int)bt] = 
+                    ScriptableObject.CreateInstance(
+                        "CoreBrain" + bt.ToString());
             }
 
         }
@@ -141,7 +142,9 @@ public class Brain : MonoBehaviour
                     break;
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = ScriptableObject.CreateInstance("CoreBrain" + bt.ToString());
+                    CoreBrains[(int)bt] = 
+                        ScriptableObject.CreateInstance(
+                            "CoreBrain" + bt.ToString());
                 }
             }
         }
@@ -150,7 +153,9 @@ public class Brain : MonoBehaviour
         // we increase the length of CoreBrains
         if (CoreBrains.Length < System.Enum.GetValues(typeof(BrainType)).Length)
         {
-            ScriptableObject[] new_CoreBrains = new ScriptableObject[System.Enum.GetValues(typeof(BrainType)).Length];
+            int numCoreBrains = System.Enum.GetValues(typeof(BrainType)).Length;
+            ScriptableObject[] new_CoreBrains = 
+                new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
                 if ((int)bt < CoreBrains.Length)
@@ -159,7 +164,9 @@ public class Brain : MonoBehaviour
                 }
                 else
                 {
-                    new_CoreBrains[(int)bt] = ScriptableObject.CreateInstance("CoreBrain" + bt.ToString());
+                    new_CoreBrains[(int)bt] = 
+                        ScriptableObject.CreateInstance(
+                            "CoreBrain" + bt.ToString());
                 }
             }
             CoreBrains = new_CoreBrains;
@@ -174,11 +181,14 @@ public class Brain : MonoBehaviour
             {
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = ScriptableObject.CreateInstance("CoreBrain" + bt.ToString());
+                    CoreBrains[(int)bt] = 
+                        ScriptableObject.CreateInstance(
+                            "CoreBrain" + bt.ToString());
                 }
                 else
                 {
-                    CoreBrains[(int)bt] = ScriptableObject.Instantiate(CoreBrains[(int)bt]);
+                    CoreBrains[(int)bt] = 
+                        ScriptableObject.Instantiate(CoreBrains[(int)bt]);
                 }
             }
             instanceID = gameObject.GetInstanceID();
