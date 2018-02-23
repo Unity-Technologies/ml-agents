@@ -22,7 +22,7 @@ public class Ball3DAgent : Agent
         AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.x);
         AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.y);
         AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
-        AddTextObs("Testing "+gameObject.GetInstanceID());
+        SetTextObs("Testing "+gameObject.GetInstanceID());
 
     }
 
