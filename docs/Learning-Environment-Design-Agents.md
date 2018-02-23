@@ -5,7 +5,7 @@ An agent is an actor that can observe its environment and decide on the best cou
 In the ML-Agents framework, an agent passes its observations to its brain at each simulation step. The brain, then, makes a decision and passes the chosen action back to the agent. The agent code executes the action, for example, it moves the agent in one direction or another, and also calculates a reward based on the current state. In training, the reward is used to discover the optimal decision-making policy. (The reward is not used by already trained agents.)
 
 The Brain class abstracts out the decision making logic from the agent itself so that you can use the same brain in multiple agents. 
-How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. During training, the ML-Agents [reinforcement learning](Learning-Environment-Design.md) algorithm adjusts its internal policy parameters to make decisions that optimize the rewards received over time. An Internal brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Agent Brains](link).
+How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. During training, the ML-Agents [reinforcement learning](Learning-Environment-Design.md) algorithm adjusts its internal policy parameters to make decisions that optimize the rewards received over time. An Internal brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Brains](Learning-Environment-Design-Brains.md).
   
 ## Observations and State
 
@@ -47,8 +47,6 @@ For examples of various state observation functions, you can look at the [Exampl
 The feature vector must always contain the same number of elements and observations must always be in the same position within the list. If the number of observed entities in an environment can vary you can pad the feature vector with zeros for any missing entities in a specific observation or you can limit an agent's observations to a fixed subset. For example, instead of observing every enemy agent in an environment, you could only observe the closest five. 
 
 When you set up an Agent's brain in the Unity Editor, set the following properties to use a continuous state-space feature vector:
-
-[Screenshot of Brain Inspector]
 
 **State Size** — The state size must match the length of your feature vector.
 **State Space Type** — Set to **Continuous**.
@@ -132,7 +130,7 @@ Neither the Brain nor the training algorithm know anything about what the action
 
 For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete actions. In the continuous case, you would set the action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would set the action size to four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to four.  
 
-Note that when you are programming actions for an agent, it is often helpful to test your action logic using a **Player** brain, which lets you map keyboard commands to actions. See [Agent Brains](link).
+Note that when you are programming actions for an agent, it is often helpful to test your action logic using a **Player** brain, which lets you map keyboard commands to actions. See [Brains](Learning-Environment-Design-Brains.md).
 
 The [3DBall and Area example projects](Learning-Environment-Examples.md) are set up to use either the continuous or the discrete action spaces. 
 
@@ -142,7 +140,7 @@ When an agent uses a brain set to the **Continuous** action space, the action pa
 
 The [Reacher example](Learning-Environment-Examples.md) defines a continuous action space with four control values. 
 
-[screenshot of reacher]
+![](images/reacher.png)
 
 These control values are applied as torques to the bodies making up the arm :
 
@@ -242,7 +240,7 @@ The `Ball3DAgent` in the [3DBall](Learning-Environment-Examples.md) takes a simi
         reward = -1f;
     }
 
-The `Ball3DAgent` also assigns a negative penalty when the ball falls off the platfrom.
+The `Ball3DAgent` also assigns a negative penalty when the ball falls off the platform.
 
 ## Agent Properties
 
@@ -251,3 +249,29 @@ The `Ball3DAgent` also assigns a negative penalty when the ball falls off the pl
 * `Brain` - The brain to register this agent to. Can be dragged into the inspector using the Editor.
 * `Observations` - A list of `Cameras` which will be used to generate observations.
 * `Max Step` - The per-agent maximum number of steps. Once this number is reached, the agent will be reset if `Reset On Done` is checked.
+* `Reset On Done` - Whether the agent's `AgentReset()` function should be called when the agent reaches its `Max Step` count or is marked as done in code.
+
+## Instantiating an Agent at Runtime
+
+To add an Agent to an environment at runtime, use the Unity `GameObject.Instantiate()` function. It is typically easiest to instantiate an agent from a [Prefab](https://docs.unity3d.com/Manual/Prefabs.html) (otherwise, you have to instantiate every GameObject and Component that make up your agent individually). In addition, you must assign a Brain instance to the new Agent and initialize it by calling its `AgentReset()` method. For example, the following function creates a new agent given a Prefab, Brain instance, location, and orientation:
+
+    private void CreateAgent(GameObject agentPrefab, Brain brain, Vector3 position, Quaternion orientation)
+    {
+        GameObject agentObj = Instantiate(agentPrefab, position, orientation);
+        Agent agent = agentObj.GetComponent<Agent>();
+        agent.GiveBrain(brain);
+        agent.AgentReset();
+    }
+
+## Destroying an Agent
+
+Before destroying an Agent Gameobject, you must mark it as done (and wait for the next step in the simulation) so that the Brain knows that this agent is no longer active. Thus, the best place to destroy an agent is in the `Agent.AgentOnDone()` function:
+
+```csharp
+public override void AgentOnDone()
+{
+    Destroy(gameObject);
+}
+```
+
+Note that in order for `AgentOnDone()` to be called, the agent's `ResetOnDone` property must be false. You can set `ResetOnDone` on the agent's Inspector or in code. 
