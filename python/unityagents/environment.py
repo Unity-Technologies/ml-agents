@@ -22,7 +22,8 @@ logger = logging.getLogger("unityagents")
 
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
-                 base_port=5005, curriculum=None):
+                 base_port=5005, curriculum=None,
+                 seed=0):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -32,7 +33,6 @@ class UnityEnvironment(object):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
-
         atexit.register(self.close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
@@ -94,7 +94,8 @@ class UnityEnvironment(object):
             # Launch Unity environment
             proc1 = subprocess.Popen(
                 [launch_string,
-                 '--port', str(self.port)])
+                 '--port', str(self.port),
+                 '--seed', str(seed)])
 
         self._socket.settimeout(30)
         try:
@@ -119,7 +120,6 @@ class UnityEnvironment(object):
                     "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
                     "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
                     "of ML-Agents.".format(self._python_api, self._unity_api))
-
             self._data = {}
             self._global_done = None
             self._academy_name = p["AcademyName"]
@@ -143,6 +143,9 @@ class UnityEnvironment(object):
             proc1.kill()
             self.close()
             raise
+    @property
+    def curriculum(self):
+        return self._curriculum
 
     @property
     def logfile_path(self):
@@ -192,13 +195,18 @@ class UnityEnvironment(object):
         return s
 
     def __str__(self):
+        _new_reset_param = self._curriculum.get_config()
+        for k in _new_reset_param:
+            self._resetParameters[k] = _new_reset_param[k]
         return '''Unity Academy name: {0}
-        Number of brains: {1}
-        Reset Parameters :\n\t\t{2}'''.format(self._academy_name, str(self._num_brains),
-                                              "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
-                                                             for k in self._resetParameters])) + '\n' + \
+        Number of Brains: {1}
+        Number of External Brains : {2}
+        Lesson number : {3}
+        Reset Parameters :\n\t\t{4}'''.format(self._academy_name, str(self._num_brains),
+                                 str(self._num_external_brains), self._curriculum.get_lesson_number,
+                                  "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
+                                         for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
-
 
     def _recv_bytes(self):
         try:
@@ -232,18 +240,15 @@ class UnityEnvironment(object):
         state_dict = json.loads(state)
         return state_dict
 
-    def reset(self, train_mode=True, config=None, progress=None):
+    def reset(self, train_mode=True, config=None, lesson=None):
         """
         Sends a signal to reset the unity environment.
         :return: A Data structure corresponding to the initial reset state of the environment.
         """
-        old_lesson = self._curriculum.get_lesson_number()
         if config is None:
-            config = self._curriculum.get_lesson(progress)
-            if old_lesson != self._curriculum.get_lesson_number():
-                logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
-                            .format(self._curriculum.get_lesson_number(),
-                                    ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
+            config = self._curriculum.get_config(lesson)
+
+
         elif config != {}:
             logger.info("\nAcademy Reset with parameters : \t{0}"
                         .format(', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
@@ -279,21 +284,21 @@ class UnityEnvironment(object):
             n_agent = len(state_dict["agents"])
             try:
                 if self._brains[b].state_space_type == "continuous":
-                    states = np.array(state_dict["states"]).reshape((n_agent, self._brains[b].state_space_size))
+                    states = np.array(state_dict["states"]).reshape((n_agent, self._brains[b].state_space_size * self._brains[b].stacked_states))
                 else:
-                    states = np.array(state_dict["states"]).reshape((n_agent, 1))
+                    states = np.array(state_dict["states"]).reshape((n_agent, self._brains[b].stacked_states))
             except UnityActionException:
                 raise UnityActionException("Brain {0} has an invalid state. "
                                            "Expecting {1} {2} state but received {3}."
                                            .format(b, n_agent if self._brains[b].state_space_type == "discrete"
-                else str(self._brains[b].state_space_size * n_agent),
+                else str(self._brains[b].state_space_size * n_agent * self._brains[b].stacked_states),
                                                    self._brains[b].state_space_type,
                                                    len(state_dict["states"])))
             memories = np.array(state_dict["memories"]).reshape((n_agent, self._brains[b].memory_space_size))
             rewards = state_dict["rewards"]
             dones = state_dict["dones"]
             agents = state_dict["agents"]
-            # actions = state_dict["actions"]
+            maxes = state_dict["maxes"]
             if n_agent > 0:
                 actions = np.array(state_dict["actions"]).reshape((n_agent, -1))
             else:
@@ -307,7 +312,7 @@ class UnityEnvironment(object):
 
                 observations.append(np.array(obs_n))
 
-            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions)
+            self._data[b] = BrainInfo(observations, states, memories, rewards, agents, dones, actions, max_reached=maxes)
 
         try:
             self._global_done = self._conn.recv(self._buffer_size).decode('utf-8') == 'True'
@@ -328,7 +333,11 @@ class UnityEnvironment(object):
         except socket.timeout as e:
             raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
         action_message = {"action": action, "memory": memory, "value": value}
-        self._conn.send(json.dumps(action_message).encode('utf-8'))
+        self._conn.send(self._append_length(json.dumps(action_message).encode('utf-8')))
+
+    @staticmethod
+    def _append_length(message):
+        return struct.pack("I", len(message)) + message
 
     @staticmethod
     def _flatten(arr):
@@ -412,11 +421,17 @@ class UnityEnvironment(object):
                 if b not in memory:
                     memory[b] = [0.0] * self._brains[b].memory_space_size * n_agent
                 else:
-                    memory[b] = self._flatten(memory[b])
+                    if memory[b] is None:
+                        memory[b] = [0.0] * self._brains[b].memory_space_size * n_agent
+                    else:
+                        memory[b] = self._flatten(memory[b])
                 if b not in value:
                     value[b] = [0.0] * n_agent
                 else:
-                    value[b] = self._flatten(value[b])
+                    if value[b] is None:
+                        value[b] = [0.0] * n_agent
+                    else:
+                        value[b] = self._flatten(value[b])
                 if not (len(value[b]) == n_agent):
                     raise UnityActionException(
                         "There was a mismatch between the provided value and environment's expectation: "

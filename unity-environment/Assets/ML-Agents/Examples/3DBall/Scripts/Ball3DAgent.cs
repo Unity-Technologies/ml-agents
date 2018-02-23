@@ -9,7 +9,6 @@ public class Ball3DAgent : Agent
 
     public override List<float> CollectState()
     {
-        List<float> state = new List<float>();
         state.Add(gameObject.transform.rotation.z);
         state.Add(gameObject.transform.rotation.x);
         state.Add((ball.transform.position.x - gameObject.transform.position.x));
@@ -21,70 +20,23 @@ public class Ball3DAgent : Agent
         return state;
     }
 
-    // to be implemented by the developer
     public override void AgentStep(float[] act)
     {
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
-            float action_z = act[0];
-            if (action_z > 2f)
-            {
-                action_z = 2f;
-            }
-            if (action_z < -2f)
-            {
-                action_z = -2f;
-            }
+            float action_z = 2f * Mathf.Clamp(act[0], -1f, 1f);
             if ((gameObject.transform.rotation.z < 0.25f && action_z > 0f) ||
                 (gameObject.transform.rotation.z > -0.25f && action_z < 0f))
             {
                 gameObject.transform.Rotate(new Vector3(0, 0, 1), action_z);
             }
-            float action_x = act[1];
-            if (action_x > 2f)
-            {
-                action_x = 2f;
-            }
-            if (action_x < -2f)
-            {
-                action_x = -2f;
-            }
+            float action_x = 2f * Mathf.Clamp(act[1], -1f, 1f);
             if ((gameObject.transform.rotation.x < 0.25f && action_x > 0f) ||
                 (gameObject.transform.rotation.x > -0.25f && action_x < 0f))
             {
                 gameObject.transform.Rotate(new Vector3(1, 0, 0), action_x);
             }
-				
-
-            if (done == false)
-            {
-                reward = 0.1f;
-            }
-        }
-        else
-        {
-            int action = (int)act[0];
-            if (action == 0 || action == 1)
-            {
-                action = (action * 2) - 1;
-                float changeValue = action * 2f;
-                if ((gameObject.transform.rotation.z < 0.25f && changeValue > 0f) ||
-                    (gameObject.transform.rotation.z > -0.25f && changeValue < 0f))
-                {
-                    gameObject.transform.Rotate(new Vector3(0, 0, 1), changeValue);
-                }
-            }
-            if (action == 2 || action == 3)
-            {
-                action = ((action - 2) * 2) - 1;
-                float changeValue = action * 2f;
-                if ((gameObject.transform.rotation.x < 0.25f && changeValue > 0f) ||
-                    (gameObject.transform.rotation.x > -0.25f && changeValue < 0f))
-                {
-                    gameObject.transform.Rotate(new Vector3(1, 0, 0), changeValue);
-                }
-            }
-            if (done == false)
+            if (!done)
             {
                 reward = 0.1f;
             }
@@ -99,7 +51,6 @@ public class Ball3DAgent : Agent
 
     }
 
-    // to be implemented by the developer
     public override void AgentReset()
     {
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);

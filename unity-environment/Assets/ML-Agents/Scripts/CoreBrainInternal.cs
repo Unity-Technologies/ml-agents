@@ -17,6 +17,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 {
 
     [SerializeField]
+    [Tooltip("If checked, the brain will broadcast states and actions to Python.")]
     private bool broadcast = true;
 
     [System.Serializable]
@@ -25,7 +26,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         public enum tensorType
         {
             Integer,
-            FloatingPoint}
+            FloatingPoint
+        }
 
         ;
 
@@ -38,11 +40,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     ExternalCommunicator coord;
 
+    [Tooltip("This must be the bytes file corresponding to the pretrained Tensorflow graph.")]
     /// Modify only in inspector : Reference to the Graph asset
     public TextAsset graphModel;
+
     /// Modify only in inspector : If a scope was used when training the model, specify it here
     public string graphScope;
     [SerializeField]
+    [Tooltip("If your graph takes additional inputs that are fixed (example: noise level) you can specify them here.")]
     ///  Modify only in inspector : If your graph takes additional inputs that are fixed you can specify them here.
     private TensorFlowAgentPlaceholder[] graphPlaceholders;
     ///  Modify only in inspector : Name of the placholder of the batch size
@@ -57,18 +62,19 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public string[] ObservationPlaceholderName;
     /// Modify only in inspector : Name of the action node
     public string ActionPlaceholderName = "action";
-    #if ENABLE_TENSORFLOW
+#if ENABLE_TENSORFLOW
     TFGraph graph;
     TFSession session;
     bool hasRecurrent;
     bool hasState;
     bool hasBatchSize;
+    bool hasValue;
     List<int> agentKeys;
     int currentBatchSize;
     float[,] inputState;
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
-    #endif
+#endif
 
     /// Reference to the brain that uses this CoreBrainInternal
     public Brain brain;
@@ -113,6 +119,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
             session = new TFSession(graph);
 
+            if ((graphScope.Length > 1) && (graphScope[graphScope.Length - 1] != '/'))
+            {
+                graphScope = graphScope + '/';
+            }
+
             if (graph[graphScope + BatchSizePlaceholderName] != null)
             {
                 hasBatchSize = true;
@@ -125,6 +136,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             if (graph[graphScope + StatePlacholderName] != null)
             {
                 hasState = true;
+            }
+            if (graph[graphScope + "value_estimate"] != null)
+            {
+                hasValue = true;
             }
         }
 #endif
@@ -151,13 +166,18 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
+            int stateLength = 1;
+            if (brain.brainParameters.stateSpaceType == StateType.continuous)
+            {
+                stateLength = brain.brainParameters.stateSize;
+            }
             Dictionary<int, List<float>> states = brain.CollectStates();
-            inputState = new float[currentBatchSize, brain.brainParameters.stateSize];
-            int i = 0;
+            inputState = new float[currentBatchSize, stateLength * brain.brainParameters.stackedStates];
+            var i = 0;
             foreach (int k in agentKeys)
             {
                 List<float> state_list = states[k];
-                for (int j = 0; j < brain.brainParameters.stateSize; j++)
+                for (int j = 0; j < stateLength * brain.brainParameters.stackedStates; j++)
                 {
 
                     inputState[i, j] = state_list[j];
@@ -175,7 +195,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             Dictionary<int, float[]> old_memories = brain.CollectMemories();
             inputOldMemories = new float[currentBatchSize, brain.brainParameters.memorySize];
-            int i = 0;
+            var i = 0;
             foreach (int k in agentKeys)
             {
                 float[] m = old_memories[k];
@@ -193,7 +213,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             coord.giveBrainInfo(brain);
         }
-        #endif
+#endif
     }
 
 
@@ -208,7 +228,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
         var runner = session.GetRunner();
-        runner.Fetch(graph[graphScope + ActionPlaceholderName][0]);
+        try
+        {
+            runner.Fetch(graph[graphScope + ActionPlaceholderName][0]);
+        }
+        catch
+        {
+            throw new UnityAgentsException(string.Format(@"The node {0} could not be found. Please make sure the graphScope {1} is correct",
+                     graphScope + ActionPlaceholderName, graphScope));
+        }
 
         if (hasBatchSize)
         {
@@ -241,7 +269,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             if (brain.brainParameters.stateSpaceType == StateType.discrete)
             {
-                int[,] discreteInputState = new int[currentBatchSize, 1];
+                var discreteInputState = new int[currentBatchSize, 1];
                 for (int i = 0; i < currentBatchSize; i++)
                 {
                     discreteInputState[i, 0] = (int)inputState[i, 0];
@@ -262,10 +290,16 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
         if (hasRecurrent)
         {
+            runner.AddInput(graph[graphScope + "sequence_length"][0], 1);
             runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
             runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
         }
-            
+
+        if (hasValue)
+        {
+            runner.Fetch(graph[graphScope + "value_estimate"][0]);
+        }
+
         TFTensor[] networkOutput;
         try
         {
@@ -277,8 +311,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             try
             {
                 errorMessage = string.Format(@"The tensorflow graph needs an input for {0} of type {1}",
-                    e.Message.Split(new string[]{ "Node: " }, 0)[1].Split('=')[0],
-                    e.Message.Split(new string[]{ "dtype=" }, 0)[1].Split(',')[0]);
+                    e.Message.Split(new string[] { "Node: " }, 0)[1].Split('=')[0],
+                    e.Message.Split(new string[] { "dtype=" }, 0)[1].Split(',')[0]);
             }
             finally
             {
@@ -290,14 +324,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the recurrent tensor
         if (hasRecurrent)
         {
-            Dictionary<int, float[]> new_memories = new Dictionary<int, float[]>();
+            var new_memories = new Dictionary<int, float[]>();
 
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
-            int i = 0;
+            var i = 0;
             foreach (int k in agentKeys)
             {
-                float[] m = new float[brain.brainParameters.memorySize];
+                var m = new float[brain.brainParameters.memorySize];
                 for (int j = 0; j < brain.brainParameters.memorySize; j++)
                 {
                     m[j] = recurrent_tensor[i, j];
@@ -309,15 +343,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             brain.SendMemories(new_memories);
         }
 
-        Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
+        var actions = new Dictionary<int, float[]>();
 
         if (brain.brainParameters.actionSpaceType == StateType.continuous)
         {
-            float[,] output = networkOutput[0].GetValue() as float[,];
-            int i = 0;
+            var output = networkOutput[0].GetValue() as float[,];
+            var i = 0;
             foreach (int k in agentKeys)
             {
-                float[] a = new float[brain.brainParameters.actionSize];
+                var a = new float[brain.brainParameters.actionSize];
                 for (int j = 0; j < brain.brainParameters.actionSize; j++)
                 {
                     a[j] = output[i, j];
@@ -329,16 +363,38 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         else if (brain.brainParameters.actionSpaceType == StateType.discrete)
         {
             long[,] output = networkOutput[0].GetValue() as long[,];
-            int i = 0;
+            var i = 0;
             foreach (int k in agentKeys)
             {
-                float[] a = new float[1] { (float)(output[i, 0]) };
+                var a = new float[1] { (float)(output[i, 0]) };
                 actions.Add(k, a);
                 i++;
             }
         }
 
         brain.SendActions(actions);
+
+        if (hasValue)
+        {
+            var values = new Dictionary<int, float>();
+            float[,] value_tensor;
+            if (hasRecurrent)
+            {
+                value_tensor = networkOutput[2].GetValue() as float[,];
+            }
+            else
+            {
+                value_tensor = networkOutput[1].GetValue() as float[,];
+            }
+            var i = 0;
+            foreach (int k in agentKeys)
+            {
+                var v = (float)(value_tensor[i, 0]);
+                values.Add(k, v);
+                i++;
+            }
+            brain.SendValues(values);
+        }
 
 #endif
     }
@@ -348,10 +404,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
 #if ENABLE_TENSORFLOW && UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
-        SerializedObject serializedBrain = new SerializedObject(this);
+        broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
+                      "If checked, the brain will broadcast states and actions to Python."), broadcast);
+        var serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
-        SerializedProperty tfGraphModel = serializedBrain.FindProperty("graphModel");
+        var tfGraphModel = serializedBrain.FindProperty("graphModel");
         serializedBrain.Update();
         EditorGUILayout.ObjectField(tfGraphModel);
         serializedBrain.ApplyModifiedProperties();
@@ -362,28 +419,35 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
 
 
-        graphScope = EditorGUILayout.TextField("Graph Scope : ", graphScope);
+        graphScope = EditorGUILayout.TextField(new GUIContent("Graph Scope", "If you set a scope while training your tensorflow model, " +
+                           "all your placeholder name will have a prefix. You must specify that prefix here."), graphScope);
 
         if (BatchSizePlaceholderName == "")
         {
             BatchSizePlaceholderName = "batch_size";
         }
-        BatchSizePlaceholderName = EditorGUILayout.TextField("Batch Size Node Name", BatchSizePlaceholderName);
+        BatchSizePlaceholderName = EditorGUILayout.TextField(new GUIContent("Batch Size Node Name", "If the batch size is one of " +
+                            "the inputs of your graph, you must specify the name if the placeholder here."), BatchSizePlaceholderName);
         if (StatePlacholderName == "")
         {
             StatePlacholderName = "state";
         }
-        StatePlacholderName = EditorGUILayout.TextField("State Node Name", StatePlacholderName);
+        StatePlacholderName = EditorGUILayout.TextField(new GUIContent("State Node Name", "If your graph uses the state as an input, " +
+                            "you must specify the name if the placeholder here."), StatePlacholderName);
         if (RecurrentInPlaceholderName == "")
         {
             RecurrentInPlaceholderName = "recurrent_in";
         }
-        RecurrentInPlaceholderName = EditorGUILayout.TextField("Recurrent Input Node Name", RecurrentInPlaceholderName);
+        RecurrentInPlaceholderName = EditorGUILayout.TextField(new GUIContent("Recurrent Input Node Name", "If your graph uses a " +
+                          "recurrent input / memory as input and outputs new recurrent input / memory, " +
+                          "you must specify the name if the input placeholder here."), RecurrentInPlaceholderName);
         if (RecurrentOutPlaceholderName == "")
         {
             RecurrentOutPlaceholderName = "recurrent_out";
         }
-        RecurrentOutPlaceholderName = EditorGUILayout.TextField("Recurrent Output Node Name", RecurrentOutPlaceholderName);
+        RecurrentOutPlaceholderName = EditorGUILayout.TextField(new GUIContent("Recurrent Output Node Name", " If your graph uses a " +
+                           "recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if " +
+                           "the output placeholder here."), RecurrentOutPlaceholderName);
 
         if (brain.brainParameters.cameraResolutions != null)
         {
@@ -405,7 +469,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                         ObservationPlaceholderName[obs_number] = "observation_" + obs_number;
                     }
                 }
-                SerializedProperty opn = serializedBrain.FindProperty("ObservationPlaceholderName");
+                var opn = serializedBrain.FindProperty("ObservationPlaceholderName");
                 serializedBrain.Update();
                 EditorGUILayout.PropertyField(opn, true);
                 serializedBrain.ApplyModifiedProperties();
@@ -416,11 +480,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             ActionPlaceholderName = "action";
         }
-        ActionPlaceholderName = EditorGUILayout.TextField("Action Node Name", ActionPlaceholderName);
+        ActionPlaceholderName = EditorGUILayout.TextField(new GUIContent("Action Node Name", "Specify the name of the " +
+                         "placeholder corresponding to the actions of the brain in your graph. If the action space type is " +
+                         "continuous, the output must be a one dimensional tensor of float of length Action Space Size, " +
+                         "if the action space type is discrete, the output must be a one dimensional tensor of int " +
+                         "of length 1."), ActionPlaceholderName);
 
 
 
-        SerializedProperty tfPlaceholders = serializedBrain.FindProperty("graphPlaceholders");
+        var tfPlaceholders = serializedBrain.FindProperty("graphPlaceholders");
         serializedBrain.Update();
         EditorGUILayout.PropertyField(tfPlaceholders, true);
         serializedBrain.ApplyModifiedProperties();

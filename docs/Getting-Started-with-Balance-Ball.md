@@ -335,13 +335,7 @@ graph" to produce an `<env_name >.bytes` file.
 5. Change the `Type of Brain` to `Internal`.
 6. Drag the `<env_name>.bytes` file from the Project window of the Editor
 to the `Graph Model` placeholder in the `3DBallBrain` inspector window.
-7. Set the `Graph Placeholder` size to 1 (_Note that step 7 and 8 are done
-because 3DBall is a continuous control environment, and the TensorFlow model
-requires a noise parameter to decide actions. In cases with discrete control,
-epsilon is not needed_).
-8. Add a placeholder called `epsilon` with a type of `floating point` and a
-range of values from `0` to `0`.
-9. Press the Play button at the top of the editor.
+7. Press the Play button at the top of the editor.
 
 If you followed these steps correctly, you should now see the trained model 
 being used to control the behavior of the balance ball within the Editor 

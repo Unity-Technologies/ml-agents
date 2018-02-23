@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Agents-Editor-Interface.md#agent")]
 /** Generic functions for parent Agent class.
  * Contains all logic for Brain-Agent communication and Agent-Environment 
  * interaction.
@@ -11,72 +12,88 @@ using UnityEngine;
  */
 public abstract class Agent : MonoBehaviour
 {
-    public Brain brain;
+    [Tooltip("The brain to register this agent to. Can be dragged into the inspector using the Editor.")]
     /**<  \brief  The brain that will control this agent. */
     /**< Use the inspector to drag the desired brain gameObject into
 	 * the Brain field */
+    public Brain brain;
 
-    public List<Camera> observations;
+    [Tooltip("A list of Cameras which will be used to generate observations.")]
     /**<  \brief  The list of the cameras the Agent uses as observations. */
     /**< These cameras will be used to generate the observations */
+    public List<Camera> observations;
 
-    public int maxStep;
+    [Tooltip("The per-agent maximum number of steps.")]
     /**<  \brief  The number of steps the agent takes before being done. */
     /**< If set to 0, the agent can only be set to done via a script.
     * If set to any positive integer, the agent will be set to done after that
     * many steps each episode. */
+    public int maxStep;
 
-    public bool resetOnDone = true;
+    [Tooltip("If checked, the agent will reset on done. Else, AgentOnDone() will be called.")]
     /**<  \brief Determines the behaviour of the Agent when done.*/
     /**< If true, the agent will reset when done. 
 	 * If not, the agent will remain done, and no longer take actions.*/
+    public bool resetOnDone = true;
 
+    // State list for the agent.
     [HideInInspector]
-    public float reward;
+    public List<float> state;
+
+    //List of last n states.
+    [HideInInspector]
+    public List<float> stackedStates;
+
     /**< \brief Describes the reward for the given step of the agent.*/
     /**< It is reset to 0 at the beginning of every step. 
-	* Modify in AgentStep(). 
-	* Should be set to positive to reinforcement desired behavior, and
-	* set to a negative value to punish undesireable behavior.
+    * Modify in AgentStep(). 
+    * Should be set to positive to reinforcement desired behavior, and
+    * set to a negative value to punish undesireable behavior.
     * Additionally, the magnitude of the reward should not exceed 1.0 */
-
     [HideInInspector]
-    public bool done;
+    public float reward;
+
     /**< \brief Whether or not the agent is done*/
     /**< Set to true when the agent has acted in some way which ends the 
-	 * episode for the given agent. */
-
+     * episode for the given agent. */
     [HideInInspector]
-    public float value;
+    public bool done;
+
+    /**< \brief Whether or not the max step is reached*/
+    [HideInInspector]
+    public bool maxStepReached;
+
     /**< \brief The current value estimate of the agent */
     /**<  When using an External brain, you can pass value estimates to the
-	 * agent at every step using env.Step(actions, values).
-	 * If AgentMonitor is attached to the Agent, this value will be displayed.*/
+     * agent at every step using env.Step(actions, values).
+     * If AgentMonitor is attached to the Agent, this value will be displayed.*/
+    [HideInInspector]
+    public float value;
 
+    /**< \brief Do not modify: This keeps track of the cumulative reward.*/
     [HideInInspector]
     public float CumulativeReward;
-    /**< \brief Do not modify: This keeps track of the cumulative reward.*/
 
-    [HideInInspector]
-    public int stepCounter;
     /**< \brief Do not modify: This keeps track of the number of steps taken by
      * the agent each episode.*/
-
     [HideInInspector]
-    public float[] agentStoredAction;
+    public int stepCounter;
+
     /**< \brief Do not modify: This keeps track of the last actions decided by
      * the brain.*/
-
     [HideInInspector]
-    public float[] memory;
+    public float[] agentStoredAction;
+
     /**< \brief Do not modify directly: This is used by the brain to store 
      * information about the previous states of the agent*/
-
     [HideInInspector]
-    public int id;
+    public float[] memory;
+
     /**< \brief Do not modify : This is the unique Identifier each agent 
      * receives at initialization. It is used by the brain to identify
      * the agent.*/
+    [HideInInspector]
+    public int id;
 
     void OnEnable()
     {
@@ -94,6 +111,19 @@ public abstract class Agent : MonoBehaviour
             }
             memory = new float[brain.brainParameters.memorySize];
         }
+
+        state = new List<float>(brain.brainParameters.stateSize);
+        if (brain.brainParameters.stateSpaceType == StateType.continuous)
+        {
+            stackedStates = new List<float>(brain.brainParameters.stateSize * brain.brainParameters.stackedStates);
+            stackedStates.AddRange(new float[brain.brainParameters.stateSize * brain.brainParameters.stackedStates]);
+        }
+        else
+        {
+            stackedStates = new List<float>(brain.brainParameters.stackedStates);
+            stackedStates.AddRange(new float[brain.brainParameters.stackedStates]);
+        }
+
         InitializeAgent();
     }
 
@@ -153,9 +183,24 @@ public abstract class Agent : MonoBehaviour
 	 *  Note : The order of the elements in the state list is important.
 	 *  @returns state A list of floats corresponding to the state of the agent. 
 	*/
+
+    public List<float> ClearAndCollectState() {
+        state.Clear();
+        CollectState();
+        if (brain.brainParameters.stateSpaceType == StateType.continuous)
+        {
+            stackedStates.RemoveRange(0, brain.brainParameters.stateSize);
+        }
+        else
+        {
+            stackedStates.RemoveRange(0, 1);
+        }
+        stackedStates.AddRange(state);
+        return stackedStates;
+    }
+
     public virtual List<float> CollectState()
     {
-        List<float> state = new List<float>();
         return state;
     }
 
@@ -196,9 +241,19 @@ public abstract class Agent : MonoBehaviour
     public void Reset()
     {
         memory = new float[brain.brainParameters.memorySize];
+        stackedStates.Clear();
+        if (brain.brainParameters.stateSpaceType == StateType.continuous) 
+        {
+            stackedStates.AddRange(new float[brain.brainParameters.stateSize * 
+                                             brain.brainParameters.stackedStates]);
+        }
+        else
+        {
+            stackedStates.AddRange(new float[brain.brainParameters.stackedStates]);
+        }
         stepCounter = 0;
-        CumulativeReward = 0f;
         AgentReset();
+        CumulativeReward = -reward;
     }
 
     /// Do not modify : Is used by the brain to collect rewards.
@@ -209,8 +264,12 @@ public abstract class Agent : MonoBehaviour
 
     public void SetCumulativeReward()
     {
-        CumulativeReward += reward;
-        //Debug.Log(reward);
+        if (!done) {
+            CumulativeReward += reward;
+        }
+        else{
+            CumulativeReward = 0f;
+        }
     }
 
     /// Do not modify : Is used by the brain to collect done.
@@ -233,6 +292,7 @@ public abstract class Agent : MonoBehaviour
         if ((stepCounter > maxStep) && (maxStep > 0))
         {
             done = true;
+            maxStepReached = true;
         }
     }
 

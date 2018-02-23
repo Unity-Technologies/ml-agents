@@ -6,6 +6,11 @@ TagManager:
   tags:
   - agent
   - iWall
+  - banana
+  - wall
+  - badBanana
+  - pit
+  - frozenAgent
   layers:
   - Default
   - TransparentFX
