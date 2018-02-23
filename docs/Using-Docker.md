@@ -20,7 +20,6 @@ Save the generated environment in the directory to be mounted (e.g. we have conv
 
 - Ensure that `unity-volume/<environment-name>.x86_64` and `unity-volume/environment-name_Data`. So for example, `<environment_name>` might be `3Dball` and you might want to ensure that `unity-volume/3Dball.x86_64` and `unity-volume/3Dball_Data` are both present in the directory `unity-volume`.
 
-
 - Make sure the docker engine is running on your machine, then build the docker container by running `docker build  -t <image_name> .` . in the top level of the source directory. Replace `<image_name>` by the name of the image that you want to use, e.g. `balance.ball.v0.1`.
 
 - Run the container:
@@ -42,7 +41,6 @@ docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
 	 --docker-target-name=unity-volume \
 	 --train --run-id=<run-id>
 ```
-
 
 **Notes on argument values** 
 
