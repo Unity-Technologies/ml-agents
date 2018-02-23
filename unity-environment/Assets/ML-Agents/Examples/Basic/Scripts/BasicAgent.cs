@@ -31,7 +31,7 @@ public class BasicAgent : Agent
 
 		gameObject.transform.position = new Vector3(position, 0f, 0f);
 
-        AddReward( 0.01f);
+        AddReward( - 0.01f);
 
 		if (position == smallGoalPosition)
 		{
