@@ -26,7 +26,7 @@ Save the generated environment in the directory to be mounted (e.g. we have conv
 
 ```
 docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
-	 <tag-name>:latest <environment-name> \
+	 <image-name>:latest <environment-name> \
 	 --docker-target-name=unity-volume \
 	 --train --run-id=<run-id>
 ```
