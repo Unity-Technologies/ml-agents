@@ -17,6 +17,7 @@ We are currently offering an experimental solution for Windows and Mac users who
 - Docker typically runs a container sharing a (linux) kernel with the host machine, this means that the 
 Unity environment **has** to be built for the **linux platform**. From the Build Settings Window, please select the architecture to be `x86_64` and choose the build to be `headless` (_This is important because we are running it in a container that does not have graphics drivers installed_). 
 Save the generated environment in the directory to be mounted (e.g. we have conveniently created an empty directory called at the top level `unity-volume`). 
+![Build Settings For Docker](../images/docker_build_settings.png)
 
 - Ensure that `unity-volume/<environment-name>.x86_64` and `unity-volume/environment-name_Data`. So for example, `<environment_name>` might be `3Dball` and you might want to ensure that `unity-volume/3Dball.x86_64` and `unity-volume/3Dball_Data` are both present in the directory `unity-volume`.
 
