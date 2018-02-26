@@ -168,6 +168,8 @@ class PPOTrainer(Trainer):
                     self.model.learning_rate]
         if self.is_continuous:
             run_list.append(self.model.epsilon)
+        elif self.use_recurrent:
+            feed_dict[self.model.prev_action] = np.reshape(info.previous_actions, [-1])
         if self.use_observations:
             for i, _ in enumerate(info.observations):
                 feed_dict[self.model.observation_in[i]] = info.observations[i]
@@ -224,6 +226,8 @@ class PPOTrainer(Trainer):
                     if self.is_continuous:
                         self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
+                    self.training_buffer[agent_id]['prev_action'].append(info.previous_actions[idx])
+                    self.training_buffer[agent_id]['masks'].append(1.0)
                     self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
@@ -257,8 +261,11 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.state_in] = info.states
                     if self.use_recurrent:
                         feed_dict[self.model.memory_in] = info.memories
+                    if not self.is_continuous:
+                        feed_dict[self.model.prev_action] = np.reshape(info.previous_actions, [-1])
                     value_next = self.sess.run(self.model.value, feed_dict)[l]
                 agent_id = info.agents[l]
+
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(
                         rewards=self.training_buffer[agent_id]['rewards'].get_batch(),
@@ -308,7 +315,7 @@ class PPOTrainer(Trainer):
         total_v, total_p = 0, 0
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
-            (advantages - advantages.mean()) / advantages.std())
+            (advantages - advantages.mean()) / advantages.std() + 1e-10)
         for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
             for l in range(len(self.training_buffer.update_buffer['actions']) // batch_size):
@@ -317,9 +324,12 @@ class PPOTrainer(Trainer):
                 _buffer = self.training_buffer.update_buffer
                 feed_dict = {self.model.batch_size: batch_size,
                              self.model.sequence_length: self.sequence_length,
+                             self.model.mask_input: np.array(_buffer['masks'][start:end]).reshape(
+                                 [-1]),
                              self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape(
                                  [-1]),
-                             self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1, 1]),
+                             self.model.old_value: np.array(_buffer['value_estimates'][start:end]).reshape([-1]),
+                             self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1]),
                              self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.action_space_size])}
                 if self.is_continuous:
@@ -328,6 +338,9 @@ class PPOTrainer(Trainer):
                 else:
                     feed_dict[self.model.action_holder] = np.array(
                         _buffer['actions'][start:end]).reshape([-1])
+                    if self.use_recurrent:
+                        feed_dict[self.model.prev_action] = np.array(
+                            _buffer['prev_action'][start:end]).reshape([-1])
                 if self.use_states:
                     if self.brain.state_space_type == "continuous":
                         feed_dict[self.model.state_in] = np.array(
@@ -343,9 +356,11 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.observation_in[i]] = _obs.reshape([-1, _w, _h, _c])
                 # Memories are zeros
                 if self.use_recurrent:
-                    feed_dict[self.model.memory_in] = np.zeros([batch_size, self.m_size])
-                v_loss, p_loss, _ = self.sess.run([self.model.value_loss, self.model.policy_loss,
-                                                   self.model.update_batch], feed_dict=feed_dict)
+                    # feed_dict[self.model.memory_in] = np.zeros([batch_size, self.m_size])
+                    feed_dict[self.model.memory_in] = np.array(_buffer['memory'][start:end])[:, 0, :]
+                v_loss, p_loss, _ = self.sess.run(
+                    [self.model.value_loss, self.model.policy_loss,
+                     self.model.update_batch], feed_dict=feed_dict)
                 total_v += v_loss
                 total_p += p_loss
         self.stats['value_loss'].append(total_v)

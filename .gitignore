@@ -54,6 +54,8 @@ python/summaries
 /unity-environment/Assets/ML-Agents/Plugins/Computer*
 /unity-environment/Assets/ML-Agents/Plugins/System*
 
+# Generated doc folders
+/docs/html
 
 # Mac hidden files
 *.DS_Store

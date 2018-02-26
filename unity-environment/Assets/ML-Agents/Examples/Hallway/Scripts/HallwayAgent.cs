@@ -21,15 +21,11 @@ public class HallwayAgent : Agent
 
     int selection;
 
-    void Awake()
-    {
-        academy = FindObjectOfType<HallwayAcademy>();
-        brain = FindObjectOfType<Brain>(); //only one brain in the scene so this should find our brain. BRAAAINS.
-    }
-
     public override void InitializeAgent()
     {
         base.InitializeAgent();
+        academy = FindObjectOfType<HallwayAcademy>();
+        brain = FindObjectOfType<Brain>(); //only one brain in the scene so this should find our brain. BRAAAINS.
 
         agentRB = GetComponent<Rigidbody>(); //cache the agent rigidbody
         groundRenderer = ground.GetComponent<Renderer>(); //get the ground renderer so we can change the material when a goal is scored

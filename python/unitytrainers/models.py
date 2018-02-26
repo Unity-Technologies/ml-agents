@@ -30,6 +30,11 @@ class LearningModel(object):
         return global_step, increment_step
 
     @staticmethod
+    def swish(input_activation):
+        """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
+        return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
+
+    @staticmethod
     def create_visual_input(o_size_h, o_size_w, bw):
         if bw:
             c_channels = 1
@@ -109,9 +114,13 @@ class LearningModel(object):
             hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
         return hidden
 
-    def create_new_obs(self, num_streams, h_size, num_layers, activation_fn):
+    def create_new_obs(self, num_streams, h_size, num_layers):
         brain = self.brain
         s_size = brain.state_space_size * brain.stacked_states
+        if brain.action_space_type == "continuous":
+            activation_fn = tf.nn.tanh
+        else:
+            activation_fn = self.swish
 
         self.observation_in = []
         for i in range(brain.number_observations):
@@ -168,18 +177,20 @@ class LearningModel(object):
                                                                 initial_state=lstm_state_in,
                                                                 time_major=False,
                                                                 dtype=tf.float32)
+
         recurrent_state = tf.reshape(recurrent_state, shape=[-1, _half_point])
         return recurrent_state, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     def create_dc_actor_critic(self, h_size, num_layers):
         num_streams = 1
-        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers, tf.nn.elu)
+        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
         hidden = hidden_streams[0]
 
-        self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
-        self.prev_action_oh = c_layers.one_hot_encoding(self.prev_action, self.a_size)
-        hidden = tf.concat([hidden, self.prev_action_oh], axis=1)
         if self.use_recurrent:
+            self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
+            self.prev_action_oh = c_layers.one_hot_encoding(self.prev_action, self.a_size)
+            hidden = tf.concat([hidden, self.prev_action_oh], axis=1)
+
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
             self.memory_out = tf.identity(self.memory_out, name='recurrent_out')
@@ -193,10 +204,8 @@ class LearningModel(object):
 
         self.value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
-
         self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
-
-        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32, name="action_input")
+        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
         self.selected_actions = c_layers.one_hot_encoding(self.action_holder, self.a_size)
 
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
@@ -205,19 +214,20 @@ class LearningModel(object):
 
     def create_cc_actor_critic(self, h_size, num_layers):
         num_streams = 2
-        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers, tf.nn.tanh)
+        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
 
         if self.use_recurrent:
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = self.create_recurrent_encoder(
                 hidden_streams[0], self.memory_in[:, :_half_point], name='lstm_policy')
+
             hidden_value, memory_value_out = self.create_recurrent_encoder(
                 hidden_streams[1], self.memory_in[:, _half_point:], name='lstm_value')
             self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1, name='recurrent_out')
-
-        hidden_policy = hidden_streams[0]
-        hidden_value = hidden_streams[1]
+        else:
+            hidden_policy = hidden_streams[0]
+            hidden_value = hidden_streams[1]
 
         self.mu = tf.layers.dense(hidden_policy, self.a_size, activation=None, use_bias=False,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
@@ -232,10 +242,10 @@ class LearningModel(object):
         a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output) - self.mu, 2) / (2 * self.sigma_sq))
         b = 1 / tf.sqrt(2 * self.sigma_sq * np.pi)
         self.all_probs = tf.multiply(a, b, name="action_probs")
-        self.probs = tf.identity(self.all_probs)
+        self.probs = tf.reduce_prod(self.all_probs, axis=1)
         self.entropy = tf.reduce_sum(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
         self.value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32,
                                             name='old_probabilities')
-        self.old_probs = tf.identity(self.all_old_probs)
+        self.old_probs = tf.reduce_prod(self.all_old_probs, axis=1)

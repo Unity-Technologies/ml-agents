@@ -7,6 +7,8 @@ using UnityEngine;
 /** Generic functions for parent Agent class.
  * Contains all logic for Brain-Agent communication and Agent-Environment 
  * interaction.
+ *
+ * See Also: \ref Agents.md
  */
 public abstract class Agent : MonoBehaviour
 {
