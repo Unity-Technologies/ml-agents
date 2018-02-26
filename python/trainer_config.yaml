@@ -21,7 +21,7 @@ Ball3DBrain:
     summary_freq: 1000
     normalize: true
     batch_size: 1000
-    buffer_size: 10000
+    buffer_size: 10000 
     hidden_units: 64
     max_steps: 1.0e4
 
