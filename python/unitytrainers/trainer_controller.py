@@ -107,7 +107,10 @@ class TrainerController(object):
                 elif not self.trainers[brain_name].parameters["use_recurrent"]:
                     nodes += [scope + x for x in ["action", "value_estimate", "action_probs"]]
                 else:
-                    nodes += [scope + x for x in ["action", "value_estimate", "action_probs", "recurrent_out"]]
+                    node_list = ["action", "value_estimate", "action_probs", "recurrent_out"]
+                    if not self.trainers[brain_name].is_continuous:
+                        node_list.append("prev_action")
+                    nodes += [scope + x for x in node_list]
         if len(scopes) > 1:
             self.logger.info("List of available scopes :")
             for scope in scopes:

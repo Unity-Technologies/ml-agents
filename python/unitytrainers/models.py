@@ -176,6 +176,9 @@ class LearningModel(object):
         hidden_streams = self.create_new_obs(num_streams, h_size, num_layers, tf.nn.elu)
         hidden = hidden_streams[0]
 
+        self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
+        self.prev_action_oh = c_layers.one_hot_encoding(self.prev_action, self.a_size)
+        hidden = tf.concat([hidden, self.prev_action_oh], axis=1)
         if self.use_recurrent:
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
