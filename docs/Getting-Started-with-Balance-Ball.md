@@ -34,7 +34,7 @@ _environment_. In the context of Unity, an environment is a scene containing
 an Academy and one or more Brain and Agent objects, and, of course, the other 
 entities that an agent interacts with.  
 
-[screenshot showing Scene Hierarchy]
+![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
 **Note:** In Unity, the base object of everything in a scene is the 
 _GameObject_. The GameObject is essentially a container for everything else, 
