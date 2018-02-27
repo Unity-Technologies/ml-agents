@@ -7,7 +7,7 @@
     * [Background: TensorFlow](Background-TensorFlow.md)
  * [Installation & Set-up](Installation.md)
     * [Background: Jupyter Notebooks](Background-Jupyter.md)
-    * [Docker Set-up (Experimental)](Installation-Docker.md)
+    * [Docker Set-up (Experimental)](Using-Docker.md)
  * [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
  * [Example Environments](Learning-Environment-Examples.md)
 

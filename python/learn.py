@@ -3,6 +3,7 @@
 
 import logging
 
+import os
 from docopt import docopt
 
 from unitytrainers.trainer_controller import TrainerController
@@ -25,10 +26,16 @@ if __name__ == '__main__':
       --slow                     Whether to run the game at training speed [default: False].
       --train                    Whether to train model, or only run inference [default: False].
       --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
+      --docker-target-name=<dt>       Docker Volume to store curriculum, executable and model files [default: Empty].
     '''
 
     options = docopt(_USAGE)
     logger.info(options)
+    # Docker Parameters
+    if options['--docker-target-name'] == 'Empty':
+        docker_target_name = ''
+    else:
+        docker_target_name = options['--docker-target-name']
 
     # General parameters
     run_id = options['--run-id']
@@ -36,7 +43,7 @@ if __name__ == '__main__':
     load_model = options['--load']
     train_model = options['--train']
     save_freq = int(options['--save-freq'])
-    env_name = options['<env>']
+    env_path = options['<env>']
     keep_checkpoints = int(options['--keep-checkpoints'])
     worker_id = int(options['--worker-id'])
     curriculum_file = str(options['--curriculum'])
@@ -45,6 +52,11 @@ if __name__ == '__main__':
     lesson = int(options['--lesson'])
     fast_simulation = not bool(options['--slow'])
 
-    tc = TrainerController(env_name, run_id, save_freq, curriculum_file, fast_simulation, load_model, train_model,
-                           worker_id, keep_checkpoints, lesson, seed)
+    # Constants
+    # Assumption that this yaml is present in same dir as this file
+    base_path = os.path.dirname(__file__)
+    TRAINER_CONFIG_PATH = os.path.abspath(os.path.join(base_path, "trainer_config.yaml"))
+
+    tc = TrainerController(env_path, run_id, save_freq, curriculum_file, fast_simulation, load_model, train_model,
+                           worker_id, keep_checkpoints, lesson, seed, docker_target_name, TRAINER_CONFIG_PATH)
     tc.start_learning()

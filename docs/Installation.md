@@ -50,7 +50,7 @@ or
 ## Docker-based Installation _[Experimental]_
 
 If you'd like to use Docker for ML-Agents, please follow 
-[this guide](Installation-Docker.md). 
+[this guide](Using-Docker.md). 
 
 ## Help
 
