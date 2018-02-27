@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*! \mainpage ML-Agents Index Page
+/**
  * Welcome to Unity Machine Learning Agents documentation.
  */
 
