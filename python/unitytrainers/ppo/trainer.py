@@ -8,6 +8,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
+from unityagents import AllBrainInfo
 from unitytrainers.buffer import Buffer
 from unitytrainers.ppo.models import PPOModel
 from unitytrainers.trainer import UnityTrainerException, Trainer
@@ -154,31 +155,31 @@ class PPOTrainer(Trainer):
         new_variance = var + (current_x - new_mean) * (current_x - mean)
         return new_mean, new_variance
 
-    def take_action(self, info):
+    def take_action(self, all_brain_info: AllBrainInfo):
         """
         Decides actions given state/observation information, and takes them in environment.
-        :param info: Current BrainInfo from environment.
-        :return: a tupple containing action, memories, values and an object
+        :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
+        :return: a tuple containing action, memories, values and an object
         to be passed to add experiences
         """
         steps = self.get_step
-        info = info[self.brain_name]
-        feed_dict = {self.model.batch_size: len(info.states), self.model.sequence_length: 1}
+        curr_brain_info = all_brain_info[self.brain_name]
+        feed_dict = {self.model.batch_size: len(curr_brain_info.states), self.model.sequence_length: 1}
         run_list = [self.model.output, self.model.all_probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
         if self.is_continuous:
             run_list.append(self.model.epsilon)
         if self.use_observations:
-            for i, _ in enumerate(info.observations):
-                feed_dict[self.model.observation_in[i]] = info.observations[i]
+            for i, _ in enumerate(curr_brain_info.observations):
+                feed_dict[self.model.observation_in[i]] = curr_brain_info.observations[i]
         if self.use_states:
-            feed_dict[self.model.state_in] = info.states
+            feed_dict[self.model.state_in] = curr_brain_info.states
         if self.use_recurrent:
-            feed_dict[self.model.memory_in] = info.memories
+            feed_dict[self.model.memory_in] = curr_brain_info.memories
             run_list += [self.model.memory_out]
         if (self.is_training and self.brain.state_space_type == "continuous" and
                 self.use_states and self.trainer_parameters['normalize']):
-            new_mean, new_variance = self.running_average(info.states, steps, self.model.running_mean,
+            new_mean, new_variance = self.running_average(curr_brain_info.states, steps, self.model.running_mean,
                                                           self.model.running_variance)
             feed_dict[self.model.new_mean] = new_mean
             feed_dict[self.model.new_variance] = new_variance
@@ -194,14 +195,14 @@ class PPOTrainer(Trainer):
         else:
             return run_out[self.model.output], None, run_out[self.model.value], run_out
 
-    def add_experiences(self, info, next_info, take_action_outputs):
+    def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
         """
         Adds experiences to each agent's experience history.
-        :param info: Current BrainInfo.
-        :param next_info: Next BrainInfo.
+        :param curr_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param next_info: Dictionary of all current brains and corresponding BrainInfo.
         :param take_action_outputs: The outputs of the take action method.
         """
-        info = info[self.brain_name]
+        curr_info = curr_info[self.brain_name]
         next_info = next_info[self.brain_name]
         actions = take_action_outputs[self.model.output]
         epsi = 0
@@ -209,18 +210,18 @@ class PPOTrainer(Trainer):
             epsi = take_action_outputs[self.model.epsilon]
         a_dist = take_action_outputs[self.model.all_probs]
         value = take_action_outputs[self.model.value]
-        for agent_id in info.agents:
+        for agent_id in curr_info.agents:
             if agent_id in next_info.agents:
-                idx = info.agents.index(agent_id)
+                idx = curr_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
-                if not info.local_done[idx]:
+                if not curr_info.local_done[idx]:
                     if self.use_observations:
-                        for i, _ in enumerate(info.observations):
-                            self.training_buffer[agent_id]['observations%d' % i].append(info.observations[i][idx])
+                        for i, _ in enumerate(curr_info.observations):
+                            self.training_buffer[agent_id]['observations%d' % i].append(curr_info.observations[i][idx])
                     if self.use_states:
-                        self.training_buffer[agent_id]['states'].append(info.states[idx])
+                        self.training_buffer[agent_id]['states'].append(curr_info.states[idx])
                     if self.use_recurrent:
-                        self.training_buffer[agent_id]['memory'].append(info.memories[idx])
+                        self.training_buffer[agent_id]['memory'].append(curr_info.memories[idx])
                     if self.is_continuous:
                         self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
@@ -234,11 +235,11 @@ class PPOTrainer(Trainer):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-    def process_experiences(self, info):
+    def process_experiences(self, info: AllBrainInfo):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param info: Current BrainInfo
+        :param info: Dictionary of all current brains and corresponding BrainInfo.
         """
 
         info = info[self.brain_name]
