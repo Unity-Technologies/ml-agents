@@ -164,7 +164,10 @@ public class Monitor : MonoBehaviour
             isInstanciated = true;
 
         }
-        canvas.SetActive(active);
+        if (canvas != null)
+        {
+            canvas.SetActive(active);
+        }
 
     }
 

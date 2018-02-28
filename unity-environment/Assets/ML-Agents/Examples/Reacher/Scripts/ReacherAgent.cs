@@ -19,43 +19,42 @@ public class ReacherAgent : Agent {
         rbB = pendulumB.GetComponent<Rigidbody>();
     }
 
-	public override List<float> CollectState()
+	public override void CollectObservations()
 	{
-        state.Add(pendulumA.transform.rotation.x);
-        state.Add(pendulumA.transform.rotation.y);
-        state.Add(pendulumA.transform.rotation.z);
-        state.Add(pendulumA.transform.rotation.w);
-        state.Add(rbA.angularVelocity.x);
-        state.Add(rbA.angularVelocity.y);
-        state.Add(rbA.angularVelocity.z);
-        state.Add(rbA.velocity.x);
-        state.Add(rbA.velocity.y);
-        state.Add(rbA.velocity.z);
+        AddVectorObs(pendulumA.transform.rotation.x);
+        AddVectorObs(pendulumA.transform.rotation.y);
+        AddVectorObs(pendulumA.transform.rotation.z);
+        AddVectorObs(pendulumA.transform.rotation.w);
+        AddVectorObs(rbA.angularVelocity.x);
+        AddVectorObs(rbA.angularVelocity.y);
+        AddVectorObs(rbA.angularVelocity.z);
+        AddVectorObs(rbA.velocity.x);
+        AddVectorObs(rbA.velocity.y);
+        AddVectorObs(rbA.velocity.z);
 
-        state.Add(pendulumB.transform.rotation.x);
-        state.Add(pendulumB.transform.rotation.y);
-        state.Add(pendulumB.transform.rotation.z);
-        state.Add(pendulumB.transform.rotation.w);
-        state.Add(rbB.angularVelocity.x);
-        state.Add(rbB.angularVelocity.y);
-        state.Add(rbB.angularVelocity.z);
-        state.Add(rbB.velocity.x);
-        state.Add(rbB.velocity.y);
-        state.Add(rbB.velocity.z);
+        AddVectorObs(pendulumB.transform.rotation.x);
+        AddVectorObs(pendulumB.transform.rotation.y);
+        AddVectorObs(pendulumB.transform.rotation.z);
+        AddVectorObs(pendulumB.transform.rotation.w);
+        AddVectorObs(rbB.angularVelocity.x);
+        AddVectorObs(rbB.angularVelocity.y);
+        AddVectorObs(rbB.angularVelocity.z);
+        AddVectorObs(rbB.velocity.x);
+        AddVectorObs(rbB.velocity.y);
+        AddVectorObs(rbB.velocity.z);
 
-        state.Add(goal.transform.position.x - transform.position.x);
-        state.Add(goal.transform.position.y - transform.position.y);
-        state.Add(goal.transform.position.z - transform.position.z);
+        AddVectorObs(goal.transform.position.x - transform.position.x);
+        AddVectorObs(goal.transform.position.y - transform.position.y);
+        AddVectorObs(goal.transform.position.z - transform.position.z);
 
-        state.Add(hand.transform.position.x - transform.position.x);
-        state.Add(hand.transform.position.y - transform.position.y);
-        state.Add(hand.transform.position.z - transform.position.z);
+        AddVectorObs(hand.transform.position.x - transform.position.x);
+        AddVectorObs(hand.transform.position.y - transform.position.y);
+        AddVectorObs(hand.transform.position.z - transform.position.z);
 
 
-		return state;
 	}
 
-	public override void AgentStep(float[] act)
+	public override void AgentAction(float[] act)
 	{
         goalDegree += goalSpeed;
         UpdateGoalPosition();

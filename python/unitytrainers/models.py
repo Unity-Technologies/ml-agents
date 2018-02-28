@@ -20,7 +20,7 @@ class LearningModel(object):
         self.m_size = m_size
         self.normalize = normalize
         self.use_recurrent = use_recurrent
-        self.a_size = brain.action_space_size
+        self.a_size = brain.vector_action_space_size
 
     @staticmethod
     def create_global_steps():
@@ -35,17 +35,17 @@ class LearningModel(object):
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
 
     @staticmethod
-    def create_visual_input(o_size_h, o_size_w, bw):
+    def create_visual_input(o_size_h, o_size_w, bw, name):
         if bw:
             c_channels = 1
         else:
             c_channels = 3
 
-        observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32)
+        observation_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name)
         return observation_in
 
     def create_vector_input(self, s_size):
-        if self.brain.state_space_type == "continuous":
+        if self.brain.vector_observation_space_type == "continuous":
             self.state_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='state')
             if self.normalize:
                 self.running_mean = tf.get_variable("running_mean", [s_size], trainable=False, dtype=tf.float32,
@@ -116,18 +116,17 @@ class LearningModel(object):
 
     def create_new_obs(self, num_streams, h_size, num_layers):
         brain = self.brain
-        s_size = brain.state_space_size * brain.stacked_states
-        if brain.action_space_type == "continuous":
+        s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
+        if brain.vector_action_space_type == "continuous":
             activation_fn = tf.nn.tanh
         else:
             activation_fn = self.swish
 
         self.observation_in = []
-        for i in range(brain.number_observations):
+        for i in range(brain.number_visual_observations):
             height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
             bw = brain.camera_resolutions[i]['blackAndWhite']
-            visual_input = self.create_visual_input(height_size, width_size, bw)
-            visual_input = tf.identity(visual_input, name="observation_in_" + str(i))
+            visual_input = self.create_visual_input(height_size, width_size, bw, name="visual_observation_" + str(i))
             self.observation_in.append(visual_input)
         self.create_vector_input(s_size)
 
@@ -135,14 +134,14 @@ class LearningModel(object):
         for i in range(num_streams):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
-            if brain.number_observations > 0:
-                for j in range(brain.number_observations):
+            if brain.number_visual_observations > 0:
+                for j in range(brain.number_visual_observations):
                     encoded_visual = self.create_visual_encoder(h_size, activation_fn, num_layers)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
-            if brain.state_space_size > 0:
-                s_size = brain.state_space_size * brain.stacked_states
-                if brain.state_space_type == "continuous":
+            if brain.vector_observation_space_size > 0:
+                s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
+                if brain.vector_observation_space_type == "continuous":
                     hidden_state = self.create_continuous_state_encoder(h_size, activation_fn, num_layers)
                 else:
                     hidden_state = self.create_discrete_state_encoder(s_size, h_size,
@@ -187,6 +186,7 @@ class LearningModel(object):
         hidden = hidden_streams[0]
 
         if self.use_recurrent:
+            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
             self.prev_action_oh = c_layers.one_hot_encoding(self.prev_action, self.a_size)
             hidden = tf.concat([hidden, self.prev_action_oh], axis=1)
@@ -217,6 +217,7 @@ class LearningModel(object):
         hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
 
         if self.use_recurrent:
+            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = self.create_recurrent_encoder(

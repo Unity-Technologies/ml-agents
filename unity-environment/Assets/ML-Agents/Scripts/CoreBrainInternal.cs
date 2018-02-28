@@ -18,7 +18,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     [SerializeField]
     [Tooltip("If checked, the brain will broadcast states and actions to Python.")]
+    #pragma warning disable
     private bool broadcast = true;
+    #pragma warning restore
 
     [System.Serializable]
     private struct TensorFlowAgentPlaceholder
@@ -62,6 +64,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public string[] ObservationPlaceholderName;
     /// Modify only in inspector : Name of the action node
     public string ActionPlaceholderName = "action";
+    /// Modify only in inspector : Name of the previous action node
     public string PreviousActionPlaceholderName = "prev_action";
 #if ENABLE_TENSORFLOW
     TFGraph graph;
@@ -69,14 +72,13 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     bool hasRecurrent;
     bool hasState;
     bool hasBatchSize;
-    bool hasValue;
     bool hasPrevAction;
-    List<int> agentKeys;
-    int currentBatchSize;
     float[,] inputState;
     int[] inputPrevAction;
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
+    List<Texture2D> texturesHolder;
+    int memorySize;
 #endif
 
     /// Reference to the brain that uses this CoreBrainInternal
@@ -89,7 +91,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     }
 
     /// Loads the tensorflow graph model to generate a TFGraph object
-    public void InitializeCoreBrain()
+    public void InitializeCoreBrain(Communicator communicator)
     {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID
@@ -102,14 +104,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 			
 		}
 #endif
-        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((communicator == null)
         || (!broadcast))
         {
             coord = null;
         }
-        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        else if (communicator is ExternalCommunicator)
         {
-            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord = (ExternalCommunicator)communicator;
             coord.SubscribeBrain(brain);
         }
 
@@ -136,37 +138,40 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             if ((graph[graphScope + RecurrentInPlaceholderName] != null) && (graph[graphScope + RecurrentOutPlaceholderName] != null))
             {
                 hasRecurrent = true;
+                var runner = session.GetRunner();
+                runner.Fetch(graph[graphScope + "memory_size"][0]);
+                var networkOutput = runner.Run()[0].GetValue();
+                memorySize = (int)networkOutput;
             }
             if (graph[graphScope + StatePlacholderName] != null)
             {
-                hasState = true;
-            }
-            if (graph[graphScope + "value_estimate"] != null)
-            {
-                hasValue = true;
+                hasState = brain.brainParameters.vectorActionSpaceType == StateType.discrete;
             }
             if (graph[graphScope + PreviousActionPlaceholderName] != null)
             {
                 hasPrevAction = true;
             }
         }
+        observationMatrixList = new List<float[,,,]>();
+        texturesHolder = new List<Texture2D>();
 #endif
     }
 
 
-    /// Collects information from the agents and store them
-    public void SendState()
+
+    /// Uses the stored information to run the tensorflow graph and generate 
+    /// the actions.
+    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
 #if ENABLE_TENSORFLOW
-        agentKeys = new List<int>(brain.agents.Keys);
-        currentBatchSize = brain.agents.Count;
+		if (coord != null)
+		{
+			coord.GiveBrainInfo(brain, agentInfo);
+		}
+        int currentBatchSize = agentInfo.Count();
+        List<Agent> agentList = agentInfo.Keys.ToList();
         if (currentBatchSize == 0)
         {
-
-            if (coord != null)
-            {
-                coord.giveBrainInfo(brain);
-            }
             return;
         }
 
@@ -175,17 +180,17 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         if (hasState)
         {
             int stateLength = 1;
-            if (brain.brainParameters.stateSpaceType == StateType.continuous)
+            if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
             {
-                stateLength = brain.brainParameters.stateSize;
+                stateLength = brain.brainParameters.vectorObservationSize;
             }
-            Dictionary<int, List<float>> states = brain.CollectStates();
-            inputState = new float[currentBatchSize, stateLength * brain.brainParameters.stackedStates];
+            inputState = new float[currentBatchSize, stateLength * brain.brainParameters.numStackedVectorObservations];
+
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
-                List<float> state_list = states[k];
-                for (int j = 0; j < stateLength * brain.brainParameters.stackedStates; j++)
+                List<float> state_list = agentInfo[agent].stackedVectorObservation;
+                for (int j = 0; j < brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations; j++)
                 {
                     inputState[i, j] = state_list[j];
                 }
@@ -196,56 +201,45 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasPrevAction)
         {
-            Dictionary<int, float[]> prevActions = brain.CollectActions();
             inputPrevAction = new int[currentBatchSize];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
-                float[] action_list = prevActions[k];
+                float[] action_list = agentInfo[agent].StoredVectorActions;
                 inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
                 i++;
             }
         }
 
-        // Create the observation tensors
-        observationMatrixList = brain.GetObservationMatrixList(agentKeys);
+
+        observationMatrixList.Clear();
+        for (int observationIndex = 0; observationIndex < brain.brainParameters.cameraResolutions.Count(); observationIndex++){
+            texturesHolder.Clear();
+            foreach (Agent agent in agentList){
+                texturesHolder.Add(agentInfo[agent].visualObservations[observationIndex]);
+            }
+            observationMatrixList.Add(
+                BatchVisualObservations(texturesHolder, brain.brainParameters.cameraResolutions[observationIndex].blackAndWhite));
+
+        }
 
         // Create the recurrent tensor
         if (hasRecurrent)
         {
-            Dictionary<int, float[]> old_memories = brain.CollectMemories();
-            inputOldMemories = new float[currentBatchSize, brain.brainParameters.memorySize];
+            // Need to have variable memory size
+            inputOldMemories = new float[currentBatchSize, memorySize];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
-                float[] m = old_memories[k];
-                for (int j = 0; j < brain.brainParameters.memorySize; j++)
+                float[] m = agentInfo[agent].memories.ToArray();
+                for (int j = 0; j < m.Count(); j++)
                 {
-
                     inputOldMemories[i, j] = m[j];
                 }
                 i++;
             }
         }
 
-
-        if (coord != null)
-        {
-            coord.giveBrainInfo(brain);
-        }
-#endif
-    }
-
-
-    /// Uses the stored information to run the tensorflow graph and generate 
-    /// the actions.
-    public void DecideAction()
-    {
-#if ENABLE_TENSORFLOW
-        if (currentBatchSize == 0)
-        {
-            return;
-        }
 
         var runner = session.GetRunner();
         try
@@ -287,7 +281,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            if (brain.brainParameters.stateSpaceType == StateType.discrete)
+            if (brain.brainParameters.vectorObservationSpaceType == StateType.discrete)
             {
                 var discreteInputState = new int[currentBatchSize, 1];
                 for (int i = 0; i < currentBatchSize; i++)
@@ -321,11 +315,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
         }
 
-        if (hasValue)
-        {
-            runner.Fetch(graph[graphScope + "value_estimate"][0]);
-        }
-
         TFTensor[] networkOutput;
         try
         {
@@ -350,78 +339,59 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the recurrent tensor
         if (hasRecurrent)
         {
-            var new_memories = new Dictionary<int, float[]>();
-
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
-                var m = new float[brain.brainParameters.memorySize];
-                for (int j = 0; j < brain.brainParameters.memorySize; j++)
+                var m = new float[memorySize];
+                for (int j = 0; j < memorySize; j++)
                 {
                     m[j] = recurrent_tensor[i, j];
                 }
-                new_memories.Add(k, m);
+                agent.UpdateMemoriesAction(m.ToList());
                 i++;
             }
 
-            brain.SendMemories(new_memories);
         }
 
-        var actions = new Dictionary<int, float[]>();
-
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             var output = networkOutput[0].GetValue() as float[,];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
-                var a = new float[brain.brainParameters.actionSize];
-                for (int j = 0; j < brain.brainParameters.actionSize; j++)
+                var a = new float[brain.brainParameters.vectorActionSize];
+                for (int j = 0; j < brain.brainParameters.vectorActionSize; j++)
                 {
                     a[j] = output[i, j];
                 }
-                actions.Add(k, a);
+                agent.UpdateVectorAction(a);
                 i++;
             }
         }
-        else if (brain.brainParameters.actionSpaceType == StateType.discrete)
+        else if (brain.brainParameters.vectorActionSpaceType == StateType.discrete)
         {
             long[,] output = networkOutput[0].GetValue() as long[,];
             var i = 0;
-            foreach (int k in agentKeys)
+            foreach (Agent agent in agentList)
             {
                 var a = new float[1] { (float)(output[i, 0]) };
-                actions.Add(k, a);
+                agent.UpdateVectorAction(a);
                 i++;
             }
         }
 
-        brain.SendActions(actions);
 
-        if (hasValue)
+
+
+#else
+        if (agentInfo.Count > 0)
         {
-            var values = new Dictionary<int, float>();
-            float[,] value_tensor;
-            if (hasRecurrent)
-            {
-                value_tensor = networkOutput[2].GetValue() as float[,];
-            }
-            else
-            {
-                value_tensor = networkOutput[1].GetValue() as float[,];
-            }
-            var i = 0;
-            foreach (int k in agentKeys)
-            {
-                var v = (float)(value_tensor[i, 0]);
-                values.Add(k, v);
-                i++;
-            }
-            brain.SendValues(values);
+            throw new UnityAgentsException(string.Format(@"The brain {0} was set to Internal but the Tensorflow 
+                        library is not present in the Unity project.",
+                        brain.gameObject.name));
         }
-
 #endif
     }
 
@@ -432,6 +402,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
                       "If checked, the brain will broadcast states and actions to Python."), broadcast);
+
         var serializedBrain = new SerializedObject(this);
         GUILayout.Label("Edit the Tensorflow graph parameters here");
         var tfGraphModel = serializedBrain.FindProperty("graphModel");
@@ -492,7 +463,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                     if ((ObservationPlaceholderName[obs_number] == "") || (ObservationPlaceholderName[obs_number] == null))
                     {
 
-                        ObservationPlaceholderName[obs_number] = "observation_" + obs_number;
+                        ObservationPlaceholderName[obs_number] = "visual_observation_" + obs_number;
                     }
                 }
                 var opn = serializedBrain.FindProperty("ObservationPlaceholderName");
@@ -519,6 +490,47 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         EditorGUILayout.PropertyField(tfPlaceholders, true);
         serializedBrain.ApplyModifiedProperties();
 #endif
+#if !ENABLE_TENSORFLOW && UNITY_EDITOR
+        EditorGUILayout.HelpBox (@"You need to install the TensorflowSharp plugin in order to use the internal brain.", MessageType.Error);
+#endif
+    }
+
+    /// Contains logic to convert the agent's cameras into observation list
+    ///  (as list of float arrays)
+    public static float[,,,] BatchVisualObservations(List<Texture2D> textures, bool BlackAndWhite)
+    {
+        int batchSize = textures.Count();
+        int width = textures[0].width;
+        int height = textures[0].height;
+        int pixels = 0;
+        if (BlackAndWhite)
+            pixels = 1;
+        else
+            pixels = 3;
+        float[,,,] result = new float[batchSize, width, height, pixels];
+
+        for (int b = 0; b < batchSize; b++)
+        {
+            Color32[] cc = textures[b].GetPixels32();
+            for (int w = 0; w < width; w++)
+            {
+                for (int h = 0; h < height; h++)
+                {
+                    Color32 currentPixel = cc[h * width + w];
+                    if (!BlackAndWhite)
+                    {
+                        result[b, textures[b].height - h - 1, w, 0] = currentPixel.r;
+                        result[b, textures[b].height - h - 1, w, 1] = currentPixel.g;
+                        result[b, textures[b].height - h - 1, w, 2] = currentPixel.b;
+                    }
+                    else
+                    {
+                        result[b, textures[b].height - h - 1, w, 0] = (currentPixel.r + currentPixel.g + currentPixel.b) / 3;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 }

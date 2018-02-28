@@ -65,9 +65,16 @@ public interface Communicator
     /// was given outside of Unity
     ExternalCommand GetCommand();
 
+    void UpdateCommand();
+    void SetCommand(ExternalCommand c);
+
     /// Implement this method to return the new dictionary of resetParameters 
     /// that was given outside of Unity
     Dictionary<string, float> GetResetParameters();
 
+
+
+    Dictionary<string, bool> GetHasTried();
+    Dictionary<string, bool> GetSent();
 
 }

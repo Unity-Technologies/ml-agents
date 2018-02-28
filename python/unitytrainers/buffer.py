@@ -116,6 +116,11 @@ class Buffer(dict):
                 """
                 self[:] = []
 
+        def __init__(self):
+            self.last_brain_info = None
+            self.last_take_action_outputs = None
+            super(Buffer.AgentBuffer, self).__init__()
+
         def __str__(self):
             return ", ".join(["'{0}' : {1}".format(k, str(self[k])) for k in self.keys()])
 
@@ -125,6 +130,8 @@ class Buffer(dict):
             """
             for k in self.keys():
                 self[k].reset_field()
+            self.last_brain_info = None
+            self.last_take_action_outputs = None
 
         def __getitem__(self, key):
             if key not in self.keys():
@@ -188,8 +195,8 @@ class Buffer(dict):
 
     def reset_all(self):
         """
-        Resets the update buffer and all the local local_buffers
-        """
+		Resets all the local local_buffers
+		"""
         agent_ids = list(self.keys())
         for k in agent_ids:
             self[k].reset_agent()

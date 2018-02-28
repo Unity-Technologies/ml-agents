@@ -17,14 +17,14 @@ def test_ppo_model_continuous():
       "logPath":"RealFakePath",
       "apiNumber":"API-2",
       "brainParameters": [{
-          "stateSize": 3,
-          "stackedStates": 2,
-          "actionSize": 2,
+          "vectorObservationSize": 3,
+          "numStackedVectorObservations": 2,
+          "vectorActionSize": 2,
           "memorySize": 0,
           "cameraResolutions": [],
-          "actionDescriptions": ["",""],
-          "actionSpaceType": 1,
-          "stateSpaceType": 1
+          "vectorActionDescriptions": ["",""],
+          "vectorActionSpaceType": 1,
+          "vectorObservationSpaceType": 1
           }]
     }'''.encode()
 
@@ -63,14 +63,14 @@ def test_ppo_model_discrete():
       "logPath":"RealFakePath",
       "apiNumber":"API-2",
       "brainParameters": [{
-          "stateSize": 3,
-          "stackedStates": 2,
-          "actionSize": 2,
+          "vectorObservationSize": 3,
+          "numStackedVectorObservations": 2,
+          "vectorActionSize": 2,
           "memorySize": 0,
           "cameraResolutions": [{"width":30,"height":40,"blackAndWhite":false}],
-          "actionDescriptions": ["",""],
-          "actionSpaceType": 0,
-          "stateSpaceType": 1
+          "vectorActionDescriptions": ["",""],
+          "vectorActionSpaceType": 0,
+          "vectorObservationSpaceType": 1
           }]
     }'''.encode()
 

@@ -17,14 +17,14 @@ dummy_start = '''{
   "logPath":"RealFakePath",
   "apiNumber":"API-2",
   "brainParameters": [{
-      "stateSize": 3,
-      "stackedStates" : 2,
-      "actionSize": 2,
+      "vectorObservationSize": 3,
+      "numStackedVectorObservations" : 2,
+      "vectorActionSize": 2,
       "memorySize": 0,
       "cameraResolutions": [],
-      "actionDescriptions": ["",""],
-      "actionSpaceType": 1,
-      "stateSpaceType": 1
+      "vectorActionDescriptions": ["",""],
+      "vectorActionSpaceType": 1,
+      "vectorObservationSpaceType": 1
       }]
 }'''.encode()
 
@@ -48,6 +48,7 @@ default:
     sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
+    memory_size: 8
 ''')
 
 dummy_bc_config = yaml.load('''
@@ -71,6 +72,7 @@ default:
     sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
+    memory_size: 8
 ''')
 
 dummy_bad_config = yaml.load('''
@@ -94,6 +96,7 @@ default:
     sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
+    memory_size: 8
 ''')
 
 

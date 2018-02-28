@@ -33,7 +33,7 @@ public class HallwayAgent : Agent
 
     }
 
-    public List<float> RayPerception(List<float> state, float rayDistance,
+    public void RayPerception(float rayDistance,
                                  float[] rayAngles, string[] detectableObjects, float height)
     {
         foreach (float angle in rayAngles)
@@ -61,9 +61,9 @@ public class HallwayAgent : Agent
             {
                 subList[detectableObjects.Length] = 1f;
             }
-            state.AddRange(new List<float>(subList));
+            foreach (float f in subList)
+                AddVectorObs(f);
         }
-        return state;
     }
 
     public Vector3 GiveCatersian(float radius, float angle)
@@ -79,13 +79,12 @@ public class HallwayAgent : Agent
     }
 
 
-    public override List<float> CollectState()
+    public override void CollectObservations()
     {
         float rayDistance = 8.5f;
         float[] rayAngles = { 0f, 45f, 90f, 135f, 180f };
         string[] detectableObjects = { "goal", "orangeBlock", "redBlock", "wall" };
-        state = RayPerception(state, rayDistance, rayAngles, detectableObjects, 0f);
-        return state;
+        RayPerception(rayDistance, rayAngles, detectableObjects, 0f);
     }
 
     //swap ground material, wait time seconds, then swap back to the regular ground material.
@@ -104,7 +103,7 @@ public class HallwayAgent : Agent
         Vector3 rotateDir = Vector3.zero;
 
         //If we're using Continuous control you will need to change the Action
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
@@ -133,9 +132,9 @@ public class HallwayAgent : Agent
         agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
     }
 
-    public override void AgentStep(float[] act)
+    public override void AgentAction(float[] act)
     {
-        reward -= 0.0003f;
+        AddReward(-0.0003f);
 
         MoveAgent(act); //perform agent actions
         bool fail = false;  // did the agent or block get pushed off the edge?
@@ -143,9 +142,9 @@ public class HallwayAgent : Agent
         if (!Physics.Raycast(agentRB.position, Vector3.down, 20)) //if the agent has gone over the edge, we done.
         {
             fail = true; //fell off bro
-            reward -= 1f; // BAD AGENT
+            AddReward(-1f); // BAD AGENT
                           //transform.position =  GetRandomSpawnPos(agentSpawnAreaBounds, agentSpawnArea);
-            done = true; //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
+            Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
         }
 
         if (fail)
@@ -161,15 +160,15 @@ public class HallwayAgent : Agent
         {
             if ((selection == 0 && col.gameObject.name == "GoalA") || (selection == 1 && col.gameObject.name == "GoalB"))
             {
-                reward += 1f; //you get 5 points
+                AddReward(1f); //you get 5 points
                 StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 2)); //swap ground material for a bit to indicate we scored.
             }
             else
             {
-                reward -= 0.1f; //you lose a point
+                AddReward(-0.1f); //you lose a point
                 StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, .5f)); //swap ground material to indicate fail
             }
-            done = true; //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
+            Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
         }
     }
 

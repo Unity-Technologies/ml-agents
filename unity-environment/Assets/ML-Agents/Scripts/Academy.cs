@@ -42,40 +42,29 @@ public class ScreenConfiguration
 public abstract class Academy : MonoBehaviour
 {
 
-    [System.Serializable]
-    private struct ResetParameter
-    {
-        public string key;
-        public float value;
-    }
-
-
-
     [SerializeField]
     [Tooltip("Total number of steps per episode. \n" +
              "0 corresponds to episodes without a maximum number of steps. \n" +
-             "Once the step counter reaches maximum, the environment will reset.")]
+             "Once the step counter reaches maximum, " +
+             "the environment will reset.")]
     private int maxSteps;
+
     [SerializeField]
-    [Tooltip("How many steps of the environment to skip before asking Brains for decisions.")]
-    private int frameToSkip;
-    [SerializeField]
-    [Tooltip("How many seconds to wait between steps when running in Inference.")]
-    private float waitTime;
     [HideInInspector]
     public bool isInference = true;
     /**< \brief Do not modify : If true, the Academy will use inference 
      * settings. */
     private bool _isCurrentlyInference;
     [SerializeField]
-    [Tooltip("The engine-level settings which correspond to rendering quality and engine speed during Training.")]
-    private ScreenConfiguration trainingConfiguration = new ScreenConfiguration(80, 80, 1, 100.0f, -1);
+    [Tooltip("The engine-level settings which correspond to rendering quality" +
+             " and engine speed during Training.")]
+    private ScreenConfiguration trainingConfiguration =
+        new ScreenConfiguration(80, 80, 1, 100.0f, -1);
     [SerializeField]
-    [Tooltip("The engine-level settings which correspond to rendering quality and engine speed during Inference.")]
-    private ScreenConfiguration inferenceConfiguration = new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
-    [SerializeField]
-    [Tooltip("List of custom parameters that can be changed in the environment on reset.")]
-    private ResetParameter[] defaultResetParameters;
+    [Tooltip("The engine-level settings which correspond to rendering quality" +
+             " and engine speed during Inference.")]
+    private ScreenConfiguration inferenceConfiguration =
+        new ScreenConfiguration(1280, 720, 5, 1.0f, 60);
 
     /**< \brief Contains a mapping from parameter names to float values. */
     /**< You can specify the Default Reset Parameters in the Inspector of the
@@ -83,55 +72,50 @@ public abstract class Academy : MonoBehaviour
      * brain by passing a config dictionary at reset. Reference resetParameters
      * in your AcademyReset() or AcademyStep() to modify elements in your 
      * environment at reset time. */
-    public Dictionary<string, float> resetParameters;
+    [SerializeField]
+    [Tooltip("List of custom parameters that can be changed in the " +
+             "environment on reset.")]
+    public ResetParameters resetParameters;
 
-
-    [HideInInspector]
-    private List<Brain> brains = new List<Brain>();
-
-    ExternalCommand externalCommand;
-
-    private bool acceptingSteps;
-    private int framesSinceAction;
-    private bool skippingFrames = true;
+    public event System.Action BrainDecideAction;
+    public event System.Action<bool, bool, int> AgentSetStatus;
+    public event System.Action AgentResetIfDone;
+    public event System.Action AgentSendState;
+    public event System.Action AgentAct;
+    public event System.Action AgentForceReset;
 
     /**< \brief The done flag of the Academy. */
     /**< When set to true, the Academy will call AcademyReset() instead of 
     * AcademyStep() at step time.
     * If true, all agents done flags will be set to true.*/
-    [HideInInspector]
-    public bool done;
+    private bool done;
 
     /// <summary>
     /// The max step reached.
     /// </summary>
-    [HideInInspector]
-    public bool maxStepReached;
+    private bool maxStepReached;
+
 
     /**< \brief Increments each time the environment is reset. */
     [HideInInspector]
     public int episodeCount;
-
-    /**< \brief Increments each time a step is taken in the environment. Is
-    * reset to 0 during AcademyReset(). */
     [HideInInspector]
-    public int currentStep;
+    public int stepsSinceReset;
 
     /**< \brief Do not modify : pointer to the communicator currently in 
      * use by the Academy. */
     public Communicator communicator;
 
-    private float timeAtStep;
+
 
     void Awake()
     {
-        resetParameters = new Dictionary<string, float>();
-        foreach (ResetParameter kv in defaultResetParameters)
-        {
-            resetParameters[kv.key] = kv.value;
-        }
+        _InitializeAcademy();
+    }
+    void _InitializeAcademy()
+    {
 
-        GetBrains(gameObject, brains);
+        List<Brain> brains = GetBrains(gameObject);
         InitializeAcademy();
 
         communicator = new ExternalCommunicator(this);
@@ -142,19 +126,31 @@ public abstract class Academy : MonoBehaviour
 
         foreach (Brain brain in brains)
         {
-            brain.InitializeBrain();
+            brain.InitializeBrain(this, communicator);
         }
         if (communicator != null)
         {
             communicator.InitializeCommunicator();
-            externalCommand = communicator.GetCommand();
+            communicator.UpdateCommand();
         }
-            
+
         isInference = (communicator == null);
         _isCurrentlyInference = !isInference;
-        done = true;
-        acceptingSteps = true;
+
+        BrainDecideAction += () => { };
+        AgentSetStatus += (m, d, i) => { };
+        AgentResetIfDone += () => { };
+        AgentSendState += () => { };
+        AgentAct += () => { };
+        AgentForceReset += () => { };
+
+        if (communicator == null)
+        {
+            _AcademyReset();
+            AgentForceReset();
+        }
     }
+
 
     /// Environment specific initialization.
     /**
@@ -171,20 +167,30 @@ public abstract class Academy : MonoBehaviour
     {
         if ((!isInference))
         {
-            Screen.SetResolution(trainingConfiguration.width, trainingConfiguration.height, false);
-            QualitySettings.SetQualityLevel(trainingConfiguration.qualityLevel, true);
+            Screen.SetResolution(
+                trainingConfiguration.width,
+                trainingConfiguration.height,
+                false);
+            QualitySettings.SetQualityLevel(
+                trainingConfiguration.qualityLevel, true);
             Time.timeScale = trainingConfiguration.timeScale;
-            Application.targetFrameRate = trainingConfiguration.targetFrameRate;
+            Application.targetFrameRate =
+                trainingConfiguration.targetFrameRate;
             QualitySettings.vSyncCount = 0;
             Time.captureFramerate = 60;
             Monitor.SetActive(false);
         }
         else
         {
-            Screen.SetResolution(inferenceConfiguration.width, inferenceConfiguration.height, false);
-            QualitySettings.SetQualityLevel(inferenceConfiguration.qualityLevel, true);
+            Screen.SetResolution(
+                inferenceConfiguration.width,
+                inferenceConfiguration.height,
+                false);
+            QualitySettings.SetQualityLevel(
+                inferenceConfiguration.qualityLevel, true);
             Time.timeScale = inferenceConfiguration.timeScale;
-            Application.targetFrameRate = inferenceConfiguration.targetFrameRate;
+            Application.targetFrameRate =
+                inferenceConfiguration.targetFrameRate;
             Time.captureFramerate = 60;
             Monitor.SetActive(true);
         }
@@ -212,167 +218,92 @@ public abstract class Academy : MonoBehaviour
     }
 
 
-    // Called after AcademyStep().
-    internal void Step()
+    public void Done()
     {
-        // Reset all agents whose flags are set to done.
-        foreach (Brain brain in brains)
-        {
-            // Set all agents to done if academy is done.
-            if (done)
-            {
-                brain.SendDone();
-                brain.SendMaxReached();
-            }
-            brain.ResetIfDone();
-
-            brain.SendState();
-
-            brain.ResetDoneAndReward();
-        }
-
+        done = true;
+    }
+    public bool IsDone()
+    {
+        return done;
     }
 
-    // Called before AcademyReset().
-    internal void Reset()
+
+    internal void _AcademyStep()
     {
-        currentStep = 0;
-        episodeCount++;
-        done = false;
-        maxStepReached = false;
-        AcademyReset();
 
-
-        foreach (Brain brain in brains)
-        {
-            brain.Reset();
-            brain.ResetDoneAndReward();
-        }
-
-    }
-
-    // Instructs all brains to process states to produce actions.
-    private void DecideAction()
-    {
-        if (communicator != null)
-        {
-            communicator.UpdateActions();
-        }
-
-        foreach (Brain brain in brains)
-        {
-            brain.DecideAction();
-        }
-
-        framesSinceAction = 0;
-    }
-
-    void FixedUpdate()
-    {
-        if (acceptingSteps)
-        {
-            RunMdp();
-        }
-    }
-
-    // Contains logic for taking steps in environment simulation.
-    /** Based on presence of communicator, inference mode, and frameSkip, 
-     * decides whether the environment should be stepped or reset.
-     */
-    void RunMdp()
-    {
         if (isInference != _isCurrentlyInference)
         {
             ConfigureEngine();
             _isCurrentlyInference = isInference;
         }
-        
-        if ((isInference) && (timeAtStep + waitTime > Time.time))
+        if (communicator != null)
         {
-            return;
+            if (communicator.GetCommand() == ExternalCommand.RESET)
+            {
+                Dictionary<string, float> NewResetParameters =
+                    communicator.GetResetParameters();
+                foreach (KeyValuePair<string, float> kv in NewResetParameters)
+                {
+                    resetParameters[kv.Key] = kv.Value;
+                }
+                _AcademyReset();
+                AgentForceReset();
+                communicator.SetCommand(ExternalCommand.STEP);
+            }
+            if (communicator.GetCommand() == ExternalCommand.QUIT)
+            {
+                Application.Quit();
+            }
         }
 
-        timeAtStep = Time.time;
-        framesSinceAction += 1;
-
-        currentStep += 1;
-        if ((currentStep >= maxSteps) && maxSteps > 0)
+        if ((stepsSinceReset >= maxSteps) && maxSteps > 0)
         {
-            done = true;
             maxStepReached = true;
+            Done();
         }
 
-        if ((framesSinceAction > frameToSkip) || done)
-        {
-            skippingFrames = false;
-            framesSinceAction = 0;
-        }
-        else
-        {
-            skippingFrames = true;
-        }
+        AgentSetStatus(maxStepReached, done, stepsSinceReset);
 
+        if (done)
+            _AcademyReset();
 
-        if (skippingFrames == false)
-        {
+        AgentResetIfDone();
 
-            if (communicator != null)
-            {
-                if (externalCommand == ExternalCommand.STEP)
-                {
-                    Step();
-                    externalCommand = communicator.GetCommand();
-                }
-                if (externalCommand == ExternalCommand.RESET)
-                {
-                    Dictionary<string, float> NewResetParameters = communicator.GetResetParameters();
-                    foreach (KeyValuePair<string, float> kv in NewResetParameters)
-                    {
-                        resetParameters[kv.Key] = kv.Value;
-                    }
-                    Reset();
-                    externalCommand = ExternalCommand.STEP;
-                    RunMdp();
-                    return;
-                }
-                if (externalCommand == ExternalCommand.QUIT)
-                {
-                    Application.Quit();
-                    return;
-                }
-            }
-            else
-            {
-                if (done)
-                {
-                    Reset();
-                    RunMdp();
-                    return;
-                }
-                else
-                {
-                    Step();
-                }
-            }
+        AgentSendState();
 
-            DecideAction();
-
-        }
-
+        BrainDecideAction();
 
         AcademyStep();
 
-        foreach (Brain brain in brains)
-        {
-            brain.Step();
-        }
+        AgentAct();
+
+        stepsSinceReset += 1;
+
 
     }
 
-    private static void GetBrains(GameObject gameObject, List<Brain> brains)
+    internal void _AcademyReset()
     {
+        stepsSinceReset = 0;
+        episodeCount++;
+        done = false;
+        maxStepReached = false;
+        AcademyReset();
+
+    }
+
+    void FixedUpdate()
+    {
+        _AcademyStep();
+
+    }
+
+
+    private static List<Brain> GetBrains(GameObject gameObject)
+    {
+        List<Brain> brains = new List<Brain>();
         var transform = gameObject.transform;
-        
+
         for (var i = 0; i < transform.childCount; i++)
         {
             var child = transform.GetChild(i);
@@ -382,5 +313,6 @@ public abstract class Academy : MonoBehaviour
                 brains.Add(brain);
 
         }
+        return brains;
     }
 }

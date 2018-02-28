@@ -35,23 +35,22 @@ public class BananaAgent : Agent
         myAcademy = myAcademyObj.GetComponent<BananaAcademy>();
     }
 
-    public override List<float> CollectState()
+    public override void CollectObservations()
     {
         float rayDistance = 50f;
         float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
         string[] detectableObjects = { "banana", "agent", "wall", "badBanana", "frozenAgent" };
-        state = RayPerception(state, rayDistance, rayAngles, detectableObjects);
+        RayPerception(rayDistance, rayAngles, detectableObjects);
         Vector3 localVelocity = transform.InverseTransformDirection(agentRB.velocity);
-        state.Add(localVelocity.x);
-        state.Add(localVelocity.z);
-        state.Add(System.Convert.ToInt32(frozen));
-        state.Add(System.Convert.ToInt32(shoot));
-        return state;
+        AddVectorObs(localVelocity.x);
+        AddVectorObs(localVelocity.z);
+        AddVectorObs(System.Convert.ToInt32(frozen));
+        AddVectorObs(System.Convert.ToInt32(shoot));
+
     }
 
-    public List<float> RayPerception(List<float> state, float rayDistance, 
-                                     float[] rayAngles, string[] detectableObjects)
-    {
+
+    public void RayPerception(float rayDistance, float[] rayAngles, string[] detectableObjects) {
         foreach (float angle in rayAngles)
         {
             float noise = 0f;
@@ -76,9 +75,9 @@ public class BananaAgent : Agent
             {
                 subList[detectableObjects.Length] = 1f;
             }
-            state.AddRange(new List<float>(subList));
+            foreach (float f in subList)
+                AddVectorObs(f);
         }
-        return state;
     }
 
     public Vector3 GiveCatersian(float radius, float angle)
@@ -174,6 +173,7 @@ public class BananaAgent : Agent
         gameObject.GetComponent<Renderer>().material.color = Color.black;
     }
 
+
     void Unfreeze()
     {
         frozen = false;
@@ -209,7 +209,7 @@ public class BananaAgent : Agent
 
 
 
-    public override void AgentStep(float[] act)
+    public override void AgentAction(float[] act)
     {
         MoveAgent(act);
     }
@@ -235,7 +235,7 @@ public class BananaAgent : Agent
         {
             Satiate();
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
-            reward += 1f;
+            AddReward(1f);
             bananas += 1;
             if (contribute)
             {
@@ -246,7 +246,8 @@ public class BananaAgent : Agent
         {
             Poison();
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
-            reward -= 1f;
+
+            AddReward(-1f);
             if (contribute)
             {
                 myAcademy.totalScore -= 1;
@@ -254,7 +255,7 @@ public class BananaAgent : Agent
         }
         if (collision.gameObject.CompareTag("wall"))
         {
-            done = true;
+            Done();
         }
     }
 

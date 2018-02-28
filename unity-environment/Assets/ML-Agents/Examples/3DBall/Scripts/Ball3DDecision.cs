@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Ball3DDecision : MonoBehaviour, Decision
 {
-    public float[] Decide(List<float> state, List<Camera> observation, float reward, bool done, float[] memory)
+    public float[] Decide(List<float> state, List<Texture2D> observation, float reward, bool done, List<float> memory)
     {
-        if (gameObject.GetComponent<Brain>().brainParameters.actionSpaceType == StateType.continuous)
+        if (gameObject.GetComponent<Brain>().brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             List<float> ret = new List<float>();
             if (state[2] < 0 || state[5] < 0)
@@ -34,8 +34,8 @@ public class Ball3DDecision : MonoBehaviour, Decision
         }
     }
 
-    public float[] MakeMemory(List<float> state, List<Camera> observation, float reward, bool done, float[] memory)
+    public List<float> MakeMemory(List<float> state, List<Texture2D> observation, float reward, bool done, List<float> memory)
     {
-        return new float[0];
+        return new List<float>();
     }
 }

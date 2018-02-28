@@ -7,16 +7,15 @@ public class AreaAgent : Agent
 
     public GameObject area;
 
-    public override List<float> CollectState()
+    public override void CollectObservations()
     {
         Vector3 velocity = GetComponent<Rigidbody>().velocity;
-		state.Add((transform.position.x - area.transform.position.x));
-		state.Add((transform.position.y - area.transform.position.y));
-		state.Add((transform.position.z + 5 - area.transform.position.z));
-		state.Add(velocity.x);
-		state.Add(velocity.y);
-		state.Add(velocity.z);
-		return state;
+		AddVectorObs((transform.position.x - area.transform.position.x));
+		AddVectorObs((transform.position.y - area.transform.position.y));
+		AddVectorObs((transform.position.z + 5 - area.transform.position.z));
+		AddVectorObs(velocity.x);
+		AddVectorObs(velocity.y);
+		AddVectorObs(velocity.z);
 	}
 
     public void MoveAgent(float[] act) {
@@ -24,7 +23,7 @@ public class AreaAgent : Agent
         float directionZ = 0;
         float directionY = 0;
 
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             directionX = Mathf.Clamp(act[0], -1f, 1f);
             directionZ = Mathf.Clamp(act[1], -1f, 1f);
@@ -66,16 +65,16 @@ public class AreaAgent : Agent
         }
     }
 
-	public override void AgentStep(float[] act)
+	public override void AgentAction(float[] act)
 	{
-		reward = -0.005f;
+        AddReward(-0.005f);
         MoveAgent(act);
 
 		if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
             Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
 		{
-			done = true;
-			reward = -1f;
+            Done();
+            AddReward(-1f);
 		}
 	}
 

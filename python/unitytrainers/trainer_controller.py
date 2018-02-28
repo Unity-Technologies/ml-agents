@@ -75,6 +75,7 @@ class TrainerController(object):
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     curriculum=self.curriculum_file, seed=self.seed)
+        self.logger.info(str(self.env))
         self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
 
     def _get_progress(self):
@@ -107,7 +108,7 @@ class TrainerController(object):
                 elif not self.trainers[brain_name].parameters["use_recurrent"]:
                     nodes += [scope + x for x in ["action", "value_estimate", "action_probs"]]
                 else:
-                    node_list = ["action", "value_estimate", "action_probs", "recurrent_out"]
+                    node_list = ["action", "value_estimate", "action_probs", "recurrent_out", "memory_size"]
                     nodes += [scope + x for x in node_list]
         if len(scopes) > 1:
             self.logger.info("List of available scopes :")
@@ -239,14 +240,15 @@ class TrainerController(object):
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
-                    take_action_actions, take_action_memories, take_action_values, take_action_outputs = {}, {}, {}, {}
+                    take_action_vector, take_action_memories, take_action_text, take_action_outputs = {}, {}, {}, {}
                     for brain_name, trainer in self.trainers.items():
-                        (take_action_actions[brain_name],
+                        (take_action_vector[brain_name],
                          take_action_memories[brain_name],
-                         take_action_values[brain_name],
+                         take_action_text[brain_name],
                          take_action_outputs[brain_name]) = trainer.take_action(curr_info)
-                    new_info = self.env.step(action=take_action_actions, memory=take_action_memories,
-                                             value=take_action_values)
+                    new_info = self.env.step(vector_action=take_action_vector, memory=take_action_memories,
+                                             text_action=take_action_text)
+
                     for brain_name, trainer in self.trainers.items():
                         trainer.add_experiences(curr_info, new_info, take_action_outputs[brain_name])
                     curr_info = new_info
