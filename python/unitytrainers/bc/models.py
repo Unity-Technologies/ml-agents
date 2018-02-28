@@ -9,10 +9,7 @@ class BehavioralCloningModel(LearningModel):
         LearningModel.__init__(self, m_size, normalize, use_recurrent, brain)
 
         num_streams = 1
-        if brain.vector_action_space_type == "discrete":
-            hidden_streams = self.create_new_obs(num_streams, h_size, n_layers, tf.nn.elu)
-        else:
-            hidden_streams = self.create_new_obs(num_streams, h_size, n_layers, tf.nn.tanh)
+        hidden_streams = self.create_new_obs(num_streams, h_size, n_layers)
         hidden = hidden_streams[0]
         self.dropout_rate = tf.placeholder(dtype=tf.float32, shape=[], name="dropout_rate")
         hidden_reg = tf.layers.dropout(hidden, self.dropout_rate)

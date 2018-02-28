@@ -64,13 +64,17 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public string[] ObservationPlaceholderName;
     /// Modify only in inspector : Name of the action node
     public string ActionPlaceholderName = "action";
+    /// Modify only in inspector : Name of the previous action node
+    public string PreviousActionPlaceholderName = "prev_action";
 #if ENABLE_TENSORFLOW
     TFGraph graph;
     TFSession session;
     bool hasRecurrent;
     bool hasState;
     bool hasBatchSize;
+    bool hasPrevAction;
     float[,] inputState;
+    int[] inputPrevAction;
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
     List<Texture2D> texturesHolder;
@@ -120,6 +124,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
             session = new TFSession(graph);
 
+            // TODO: Make this a loop over a dynamic set of graph inputs
+
             if ((graphScope.Length > 1) && (graphScope[graphScope.Length - 1] != '/'))
             {
                 graphScope = graphScope + '/';
@@ -136,11 +142,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 runner.Fetch(graph[graphScope + "memory_size"][0]);
                 var networkOutput = runner.Run()[0].GetValue();
                 memorySize = (int)networkOutput;
-
             }
             if (graph[graphScope + StatePlacholderName] != null)
             {
-                hasState = true;
+                hasState = brain.brainParameters.vectorActionSpaceType == StateType.discrete;
+            }
+            if (graph[graphScope + PreviousActionPlaceholderName] != null)
+            {
+                hasPrevAction = true;
             }
         }
         observationMatrixList = new List<float[,,,]>();
@@ -171,7 +180,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         if (hasState)
         {
             int stateLength = 1;
-            if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+            if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
             {
                 stateLength = brain.brainParameters.vectorObservationSize;
             }
@@ -189,6 +198,18 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             }
         }
 
+        // Create the state tensor
+        if (hasPrevAction)
+        {
+            inputPrevAction = new int[currentBatchSize];
+            var i = 0;
+            foreach (Agent agent in agentList)
+            {
+                float[] action_list = agentInfo[agent].StoredVectorActions;
+                inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
+                i++;
+            }
+        }
 
 
         observationMatrixList.Clear();
@@ -213,9 +234,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 float[] m = agentInfo[agent].memories.ToArray();
                 for (int j = 0; j < m.Count(); j++)
                 {
-
                     inputOldMemories[i, j] = m[j];
-
                 }
                 i++;
             }
@@ -277,7 +296,13 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             }
         }
 
-        //// Create the observation tensors
+        // Create the previous action tensor
+        if (hasPrevAction)
+        {
+            runner.AddInput(graph[graphScope + PreviousActionPlaceholderName][0], inputPrevAction);
+        }
+
+        // Create the observation tensors
         for (int obs_number = 0; obs_number < brain.brainParameters.cameraResolutions.Length; obs_number++)
         {
             runner.AddInput(graph[graphScope + ObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);

@@ -75,6 +75,7 @@ class TrainerController(object):
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     curriculum=self.curriculum_file, seed=self.seed)
+        self.logger.info(str(self.env))
         self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
 
     def _get_progress(self):
@@ -107,7 +108,8 @@ class TrainerController(object):
                 elif not self.trainers[brain_name].parameters["use_recurrent"]:
                     nodes += [scope + x for x in ["action", "value_estimate", "action_probs"]]
                 else:
-                    nodes += [scope + x for x in ["action", "value_estimate", "action_probs", "recurrent_out", "memory_size"]]
+                    node_list = ["action", "value_estimate", "action_probs", "recurrent_out", "memory_size"]
+                    nodes += [scope + x for x in node_list]
         if len(scopes) > 1:
             self.logger.info("List of available scopes :")
             for scope in scopes:
@@ -226,7 +228,7 @@ class TrainerController(object):
                 sess.run(init)
             global_step = 0  # This is only for saving the model
             self.env.curriculum.increment_lesson(self._get_progress())
-            info = self.env.reset(train_mode=self.fast_simulation)
+            curr_info = self.env.reset(train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters', trainer.parameters)
@@ -234,7 +236,7 @@ class TrainerController(object):
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
                         self.env.curriculum.increment_lesson(self._get_progress())
-                        info = self.env.reset(train_mode=self.fast_simulation)
+                        curr_info = self.env.reset(train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
@@ -243,14 +245,15 @@ class TrainerController(object):
                         (take_action_vector[brain_name],
                          take_action_memories[brain_name],
                          take_action_text[brain_name],
-                         take_action_outputs[brain_name]) = trainer.take_action(info)
+                         take_action_outputs[brain_name]) = trainer.take_action(curr_info)
                     new_info = self.env.step(vector_action=take_action_vector, memory=take_action_memories,
                                              text_action=take_action_text)
+
                     for brain_name, trainer in self.trainers.items():
-                        trainer.add_experiences(info, new_info, take_action_outputs[brain_name])
-                    info = new_info
+                        trainer.add_experiences(curr_info, new_info, take_action_outputs[brain_name])
+                    curr_info = new_info
                     for brain_name, trainer in self.trainers.items():
-                        trainer.process_experiences(info)
+                        trainer.process_experiences(curr_info)
                         if trainer.is_ready_update() and self.train_model and trainer.get_step <= trainer.get_max_steps:
                             # Perform gradient descent with experience buffer
                             trainer.update_model()

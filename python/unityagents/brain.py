@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 class BrainInfo:
     def __init__(self, visual_observation, vector_observation, text_observations, memory=None,
                 reward=None, agents=None, local_done=None,
@@ -14,6 +17,9 @@ class BrainInfo:
         self.max_reached = max_reached
         self.agents = agents
         self.previous_actions = action
+
+
+AllBrainInfo = Dict[str, BrainInfo]
 
 
 class BrainParameters:

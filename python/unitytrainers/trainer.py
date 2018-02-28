@@ -3,7 +3,7 @@ import logging
 
 import tensorflow as tf
 
-from unityagents import UnityException
+from unityagents import UnityException, AllBrainInfo
 
 logger = logging.getLogger("unityagents")
 
@@ -85,29 +85,29 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_last_reward method was not implemented.")
 
-    def take_action(self, info):
+    def take_action(self, all_brain_info: AllBrainInfo):
         """
         Decides actions given state/observation information, and takes them in environment.
-        :param info: Current BrainInfo from environment.
-        :return: a tupple containing action, memories, values and an object
+        :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
+        :return: a tuple containing action, memories, values and an object
         to be passed to add experiences
         """
         raise UnityTrainerException("The take_action method was not implemented.")
 
-    def add_experiences(self, info, next_info, take_action_outputs):
+    def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
         """
         Adds experiences to each agent's experience history.
-        :param info: Current BrainInfo.
-        :param next_info: Next BrainInfo.
+        :param curr_info: Current AllBrainInfo.
+        :param next_info: Next AllBrainInfo.
         :param take_action_outputs: The outputs of the take action method.
         """
         raise UnityTrainerException("The add_experiences method was not implemented.")
 
-    def process_experiences(self, info):
+    def process_experiences(self, info: AllBrainInfo):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param info: Current BrainInfo
+        :param info: Dictionary of all current brains and corresponding BrainInfo.
         """
         raise UnityTrainerException("The process_experiences method was not implemented.")
 

@@ -9,7 +9,7 @@ import socket
 import subprocess
 import struct
 
-from .brain import BrainInfo, BrainParameters
+from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
@@ -127,6 +127,7 @@ class UnityEnvironment(object):
             self._global_done = None
             self._academy_name = p["AcademyName"]
             self._log_path = p["logPath"]
+            # Need to instantiate new AllBrainInfo
             self._brains = {}
             self._brain_names = p["brainNames"]
             self._external_brain_names = p["externalBrainNames"]
@@ -139,13 +140,14 @@ class UnityEnvironment(object):
                 self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
             self._loaded = True
             logger.info("\n'{}' started successfully!".format(self._academy_name))
-            if (self._num_external_brains == 0):
+            if self._num_external_brains == 0:
                 logger.warning(" No External Brains found in the Unity Environment. "
                                "You will not be able to pass actions to your agent(s).")
         except UnityEnvironmentException:
             proc1.kill()
             self.close()
             raise
+
     @property
     def curriculum(self):
         return self._curriculum
@@ -185,8 +187,8 @@ class UnityEnvironment(object):
     @staticmethod
     def _process_pixels(image_bytes=None, bw=False):
         """
-        Converts bytearray observation image into numpy array, resizes it, and optionally converts it to greyscale
-        :param image_bytes: input bytearray corresponding to image
+        Converts byte array observation image into numpy array, re-sizes it, and optionally converts it to grey scale
+        :param image_bytes: input byte array corresponding to image
         :return: processed numpy array of observation from environment
         """
         s = bytearray(image_bytes)
@@ -245,15 +247,13 @@ class UnityEnvironment(object):
         state_dict = json.loads(state)
         return state_dict, None
 
-    def reset(self, train_mode=True, config=None, lesson=None):
+    def reset(self, train_mode=True, config=None, lesson=None) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
-        :return: A Data structure corresponding to the initial reset state of the environment.
+        :return: AllBrainInfo  : A Data structure corresponding to the initial reset state of the environment.
         """
         if config is None:
             config = self._curriculum.get_config(lesson)
-
-
         elif config != {}:
             logger.info("\nAcademy Reset with parameters : \t{0}"
                         .format(', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
@@ -277,10 +277,10 @@ class UnityEnvironment(object):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
-    def _get_state(self):
+    def _get_state(self) -> AllBrainInfo:
         """
         Collects experience information from all external brains in environment at current step.
-        :return: a dictionary BrainInfo objects.
+        :return: a dictionary of BrainInfo objects.
         """
         self._data = {}
         while True:
@@ -369,14 +369,14 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
-    def step(self,  vector_action=None, memory=None, text_action=None):
+    def step(self,  vector_action=None, memory=None, text_action=None) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly, and returns
         observation, state, and reward information to the agent.
         :param vector_action: Agent's vector action to send to environment. Can be a scalar or vector of int/floats.
         :param memory: Vector corresponding to memory used for RNNs, frame-stacking, or other auto-regressive process.
         :param text_action: Text action to send to environment for.
-        :return: A Data structure corresponding to the new state of the environment.
+        :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
         vector_action = {} if vector_action is None else vector_action
         memory = {} if memory is None else memory
@@ -462,6 +462,7 @@ class UnityEnvironment(object):
                         str(self._brains[b].vector_action_space_size * n_agent),
                         self._brains[b].vector_action_space_type,
                         str(vector_action[b])))
+
             self._conn.send(b"STEP")
             self._send_action(vector_action, memory, text_action)
             return self._get_state()

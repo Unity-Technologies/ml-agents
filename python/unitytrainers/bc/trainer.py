@@ -8,6 +8,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
+from unityagents import AllBrainInfo
 from unitytrainers.bc.models import BehavioralCloningModel
 from unitytrainers.buffer import Buffer
 from unitytrainers.trainer import UnityTrainerException, Trainer
@@ -132,11 +133,11 @@ class BehavioralCloningTrainer(Trainer):
         """
         return
 
-    def take_action(self, all_brain_info):
+    def take_action(self, all_brain_info: AllBrainInfo):
         """
         Decides actions given state/observation information, and takes them in environment.
-        :param info: Current BrainInfo from environment.
-        :return: a tupple containing action, memories, values and an object
+        :param all_brain_info: AllBrainInfo from environment.
+        :return: a tuple containing action, memories, values and an object
         to be passed to add experiences
         """
         if len(all_brain_info[self.brain_name].agents) == 0:
@@ -162,14 +163,14 @@ class BehavioralCloningTrainer(Trainer):
             agent_action = self.sess.run(run_list, feed_dict)
         return agent_action, None, None, None
 
-    def add_experiences(self, info, next_info, take_action_outputs):
+    def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
         """
         Adds experiences to each agent's experience history.
-        :param info: Current BrainInfo.
-        :param next_info: Next BrainInfo.
+        :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
+        :param next_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
         :param take_action_outputs: The outputs of the take action method.
         """
-        info_expert = info[self.brain_to_imitate]
+        info_expert = curr_info[self.brain_to_imitate]
         next_info_expert = next_info[self.brain_to_imitate]
         for agent_id in info_expert.agents:
             idx = info_expert.agents.index(agent_id)
@@ -187,7 +188,7 @@ class BehavioralCloningTrainer(Trainer):
                 next_idx = next_info_expert.agents.index(agent_id)
                 if not stored_info_expert.local_done[idx]:
                     if self.use_observations:
-                        for i, _ in enumerate(info.visual_observations):
+                        for i, _ in enumerate(stored_info_expert.visual_observations):
                             self.training_buffer[agent_id]['observations%d' % i].append(stored_info_expert.visual_observations[i][idx])
                     if self.use_states:
                         self.training_buffer[agent_id]['states'].append(stored_info_expert.vector_observations[idx])
@@ -197,7 +198,7 @@ class BehavioralCloningTrainer(Trainer):
                         self.training_buffer[agent_id]['memory'].append(stored_info_expert.memories[idx])
                     self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_actions[next_idx])
 
-        info_student = info[self.brain_name]
+        info_student = curr_info[self.brain_name]
         next_info_student = next_info[self.brain_name]
         for agent_id in info_student.agents:
             idx = info_student.agents.index(agent_id)
@@ -219,11 +220,11 @@ class BehavioralCloningTrainer(Trainer):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-    def process_experiences(self, info):
+    def process_experiences(self, info: AllBrainInfo):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param info: Current BrainInfo
+        :param info: Current AllBrainInfo
         """
         info_expert = info[self.brain_to_imitate]
         for l in range(len(info_expert.agents)):

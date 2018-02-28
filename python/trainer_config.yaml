@@ -1,8 +1,8 @@
 default:
     trainer: ppo
-    batch_size: 32
+    batch_size: 1024
     beta: 5.0e-3
-    buffer_size: 512
+    buffer_size: 10240
     epsilon: 0.2
     gamma: 0.99
     hidden_units: 128
@@ -10,7 +10,7 @@ default:
     learning_rate: 3.0e-4
     max_steps: 5.0e4
     memory_size: 256
-    normalize: true
+    normalize: false
     num_epoch: 5
     num_layers: 2
     time_horizon: 64
@@ -19,12 +19,72 @@ default:
     use_recurrent: false
 
 Ball3DBrain:
-    summary_freq: 1000
     normalize: true
-    batch_size: 1000
-    buffer_size: 10000 
+
+BrainWallJumpCC:
+    max_steps: 2.0e5
+    num_layers: 2
+    beta: 5.0e-4
+    hidden_units: 256
+    use_recurrent: true
+    sequence_length: 32
+    time_horizon: 32
+    batch_size: 32
+    buffer_size: 320
+
+Ball3DHardBrain:
+    max_steps: 5.0e4
+    num_layers: 2
+    normalize: true
+    num_epoch: 3
+    beta: 5.0e-4
     hidden_units: 64
-    max_steps: 1.0e5
+
+    use_recurrent: true
+    sequence_length: 8
+    time_horizon: 8
+    batch_size: 32
+    buffer_size: 320
+
+HallwayBrainDC:
+    num_layers: 3
+    hidden_units: 256
+    beta: 1.0e-2
+    gamma: 0.99
+    num_epoch: 3
+    buffer_size: 512
+    batch_size: 64
+    max_steps: 5.0e5
+    summary_freq: 1000
+    time_horizon: 64
+
+BrainWallJumpDC:
+    use_recurrent: true
+    sequence_length: 64
+    num_layers: 2
+    hidden_units: 128
+    beta: 1.0e-2
+    gamma: 0.99
+    num_epoch: 3
+    buffer_size: 16
+    batch_size: 2
+    max_steps: 5.0e5
+    summary_freq: 1000
+    time_horizon: 64
+
+HallwayBrainDCLSTM:
+    use_recurrent: true
+    sequence_length: 64
+    num_layers: 2
+    hidden_units: 128
+    beta: 1.0e-2
+    gamma: 0.99
+    num_epoch: 3
+    buffer_size: 16
+    batch_size: 2
+    max_steps: 5.0e5
+    summary_freq: 1000
+    time_horizon: 64
 
 GridWorldBrain:
     batch_size: 32

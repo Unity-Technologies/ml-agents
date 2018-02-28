@@ -30,6 +30,7 @@ class PPOModel(LearningModel):
         self.last_reward, self.new_reward, self.update_reward = self.create_reward_encoder()
         if brain.vector_action_space_type == "continuous":
             self.create_cc_actor_critic(h_size, num_layers)
+            self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers)
         self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
@@ -57,17 +58,29 @@ class PPOModel(LearningModel):
         """
 
         self.returns_holder = tf.placeholder(shape=[None], dtype=tf.float32, name='discounted_rewards')
-        self.advantage = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='advantages')
+        self.advantage = tf.placeholder(shape=[None], dtype=tf.float32, name='advantages')
         self.learning_rate = tf.train.polynomial_decay(lr, self.global_step, max_step, 1e-10, power=1.0)
+
+        self.old_value = tf.placeholder(shape=[None], dtype=tf.float32, name='old_value_estimates')
+        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
 
         decay_epsilon = tf.train.polynomial_decay(epsilon, self.global_step, max_step, 0.1, power=1.0)
         decay_beta = tf.train.polynomial_decay(beta, self.global_step, max_step, 1e-5, power=1.0)
         optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
 
-        r_theta = probs / (old_probs + 1e-10)
-        p_opt_a = r_theta * self.advantage
-        p_opt_b = tf.clip_by_value(r_theta, 1 - decay_epsilon, 1 + decay_epsilon) * self.advantage
-        self.policy_loss = -tf.reduce_mean(tf.minimum(p_opt_a, p_opt_b))
-        self.value_loss = tf.reduce_mean(tf.squared_difference(self.returns_holder, tf.reduce_sum(value, axis=1)))
-        self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(entropy)
+        self.mask = tf.equal(self.mask_input, 1.0)
+
+        clipped_value_estimate = self.old_value + tf.clip_by_value(tf.reduce_sum(value, axis=1) - self.old_value,
+                                                                   - decay_epsilon, decay_epsilon)
+
+        v_opt_a = tf.squared_difference(self.returns_holder, tf.reduce_sum(value, axis=1))
+        v_opt_b = tf.squared_difference(self.returns_holder, clipped_value_estimate)
+        self.value_loss = tf.reduce_mean(tf.boolean_mask(tf.maximum(v_opt_a, v_opt_b), self.mask))
+
+        self.r_theta = probs / (old_probs + 1e-10)
+        self.p_opt_a = self.r_theta * self.advantage
+        self.p_opt_b = tf.clip_by_value(self.r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
+        self.policy_loss = -tf.reduce_mean(tf.boolean_mask(tf.minimum(self.p_opt_a, self.p_opt_b), self.mask))
+        self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(
+            tf.boolean_mask(entropy, self.mask))
         self.update_batch = optimizer.minimize(self.loss)
