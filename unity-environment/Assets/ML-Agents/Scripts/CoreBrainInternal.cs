@@ -62,6 +62,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public string[] ObservationPlaceholderName;
     /// Modify only in inspector : Name of the action node
     public string ActionPlaceholderName = "action";
+    public string PreviousActionPlaceholderName = "prev_action";
 #if ENABLE_TENSORFLOW
     TFGraph graph;
     TFSession session;
@@ -69,9 +70,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     bool hasState;
     bool hasBatchSize;
     bool hasValue;
+    bool hasPrevAction;
     List<int> agentKeys;
     int currentBatchSize;
     float[,] inputState;
+    int[] inputPrevAction;
     List<float[,,,]> observationMatrixList;
     float[,] inputOldMemories;
 #endif
@@ -119,6 +122,8 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
             session = new TFSession(graph);
 
+            // TODO: Make this a loop over a dynamic set of graph inputs
+
             if ((graphScope.Length > 1) && (graphScope[graphScope.Length - 1] != '/'))
             {
                 graphScope = graphScope + '/';
@@ -131,7 +136,6 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             if ((graph[graphScope + RecurrentInPlaceholderName] != null) && (graph[graphScope + RecurrentOutPlaceholderName] != null))
             {
                 hasRecurrent = true;
-
             }
             if (graph[graphScope + StatePlacholderName] != null)
             {
@@ -140,6 +144,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             if (graph[graphScope + "value_estimate"] != null)
             {
                 hasValue = true;
+            }
+            if (graph[graphScope + PreviousActionPlaceholderName] != null)
+            {
+                hasPrevAction = true;
             }
         }
 #endif
@@ -179,13 +187,25 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 List<float> state_list = states[k];
                 for (int j = 0; j < stateLength * brain.brainParameters.stackedStates; j++)
                 {
-
                     inputState[i, j] = state_list[j];
                 }
                 i++;
             }
         }
 
+        // Create the state tensor
+        if (hasPrevAction)
+        {
+            Dictionary<int, float[]> prevActions = brain.CollectActions();
+            inputPrevAction = new int[currentBatchSize];
+            var i = 0;
+            foreach (int k in agentKeys)
+            {
+                float[] action_list = prevActions[k];
+                inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
+                i++;
+            }
+        }
 
         // Create the observation tensors
         observationMatrixList = brain.GetObservationMatrixList(agentKeys);
@@ -280,6 +300,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             {
                 runner.AddInput(graph[graphScope + StatePlacholderName][0], inputState);
             }
+        }
+
+        // Create the previous action tensor
+        if (hasPrevAction)
+        {
+            runner.AddInput(graph[graphScope + PreviousActionPlaceholderName][0], inputPrevAction);
         }
 
         // Create the observation tensors
