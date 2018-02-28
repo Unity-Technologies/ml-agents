@@ -170,7 +170,7 @@ class PPOTrainer(Trainer):
         if self.is_continuous:
             run_list.append(self.model.epsilon)
         elif self.use_recurrent:
-            feed_dict[self.model.prev_action] = np.reshape(info.previous_actions, [-1])
+            feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_actions, [-1])
         if self.use_observations:
             for i, _ in enumerate(curr_brain_info.observations):
                 feed_dict[self.model.observation_in[i]] = curr_brain_info.observations[i]
