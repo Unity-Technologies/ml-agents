@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 4587181662868872}
   - component: {fileID: 33731433020831250}
   - component: {fileID: 65005393801495654}
-  - component: {fileID: 114841131957396212}
+  - component: {fileID: 114143683117020968}
   m_Layer: 8
   m_Name: agent
   m_TagString: agent
@@ -183,7 +183,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: 0457b417479684a52a3403f88f1b6b72, type: 2}
   m_StaticBatchInfo:
@@ -218,7 +217,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: 0457b417479684a52a3403f88f1b6b72, type: 2}
   m_StaticBatchInfo:
@@ -253,7 +251,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: 0457b417479684a52a3403f88f1b6b72, type: 2}
   m_StaticBatchInfo:
@@ -288,7 +285,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: 0457b417479684a52a3403f88f1b6b72, type: 2}
   m_StaticBatchInfo:
@@ -405,7 +401,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114841131957396212
+--- !u!114 &114143683117020968
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -417,19 +413,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  observations:
-  - {fileID: 0}
-  maxStep: 100
-  resetOnDone: 1
-  state: []
-  stackedStates: []
-  reward: 0
-  done: 0
-  maxStepReached: 0
-  value: 0
-  CumulativeReward: 0
   stepCounter: 0
-  agentStoredAction: []
-  memory: []
-  id: 0
-  academy: {fileID: 0}
+  agentParameters:
+    agentCameras:
+    - {fileID: 0}
+    maxStep: 100
+    resetOnDone: 1
+    onDemandDecision: 1
+    numberOfActionsBetweenDecisions: 1
+  timeBetweenDecisions: 0.15

@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class BasicAgent : Agent
 {
-
+    [Header("Specific to Basic")]
+    private BasicAcademy academy;
+    public float timeBetweenDecisionsAtInference;
+    private float timeSinceDecision;
 	public int position;
 	public int smallGoalPosition;
 	public int largeGoalPosition;
@@ -12,6 +15,11 @@ public class BasicAgent : Agent
 	public GameObject smallGoal;
 	public int minPosition;
 	public int maxPosition;
+
+    public override void InitializeAgent()
+    {
+        academy = FindObjectOfType(typeof(BasicAcademy)) as BasicAcademy;
+    }
 
 	public override void CollectObservations()
 	{
@@ -61,4 +69,30 @@ public class BasicAgent : Agent
 	{
 
 	}
+
+    public void FixedUpdate()
+    {
+        WaitTimeInference();
+    }
+
+    private void WaitTimeInference()
+    {
+        if (!academy.isInference)
+        {
+            RequestDecision();
+        }
+        else
+        {
+            if (timeSinceDecision >= timeBetweenDecisionsAtInference)
+            {
+                timeSinceDecision = 0f;
+                RequestDecision();
+            }
+            else
+            {
+                timeSinceDecision += Time.fixedDeltaTime;
+            }
+        }
+    }
+
 }
