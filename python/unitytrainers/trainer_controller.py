@@ -227,7 +227,7 @@ class TrainerController(object):
                 sess.run(init)
             global_step = 0  # This is only for saving the model
             self.env.curriculum.increment_lesson(self._get_progress())
-            info = self.env.reset(train_mode=self.fast_simulation)
+            curr_info = self.env.reset(train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters', trainer.parameters)
@@ -235,7 +235,7 @@ class TrainerController(object):
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
                         self.env.curriculum.increment_lesson(self._get_progress())
-                        info = self.env.reset(train_mode=self.fast_simulation)
+                        curr_info = self.env.reset(train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
@@ -244,14 +244,14 @@ class TrainerController(object):
                         (take_action_actions[brain_name],
                          take_action_memories[brain_name],
                          take_action_values[brain_name],
-                         take_action_outputs[brain_name]) = trainer.take_action(info)
+                         take_action_outputs[brain_name]) = trainer.take_action(curr_info)
                     new_info = self.env.step(action=take_action_actions, memory=take_action_memories,
                                              value=take_action_values)
                     for brain_name, trainer in self.trainers.items():
-                        trainer.add_experiences(info, new_info, take_action_outputs[brain_name])
-                    info = new_info
+                        trainer.add_experiences(curr_info, new_info, take_action_outputs[brain_name])
+                    curr_info = new_info
                     for brain_name, trainer in self.trainers.items():
-                        trainer.process_experiences(info)
+                        trainer.process_experiences(curr_info)
                         if trainer.is_ready_update() and self.train_model and trainer.get_step <= trainer.get_max_steps:
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
