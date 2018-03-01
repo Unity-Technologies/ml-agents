@@ -4,22 +4,24 @@ The Brain encapsulates the decision making process. Brain objects must be childr
 
 Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
 
-The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `State Size` property must match the length of the feature vector created by an agent exactly. See [Agents](Learning-Environment-Design-Agents.md) for information about creating agents and setting up a Brain instance correctly.
+The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `Vector Observation Space Size` property must match the length of the feature vector created by an agent exactly. See [Agents](Learning-Environment-Design-Agents.md) for information about creating agents and setting up a Brain instance correctly.
 
 ## Brain Properties
 
 ![Brain Inspector](images/brain.png)
 
-* `Brain Parameters` - Define state, observation, and action spaces for the Brain.
-    * `State Size` - Length of state vector for brain (In _Continuous_ state space). Or number of possible
-values (in _Discrete_ state space).
-    * `Action Size` - Length of action vector for brain (In _Continuous_ state space). Or number of possible
+* `Brain Parameters` - Define vector observations, visual observation, and vector actions for the Brain.
+    * `Vector Observation` 
+    	* `Space Type` - Corresponds to whether the observation vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
+    	* `Space Size` - Length of vector observation for brain (In _Continuous_ space type). Or number of possible
+values (in _Discrete_ space type).
+		* `Stacked Vectors` - The number of previous vector observations that will be stacked before being sent to the brain.
+	* `Visual Observations`	- Describes height, width, and whether to greyscale visual observations for the Brain.
+	* `Vector Action`
+		* `Space Type` - Corresponds to whether action vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
+		* `Space Size` - Length of action vector for brain (In _Continuous_ state space). Or number of possible
 values (in _Discrete_ action space).
-    * `Memory Size` - Length of memory vector for brain. Used with Recurrent networks and frame-stacking CNNs.
-    * `Camera Resolution` - Describes height, width, and whether to greyscale visual observations for the Brain.
-    * `Action Descriptions` - A list of strings used to name the available actions for the Brain.
-* `State Space Type` - Corresponds to whether state vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
-* `Action Space Type` - Corresponds to whether action vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
+		* `Action Descriptions` - A list of strings used to name the available actions for the Brain.
 * `Type of Brain` - Describes how the Brain will decide actions.
     * `External` - Actions are decided using Python API.
     * `Internal` - Actions are decided using internal TensorFlowSharp model.
@@ -36,7 +38,7 @@ values (in _Discrete_ action space).
    *  `State Node Name` : If your graph uses the state as an input, you must specify the name if the placeholder here.
    *  `Recurrent Input Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the input placeholder here.
    *  `Recurrent Output Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the output placeholder here.
-   * `Observation Placeholder Name` : If your graph uses observations as input, you must specify it here. Note that the number of observations is equal to the length of `Camera Resolutions` in the brain parameters.
+   * `Visual Observation Placeholder Name` : If your graph uses observations as input, you must specify it here. Note that the number of observations is equal to the length of `Camera Resolutions` in the brain parameters.
    * `Action Node Name` : Specify the name of the placeholder corresponding to the actions of the brain in your graph. If the action space type is continuous, the output must be a one dimensional tensor of float of length `Action Space Size`, if the action space type is discrete, the output must be a one dimensional tensor of int of length 1.
    * `Graph Placeholder` : If your graph takes additional inputs that are fixed (example: noise level) you can specify them here. Note that in your graph, these must correspond to one dimensional tensors of int or float of size 1.
      * `Name` : Corresponds to the name of the placeholdder.

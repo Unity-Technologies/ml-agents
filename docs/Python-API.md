@@ -19,12 +19,15 @@ env = UnityEnvironment(file_name=filename, worker_id=0)
 
 A BrainInfo object contains the following fields:
 
-* **`observations`** : A list of 4 dimensional numpy arrays. Matrix n of the list corresponds to the n<sup>th</sup> observation of the brain. 
-* **`states`** : A two dimensional numpy array of dimension `(batch size, state size)` if the state space is continuous and `(batch size, 1)` if the state space is discrete.
+* **`visual_observations`** : A list of 4 dimensional numpy arrays. Matrix n of the list corresponds to the n<sup>th</sup> observation of the brain. 
+* **`vector_observations`** : A two dimensional numpy array of dimension `(batch size, vector observation size)` if the vector observation space is continuous and `(batch size, 1)` if the vector observation space is discrete.
+* **`text_observations`** : A list of string corresponding to the agents text observations.
 * **`memories`** : A two dimensional numpy array of dimension `(batch size, memory size)` which corresponds to the memories sent at the previous step.
 * **`rewards`** : A list as long as the number of agents using the brain containing the rewards they each obtained at the previous step. 
 * **`local_done`** : A list as long as the number of agents using the brain containing  `done` flags (wether or not the agent is done). 
+* **`max_reached`** : A list as long as the number of agents using the brain containing true if the agents reached their max steps.
 * **`agents`** : A list of the unique ids of the agents using the brain.
+* **`previous_actions`** : A two dimensional numpy array of dimension `(batch size, vector action size)` if the vector action space is continuous and `(batch size, 1)` if the vector action space is discrete.
 
 Once loaded, `env` can be used in the following way:  
 - **Print : `print(str(env))`**  
@@ -33,11 +36,11 @@ Prints all parameters relevant to the loaded environment and the external brains
 Send a reset signal to the environment, and provides a dictionary mapping brain names to BrainInfo objects.  
     - `train_model` indicates whether to run the environment in train (`True`) or test (`False`) mode.
     - `config` is an optional dictionary of configuration flags specific to the environment. For more information on adding optional config flags to an environment, see [here](Making-a-new-Unity-Environment.md#implementing-yournameacademy). For generic environments, `config` can be ignored. `config` is a dictionary of strings to floats where the keys are the names of the `resetParameters` and the values are their corresponding float values.  
-- **Step : `env.step(action, memory=None, value = None)`**  
+- **Step : `env.step(action, memory=None, text_action=None)`**  
 Sends a step signal to the environment using the actions. For each brain : 
     - `action` can be one dimensional arrays or two dimensional arrays if you have multiple agents per brains.
     - `memory` is an optional input that can be used to send a list of floats per agents to be retrieved at the next step.
-    - `value` is an optional input that be used to send a single float per agent to be displayed if and `AgentMonitor.cs` component is attached to the agent. 
+    - `text_action` is an optional input that be used to send a single string per agent.
 
 Note that if you have more than one external brain in the environment, you must provide dictionaries from brain names to arrays for `action`, `memory` and `value`. For example: If you have two external brains named `brain1` and `brain2` each with one agent taking two continuous actions, then you can have:
 ```python

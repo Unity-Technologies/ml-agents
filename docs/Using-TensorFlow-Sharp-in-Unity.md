@@ -24,16 +24,16 @@ variable= tf.identity(variable, name="variable_name")
 ```
 We recommend using the following naming convention:
  * Name the batch size input placeholder `batch_size`
- * Name the input state placeholder `state`
+ * Name the input vector observation placeholder `state`
  * Name the output node `action`
  * Name the recurrent vector (memory) input placeholder `recurrent_in` (if any)
  * Name the recurrent vector (memory) output node `recurrent_out` (if any)
- * Name the observations placeholders input placeholders `observation_i` where `i` is the index of the observation (starting at 0)
+ * Name the observations placeholders input placeholders `visual_observation_i` where `i` is the index of the observation (starting at 0)
 
 You can have additional placeholders for float or integers but they must be placed in placeholders of dimension 1 and size 1. (Be sure to name them)
 
 It is important that the inputs and outputs of the graph are exactly the one you receive / give when training your model with an `External` brain. This means you cannot have any operations such as reshaping outside of the graph.
-The object you get by calling `step` or `reset` has fields `states`, `observations` and `memories` which must correspond to the placeholders of your graph. Similarly, the arguments `action` and `memory` you pass to `step` must correspond to the output nodes of your graph.
+The object you get by calling `step` or `reset` has fields `vector_observations`, `visual_observations` and `memories` which must correspond to the placeholders of your graph. Similarly, the arguments `action` and `memory` you pass to `step` must correspond to the output nodes of your graph.
 
 While training your Agent using the Python API, you can save your graph at any point of the training. Note that the argument `output_node_names` must be the name of the tensor your graph outputs (separated by a coma if multiple outputs). In this case, it will be either `action` or `action,recurrent_out` if you have recurrent outputs.
 ```python

@@ -12,14 +12,14 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 * If you want the agent to finish a task quickly, it is often helpful to provide a small penalty every step (-0.05) that the agent does not complete the task. In this case completion of the task should also coincide with the end of the episode.
 * Overly-large negative rewards can cause undesirable behavior where an agent learns to avoid any behavior which might produce the negative reward, even if it is also behavior which can eventually lead to a positive reward.
 
-## States
-* States should include all variables relevant to allowing the agent to take the optimally informed decision.
-* Categorical state variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (ie `3` -> `0, 0, 1`).
-* Besides encoding non-numeric values, all inputs should be normalized to be in the range 0 to +1 (or -1 to 1). For example rotation information on GameObjects should be recorded as `state.Add(transform.rotation.eulerAngles.y/180.0f-1.0f);` rather than `state.Add(transform.rotation.y);`. See the equation below for one approach of normaliztaion. 
+## Vector Observations
+* Vector observations should include all variables relevant to allowing the agent to take the optimally informed decision.
+* Categorical variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (ie `3` -> `0, 0, 1`).
+* Besides encoding non-numeric values, all inputs should be normalized to be in the range 0 to +1 (or -1 to 1). For example rotation information on GameObjects should be recorded as `AddVectorObs(transform.rotation.eulerAngles.y/180.0f-1.0f);` rather than `AddVectorObs(transform.rotation.y);`. See the equation below for one approach of normalization. 
 * Positional information of relevant GameObjects should be encoded in relative coordinates wherever possible. This is often relative to the agent position.
 
 ![normalization](images/normalization.png)
 
-## Actions
+## Vector Actions
 * When using continuous control, action values should be clipped to an appropriate range.
-* Be sure to set the action-space-size to the number of used actions, and not greater, as doing the latter can interfere with the efficency of the training process.
+* Be sure to set the action-space-size to the number of used vector actions, and not greater, as doing the latter can interfere with the efficency of the training process.

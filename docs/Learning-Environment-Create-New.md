@@ -188,7 +188,7 @@ So far, our RollerAgent script looks like:
         }
     }
 
-Next, let's implement the Agent.CollectState() function. 
+Next, let's implement the Agent.CollectObservations() function. 
 
 **Observing the Environment**
 
@@ -202,57 +202,54 @@ In our case, the information our agent collects includes:
         Vector3 relativePosition = Target.position - this.transform.position;
         
         // Relative position
-        observation.Add(relativePosition.x/5);
-        observation.Add(relativePosition.z/5);
+        AddVectorObs(relativePosition.x/5);
+        AddVectorObs(relativePosition.z/5);
 
 * Position of the agent itself within the confines of the floor. This data is collected as the agent's distance from each edge of the floor.
 
         // Distance to edges of platform
-        observation.Add((this.transform.position.x + 5) / 5);
-        observation.Add((this.transform.position.x - 5) / 5);
-        observation.Add((this.transform.position.z + 5) / 5);
-        observation.Add((this.transform.position.z - 5) / 5);
+        AddVectorObs((this.transform.position.x + 5) / 5);
+        AddVectorObs((this.transform.position.x - 5) / 5);
+        AddVectorObs((this.transform.position.z + 5) / 5);
+        AddVectorObs((this.transform.position.z - 5) / 5);
 
 * The velocity of the agent. This helps the agent learn to control its speed so it doesn't overshoot the target and roll off the platform.
 
         // Agent velocity
-        observation.Add(rBody.velocity.x/5);
-        observation.Add(rBody.velocity.z/5);
+        AddVectorObs(rBody.velocity.x/5);
+        AddVectorObs(rBody.velocity.z/5);
 
 All the values are divided by 5 to normalize the inputs to the neural network to the range [-1,1]. (The number five is used because the platform is 10 units across.)
 
 In total, the state observation contains 8 values and we need to use the continuous state space when we get around to setting the Brain properties:
 
     List<float> observation = new List<float>();
-    public override List<float> CollectState()
+    public override void CollectObservations()
     {
-        // Remove last step's observations from the list
-        observation.Clear();
         
         // Calculate relative position
         Vector3 relativePosition = Target.position - this.transform.position;
         
         // Relative position
-        observation.Add(relativePosition.x/5);
-        observation.Add(relativePosition.z/5);
+        AddVectorObs(relativePosition.x/5);
+        AddVectorObs(relativePosition.z/5);
         
         // Distance to edges of platform
-        observation.Add((this.transform.position.x + 5)/5);
-        observation.Add((this.transform.position.x - 5)/5);
-        observation.Add((this.transform.position.z + 5)/5);
-        observation.Add((this.transform.position.z - 5)/5);
+        AddVectorObs((this.transform.position.x + 5)/5);
+        AddVectorObs((this.transform.position.x - 5)/5);
+        AddVectorObs((this.transform.position.z + 5)/5);
+        AddVectorObs((this.transform.position.z - 5)/5);
         
         // Agent velocity
-        observation.Add(rBody.velocity.x/5);
-        observation.Add(rBody.velocity.z/5);
-        return observation;
+        AddVectorObs(rBody.velocity.x/5);
+        AddVectorObs(rBody.velocity.z/5);
     }
 
-The final part of the Agent code is the Agent.AgentStep() function, which receives the decision from the Brain.
+The final part of the Agent code is the Agent.AgentAct() function, which receives the decision from the Brain.
 
 **Actions**
 
-The decision of the Brain comes in the form of an action array passed to the `AgentStep()` function. The number of elements in this array is determined by the `Action Space Type` and `ActionSize` settings of the agent's Brain. The RollerAgent uses the continuous action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Action Size` to 3. Note the Brain really has no idea what the values in the action array mean. The training process adjust the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
+The decision of the Brain comes in the form of an action array passed to the `AgentAct()` function. The number of elements in this array is determined by the `Vector Action Space Type` and `Vector Action Space Size` settings of the agent's Brain. The RollerAgent uses the continuous vector action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Vector Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Vector Action Size` to 3. Note the Brain really has no idea what the values in the action array mean. The training process adjust the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
 
 Before we can add a force to the agent, we need a reference to its Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) A good place to set references to other components of the same GameObject is in the standard Unity `Start()` method:
 
@@ -268,17 +265,17 @@ The agent clamps the action values to the range [-1,1] for two reasons. First, t
 
 **Rewards**
 
-Rewards are also assigned in the AgentStep() function. The learning algorithm uses the rewards assigned to the Agent.reward property at each step in the simulation and learning process to determine whether it is giving the agent to optimal actions. You want to reward an agent for completing the assigned task (reaching the Target cube, in this case) and punish the agent if it irrevocably fails (falls off the platform). You can sometimes speed up training with sub-rewards that encourage behavior that helps the agent complete the task. For example, the RollerAgent reward system provides a small reward if the agent moves closer to the target in a step. 
+Rewards are also assigned in the AgentAct() function. The learning algorithm uses the rewards assigned to the agent property at each step in the simulation and learning process to determine whether it is giving the agent to optimal actions. You want to reward an agent for completing the assigned task (reaching the Target cube, in this case) and punish the agent if it irrevocably fails (falls off the platform). You can sometimes speed up training with sub-rewards that encourage behavior that helps the agent complete the task. For example, the RollerAgent reward system provides a small reward if the agent moves closer to the target in a step. 
 
-The RollerAgent calculates the distance to detect when it reaches the target. When it does, the code increments the Agent.reward variable by 1.0 and marks the agent as finished by setting the Agent.done variable to `true`. 
+The RollerAgent calculates the distance to detect when it reaches the target. When it does, the code increments the Agent.reward variable by 1.0 and marks the agent as finished by setting the agent to done. 
 
     float distanceToTarget = Vector3.Distance(this.transform.position,
                                               Target.position);
     // Reached target
     if (distanceToTarget < 1.42f)
     {
-        this.done = true;
-        reward += 1.0f;
+        Done();
+        AddReward(1.0f);
     }
 
 **Note:** When you mark an agent as done, it stops its activity until it is reset. You can have the agent reset immediately, by setting the Agent.ResetOnDone property in the inspector or you can wait for the Academy to reset the environment. This RollerBall environment relies on the `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so it never resets the environment).
@@ -288,31 +285,31 @@ To encourage the agent along, we also reward it for getting closer to the target
     // Getting closer
     if (distanceToTarget < previousDistance)
     {
-        reward += 0.1f;
+        AddReward(0.1f);
     }
 
 It can also encourage an agent to finish a task more quickly to assign a negative reward at each step:
 
     // Time penalty
-    reward += -0.05f;
+    AddReward(-0.05f);
 
 Finally, to punish the agent for falling off the platform, assign a large negative reward and, of course, set the agent to done so that it resets itself in the next step:
 
     // Fell off platform
     if (this.transform.position.y < -1.0)
     {
-        this.done = true;
-        reward += -1.0f;
+        Done();
+        AddReward(-1.0f);
     }
 
-**AgentStep()**
+**AgentAct()**
  
-With the action and reward logic outlined above, the final version of the `AgentStep()` function looks like:
+With the action and reward logic outlined above, the final version of the `AgentAct()` function looks like:
 
     public float speed = 10;
     private float previousDistance = float.MaxValue;
     
-    public override void AgentStep(float[] action)
+    public override void AgentAct(float[] action)
     {
         // Rewards
         float distanceToTarget = Vector3.Distance(this.transform.position, 
@@ -321,24 +318,24 @@ With the action and reward logic outlined above, the final version of the `Agent
         // Reached target
         if (distanceToTarget < 1.42f)
         {
-            this.done = true;
-            reward += 1.0f;
+            Done();
+            AddReward(1.0f);
         }
         
         // Getting closer
         if (distanceToTarget < previousDistance)
         {
-            reward += 0.1f;
+            AddReward(0.1f);
         }
    
         // Time penalty
-        reward += -0.05f;
+        AddReward(-0.05f);
 
         // Fell off platform
         if (this.transform.position.y < -1.0)
         {
-            this.done = true;
-            reward += -1.0f;
+            Done();
+            AddReward(-1.0f);
         }
         previousDistance = distanceToTarget;
 
@@ -365,10 +362,10 @@ Also, drag the Target GameObject from the Hierarchy window to the RollerAgent Ta
 
 Finally, select the Brain GameObject so that you can see its properties in the Inspector window. Set the following properties:
 
-* `State Size` = 8
-* `Action Size` = 2
-* `Action Space Type` = **Continuous**
-* `State Space Type` = **Continuous**
+* `Vector Observation Space Size` = 8
+* `Vector Action Space Size` = 2
+* `Vector Action Space Type` = **Continuous**
+* `Vector Observation Space Type` = **Continuous**
 * `Brain Type` = **Player**
 
 Now you are ready to test the environment before training.
@@ -390,7 +387,7 @@ It is always a good idea to test your environment manually before embarking on a
 | Element 2 | W  | 1        | 1        |
 | Element 3 | S   | 1        | -1       |
 
-The **Index** value corresponds to the index of the action array passed to `AgentStep()` function. **Value** is assigned to action[Index] when **Key** is pressed.
+The **Index** value corresponds to the index of the action array passed to `AgentAct()` function. **Value** is assigned to action[Index] when **Key** is pressed.
 
 Press **Play** to run the scene and use the WASD keys to move the agent around the platform. Make sure that there are no errors displayed in the Unity editor Console window and that the agent resets when it reaches its target or falls from the platform. Note that for more involved debugging, the ML-Agents SDK includes a convenient Monitor class that you can use to easily display agent status information in the Game window.
 
