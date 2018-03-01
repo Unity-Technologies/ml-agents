@@ -85,7 +85,8 @@ control the environment around the agents.
 The Ball3DBrain GameObject in the scene, which contains a Brain component, 
 is a child of the Academy object. (All Brain objects in a scene must be 
 children of the Academy.) All the agents in the 3D Balance Ball environment 
-use the same Brain instance. A Brain doesn't store any information about an agent, 
+use the same Brain instance. 
+A Brain doesn't store any information about an agent, 
 it just routes the agent's collected observations to the decision making 
 process and returns the chosen action to the agent. Thus, all agents can share 
 the same brain, but act independently. The Brain settings tell you quite a bit 
@@ -107,35 +108,37 @@ when you embed the trained model in the Unity application, you will change the
 **Vector Observation Space**
 
 Before making a decision, an agent collects its observation about its state 
-in the world. ML-Agents classifies vector observations into two types: **Continuous** 
-and **Discrete**. The **Continuous** vector observation space collects observations in a 
-vector of floating point numbers. The **Discrete** vector observation space is an index 
-into a table of states. Most of the example environments use a continuous 
-vector observation space. 
+in the world. ML-Agents classifies vector observations into two types:
+**Continuous** and **Discrete**. The **Continuous** vector observation space 
+collects observations in a vector of floating point numbers. The **Discrete** 
+vector observation space is an index into a table of states. Most of the example
+environments use a continuous vector observation space. 
 
 The Brain instance used in the 3D Balance Ball example uses the **Continuous** 
-vector observation space with a **State Size** of 8. This means that the feature vector 
-containing the agent's observations contains eight elements: the `x` and `z` 
-components of the platform's rotation and the `x`, `y`, and `z` components of 
-the ball's relative position and velocity. (The observation values are defined in 
-the agent's `CollectObservations()` function.)
+vector observation space with a **State Size** of 8. This means that the 
+feature vector containing the agent's observations contains eight elements: 
+the `x` and `z` components of the platform's rotation and the `x`, `y`, and `z`
+components of the ball's relative position and velocity. (The observation
+values are defined in the agent's `CollectObservations()` function.)
 
 **Vector Action Space**
 
 An agent is given instructions from the brain in the form of *actions*. Like 
-states, ML-Agents classifies actions into two types: the **Continuous** vector action 
-space is a vector of numbers that can vary continuously. What each element of 
-the vector means is defined by the agent logic (the PPO training process just 
-learns what values are better given particular state observations based on the 
-rewards received when it tries different values). For example, an element might
-represent a force or torque applied to a Rigidbody in the agent. The 
-**Discrete** action vector space defines its actions as a table. A specific action 
-given to the agent is an index into this table. 
+states, ML-Agents classifies actions into two types: the **Continuous** 
+vector action space is a vector of numbers that can vary continuously. What 
+each element of the vector means is defined by the agent logic (the PPO
+training process just learns what values are better given particular state 
+observations based on the rewards received when it tries different values). 
+For example, an element might represent a force or torque applied to a 
+Rigidbody in the agent. The **Discrete** action vector space defines its
+actions as a table. A specific action given to the agent is an index into 
+this table. 
 
-The 3D Balance Ball example is programmed to use both types of vector action space. 
+The 3D Balance Ball example is programmed to use both types of vector action
+space. 
 You can try training with both settings to observe whether there is a 
-difference. (Set the `Vector Action Space Size` to 4 when using the discrete action space 
-and 2 when using continuous.)
+difference. (Set the `Vector Action Space Size` to 4 when using the discrete 
+action space and 2 when using continuous.)
  
 ### Agent
 
@@ -147,8 +150,8 @@ affect its behavior:
 * **Brain** — Every agent must have a Brain. The brain determines how an agent 
 makes decisions. All the agents in the 3D Balance Ball scene share the same 
 brain.
-* **Visual Observations** — Defines any Camera objects used by the agent to observe 
-its environment. 3D Balance Ball does not use camera observations.
+* **Visual Observations** — Defines any Camera objects used by the agent to
+observe its environment. 3D Balance Ball does not use camera observations.
 * **Max Step** — Defines how many simulation steps can occur before the agent 
 decides it is done. In 3D Balance Ball, an agent restarts after 5000 steps.
 * **Reset On Done** — Defines whether an agent starts over when it is finished.
@@ -166,17 +169,19 @@ training generalizes to more than a specific starting position and platform
 attitude.
 * Agent.CollectObservations() — Called every simulation step. Responsible for 
 collecting the agent's observations of the environment. Since the Brain 
-instance assigned to the agent is set to the continuous state space with a 
-state size of 8, the `CollectObservations()` must call `AddVectorObs` 8 times.
-* Agent.AgentAct() — Called every simulation step. Receives the action chosen by the brain. The 
-Ball3DAgent example handles both the continuous and the discrete action space 
-types. There isn't actually much difference between the two state types in 
-this environment — both vector action spaces result in a small change in platform 
-rotation at each step. The `AgentAct()` function assigns a reward to the
-agent; in this example, an agent receives a small positive reward for each 
-step it keeps the ball on the platform and a larger, negative reward for 
-dropping the ball. An agent is also marked as done when it drops the ball 
-so that it will reset with a new ball for the next simulation step.
+instance assigned to the agent is set to the continuous vector observation
+space with a state size of 8, the `CollectObservations()` must call 
+`AddVectorObs` 8 times.
+* Agent.AgentAct() — Called every simulation step. Receives the action chosen
+by the brain. The Ball3DAgent example handles both the continuous and the 
+discrete action space types. There isn't actually much difference between the 
+two state types in this environment — both vector action spaces result in a
+small change in platform rotation at each step. The `AgentAct()` function
+assigns a reward to the agent; in this example, an agent receives a small 
+positive reward for each step it keeps the ball on the platform and a larger, 
+negative reward for dropping the ball. An agent is also marked as done when it
+drops the ball so that it will reset with a new ball for the next simulation
+step.
 
 ## Building the Environment
 
