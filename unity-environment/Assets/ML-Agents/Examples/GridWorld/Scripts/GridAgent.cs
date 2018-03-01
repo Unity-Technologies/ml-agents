@@ -12,11 +12,13 @@ using System.Text;
 public class GridAgent : Agent
 {
     [Header("Specific to GridWorld")]
-    public GridAcademy academy;
+    private GridAcademy academy;
+    public float timeBetweenDecisionsAtInference;
+    private float timeSinceDecision;
 
     public override void InitializeAgent()
     {
-
+        academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
     }
 
     public override void CollectObservations()
@@ -75,5 +77,30 @@ public class GridAgent : Agent
     public override void AgentReset()
     {
         academy.AcademyReset();
+    }
+
+    public void FixedUpdate()
+    {
+        WaitTimeInference();
+    }
+
+    private void WaitTimeInference()
+    {
+        if (!academy.isInference)
+        {
+            RequestDecision();
+        }
+        else
+        {
+            if (timeSinceDecision >= timeBetweenDecisionsAtInference)
+            {
+                timeSinceDecision = 0f;
+                RequestDecision();
+            }
+            else
+            {
+                timeSinceDecision += Time.fixedDeltaTime;
+            }
+        }
     }
 }
