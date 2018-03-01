@@ -8,7 +8,7 @@ public class BananaAcademy : Academy
     [HideInInspector]
     public GameObject[] agents;
     [HideInInspector]
-    public List<BananaArea> listArea;
+    public BananaArea[] listArea;
 
     public int totalScore;
     public Text scoreText;
@@ -18,9 +18,11 @@ public class BananaAcademy : Academy
         ClearObjects(GameObject.FindGameObjectsWithTag("badBanana"));
 
         agents = GameObject.FindGameObjectsWithTag("agent");
+        Debug.Log(agents.Length);
+        listArea = FindObjectsOfType<BananaArea>();
         foreach (BananaArea ba in listArea)
         {
-            ba.ResetArea();
+            ba.ResetBananaArea(agents);
         }
 
         totalScore = 0;

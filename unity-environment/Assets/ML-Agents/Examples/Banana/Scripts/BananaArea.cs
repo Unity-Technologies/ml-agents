@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class BananaArea : Area
 {
-
-    BananaAcademy aca;
     public GameObject banana;
     public GameObject badBanana;
     public int numBananas;
@@ -15,8 +13,7 @@ public class BananaArea : Area
     // Use this for initialization
     void Start()
     {
-        aca = GameObject.Find("Academy").GetComponent<BananaAcademy>();
-        aca.listArea.Add(this);
+
     }
 
     // Update is called once per frame
@@ -37,9 +34,9 @@ public class BananaArea : Area
         }
     }
 
-    public override void ResetArea()
+    public void ResetBananaArea(GameObject[] agents)
     {
-        foreach (GameObject agent in aca.agents)
+        foreach (GameObject agent in agents)
         {
             if (agent.transform.parent == gameObject.transform)
             {
@@ -52,5 +49,9 @@ public class BananaArea : Area
 
         CreateBanana(numBananas, banana);
         CreateBanana(numBadBananas, badBanana);
+    }
+
+    public override void ResetArea()
+    {
     }
 }

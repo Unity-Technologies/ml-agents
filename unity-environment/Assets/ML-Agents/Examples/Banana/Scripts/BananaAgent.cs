@@ -46,7 +46,6 @@ public class BananaAgent : Agent
         AddVectorObs(localVelocity.z);
         AddVectorObs(System.Convert.ToInt32(frozen));
         AddVectorObs(System.Convert.ToInt32(shoot));
-
     }
 
 
