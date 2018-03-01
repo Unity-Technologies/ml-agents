@@ -21,6 +21,12 @@ default:
 Ball3DBrain:
     normalize: true
 
+CrawlerBrain:
+    normalize: true
+    time_horizon: 1024
+    gamma: 0.995
+    max_steps: 1e6
+
 BrainWallJumpCC:
     max_steps: 2.0e5
     num_layers: 2
