@@ -55,13 +55,13 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     ///  Modify only in inspector : Name of the placholder of the batch size
     public string BatchSizePlaceholderName = "batch_size";
     ///  Modify only in inspector : Name of the state placeholder
-    public string StatePlacholderName = "state";
+    public string VectorObservationPlacholderName = "state";
     ///  Modify only in inspector : Name of the recurrent input
     public string RecurrentInPlaceholderName = "recurrent_in";
     ///  Modify only in inspector : Name of the recurrent output
     public string RecurrentOutPlaceholderName = "recurrent_out";
     /// Modify only in inspector : Names of the observations placeholders
-    public string[] ObservationPlaceholderName;
+    public string[] VisualObservationPlaceholderName;
     /// Modify only in inspector : Name of the action node
     public string ActionPlaceholderName = "action";
     /// Modify only in inspector : Name of the previous action node
@@ -143,7 +143,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 var networkOutput = runner.Run()[0].GetValue();
                 memorySize = (int)networkOutput;
             }
-            if (graph[graphScope + StatePlacholderName] != null)
+            if (graph[graphScope + VectorObservationPlacholderName] != null)
             {
                 hasState = brain.brainParameters.vectorActionSpaceType == StateType.discrete;
             }
@@ -288,11 +288,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 {
                     discreteInputState[i, 0] = (int)inputState[i, 0];
                 }
-                runner.AddInput(graph[graphScope + StatePlacholderName][0], discreteInputState);
+                runner.AddInput(graph[graphScope + VectorObservationPlacholderName][0], discreteInputState);
             }
             else
             {
-                runner.AddInput(graph[graphScope + StatePlacholderName][0], inputState);
+                runner.AddInput(graph[graphScope + VectorObservationPlacholderName][0], inputState);
             }
         }
 
@@ -305,7 +305,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the observation tensors
         for (int obs_number = 0; obs_number < brain.brainParameters.cameraResolutions.Length; obs_number++)
         {
-            runner.AddInput(graph[graphScope + ObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);
+            runner.AddInput(graph[graphScope + VisualObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);
         }
 
         if (hasRecurrent)
@@ -425,12 +425,12 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         }
         BatchSizePlaceholderName = EditorGUILayout.TextField(new GUIContent("Batch Size Node Name", "If the batch size is one of " +
                             "the inputs of your graph, you must specify the name if the placeholder here."), BatchSizePlaceholderName);
-        if (StatePlacholderName == "")
+        if (VectorObservationPlacholderName == "")
         {
-            StatePlacholderName = "state";
+            VectorObservationPlacholderName = "state";
         }
-        StatePlacholderName = EditorGUILayout.TextField(new GUIContent("State Node Name", "If your graph uses the state as an input, " +
-                            "you must specify the name if the placeholder here."), StatePlacholderName);
+        VectorObservationPlacholderName = EditorGUILayout.TextField(new GUIContent("Vector Observation Node Name", "If your graph uses the state as an input, " +
+                                                                                   "you must specify the name if the placeholder here."), VectorObservationPlacholderName);
         if (RecurrentInPlaceholderName == "")
         {
             RecurrentInPlaceholderName = "recurrent_in";
@@ -450,23 +450,23 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             if (brain.brainParameters.cameraResolutions.Count() > 0)
             {
-                if (ObservationPlaceholderName == null)
+                if (VisualObservationPlaceholderName == null)
                 {
-                    ObservationPlaceholderName = new string[brain.brainParameters.cameraResolutions.Count()];
+                    VisualObservationPlaceholderName = new string[brain.brainParameters.cameraResolutions.Count()];
                 }
-                if (ObservationPlaceholderName.Count() != brain.brainParameters.cameraResolutions.Count())
+                if (VisualObservationPlaceholderName.Count() != brain.brainParameters.cameraResolutions.Count())
                 {
-                    ObservationPlaceholderName = new string[brain.brainParameters.cameraResolutions.Count()];
+                    VisualObservationPlaceholderName = new string[brain.brainParameters.cameraResolutions.Count()];
                 }
                 for (int obs_number = 0; obs_number < brain.brainParameters.cameraResolutions.Count(); obs_number++)
                 {
-                    if ((ObservationPlaceholderName[obs_number] == "") || (ObservationPlaceholderName[obs_number] == null))
+                    if ((VisualObservationPlaceholderName[obs_number] == "") || (VisualObservationPlaceholderName[obs_number] == null))
                     {
 
-                        ObservationPlaceholderName[obs_number] = "visual_observation_" + obs_number;
+                        VisualObservationPlaceholderName[obs_number] = "visual_observation_" + obs_number;
                     }
                 }
-                var opn = serializedBrain.FindProperty("ObservationPlaceholderName");
+                var opn = serializedBrain.FindProperty("VisualObservationPlaceholderName");
                 serializedBrain.Update();
                 EditorGUILayout.PropertyField(opn, true);
                 serializedBrain.ApplyModifiedProperties();
