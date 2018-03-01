@@ -172,7 +172,7 @@ class PPOTrainer(Trainer):
         if self.is_continuous:
             run_list.append(self.model.epsilon)
         elif self.use_recurrent:
-            feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_actions, [-1])
+            feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
         if self.use_observations:
             for i, _ in enumerate(curr_brain_info.visual_observations):
                 feed_dict[self.model.observation_in[i]] = curr_brain_info.visual_observations[i]
@@ -247,7 +247,7 @@ class PPOTrainer(Trainer):
                     a_dist = stored_take_action_outputs[self.model.all_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
-                    self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_actions[idx])
+                    self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
                     self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
@@ -287,7 +287,7 @@ class PPOTrainer(Trainer):
                             info.memories = np.zeros((len(info.vector_observations), self.m_size))
                         feed_dict[self.model.memory_in] = info.memories
                     if not self.is_continuous and self.use_recurrent:
-                        feed_dict[self.model.prev_action] = np.reshape(info.previous_actions, [-1])
+                        feed_dict[self.model.prev_action] = np.reshape(info.previous_vector_actions, [-1])
                     value_next = self.sess.run(self.model.value, feed_dict)[l]
                 agent_id = info.agents[l]
 

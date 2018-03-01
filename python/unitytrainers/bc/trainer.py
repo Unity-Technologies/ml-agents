@@ -196,7 +196,7 @@ class BehavioralCloningTrainer(Trainer):
                         if stored_info_expert.memories.shape[1] == 0:
                             stored_info_expert.memories = np.zeros((len(stored_info_expert.agents), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info_expert.memories[idx])
-                    self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_actions[next_idx])
+                    self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_vector_actions[next_idx])
 
         info_student = curr_info[self.brain_name]
         next_info_student = next_info[self.brain_name]
