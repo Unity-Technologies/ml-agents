@@ -1,4 +1,4 @@
-import mock
+import unittest.mock as mock
 import pytest
 
 import numpy as np
