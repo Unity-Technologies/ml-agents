@@ -21,6 +21,16 @@ default:
 Ball3DBrain:
     normalize: true
 
+CrawlerBrain:
+    normalize: true
+    num_epoch: 3
+    time_horizon: 1000
+    batch_size: 2024
+    buffer_size: 20240
+    gamma: 0.995
+    max_steps: 1e6
+    summary_freq: 5000
+
 BrainWallJumpCC:
     max_steps: 2.0e5
     num_layers: 2

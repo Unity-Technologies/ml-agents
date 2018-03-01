@@ -2,43 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CrawlerAgentConfigurable: Agent
+public class CrawlerAgentConfigurable : Agent
 {
 
     public float strength;
-
     float x_position;
-
-
     [HideInInspector]
     public bool[] leg_touching;
-
     [HideInInspector]
     public bool fell;
-
     Vector3 past_velocity;
-
     Transform body;
-
-
+    Rigidbody bodyRB;
     public Transform[] limbs;
-
-
-
-    //
+    Rigidbody[] limbRBs;
     Dictionary<GameObject, Vector3> transformsPosition;
     Dictionary<GameObject, Quaternion> transformsRotation;
 
-
-
-
     public override void InitializeAgent()
     {
-        
         body = transform.Find("Sphere");
-        
-
-
+        bodyRB = body.GetComponent<Rigidbody>();
         transformsPosition = new Dictionary<GameObject, Vector3>();
         transformsRotation = new Dictionary<GameObject, Quaternion>();
         Transform[] allChildren = GetComponentsInChildren<Transform>();
@@ -47,47 +31,45 @@ public class CrawlerAgentConfigurable: Agent
             transformsPosition[child.gameObject] = child.position;
             transformsRotation[child.gameObject] = child.rotation;
         }
-
-
-
         leg_touching = new bool[4];
-
+        limbRBs = new Rigidbody[limbs.Length];
+        for (int i = 0; i < limbs.Length; i++)
+        {
+            limbRBs[i] = limbs[i].gameObject.GetComponent<Rigidbody>();
+        }
     }
 
-    public override void CollectObservations(){
+    public override void CollectObservations()
+    {
         AddVectorObs(body.transform.rotation.eulerAngles.x);
         AddVectorObs(body.transform.rotation.eulerAngles.y);
         AddVectorObs(body.transform.rotation.eulerAngles.z);
 
-        AddVectorObs(body.gameObject.GetComponent<Rigidbody>().velocity.x);
-        AddVectorObs(body.gameObject.GetComponent<Rigidbody>().velocity.y);
-        AddVectorObs(body.gameObject.GetComponent<Rigidbody>().velocity.z);
+        AddVectorObs(bodyRB.velocity.x);
+        AddVectorObs(bodyRB.velocity.y);
+        AddVectorObs(bodyRB.velocity.z);
 
-        AddVectorObs((body.gameObject.GetComponent<Rigidbody>().velocity.x - past_velocity.x) / Time.fixedDeltaTime);
-        AddVectorObs((body.gameObject.GetComponent<Rigidbody>().velocity.y - past_velocity.y) / Time.fixedDeltaTime);
-        AddVectorObs((body.gameObject.GetComponent<Rigidbody>().velocity.z - past_velocity.z) / Time.fixedDeltaTime);
-        past_velocity = body.gameObject.GetComponent<Rigidbody>().velocity;
+        AddVectorObs((bodyRB.velocity.x - past_velocity.x) / Time.fixedDeltaTime);
+        AddVectorObs((bodyRB.velocity.y - past_velocity.y) / Time.fixedDeltaTime);
+        AddVectorObs((bodyRB.velocity.z - past_velocity.z) / Time.fixedDeltaTime);
+        past_velocity = bodyRB.velocity;
 
-        foreach (Transform t in limbs)
+        for (int i = 0; i < limbs.Length; i++)
         {
-            AddVectorObs(t.localPosition.x);
-            AddVectorObs(t.localPosition.y);
-            AddVectorObs(t.localPosition.z);
-            AddVectorObs(t.localRotation.x);
-            AddVectorObs(t.localRotation.y);
-            AddVectorObs(t.localRotation.z);
-            AddVectorObs(t.localRotation.w);
-            Rigidbody rb = t.gameObject.GetComponent < Rigidbody >();
-            AddVectorObs(rb.velocity.x);
-            AddVectorObs(rb.velocity.y);
-            AddVectorObs(rb.velocity.z);
-            AddVectorObs(rb.angularVelocity.x);
-            AddVectorObs(rb.angularVelocity.y);
-            AddVectorObs(rb.angularVelocity.z);
+            AddVectorObs(limbs[i].localPosition.x);
+            AddVectorObs(limbs[i].localPosition.y);
+            AddVectorObs(limbs[i].localPosition.z);
+            AddVectorObs(limbs[i].localRotation.x);
+            AddVectorObs(limbs[i].localRotation.y);
+            AddVectorObs(limbs[i].localRotation.z);
+            AddVectorObs(limbs[i].localRotation.w);
+            AddVectorObs(limbRBs[i].velocity.x);
+            AddVectorObs(limbRBs[i].velocity.y);
+            AddVectorObs(limbRBs[i].velocity.z);
+            AddVectorObs(limbRBs[i].angularVelocity.x);
+            AddVectorObs(limbRBs[i].angularVelocity.y);
+            AddVectorObs(limbRBs[i].angularVelocity.z);
         }
-
-
-
 
         for (int index = 0; index < 4; index++)
         {
@@ -101,35 +83,27 @@ public class CrawlerAgentConfigurable: Agent
             }
             leg_touching[index] = false;
         }
-
-
-
     }
 
     public override void AgentAction(float[] act)
     {
         for (int k = 0; k < act.Length; k++)
         {
-            act[k] = Mathf.Max(Mathf.Min(act[k], 1), -1);
+            act[k] = Mathf.Clamp(act[k], -1f, 1f);
         }
 
-        limbs[0].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[0].transform.right * strength * act[0]);
-        limbs[1].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[1].transform.right * strength * act[1]);
-        limbs[2].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[2].transform.right * strength * act[2]);
-        limbs[3].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[3].transform.right * strength * act[3]);
-
-        limbs[0].gameObject.GetComponent<Rigidbody>().AddTorque(-body.transform.up * strength * act[4]);
-        limbs[1].gameObject.GetComponent<Rigidbody>().AddTorque(-body.transform.up * strength * act[5]);
-        limbs[2].gameObject.GetComponent<Rigidbody>().AddTorque(-body.transform.up * strength * act[6]);
-        limbs[3].gameObject.GetComponent<Rigidbody>().AddTorque(-body.transform.up * strength * act[7]);
-
-
-        limbs[4].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[4].transform.right * strength * act[8]);
-        limbs[5].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[5].transform.right * strength * act[9]);
-        limbs[6].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[6].transform.right * strength * act[10]);
-        limbs[7].gameObject.GetComponent<Rigidbody>().AddTorque(-limbs[7].transform.right * strength * act[11]);
-
-
+        limbRBs[0].AddTorque(-limbs[0].transform.right * strength * act[0]);
+        limbRBs[1].AddTorque(-limbs[1].transform.right * strength * act[1]);
+        limbRBs[2].AddTorque(-limbs[2].transform.right * strength * act[2]);
+        limbRBs[3].AddTorque(-limbs[3].transform.right * strength * act[3]);
+        limbRBs[0].AddTorque(-body.transform.up * strength * act[4]);
+        limbRBs[1].AddTorque(-body.transform.up * strength * act[5]);
+        limbRBs[2].AddTorque(-body.transform.up * strength * act[6]);
+        limbRBs[3].AddTorque(-body.transform.up * strength * act[7]);
+        limbRBs[4].AddTorque(-limbs[4].transform.right * strength * act[8]);
+        limbRBs[5].AddTorque(-limbs[5].transform.right * strength * act[9]);
+        limbRBs[6].AddTorque(-limbs[6].transform.right * strength * act[10]);
+        limbRBs[7].AddTorque(-limbs[7].transform.right * strength * act[11]);
 
         float torque_penalty = act[0] * act[0] + act[1] * act[1] + act[2] * act[2] + act[3] * act[3]
                          + act[4] * act[4] + act[5] * act[5] + act[6] * act[6] + act[7] * act[7]
@@ -137,33 +111,21 @@ public class CrawlerAgentConfigurable: Agent
 
         if (!IsDone())
         {
-
-            SetReward (0
-            - 0.01f * torque_penalty
-            + 1.0f * body.GetComponent<Rigidbody>().velocity.x
+            SetReward(0 - 0.01f * torque_penalty + 1.0f * bodyRB.velocity.x
             - 0.05f * Mathf.Abs(body.transform.position.z - body.transform.parent.transform.position.z)
-            - 0.05f * Mathf.Abs(body.GetComponent<Rigidbody>().velocity.y)
+                      - 0.05f * Mathf.Abs(bodyRB.velocity.y)
             );
         }
         if (fell)
         {
             Done();
-            AddReward(-1);
-            fell = false;
+            AddReward(-1f);
         }
-
-        Monitor.Log("Reward", GetReward(), MonitorType.slider, body.gameObject.transform);
-        Transform[] allChildren = GetComponentsInChildren<Transform>();
-        foreach (Transform child in allChildren)
-        {
-
-        }
-
     }
 
     public override void AgentReset()
     {
-
+        fell = false;
         Transform[] allChildren = GetComponentsInChildren<Transform>();
         foreach (Transform child in allChildren)
         {
@@ -184,7 +146,4 @@ public class CrawlerAgentConfigurable: Agent
     {
 
     }
-
-
-
 }
