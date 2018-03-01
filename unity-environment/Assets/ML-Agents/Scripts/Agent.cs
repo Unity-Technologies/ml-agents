@@ -349,7 +349,6 @@ public abstract class Agent : MonoBehaviour
         _info.StoredVectorActions = _action.vectorActions;
         _info.StoredTextActions = _action.textActions;
         _info.vectorObservation.Clear();
-        _info.textObservation = "";
         CollectObservations();
 
         BrainParameters param = brain.brainParameters;
@@ -407,7 +406,7 @@ public abstract class Agent : MonoBehaviour
 
 
         brain.SendState(this, _info);
-
+        _info.textObservation = "";
     }
     /// <summary>
     /// Collects the observations. Must be implemented by the developer.
@@ -428,9 +427,10 @@ public abstract class Agent : MonoBehaviour
     {
         _info.vectorObservation.Add(observation);
     }
-    internal void SetTextObs(string s)
+
+    internal void SetTextObs(object s)
     {
-        _info.textObservation = s;
+        _info.textObservation = s.ToString();
     }
 
     /// <summary>
