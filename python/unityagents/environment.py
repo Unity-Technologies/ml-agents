@@ -290,7 +290,7 @@ class UnityEnvironment(object):
                 for _b in self._brain_names:
                     if _b not in self._data:
                         self._data[_b] = BrainInfo([], np.array([]), [], np.array([]),
-                                                   [], [], [], np.array([]), max_reached=[])
+                                                   [], [], [], np.array([]), [], max_reached=[])
                 return self._data
             b = state_dict["brain_name"]
             n_agent = len(state_dict["agents"])
@@ -303,13 +303,13 @@ class UnityEnvironment(object):
                     vector_obs = np.array(state_dict["vectorObservations"]).reshape(
                         (n_agent, self._brains[b].num_stacked_vector_observations))
             except UnityActionException:
-                raise UnityActionException("Brain {0} has an invalid state. "
-                                    "Expecting {1} {2} state but received {3}."
+                raise UnityActionException("Brain {0} has an invalid vector observation. "
+                                    "Expecting {1} {2} vector observations but received {3}."
                                     .format(b, n_agent if self._brains[b].vector_observation_space_type == "discrete"
                 else str(self._brains[b].vector_observation_space_size * n_agent
                          * self._brains[b].num_stacked_vector_observations),
                                                    self._brains[b].vector_observation_space_type,
-                                                   len(state_dict["states"])))
+                                                   len(state_dict["vectorObservations"])))
 
             memories = np.array(state_dict["memories"]).reshape((n_agent, -1))
             text_obs = state_dict["textObservations"]
@@ -317,10 +317,13 @@ class UnityEnvironment(object):
             dones = state_dict["dones"]
             agents = state_dict["agents"]
             maxes = state_dict["maxes"]
+
             if n_agent > 0:
-                vector_actions = np.array(state_dict["vectorActions"]).reshape((n_agent, -1))
+                vector_actions = np.array(state_dict["previousVectorActions"]).reshape((n_agent, -1))
+                text_actions = state_dict["previousTextActions"]
             else:
                 vector_actions = np.array([])
+                text_actions = []
             observations = []
             for o in range(self._brains[b].number_visual_observations):
                 obs_n = []
@@ -329,7 +332,7 @@ class UnityEnvironment(object):
 
                 observations.append(np.array(obs_n))
             self._data[b] = BrainInfo(observations, vector_obs, text_obs, memories, rewards,
-                                      agents, dones, vector_actions, max_reached=maxes)
+                                      agents, dones, vector_actions, text_actions, max_reached=maxes)
 
     def _send_action(self, vector_action ,memory, text_action):
         """
@@ -445,8 +448,8 @@ class UnityEnvironment(object):
                 else:
                     if text_action[b] is None:
                         text_action[b] = []
-                    else:
-                        text_action[b] = [""] * n_agent
+                    if isinstance(text_action[b], str):
+                        text_action[b] = [text_action[b]] * n_agent
                 if not ((len(text_action[b]) == n_agent) or len(text_action[b]) == 0):
                     raise UnityActionException(
                         "There was a mismatch between the provided text_action and environment's expectation: "
