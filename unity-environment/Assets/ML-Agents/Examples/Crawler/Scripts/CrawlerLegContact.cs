@@ -8,7 +8,7 @@ public class CrawlerLegContact : MonoBehaviour {
     public CrawlerAgentConfigurable agent;
 
     void Start(){
-//        agent = gameObject.transform.parent.gameObject.GetComponent<SpiderAgent>();
+
     }
 
     void OnCollisionStay(Collision other){

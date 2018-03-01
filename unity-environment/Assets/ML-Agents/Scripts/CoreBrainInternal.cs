@@ -145,7 +145,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             }
             if (graph[graphScope + StatePlacholderName] != null)
             {
-                hasState = brain.brainParameters.vectorActionSpaceType == StateType.discrete;
+                hasState = true;
             }
             if (graph[graphScope + PreviousActionPlaceholderName] != null)
             {
