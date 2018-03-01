@@ -106,7 +106,7 @@ public abstract class Academy : MonoBehaviour
      * use by the Academy. */
     public Communicator communicator;
 
-
+    private bool firstAcademyReset;
 
     void Awake()
     {
@@ -144,11 +144,7 @@ public abstract class Academy : MonoBehaviour
         AgentAct += () => { };
         AgentForceReset += () => { };
 
-        if (communicator == null)
-        {
-            _AcademyReset();
-            AgentForceReset();
-        }
+
     }
 
 
@@ -227,9 +223,22 @@ public abstract class Academy : MonoBehaviour
         return done;
     }
 
+    /// <summary>
+    /// Forceds the full reset. The done flags are not affected. Is either 
+    /// called the first reset at inference and every external reset
+    /// at training.
+    /// </summary>
+    private void ForcedFullReset()
+    {
+        _AcademyReset();
+        AgentForceReset();
+        firstAcademyReset = true;
+    }
+
 
     internal void _AcademyStep()
     {
+
 
         if (isInference != _isCurrentlyInference)
         {
@@ -246,14 +255,17 @@ public abstract class Academy : MonoBehaviour
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
-                _AcademyReset();
-                AgentForceReset();
+                ForcedFullReset();
                 communicator.SetCommand(ExternalCommand.STEP);
             }
             if (communicator.GetCommand() == ExternalCommand.QUIT)
             {
                 Application.Quit();
             }
+        }
+        else if (!firstAcademyReset)
+        {
+            ForcedFullReset();
         }
 
         if ((stepsSinceReset >= maxSteps) && maxSteps > 0)
