@@ -116,7 +116,7 @@ StudentBrain:
     summary_freq: 1000
     brain_to_imitate: ExpertBrain
     batch_size: 16
-    batches_per_epoch: 10
+    batches_per_epoch: 5
     num_layers: 4
     hidden_units: 64
     use_recurrent: false

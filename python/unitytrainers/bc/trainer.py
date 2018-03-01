@@ -170,15 +170,13 @@ class BehavioralCloningTrainer(Trainer):
         :param next_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
         :param take_action_outputs: The outputs of the take action method.
         """
+
+        # Used to collect expert experience into training buffer
         info_expert = curr_info[self.brain_to_imitate]
         next_info_expert = next_info[self.brain_to_imitate]
         for agent_id in info_expert.agents:
-            idx = info_expert.agents.index(agent_id)
             self.training_buffer[agent_id].last_brain_info = info_expert
-            self.training_buffer[agent_id].last_take_action_outputs = take_action_outputs
 
-        info_expert = None
-        take_action_outputs = None
         for agent_id in next_info_expert.agents:
             stored_info_expert = self.training_buffer[agent_id].last_brain_info
             if stored_info_expert is None:
@@ -186,25 +184,32 @@ class BehavioralCloningTrainer(Trainer):
             else:
                 idx = stored_info_expert.agents.index(agent_id)
                 next_idx = next_info_expert.agents.index(agent_id)
-                if not stored_info_expert.local_done[idx]:
-                    if self.use_observations:
-                        for i, _ in enumerate(stored_info_expert.visual_observations):
-                            self.training_buffer[agent_id]['observations%d' % i].append(stored_info_expert.visual_observations[i][idx])
-                    if self.use_states:
-                        self.training_buffer[agent_id]['states'].append(stored_info_expert.vector_observations[idx])
-                    if self.use_recurrent:
-                        if stored_info_expert.memories.shape[1] == 0:
-                            stored_info_expert.memories = np.zeros((len(stored_info_expert.agents), self.m_size))
-                        self.training_buffer[agent_id]['memory'].append(stored_info_expert.memories[idx])
-                    self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_vector_actions[next_idx])
+                info_expert_record, info_expert_reset = info_expert.text_observations[idx].lower().split(",")
+                next_info_expert_record, next_info_expert_reset = next_info_expert.text_observations[idx].\
+                    lower().split(",")
+                if next_info_expert_reset == "true":
+                    self.training_buffer.reset_update_buffer()
 
+                if info_expert_record == "true" and next_info_expert_record == "true":
+                    if not stored_info_expert.local_done[idx]:
+                        if self.use_observations:
+                            for i, _ in enumerate(stored_info_expert.visual_observations):
+                                self.training_buffer[agent_id]['visual_observations%d' % i]\
+                                    .append(stored_info_expert.visual_observations[i][idx])
+                        if self.use_states:
+                            self.training_buffer[agent_id]['vector_observations']\
+                                .append(stored_info_expert.vector_observations[idx])
+                        if self.use_recurrent:
+                            if stored_info_expert.memories.shape[1] == 0:
+                                stored_info_expert.memories = np.zeros((len(stored_info_expert.agents), self.m_size))
+                            self.training_buffer[agent_id]['memory'].append(stored_info_expert.memories[idx])
+                        self.training_buffer[agent_id]['actions'].append(next_info_expert.previous_vector_actions[next_idx])
         info_student = curr_info[self.brain_name]
         next_info_student = next_info[self.brain_name]
         for agent_id in info_student.agents:
-            idx = info_student.agents.index(agent_id)
             self.training_buffer[agent_id].last_brain_info = info_student
-        
-        info_student = None
+
+        # Used to collect information about student performance.
         for agent_id in next_info_student.agents:
             stored_info_student = self.training_buffer[agent_id].last_brain_info
             if stored_info_student is None:
@@ -233,7 +238,8 @@ class BehavioralCloningTrainer(Trainer):
                  'time_horizon'])
                     and len(self.training_buffer[info_expert.agents[l]]['actions']) > 0):
                 agent_id = info_expert.agents[l]
-                self.training_buffer.append_update_buffer(agent_id, batch_size=None, training_length=self.sequence_length)
+                self.training_buffer.append_update_buffer(agent_id, batch_size=None,
+                                                          training_length=self.sequence_length)
                 self.training_buffer[agent_id].reset_agent()
 
         info_student = info[self.brain_name]
@@ -275,7 +281,7 @@ class BehavioralCloningTrainer(Trainer):
             _buffer = self.training_buffer.update_buffer
             start = j * self.n_sequences
             end = (j + 1) * self.n_sequences
-            batch_states = np.array(_buffer['states'][start:end])
+            batch_states = np.array(_buffer['vector_observations'][start:end])
             batch_actions = np.array(_buffer['actions'][start:end])
             feed_dict = {self.model.true_action: batch_actions.reshape([-1, self.brain.vector_action_space_size]),
                          self.model.dropout_rate: 0.5,
@@ -288,7 +294,7 @@ class BehavioralCloningTrainer(Trainer):
                                                                        self.brain.num_stacked_vector_observations])
             if self.use_observations:
                 for i, _ in enumerate(self.model.observation_in):
-                    _obs = np.array(_buffer['observations%d' % i][start:end])
+                    _obs = np.array(_buffer['visual_observations%d' % i][start:end])
                     (_batch, _seq, _w, _h, _c) = _obs.shape
                     feed_dict[self.model.observation_in[i]] = _obs.reshape([-1, _w, _h, _c])
             if self.use_recurrent:

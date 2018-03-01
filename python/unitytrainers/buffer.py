@@ -82,7 +82,6 @@ class Buffer(dict):
                         if (len(self) - training_length + 1) < batch_size:
                             raise BufferException("The batch size and training length requested for get_batch where"
                                                   " too large given the current number of data points.")
-                            return
                         tmp_list = []
                         for end in range(len(self) - batch_size + 1, len(self) + 1):
                             tmp_list += [np.array(self[end - training_length:end])]
@@ -99,7 +98,6 @@ class Buffer(dict):
                         if batch_size > (len(self) // training_length + 1 * (leftover != 0)):
                             raise BufferException("The batch size and training length requested for get_batch where"
                                                   " too large given the current number of data points.")
-                            return
                         tmp_list = []
                         padding = np.array(self[-1]) * 0
                         # The padding is made with zeros and its shape is given by the shape of the last element
@@ -151,7 +149,7 @@ class Buffer(dict):
             for key in key_list:
                 if key not in self.keys():
                     return False
-                if ((l != None) and (l != len(self[key]))):
+                if (l is not None) and (l != len(self[key])):
                     return False
                 l = len(self[key])
             return True
@@ -159,14 +157,13 @@ class Buffer(dict):
         def shuffle(self, key_list=None):
             """
             Shuffles the fields in key_list in a consistent way: The reordering will
-            be the same accross fields.
+            be the same across fields.
             :param key_list: The fields that must be shuffled.
             """
             if key_list is None:
                 key_list = list(self.keys())
             if not self.check_length(key_list):
                 raise BufferException("Unable to shuffle if the fields are not of same length")
-                return
             s = np.arange(len(self[key_list[0]]))
             np.random.shuffle(s)
             for key in key_list:
@@ -195,8 +192,8 @@ class Buffer(dict):
 
     def reset_all(self):
         """
-		Resets all the local local_buffers
-		"""
+        Resets all the local local_buffers
+        """
         agent_ids = list(self.keys())
         for k in agent_ids:
             self[k].reset_agent()
