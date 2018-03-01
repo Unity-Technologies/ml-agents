@@ -42,8 +42,8 @@ Typical Range: `0.1` - `0.3`
 #### Hidden Units
 
 `hidden_units` correspond to how many units are in each fully connected layer of the neural network. For simple problems
-where the correct action is a straightforward combination of the state inputs, this should be small. For problems where
-the action is a very complex interaction between the state variables, this should be larger.
+where the correct action is a straightforward combination of the observation inputs, this should be small. For problems where
+the action is a very complex interaction between the observation variables, this should be larger.
 
 Typical Range: `32` - `512`
 
@@ -79,12 +79,12 @@ Typical Range: `5e5 - 1e7`
 
 #### Normalize 
 
-`normalize` corresponds to whether normalization is applied to the state inputs. This normalization is based on the running average and variance of the states.
+`normalize` corresponds to whether normalization is applied to the vector observation inputs. This normalization is based on the running average and variance of the vector observation.
 Normalization can be helpful in cases with complex continuous control problems, but may be harmful with simpler discrete control problems.
 
 #### Number of Layers
 
-`num_layers` corresponds to how many hidden layers are present after the state input, or after the CNN encoding of the observation. For simple problems,
+`num_layers` corresponds to how many hidden layers are present after the observation input, or after the CNN encoding of the visual observation. For simple problems,
 fewer layers are likely to train faster and more efficiently. More layers may be necessary for more complex control problems.
 
 Typical range: `1` - `3`
