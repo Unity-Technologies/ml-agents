@@ -47,7 +47,8 @@ public class ExternalCommunicator : Communicator
         public List<int> agents;
         public List<float> vectorObservations;
         public List<float> rewards;
-        public List<float> vectorActions;
+        public List<float> previousVectorActions;
+        public List<string> previousTextActions;
         public List<float> memories;
         public List<string> textObservations;
         public List<bool> dones;
@@ -153,7 +154,8 @@ public class ExternalCommunicator : Communicator
         sMessage.rewards = new List<float>(defaultNumAgents);
         sMessage.memories= new List<float>(defaultNumAgents * defaultNumObservations);
         sMessage.dones = new List<bool>(defaultNumAgents);
-        sMessage.vectorActions = new List<float>(defaultNumAgents * defaultNumObservations);
+        sMessage.previousVectorActions = new List<float>(defaultNumAgents * defaultNumObservations);
+        sMessage.previousTextActions = new List<string>(defaultNumAgents);
         sMessage.maxes= new List<bool>(defaultNumAgents);
         sMessage.textObservations = new List<string>(defaultNumAgents);
 
@@ -319,7 +321,8 @@ public class ExternalCommunicator : Communicator
             sMessage.rewards.Clear();
             sMessage.memories.Clear();
             sMessage.dones.Clear();
-            sMessage.vectorActions.Clear();
+            sMessage.previousVectorActions.Clear();
+            sMessage.previousTextActions.Clear();
             sMessage.maxes.Clear();
             sMessage.textObservations.Clear();
 
@@ -338,7 +341,8 @@ public class ExternalCommunicator : Communicator
                 for (int j = 0; j < memorySize - agentInfo[agent].memories.Count; j++ )
                     sMessage.memories.Add(0f);
                 sMessage.dones.Add(agentInfo[agent].done);
-                sMessage.vectorActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
+                sMessage.previousVectorActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
+                sMessage.previousTextActions.Add(agentInfo[agent].StoredTextActions);
                 sMessage.maxes.Add(agentInfo[agent].maxStepReached);
                 sMessage.textObservations.Add(agentInfo[agent].textObservation);
 
