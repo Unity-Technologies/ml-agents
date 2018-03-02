@@ -232,7 +232,7 @@ public class Monitor : MonoBehaviour
             float paddingwidth = 10 * widthScaler;
 
             float scale = 1f;
-            var origin = new Vector3(0, Screen.height);
+            var origin = new Vector3(Screen.width / 2 - keyPixelWidth, Screen.height);
             if (!(target == canvas.transform))
             {
                 Vector3 cam2obj = target.position - Camera.main.transform.position;
