@@ -14,7 +14,7 @@ class PPOModel(LearningModel):
         appropriate PPO agent model for the environment.
         :param brain: BrainInfo used to generate specific network graph.
         :param lr: Learning rate.
-        :param h_size: Size of hidden layers/
+        :param h_size: Size of hidden layers
         :param epsilon: Value for policy-divergence threshold.
         :param beta: Strength of entropy regularization.
         :return: a sub-class of PPOAgent tailored to the environment.
