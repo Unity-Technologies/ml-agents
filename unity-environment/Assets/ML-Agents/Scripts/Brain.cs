@@ -18,7 +18,7 @@ public enum BrainType
     Internal
 }
 
-public enum StateType
+public enum SpaceType
 {
     discrete,
     continuous
@@ -68,10 +68,10 @@ public class BrainParameters
     public string[] vectorActionDescriptions;
     /**< \brief The list of strings describing what the actions correpond to */
 
-    public StateType vectorActionSpaceType = StateType.discrete;
+    public SpaceType vectorActionSpaceType = SpaceType.discrete;
     /**< \brief Defines if the action is discrete or continuous */
 
-    public StateType vectorObservationSpaceType = StateType.continuous;
+    public SpaceType vectorObservationSpaceType = SpaceType.continuous;
     /**< \brief Defines if the state is discrete or continuous */
 }
 

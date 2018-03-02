@@ -417,7 +417,7 @@ public class ExternalCommunicator : Communicator
 
                 for (int i = 0; i < current_agents[brainName].Count(); i++)
                 {
-                    if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+                    if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
                     {
                         current_agents[brainName][i].UpdateVectorAction(rMessage.vector_action[brainName].GetRange(
                             i * brain.brainParameters.vectorActionSize, brain.brainParameters.vectorActionSize).ToArray());
