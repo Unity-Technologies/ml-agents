@@ -148,9 +148,9 @@ class BehavioralCloningTrainer(Trainer):
         run_list = [self.model.sample_action]
         if self.use_observations:
             for i, _ in enumerate(agent_brain.visual_observations):
-                feed_dict[self.model.observation_in[i]] = agent_brain.visual_observations[i]
+                feed_dict[self.model.visual_in[i]] = agent_brain.visual_observations[i]
         if self.use_states:
-            feed_dict[self.model.state_in] = agent_brain.vector_observations
+            feed_dict[self.model.vector_in] = agent_brain.vector_observations
         if self.use_recurrent:
             if agent_brain.memories.shape[1] == 0:
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
@@ -291,15 +291,15 @@ class BehavioralCloningTrainer(Trainer):
                          self.model.batch_size: self.n_sequences,
                          self.model.sequence_length: self.sequence_length}
             if not self.is_continuous:
-                feed_dict[self.model.state_in] = batch_states.reshape([-1, 1])
+                feed_dict[self.model.vector_in] = batch_states.reshape([-1, 1])
             else:
-                feed_dict[self.model.state_in] = batch_states.reshape([-1, self.brain.vector_observation_space_size *
+                feed_dict[self.model.vector_in] = batch_states.reshape([-1, self.brain.vector_observation_space_size *
                                                                        self.brain.num_stacked_vector_observations])
             if self.use_observations:
-                for i, _ in enumerate(self.model.observation_in):
+                for i, _ in enumerate(self.model.visual_in):
                     _obs = np.array(_buffer['visual_observations%d' % i][start:end])
                     (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.observation_in[i]] = _obs.reshape([-1, _w, _h, _c])
+                    feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
             if self.use_recurrent:
                 feed_dict[self.model.memory_in] = np.zeros([self.n_sequences, self.m_size])
 
