@@ -11,7 +11,7 @@ public interface Decision
 	* @param state The state of the agent
 	* @param observation The cameras the agent uses
 	* @param reward The reward the agent had at the previous step
-	* @param done Weather or not the agent is done
+	* @param done Whether or not the agent is done
 	* @param memory The memories stored from the previous step with MakeMemory()
 	* @return The vector of actions the agent will take at the next step
 	*/

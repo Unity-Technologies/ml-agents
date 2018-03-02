@@ -83,10 +83,10 @@ public abstract class Agent : MonoBehaviour
     ///</summary>
     private float reward;
 
-    /// Whether or not the agent is requests an action
+    /// Whether or not the agent requests an action
     private bool requestAction;
 
-    /// Whether or not the agent is requests a decision
+    /// Whether or not the agent requests a decision
     private bool requestDecision;
 
     /// <summary> 
@@ -119,7 +119,7 @@ public abstract class Agent : MonoBehaviour
     private int id;
 
     /// <summary>
-    /// Unity method called when the agent is istanciated or set to active.
+	/// Unity method called when the agent is instantiated or set to active.
     /// </summary>
     private void OnEnable()
     {
