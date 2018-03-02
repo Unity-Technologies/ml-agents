@@ -1,6 +1,6 @@
 # Training with Proximal Policy Optimization
 
-This document is still to be written. Refer to [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md) for a walk-through of the PPO training process.
+This section is still to be written. Refer to [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md) for a walk-through of the PPO training process.
 
 ## Best Practices when training with PPO
 
@@ -10,42 +10,31 @@ parameters don't seem to be giving the level of performance you would like.
 
 ### Hyperparameters
 
+#### Buffer Size
+
+`buffer_size` corresponds to how many experiences (agent observations, actions and rewards obtained) should be collected before we do any 
+learning or updating of the model. **This should be a multiple of `batch_size`**. Typically larger `buffer_size` correspond to more stable training updates.
+
+Typical Range: `2048` - `409600`
+
 #### Batch Size
 
-`batch_size` corresponds to how many experiences are used for each gradient descent update. This should always be a fraction
-of the `buffer_size`. If you are using a continuous action space, this value should be large (in 1000s). If you are using a discrete action space, this value should be smaller (in 10s). 
+`batch_size` is the number of experiences used for one iteration of a gradient descent update. **This should always be a fraction of the 
+`buffer_size`**. If you are using a continuous action space, this value should be large (in the order of  1000s). If you are using a discrete action space, this value 
+should be smaller (in order of 10s). 
 
 Typical Range (Continuous): `512` - `5120`
 
 Typical Range (Discrete): `32` - `512`
 
 
-#### Beta (Used only in Discrete Control)
+#### Number of Epochs
 
-`beta` corresponds to the strength of the entropy regularization, which makes the policy "more random." This ensures that discrete action space agents properly explore during training. Increasing this will ensure more random actions are taken. This should be adjusted such that the entropy (measurable from TensorBoard) slowly decreases alongside increases in reward. If entropy drops too quickly, increase `beta`. If entropy drops too slowly, decrease `beta`.
+`num_epoch` is the number of passes through the experience buffer during gradient descent. The larger the `batch_size`, the
+larger it is acceptable to make this. Decreasing this will ensure more stable updates, at the cost of slower learning.
 
-Typical Range: `1e-4` - `1e-2`
+Typical Range: `3` - `10`
 
-#### Buffer Size
-
-`buffer_size` corresponds to how many experiences should be collected before gradient descent is performed on them all.
-This should be a multiple of `batch_size`. Typically larger buffer sizes correspond to more stable training updates.
-
-Typical Range: `2048` - `409600`
-
-#### Epsilon
-
-`epsilon` corresponds to the acceptable threshold of divergence between the old and new policies during gradient descent updating. Setting this value small will result in more stable updates, but will also slow the training process.
-
-Typical Range: `0.1` - `0.3`
-
-#### Hidden Units
-
-`hidden_units` correspond to how many units are in each fully connected layer of the neural network. For simple problems
-where the correct action is a straightforward combination of the observation inputs, this should be small. For problems where
-the action is a very complex interaction between the observation variables, this should be larger.
-
-Typical Range: `32` - `512`
 
 #### Learning Rate
 
@@ -54,12 +43,6 @@ training is unstable, and the reward does not consistently increase.
 
 Typical Range: `1e-5` - `1e-3`
 
-#### Number of Epochs
-
-`num_epoch` is the number of passes through the experience buffer during gradient descent. The larger the batch size, the
-larger it is acceptable to make this. Decreasing this will ensure more stable updates, at the cost of slower learning.
-
-Typical Range: `3` - `10`
 
 #### Time Horizon
 
@@ -73,9 +56,22 @@ Typical Range: `32` - `2048`
 
 #### Max Steps
 
-`max_steps` corresponds to how many steps of the simulation (multiplied by frame-skip) are run durring the training process. This value should be increased for more complex problems.
+`max_steps` corresponds to how many steps of the simulation (multiplied by frame-skip) are run during the training process. This value should be increased for more complex problems.
 
 Typical Range: `5e5 - 1e7`
+
+#### Beta (Used only in Discrete Control)
+
+`beta` corresponds to the strength of the entropy regularization, which makes the policy "more random." This ensures that discrete action space agents properly explore during training. Increasing this will ensure more random actions are taken. This should be adjusted such that the entropy (measurable from TensorBoard) slowly decreases alongside increases in reward. If entropy drops too quickly, increase `beta`. If entropy drops too slowly, decrease `beta`.
+
+Typical Range: `1e-4` - `1e-2`
+
+
+#### Epsilon
+
+`epsilon` corresponds to the acceptable threshold of divergence between the old and new policies during gradient descent updating. Setting this value small will result in more stable updates, but will also slow the training process.
+
+Typical Range: `0.1` - `0.3`
 
 #### Normalize 
 
@@ -88,6 +84,14 @@ Normalization can be helpful in cases with complex continuous control problems, 
 fewer layers are likely to train faster and more efficiently. More layers may be necessary for more complex control problems.
 
 Typical range: `1` - `3`
+
+#### Hidden Units
+
+`hidden_units` correspond to how many units are in each fully connected layer of the neural network. For simple problems
+where the correct action is a straightforward combination of the observation inputs, this should be small. For problems where
+the action is a very complex interaction between the observation variables, this should be larger.
+
+Typical Range: `32` - `512`
 
 ### Training Statistics
 
