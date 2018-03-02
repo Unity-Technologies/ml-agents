@@ -184,12 +184,14 @@ class BehavioralCloningTrainer(Trainer):
             else:
                 idx = stored_info_expert.agents.index(agent_id)
                 next_idx = next_info_expert.agents.index(agent_id)
-                info_expert_record, info_expert_reset = info_expert.text_observations[idx].lower().split(",")
-                next_info_expert_record, next_info_expert_reset = next_info_expert.text_observations[idx].\
-                    lower().split(",")
-                if next_info_expert_reset == "true":
-                    self.training_buffer.reset_update_buffer()
-
+                if info_expert.text_observations[idx] != "":
+                    info_expert_record, info_expert_reset = info_expert.text_observations[idx].lower().split(",")
+                    next_info_expert_record, next_info_expert_reset = next_info_expert.text_observations[idx].\
+                        lower().split(",")
+                    if next_info_expert_reset == "true":
+                        self.training_buffer.reset_update_buffer()
+                else:
+                    info_expert_record, next_info_expert_record = "true", "true"
                 if info_expert_record == "true" and next_info_expert_record == "true":
                     if not stored_info_expert.local_done[idx]:
                         if self.use_observations:
