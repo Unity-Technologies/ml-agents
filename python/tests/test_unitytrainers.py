@@ -175,21 +175,21 @@ def test_buffer():
     b = Buffer()
     for fake_agent_id in range(4):
         for step in range(9):
-            b[fake_agent_id]['state'].append(
+            b[fake_agent_id]['vector_observation'].append(
                 [100 * fake_agent_id + 10 * step + 1,
                  100 * fake_agent_id + 10 * step + 2,
                  100 * fake_agent_id + 10 * step + 3]
             )
             b[fake_agent_id]['action'].append([100 * fake_agent_id + 10 * step + 4,
                                                100 * fake_agent_id + 10 * step + 5])
-    a = b[1]['state'].get_batch(batch_size=2, training_length=None, sequential=True)
+    a = b[1]['vector_observation'].get_batch(batch_size=2, training_length=None, sequential=True)
     assert_array(a, np.array([[171, 172, 173], [181, 182, 183]]))
-    a = b[2]['state'].get_batch(batch_size=2, training_length=3, sequential=True)
+    a = b[2]['vector_observation'].get_batch(batch_size=2, training_length=3, sequential=True)
     assert_array(a, np.array([
         [[231, 232, 233], [241, 242, 243], [251, 252, 253]],
         [[261, 262, 263], [271, 272, 273], [281, 282, 283]]
     ]))
-    a = b[2]['state'].get_batch(batch_size=2, training_length=3, sequential=False)
+    a = b[2]['vector_observation'].get_batch(batch_size=2, training_length=3, sequential=False)
     assert_array(a, np.array([
         [[251, 252, 253], [261, 262, 263], [271, 272, 273]],
         [[261, 262, 263], [271, 272, 273], [281, 282, 283]]

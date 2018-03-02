@@ -55,7 +55,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     ///  Modify only in inspector : Name of the placholder of the batch size
     public string BatchSizePlaceholderName = "batch_size";
     ///  Modify only in inspector : Name of the state placeholder
-    public string VectorObservationPlacholderName = "state";
+    public string VectorObservationPlacholderName = "vector_observation";
     ///  Modify only in inspector : Name of the recurrent input
     public string RecurrentInPlaceholderName = "recurrent_in";
     ///  Modify only in inspector : Name of the recurrent output
