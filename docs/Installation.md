@@ -6,7 +6,15 @@ below overviews each step, in addition to an experimental Docker set-up.
 
 ## Install **Unity 2017.1** or Later
 
-[Download](https://store.unity.com/download) and install Unity.
+[Download](https://store.unity.com/download) and install Unity. If you would
+like to use our Docker set-up (introduced later), make sure to select the 
+_Linux Build Support_ component when installing Unity.
+
+<p align="center">
+    <img src="images/unity_linux_build_support.png" 
+        alt="Linux Build Support" 
+        width="500" border="10" />
+</p>
 
 ## Clone the ml-agents Repository
 
@@ -47,7 +55,7 @@ or
 
     pip3 install .
 
-## Docker-based Installation _[Experimental]_
+## Docker-based Installation (Experimental)
 
 If you'd like to use Docker for ML-Agents, please follow 
 [this guide](Using-Docker.md). 
@@ -58,4 +66,3 @@ If you run into any problems installing ML-Agents,
 [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
 make sure to cite relevant information on OS, Python version, and exact error 
 message (whenever possible). 
-

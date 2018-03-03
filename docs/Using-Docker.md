@@ -1,59 +1,70 @@
-# Using Docker For ML Agents (Experimental)
+# Using Docker For ML-Agents (Experimental)
 
-We are currently offering an experimental solution for Windows and Mac users who would like to do training or inference using Docker. This option may be appealing to users who would like to avoid dealing with Python and TensorFlow installation on their host machines. This setup currently forces both TensorFlow and Unity to rely on _only_ the CPU for computation purposes. As such, we currently only support training using environments that only contain agents which use vector observations, rather than camera-based visual observations. For example, the [GridWorld](Example-Environments.md#gridworld) environment which use visual observations for training is not supported. 
+We currently offer an experimental solution for Windows and Mac users who would like to do training or inference using Docker. This option may be appealing to those who would like to avoid installing Python and TensorFlow themselves. The current setup forces both TensorFlow and Unity to _only_ rely on the CPU for computations. Consequently, our Docker support is limited to environments whose agents **do not** use camera-based visual observations. For example, the [GridWorld](Learning-Environment-Examples.md#gridworld) environment is **not** supported.
 
 ## Requirements
-- Unity Linux Standalone Player ([Link](https://unity3d.com/get-unity/download?ref=professional&_ga=2.161111422.259506921.1519336396-1357272041.1488299149))
-- Docker ([Link](https://www.docker.com/community-edition#/download))
+- Unity _Linux Build Support_ Component
+- [Docker](https://www.docker.com)
 
 ## Setup
 
-- Install Docker (see link above) if you don't have it setup on your machine. 
+- [Download](https://unity3d.com/get-unity/download) the Unity Installer and
+add the _Linux Build Support_ Component
 
-- Since Docker runs a container in an environment that is isolated from the host machine, we will be using a mounted directory, e.g. `unity-volume` in your host machine in order to share data, e.g. the Unity executable, curriculum files and tensorflow graph.
+- [Download](https://www.docker.com/community-edition#/download) and
+install Docker if you don't have it setup on your machine.
+
+- Since Docker runs a container in an environment that is isolated from the host machine, a mounted directory in your host machine is used to share data, e.g. the Unity executable, curriculum files and tensorflow graph. For convenience, we created an empty `unity-volume` directory at the root of the repository for this purpose, but feel free to use any other directory. The remainder of this guide assumes that the `unity-volume` directory is the one used.
 
 ## Usage
 
-- Docker typically runs a container sharing a (linux) kernel with the host machine, this means that the 
-Unity environment **has** to be built for the **linux platform**. From the Build Settings Window, please select the architecture to be `x86_64` and choose the build to be `headless` (_This is important because we are running it in a container that does not have graphics drivers installed_). 
-Save the generated environment in the directory to be mounted (e.g. we have conveniently created an empty directory called at the top level `unity-volume`). 
+Using Docker for ML-Agents involves three steps: building the Unity environment with specific flags, building a Docker container and, finally, running the container. If you are not familiar with building a Unity environment for ML-Agents, please read through our [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md) guide first.
+
+### Build the Environment
+
+Since Docker typically runs a container sharing a (linux) kernel with the host machine, the 
+Unity environment **has** to be built for the **linux platform**. When building a Unity environment, please select the following options from the the Build Settings window:
+- Set the _Target Platform_ to `Linux`
+- Set the _Architecture_ to `x86_64`
+- `Uncheck` the _Development Build_ option
+- `Check` the _Headless Mode_ option. (_This is required because the Unity binary will run in a container that does not have graphics drivers installed_.) 
 
 ![Build Settings For Docker](images/docker_build_settings.png)
 
-- Ensure that `unity-volume/<environment-name>.x86_64` and `unity-volume/environment-name_Data`. So for example, `<environment_name>` might be `3Dball` and you might want to ensure that `unity-volume/3Dball.x86_64` and `unity-volume/3Dball_Data` are both present in the directory `unity-volume`.
+Then click `Build`, pick an environment name (e.g. `3DBall`) and set the output directory to `unity-volume`. After building, ensure that the file `<environment-name>.x86_64` and subdirectory `<environment-name>_Data/` are created under `unity-volume`.
 
-- Make sure the docker engine is running on your machine, then build the docker container by running `docker build  -t <image_name> .` . in the top level of the source directory. Replace `<image_name>` by the name of the image that you want to use, e.g. `balance.ball.v0.1`.
+### Build the Docker Container
 
-- Run the container:
+First, make sure the Docker engine is running on your machine. Then build the Docker container by calling the following command at the top-level of the repository:
+```
+docker build -t <image-name> .
+``` 
+Replace `<image-name>` with a name for the Docker image, e.g. `balance.ball.v0.1`.
 
+### Run the Docker Container
+
+Run the Docker container by calling the following command at the top-level of the repository:
 ```
 docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
-	 <image-name>:latest <environment-name> \
-	 --docker-target-name=unity-volume \
-	 --train --run-id=<run-id>
+     <image-name>:latest <environment-name> \
+     --docker-target-name=unity-volume \
+     --train --run-id=<run-id>
 ```
+
+Notes on argument values:
+- `<image-name>` and `<environment-name>`: References the image and environment names, respectively.
+- `source`: Reference to the path in your host OS where you will store the Unity executable. 
+- `target`: Tells Docker to mount the `source` path as a disk with this name. 
+- `docker-target-name`: Tells the ML-Agents Python package what the name of the disk where it can read the Unity executable and store the graph. **This should therefore be identical to `target`.**
+- `train`, `run-id`: ML-Agents arguments passed to `learn.py`. `train` trains the algorithm, `run-id` is used to tag each experiment with a unique identifier. 
 
 For the `3DBall` environment, for example this would be:
 
-- Run the container:
-
 ```
 docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
-	 balance.ball.v0.1:latest 3Dball \
-	 --docker-target-name=unity-volume \
-	 --train --run-id=<run-id>
+     balance.ball.v0.1:latest 3Dball \
+     --docker-target-name=unity-volume \
+     --train --run-id=3dball_first_trial
 ```
 
-**Notes on argument values** 
-
-- `source` : Reference to the path in your host OS where you will store the Unity executable. 
-- `target`: Tells docker to mount the `source` path as a disk with this name. 
-- `docker-target-name`: Tells the ML-Agents python package what the name of the disk where it can read the Unity executable and store the graph.**This should therefore be identical to the `target`.**
-- `train`, `run-id`: ML-Agents arguments passed to `learn.py`. `train` trains the algorithm, `run-id` is used to tag each experiment with a unique id. 
-
-
-For more details on docker mounts, look at [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
-
-
-
-
+For more detail on Docker mounts, check out [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
