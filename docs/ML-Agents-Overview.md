@@ -401,3 +401,11 @@ Player Brain are used to learn the policies of an agent through demonstration.
 However, this could also be helpful for the Heuristic and Internal Brains,
 particularly when debugging agent behaviors. You can learn more about using 
 the broadcasting feature [here](Feature-Broadcasting.md).
+
+* **On Demand Decision** - With ML-Agents it is possible to have agents 
+request decisions only when needed as opposed to requesting decisions at 
+every step. This enables training of turn based games, games where agents 
+must react to events or games where agents can take actions of variable 
+duration. Switching between decision taking at every step and 
+on-demand-decision is one button click away. You can learn more about the 
+on-demand-decision feature [here](Learning-Environment-On-Demand-Decision)
