@@ -18,6 +18,12 @@ default:
     summary_freq: 1000
     use_recurrent: false
 
+
+BrainCurio:
+    trainer: 'ppo-curio'
+    batch_size: 64
+    buffer_size: 512
+
 Ball3DBrain:
     normalize: true
 

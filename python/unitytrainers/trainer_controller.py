@@ -11,6 +11,7 @@ import yaml
 
 from tensorflow.python.tools import freeze_graph
 from unitytrainers.ppo.trainer import PPOTrainer
+from unitytrainers.ppo_curio import PPOCurioTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
@@ -176,6 +177,10 @@ class TrainerController(object):
             elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(sess, self.env, brain_name, trainer_parameters_dict[brain_name],
                                                        self.train_model, self.seed)
+            elif trainer_parameters_dict[brain_name]['trainer'] == "ppo-curio":
+                self.trainers[brain_name] = PPOCurioTrainer(sess, self.env, brain_name,
+                                                            trainer_parameters_dict[brain_name],
+                                                            self.train_model, self.seed)
             else:
                 raise UnityEnvironmentException("The trainer config contains an unknown trainer type for brain {}"
                                                 .format(brain_name))
@@ -270,7 +275,7 @@ class TrainerController(object):
 
                 # Final save Tensorflow model
                 if global_step != 0 and self.train_model:
-                    self._save_model(sess,  steps=global_step, saver=saver)
+                    self._save_model(sess, steps=global_step, saver=saver)
             except KeyboardInterrupt:
                 if self.train_model:
                     self.logger.info("Learning was interrupted. Please wait while the graph is generated.")
