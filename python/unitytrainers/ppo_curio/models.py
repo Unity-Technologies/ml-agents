@@ -62,7 +62,7 @@ class PPOCurioModel(LearningModel):
 
         combined = tf.concat([encoded_state, encoded_next_state], axis=1)
         pred_action = tf.layers.dense(combined, a_size, activation=tf.nn.sigmoid)
-        self.inverse_loss = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions))
+        self.inverse_loss = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions)
         return encoded_state, encoded_next_state
 
     def create_forward_model(self, encoded_state, encoded_next_state):
