@@ -5,7 +5,9 @@ On demand decision making allows agents to request decisions from their
 brains only when needed instead of requesting decisions at a fixed 
 frequency. This is useful when the agents commit to an action for a 
 variable number of steps or when the agents cannot make decisions 
-at the same time.
+at the same time. This typically the case for turn based games, games 
+where agents must react to events or games where agents can take 
+actions of variable duration.
 
 ## How to use
 
