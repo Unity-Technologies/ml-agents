@@ -70,11 +70,12 @@ class PPOCurioTrainer(Trainer):
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': [], 'forward_loss': [],
-                 'inverse_loss': []}
+                 'inverse_loss': [], 'intrinsic_rewards': []}
         self.stats = stats
 
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
+        self.intrinsic_rewards = {}
         self.episode_steps = {}
         self.is_continuous = (env.brains[brain_name].vector_action_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_visual_observations > 0)
@@ -279,6 +280,7 @@ class PPOCurioTrainer(Trainer):
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
+                    self.intrinsic_rewards[agent_id] += intrinsic_rewards[next_idx]
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
@@ -331,9 +333,11 @@ class PPOCurioTrainer(Trainer):
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
                     self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
+                    self.stats['intrinsic_rewards'].append(self.intrinsic_rewards[agent_id])
                     self.stats['episode_length'].append(self.episode_steps[agent_id])
                     self.cumulative_rewards[agent_id] = 0
                     self.episode_steps[agent_id] = 0
+                    self.intrinsic_rewards[agent_id] = 0
 
     def end_episode(self):
         """

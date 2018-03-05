@@ -18,11 +18,16 @@ default:
     summary_freq: 1000
     use_recurrent: false
 
-
 BrainCurio:
     trainer: 'ppo-curio'
-    batch_size: 64
-    buffer_size: 512
+    batch_size: 128
+    buffer_size: 1024
+    hidden_units: 128
+    use_recurrent: true
+    sequence_length: 64
+    num_layers: 2
+    beta: 1.0e-2
+    max_steps: 5e5
 
 Ball3DBrain:
     normalize: true
