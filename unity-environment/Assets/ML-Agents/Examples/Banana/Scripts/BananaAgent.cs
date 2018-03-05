@@ -208,9 +208,9 @@ public class BananaAgent : Agent
 
 
 
-    public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
-        MoveAgent(act);
+        MoveAgent(vectorAction);
     }
 
     public override void AgentReset()

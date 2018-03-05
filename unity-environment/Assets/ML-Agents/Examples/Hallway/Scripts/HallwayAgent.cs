@@ -132,11 +132,11 @@ public class HallwayAgent : Agent
         agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
     }
 
-    public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
         AddReward(-0.0003f);
 
-        MoveAgent(act); //perform agent actions
+        MoveAgent(vectorAction); //perform agent actions
         bool fail = false;  // did the agent or block get pushed off the edge?
 
         if (!Physics.Raycast(agentRB.position, Vector3.down, 20)) //if the agent has gone over the edge, we done.

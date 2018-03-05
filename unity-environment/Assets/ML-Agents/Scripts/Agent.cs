@@ -441,7 +441,7 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     /// <param name="action">The action the agent receives 
     /// from the brain.</param>
-    public virtual void AgentAction(float[] action)
+    public virtual void AgentAction(float[] vectorAction, string textAction)
     {
 
     }
@@ -596,7 +596,7 @@ public abstract class Agent : MonoBehaviour
         if ((requestAction) && (brain != null))
         {
             requestAction = false;
-            AgentAction(_action.vectorActions);
+            AgentAction(_action.vectorActions, _action.textActions);
         }
 
         if ((stepCounter >= agentParameters.maxStep)

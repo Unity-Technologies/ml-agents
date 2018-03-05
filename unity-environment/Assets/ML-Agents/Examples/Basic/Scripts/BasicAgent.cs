@@ -26,9 +26,9 @@ public class BasicAgent : Agent
 		AddVectorObs(position);
 	}
 
-	public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
 	{
-		float movement = act[0];
+        float movement = vectorAction[0];
 		int direction = 0;
 		if (movement == 0) { direction = -1; }
 		if (movement == 1) { direction = 1; }
