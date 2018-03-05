@@ -1,5 +1,5 @@
 import json
-import mock
+import unittest.mock as mock
 import pytest
 import struct
 
@@ -41,7 +41,8 @@ dummy_reset = [
           "agents": [1,2],
           "vectorObservations": [1,2,3,4,5,6,1,2,3,4,5,6],
           "rewards": [1,2],
-          "vectorActions": [1,2,3,4],
+          "previousVectorActions": [1,2,3,4],
+          "previousTextActions":["",""],
           "memories": [],
           "dones": [false, false],
           "maxes": [false, false],
@@ -56,7 +57,8 @@ dummy_step = ['actions'.encode(),
   "agents": [1,2,3],
   "vectorObservations": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
   "rewards": [1,2,3],
-  "vectorActions": [1,2,3,4,5,6],
+  "previousVectorActions": [1,2,3,4,5,6],
+  "previousTextActions":["","",""],
   "memories": [],
   "dones": [false, false, false],
   "maxes": [false, false, false],
@@ -70,7 +72,8 @@ dummy_step = ['actions'.encode(),
   "agents": [1,2,3],
   "vectorObservations": [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],
   "rewards": [1,2,3],
-  "vectorActions": [1,2,3,4,5,6],
+  "previousVectorActions": [1,2,3,4,5,6],
+  "previousTextActions":["","",""],
   "memories": [],
   "dones": [false, false, true],
   "maxes": [false, false, false],

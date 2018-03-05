@@ -5,10 +5,6 @@ public class FlyCamera : MonoBehaviour
 {
 
     /*
-    Writen by Windexglow 11-13-10.  Use it, edit it, steal it I don't care.  
-    Converted to C# 27-02-13 - no credit wanted.
-    Simple flycam I made, since I couldn't find any others made public.  
-    Made simple to use (drag and drop, done) for regular keyboard layout  
     wasd : basic movement
     shift : Makes camera accelerate
     space : Moves camera on X and Z axis only.  So camera doesn't gain any height*/

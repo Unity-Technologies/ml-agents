@@ -34,13 +34,11 @@ public class ReacherGoal : MonoBehaviour {
         }
     }
 
-
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other) 
     {
         if (other.gameObject == hand)
         {
-            agent.GetComponent<ReacherAgent>().SetReward(  0.1f);
-            //agent.GetComponent<PendulumAgent>().done = true;
+            agent.GetComponent<ReacherAgent>().AddReward(0.01f);
         }
     }
 }

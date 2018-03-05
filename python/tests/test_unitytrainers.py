@@ -1,5 +1,5 @@
 import yaml
-import mock
+import unittest.mock as mock
 import pytest
 
 from unitytrainers.trainer_controller import TrainerController
@@ -108,26 +108,33 @@ def test_initialization():
                 mock_socket.return_value.accept.return_value = (mock_socket, 0)
                 mock_socket.recv.return_value.decode.return_value = dummy_start
                 tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                                       1, 1, 1)
+                                       1, 1, 1, '', "tests/test_unitytrainers.py")
                 assert(tc.env.brain_names[0] == 'RealFakeBrain')
 
 
 def test_load_config():
-    open_name = '%s.open' % __name__
+    open_name = 'unitytrainers.trainer_controller' + '.open'
     with mock.patch('yaml.load') as mock_load:
-        with mock.patch(open_name, create=True) as mock_open:
-            mock_open.return_value = 0
-            mock_load.return_value = dummy_config
-            config = TrainerController._load_config("tests/test_unitytrainers.py")
-            assert(len(config) == 1)
-            assert(config['default']['trainer'] == "ppo")
+        with mock.patch(open_name, create=True) as _:
+            with mock.patch('subprocess.Popen'):
+                with mock.patch('socket.socket') as mock_socket:
+                    with mock.patch('glob.glob') as mock_glob:
+                        mock_load.return_value = dummy_config
+                        mock_glob.return_value = ['FakeLaunchPath']
+                        mock_socket.return_value.accept.return_value = (mock_socket, 0)
+                        mock_socket.recv.return_value.decode.return_value = dummy_start
+                        mock_load.return_value = dummy_config
+                        tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
+                                                   1, 1, 1, '','')
+                        config = tc._load_config()
+                        assert(len(config) == 1)
+                        assert(config['default']['trainer'] == "ppo")
 
 
 def test_initialize_trainers():
-    open_name = '%s.open' % __name__
+    open_name = 'unitytrainers.trainer_controller' + '.open'
     with mock.patch('yaml.load') as mock_load:
-        with mock.patch(open_name, create=True) as mock_open:
-            mock_open.return_value = 0
+        with mock.patch(open_name, create=True) as _:
             with mock.patch('subprocess.Popen'):
                 with mock.patch('socket.socket') as mock_socket:
                     with mock.patch('glob.glob') as mock_glob:
@@ -135,11 +142,11 @@ def test_initialize_trainers():
                         mock_socket.return_value.accept.return_value = (mock_socket, 0)
                         mock_socket.recv.return_value.decode.return_value = dummy_start
                         tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                                               1, 1, 1)
+                                               1, 1, 1, '', "tests/test_unitytrainers.py")
 
                         # Test for PPO trainer
                         mock_load.return_value = dummy_config
-                        config = tc._load_config("tests/test_unitytrainers.py")
+                        config = tc._load_config()
                         tf.reset_default_graph()
                         with tf.Session() as sess:
                             tc._initialize_trainers(config, sess)
@@ -148,7 +155,7 @@ def test_initialize_trainers():
 
                         # Test for Behavior Cloning Trainer
                         mock_load.return_value = dummy_bc_config
-                        config = tc._load_config("tests/test_unitytrainers.py")
+                        config = tc._load_config()
                         tf.reset_default_graph()
                         with tf.Session() as sess:
                             tc._initialize_trainers(config, sess)
@@ -156,7 +163,7 @@ def test_initialize_trainers():
 
                         # Test for proper exception when trainer name is incorrect
                         mock_load.return_value = dummy_bad_config
-                        config = tc._load_config("tests/test_unitytrainers.py")
+                        config = tc._load_config()
                         tf.reset_default_graph()
                         with tf.Session() as sess:
                             with pytest.raises(UnityEnvironmentException):
@@ -175,21 +182,21 @@ def test_buffer():
     b = Buffer()
     for fake_agent_id in range(4):
         for step in range(9):
-            b[fake_agent_id]['state'].append(
+            b[fake_agent_id]['vector_observation'].append(
                 [100 * fake_agent_id + 10 * step + 1,
                  100 * fake_agent_id + 10 * step + 2,
                  100 * fake_agent_id + 10 * step + 3]
             )
             b[fake_agent_id]['action'].append([100 * fake_agent_id + 10 * step + 4,
                                                100 * fake_agent_id + 10 * step + 5])
-    a = b[1]['state'].get_batch(batch_size=2, training_length=None, sequential=True)
+    a = b[1]['vector_observation'].get_batch(batch_size=2, training_length=None, sequential=True)
     assert_array(a, np.array([[171, 172, 173], [181, 182, 183]]))
-    a = b[2]['state'].get_batch(batch_size=2, training_length=3, sequential=True)
+    a = b[2]['vector_observation'].get_batch(batch_size=2, training_length=3, sequential=True)
     assert_array(a, np.array([
         [[231, 232, 233], [241, 242, 243], [251, 252, 253]],
         [[261, 262, 263], [271, 272, 273], [281, 282, 283]]
     ]))
-    a = b[2]['state'].get_batch(batch_size=2, training_length=3, sequential=False)
+    a = b[2]['vector_observation'].get_batch(batch_size=2, training_length=3, sequential=False)
     assert_array(a, np.array([
         [[251, 252, 253], [261, 262, 263], [271, 272, 273]],
         [[261, 262, 263], [271, 272, 273], [281, 282, 283]]

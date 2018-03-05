@@ -35,7 +35,7 @@ values (in _Discrete_ action space).
    *  `Graph Model` : This must be the `bytes` file corresponding to the pretrained Tensorflow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
    *  `Graph Scope` : If you set a scope while training your TensorFlow model, all your placeholder name will have a prefix. You must specify that prefix here.
    *  `Batch Size Node Name` : If the batch size is one of the inputs of your graph, you must specify the name if the placeholder here. The brain will make the batch size equal to the number of agents connected to the brain automatically.
-   *  `State Node Name` : If your graph uses the state as an input, you must specify the name if the placeholder here.
+   *  `Vector Observation Node Name` : If your graph uses a vector observation as an input, you must specify the name if the placeholder here.
    *  `Recurrent Input Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the input placeholder here.
    *  `Recurrent Output Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the output placeholder here.
    * `Visual Observation Placeholder Name` : If your graph uses observations as input, you must specify it here. Note that the number of observations is equal to the length of `Camera Resolutions` in the brain parameters.

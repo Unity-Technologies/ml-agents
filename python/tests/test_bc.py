@@ -1,4 +1,4 @@
-import mock
+import unittest.mock as mock
 import pytest
 
 import numpy as np
@@ -47,7 +47,7 @@ def test_cc_bc_model():
                         run_list = [model.sample_action, model.policy]
                         feed_dict = {model.batch_size: 2,
                                      model.sequence_length: 1,
-                                     model.state_in: np.array([[1, 2, 3, 1, 2, 3],
+                                     model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                                [3, 4, 5, 3, 4, 5]])}
                         sess.run(run_list, feed_dict=feed_dict)
                         env.close()
@@ -92,9 +92,9 @@ def test_dc_bc_model():
                         feed_dict = {model.batch_size: 2,
                                      model.dropout_rate: 1.0,
                                      model.sequence_length: 1,
-                                     model.state_in: np.array([[1, 2, 3, 1, 2, 3],
+                                     model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                                [3, 4, 5, 3, 4, 5]]),
-                                     model.observation_in[0]: np.ones([2, 40, 30, 3])}
+                                     model.visual_in[0]: np.ones([2, 40, 30, 3])}
                         sess.run(run_list, feed_dict=feed_dict)
                         env.close()
 

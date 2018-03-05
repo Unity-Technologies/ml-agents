@@ -292,7 +292,7 @@ public abstract class Agent : MonoBehaviour
             return;
 
         BrainParameters param = brain.brainParameters;
-        if (param.vectorActionSpaceType == StateType.continuous)
+        if (param.vectorActionSpaceType == SpaceType.continuous)
         {
             _action.vectorActions = new float[param.vectorActionSize];
             _info.StoredVectorActions = new float[param.vectorActionSize];
@@ -305,7 +305,7 @@ public abstract class Agent : MonoBehaviour
         _action.textActions = "";
         _info.memories = new List<float>();
         _action.memories = new List<float>();
-        if (param.vectorObservationSpaceType == StateType.continuous)
+        if (param.vectorObservationSpaceType == SpaceType.continuous)
         {
             _info.vectorObservation =
                 new List<float>(param.vectorObservationSize);
@@ -352,7 +352,7 @@ public abstract class Agent : MonoBehaviour
         CollectObservations();
 
         BrainParameters param = brain.brainParameters;
-        if (param.vectorObservationSpaceType == StateType.continuous)
+        if (param.vectorObservationSpaceType == SpaceType.continuous)
         {
             if (_info.vectorObservation.Count != param.vectorObservationSize)
             {

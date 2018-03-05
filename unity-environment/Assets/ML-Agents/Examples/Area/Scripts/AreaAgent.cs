@@ -23,7 +23,7 @@ public class AreaAgent : Agent
         float directionZ = 0;
         float directionY = 0;
 
-        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             directionX = Mathf.Clamp(act[0], -1f, 1f);
             directionZ = Mathf.Clamp(act[1], -1f, 1f);

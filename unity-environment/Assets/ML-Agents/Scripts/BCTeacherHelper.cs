@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TeacherHelper : MonoBehaviour {
+
+/// <summary>
+/// Behavioral Cloning Helper script. Attach to teacher agent to enable 
+/// resetting the experience buffer, as well as toggling session recording.
+/// </summary>
+public class BCTeacherHelper : MonoBehaviour {
 
     bool recordExperiences;
     bool resetBuffer;
     Agent myAgent;
     float bufferResetTime;
+
+    public KeyCode recordKey = KeyCode.R;
+    public KeyCode resetKey = KeyCode.C;
 
     // Use this for initialization
     void Start () {
@@ -19,11 +27,11 @@ public class TeacherHelper : MonoBehaviour {
     
     // Update is called once per frame
     void Update () {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(recordKey))
         {
             recordExperiences = !recordExperiences;
         }
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(resetKey))
         {
             resetBuffer = true;
             bufferResetTime = Time.time;
@@ -32,9 +40,9 @@ public class TeacherHelper : MonoBehaviour {
         {
             resetBuffer = false;
         }
-        Monitor.Log("Recording experiences", recordExperiences.ToString());
+        Monitor.Log("Recording experiences " + recordKey.ToString(), recordExperiences.ToString());
         float timeSinceBufferReset = Time.time - bufferResetTime;
-        Monitor.Log("Seconds since buffer reset", Mathf.FloorToInt(timeSinceBufferReset));
+        Monitor.Log("Seconds since buffer reset " + resetKey.ToString(), Mathf.FloorToInt(timeSinceBufferReset));
     }
 
     void FixedUpdate()

@@ -69,11 +69,11 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// decide action
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-        if (coord != null)
-        {
-            coord.GiveBrainInfo(brain, agentInfo);
-        }
-        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+		if (coord != null)
+		{
+			coord.GiveBrainInfo(brain, agentInfo);
+		}
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             foreach (Agent agent in agentInfo.Keys)
             {
@@ -120,7 +120,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
                       "If checked, the brain will broadcast states and actions to Python."), broadcast);
         var serializedBrain = new SerializedObject(this);
-        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
             var chas = serializedBrain.FindProperty("continuousPlayerActions");

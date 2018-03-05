@@ -55,7 +55,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     ///  Modify only in inspector : Name of the placholder of the batch size
     public string BatchSizePlaceholderName = "batch_size";
     ///  Modify only in inspector : Name of the state placeholder
-    public string VectorObservationPlacholderName = "state";
+    public string VectorObservationPlacholderName = "vector_observation";
     ///  Modify only in inspector : Name of the recurrent input
     public string RecurrentInPlaceholderName = "recurrent_in";
     ///  Modify only in inspector : Name of the recurrent output
@@ -180,7 +180,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         if (hasState)
         {
             int stateLength = 1;
-            if (brain.brainParameters.vectorObservationSpaceType == StateType.continuous)
+            if (brain.brainParameters.vectorObservationSpaceType == SpaceType.continuous)
             {
                 stateLength = brain.brainParameters.vectorObservationSize;
             }
@@ -281,7 +281,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         // Create the state tensor
         if (hasState)
         {
-            if (brain.brainParameters.vectorObservationSpaceType == StateType.discrete)
+            if (brain.brainParameters.vectorObservationSpaceType == SpaceType.discrete)
             {
                 var discreteInputState = new int[currentBatchSize, 1];
                 for (int i = 0; i < currentBatchSize; i++)
@@ -355,7 +355,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
         }
 
-        if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             var output = networkOutput[0].GetValue() as float[,];
             var i = 0;
@@ -370,7 +370,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 i++;
             }
         }
-        else if (brain.brainParameters.vectorActionSpaceType == StateType.discrete)
+        else if (brain.brainParameters.vectorActionSpaceType == SpaceType.discrete)
         {
             long[,] output = networkOutput[0].GetValue() as long[,];
             var i = 0;
