@@ -110,10 +110,10 @@ namespace MLAgentsTests
                            BindingFlags.Instance | BindingFlags.NonPublic);
             AcademyInitializeMethod.Invoke(aca, new object[] { });
             Assert.AreEqual(1, aca.initializeAcademyCalls);
-            Assert.AreEqual(1, aca.episodeCount);
+            Assert.AreEqual(0, aca.episodeCount);
             Assert.AreEqual(0, aca.stepsSinceReset);
             Assert.AreEqual(false, aca.IsDone());
-            Assert.AreEqual(1, aca.academyResetCalls);
+            Assert.AreEqual(0, aca.academyResetCalls);
             Assert.AreEqual(0, aca.AcademyStepCalls);
         }
 
@@ -161,7 +161,7 @@ namespace MLAgentsTests
             Assert.AreEqual(false, agent2.IsDone());
             //agent1 was not enabled when the academy started
             Assert.AreEqual(0, agent1.agentResetCalls);
-            Assert.AreEqual(1, agent2.agentResetCalls);
+            Assert.AreEqual(0, agent2.agentResetCalls);
             Assert.AreEqual(1, agent1.initializeAgentCalls);
             Assert.AreEqual(1, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
@@ -185,16 +185,18 @@ namespace MLAgentsTests
             MethodInfo AcademyStepMethod = typeof(Academy).GetMethod("_AcademyStep",
                            BindingFlags.Instance | BindingFlags.NonPublic);
 
+            int numberReset = 0;
             for (int i = 0; i < 10; i++){  
                 Assert.AreEqual(1, aca.initializeAcademyCalls);
-                Assert.AreEqual(1, aca.episodeCount);
+                Assert.AreEqual(numberReset, aca.episodeCount);
                 Assert.AreEqual(i, aca.stepsSinceReset);
                 Assert.AreEqual(false, aca.IsDone());
-                Assert.AreEqual(1, aca.academyResetCalls);
+                Assert.AreEqual(numberReset, aca.academyResetCalls);
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
+                if (i == 0)
+                    numberReset += 1;
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
-
             }
         }
 
@@ -240,31 +242,42 @@ namespace MLAgentsTests
 
             AgentEnableMethod.Invoke(agent1, new object[] { aca });
             AcademyInitializeMethod.Invoke(aca, new object[] { });
-            AgentEnableMethod.Invoke(agent2, new object[] { aca });
 
             MethodInfo AcademyStepMethod = typeof(Academy).GetMethod("_AcademyStep",
                            BindingFlags.Instance | BindingFlags.NonPublic);
 
+            int numberAgent1Reset = 0; 
+            int numberAgent2Initialization = 0; 
             int requestDecision =0;
             int requestAction=0;
             for (int i = 0; i < 50; i++)
             {
-                
-                Assert.AreEqual(1, agent1.agentResetCalls);
-                Assert.AreEqual(0, agent2.agentResetCalls);
+                Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
+                Assert.AreEqual(0, agent2.agentResetCalls); // Agent2 is never reset since intialized after academy
                 Assert.AreEqual(1, agent1.initializeAgentCalls);
-                Assert.AreEqual(1, agent2.initializeAgentCalls);
+                Assert.AreEqual(numberAgent2Initialization, agent2.initializeAgentCalls);
                 Assert.AreEqual(i, agent1.agentActionCalls);
                 Assert.AreEqual(requestAction, agent2.agentActionCalls);
                 Assert.AreEqual((i+1)/2, agent1.collectObservationsCalls);
                 Assert.AreEqual(requestDecision, agent2.collectObservationsCalls);
-                if (i % 3 == 0)
+
+                if (i == 0)
+                {
+                    numberAgent1Reset += 1;
+                }
+                if (i == 2) //Agent 2 is only initialized at step 2
+                {
+                    AgentEnableMethod.Invoke(agent2, new object[] { aca });
+                    numberAgent2Initialization += 1;
+                }
+
+                if ((i % 3 == 0) && (i > 2))
                 {
                     requestDecision +=1;
                     requestAction+=1;
                     agent2.RequestDecision();
                 }
-                else if (i % 5 == 0)
+                else if ((i % 5 == 0) && (i > 2))
                 {
                     requestAction += 1;
                     agent2.RequestAction();
@@ -289,7 +302,7 @@ namespace MLAgentsTests
             MethodInfo AcademyStepMethod = typeof(Academy).GetMethod("_AcademyStep",
                            BindingFlags.Instance | BindingFlags.NonPublic);
 
-            int numberReset = 1;
+            int numberReset = 0;
             int stepsSinceReset = 0;
             for (int i = 0; i < 50; i++)
             {
@@ -301,6 +314,10 @@ namespace MLAgentsTests
                 Assert.AreEqual(false, aca.IsDone());
                 Assert.AreEqual(numberReset, aca.academyResetCalls);
                 Assert.AreEqual(i, aca.AcademyStepCalls);
+                if (i == 0)
+                {
+                    numberReset += 1;
+                }
 
                 stepsSinceReset += 1;
                 if (i % 5 == 3)
@@ -361,11 +378,10 @@ namespace MLAgentsTests
 
             AgentEnableMethod.Invoke(agent2, new object[] { aca });
             AcademyInitializeMethod.Invoke(aca, new object[] { });
-            AgentEnableMethod.Invoke(agent1, new object[] { aca });
 
-            int numberAgent1Reset = 0; // Agent1 was not enabled at Academy start
-            int numberAgent2Reset = 1; 
-            int numberAcaReset = 1;
+            int numberAgent1Reset = 0; 
+            int numberAgent2Reset = 0; 
+            int numberAcaReset = 0;
             int acaStepsSinceReset = 0;
             int agent1StepSinceReset =0;
             int agent2StepSinceReset=0;
@@ -386,15 +402,22 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
-                acaStepsSinceReset += 1;
-                agent1StepSinceReset += 1;
-                agent2StepSinceReset += 1;
+                if (i == 0)
+                {
+                    numberAcaReset += 1;
+                    numberAgent2Reset += 1;
+                }
+                if (i == 2) //Agent 1 is only initialized at step 2
+                {
+                    AgentEnableMethod.Invoke(agent1, new object[] { aca });
+
+                }
 
                 if (i % 100 == 3)
                 {
                     aca.Done();
                     numberAcaReset += 1;
-                    acaStepsSinceReset = 1;
+                    acaStepsSinceReset = 0;
                 }
                 if (i % 11 == 5)
                 {
@@ -408,7 +431,7 @@ namespace MLAgentsTests
                         // We should not reset again
                         agent2.Done();
                         numberAgent2Reset += 1;
-                        agent2StepSinceReset = 1;
+                        agent2StepSinceReset = 0;
                     }
                 }
 
@@ -423,17 +446,24 @@ namespace MLAgentsTests
                     requestAction += 1;
                     agent2.RequestAction();
                 }
-                if (agent1.IsDone() && (((acaStepsSinceReset+1) % agent1.agentParameters.numberOfActionsBetweenDecisions==0)) || aca.IsDone())
+                if (agent1.IsDone() && (((acaStepsSinceReset) % agent1.agentParameters.numberOfActionsBetweenDecisions==0)) || aca.IsDone())
                 {
                     numberAgent1Reset += 1;
-                    agent1StepSinceReset = 1;
+                    agent1StepSinceReset = 0;
                 }
                 if (aca.IsDone())
                 {
                     numberAgent2Reset += 1;
-                    agent2StepSinceReset = 1;
+                    agent2StepSinceReset = 0;
                 }
 
+                acaStepsSinceReset += 1;
+                agent1StepSinceReset += 1;
+                agent2StepSinceReset += 1;
+                if (i < 2) //Agent 1 is only initialized at step 2
+                {
+                    agent1StepSinceReset = 0;
+                }
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
 
 
@@ -459,27 +489,28 @@ namespace MLAgentsTests
             FieldInfo maxStep = typeof(Academy).GetField("maxSteps", BindingFlags.Instance | BindingFlags.NonPublic);
             maxStep.SetValue((object)aca, 20);
 
-            int numberReset = 1;
+            int numberReset = 0;
             int stepsSinceReset = 0;
             for (int i = 0; i < 50; i++)
             {
 
                 Assert.AreEqual(stepsSinceReset, aca.stepsSinceReset);
                 Assert.AreEqual(1, aca.initializeAcademyCalls);
-                Assert.AreEqual(numberReset, aca.episodeCount);
-
                 Assert.AreEqual(false, aca.IsDone());
-                Assert.AreEqual(numberReset, aca.academyResetCalls);
-                Assert.AreEqual(i, aca.AcademyStepCalls);
 
+                Assert.AreEqual(i, aca.AcademyStepCalls);
+                Assert.AreEqual(numberReset, aca.episodeCount);
+                Assert.AreEqual(numberReset, aca.academyResetCalls);
                 stepsSinceReset += 1;
-                if ((i % 20 == 0) && (i>0))
+                if ((i % 20 == 0) )
                 {
                     numberReset += 1;
                     stepsSinceReset = 1;
 
                 }
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
+
+
             }
         }
 
@@ -530,11 +561,11 @@ namespace MLAgentsTests
 
             AgentEnableMethod.Invoke(agent2, new object[] { aca });
             AcademyInitializeMethod.Invoke(aca, new object[] { });
-            AgentEnableMethod.Invoke(agent1, new object[] { aca });
 
-            int numberAgent1Reset = 0; // Agent1 was not enabled at Academy start
-            int numberAgent2Reset = 1;
-            int numberAcaReset = 1;
+
+            int numberAgent1Reset = 0; 
+            int numberAgent2Reset = 0;
+            int numberAcaReset = 0;
             int acaStepsSinceReset = 0;
             int agent1StepSinceReset = 0;
             int agent2StepSinceReset = 0;
@@ -543,47 +574,70 @@ namespace MLAgentsTests
             {
                 Assert.AreEqual(acaStepsSinceReset, aca.stepsSinceReset);
                 Assert.AreEqual(1, aca.initializeAcademyCalls);
-                Assert.AreEqual(numberAcaReset, aca.episodeCount);
 
-                Assert.AreEqual(numberAcaReset, aca.academyResetCalls);
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
                 Assert.AreEqual(agent1StepSinceReset, agent1.stepCounter);
                 Assert.AreEqual(agent2StepSinceReset, agent2.stepCounter);
+
+
+                Assert.AreEqual(numberAcaReset, aca.episodeCount);
+                Assert.AreEqual(numberAcaReset, aca.academyResetCalls);
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
+                if (i == 0) //At the first step, Academy and agent 2 reset
+                {
+                    numberAcaReset += 1;
+                    numberAgent2Reset += 1;
+                }
+
+                if (i == 2) //Agent 1 is only initialized at step 2
+                {
+                    AgentEnableMethod.Invoke(agent1, new object[] { aca });
+
+                }
+
                 agent2.RequestDecision(); // we request a decision at each step
-                acaStepsSinceReset += 1;
-                agent1StepSinceReset += 1;
-                agent2StepSinceReset += 1;
+
                 if (i > 3)
                 {
                     if (i % 100 == 0)
                     {
-                        acaStepsSinceReset = 1;
-                        agent1StepSinceReset = 1;
-                        agent2StepSinceReset = 1;
+                        acaStepsSinceReset = 0;
+                        agent1StepSinceReset = 0;
+                        agent2StepSinceReset = 0;
                         numberAcaReset += 1;
                         numberAgent1Reset += 1;
                         numberAgent2Reset += 1;
                     }
                     else
                     {
-                        if ((i % 100) % 21 == 0)
+                        if (agent1StepSinceReset % 21 == 0)
                         {
-                            agent1StepSinceReset = 1;
+                            agent1StepSinceReset = 0;
                             numberAgent1Reset += 1;
                         }
-                        if ((i % 100) % 31 == 0)
+                        if (agent2StepSinceReset % 31 == 0)
                         {
-                            agent2StepSinceReset = 1;
+                            agent2StepSinceReset = 0;
                             numberAgent2Reset += 1;
                         }
                     }
                 }
 
+                acaStepsSinceReset += 1;
+                agent1StepSinceReset += 1;
+                agent2StepSinceReset += 1;
+
+                if (i < 2) //Agent 1 is only initialized at step 2
+                {
+                    agent1StepSinceReset = 0;
+                }
+
+
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
+
             }
 
         }
