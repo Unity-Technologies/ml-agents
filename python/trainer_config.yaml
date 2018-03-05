@@ -22,12 +22,11 @@ BrainCurio:
     trainer: 'ppo-curio'
     batch_size: 128
     buffer_size: 1024
-    hidden_units: 128
-    use_recurrent: true
-    sequence_length: 64
+    hidden_units: 256
     num_layers: 2
     beta: 1.0e-2
-    max_steps: 5e5
+    max_steps: 5.0e5
+    num_epoch: 3
 
 Ball3DBrain:
     normalize: true
