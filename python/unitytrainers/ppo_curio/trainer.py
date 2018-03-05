@@ -1,5 +1,5 @@
 # # Unity ML Agents
-# ## ML-Agent Learning (PPO)
+# ## ML-Agent Learning (PPO+Curiosity)
 # Contains an implementation of PPO as described [here](https://arxiv.org/abs/1707.06347).
 
 import logging
@@ -17,7 +17,8 @@ logger = logging.getLogger("unityagents")
 
 
 class PPOCurioTrainer(Trainer):
-    """The PPOTrainer is an implementation of the PPO algorythm."""
+    """The PPOTrainer is an implementation of the PPO algorithm (https://arxiv.org/abs/1707.06347)
+       with the addition of a Curiosity bonus (https://arxiv.org/abs/1705.05363)."""
 
     def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
         """
@@ -35,8 +36,8 @@ class PPOCurioTrainer(Trainer):
 
         for k in self.param_keys:
             if k not in trainer_parameters:
-                raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
-                                            "brain {1}.".format(k, brain_name))
+                raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO+Curiosity "
+                                            "trainer of brain {1}.".format(k, brain_name))
 
         super(PPOCurioTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
 
@@ -87,7 +88,7 @@ class PPOCurioTrainer(Trainer):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
     def __str__(self):
-        return '''Hypermarameters for the PPO Trainer of brain {0}: \n{1}'''.format(
+        return '''Hypermarameters for the PPO+Curiosity Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
@@ -279,6 +280,8 @@ class PPOCurioTrainer(Trainer):
 
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
+                    if agent_id not in self.intrinsic_rewards:
+                        self.intrinsic_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
                     self.intrinsic_rewards[agent_id] += intrinsic_rewards[next_idx]
                     if agent_id not in self.episode_steps:
@@ -349,6 +352,8 @@ class PPOCurioTrainer(Trainer):
             self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
+        for agent_id in self.intrinsic_rewards:
+            self.intrinsic_rewards[agent_id] = 0
 
     def is_ready_update(self):
         """
