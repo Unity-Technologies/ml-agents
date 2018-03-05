@@ -26,6 +26,6 @@ public class GoalInteract : MonoBehaviour
             agent.Done();
             agent.AddReward(1f);
         }
-	}
+    }
 
 }

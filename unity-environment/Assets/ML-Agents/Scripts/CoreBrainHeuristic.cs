@@ -46,11 +46,11 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     /// Uses the Decision Component to decide that action to take
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-	    if (coord!=null)
-	    {
+    if (coord!=null)
+    {
             coord.GiveBrainInfo(brain, agentInfo);
-	    }
-		if (decision == null)
+    }
+if (decision == null)
         {
             throw new UnityAgentsException("The Brain is set to Heuristic, but no decision script attached to it");
         }
@@ -58,7 +58,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
 
         foreach (Agent agent in agentInfo.Keys)
         {
-			agent.UpdateVectorAction(decision.Decide(
+agent.UpdateVectorAction(decision.Decide(
                 agentInfo[agent].stackedVectorObservation,
                 agentInfo[agent].visualObservations,
                 agentInfo[agent].reward,
@@ -69,11 +69,11 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
         foreach (Agent agent in agentInfo.Keys)
         {
             agent.UpdateMemoriesAction(decision.MakeMemory(
-				agentInfo[agent].stackedVectorObservation,
-				agentInfo[agent].visualObservations,
-				agentInfo[agent].reward,
-				agentInfo[agent].done,
-				agentInfo[agent].memories));
+agentInfo[agent].stackedVectorObservation,
+agentInfo[agent].visualObservations,
+agentInfo[agent].reward,
+agentInfo[agent].done,
+agentInfo[agent].memories));
         }
     }
 
@@ -82,8 +82,8 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     {
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-		broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
-					  "If checked, the brain will broadcast states and actions to Python."), broadcast);
+broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
+  "If checked, the brain will broadcast states and actions to Python."), broadcast);
         if (brain.gameObject.GetComponent<Decision>() == null)
         {
             EditorGUILayout.HelpBox("You need to add a 'Decision' component to this gameObject", MessageType.Error);

@@ -536,7 +536,7 @@ public abstract class Agent : MonoBehaviour
                 {
                     if (!hasAlreadyReset)
                     {
-                        //If event based, the agent can reset as soon
+                        // If event based, the agent can reset as soon
                         // as it is done
                         _AgentReset();
                         hasAlreadyReset = true;

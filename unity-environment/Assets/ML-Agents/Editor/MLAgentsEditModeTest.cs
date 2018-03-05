@@ -105,7 +105,7 @@ namespace MLAgentsTests
             Assert.AreEqual(0, aca.stepsSinceReset);
             Assert.AreEqual(0, aca.episodeCount);
             Assert.AreEqual(false, aca.IsDone());
-            //This will call the method even though it is private
+            // This will call the method even though it is private
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod("_InitializeAcademy",
                            BindingFlags.Instance | BindingFlags.NonPublic);
             AcademyInitializeMethod.Invoke(aca, new object[] { });
@@ -159,7 +159,7 @@ namespace MLAgentsTests
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
-            //agent1 was not enabled when the academy started
+            // agent1 was not enabled when the academy started
             Assert.AreEqual(0, agent1.agentResetCalls);
             Assert.AreEqual(1, agent2.agentResetCalls);
             Assert.AreEqual(1, agent1.initializeAgentCalls);
@@ -628,7 +628,7 @@ namespace MLAgentsTests
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
             agent1.agentParameters.resetOnDone = false;
-            agent2.agentParameters.resetOnDone = false; //Here we specify that the agent does not reset when done
+            agent2.agentParameters.resetOnDone = false; // Here we specify that the agent does not reset when done
             brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
             agent1.GiveBrain(brain);

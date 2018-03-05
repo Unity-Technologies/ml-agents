@@ -69,10 +69,10 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// decide action
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-		if (coord != null)
-		{
-			coord.GiveBrainInfo(brain, agentInfo);
-		}
+        if (coord != null)
+        {
+            coord.GiveBrainInfo(brain, agentInfo);
+        }
         if (brain.brainParameters.vectorActionSpaceType == StateType.continuous)
         {
             foreach (Agent agent in agentInfo.Keys)
@@ -93,7 +93,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         else
         {
             foreach (Agent agent in agentInfo.Keys)
-			{
+            {
                 var action = new float[1] { defaultAction };
                 foreach (DiscretePlayerAction dha in discretePlayerActions)
                 {

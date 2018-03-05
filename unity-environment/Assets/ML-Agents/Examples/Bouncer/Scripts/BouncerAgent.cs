@@ -45,7 +45,7 @@ public class BouncerAgent : Agent {
         }
         else
         {
-            //AddReward(0.05f);
+            // AddReward(0.05f);
         }
     }
 

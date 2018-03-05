@@ -5,6 +5,7 @@ using UnityEngine;
 public class Ball3DDecision : MonoBehaviour, Decision
 {
     public float rotationSpeed = 2f;
+
     public float[] Decide(List<float> state, List<Texture2D> observation, float reward, bool done, List<float> memory)
     {
         if (gameObject.GetComponent<Brain>().brainParameters.vectorActionSpaceType == StateType.continuous)
@@ -18,7 +19,7 @@ public class Ball3DDecision : MonoBehaviour, Decision
             act.Add(-state[7] * rotationSpeed);
             return act.ToArray();
         }
-        //If the vector action space type is discrete, then we don't do anything.     
+        // If the vector action space type is discrete, then we don't do anything.     
         else
         {
             return new float[1]{ 1f };

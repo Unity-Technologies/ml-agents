@@ -9,16 +9,16 @@ public class TeacherHelper : MonoBehaviour {
     Agent myAgent;
     float bufferResetTime;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         recordExperiences = true;
         resetBuffer = false;
         myAgent = GetComponent<Agent>();
         bufferResetTime = Time.time;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+    
+    // Update is called once per frame
+    void Update () {
         if (Input.GetKeyDown(KeyCode.R))
         {
             recordExperiences = !recordExperiences;
@@ -35,7 +35,7 @@ public class TeacherHelper : MonoBehaviour {
         Monitor.Log("Recording experiences", recordExperiences.ToString());
         float timeSinceBufferReset = Time.time - bufferResetTime;
         Monitor.Log("Seconds since buffer reset", Mathf.FloorToInt(timeSinceBufferReset));
-	}
+    }
 
     void FixedUpdate()
     {
