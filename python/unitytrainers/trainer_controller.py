@@ -75,7 +75,6 @@ class TrainerController(object):
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     curriculum=self.curriculum_file, seed=self.seed)
-        self.logger.info(str(self.env))
         self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
 
     def _get_progress(self):
