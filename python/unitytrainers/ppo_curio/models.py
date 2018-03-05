@@ -71,7 +71,7 @@ class PPOCurioModel(LearningModel):
         pred_next_state = tf.layers.dense(hidden, 128, activation=None)
 
         forward_distance = tf.squared_difference(pred_next_state, encoded_next_state)
-        self.intrinsic_reward = tf.reduce_mean(forward_distance, axis=1)
+        self.intrinsic_reward = 0.5 * tf.reduce_mean(forward_distance, axis=1)
         self.forward_loss = tf.reduce_sum(forward_distance)
 
     def create_ppo_optimizer(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
@@ -112,5 +112,5 @@ class PPOCurioModel(LearningModel):
         self.p_opt_b = tf.clip_by_value(self.r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
         self.policy_loss = -tf.reduce_mean(tf.boolean_mask(tf.minimum(self.p_opt_a, self.p_opt_b), self.mask))
         self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(
-            tf.boolean_mask(entropy, self.mask)) + self.forward_loss + self.inverse_loss
+            tf.boolean_mask(entropy, self.mask)) + 0.2 * self.forward_loss + 0.8 * self.inverse_loss
         self.update_batch = optimizer.minimize(self.loss)
