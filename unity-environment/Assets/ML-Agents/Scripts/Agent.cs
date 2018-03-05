@@ -421,13 +421,48 @@ public abstract class Agent : MonoBehaviour
     /// Note that the number of vector observation to add
     /// must be the same at each CollectObservations call.
     /// </summary>
-    /// <param name="observation">The float value to add to 
+    /// <param name="observation">The value to add to 
     /// the vector observation.</param>
     internal void AddVectorObs(float observation)
     {
         _info.vectorObservation.Add(observation);
     }
+    internal void AddVectorObs(int observation)
+    {
+        _info.vectorObservation.Add((float)observation);
+    }
+    internal void AddVectorObs(Vector3 observation)
+    {
+        _info.vectorObservation.Add(observation.x);
+        _info.vectorObservation.Add(observation.y);
+        _info.vectorObservation.Add(observation.z);
+    }
+    internal void AddVectorObs(Vector2 observation)
+    {
+        _info.vectorObservation.Add(observation.x);
+        _info.vectorObservation.Add(observation.y);
+    }
+    internal void AddVectorObs(float[] observation)
+    {
+        foreach (float obs in observation)
+        {
+            _info.vectorObservation.Add(obs);
+        }
+    }
+    internal void AddVectorObs(List<float> observation)
+    {
+        foreach (float obs in observation)
+        {
+            _info.vectorObservation.Add(obs);
+        }
+    }
 
+
+
+    /// <summary>
+    /// Sets the text observation.
+    /// </summary>
+    /// <param name="s">The string the text observation must be set to.</param>
     internal void SetTextObs(object s)
     {
         _info.textObservation = s.ToString();
