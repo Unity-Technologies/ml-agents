@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PushAgent : AreaAgent
 {
-	public GameObject goalHolder;
+    public GameObject goalHolder;
     public GameObject block;
 
     Rigidbody rb;
@@ -14,12 +14,12 @@ public class PushAgent : AreaAgent
 
     public override void InitializeAgent()
     {
-		base.InitializeAgent();
+        base.InitializeAgent();
         rb = GetComponent<Rigidbody>();
     }
 
-	public override void CollectObservations()
-	{
+    public override void CollectObservations()
+    {
         velocity = rb.velocity;
         blockVelocity = block.GetComponent<Rigidbody>().velocity;
         AddVectorObs((transform.position.x - area.transform.position.x));
@@ -34,43 +34,43 @@ public class PushAgent : AreaAgent
         AddVectorObs((block.transform.position.y - area.transform.position.y));
         AddVectorObs((block.transform.position.z + 5 - area.transform.position.z));
 
-		AddVectorObs(velocity.x);
-		AddVectorObs(velocity.y);
-		AddVectorObs(velocity.z);
+        AddVectorObs(velocity.x);
+        AddVectorObs(velocity.y);
+        AddVectorObs(velocity.z);
 
-		AddVectorObs(blockVelocity.x);
-		AddVectorObs(blockVelocity.y);
-		AddVectorObs(blockVelocity.z);
+        AddVectorObs(blockVelocity.x);
+        AddVectorObs(blockVelocity.y);
+        AddVectorObs(blockVelocity.z);
 
         AddVectorObs(block.transform.localScale.x);
         AddVectorObs(goalHolder.transform.localScale.x);
 
-	}
+    }
 
-	public override void AgentAction(float[] act)
-	{
+    public override void AgentAction(float[] act)
+    {
         AddReward( -0.005f);
         MoveAgent(act);
 
         if (gameObject.transform.position.y < 0.0f || Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f ||
             Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
-		{
+        {
             Done();
             AddReward(-1f);
-		}
-	}
+        }
+    }
 
-	public override void AgentReset()
-	{
+    public override void AgentReset()
+    {
         float xVariation = GameObject.Find("Academy").GetComponent<PushAcademy>().xVariation;
         transform.position = new Vector3(Random.Range(-xVariation, xVariation), 1.1f, -8f) + area.transform.position;
-		rb.velocity = new Vector3(0f, 0f, 0f);
+        rb.velocity = new Vector3(0f, 0f, 0f);
 
         area.GetComponent<Area>().ResetArea();
-	}
+    }
 
-	public override void AgentOnDone()
-	{
+    public override void AgentOnDone()
+    {
 
-	}
+    }
 }

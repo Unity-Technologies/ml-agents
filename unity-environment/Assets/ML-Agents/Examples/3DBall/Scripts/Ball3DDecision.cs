@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ball3DDecision : MonoBehaviour, Decision
 {
-	public float rotationSpeed = 2f;
+    public float rotationSpeed = 2f;
     public float[] Decide(List<float> state, List<Texture2D> observation, float reward, bool done, List<float> memory)
     {
         if (gameObject.GetComponent<Brain>().brainParameters.vectorActionSpaceType == StateType.continuous)

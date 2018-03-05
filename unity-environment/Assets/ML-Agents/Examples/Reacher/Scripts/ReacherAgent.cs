@@ -19,8 +19,8 @@ public class ReacherAgent : Agent {
         rbB = pendulumB.GetComponent<Rigidbody>();
     }
 
-	public override void CollectObservations()
-	{
+    public override void CollectObservations()
+    {
         AddVectorObs(pendulumA.transform.rotation.x);
         AddVectorObs(pendulumA.transform.rotation.y);
         AddVectorObs(pendulumA.transform.rotation.z);
@@ -52,10 +52,10 @@ public class ReacherAgent : Agent {
         AddVectorObs(hand.transform.position.z - transform.position.z);
 
 
-	}
+    }
 
-	public override void AgentAction(float[] act)
-	{
+    public override void AgentAction(float[] act)
+    {
         goalDegree += goalSpeed;
         UpdateGoalPosition();
 
@@ -67,7 +67,7 @@ public class ReacherAgent : Agent {
         torque_z = Mathf.Clamp(act[3], -1, 1) * 100f;
         rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
 
-	}
+    }
 
     void UpdateGoalPosition() {
         float radians = (goalDegree * Mathf.PI) / 180f;
@@ -101,8 +101,8 @@ public class ReacherAgent : Agent {
         goal.transform.localScale = new Vector3(goalSize, goalSize, goalSize);
     }
 
-	public override void AgentOnDone()
-	{
+    public override void AgentOnDone()
+    {
 
-	}
+    }
 }

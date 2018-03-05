@@ -8,16 +8,16 @@ public class PushAcademy : Academy {
     public float blockSize;
     public float xVariation;
 
-	public override void AcademyReset()
-	{
+    public override void AcademyReset()
+    {
         goalSize = (float)resetParameters["goal_size"];
         blockSize = (float)resetParameters["block_size"];
         xVariation = (float)resetParameters["x_variation"];
-	}
+    }
 
-	public override void AcademyStep()
-	{
+    public override void AcademyStep()
+    {
 
-	}
+    }
 
 }

@@ -95,14 +95,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID
-		// This needs to ba called only once and will raise an exception if 
+        // This needs to ba called only once and will raise an exception if 
         // there are multiple internal brains
-		try{
-			TensorFlowSharp.Android.NativeBinding.Init();
-		}
-		catch{
-			
-		}
+        try{
+            TensorFlowSharp.Android.NativeBinding.Init();
+        }
+        catch{
+            
+        }
 #endif
         if ((communicator == null)
         || (!broadcast))
@@ -164,10 +164,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
 #if ENABLE_TENSORFLOW
-		if (coord != null)
-		{
-			coord.GiveBrainInfo(brain, agentInfo);
-		}
+        if (coord != null)
+        {
+            coord.GiveBrainInfo(brain, agentInfo);
+        }
         int currentBatchSize = agentInfo.Count();
         List<Agent> agentList = agentInfo.Keys.ToList();
         if (currentBatchSize == 0)
