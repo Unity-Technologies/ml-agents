@@ -130,7 +130,7 @@ each element of the vector means is defined by the agent logic (the PPO
 training process just learns what values are better given particular state 
 observations based on the rewards received when it tries different values). 
 For example, an element might represent a force or torque applied to a 
-Rigid body in the agent. The **Discrete** action vector space defines its
+`RigidBody` in the agent. The **Discrete** action vector space defines its
 actions as a table. A specific action given to the agent is an index into 
 this table. 
 
@@ -251,8 +251,7 @@ explaining it.
 
 
 To train the agents within the Ball Balance environment, we will be using the python 
-package. We have provided a convenient python wrapper script called `learn.py` which can be passed 
-arguments which are used to configure the training. 
+package. We have provided a convenient python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
 
 
 We will pass to this script the path of the environment executable that we just built. (Optionally) We can
@@ -271,15 +270,14 @@ python python/learn.py <env_file_path> --run-id=<run-identifier> --train
 
 ```
 
-The `--train` flag tells ML Agents to run in training mode. `env_file_path` should be the path to the Unity executable 
-that was just created. 
+The `--train` flag tells ML-Agents to run in training mode. `env_file_path` should be the path to the Unity executable that was just created. 
 
 
 ### Observing Training Progress
 
 Once you start training using `learn.py` in the way described in the previous section, the `ml-agents` folder will 
 contain a `summaries` directory. In order to observe the training process 
-in more detail, you can use  TensorBoard. From the command line run :
+in more detail, you can use TensorBoard. From the command line run :
 
 `tensorboard --logdir=summaries`
 
@@ -341,7 +339,7 @@ under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
 
 ### Embedding the trained model into Unity
 
-1. The trained model is stored in `models/<run-identifier` in the `ml-agents` folder. Once the 
+1. The trained model is stored in `models/<run-identifier>` in the `ml-agents` folder. Once the 
 training is complete, there will be a `<env_name>.bytes` file in that location where `<env_name>` is the name 
 of the executable used during training. 
  2. Move `<env_name>.bytes` from `python/models/ppo/` into 

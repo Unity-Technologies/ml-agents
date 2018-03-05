@@ -58,11 +58,11 @@ Typical Range: `32` - `2048`
 
 `max_steps` corresponds to how many steps of the simulation (multiplied by frame-skip) are run during the training process. This value should be increased for more complex problems.
 
-Typical Range: `5e5 - 1e7`
+Typical Range: `5e5` - `1e7`
 
-#### Beta (Used only in Discrete Control)
+#### Beta
 
-`beta` corresponds to the strength of the entropy regularization, which makes the policy "more random." This ensures that discrete action space agents properly explore during training. Increasing this will ensure more random actions are taken. This should be adjusted such that the entropy (measurable from TensorBoard) slowly decreases alongside increases in reward. If entropy drops too quickly, increase `beta`. If entropy drops too slowly, decrease `beta`.
+`beta` corresponds to the strength of the entropy regularization, which makes the policy "more random." This ensures that agents properly explore the action space during training. Increasing this will ensure more random actions are taken. This should be adjusted such that the entropy (measurable from TensorBoard) slowly decreases alongside increases in reward. If entropy drops too quickly, increase `beta`. If entropy drops too slowly, decrease `beta`.
 
 Typical Range: `1e-4` - `1e-2`
 
