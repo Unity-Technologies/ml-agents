@@ -62,7 +62,7 @@ namespace MLAgentsTests
 
     public class TestBrain : Brain
     {
-        // TODO : Mock a brain
+        // Mock a brain
     }
 
 
@@ -159,7 +159,8 @@ namespace MLAgentsTests
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
-            //agent1 was not enabled when the academy started
+            // agent1 was not enabled when the academy started
+            // The agents have been initialized
             Assert.AreEqual(0, agent1.agentResetCalls);
             Assert.AreEqual(0, agent2.agentResetCalls);
             Assert.AreEqual(1, agent1.initializeAgentCalls);
@@ -195,7 +196,9 @@ namespace MLAgentsTests
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
                 if (i == 0)
+                { // The reset happens at the begining of the first step
                     numberReset += 1;
+                }
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
             }
         }
@@ -261,7 +264,7 @@ namespace MLAgentsTests
                 Assert.AreEqual((i+1)/2, agent1.collectObservationsCalls);
                 Assert.AreEqual(requestDecision, agent2.collectObservationsCalls);
 
-                if (i == 0)
+                if (i == 0) // Agent 1 resets at the first step
                 {
                     numberAgent1Reset += 1;
                 }
@@ -271,14 +274,18 @@ namespace MLAgentsTests
                     numberAgent2Initialization += 1;
                 }
 
+                // We are testing request decision and request actions when called
+                // at different intervals
                 if ((i % 3 == 0) && (i > 2))
                 {
+                    //Every 3 steps after agent 2 is initialized, request decision
                     requestDecision +=1;
                     requestAction+=1;
                     agent2.RequestDecision();
                 }
                 else if ((i % 5 == 0) && (i > 2))
                 {
+                    // Every 5 steps after agent 2 is initialized, request action
                     requestAction += 1;
                     agent2.RequestAction();
                 }
@@ -314,13 +321,14 @@ namespace MLAgentsTests
                 Assert.AreEqual(false, aca.IsDone());
                 Assert.AreEqual(numberReset, aca.academyResetCalls);
                 Assert.AreEqual(i, aca.AcademyStepCalls);
+                // Academy resets at the first step
                 if (i == 0)
                 {
                     numberReset += 1;
                 }
 
                 stepsSinceReset += 1;
-                if (i % 5 == 3)
+                if (i % 5 == 3) // Regularly set the academy to done to check behavior
                 {
                     aca.Done();
                     numberReset += 1;
@@ -402,7 +410,7 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
-                if (i == 0)
+                if (i == 0) // Agent 2  and academy reset at the first step
                 {
                     numberAcaReset += 1;
                     numberAgent2Reset += 1;
@@ -413,17 +421,17 @@ namespace MLAgentsTests
 
                 }
 
-                if (i % 100 == 3)
+                if (i % 100 == 3) // Reset Academy every 100 steps
                 {
                     aca.Done();
                     numberAcaReset += 1;
                     acaStepsSinceReset = 0;
                 }
-                if (i % 11 == 5)
+                if (i % 11 == 5) // Set agent 1 to done every 11 steps to test behaviot
                 {
                     agent1.Done();
                 }
-                if (i % 13 == 3)
+                if (i % 13 == 3) // Reseting agent 2 regularly
                 {
                     if (!(agent2.IsDone()||aca.IsDone()))
                     {
@@ -435,13 +443,13 @@ namespace MLAgentsTests
                     }
                 }
 
-                if (i % 3 == 2)
+                if (i % 3 == 2) // Request a decision for agent 2 regularly
                 {
                     requestDecision += 1;
                     requestAction += 1;
                     agent2.RequestDecision();
                 }
-                else if (i % 5 == 1)
+                else if (i % 5 == 1) // Request an action without decision regularly
                 {
                     requestAction += 1;
                     agent2.RequestAction();
@@ -493,7 +501,6 @@ namespace MLAgentsTests
             int stepsSinceReset = 0;
             for (int i = 0; i < 50; i++)
             {
-
                 Assert.AreEqual(stepsSinceReset, aca.stepsSinceReset);
                 Assert.AreEqual(1, aca.initializeAcademyCalls);
                 Assert.AreEqual(false, aca.IsDone());
@@ -502,15 +509,13 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberReset, aca.episodeCount);
                 Assert.AreEqual(numberReset, aca.academyResetCalls);
                 stepsSinceReset += 1;
-                if ((i % 20 == 0) )
+                if (i % 20 == 0) // Make sure max step is reached every 20 steps
                 {
                     numberReset += 1;
                     stepsSinceReset = 1;
 
                 }
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
-
-
             }
         }
 
@@ -595,14 +600,13 @@ namespace MLAgentsTests
                 if (i == 2) //Agent 1 is only initialized at step 2
                 {
                     AgentEnableMethod.Invoke(agent1, new object[] { aca });
-
                 }
 
                 agent2.RequestDecision(); // we request a decision at each step
 
                 if (i > 3)
                 {
-                    if (i % 100 == 0)
+                    if (i % 100 == 0) // Make sure the academy max steps at 100
                     {
                         acaStepsSinceReset = 0;
                         agent1StepSinceReset = 0;
@@ -613,6 +617,7 @@ namespace MLAgentsTests
                     }
                     else
                     {
+                        //Make sure the agents reset when their max steps is reached
                         if (agent1StepSinceReset % 21 == 0)
                         {
                             agent1StepSinceReset = 0;
@@ -634,7 +639,6 @@ namespace MLAgentsTests
                 {
                     agent1StepSinceReset = 0;
                 }
-
 
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
 
