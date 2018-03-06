@@ -12,8 +12,8 @@ you should be able to explore and build the example environments.
 
 ![Balance Ball](images/balance.png)
 
-This walkthrough uses the **3D Balance Ball** environment. 3D Balance Ball 
-contains a number of platforms and balls (which are all copies of each other). 
+This walk-through uses the **3D Balance Ball** environment. 3D Balance Ball contains 
+a number of platforms and balls (which are all copies of each other). 
 Each platform tries to keep its ball from falling by rotating either 
 horizontally or vertically. In this environment, a platform is an **agent** 
 that receives a reward for every step that it balances the ball. An agent is 
@@ -130,7 +130,7 @@ each element of the vector means is defined by the agent logic (the PPO
 training process just learns what values are better given particular state 
 observations based on the rewards received when it tries different values). 
 For example, an element might represent a force or torque applied to a 
-Rigidbody in the agent. The **Discrete** action vector space defines its
+`RigidBody` in the agent. The **Discrete** action vector space defines its
 actions as a table. A specific action given to the agent is an index into 
 this table. 
 
@@ -249,25 +249,35 @@ example algorithm for use with ML-Agents. For more information on PPO,
 OpenAI has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/) 
 explaining it.
 
-In order to train the agents within the Ball Balance environment:
 
-1. Open `python/PPO.ipynb` notebook from Jupyter.
-2. Set `env_name` to the name of your environment file earlier.
-3. (optional) In order to get the best results quickly, set `max_steps` to 
-50000, set `buffer_size` to 5000, and set `batch_size` to 512.  For this 
-exercise, this will train the model in approximately ~5-10 minutes.
-4. (optional) Set `run_path` directory to your choice. When using TensorBoard 
-to observe the training statistics, it helps to set this to a sequential value 
+To train the agents within the Ball Balance environment, we will be using the python 
+package. We have provided a convenient python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
+
+
+We will pass to this script the path of the environment executable that we just built. (Optionally) We can
+use `run_id` to identify the experiment and create a folder where the model and summary statistics are stored. When 
+using TensorBoard to observe the training statistics, it helps to set this to a sequential value 
 for each training run. In other words, "BalanceBall1" for the first run, 
 "BalanceBall2" or the second, and so on. If you don't, the summaries for 
 every training run are saved to the same directory and will all be included 
 on the same graph.
-5. Run all cells of notebook with the exception of the last one under "Export 
-the trained Tensorflow graph."
+
+To summarize, go to your command line, enter the `ml-agents` directory and type: 
+
+```
+
+python python/learn.py <env_file_path> --run-id=<run-identifier> --train 
+
+```
+
+The `--train` flag tells ML-Agents to run in training mode. `env_file_path` should be the path to the Unity executable that was just created. 
+
 
 ### Observing Training Progress
-In order to observe the training process in more detail, you can use 
-TensorBoard. In your command line, enter into `python` directory and then run :
+
+Once you start training using `learn.py` in the way described in the previous section, the `ml-agents` folder will 
+contain a `summaries` directory. In order to observe the training process 
+in more detail, you can use TensorBoard. From the command line run :
 
 `tensorboard --logdir=summaries`
 
@@ -329,9 +339,10 @@ under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
 
 ### Embedding the trained model into Unity
 
-1. Run the final cell of the notebook under "Export the trained TensorFlow
-graph" to produce an `<env_name >.bytes` file.
-2. Move `<env_name>.bytes` from `python/models/ppo/` into 
+1. The trained model is stored in `models/<run-identifier>` in the `ml-agents` folder. Once the 
+training is complete, there will be a `<env_name>.bytes` file in that location where `<env_name>` is the name 
+of the executable used during training. 
+ 2. Move `<env_name>.bytes` from `python/models/ppo/` into 
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 3. Open the Unity Editor, and select the `3DBall` scene as described above.
 4. Select the `Ball3DBrain` object from the Scene hierarchy.

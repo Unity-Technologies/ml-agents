@@ -413,6 +413,10 @@ public class ExternalCommunicator : Communicator
             {
                 var brainName = brain.gameObject.name;
 
+                if (current_agents[brainName].Count() == 0)
+                {
+                    continue;
+                }
                 var memorySize = rMessage.memory[brainName].Count() / current_agents[brainName].Count();
 
                 for (int i = 0; i < current_agents[brainName].Count(); i++)

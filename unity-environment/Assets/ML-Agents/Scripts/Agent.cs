@@ -417,17 +417,46 @@ public abstract class Agent : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds a vector observation. 
-    /// Note that the number of vector observation to add
+    /// Appends float values to the vector observation.
+    /// Note that the total number of vector observation added
     /// must be the same at each CollectObservations call.
     /// </summary>
-    /// <param name="observation">The float value to add to 
+    /// <param name="observation">The value to add to 
     /// the vector observation.</param>
     internal void AddVectorObs(float observation)
     {
         _info.vectorObservation.Add(observation);
     }
+    internal void AddVectorObs(int observation)
+    {
+        _info.vectorObservation.Add((float)observation);
+    }
+    internal void AddVectorObs(Vector3 observation)
+    {
+        _info.vectorObservation.Add(observation.x);
+        _info.vectorObservation.Add(observation.y);
+        _info.vectorObservation.Add(observation.z);
+    }
+    internal void AddVectorObs(Vector2 observation)
+    {
+        _info.vectorObservation.Add(observation.x);
+        _info.vectorObservation.Add(observation.y);
+    }
+    internal void AddVectorObs(float[] observation)
+    {
+            _info.vectorObservation.AddRange(observation);
+    }
+    internal void AddVectorObs(List<float> observation)
+    {
+            _info.vectorObservation.AddRange(observation);
+    }
 
+
+
+    /// <summary>
+    /// Sets the text observation.
+    /// </summary>
+    /// <param name="s">The string the text observation must be set to.</param>
     internal void SetTextObs(object s)
     {
         _info.textObservation = s.ToString();
@@ -441,7 +470,7 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     /// <param name="action">The action the agent receives 
     /// from the brain.</param>
-    public virtual void AgentAction(float[] action)
+    public virtual void AgentAction(float[] vectorAction, string textAction)
     {
 
     }
@@ -596,7 +625,7 @@ public abstract class Agent : MonoBehaviour
         if ((requestAction) && (brain != null))
         {
             requestAction = false;
-            AgentAction(_action.vectorActions);
+            AgentAction(_action.vectorActions, _action.textActions);
         }
 
         if ((stepCounter >= agentParameters.maxStep)

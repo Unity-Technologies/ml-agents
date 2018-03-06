@@ -24,10 +24,10 @@ public class BouncerAgent : Agent {
         AddVectorObs(banana.transform.position.z / 25f);
     }
 
-    public override void AgentAction(float[] act)
-    {
-        float x = Mathf.Clamp(act[0], -1, 1);
-        float z = Mathf.Clamp(act[1], -1, 1);
+    public override void AgentAction(float[] vectorAction, string textAction)
+	{
+        float x = Mathf.Clamp(vectorAction[0], -1, 1);
+        float z = Mathf.Clamp(vectorAction[1], -1, 1);
         rb.velocity = new Vector3(x, 0, z) ;
         if (rb.velocity.magnitude < 0.01f){
             AddReward(-1);

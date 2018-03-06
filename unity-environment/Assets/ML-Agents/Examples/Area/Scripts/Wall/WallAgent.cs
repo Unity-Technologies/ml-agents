@@ -40,10 +40,10 @@ public class WallAgent : AreaAgent
         AddVectorObs(blockVelocity.z);
     }
 
-    public override void AgentAction(float[] act)
-    {
+    public override void AgentAction(float[] vectorAction, string textAction)
+	{
         AddReward(-0.005f);
-        MoveAgent(act);
+        MoveAgent(vectorAction);
 
         if (gameObject.transform.position.y < 0.0f ||
             Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f ||
