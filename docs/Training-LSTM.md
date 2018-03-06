@@ -1,8 +1,8 @@
 # Using Recurrent Neural Network in ML-Agents
 
 ## What are memories for?
-Has it ever happened to you that you enter a room to get something and 
-immediately forget what you were looking for? Don't let that happen to 
+Have you ever entered a room to get something and immediately forgot
+what you were looking for? Don't let that happen to 
 your agents.  
 
 It is now possible to give memories to your agents. When training, the 
