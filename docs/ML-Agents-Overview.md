@@ -327,6 +327,16 @@ to learn a policy.
 The [Imitation Learning](Training-Imitation-Learning.md) tutorial covers this training
 mode with the **Anti-Graviator** sample environment.
 
+### Recurrent Neural Networks
+In some scenarios, agents must learn to remember the past in order to take the 
+best decision. When an agent only has partial observability of the environment, 
+keeping track of past observations can help the agent learn. We provide an 
+implementation of [LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory) in 
+our trainers that enable the agent to store memories to be used in future steps.
+
+The [Training with LSTM](Training-LSTM.md) tutorial covers this feature and 
+the **Hallway** environment demonstrates its capabilities.
+
 ## Flexible Training Scenarios
 
 While the discussion so-far has mostly focused on training a single agent, with 
