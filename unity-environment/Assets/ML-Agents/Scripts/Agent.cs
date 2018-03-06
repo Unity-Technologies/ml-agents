@@ -58,7 +58,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// The brain that will control this agent. 
     /// Use the inspector to drag the desired brain gameObject into
-	/// the Brain field.
+    /// the Brain field.
     ///</summary>
     [HideInInspector]
     public Brain brain;
@@ -83,10 +83,10 @@ public abstract class Agent : MonoBehaviour
     ///</summary>
     private float reward;
 
-    /// Whether or not the agent is requests an action
+    /// Whether or not the agent requests an action.
     private bool requestAction;
 
-    /// Whether or not the agent is requests a decision
+    /// Whether or not the agent requests a decision.
     private bool requestDecision;
 
     /// <summary> 
@@ -119,7 +119,7 @@ public abstract class Agent : MonoBehaviour
     private int id;
 
     /// <summary>
-    /// Unity method called when the agent is istanciated or set to active.
+    /// Unity method called when the agent is instantiated or set to active.
     /// </summary>
     private void OnEnable()
     {
@@ -188,7 +188,7 @@ public abstract class Agent : MonoBehaviour
     /// When GiveBrain is called, the agent unsubscribes from its 
     /// previous brain and subscribes to the one passed in argument.
     /// Use this method to provide a brain to the agent via script. 
-	///<param name= "b" >The Brain the agent will subscribe to.</param>
+    ///<param name= "b" >The Brain the agent will subscribe to.</param>
     /// <summary>
     public void GiveBrain(Brain b)
     {
@@ -251,7 +251,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Is called when the agent must request the brain for a new decision.
     /// </summary>
-	public void RequestDecision()
+    public void RequestDecision()
     {
         requestDecision = true;
         RequestAction();
@@ -259,7 +259,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Is called then the agent must perform a new action.
     /// </summary>
-	public void RequestAction()
+    public void RequestAction()
     {
         requestAction = true;
     }
@@ -331,7 +331,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Initialize the agent with this method
     /// Must be implemented in agent-specific child class.
-	/// This method called only once when the agent is enabled.
+    /// This method called only once when the agent is enabled.
     /// </summary>
     public virtual void InitializeAgent()
     {
@@ -565,7 +565,7 @@ public abstract class Agent : MonoBehaviour
                 {
                     if (!hasAlreadyReset)
                     {
-                        //If event based, the agent can reset as soon
+                        // If event based, the agent can reset as soon
                         // as it is done
                         _AgentReset();
                         hasAlreadyReset = true;

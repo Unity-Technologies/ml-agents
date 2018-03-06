@@ -14,23 +14,23 @@ public class BrainEditor : Editor
     [SerializeField]
     bool _Foldout = true;
 
-	public override void OnInspectorGUI ()
-	{
-		Brain myBrain = (Brain)target;
-		SerializedObject serializedBrain = serializedObject;
+    public override void OnInspectorGUI ()
+    {
+        Brain myBrain = (Brain)target;
+        SerializedObject serializedBrain = serializedObject;
 
-		if (myBrain.transform.parent == null) {
-			EditorGUILayout.HelpBox ("A Brain GameObject must be a child of an Academy GameObject!", MessageType.Error);
-		} else if (myBrain.transform.parent.GetComponent<Academy> () == null) {
-			EditorGUILayout.HelpBox ("The Parent of a Brain must have an Academy Component attached to it!", MessageType.Error);
-		}
+        if (myBrain.transform.parent == null) {
+            EditorGUILayout.HelpBox ("A Brain GameObject must be a child of an Academy GameObject!", MessageType.Error);
+        } else if (myBrain.transform.parent.GetComponent<Academy> () == null) {
+            EditorGUILayout.HelpBox ("The Parent of a Brain must have an Academy Component attached to it!", MessageType.Error);
+        }
 
-		BrainParameters parameters = myBrain.brainParameters;
+        BrainParameters parameters = myBrain.brainParameters;
         if (parameters.vectorActionDescriptions == null || parameters.vectorActionDescriptions.Length != parameters.vectorActionSize)
             parameters.vectorActionDescriptions = new string[parameters.vectorActionSize];
-		
-		serializedBrain.Update();
-		
+        
+        serializedBrain.Update();
+        
 
         _Foldout = EditorGUILayout.Foldout(_Foldout, "Brain Parameters");
         int indentLevel = EditorGUI.indentLevel;
@@ -79,23 +79,23 @@ public class BrainEditor : Editor
 
         }
         EditorGUI.indentLevel = indentLevel;
-		SerializedProperty bt = serializedBrain.FindProperty("brainType");
-		EditorGUILayout.PropertyField(bt);
+        SerializedProperty bt = serializedBrain.FindProperty("brainType");
+        EditorGUILayout.PropertyField(bt);
 
 
 
 
-		if (bt.enumValueIndex < 0) {
-			bt.enumValueIndex = (int)BrainType.Player;
-		}
+        if (bt.enumValueIndex < 0) {
+            bt.enumValueIndex = (int)BrainType.Player;
+        }
 
-		serializedBrain.ApplyModifiedProperties();
+        serializedBrain.ApplyModifiedProperties();
 
-		myBrain.UpdateCoreBrains ();
-		myBrain.coreBrain.OnInspector ();
+        myBrain.UpdateCoreBrains ();
+        myBrain.coreBrain.OnInspector ();
 
-		#if !NET_4_6 && ENABLE_TENSORFLOW
-		EditorGUILayout.HelpBox ("You cannot have ENABLE_TENSORFLOW without NET_4_6", MessageType.Error);
-		#endif
-	}
+        #if !NET_4_6 && ENABLE_TENSORFLOW
+        EditorGUILayout.HelpBox ("You cannot have ENABLE_TENSORFLOW without NET_4_6", MessageType.Error);
+        #endif
+    }
 }

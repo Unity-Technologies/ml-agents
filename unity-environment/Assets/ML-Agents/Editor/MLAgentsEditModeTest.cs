@@ -107,7 +107,7 @@ namespace MLAgentsTests
             Assert.AreEqual(0, aca.stepsSinceReset);
             Assert.AreEqual(0, aca.episodeCount);
             Assert.AreEqual(false, aca.IsDone());
-            //This will call the method even though it is private
+            // This will call the method even though it is private
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod("_InitializeAcademy",
                            BindingFlags.Instance | BindingFlags.NonPublic);
             AcademyInitializeMethod.Invoke(aca, new object[] { });

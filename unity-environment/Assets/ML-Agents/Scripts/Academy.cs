@@ -150,9 +150,9 @@ public abstract class Academy : MonoBehaviour
 
     /// Environment specific initialization.
     /**
-	* Implemented in environment-specific child class. 
-	* This method is called once when the environment is loaded.
-	*/
+    * Implemented in environment-specific child class. 
+    * This method is called once when the environment is loaded.
+    */
     public virtual void InitializeAcademy()
     {
 
@@ -194,9 +194,9 @@ public abstract class Academy : MonoBehaviour
 
     /// Environment specific step logic.
     /**
-	 * Implemented in environment-specific child class. 
-	 * This method is called at every step. 
-	*/
+     * Implemented in environment-specific child class. 
+     * This method is called at every step. 
+    */
     public virtual void AcademyStep()
     {
 
@@ -204,10 +204,10 @@ public abstract class Academy : MonoBehaviour
 
     /// Environment specific reset logic.
     /**
-	* Implemented in environment-specific child class. 
-	* This method is called everytime the Academy resets (when the global done
-	* flag is set to true).
-	*/
+    * Implemented in environment-specific child class. 
+    * This method is called everytime the Academy resets (when the global done
+    * flag is set to true).
+    */
     public virtual void AcademyReset()
     {
 

@@ -1,4 +1,4 @@
-﻿//Put this script on your blue cube.
+﻿// Put this script on your blue cube.
 
 using System.Collections;
 using System.Collections.Generic;
@@ -6,16 +6,16 @@ using UnityEngine;
 
 public class HallwayAgent : Agent
 {
-    public GameObject ground; //ground game object. we will use the area bounds to spawn the blocks
+    public GameObject ground; // ground game object. we will use the area bounds to spawn the blocks
     public GameObject area;
 
     public GameObject goalA;
     public GameObject goalB;
-    public GameObject orangeBlock; //the orange block we are going to be pushing
+    public GameObject orangeBlock; // the orange block we are going to be pushing
     public GameObject violetBlock;
-    Rigidbody shortBlockRB;  //cached on initialization
-    Rigidbody agentRB;  //cached on initialization
-    Material groundMaterial; //cached on Awake()
+    Rigidbody shortBlockRB;  // cached on initialization
+    Rigidbody agentRB;  // cached on initialization
+    Material groundMaterial; // cached on Awake()
     Renderer groundRenderer;
     HallwayAcademy academy;
 
@@ -25,11 +25,11 @@ public class HallwayAgent : Agent
     {
         base.InitializeAgent();
         academy = FindObjectOfType<HallwayAcademy>();
-        brain = FindObjectOfType<Brain>(); //only one brain in the scene so this should find our brain. BRAAAINS.
+        brain = FindObjectOfType<Brain>(); // only one brain in the scene so this should find our brain. BRAAAINS.
 
-        agentRB = GetComponent<Rigidbody>(); //cache the agent rigidbody
-        groundRenderer = ground.GetComponent<Renderer>(); //get the ground renderer so we can change the material when a goal is scored
-        groundMaterial = groundRenderer.material; //starting material
+        agentRB = GetComponent<Rigidbody>(); // cache the agent rigidbody
+        groundRenderer = ground.GetComponent<Renderer>(); // get the ground renderer so we can change the material when a goal is scored
+        groundMaterial = groundRenderer.material; // starting material
 
     }
 
@@ -87,11 +87,11 @@ public class HallwayAgent : Agent
         RayPerception(rayDistance, rayAngles, detectableObjects, 0f);
     }
 
-    //swap ground material, wait time seconds, then swap back to the regular ground material.
+    // swap ground material, wait time seconds, then swap back to the regular ground material.
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
         groundRenderer.material = mat;
-        yield return new WaitForSeconds(time); //wait for 2 sec
+        yield return new WaitForSeconds(time); // wait for 2 sec
         groundRenderer.material = groundMaterial;
     }
 
@@ -102,7 +102,8 @@ public class HallwayAgent : Agent
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
-        //If we're using Continuous control you will need to change the Action
+
+        // If we're using Continuous control you will need to change the Action
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
@@ -129,7 +130,7 @@ public class HallwayAgent : Agent
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
+        agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); // GO
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -139,40 +140,40 @@ public class HallwayAgent : Agent
         MoveAgent(vectorAction); //perform agent actions
         bool fail = false;  // did the agent or block get pushed off the edge?
 
-        if (!Physics.Raycast(agentRB.position, Vector3.down, 20)) //if the agent has gone over the edge, we done.
+        if (!Physics.Raycast(agentRB.position, Vector3.down, 20)) // if the agent has gone over the edge, we done.
         {
-            fail = true; //fell off bro
+            fail = true; // fell off bro
             AddReward(-1f); // BAD AGENT
                           //transform.position =  GetRandomSpawnPos(agentSpawnAreaBounds, agentSpawnArea);
-            Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
+            Done(); // if we mark an agent as done it will be reset automatically. AgentReset() will be called.
         }
 
         if (fail)
         {
-            StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, .5f)); //swap ground material to indicate fail
+            StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, .5f)); // swap ground material to indicate fail
         }
     }
 
     // detect when we touch the goal
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag("goal")) //touched goal
+        if (col.gameObject.CompareTag("goal")) // touched goal
         {
             if ((selection == 0 && col.gameObject.name == "GoalA") || (selection == 1 && col.gameObject.name == "GoalB"))
             {
-                AddReward(1f); //you get 5 points
-                StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 2)); //swap ground material for a bit to indicate we scored.
+                AddReward(1f); // you get 5 points
+                StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 2)); // swap ground material for a bit to indicate we scored.
             }
             else
             {
-                AddReward(-0.1f); //you lose a point
-                StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, .5f)); //swap ground material to indicate fail
+                AddReward(-0.1f); // you lose a point
+                StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, .5f)); // swap ground material to indicate fail
             }
-            Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
+            Done(); // if we mark an agent as done it will be reset automatically. AgentReset() will be called.
         }
     }
 
-    //In the editor, if "Reset On Done" is checked then AgentReset() will be called automatically anytime we mark done = true in an agent script.
+    // In the editor, if "Reset On Done" is checked then AgentReset() will be called automatically anytime we mark done = true in an agent script.
     public override void AgentReset()
     {
         selection = Random.Range(0, 2);

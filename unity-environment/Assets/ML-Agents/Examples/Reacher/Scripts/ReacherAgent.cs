@@ -25,8 +25,8 @@ public class ReacherAgent : Agent {
     /// We collect the normalized rotations, angularal velocities, and velocities of both
     /// limbs of the reacher as well as the relative position of the target and hand.
     /// </summary>
-	public override void CollectObservations()
-	{
+    public override void CollectObservations()
+    {
         AddVectorObs(pendulumA.transform.rotation.eulerAngles.x / 180.0f - 1.0f);
         AddVectorObs(pendulumA.transform.rotation.eulerAngles.y / 180.0f - 1.0f);
         AddVectorObs(pendulumA.transform.rotation.eulerAngles.z / 180.0f - 1.0f);
@@ -111,5 +111,4 @@ public class ReacherAgent : Agent {
 
         goal.transform.localScale = new Vector3(goalSize, goalSize, goalSize);
     }
-
 }
