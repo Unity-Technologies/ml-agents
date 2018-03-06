@@ -13,7 +13,8 @@ if __name__ == '__main__':
     _USAGE = '''
     Usage:
       learn (<env>) [options]
-      execute with --help to get more information
+
+    Execute with --help to get more information
 
     Options:
       --help                     Show this message.

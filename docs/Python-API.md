@@ -4,15 +4,14 @@ _Notice: Currently communication between Unity and Python takes place over an op
 
 ## Loading a Unity Environment
 
-Python-side communication happens through `UnityEnvironment` which is located in `python/unityagents`. To load a Unity environment from a built binary file, put the file in the same directory as `unityagents`. In python, run:
-
+Python-side communication happens through `UnityEnvironment` which is located in `python/unityagents`. To load a Unity environment from a built binary file, put the file in the same directory as `unityagents`. If your filename is 3DBall.app, in python, run:
 
 ```python
 from unityagents import UnityEnvironment
-env = UnityEnvironment(file_name=filename, worker_id=0)
+env = UnityEnvironment(file_name="3DBall", worker_id=0)
 ```
 
-* `file_name` is the name of the environment binary (located in the root directory of the python project), remember to wrap the `file_name` with `""`. 
+* `file_name` is the name of the environment binary (located in the root directory of the python project).
 * `worker_id` indicates which port to use for communication with the environment. For use in parallel training regimes such as A3C.
 
 ## Interacting with a Unity Environment
