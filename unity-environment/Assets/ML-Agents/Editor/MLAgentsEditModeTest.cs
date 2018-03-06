@@ -60,9 +60,11 @@ namespace MLAgentsTests
         }
     }
 
+    // This is an empty class for testing the behavior of agents and academy
+    // It is left empty because we are not testing any brain behavior
     public class TestBrain : Brain
     {
-        // Mock a brain
+
     }
 
 
@@ -195,8 +197,9 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberReset, aca.academyResetCalls);
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
+                // The reset happens at the begining of the first step
                 if (i == 0)
-                { // The reset happens at the begining of the first step
+                { 
                     numberReset += 1;
                 }
                 AcademyStepMethod.Invoke((object)aca, new object[] { });
@@ -256,19 +259,21 @@ namespace MLAgentsTests
             for (int i = 0; i < 50; i++)
             {
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
-                Assert.AreEqual(0, agent2.agentResetCalls); // Agent2 is never reset since intialized after academy
+                // Agent2 is never reset since intialized after academy
+                Assert.AreEqual(0, agent2.agentResetCalls); 
                 Assert.AreEqual(1, agent1.initializeAgentCalls);
                 Assert.AreEqual(numberAgent2Initialization, agent2.initializeAgentCalls);
                 Assert.AreEqual(i, agent1.agentActionCalls);
                 Assert.AreEqual(requestAction, agent2.agentActionCalls);
                 Assert.AreEqual((i+1)/2, agent1.collectObservationsCalls);
                 Assert.AreEqual(requestDecision, agent2.collectObservationsCalls);
-
-                if (i == 0) // Agent 1 resets at the first step
+                // Agent 1 resets at the first step
+                if (i == 0) 
                 {
                     numberAgent1Reset += 1;
                 }
-                if (i == 2) //Agent 2 is only initialized at step 2
+                //Agent 2 is only initialized at step 2
+                if (i == 2) 
                 {
                     AgentEnableMethod.Invoke(agent2, new object[] { aca });
                     numberAgent2Initialization += 1;
@@ -328,7 +333,8 @@ namespace MLAgentsTests
                 }
 
                 stepsSinceReset += 1;
-                if (i % 5 == 3) // Regularly set the academy to done to check behavior
+                // Regularly set the academy to done to check behavior
+                if (i % 5 == 3) 
                 {
                     aca.Done();
                     numberReset += 1;
@@ -410,28 +416,32 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
-                if (i == 0) // Agent 2  and academy reset at the first step
+                // Agent 2  and academy reset at the first step
+                if (i == 0) 
                 {
                     numberAcaReset += 1;
                     numberAgent2Reset += 1;
                 }
-                if (i == 2) //Agent 1 is only initialized at step 2
+                //Agent 1 is only initialized at step 2
+                if (i == 2) 
                 {
                     AgentEnableMethod.Invoke(agent1, new object[] { aca });
 
                 }
-
-                if (i % 100 == 3) // Reset Academy every 100 steps
+                // Reset Academy every 100 steps
+                if (i % 100 == 3) 
                 {
                     aca.Done();
                     numberAcaReset += 1;
                     acaStepsSinceReset = 0;
                 }
-                if (i % 11 == 5) // Set agent 1 to done every 11 steps to test behaviot
+                // Set agent 1 to done every 11 steps to test behavior
+                if (i % 11 == 5) 
                 {
                     agent1.Done();
                 }
-                if (i % 13 == 3) // Reseting agent 2 regularly
+                // Reseting agent 2 regularly
+                if (i % 13 == 3) 
                 {
                     if (!(agent2.IsDone()||aca.IsDone()))
                     {
@@ -442,15 +452,16 @@ namespace MLAgentsTests
                         agent2StepSinceReset = 0;
                     }
                 }
-
-                if (i % 3 == 2) // Request a decision for agent 2 regularly
+                // Request a decision for agent 2 regularly
+                if (i % 3 == 2) 
                 {
                     requestDecision += 1;
                     requestAction += 1;
                     agent2.RequestDecision();
                 }
-                else if (i % 5 == 1) // Request an action without decision regularly
+                else if (i % 5 == 1) 
                 {
+                    // Request an action without decision regularly
                     requestAction += 1;
                     agent2.RequestAction();
                 }
@@ -468,7 +479,8 @@ namespace MLAgentsTests
                 acaStepsSinceReset += 1;
                 agent1StepSinceReset += 1;
                 agent2StepSinceReset += 1;
-                if (i < 2) //Agent 1 is only initialized at step 2
+                //Agent 1 is only initialized at step 2
+                if (i < 2) 
                 {
                     agent1StepSinceReset = 0;
                 }
@@ -509,7 +521,8 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberReset, aca.episodeCount);
                 Assert.AreEqual(numberReset, aca.academyResetCalls);
                 stepsSinceReset += 1;
-                if (i % 20 == 0) // Make sure max step is reached every 20 steps
+                // Make sure max step is reached every 20 steps
+                if (i % 20 == 0) 
                 {
                     numberReset += 1;
                     stepsSinceReset = 1;
@@ -591,22 +604,25 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
-                if (i == 0) //At the first step, Academy and agent 2 reset
+                //At the first step, Academy and agent 2 reset
+                if (i == 0) 
                 {
                     numberAcaReset += 1;
                     numberAgent2Reset += 1;
                 }
-
-                if (i == 2) //Agent 1 is only initialized at step 2
+                //Agent 1 is only initialized at step 2
+                if (i == 2) 
                 {
                     AgentEnableMethod.Invoke(agent1, new object[] { aca });
                 }
 
-                agent2.RequestDecision(); // we request a decision at each step
+                // we request a decision at each step
+                agent2.RequestDecision(); 
 
                 if (i > 3)
                 {
-                    if (i % 100 == 0) // Make sure the academy max steps at 100
+                    // Make sure the academy max steps at 100
+                    if (i % 100 == 0) 
                     {
                         acaStepsSinceReset = 0;
                         agent1StepSinceReset = 0;
@@ -635,7 +651,8 @@ namespace MLAgentsTests
                 agent1StepSinceReset += 1;
                 agent2StepSinceReset += 1;
 
-                if (i < 2) //Agent 1 is only initialized at step 2
+                //Agent 1 is only initialized at step 2
+                if (i < 2) 
                 {
                     agent1StepSinceReset = 0;
                 }
@@ -680,13 +697,14 @@ namespace MLAgentsTests
             brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
+            // agent1 will take an action at every step and request a decision every steps
             agent1.agentParameters.numberOfActionsBetweenDecisions = 1;
-            // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
+            agent2.agentParameters.onDemandDecision = true;
             agent1.agentParameters.maxStep = 20;
+            //Here we specify that the agent does not reset when done
             agent1.agentParameters.resetOnDone = false;
-            agent2.agentParameters.resetOnDone = false; //Here we specify that the agent does not reset when done
+            agent2.agentParameters.resetOnDone = false; 
             brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new resolution[0];
             agent1.GiveBrain(brain);
@@ -711,7 +729,8 @@ namespace MLAgentsTests
                 Assert.AreEqual(agent1ResetOnDone, agent1.agentOnDoneCalls);
                 Assert.AreEqual(agent2ResetOnDone, agent2.agentOnDoneCalls);
 
-                agent2.RequestDecision(); // we request a decision at each step
+                // we request a decision at each step
+                agent2.RequestDecision(); 
                 acaStepsSinceReset += 1;
                 if (agent1ResetOnDone ==0)
                     agent1StepSinceReset += 1;
