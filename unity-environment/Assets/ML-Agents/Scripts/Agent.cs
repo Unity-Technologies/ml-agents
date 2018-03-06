@@ -417,8 +417,8 @@ public abstract class Agent : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds a vector observation. 
-    /// Note that the number of vector observation to add
+    /// Appends float values to the vector observation.
+    /// Note that the total number of vector observation added
     /// must be the same at each CollectObservations call.
     /// </summary>
     /// <param name="observation">The value to add to 
