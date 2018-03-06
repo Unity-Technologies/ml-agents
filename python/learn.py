@@ -12,7 +12,8 @@ if __name__ == '__main__':
     logger = logging.getLogger("unityagents")
     _USAGE = '''
     Usage:
-      learn (<env>) [options] 
+      learn (<env>) [options]
+      execute with --help to get more information
 
     Options:
       --help                     Show this message.
