@@ -444,17 +444,11 @@ public abstract class Agent : MonoBehaviour
     }
     internal void AddVectorObs(float[] observation)
     {
-        foreach (float obs in observation)
-        {
-            _info.vectorObservation.Add(obs);
-        }
+            _info.vectorObservation.AddRange(observation);
     }
     internal void AddVectorObs(List<float> observation)
     {
-        foreach (float obs in observation)
-        {
-            _info.vectorObservation.Add(obs);
-        }
+            _info.vectorObservation.AddRange(observation);
     }
 
 
