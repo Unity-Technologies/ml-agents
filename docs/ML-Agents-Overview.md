@@ -330,7 +330,7 @@ mode with the **Anti-Graviator** sample environment.
 ### Recurrent Neural Networks
 In some scenarios, agents must learn to remember the past in order to take the 
 best decision. When an agent only has partial observability of the environment, 
-keeping track of past observations can help the agent learn. We propose an 
+keeping track of past observations can help the agent learn. We provide an 
 implementation of LSTM in both the PPO and the Behavioral Cloning trainers 
 that enable the agent to store memories to be used in future steps.
 
