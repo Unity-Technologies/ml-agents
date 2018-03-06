@@ -28,12 +28,12 @@ public class TennisAgent : Agent
     }
 
     // to be implemented by the developer
-    public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
         float moveX = 0.0f;
         float moveY = 0.0f;
-        moveX = 0.25f * Mathf.Clamp(act[0], -1f, 1f) * invertMult;
-        if (Mathf.Clamp(act[1], -1f, 1f) > 0f && gameObject.transform.position.y - transform.parent.transform.position.y < -1.5f)
+        moveX = 0.25f * Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
+        if (Mathf.Clamp(vectorAction[1], -1f, 1f) > 0f && gameObject.transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
             moveY = 0.5f;
             gameObject.GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, moveY * 12f, 0f);
