@@ -13,11 +13,9 @@ if __name__ == '__main__':
     _USAGE = '''
     Usage:
       learn (<env>) [options]
-
-    Execute with --help to get more information
+      learn --help
 
     Options:
-      --help                     Show this message.
       --curriculum=<file>        Curriculum json file for environment [default: None].
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
