@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /**
@@ -162,7 +162,7 @@ public abstract class Academy : MonoBehaviour
     /// Pointer to the communicator currently in use by the Academy.
     Communicator communicator;
 
-    // 
+    // Flag used to keep track of the first time the Academy is reset.
     bool firstAcademyReset;
 
     // The Academy uses a series of events to communicate with agents and
