@@ -27,9 +27,8 @@ public class BouncerBanana : MonoBehaviour {
 
     }
 
-    private void Respawn(){
-        Vector3 oldPosition = gameObject.transform.position;
-        gameObject.transform.position = new Vector3((1 - 2 * Random.value) * 15, oldPosition.y, (1 - 2 * Random.value) * 15);
+    public void Respawn(){
+        gameObject.transform.localPosition = new Vector3((1 - 2 * Random.value) *5f, 2f+(Random.value) *5f, (1 - 2 * Random.value) *5f);
     }
 
 }
