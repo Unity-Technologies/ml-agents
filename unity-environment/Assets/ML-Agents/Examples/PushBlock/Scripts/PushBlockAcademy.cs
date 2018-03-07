@@ -6,7 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PushBlockAcademy : Academy {
+public class PushBlockAcademy : Academy
+{
 
     /// <summary>
     /// The "walking speed" of the agents in the scene. 
@@ -44,9 +45,9 @@ public class PushBlockAcademy : Academy {
     /// </summary>
 	public float gravityMultiplier;
 
-	void State()
-	{
-		Physics.gravity *= gravityMultiplier;
+    void State()
+    {
+        Physics.gravity *= gravityMultiplier;
 
-	}
+    }
 }

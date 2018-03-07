@@ -5,8 +5,9 @@
 
 using UnityEngine;
 
-public class GoalDetect : MonoBehaviour {
-	[HideInInspector]
+public class GoalDetect : MonoBehaviour
+{
+    [HideInInspector]
     /// <summary>
     /// The associated agent.
     /// This will be set by the agent script on Initialization. 
@@ -14,12 +15,12 @@ public class GoalDetect : MonoBehaviour {
     /// </summary>
 	public PushAgentBasic agent;  //
 
-	void OnCollisionEnter(Collision col)
-	{
+    void OnCollisionEnter(Collision col)
+    {
         // Touched goal.
-		if(col.gameObject.CompareTag("goal"))
-		{
-			agent.IScoredAGoal();
-		}
-	}
+        if (col.gameObject.CompareTag("goal"))
+        {
+            agent.IScoredAGoal();
+        }
+    }
 }
