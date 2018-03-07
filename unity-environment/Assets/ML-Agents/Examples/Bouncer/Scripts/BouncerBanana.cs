@@ -8,11 +8,11 @@ public class BouncerBanana : MonoBehaviour {
     void Start(){
 
     }
-	
-	// Update is called once per frame
-	void FixedUpdate () {
+    
+    // Update is called once per frame
+    void FixedUpdate () {
         gameObject.transform.Rotate(new Vector3(1, 0, 0), 0.5f);
-	}
+    }
 
     private void OnTriggerEnter(Collider collision)
     {

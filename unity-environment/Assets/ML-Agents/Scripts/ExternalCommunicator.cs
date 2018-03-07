@@ -159,7 +159,7 @@ public class ExternalCommunicator : Communicator
         sMessage.maxes = new List<bool>(defaultNumAgents);
         sMessage.textObservations = new List<string>(defaultNumAgents);
 
-        //Initialize the list of brains the Communicator must listen to
+        // Initialize the list of brains the Communicator must listen to
         // Issue : This assumes all brains are broadcasting.
         foreach (string k in accParamerters.brainNames)
         {

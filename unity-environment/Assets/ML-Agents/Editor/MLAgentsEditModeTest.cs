@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 

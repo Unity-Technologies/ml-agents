@@ -8,15 +8,15 @@ public class TennisArea : MonoBehaviour {
     public GameObject agentA;
     public GameObject agentB;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         MatchReset();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    }
+    
+    // Update is called once per frame
+    void Update () {
+        
+    }
 
     public void MatchReset() {
         float ballOut = Random.Range(6f, 8f);

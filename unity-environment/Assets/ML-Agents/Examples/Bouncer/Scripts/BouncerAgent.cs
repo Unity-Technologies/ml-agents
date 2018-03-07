@@ -16,13 +16,13 @@ public class BouncerAgent : Agent {
         rb.velocity = rb.velocity.normalized * speed;
     }
 
-	public override void CollectObservations()
-	{
+    public override void CollectObservations()
+    {
         AddVectorObs(gameObject.transform.position.x / 25f);
         AddVectorObs(gameObject.transform.position.z / 25f);
         AddVectorObs(banana.transform.position.x / 25f);
         AddVectorObs(banana.transform.position.z / 25f);
-	}
+    }
 
     public override void AgentAction(float[] vectorAction, string textAction)
 	{
@@ -45,23 +45,23 @@ public class BouncerAgent : Agent {
         }
         else
         {
-            //AddReward(0.05f);
+            // AddReward(0.05f);
         }
-	}
+    }
 
-	public override void AgentReset()
-	{
+    public override void AgentReset()
+    {
 
         Vector3 oldPosition = gameObject.transform.position;
         gameObject.transform.position = new Vector3((1 - 2 * Random.value) * 15, oldPosition.y, (1 - 2 * Random.value) * 15);
         rb.velocity = new Vector3((1 - 2 * Random.value) * 15, 0, (1 - 2 * Random.value) * 15);
         rb.velocity = rb.velocity.normalized * speed;
-	}
+    }
 
-	public override void AgentOnDone()
-	{
+    public override void AgentOnDone()
+    {
 
-	}
+    }
 
     private void OnTriggerEnter(Collider collision)
     {

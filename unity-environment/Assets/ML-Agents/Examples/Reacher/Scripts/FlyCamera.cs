@@ -10,22 +10,22 @@ public class FlyCamera : MonoBehaviour
     space : Moves camera on X and Z axis only.  So camera doesn't gain any height*/
 
 
-    public float mainSpeed = 100.0f; //regular speed
-    public float shiftAdd = 250.0f; //multiplied by how long shift is held.  Basically running
-    public float maxShift = 1000.0f; //Maximum speed when holdin gshift
-    public float camSens = 0.25f; //How sensitive it with mouse
+    public float mainSpeed = 100.0f; // regular speed
+    public float shiftAdd = 250.0f; // multiplied by how long shift is held.  Basically running
+    public float maxShift = 1000.0f; // Maximum speed when holdin gshift
+    public float camSens = 0.25f; // How sensitive it with mouse
     public bool rotateOnlyIfMousedown = true;
     public bool movementStaysFlat = true;
 
-    private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
+    private Vector3 lastMouse = new Vector3(255, 255, 255); // kind of in the middle of the screen, rather than at the top (play)
     private float totalRun = 1.0f;
 
     void Awake()
     {
         Debug.Log("FlyCamera Awake() - RESETTING CAMERA POSITION"); // nop?
                                                                     // nop:
-                                                                    //transform.position.Set(0,8,-32);
-                                                                    //transform.rotation.Set(15,0,0,1);
+                                                                    // transform.position.Set(0,8,-32);
+                                                                    // transform.rotation.Set(15,0,0,1);
         transform.position = new Vector3(0, 8, -32);
         transform.rotation = Quaternion.Euler(25, 0, 0);
     }
@@ -47,10 +47,10 @@ public class FlyCamera : MonoBehaviour
             lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
             transform.eulerAngles = lastMouse;
             lastMouse = Input.mousePosition;
-            //Mouse  camera angle done.  
+            // Mouse  camera angle done.  
         }
 
-        //Keyboard commands
+        // Keyboard commands
         Vector3 p = GetBaseInput();
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -70,7 +70,7 @@ public class FlyCamera : MonoBehaviour
         Vector3 newPosition = transform.position;
         if (Input.GetKey(KeyCode.Space)
             || (movementStaysFlat && !(rotateOnlyIfMousedown && Input.GetMouseButton(1))))
-        { //If player wants to move on X and Z axis only
+        { // If player wants to move on X and Z axis only
             transform.Translate(p);
             newPosition.x = transform.position.x;
             newPosition.z = transform.position.z;
@@ -84,7 +84,7 @@ public class FlyCamera : MonoBehaviour
     }
 
     private Vector3 GetBaseInput()
-    { //returns the basic values, if it's 0 than it's not active.
+    { // returns the basic values, if it's 0 than it's not active.
         Vector3 p_Velocity = new Vector3();
         if (Input.GetKey(KeyCode.W))
         {
