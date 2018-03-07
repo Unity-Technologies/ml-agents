@@ -194,7 +194,7 @@ class PPOTrainer(Trainer):
         values = self.sess.run(run_list, feed_dict=feed_dict)
         run_out = dict(zip(run_list, values))
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
-        self.stats['entropy'].append(run_out[self.model.entropy])
+        self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
         if self.use_recurrent:
             return (run_out[self.model.output],
