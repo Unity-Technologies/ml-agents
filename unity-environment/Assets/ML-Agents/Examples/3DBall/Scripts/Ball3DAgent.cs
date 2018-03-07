@@ -16,12 +16,8 @@ public class Ball3DAgent : Agent
     {
         AddVectorObs(gameObject.transform.rotation.z);
         AddVectorObs(gameObject.transform.rotation.x);
-        AddVectorObs((ball.transform.position.x - gameObject.transform.position.x));
-        AddVectorObs((ball.transform.position.y - gameObject.transform.position.y));
-        AddVectorObs((ball.transform.position.z - gameObject.transform.position.z));
-        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.x);
-        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.y);
-        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
+        AddVectorObs((ball.transform.position - gameObject.transform.position));
+        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity);
         SetTextObs("Testing "+gameObject.GetInstanceID());
 
     }

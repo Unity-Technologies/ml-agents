@@ -27,35 +27,19 @@ public class ReacherAgent : Agent {
     /// </summary>
     public override void CollectObservations()
     {
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.x / 180.0f - 1.0f);
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.y / 180.0f - 1.0f);
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.z / 180.0f - 1.0f);
-        AddVectorObs(rbA.angularVelocity.x);
-        AddVectorObs(rbA.angularVelocity.y);
-        AddVectorObs(rbA.angularVelocity.z);
-        AddVectorObs(rbA.velocity.x);
-        AddVectorObs(rbA.velocity.y);
-        AddVectorObs(rbA.velocity.z);
+        AddVectorObs(pendulumA.transform.rotation.eulerAngles / 180.0f - Vector3.one);
+        AddVectorObs(rbA.angularVelocity);
+        AddVectorObs(rbA.velocity);
 
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.x / 180.0f - 1.0f);
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.y / 180.0f - 1.0f);
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.z / 180.0f - 1.0f);
-        AddVectorObs(rbB.angularVelocity.x);
-        AddVectorObs(rbB.angularVelocity.y);
-        AddVectorObs(rbB.angularVelocity.z);
-        AddVectorObs(rbB.velocity.x);
-        AddVectorObs(rbB.velocity.y);
-        AddVectorObs(rbB.velocity.z);
+        AddVectorObs(pendulumB.transform.rotation.eulerAngles / 180.0f - Vector3.one);
+        AddVectorObs(rbB.angularVelocity);
+        AddVectorObs(rbB.velocity);
 
         Vector3 localGoalPosition = goal.transform.position - transform.position;
-        AddVectorObs(localGoalPosition.x);
-        AddVectorObs(localGoalPosition.y);
-        AddVectorObs(localGoalPosition.z);
+        AddVectorObs(localGoalPosition);
 
         Vector3 localHandPosition = hand.transform.position - transform.position;
-        AddVectorObs(localHandPosition.x);
-        AddVectorObs(localHandPosition.y);
-        AddVectorObs(localHandPosition.z);
+        AddVectorObs(localHandPosition);
 	}
 
     /// <summary>
