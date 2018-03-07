@@ -85,6 +85,7 @@ public class BrainParameters
  */
 public class Brain : MonoBehaviour
 {
+    private bool isInitialized = false;
 
     private Dictionary<Agent, AgentInfo> agentInfos =
         new Dictionary<Agent, AgentInfo>(1024);
@@ -128,7 +129,7 @@ public class Brain : MonoBehaviour
             CoreBrains = new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
-                CoreBrains[(int)bt] = 
+                CoreBrains[(int)bt] =
                     ScriptableObject.CreateInstance(
                         "CoreBrain" + bt.ToString());
             }
@@ -142,7 +143,7 @@ public class Brain : MonoBehaviour
                     break;
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
@@ -154,7 +155,7 @@ public class Brain : MonoBehaviour
         if (CoreBrains.Length < System.Enum.GetValues(typeof(BrainType)).Length)
         {
             int numCoreBrains = System.Enum.GetValues(typeof(BrainType)).Length;
-            ScriptableObject[] new_CoreBrains = 
+            ScriptableObject[] new_CoreBrains =
                 new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
@@ -164,7 +165,7 @@ public class Brain : MonoBehaviour
                 }
                 else
                 {
-                    new_CoreBrains[(int)bt] = 
+                    new_CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
@@ -181,13 +182,13 @@ public class Brain : MonoBehaviour
             {
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
                 else
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.Instantiate(CoreBrains[(int)bt]);
                 }
             }
@@ -206,11 +207,31 @@ public class Brain : MonoBehaviour
         UpdateCoreBrains();
         coreBrain.InitializeCoreBrain(communicator);
         aca.BrainDecideAction += DecideAction;
+        isInitialized = true;
     }
 
     public void SendState(Agent agent, AgentInfo info)
     {
-        agentInfos.Add(agent, info);
+        // If the brain is not active or not properly initialized, an error is
+        // thrown.
+        if (gameObject.activeSelf == false)
+        {
+            throw new UnityAgentsException(
+                string.Format("Agent {0} tried to request an action " +
+                "from brain {1} but it is not active.",
+                             agent.gameObject.name, gameObject.name));
+        }
+        else if (!isInitialized)
+        {
+            throw new UnityAgentsException(
+                string.Format("Agent {0} tried to request an action " +
+                "from brain {1} but it was not initialized.",
+                             agent.gameObject.name, gameObject.name));
+        }
+        else
+        {
+            agentInfos.Add(agent, info);
+        }
 
     }
 
