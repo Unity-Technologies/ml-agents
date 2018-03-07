@@ -58,7 +58,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// The brain that will control this agent. 
     /// Use the inspector to drag the desired brain gameObject into
-	/// the Brain field.
+    /// the Brain field.
     ///</summary>
     [HideInInspector]
     public Brain brain;
@@ -83,10 +83,10 @@ public abstract class Agent : MonoBehaviour
     ///</summary>
     private float reward;
 
-    /// Whether or not the agent is requests an action
+    /// Whether or not the agent requests an action.
     private bool requestAction;
 
-    /// Whether or not the agent is requests a decision
+    /// Whether or not the agent requests a decision.
     private bool requestDecision;
 
     /// <summary> 
@@ -119,7 +119,7 @@ public abstract class Agent : MonoBehaviour
     private int id;
 
     /// <summary>
-    /// Unity method called when the agent is istanciated or set to active.
+    /// Unity method called when the agent is instantiated or set to active.
     /// </summary>
     private void OnEnable()
     {
@@ -188,7 +188,7 @@ public abstract class Agent : MonoBehaviour
     /// When GiveBrain is called, the agent unsubscribes from its 
     /// previous brain and subscribes to the one passed in argument.
     /// Use this method to provide a brain to the agent via script. 
-	///<param name= "b" >The Brain the agent will subscribe to.</param>
+    ///<param name= "b" >The Brain the agent will subscribe to.</param>
     /// <summary>
     public void GiveBrain(Brain b)
     {
@@ -251,7 +251,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Is called when the agent must request the brain for a new decision.
     /// </summary>
-	public void RequestDecision()
+    public void RequestDecision()
     {
         requestDecision = true;
         RequestAction();
@@ -259,7 +259,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Is called then the agent must perform a new action.
     /// </summary>
-	public void RequestAction()
+    public void RequestAction()
     {
         requestAction = true;
     }
@@ -331,7 +331,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// Initialize the agent with this method
     /// Must be implemented in agent-specific child class.
-	/// This method called only once when the agent is enabled.
+    /// This method called only once when the agent is enabled.
     /// </summary>
     public virtual void InitializeAgent()
     {
@@ -417,17 +417,46 @@ public abstract class Agent : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds a vector observation. 
-    /// Note that the number of vector observation to add
+    /// Appends float values to the vector observation.
+    /// Note that the total number of vector observation added
     /// must be the same at each CollectObservations call.
     /// </summary>
-    /// <param name="observation">The float value to add to 
+    /// <param name="observation">The value to add to 
     /// the vector observation.</param>
     internal void AddVectorObs(float observation)
     {
         _info.vectorObservation.Add(observation);
     }
+    internal void AddVectorObs(int observation)
+    {
+        _info.vectorObservation.Add((float)observation);
+    }
+    internal void AddVectorObs(Vector3 observation)
+    {
+        _info.vectorObservation.Add(observation.x);
+        _info.vectorObservation.Add(observation.y);
+        _info.vectorObservation.Add(observation.z);
+    }
+    internal void AddVectorObs(Vector2 observation)
+    {
+        _info.vectorObservation.Add(observation.x);
+        _info.vectorObservation.Add(observation.y);
+    }
+    internal void AddVectorObs(float[] observation)
+    {
+            _info.vectorObservation.AddRange(observation);
+    }
+    internal void AddVectorObs(List<float> observation)
+    {
+            _info.vectorObservation.AddRange(observation);
+    }
 
+
+
+    /// <summary>
+    /// Sets the text observation.
+    /// </summary>
+    /// <param name="s">The string the text observation must be set to.</param>
     internal void SetTextObs(object s)
     {
         _info.textObservation = s.ToString();
@@ -441,7 +470,7 @@ public abstract class Agent : MonoBehaviour
     /// </summary>
     /// <param name="action">The action the agent receives 
     /// from the brain.</param>
-    public virtual void AgentAction(float[] action)
+    public virtual void AgentAction(float[] vectorAction, string textAction)
     {
 
     }
@@ -536,7 +565,7 @@ public abstract class Agent : MonoBehaviour
                 {
                     if (!hasAlreadyReset)
                     {
-                        //If event based, the agent can reset as soon
+                        // If event based, the agent can reset as soon
                         // as it is done
                         _AgentReset();
                         hasAlreadyReset = true;
@@ -596,7 +625,7 @@ public abstract class Agent : MonoBehaviour
         if ((requestAction) && (brain != null))
         {
             requestAction = false;
-            AgentAction(_action.vectorActions);
+            AgentAction(_action.vectorActions, _action.textActions);
         }
 
         if ((stepCounter >= agentParameters.maxStep)

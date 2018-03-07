@@ -8,18 +8,18 @@ public class PushArea : Area {
     public GameObject goalHolder;
     public GameObject academy;
 
-	// Use this for initialization
-	void Start () {
-		academy = GameObject.Find("Academy");
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Use this for initialization
+    void Start () {
+        academy = GameObject.Find("Academy");
+    }
+    
+    // Update is called once per frame
+    void Update () {
+        
+    }
 
-	public override void ResetArea()
-	{
+    public override void ResetArea()
+    {
         float goalSize = academy.GetComponent<PushAcademy>().goalSize;
         float blockSize = academy.GetComponent<PushAcademy>().blockSize;
         float xVariation = academy.GetComponent<PushAcademy>().xVariation;
@@ -30,6 +30,6 @@ public class PushArea : Area {
         blockSize = Random.Range(blockSize * 0.9f, blockSize * 1.1f);
         block.transform.localScale = new Vector3(blockSize, 1f, blockSize);
         goalHolder.transform.localScale = new Vector3(goalSize, 1f, goalSize);
-	}
+    }
 
 }

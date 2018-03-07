@@ -17,16 +17,16 @@ public class BCTeacherHelper : MonoBehaviour {
     public KeyCode recordKey = KeyCode.R;
     public KeyCode resetKey = KeyCode.C;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         recordExperiences = true;
         resetBuffer = false;
         myAgent = GetComponent<Agent>();
         bufferResetTime = Time.time;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+    
+    // Update is called once per frame
+    void Update () {
         if (Input.GetKeyDown(recordKey))
         {
             recordExperiences = !recordExperiences;
@@ -43,7 +43,7 @@ public class BCTeacherHelper : MonoBehaviour {
         Monitor.Log("Recording experiences " + recordKey.ToString(), recordExperiences.ToString());
         float timeSinceBufferReset = Time.time - bufferResetTime;
         Monitor.Log("Seconds since buffer reset " + resetKey.ToString(), Mathf.FloorToInt(timeSinceBufferReset));
-	}
+    }
 
     void FixedUpdate()
     {

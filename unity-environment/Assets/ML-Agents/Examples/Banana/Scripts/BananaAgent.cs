@@ -29,7 +29,7 @@ public class BananaAgent : Agent
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        agentRB = GetComponent<Rigidbody>(); //cache the RB
+        agentRB = GetComponent<Rigidbody>(); // cache the RB
         Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<BananaArea>();
         myAcademy = myAcademyObj.GetComponent<BananaAcademy>();
@@ -137,7 +137,7 @@ public class BananaAgent : Agent
             transform.Rotate(rotateDir, Time.deltaTime * turnSpeed);
         }
 
-        if (agentRB.velocity.sqrMagnitude > 25f) //slow it down
+        if (agentRB.velocity.sqrMagnitude > 25f) // slow it down
         {
             agentRB.velocity *= 0.95f;
         }
@@ -208,9 +208,9 @@ public class BananaAgent : Agent
 
 
 
-    public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
-        MoveAgent(act);
+        MoveAgent(vectorAction);
     }
 
     public override void AgentReset()

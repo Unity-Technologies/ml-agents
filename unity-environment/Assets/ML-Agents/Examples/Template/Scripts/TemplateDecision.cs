@@ -14,6 +14,6 @@ public class TemplateDecision : MonoBehaviour, Decision
     public List<float> MakeMemory(List<float> state, List<Texture2D> observation, float reward, bool done, List<float> memory)
     {
         return new List<float>();
-		
+        
     }
 }

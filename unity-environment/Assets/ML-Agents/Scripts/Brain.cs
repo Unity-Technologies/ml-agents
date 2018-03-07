@@ -101,7 +101,7 @@ public class Brain : MonoBehaviour
 
     //[HideInInspector]
     ///**<  \brief Keeps track of the agents which subscribe to this brain*/
-    //public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
+    // public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
 
     [SerializeField]
     ScriptableObject[] CoreBrains;
@@ -109,14 +109,14 @@ public class Brain : MonoBehaviour
     /**<  \brief Reference to the current CoreBrain used by the brain*/
     public CoreBrain coreBrain;
 
-    //Ensures the coreBrains are not dupplicated with the brains
+    // Ensures the coreBrains are not dupplicated with the brains
     [SerializeField]
     private int instanceID;
 
     /// Ensures the brain has an up to date array of coreBrains
     /** Is called when the inspector is modified and into InitializeBrain. 
-	 * If the brain gameObject was just created, it generates a list of 
-	 * coreBrains (one for each brainType) */
+     * If the brain gameObject was just created, it generates a list of 
+     * coreBrains (one for each brainType) */
     public void UpdateCoreBrains()
     {
 

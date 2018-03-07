@@ -159,7 +159,7 @@ public class ExternalCommunicator : Communicator
         sMessage.maxes= new List<bool>(defaultNumAgents);
         sMessage.textObservations = new List<string>(defaultNumAgents);
 
-        //Initialize the list of brains the Communicator must listen to
+        // Initialize the list of brains the Communicator must listen to
         // Issue : This assumes all brains are broadcasting.
         foreach(string k in accParamerters.brainNames){
             current_agents[k] = new List<Agent>(defaultNumAgents);
@@ -394,10 +394,10 @@ public class ExternalCommunicator : Communicator
         return triedSendState;
     }
 
-	public Dictionary<string, bool> GetSent()
-	{
+    public Dictionary<string, bool> GetSent()
+    {
         return hasSentState;
-	}
+    }
 
     /// Listens for actions, memories, and values and sends them 
     /// to the corrensponding brains.
@@ -413,6 +413,10 @@ public class ExternalCommunicator : Communicator
             {
                 var brainName = brain.gameObject.name;
 
+                if (current_agents[brainName].Count() == 0)
+                {
+                    continue;
+                }
                 var memorySize = rMessage.memory[brainName].Count() / current_agents[brainName].Count();
 
                 for (int i = 0; i < current_agents[brainName].Count(); i++)

@@ -7,15 +7,15 @@ public class BananaLogic : MonoBehaviour {
     public bool respawn;
     public BananaArea myArea;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Use this for initialization
+    void Start () {
+        
+    }
+    
+    // Update is called once per frame
+    void Update () {
+        
+    }
 
     public void OnEaten() {
         if (respawn) 

@@ -93,7 +93,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         else
         {
             foreach (Agent agent in agentInfo.Keys)
-			{
+            {
                 var action = new float[1] { defaultAction };
                 foreach (DiscretePlayerAction dha in discretePlayerActions)
                 {

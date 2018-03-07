@@ -29,23 +29,23 @@ public class AgentEditor : Editor
         EditorGUILayout.PropertyField(brain);
 
         EditorGUILayout.LabelField("Agent Cameras");
-		for (int i = 0; i < cameras.arraySize; i++)
-		{
-			EditorGUILayout.PropertyField(cameras.GetArrayElementAtIndex(i), new GUIContent("Camera " + (i + 1).ToString() + ": "));
-		}
+        for (int i = 0; i < cameras.arraySize; i++)
+        {
+            EditorGUILayout.PropertyField(cameras.GetArrayElementAtIndex(i), new GUIContent("Camera " + (i + 1).ToString() + ": "));
+        }
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Add Camera", EditorStyles.miniButton))
         {
             cameras.arraySize++;
         }
-		if (GUILayout.Button("Remove Camera", EditorStyles.miniButton))
-		{
-			cameras.arraySize--;
-		}
+        if (GUILayout.Button("Remove Camera", EditorStyles.miniButton))
+        {
+            cameras.arraySize--;
+        }
         EditorGUILayout.EndHorizontal();
-		
+        
         EditorGUILayout.PropertyField(maxSteps, new GUIContent("Max Step",
-                                		"The per-agent maximum number of steps."));
+                                        "The per-agent maximum number of steps."));
         EditorGUILayout.PropertyField(isResetOnDone, new GUIContent("Reset On Done",
                          "If checked, the agent will reset on done. Else, AgentOnDone() will be called."));
         EditorGUILayout.PropertyField(isEBS, new GUIContent("On Demand Decision", "If checked, you must manually request decisions."));
@@ -56,7 +56,7 @@ public class AgentEditor : Editor
             actionsPerDecision.intValue = Mathf.Max(1, actionsPerDecision.intValue);
         }
 
-		serializedAgent.ApplyModifiedProperties();
+        serializedAgent.ApplyModifiedProperties();
 
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         base.OnInspectorGUI();

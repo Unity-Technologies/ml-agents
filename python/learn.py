@@ -12,10 +12,10 @@ if __name__ == '__main__':
     logger = logging.getLogger("unityagents")
     _USAGE = '''
     Usage:
-      learn (<env>) [options] 
+      learn (<env>) [options]
+      learn --help
 
     Options:
-      --help                     Show this message.
       --curriculum=<file>        Curriculum json file for environment [default: None].
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].

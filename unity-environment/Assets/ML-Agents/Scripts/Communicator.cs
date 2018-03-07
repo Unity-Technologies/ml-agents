@@ -20,7 +20,7 @@ public struct AcademyParameters
     public string logPath;
 
     /**< \brief The default reset parameters are sent via socket*/
-	public Dictionary<string, float> resetParameters;
+    public Dictionary<string, float> resetParameters;
 
     /**< \brief A list of the all the brains names sent via socket*/
     public List<string> brainNames;
