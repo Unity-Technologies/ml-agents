@@ -535,7 +535,7 @@ MonoBehaviour:
     - 
     vectorActionSpaceType: 1
     vectorObservationSpaceType: 1
-  brainType: 3
+  brainType: 2
   CoreBrains:
   - {fileID: 635266522}
   - {fileID: 414188952}
@@ -1684,11 +1684,7 @@ MonoBehaviour:
   broadcast: 1
   graphModel: {fileID: 4900000, guid: 57cd436ad0d12422ba379708e135815b, type: 3}
   graphScope: 
-  graphPlaceholders:
-  - name: epsilon
-    valueType: 1
-    minValue: 0
-    maxValue: 0
+  graphPlaceholders: []
   BatchSizePlaceholderName: batch_size
   VectorObservationPlacholderName: vector_observation
   RecurrentInPlaceholderName: recurrent_in
