@@ -21,11 +21,5 @@ public class GoalDetect : MonoBehaviour {
 		{
 			agent.IScoredAGoal();
 		}
-
-        // Touched obstacle.
-		if(col.gameObject.CompareTag("obstacle"))
-		{
-			agent.BlockTouchedObstacle();
-		}
 	}
 }

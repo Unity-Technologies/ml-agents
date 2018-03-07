@@ -82,9 +82,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
-## Area 
-
-### Push Area
+## Push Block
 
 ![Push](images/push.png)
 
@@ -92,16 +90,15 @@ If you would like to contribute environments, please see our
 * Goal: The agent must push the block to the goal.
 * Agents: The environment contains one agent linked to a single brain.
 * Agent Reward Function: 
-    * -0.01 for every step.
+    * -0.0025 for every step.
     * +1.0 if the block touches the goal.
-    * -1.0 if the agent falls off the platform.
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
-    * Vector Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
     * Visual Observations: None.
-* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of elements for Curriculum Learning.
+* Reset Parameters: None.
 
-### Wall Area
+## Wall Jump
 
 ![Wall](images/wall.png)
 
