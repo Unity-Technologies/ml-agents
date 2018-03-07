@@ -72,7 +72,7 @@ If you would like to contribute environments, please see our
 
 * Set-up: Two-player game where agents control rackets to bounce ball over a net. 
 * Goal: The agents must bounce ball between one another while not dropping or sending ball out of bounds.
-* Agents: The environment contains two agent linked to a single brain.
+* Agents: The environment contains two agent linked to a single brain named TennisBrain. After training you can attach another brain named MyBrain to one of the agent to play against your trained model. 
 * Agent Reward Function (independent): 
     * +0.1 To agent when hitting ball over net.
     * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
