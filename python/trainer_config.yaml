@@ -21,6 +21,12 @@ default:
 Ball3DBrain:
     normalize: true
 
+BouncerBrain:
+    normalize: true
+    max_steps: 5.0e5
+    num_layers: 2
+    hidden_units: 56
+
 CrawlerBrain:
     normalize: true
     num_epoch: 3
