@@ -27,15 +27,11 @@ public class ReacherAgent : Agent {
     /// </summary>
     public override void CollectObservations()
     {
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.x / 180.0f - 1.0f);
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.y / 180.0f - 1.0f);
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.z / 180.0f - 1.0f);
+        AddVectorObs(pendulumA.transform.rotation.eulerAngles / 180.0f - Vector3.one);
         AddVectorObs(rbA.angularVelocity);
         AddVectorObs(rbA.velocity);
 
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.x / 180.0f - 1.0f);
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.y / 180.0f - 1.0f);
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.z / 180.0f - 1.0f);
+        AddVectorObs(pendulumB.transform.rotation.eulerAngles / 180.0f - Vector3.one);
         AddVectorObs(rbB.angularVelocity);
         AddVectorObs(rbB.velocity);
 
