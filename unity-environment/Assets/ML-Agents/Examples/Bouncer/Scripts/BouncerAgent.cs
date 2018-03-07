@@ -40,9 +40,12 @@ public class BouncerAgent : Agent {
     public override void AgentReset()
     {
 
-        gameObject.transform.localPosition = new Vector3((1 - 2 * Random.value) *5, 2, (1 - 2 * Random.value)*5);
+        gameObject.transform.localPosition = new Vector3(
+            (1 - 2 * Random.value) *5, 2, (1 - 2 * Random.value)*5);
         rb.velocity = default(Vector3);
-        BouncerBanana[] bananas = gameObject.transform.parent.gameObject.GetComponentsInChildren<BouncerBanana>();
+        GameObject environment = gameObject.transform.parent.gameObject;
+        BouncerBanana[] bananas = 
+            environment.GetComponentsInChildren<BouncerBanana>();
         foreach (BouncerBanana bb in bananas)
         {
             bb.Respawn();

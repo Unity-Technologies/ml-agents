@@ -187,7 +187,7 @@ If you would like to contribute environments, please see our
 
 ## Bouncer
 
-![Hallway](images/bouncer.png)
+![Bouncer](images/bouncer.png)
 
 * Set-up: Environment where the agent needs on-demand decision making. The agent must decide how perform its next bounce only when it touches the ground.
 * Goal: Catch the floating banana. Only has a limited number of jumps.
