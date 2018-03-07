@@ -11,9 +11,7 @@ public class Ball3DHardAgent : Agent
     {
         AddVectorObs(gameObject.transform.rotation.z);
         AddVectorObs(gameObject.transform.rotation.x);
-        AddVectorObs((ball.transform.position.x - gameObject.transform.position.x));
-        AddVectorObs((ball.transform.position.y - gameObject.transform.position.y));
-        AddVectorObs((ball.transform.position.z - gameObject.transform.position.z));
+        AddVectorObs((ball.transform.position - gameObject.transform.position));
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

@@ -41,45 +41,30 @@ public class CrawlerAgentConfigurable : Agent
 
     public override void CollectObservations()
     {
-        AddVectorObs(body.transform.rotation.eulerAngles.x);
-        AddVectorObs(body.transform.rotation.eulerAngles.y);
-        AddVectorObs(body.transform.rotation.eulerAngles.z);
+        AddVectorObs(body.transform.rotation.eulerAngles);
 
-        AddVectorObs(bodyRB.velocity.x);
-        AddVectorObs(bodyRB.velocity.y);
-        AddVectorObs(bodyRB.velocity.z);
+        AddVectorObs(bodyRB.velocity);
 
-        AddVectorObs((bodyRB.velocity.x - past_velocity.x) / Time.fixedDeltaTime);
-        AddVectorObs((bodyRB.velocity.y - past_velocity.y) / Time.fixedDeltaTime);
-        AddVectorObs((bodyRB.velocity.z - past_velocity.z) / Time.fixedDeltaTime);
+        AddVectorObs((bodyRB.velocity - past_velocity) / Time.fixedDeltaTime);
         past_velocity = bodyRB.velocity;
 
         for (int i = 0; i < limbs.Length; i++)
         {
-            AddVectorObs(limbs[i].localPosition.x);
-            AddVectorObs(limbs[i].localPosition.y);
-            AddVectorObs(limbs[i].localPosition.z);
-            AddVectorObs(limbs[i].localRotation.x);
-            AddVectorObs(limbs[i].localRotation.y);
-            AddVectorObs(limbs[i].localRotation.z);
-            AddVectorObs(limbs[i].localRotation.w);
-            AddVectorObs(limbRBs[i].velocity.x);
-            AddVectorObs(limbRBs[i].velocity.y);
-            AddVectorObs(limbRBs[i].velocity.z);
-            AddVectorObs(limbRBs[i].angularVelocity.x);
-            AddVectorObs(limbRBs[i].angularVelocity.y);
-            AddVectorObs(limbRBs[i].angularVelocity.z);
+            AddVectorObs(limbs[i].localPosition);
+            AddVectorObs(limbs[i].localRotation);
+            AddVectorObs(limbRBs[i].velocity);
+            AddVectorObs(limbRBs[i].angularVelocity);
         }
 
         for (int index = 0; index < 4; index++)
         {
             if (leg_touching[index])
             {
-                AddVectorObs(1.0f);
+                AddVectorObs(1);
             }
             else
             {
-                AddVectorObs(0.0f);
+                AddVectorObs(0);
             }
             leg_touching[index] = false;
         }

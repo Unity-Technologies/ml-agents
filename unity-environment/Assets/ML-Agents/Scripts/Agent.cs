@@ -450,6 +450,14 @@ public abstract class Agent : MonoBehaviour
     {
         _info.vectorObservation.AddRange(observation);
     }
+    internal void AddVectorObs(Quaternion observation)
+    {
+        _info.vectorObservation.Add(observation.x);
+        _info.vectorObservation.Add(observation.y);
+        _info.vectorObservation.Add(observation.z);
+        _info.vectorObservation.Add(observation.w);
+    }
+
 
 
 
