@@ -83,11 +83,7 @@ public class PushAgentBasic : Agent
         Vector3 agentPos = agentRB.position - area.transform.position;
         // Goal position relative to ground.
         Vector3 goalPos = goal.transform.position - ground.transform.position;
-        // Block position relative to ground.
-        Vector3 blockPos = blockRB.transform.position - ground.transform.position;
 
-        // Collect Observations using helper function.
-        Agent myAgent = GetComponent<Agent>();
         AddVectorObs(agentPos);
         AddVectorObs(goalPos);
         AddVectorObs(blockPosRelToGoal);
