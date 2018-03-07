@@ -214,7 +214,7 @@ public class Brain : MonoBehaviour
     {
         // If the brain is not active or not properly initialized, an error is
         // thrown.
-        if (gameObject.activeSelf == false)
+        if (!gameObject.activeSelf)
         {
             throw new UnityAgentsException(
                 string.Format("Agent {0} tried to request an action " +
