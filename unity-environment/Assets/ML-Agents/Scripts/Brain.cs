@@ -128,7 +128,7 @@ public class Brain : MonoBehaviour
             CoreBrains = new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
-                CoreBrains[(int)bt] = 
+                CoreBrains[(int)bt] =
                     ScriptableObject.CreateInstance(
                         "CoreBrain" + bt.ToString());
             }
@@ -142,7 +142,7 @@ public class Brain : MonoBehaviour
                     break;
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
@@ -154,7 +154,7 @@ public class Brain : MonoBehaviour
         if (CoreBrains.Length < System.Enum.GetValues(typeof(BrainType)).Length)
         {
             int numCoreBrains = System.Enum.GetValues(typeof(BrainType)).Length;
-            ScriptableObject[] new_CoreBrains = 
+            ScriptableObject[] new_CoreBrains =
                 new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
@@ -164,7 +164,7 @@ public class Brain : MonoBehaviour
                 }
                 else
                 {
-                    new_CoreBrains[(int)bt] = 
+                    new_CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
@@ -181,13 +181,13 @@ public class Brain : MonoBehaviour
             {
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
                 else
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.Instantiate(CoreBrains[(int)bt]);
                 }
             }
@@ -211,14 +211,11 @@ public class Brain : MonoBehaviour
     public void SendState(Agent agent, AgentInfo info)
     {
         agentInfos.Add(agent, info);
-
     }
 
     void DecideAction()
     {
         coreBrain.DecideAction(agentInfos);
         agentInfos.Clear();
-
     }
-
 }
