@@ -72,7 +72,7 @@ If you would like to contribute environments, please see our
 
 * Set-up: Two-player game where agents control rackets to bounce ball over a net. 
 * Goal: The agents must bounce ball between one another while not dropping or sending ball out of bounds.
-* Agents: The environment contains two agent linked to a single brain.
+* Agents: The environment contains two agent linked to a single brain named TennisBrain. After training you can attach another brain named MyBrain to one of the agent to play against your trained model. 
 * Agent Reward Function (independent): 
     * +0.1 To agent when hitting ball over net.
     * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
@@ -82,9 +82,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
-## Area 
-
-### Push Area
+## Push Block
 
 ![Push](images/push.png)
 
@@ -92,16 +90,15 @@ If you would like to contribute environments, please see our
 * Goal: The agent must push the block to the goal.
 * Agents: The environment contains one agent linked to a single brain.
 * Agent Reward Function: 
-    * -0.01 for every step.
+    * -0.0025 for every step.
     * +1.0 if the block touches the goal.
-    * -1.0 if the agent falls off the platform.
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
-    * Vector Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
     * Visual Observations: None.
-* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of elements for Curriculum Learning.
+* Reset Parameters: None.
 
-### Wall Area
+## Wall Jump
 
 ![Wall](images/wall.png)
 
@@ -183,4 +180,21 @@ If you would like to contribute environments, please see our
     * Vector Observation space: (Continuous) 30 corresponding to local ray-casts detecting objects, goals, and walls.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
     * Visual Observations (Optional): First-person view for the agent.
+* Reset Parameters: None
+
+## Bouncer
+
+![Bouncer](images/bouncer.png)
+
+* Set-up: Environment where the agent needs on-demand decision making. The agent must decide how perform its next bounce only when it touches the ground.
+* Goal: Catch the floating banana. Only has a limited number of jumps.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function (independent):
+    * +1 For catching the banana.
+    * -1 For bouncing out of bounds.
+    * -0.05 Times the action squared. Energy expenditure penalty.
+* Brains: One brain with the following observation/action space:
+    * Vector Observation space: (Continuous) 6 corresponding to local position of agent and banana.
+    * Vector Action space: (Continuous) 3 corresponding to agent force applied for the jump.
+    * Visual Observations: None
 * Reset Parameters: None

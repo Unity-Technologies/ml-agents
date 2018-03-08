@@ -11,15 +11,31 @@ default:
     max_steps: 5.0e4
     memory_size: 256
     normalize: false
-    num_epoch: 5
+    num_epoch: 3
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
 
+PushBlockBrain:
+    max_steps: 2.0e5
+    batch_size: 1048
+    buffer_size: 10240
+    beta: 1.0e-2
+    hidden_units: 128
+    summary_freq: 2000
+    time_horizon: 64
+    num_layers: 2
+
 Ball3DBrain:
     normalize: true
+
+BouncerBrain:
+    normalize: true
+    max_steps: 5.0e5
+    num_layers: 2
+    hidden_units: 56
 
 CrawlerBrain:
     normalize: true

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -85,6 +85,7 @@ public class BrainParameters
  */
 public class Brain : MonoBehaviour
 {
+    private bool isInitialized = false;
 
     private Dictionary<Agent, AgentInfo> agentInfos =
         new Dictionary<Agent, AgentInfo>(1024);
@@ -206,11 +207,32 @@ public class Brain : MonoBehaviour
         UpdateCoreBrains();
         coreBrain.InitializeCoreBrain(communicator);
         aca.BrainDecideAction += DecideAction;
+        isInitialized = true;
     }
 
     public void SendState(Agent agent, AgentInfo info)
     {
-        agentInfos.Add(agent, info);
+        // If the brain is not active or not properly initialized, an error is
+        // thrown.
+        if (!gameObject.activeSelf)
+        {
+            throw new UnityAgentsException(
+                string.Format("Agent {0} tried to request an action " +
+                "from brain {1} but it is not active.",
+                             agent.gameObject.name, gameObject.name));
+        }
+        else if (!isInitialized)
+        {
+            throw new UnityAgentsException(
+                string.Format("Agent {0} tried to request an action " +
+                "from brain {1} but it was not initialized.",
+                             agent.gameObject.name, gameObject.name));
+        }
+        else
+        {
+            agentInfos.Add(agent, info);
+        }
+
     }
 
     void DecideAction()
