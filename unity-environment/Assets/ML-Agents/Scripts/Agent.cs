@@ -444,11 +444,11 @@ public abstract class Agent : MonoBehaviour
     }
     internal void AddVectorObs(float[] observation)
     {
-            _info.vectorObservation.AddRange(observation);
+        _info.vectorObservation.AddRange(observation);
     }
     internal void AddVectorObs(List<float> observation)
     {
-            _info.vectorObservation.AddRange(observation);
+        _info.vectorObservation.AddRange(observation);
     }
     internal void AddVectorObs(Quaternion observation)
     {
@@ -476,8 +476,6 @@ public abstract class Agent : MonoBehaviour
     /// Note: If your state is discrete, you need to convert your 
     /// state into a list of float with length 1.
     /// </summary>
-    /// <param name="action">The action the agent receives 
-    /// from the brain.</param>
     public virtual void AgentAction(float[] vectorAction, string textAction)
     {
 
@@ -692,8 +690,5 @@ public abstract class Agent : MonoBehaviour
         RenderTexture.active = prevActiveRT;
         RenderTexture.ReleaseTemporary(tempRT);
         return tex;
-
     }
-
-
 }

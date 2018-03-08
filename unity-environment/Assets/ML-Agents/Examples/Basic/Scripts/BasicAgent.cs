@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,12 +39,12 @@ public class BasicAgent : Agent
 
         gameObject.transform.position = new Vector3(position, 0f, 0f);
 
-        AddReward( - 0.01f);
+        AddReward(-0.01f);
 
         if (position == smallGoalPosition)
         {
             Done();
-            AddReward( 0.1f);
+            AddReward(0.1f);
         }
 
         if (position == largeGoalPosition)
@@ -77,7 +77,7 @@ public class BasicAgent : Agent
 
     private void WaitTimeInference()
     {
-        if (!academy.isInference)
+        if (!academy.GetIsInference())
         {
             RequestDecision();
         }
