@@ -16,7 +16,7 @@ public class AgentSoccer : Agent
     // ReadRewardData readRewardData;
     public Team team;
     public AgentRole agentRole;
-    public GameObject myFoot;
+    float kickPower;
     // public float teamFloat;
     // public float playerID;
     public int playerIndex;
@@ -35,8 +35,6 @@ public class AgentSoccer : Agent
 
     public float agentEnergy = 100;
     public bool tired = false;
-    string[] detectableObjects = { "ball", "wall", "redAgent", "blueAgent" };
-    // string[] detectableObjects  = {"ball", "wall", "agent"};
 
     public void ChooseRandomTeam()
     {
@@ -82,148 +80,133 @@ public class AgentSoccer : Agent
         base.InitializeAgent();
     }
 
-    public override void CollectObservations()
+    public void RayPerception(float rayDistance,
+                             float[] rayAngles, string[] detectableObjects, float startHeight, float endHeight)
     {
-        playerDirToTargetGoal = Vector3.zero; //set the target goal based on which team this player is currently on
-        playerDirToDefendGoal = Vector3.zero;//set the defend goal based on which team this player is currently on
-        Vector3 ballDirToTargetGoal = Vector3.zero;
-        Vector3 ballDirToDefendGoal = Vector3.zero;
-        if (team == AgentSoccer.Team.red)//I'm on the red team
+        foreach (float angle in rayAngles)
         {
-            playerDirToTargetGoal = area.blueGoal.position - agentRB.position;
-            playerDirToDefendGoal = area.redGoal.position - agentRB.position;
-            ballDirToTargetGoal = area.blueGoal.position - area.ballRB.position;
-            ballDirToDefendGoal = area.redGoal.position - area.ballRB.position;
-        }
-        if (team == AgentSoccer.Team.blue)//I'm on the blue team
-        {
-            playerDirToTargetGoal = area.redGoal.position - agentRB.position;
-            playerDirToDefendGoal = area.blueGoal.position - agentRB.position;
-            ballDirToTargetGoal = area.redGoal.position - area.ballRB.position;
-            ballDirToDefendGoal = area.blueGoal.position - area.ballRB.position;
-        }
-
-        Vector3 playerPos = agentRB.position - area.ground.transform.position;
-        Vector3 ballPos = area.ballRB.position - area.ground.transform.position;
-        Vector3 playerDirToBall = area.ballRB.position - agentRB.position;
-        AddVectorObs(agentRB.velocity);
-        AddVectorObs(playerPos);
-        AddVectorObs(playerDirToBall);
-        AddVectorObs(playerDirToTargetGoal);
-        AddVectorObs(playerDirToDefendGoal);
-        AddVectorObs(ballDirToTargetGoal);
-        AddVectorObs(ballDirToDefendGoal);
-        AddVectorObs(area.ballRB.velocity);
-
-        //RaycastAndAddState(agentRB.transform.position, transform.forward); //forward
-        //RaycastAndAddState(agentRB.transform.position, transform.forward + transform.right); //right forward
-        //RaycastAndAddState(agentRB.transform.position, transform.right); //right
-        //RaycastAndAddState(agentRB.transform.position, transform.forward - transform.right); //left forward
-        //RaycastAndAddState(agentRB.transform.position, -transform.right); //left
-
-        //AddVectorObs(agentEnergy / 100);
-    }
-
-    public void RaycastAndAddState(Vector3 pos, Vector3 dir)
-    {
-        RaycastHit hit;
-        // float hitDist = 5; //how far away was it. if nothing was hit then this will return our max raycast dist (which is 10 right now)
-        // float hitObjHeight = 0;
-        // float raycastDist;
-        if (showRaycastRays)
-        {
-            Debug.DrawRay(pos, dir * 30, Color.green, .1f, true);
-            // print("drawing debug rays");
-        }
-
-        float[] subList = new float[detectableObjects.Length + 5];
-        //bit array looks like this
-        // [walkableSurface, avoidObstacle, nothing hit, distance] if true 1, else 0
-        // [0] walkableSurface
-        // [1] walkableSurface
-        // [2] no hit
-        // [3] hit distance
-        var noHitIndex = detectableObjects.Length; //if we didn't hit anything this will be 1
-        var hitDistIndex = detectableObjects.Length + 1; //if we hit something the distance will be stored here.
-        var hitNormalX = detectableObjects.Length + 2; //if we hit something the distance will be stored here.
-        var hitNormalY = detectableObjects.Length + 3; //if we hit something the distance will be stored here.
-        var hitNormalZ = detectableObjects.Length + 4; //if we hit something the distance will be stored here.
-
-        // string[] detectableObjects  = { "banana", "agent", "wall", "badBanana", "frozenAgent" };
-
-        // if (Physics.SphereCast(transform.position, 1.0f, position, out hit, rayDistance))
-        if (Physics.Raycast(pos, dir, out hit, 30)) // raycast forward to look for walls
-                                                    // if (Physics.SphereCast(transform.position, 1.0f, position, out hit, rayDistance))
-        {
-            for (int i = 0; i < detectableObjects.Length; i++)
+            float noise = 0f;
+            float noisyAngle = angle + Random.Range(-noise, noise);
+            Vector3 position = transform.TransformDirection(GiveCatersian(rayDistance, noisyAngle));
+            position.y = endHeight;
+            Debug.DrawRay(transform.position + new Vector3(0f, endHeight, 0f), position, Color.red, 0.1f, true);
+            RaycastHit hit;
+            float[] subList = new float[detectableObjects.Length + 2];
+            if (Physics.SphereCast(transform.position + new Vector3(0f, endHeight, 0f), 1.0f, position, out hit, rayDistance))
             {
-                if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
+                for (int i = 0; i < detectableObjects.Length; i++)
                 {
-                    subList[i] = 1;  //tag hit
-                                     // print("raycast hit: " + detectableObjects[i]);
-                    subList[hitDistIndex] = hit.distance / 30; //hit distance is stored in second to last pos
-
-                    subList[hitNormalX] = hit.normal.x;
-                    subList[hitNormalY] = hit.normal.y;
-                    subList[hitNormalZ] = hit.normal.z;
-
-                    if (team == Team.red && hit.collider.gameObject.CompareTag("redAgent"))
+                    if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
                     {
-                        if (hit.distance < 5)
-                        {
-                            AddReward(-0.001f);
-                        }
+                        subList[i] = 1;
+                        subList[detectableObjects.Length + 1] = hit.distance / rayDistance;
+                        break;
                     }
-                    if (team == Team.blue && hit.collider.gameObject.CompareTag("blueAgent"))
-                    {
-                        if (hit.distance < 5)
-                        {
-                            AddReward(-0.001f);
-                        }
-                    }
-
-                    break;
                 }
             }
+            else
+            {
+                subList[detectableObjects.Length] = 1f;
+            }
+            foreach (float f in subList)
+                AddVectorObs(f);
+        }
+    }
+
+    public Vector3 GiveCatersian(float radius, float angle)
+    {
+        float x = radius * Mathf.Cos(DegreeToRadian(angle));
+        float z = radius * Mathf.Sin(DegreeToRadian(angle));
+        return new Vector3(x, 1f, z);
+    }
+
+    public float DegreeToRadian(float degree)
+    {
+        return degree * Mathf.PI / 180f;
+    }
+
+    public override void CollectObservations()
+    {
+        float rayDistance = 20f;
+        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+        string[] detectableObjects;
+        if (team == Team.red)
+        {
+            detectableObjects = new string[] { "ball", "redGoal", "blueGoal", "wall" };
         }
         else
         {
-            subList[noHitIndex] = 1f; //nothing hit
+            detectableObjects = new string[] { "ball", "blueGoal", "redGoal", "wall" };
         }
-        // stateArray = subList; //for debug
-        // print(stateArray);
-        AddVectorObs(subList);  //adding n = detectableObjects.Length + 2 items to the state
+        RayPerception(rayDistance, rayAngles, detectableObjects, 0f, 0f);
+        RayPerception(rayDistance, rayAngles, detectableObjects, 1f, 1f);
     }
+
     public void MoveAgent(float[] act)
     {
-        Vector3 directionX = Vector3.zero;
-        Vector3 directionZ = Vector3.zero;
+        Vector3 dirToGo = Vector3.zero;
+        Vector3 rotateDir = Vector3.zero;
 
-        // Move left or right in world space.
-        directionX = Vector3.right * Mathf.Clamp(act[0], -1f, 1f);
 
-        // Move forward or back in world space.
-        directionZ = Vector3.forward * Mathf.Clamp(act[1], -1f, 1f);
-
-        float hitPower = Mathf.Clamp(act[2], 0f, 1f);
-
-        // Add directions together. This is the direction we want the agent
-        // to move in.
-        Vector3 dirToGo = directionX + directionZ;
-
-        // Apply movement force!
-        agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange);
-        if (dirToGo != Vector3.zero)
+        // If we're using Continuous control you will need to change the Action
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            // Rotate the agent appropriately.
-            agentRB.rotation = Quaternion.Lerp(agentRB.rotation,
-                                               Quaternion.LookRotation(dirToGo),
-                                               Time.deltaTime * academy.agentRotationSpeed);
+            //// Larger the value, the less the penalty is.
+            float energyConservPenaltyModifier = 10000;
+
+            //// The larger the movement, the greater the penalty given.
+            AddReward(-Mathf.Abs(act[0]) / energyConservPenaltyModifier);
+            AddReward(-Mathf.Abs(act[1]) / energyConservPenaltyModifier);
+
+            dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
+            rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
+            kickPower = Mathf.Clamp(act[2], 0f, 1f);
         }
+        else
+        {
+            kickPower = 0f;
+            int action = Mathf.FloorToInt(act[0]);
+            if (action == 0)
+            {
+                dirToGo = transform.forward * 1f;
+                kickPower = 1f;
+            }
+            else if (action == 1)
+            {
+                dirToGo = transform.forward * -1f;
+            }
+            else if (action == 2)
+            {
+                rotateDir = transform.up * 1f;
+            }
+            else if (action == 3)
+            {
+                rotateDir = transform.up * -1f;
+            }
+            else if (action == 4)
+            {
+                dirToGo = transform.right * -1f;
+            }
+            else if (action == 5)
+            {
+                dirToGo = transform.right * 1f;
+            }
+        }
+        transform.Rotate(rotateDir, Time.deltaTime * 100f);
+        agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); // GO
+
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        if (agentRole == AgentRole.striker)
+        {
+            AddReward(-1f / 3000f);
+        }
+        if (agentRole == AgentRole.goalie)
+        {
+            AddReward(1f / 3000f);
+        }
         MoveAgent(vectorAction); //perform agent actions
         if (agentRole == AgentRole.goalie)
         {
@@ -247,15 +230,44 @@ public class AgentSoccer : Agent
         }
     }
 
+    void OnCollisionEnter(Collision c)
+    {
+        // force is how forcefully we will push the player away from the enemy.
+        float force = 2000f * kickPower;
+
+        // If the object we hit is the enemy
+        if (c.gameObject.tag == "ball")
+        {
+            // Calculate Angle Between the collision point and the player
+            Vector3 dir = c.contacts[0].point - transform.position;
+            // We then get the opposite (-Vector3) and normalize it
+            dir = dir.normalized;
+            // And finally we add force in the direction of dir and multiply it by force. 
+            // This will push back the player
+            c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
+        }
+    }
+
+
     public override void AgentReset()
     {
-        myFoot.transform.localScale = new Vector3(0f, 0f, 0f);
-        transform.position = area.GetRandomSpawnPos();
-        agentRB.velocity = Vector3.zero; //we want the agent's vel to return to zero on reset
         if (academy.randomizePlayersTeamForTraining)
         {
             ChooseRandomTeam();
         }
+
+        if (team == Team.red)
+        {
+            transform.rotation = Quaternion.Euler(0f, -90f + Random.Range(-10f, 10f), 0f);
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0f, 90f + Random.Range(-10f, 10f), 0f);
+        }
+        transform.position = area.GetRandomSpawnPos(team.ToString(), agentRole.ToString());
+        agentRB.velocity = Vector3.zero; //we want the agent's vel to return to zero on reset
+        agentRB.angularVelocity = Vector3.zero;
+        area.ResetBall();
     }
 
     public override void AgentOnDone()

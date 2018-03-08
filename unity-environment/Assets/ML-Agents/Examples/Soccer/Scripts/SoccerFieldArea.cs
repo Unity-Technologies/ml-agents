@@ -41,7 +41,6 @@ public class SoccerFieldArea : MonoBehaviour
     public float goalScoreAgainstTeamReward; //if red scores we deduct some from blue & vice versa
     public GameObject goalTextUI;
     public float totalPlayers;
-    public float minWaitTimeToRespawnBall = 5; //the ball can a spawn every 5 sec
     [HideInInspector]
     public bool canResetBall;
     public bool useSpawnPoint;
@@ -139,7 +138,7 @@ public class SoccerFieldArea : MonoBehaviour
 
 
         StartCoroutine(GoalScoredSwapGroundMaterial(academy.redMaterial, 2));
-        ResetBall();
+        //ResetBall();
         if (goalTextUI)
         {
             StartCoroutine(ShowGoalUI());
@@ -176,7 +175,7 @@ public class SoccerFieldArea : MonoBehaviour
         }
 
         StartCoroutine(GoalScoredSwapGroundMaterial(academy.blueMaterial, 2));
-        ResetBall();
+        //ResetBall();
         if (goalTextUI)
         {
             StartCoroutine(ShowGoalUI());
@@ -198,7 +197,6 @@ public class SoccerFieldArea : MonoBehaviour
             ps.agentScript.AddReward(goalie);
         }
         ps.agentScript.Done();  //all agents need to be reset
-
     }
 
 
@@ -213,10 +211,33 @@ public class SoccerFieldArea : MonoBehaviour
         }
     }
 
-    public Vector3 GetRandomSpawnPos()
+    public Vector3 GetRandomSpawnPos(string type, string position)
     {
-
-        Vector3 randomSpawnPos = ground.transform.position + (Random.insideUnitSphere * 7);
+        Vector3 randomSpawnPos = Vector3.zero;
+        float xOffset = 0f;
+        if (type == "red")
+        {
+            if (position == "goalie")
+            {
+                xOffset = 13f;
+            }
+            if (position == "striker")
+            {
+                xOffset = 7f;
+            }
+        }
+        if (type == "blue")
+        {
+            if (position == "goalie")
+            {
+                xOffset = -13f;
+            }
+            if (position == "striker")
+            {
+                xOffset = -7f;
+            }
+        }
+        randomSpawnPos = ground.transform.position + new Vector3(xOffset, 0f, 0f) + (Random.insideUnitSphere * 2);
         randomSpawnPos.y = ground.transform.position.y + 1;
         return randomSpawnPos;
     }
@@ -227,18 +248,10 @@ public class SoccerFieldArea : MonoBehaviour
         // canUseThisPos = true;
     }
 
-    IEnumerator ResetBallTimer()
-    {
-        canResetBall = false;
-        yield return new WaitForSeconds(minWaitTimeToRespawnBall);
-        canResetBall = true;
-    }
-
-
     public void ResetBall()
     {
-
-        ball.transform.position = GetRandomSpawnPos();
-        StartCoroutine(ResetBallTimer());
+        ball.transform.position = GetRandomSpawnPos("ball", "ball");
+        ballRB.velocity = Vector3.zero;
+        ballRB.angularVelocity = Vector3.zero;
     }
 }

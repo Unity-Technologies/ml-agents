@@ -20,17 +20,8 @@ public class SoccerBallController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		// print (rb.velocity.sqrMagnitude);
 
-		if(rb.velocity.sqrMagnitude < .05f) //ball is almost completely stopped
-		{
-			if(area.canResetBall)
-			{
-				area.AllPlayersDone(-.5f);
-				area.ResetBall();
-			}
-		}
-	}
+    }
 
 	void OnCollisionEnter(Collision col)
 	{
