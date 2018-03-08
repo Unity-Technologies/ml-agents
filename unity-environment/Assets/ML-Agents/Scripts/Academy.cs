@@ -213,25 +213,27 @@ public abstract class Academy : MonoBehaviour
     /// </summary>
     void InitializeEnvironment()
     {
-        // Initialize communicator (if possible)
+        // Retrieve Brain and initialize Academy
+        List<Brain> brains = GetBrains(gameObject);
+        InitializeAcademy();
+
+        // Check for existence of communicator
         communicator = new ExternalCommunicator(this);
-        if (communicator.CommunicatorHandShake())
-        {
-            isCommunicatorOn = true;
-            communicator.InitializeCommunicator();
-            communicator.UpdateCommand();
-        }
-        else
+        if (!communicator.CommunicatorHandShake())
         {
             communicator = null;
         }
 
-        // Initialize Academy and Brains.
-        InitializeAcademy();
-        List<Brain> brains = GetBrains(gameObject);
+        // Initialize Brains and communicator (if present)
         foreach (Brain brain in brains)
         {
             brain.InitializeBrain(this, communicator);
+        }
+        if (communicator != null)
+        {
+            isCommunicatorOn = true;
+            communicator.InitializeCommunicator();
+            communicator.UpdateCommand();
         }
 
         // If a communicator is enabled/provided, then we assume we are in
@@ -447,6 +449,7 @@ public abstract class Academy : MonoBehaviour
             if (communicator.GetCommand() == ExternalCommand.QUIT)
             {
                 Application.Quit();
+                return;
             }
         }
         else if (!firstAcademyReset)
