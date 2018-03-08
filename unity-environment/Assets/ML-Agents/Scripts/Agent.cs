@@ -617,6 +617,7 @@ public abstract class Agent : MonoBehaviour
 
         if (terminate)
         {
+            stepCounter = 0;
             terminate = false;
             ResetReward();
             done = false;
