@@ -83,6 +83,7 @@ class TrainerController(object):
             if self.env.curriculum.measure_type == "progress":
                 for brain_name in self.env.external_brain_names:
                     progress += self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
+                print(progress / len(self.env.external_brain_names))
                 return progress / len(self.env.external_brain_names)
             elif self.env.curriculum.measure_type == "reward":
                 for brain_name in self.env.external_brain_names:

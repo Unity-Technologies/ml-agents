@@ -27,10 +27,9 @@ SmallWallBrain:
     summary_freq: 2000
     time_horizon: 64
     num_layers: 2
-    normalize: true
 
 BigWallBrain: 
-    max_steps: 2.0e5
+    max_steps: 1.0e5
     batch_size: 1048
     buffer_size: 10240
     beta: 1.0e-2
@@ -38,10 +37,9 @@ BigWallBrain:
     summary_freq: 2000
     time_horizon: 64
     num_layers: 2
-    normalize: true
 
 PushBlockBrain:
-    max_steps: 2.0e5
+    max_steps: 1.0e5
     batch_size: 1048
     buffer_size: 10240
     beta: 1.0e-2

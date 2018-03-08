@@ -14,18 +14,17 @@ public class WallJumpAgent : Agent
 	public GameObject ground; //ground game object. we will use the area bounds to spawn the blocks
 	public GameObject spawnArea; //ground game object. we will use the area bounds to spawn the blocks
 	public bool visualizeSpawnArea;
-	// [HideInInspector]
 	public Bounds spawnAreaBounds; //the bounds of the pushblock area
 	public Bounds areaBounds; //the bounds of the pushblock area
 
 	public GameObject goal; //goal to push the block to
     public GameObject shortBlock; //the orange block we are going to be pushing
-    public GameObject mediumBlock; //the orange block we are going to be pushing
-    public GameObject tallBlock; //the orange block we are going to be pushing
+    //public GameObject mediumBlock; //the orange block we are going to be pushing
+    //public GameObject tallBlock; //the orange block we are going to be pushing
     public GameObject wall; //
 	Rigidbody shortBlockRB;  //cached on initialization
-	Rigidbody mediumBlockRB;  //cached on initialization
-	Rigidbody tallBlockRB;  //cached on initialization
+	//Rigidbody mediumBlockRB;  //cached on initialization
+	//Rigidbody tallBlockRB;  //cached on initialization
 	Rigidbody agentRB;  //cached on initialization
 	Material groundMaterial; //cached on Awake()
 	Renderer groundRenderer;
@@ -34,7 +33,7 @@ public class WallJumpAgent : Agent
 
 
 	//JUMPING STUFF
-	public bool jumping;
+	public float jumpingTime;
 	public float jumpTime;
 	public float fallingForce; //this is a downward force applied when falling to make jumps look less floaty
 	public Collider[] hitGroundColliders = new Collider[3]; //used for groundchecks
@@ -46,31 +45,20 @@ public class WallJumpAgent : Agent
 	public float groundCheckFrequency; //perform a groundcheck every x sec. ex: .5 will do a groundcheck every .5 sec.
 	Vector3 jumpTargetPos; //target this position during jump. it will be 
 	Vector3 jumpStartingPos; //target this position during jump. it will be 
-	// public float jumpHeight = 1; //how high should we jump?
-	// public float jumpVelocity = 500; //higher number will result in a quicker jump
-	// public float jumpVelocityMaxChange = 10; // don't let the velocity change more than this every tick. this helps smooth out the motion. lower number == slower/more controlled movement. I typically use 10-20 for this value.
 	
 	
 	void Awake()
 	{
 		academy = FindObjectOfType<WallJumpAcademy>();
-		//goalStartingPos = goal.transform.position; //cached goal starting Pos in case we want to remember that
-		//brain = FindObjectOfType<Brain>(); //only one brain in the scene so this should find our brain. BRAAAINS.
-		//wall.transform.localScale = new Vector3(wall.transform.localScale.x, academy.wallHeight, wall.transform.localScale.z); //set the wall height to match the slider
-	}
+    }
 
     public override void InitializeAgent()
     {
-        configuration = Random.Range(0, 5);
-		// goalDetect = block.GetComponent<GoalDetect>();
-		// spawnArea.SetActive(false);
-		// goalDetect.agent = this; 
+        configuration = Random.Range(0, 3);
 		StartGroundCheck();
 
 		agentRB	= GetComponent<Rigidbody>(); //cache the agent rigidbody
 		shortBlockRB = shortBlock.GetComponent<Rigidbody>(); //cache the block rigidbody
-		mediumBlockRB = mediumBlock.GetComponent<Rigidbody>(); //cache the block rigidbody
-		tallBlockRB	= tallBlock.GetComponent<Rigidbody>(); //cache the block rigidbody
 		areaBounds = ground.GetComponent<Collider>().bounds; //get the ground's bounds
 		spawnAreaBounds = spawnArea.GetComponent<Collider>().bounds; //get the ground's bounds
 		groundRenderer = ground.GetComponent<Renderer>(); //get the ground renderer so we can change the material when a goal is scored
@@ -79,25 +67,16 @@ public class WallJumpAgent : Agent
 		spawnArea.SetActive(false);
     }
 
-	// //add some falling force (otherwise it looks floaty)
-	// IEnumerator Falling()
-	// {
-	// 	while(!grounded)
-	// 	{
-	// 		agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
-	// 		yield return null;
-	// 	}
-	// }
 	
 	//put agent into the jumping state for the specified jumpTime
-	IEnumerator Jump()
+	public void Jump()
 	{
 
-		jumping = true;
+		jumpingTime = 0.2f;
 		jumpStartingPos = agentRB.position;
 		// jumpTargetPos = agentRB.position + Vector3.up * jumpHeight;
-		yield return new WaitForSeconds(jumpTime);
-		jumping = false;
+		//yield return new WaitForSeconds(jumpTime);
+		//jumping = false;
 		// StartCoroutine(Falling());//should be falling now
 	}
 
@@ -149,22 +128,13 @@ public class WallJumpAgent : Agent
 		}
 	}
 
-
-	//debug
-	void OnDrawGizmos()
-	{
-		if(visualizeGroundCheckSphere)
-		{
-			Gizmos.color = Color.red;
-			Gizmos.DrawWireSphere(transform.position + groundCheckOffset, groundCheckRadius);
-		}
-	}
-
 	//moves a rigidbody towards a position with a smooth controlled movement.
 	void MoveTowards(Vector3 targetPos, Rigidbody rb, float targetVel, float maxVel)
 	{
 		Vector3 moveToPos = targetPos - rb.worldCenterOfMass;  //cube needs to go to the standard Pos
-		Vector3 velocityTarget = moveToPos * targetVel * Time.deltaTime; //not sure of the logic here, but it modifies velTarget
+		//Vector3 velocityTarget = moveToPos * targetVel * Time.deltaTime; //not sure of the logic here, but it modifies velTarget
+        /*Well does that fuck shit up ???? */
+        Vector3 velocityTarget = moveToPos * targetVel * Time.fixedDeltaTime;
 		if (float.IsNaN(velocityTarget.x) == false) //sanity check. if the velocity is NaN that means it's going way too fast. this check isn't needed for slow moving objs
 		{
 			rb.velocity = Vector3.MoveTowards(rb.velocity, velocityTarget, maxVel);
@@ -176,63 +146,16 @@ public class WallJumpAgent : Agent
 
 
 
-		Vector3 goalPos = goal.transform.position - ground.transform.position;  //pos of goal rel to ground
-		Vector3 shortBlockPos = shortBlockRB.transform.position - ground.transform.position;  //pos of goal rel to ground
-		// Vector3 medBlockPos = mediumBlockRB.transform.position - ground.transform.position;  //pos of goal rel to ground
-		// Vector3 tallBlockPos = tallBlockRB.transform.position - ground.transform.position;  //pos of goal rel to ground
+        Vector3 goalPos = goal.transform.position - agentRB.position;  //pos of goal rel to agent
+        Vector3 shortBlockPos = shortBlockRB.transform.position - agentRB.position;  //pos of goal rel to agent
 		Vector3 agentPos = agentRB.position - ground.transform.position;  //pos of agent rel to ground
 
 		//COLLECTIN STATES
-        AddVectorObs(agentPos);  //pos of agent rel to ground
-        AddVectorObs(goalPos);  //pos of goal rel to ground
-        AddVectorObs(shortBlockPos);  //pos of short block rel to ground
-		// MLAgentsHelpers.CollectVector3State(state, medBlockPos);  //pos of med block rel to ground
-		// MLAgentsHelpers.CollectVector3State(state, tallBlockPos);  //pos of tall block rel to ground
-        AddVectorObs(agentRB.velocity); //agent's vel
+        AddVectorObs(agentPos /20f);  //pos of agent rel to ground
+        AddVectorObs(goalPos / 20f);  //pos of goal rel to ground
+        AddVectorObs(shortBlockPos / 20f);  //pos of short block rel to ground
+        AddVectorObs(agentRB.velocity / 20f); //agent's vel
         AddVectorObs(agentRB.transform.rotation.eulerAngles /180f - Vector3.one); //agent's rotation
-
-        AddVectorObs(wall.transform.localScale.y); //wall height
-
-
-
-		// RaycastHit hit;
-		// // float didWeHitSomething = 0; //1 if yes, 0 if no
-		// // float hitDistance = 5; //how far away was it. if nothing was hit then this will return our max raycast dist (which is 10 right now)
-		// // float hitObjectHeight = 0;
-		// float[] subList = new float[3]; //will initialize with all zeros
-
-		// if (Physics.Raycast(agentRB.position, transform.forward, out hit, academy.agentRaycastDistance)) // raycast forward to look for walls
-		// {
-		// 	if(hit.collider.CompareTag("walkableSurface"))
-		// 	{
-		// 		// didWeHitSomething = 1;
-		// 		// hitDistance = hit.distance;
-		// 		// hitObjectHeight = hit.transform.localScale.y;
-		// 		subList[0] = 1; //hit
-		// 		// subList[1] = hit.distance; //distance
-		// 		subList[1] = hit.distance / academy.agentRaycastDistance; //distance
-		// 		subList[2] = hit.transform.localScale.y; //height
-		// 		// print(hit.collider.name + hit.distance);
-		// 	}
-		// }
-		// state.AddRange(new List<float>(subList));  //adding n = detectableObjects.Length + 2 items to the state
-		
-		
-		
-		
-		
-		// else
-		// {
-		// 		subList[0] = 0; //hit
-		// 		subList[1] = 0; //distance
-		// 		subList[2] = hit.transform.localScale.y; //height
-
-		// }
-
-		// // state.Add(didWeHitSomething);
-		// state.Add(hitDistance);
-		// state.Add(hitObjectHeight);
-
 	}
 
 	//use the ground's bounds to pick a random spawn pos
@@ -268,21 +191,7 @@ public class WallJumpAgent : Agent
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
 
-            AddReward(-0.001f); //existential penalty
-			//Continuous control means we are letting the neural network set the direction on a sliding scale. 
-			//We will define the number of "slots" we want to use here. In this example we need 3 "slots" to define:
-				//right/left movement (act[0])
-				//forward/back movement (act[1])
-				//rotate right/left movement (act[2])
-				
-			//Example: One agent action is that the agent can go right or left. It is defined in this line:
-				//Vector3 directionX = Vector3.right * Mathf.Clamp(act[0], -1f, 1f);
-
-				//The neural network is setting the act[0] value using a float in between -1 & 1. 
-				//If it chooses 1 then the agent will go right. 
-				//If it chooses -1 the agent will go left. 
-				//If it chooses .42 then it will go a little bit right
-				//If it chooses -.8 then it will go left (well...80% left)
+            AddReward(-0.0001f); //existential penalty
 			
             act[0] = Mathf.Clamp(act[0], -1, 1);
             act[1] = Mathf.Clamp(act[1], -1, 1);
@@ -290,41 +199,33 @@ public class WallJumpAgent : Agent
 			float speedZ = 0;
 			if(act[0] != 0)
 			{
-				// float energyConservationPentalty = Mathf.Abs(act[0])/5000;
-				//float energyConservationPentalty = Mathf.Abs(act[0])/10000;
 				speedX = grounded? act[0]: act[0]/2; //if we are in the air, our move speed should be a fraction of normal speed.
-				// print("act[0] = " + act[0]);
-				// reward -= energyConservationPentalty;
-				// reward -= .0001f;
 			}
 			if(act[1] != 0)
 			{
-				//float energyConservationPentalty = Mathf.Abs(act[1])/10000;
 				speedZ= grounded? act[1]: act[1]/2; //if we are in the air, our move speed should be a fraction of normal speed.
-				// print("act[1] = " + act[1]);
-				// reward -= energyConservationPentalty;
 			}
-			
-			// Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
-            // Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
+
 			Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
             Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
         	Vector3 dirToGo = directionX + directionZ; //the dir we want to go
 
-			if(act[2] > 0 && !jumping && grounded)
+            if(act[2] > 0 && !(jumpingTime > 0f) && grounded)
 			{
 				//jump
-                //AddReward(-0.005f); //energy conservation penalty
                 AddReward(-0.001f); //energy conservation penalty
-				StartCoroutine(Jump());
+                //StartCoroutine(Jump());
+                Jump();
 			}
 
-			//add force
-			agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
+            //add force
+            agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
+            //agentRB.velocity = dirToGo * academy.agentRunSpeed;
 			//rotate the player forward
 			if(dirToGo != Vector3.zero)
 			{
-				agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
+				//agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
+                agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.fixedDeltaTime * academy.agentRotationSpeed);
 			}
         }
     }
@@ -341,37 +242,30 @@ public class WallJumpAgent : Agent
 			spawnArea.SetActive(true);
 		}
 
-		if(jumping)
+		if(jumpingTime > 0f)
 		{
-			// jumpTargetPos = transform.forward
-			// jumpTargetPos = new Vector3(agentRB.position.x,  jumpStartingPos.y + jumpHeight, agentRB.position.z) + transform.forward/4; 
-			jumpTargetPos = new Vector3(agentRB.position.x,  jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z) + transform.forward/4; 
+            jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z);// + transform.forward/4; 
 
-			// MoveTowards(jumpTargetPos, agentRB, jumpVelocity, jumpVelocityMaxChange);
 			MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity, academy.agentJumpVelocityMaxChange);
-			// agentRB.AddForce(Vector3.up * jumpHeight, ForceMode.VelocityChange);
-			// agentRB.AddForce(Vector3.up * jumpVelocity, ForceMode.VelocityChange);
 		}
 
-		if(!jumping && !grounded) //add some downward force so it's not floaty
+        if(!(jumpingTime > 0f) && !grounded) //add some downward force so it's not floaty
 		{
 			agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
 		}
-
+        jumpingTime -= Time.fixedDeltaTime;
 		if (!Physics.Raycast(agentRB.position, Vector3.down, 20)) //if the agent has gone over the edge, we done.
-		// if (agentRB.position.y < -2) //if the agent has gone over the edge, we done.
 		{
 			fail = true; //fell off bro
-            AddReward(-1f); // BAD AGENT
+            SetReward(-1f); // BAD AGENT
 			transform.position =  GetRandomSpawnPos();
             Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
 		}
 
 		if (!Physics.Raycast(shortBlockRB.position, Vector3.down, 20)) //if the block has gone over the edge, we done.
-		// if (shortBlockRB.position.y < -2) //if the block has gone over the edge, we done.
 		{
 			fail = true; //fell off bro
-            AddReward(-1f); // BAD AGENT
+            SetReward(-1f); // BAD AGENT
 			ResetBlock(shortBlockRB); //reset block pos
             Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
 		}
@@ -387,7 +281,7 @@ public class WallJumpAgent : Agent
 	{
 		if(col.gameObject.CompareTag("goal")) //touched goal
 		{
-            AddReward(1f); //you get a point
+            SetReward(1f); //you get a point
             Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
 			StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 2)); //swap ground material for a bit to indicate we scored.
 		}
@@ -405,17 +299,19 @@ public class WallJumpAgent : Agent
 	//In the editor, if "Reset On Done" is checked then AgentReset() will be called automatically anytime we mark done = true in an agent script.
 	public override void AgentReset()
 	{
-        Debug.Log("Reset");
 		ResetBlock(shortBlockRB);
-		ResetBlock(mediumBlockRB);
-		ResetBlock(tallBlockRB);
 		transform.position =  GetRandomSpawnPos();
-        // wall.transform.localScale = new Vector3(wall.transform.localScale.x, Random.Range(0, 9.5f), wall.transform.localScale.z);
-        //int configuration = Random.Range(0, 3); 
-        configuration = Random.Range(0, 5);
+        configuration = Random.Range(0, 3);
 
+        //if (ground.transform.parent.position.x >= 0)
+        //{
+        //    configuration = Random.Range(0, 2);
+        //}
+        //if (ground.transform.parent.position.x < 0)
+        //{
+        //    configuration = Random.Range(2, 5);
 
-
+        //}
 
 	}
 
@@ -442,17 +338,8 @@ public class WallJumpAgent : Agent
         }
         else if (config == 2)
         {
-            wall.transform.localScale = new Vector3(wall.transform.localScale.x, academy.resetParameters["big_wall_height"], wall.transform.localScale.z);
-            GiveBrain(bigWallBrain);
-        }
-        else if (config == 3)
-        {
-            wall.transform.localScale = new Vector3(wall.transform.localScale.x, academy.resetParameters["small_wall_height"], wall.transform.localScale.z);
-            GiveBrain(bigWallBrain);
-        }
-        else if (config == 4)
-        {
-            wall.transform.localScale = new Vector3(wall.transform.localScale.x, academy.resetParameters["no_wall_height"], wall.transform.localScale.z);
+            float height = academy.resetParameters["big_wall_min_height"] + Random.value * (academy.resetParameters["big_wall_max_height"] - academy.resetParameters["big_wall_min_height"]);
+            wall.transform.localScale = new Vector3(wall.transform.localScale.x, height, wall.transform.localScale.z);
             GiveBrain(bigWallBrain);
         }
     }

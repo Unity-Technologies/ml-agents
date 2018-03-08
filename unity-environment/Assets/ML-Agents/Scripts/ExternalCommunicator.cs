@@ -368,7 +368,7 @@ public class ExternalCommunicator : Communicator
         }
         if (triedSendState.Values.All(x => x))
         {
-            if (hasSentState.Values.Any(x => x))
+            if (hasSentState.Values.Any(x => x) || academy.IsDone())
             {
                 // if all the brains listed have sent their state
                 sender.Send(AppendLength(Encoding.ASCII.GetBytes("END_OF_MESSAGE:" + (academy.IsDone() ? "True" : "False"))));
