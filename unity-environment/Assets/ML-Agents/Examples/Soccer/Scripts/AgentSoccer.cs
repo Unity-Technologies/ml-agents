@@ -16,6 +16,7 @@ public class AgentSoccer : Agent
     // ReadRewardData readRewardData;
     public Team team;
     public AgentRole agentRole;
+    public GameObject myFoot;
     // public float teamFloat;
     // public float playerID;
     public int playerIndex;
@@ -114,13 +115,13 @@ public class AgentSoccer : Agent
         AddVectorObs(ballDirToDefendGoal);
         AddVectorObs(area.ballRB.velocity);
 
-        RaycastAndAddState(agentRB.transform.position, transform.forward); //forward
-        RaycastAndAddState(agentRB.transform.position, transform.forward + transform.right); //right forward
-        RaycastAndAddState(agentRB.transform.position, transform.right); //right
-        RaycastAndAddState(agentRB.transform.position, transform.forward - transform.right); //left forward
-        RaycastAndAddState(agentRB.transform.position, -transform.right); //left
+        //RaycastAndAddState(agentRB.transform.position, transform.forward); //forward
+        //RaycastAndAddState(agentRB.transform.position, transform.forward + transform.right); //right forward
+        //RaycastAndAddState(agentRB.transform.position, transform.right); //right
+        //RaycastAndAddState(agentRB.transform.position, transform.forward - transform.right); //left forward
+        //RaycastAndAddState(agentRB.transform.position, -transform.right); //left
 
-        AddVectorObs(agentEnergy / 100);
+        //AddVectorObs(agentEnergy / 100);
     }
 
     public void RaycastAndAddState(Vector3 pos, Vector3 dir)
@@ -195,24 +196,29 @@ public class AgentSoccer : Agent
     }
     public void MoveAgent(float[] act)
     {
+        Vector3 directionX = Vector3.zero;
+        Vector3 directionZ = Vector3.zero;
 
-        agentEnergy -= Mathf.Abs(act[0]) / 10;
-        agentEnergy -= Mathf.Abs(act[1]) / 10;
+        // Move left or right in world space.
+        directionX = Vector3.right * Mathf.Clamp(act[0], -1f, 1f);
 
-        Vector3 directionX = Vector3.right * Mathf.Clamp(act[0], -1, 1);  //go left or right in world space
-        agentRB.AddForce(directionX * (academy.agentRunSpeed * (agentEnergy / 100) * Random.Range(0, 2)), ForceMode.VelocityChange); //GO
-                                                                                                                                     // agentRB.AddForce(directionX * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
-                                                                                                                                     // Vector3 directionZ = Vector3.right * Mathf.Clamp(act[1], Random.Range(-1, 0), Random.Range(0,1));  //go left or right in world space
-        Vector3 directionZ = Vector3.forward * Mathf.Clamp(act[1], -1, 1); //go forward or back in world space
-                                                                           // agentRB.AddForce(directionZ * Random.Range(.3f, 1) * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
-        agentRB.AddForce(directionZ * (academy.agentRunSpeed * (agentEnergy / 100) * Random.Range(0, 2)), ForceMode.VelocityChange); //GO
-                                                                                                                                     // agentRB.AddForce(directionZ * Random.Range(0, 1) * (academy.agentRunSpeed * Random.Range(0, 2)), ForceMode.VelocityChange); //GO
-                                                                                                                                     // Vector3 dirToGo = (directionX * Random.Range(.3f, 1)) + (directionZ * Random.Range(.3f, 1)); //the dir we want to go
-        Vector3 dirToGo = directionX + directionZ; //the dir we want to go
-                                                   // agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
+        // Move forward or back in world space.
+        directionZ = Vector3.forward * Mathf.Clamp(act[1], -1f, 1f);
+
+        float hitPower = Mathf.Clamp(act[2], 0f, 1f);
+
+        // Add directions together. This is the direction we want the agent
+        // to move in.
+        Vector3 dirToGo = directionX + directionZ;
+
+        // Apply movement force!
+        agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange);
         if (dirToGo != Vector3.zero)
         {
-            agentRB.MoveRotation(Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed));
+            // Rotate the agent appropriately.
+            agentRB.rotation = Quaternion.Lerp(agentRB.rotation,
+                                               Quaternion.LookRotation(dirToGo),
+                                               Time.deltaTime * academy.agentRotationSpeed);
         }
     }
 
@@ -243,6 +249,7 @@ public class AgentSoccer : Agent
 
     public override void AgentReset()
     {
+        myFoot.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = area.GetRandomSpawnPos();
         agentRB.velocity = Vector3.zero; //we want the agent's vel to return to zero on reset
         if (academy.randomizePlayersTeamForTraining)
