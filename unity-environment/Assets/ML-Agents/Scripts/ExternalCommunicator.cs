@@ -343,8 +343,8 @@ public class ExternalCommunicator : Communicator
                     sMessage.memories.Add(0f);
                 }
                 sMessage.dones.Add(agentInfo[agent].done);
-                sMessage.previousVectorActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
-                sMessage.previousTextActions.Add(agentInfo[agent].StoredTextActions);
+                sMessage.previousVectorActions.AddRange(agentInfo[agent].storedVectorActions.ToList());
+                sMessage.previousTextActions.Add(agentInfo[agent].storedTextActions);
                 sMessage.maxes.Add(agentInfo[agent].maxStepReached);
                 sMessage.textObservations.Add(agentInfo[agent].textObservation);
 

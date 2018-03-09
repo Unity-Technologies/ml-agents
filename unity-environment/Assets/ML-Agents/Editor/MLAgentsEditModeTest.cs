@@ -146,7 +146,7 @@ namespace MLAgentsTests
             Assert.AreEqual(0, agent1.agentActionCalls);
             Assert.AreEqual(0, agent2.agentActionCalls);
 
-            MethodInfo AgentEnableMethod = typeof(Agent).GetMethod("_InitializeAgent",
+            MethodInfo AgentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
                    BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
                            BindingFlags.Instance | BindingFlags.NonPublic);
@@ -223,7 +223,7 @@ namespace MLAgentsTests
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
-                "_InitializeAgent", BindingFlags.Instance | BindingFlags.NonPublic);
+                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod(
                 "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -361,7 +361,7 @@ namespace MLAgentsTests
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
-                "_InitializeAgent", BindingFlags.Instance | BindingFlags.NonPublic);
+                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod(
                 "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -403,8 +403,7 @@ namespace MLAgentsTests
                 Assert.AreEqual(numberAcaReset, aca.academyResetCalls);
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
-                Assert.AreEqual(agent1StepSinceReset, agent1.stepCounter);
-                Assert.AreEqual(agent2StepSinceReset, agent2.stepCounter);
+                Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
@@ -544,7 +543,7 @@ namespace MLAgentsTests
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
-                "_InitializeAgent", BindingFlags.Instance | BindingFlags.NonPublic);
+                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod(
                 "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -589,8 +588,8 @@ namespace MLAgentsTests
 
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
-                Assert.AreEqual(agent1StepSinceReset, agent1.stepCounter);
-                Assert.AreEqual(agent2StepSinceReset, agent2.stepCounter);
+                Assert.AreEqual(agent1StepSinceReset, agent1.GetStepCount());
+                Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
 
 
                 Assert.AreEqual(numberAcaReset, aca.GetEpisodeCount());
@@ -679,7 +678,7 @@ namespace MLAgentsTests
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
-                "_InitializeAgent", BindingFlags.Instance | BindingFlags.NonPublic);
+                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod(
                 "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -718,8 +717,8 @@ namespace MLAgentsTests
             {
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
-                Assert.AreEqual(agent1StepSinceReset, agent1.stepCounter);
-                Assert.AreEqual(agent2StepSinceReset, agent2.stepCounter);
+                Assert.AreEqual(agent1StepSinceReset, agent1.GetStepCount());
+                Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
                 Assert.AreEqual(agent1ResetOnDone, agent1.agentOnDoneCalls);
                 Assert.AreEqual(agent2ResetOnDone, agent2.agentOnDoneCalls);
 
@@ -767,7 +766,7 @@ namespace MLAgentsTests
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
-                "_InitializeAgent", BindingFlags.Instance | BindingFlags.NonPublic);
+                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo AcademyInitializeMethod = typeof(Academy).GetMethod(
                 "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
 

@@ -205,7 +205,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             var i = 0;
             foreach (Agent agent in agentList)
             {
-                float[] action_list = agentInfo[agent].StoredVectorActions;
+                float[] action_list = agentInfo[agent].storedVectorActions;
                 inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
                 i++;
             }
