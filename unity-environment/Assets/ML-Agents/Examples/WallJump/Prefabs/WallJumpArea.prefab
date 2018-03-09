@@ -175,8 +175,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1535176706844624}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.04, z: -7.3}
-  m_LocalScale: {x: 16.2, y: 1, z: 8.5}
+  m_LocalPosition: {x: 0, y: 1.05, z: -6.5}
+  m_LocalScale: {x: 16.2, y: 1, z: 7}
   m_Children: []
   m_Father: {fileID: 4768003208014390}
   m_RootOrder: 5
@@ -552,7 +552,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!54 &54678503543725326
 Rigidbody:
@@ -668,7 +668,7 @@ MonoBehaviour:
   stepCounter: 907
   agentParameters:
     agentCameras: []
-    maxStep: 1000
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5

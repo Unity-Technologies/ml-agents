@@ -54,7 +54,7 @@ public class WallJumpAgent : Agent
 
     public override void InitializeAgent()
     {
-        configuration = Random.Range(0, 3);
+        configuration = Random.Range(0, 5);
 		StartGroundCheck();
 
 		agentRB	= GetComponent<Rigidbody>(); //cache the agent rigidbody
@@ -72,7 +72,7 @@ public class WallJumpAgent : Agent
 	public void Jump()
 	{
 
-		jumpingTime = 0.2f;
+		jumpingTime = 0.4f;
 		jumpStartingPos = agentRB.position;
 		// jumpTargetPos = agentRB.position + Vector3.up * jumpHeight;
 		//yield return new WaitForSeconds(jumpTime);
@@ -164,7 +164,7 @@ public class WallJumpAgent : Agent
         Vector3 randomSpawnPos = Vector3.zero;
         float randomPosX = Random.Range(-spawnAreaBounds.extents.x * academy.spawnAreaMarginMultiplier, spawnAreaBounds.extents.x * academy.spawnAreaMarginMultiplier);
         float randomPosZ = Random.Range(-spawnAreaBounds.extents.z * academy.spawnAreaMarginMultiplier, spawnAreaBounds.extents.z * academy.spawnAreaMarginMultiplier);
-        randomSpawnPos = spawnArea.transform.position + new Vector3(randomPosX, 1.5f, randomPosZ );
+        randomSpawnPos = spawnArea.transform.position + new Vector3(randomPosX, 1.5f -1.05f, randomPosZ );
         return randomSpawnPos;
     }
 
@@ -218,6 +218,23 @@ public class WallJumpAgent : Agent
                 Jump();
             }
 
+            if (jumpingTime > 0f)
+            {
+
+                //agentRB.AddForce(Vector3.up * 10, ForceMode.VelocityChange); 
+                jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z) + dirToGo/2;// + transform.forward / 4;
+
+                MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity, academy.agentJumpVelocityMaxChange);
+
+            }
+
+            if (!(jumpingTime > 0f) && !grounded) //add some downward force so it's not floaty
+            {
+                agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
+            }
+            jumpingTime -= Time.fixedDeltaTime;
+
+
             //add force
             agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
                                                                                          //agentRB.velocity = dirToGo * academy.agentRunSpeed;
@@ -236,19 +253,19 @@ public class WallJumpAgent : Agent
             int action = (int)(act[0]);
             if (action == 1)
             {
-                speedX = grounded ? -1f : -1f / 2;
+                speedX = grounded ? -1f : -0.5f ;
             }
             else if (action == 2)
             {
-                speedX = grounded ? 1f : 1f / 2;
+                speedX = grounded ? 1f : 0.5f ;
             }
             else if (action == 3)
             {
-                speedZ = grounded ? 1f : 1f / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+                speedZ = grounded ? 1f : 0.5f ; //if we are in the air, our move speed should be a fraction of normal speed.
             }
             else if (action == 4)
             {
-                speedZ = grounded ? -1f : -1f / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+                speedZ = grounded ? -1f : -0.5f ; //if we are in the air, our move speed should be a fraction of normal speed.
             }
             else if ((action == 5) && !(jumpingTime > 0f) && grounded)
             {
@@ -256,6 +273,22 @@ public class WallJumpAgent : Agent
                 //StartCoroutine(Jump());
                 Jump();
             }
+
+            if (jumpingTime > 0f)
+            {
+
+                //agentRB.AddForce(Vector3.up * 10, ForceMode.VelocityChange); 
+                jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z);// + transform.forward / 4;
+
+                MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity, academy.agentJumpVelocityMaxChange);
+
+            }
+
+            if (!(jumpingTime > 0f) && !grounded) //add some downward force so it's not floaty
+            {
+                agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
+            }
+            jumpingTime -= Time.fixedDeltaTime;
 
             Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
             Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
@@ -284,18 +317,7 @@ public class WallJumpAgent : Agent
 			spawnArea.SetActive(true);
 		}
 
-		if(jumpingTime > 0f)
-		{
-            jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z);// + transform.forward/4; 
 
-			MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity, academy.agentJumpVelocityMaxChange);
-		}
-
-        if(!(jumpingTime > 0f) && !grounded) //add some downward force so it's not floaty
-		{
-			agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
-		}
-        jumpingTime -= Time.fixedDeltaTime;
 		if (!Physics.Raycast(agentRB.position, Vector3.down, 20)) //if the agent has gone over the edge, we done.
 		{
 			fail = true; //fell off bro
@@ -343,7 +365,7 @@ public class WallJumpAgent : Agent
 	{
 		ResetBlock(shortBlockRB);
 		transform.position =  GetRandomSpawnPos();
-        configuration = Random.Range(0, 3);
+        configuration = Random.Range(0, 5);
 
         //if (ground.transform.parent.position.x >= 0)
         //{
@@ -378,7 +400,7 @@ public class WallJumpAgent : Agent
             wall.transform.localScale = new Vector3(wall.transform.localScale.x, academy.resetParameters["small_wall_height"], wall.transform.localScale.z);
             GiveBrain(smallWallBrain);
         }
-        else if (config == 2)
+        else
         {
             float height = academy.resetParameters["big_wall_min_height"] + Random.value * (academy.resetParameters["big_wall_max_height"] - academy.resetParameters["big_wall_min_height"]);
             wall.transform.localScale = new Vector3(wall.transform.localScale.x, height, wall.transform.localScale.z);
