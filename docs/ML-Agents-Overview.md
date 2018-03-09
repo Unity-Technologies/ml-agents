@@ -285,7 +285,7 @@ can provide a scaffolding for harder tasks in the future.
 
 <p align="center">
     <img src="images/math.png" 
-        alt="Example Math Cirriculum" 
+        alt="Example Math Curriculum" 
         width="700"
         border="10" />
 </p>
