@@ -25,7 +25,7 @@
  * [Training with Proximal Policy Optimization](Training-PPO.md)
  * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
  * [Training with Imitation Learning](Training-Imitation-Learning.md)
- * [Training with LSTM](Training-LSTM.md)
+ * [Training with LSTM](Feature-Memory.md)
  * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
  * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 

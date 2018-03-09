@@ -1,18 +1,16 @@
 # Background: Machine Learning
 
-**Work In Progress**
+Given that a number of users of ML-Agents might not have a formal machine 
+learning background, this page provides an overview to facilitate the 
+understanding of ML-Agents. However, We will not attempt to provide a thorough 
+treatment of machine learning as there are fantastic resources online.
 
-We will not attempt to provide a thorough treatment of machine learning
-as there are fantastic resources online. However, given that a number
-of users of ML-Agents might not have a formal machine learning background,
-this section provides an overview of terminology to facilitate the
-understanding of ML-Agents.
-
-Machine learning, a branch of artificial intelligence, focuses on learning patterns 
-from data. The three main classes of machine learning algorithms include: 
-unsupervised learning, supervised learning and reinforcement learning. 
-Each class of algorithm learns from a different type of data. The following paragraphs 
-provide an overview for each of these classes of machine learning, as well as introductory examples. 
+Machine learning, a branch of artificial intelligence, focuses on learning 
+patterns from data. The three main classes of machine learning algorithms
+include: unsupervised learning, supervised learning and reinforcement learning. 
+Each class of algorithm learns from a different type of data. The following 
+paragraphs provide an overview for each of these classes of machine learning, 
+as well as introductory examples. 
 
 ## Unsupervised Learning
 

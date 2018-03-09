@@ -21,7 +21,9 @@ To make your transition to ML-Agents easier, we provide several background
 pages that include overviews and helpful resources on the 
 [Unity Engine](Background-Unity.md), 
 [machine learning](Background-Machine-Learning.md) and 
-[TensorFlow](Background-TensorFlow.md).
+[TensorFlow](Background-TensorFlow.md). We **strongly** recommend browsing
+the relevant background pages if you're not familiar with a Unity scene, 
+basic machine learning concepts or have not previously heard of TensorFlow.
 
 The remainder of this page contains a deep dive into ML-Agents, its key
 components, different training modes and scenarios. By the end of it, you
@@ -93,7 +95,8 @@ assistance. Note that the reward signal is how the objectives of the task
 are communicated to the agent, so they need to be set up in a manner where
 maximizing reward generates the desired optimal behavior.
 
-After defining these three entities (called a **reinforcement learning task**), 
+After defining these three entities (the building blocks of a 
+**reinforcement learning task**), 
 we can now _train_ the medic's behavior. This is achieved by simulating the
 environment for many trials where the medic, over time, learns what is the 
 optimal action to take for every observation it measures by maximizing 
@@ -133,13 +136,13 @@ _Simplified block diagram of ML-Agents._
 
 The Learning Environment contains three additional components that help
 organize the Unity scene: 
-* **Agents** - which is attached to each agent and handles generating its
-observations, performing the actions it receives and assigning a reward
-(positive / negative) when appropriate. Each Agent is linked to exactly one 
-Brain.
+* **Agents** - which is attached to a Unity GameObject (any character within a 
+scene) and handles generating its observations, performing the actions it 
+receives and assigning a reward (positive / negative) when appropriate. 
+Each Agent is linked to exactly one Brain.
 * **Brains** - which encapsulates the logic for making decisions for the Agent.
-In essence, the Brain is what holds on to the policy for each agent and
-determines which actions the agent should take at each instance. More
+In essence, the Brain is what holds on to the policy for each Agent and
+determines which actions the Agent should take at each instance. More
 specifically, it is the component that receives the observations and rewards
 from the Agent and returns an action. 
 * **Academy** - which orchestrates the observation and decision making process.
@@ -149,7 +152,7 @@ External Communicator lives within the Academy.
 
 Every Learning Environment will always have one global Academy and one Agent
 for every character in the scene. While each Agent must be linked to a Brain,
-it is possible for Agent that have similar observations and actions to be 
+it is possible for Agents that have similar observations and actions to be 
 linked to the same Brain. In our sample game, we have two teams each with
 their own medic. Thus we will have two Agents in our Learning Environment, 
 one for each medic, but both of these medics can be linked to the same Brain.
@@ -160,7 +163,8 @@ words, the Brain defines the space of all possible observations and actions,
 while the Agents connected to it (in this case the medics) can each have
 their own, unique observation and action values. If we expanded our game 
 to include tank driver NPCs, then the Agent attached to those characters 
-cannot share a Brain with the Agent linked to the medics.
+cannot share a Brain with the Agent linked to the medics (medics and drivers 
+have different actions).
 
 <p align="center">
     <img src="images/learning_environment_example.png" 
@@ -184,7 +188,8 @@ range of training and inference scenarios:
 observations and rewards collected by the Brain are forwarded to the Python
 API through the External Communicator. The Python API then returns the
 corresponding action that needs to be taken by the Agent.
-* **Internal** - where decisions are made using an embedded TensorFlow model. 
+* **Internal** - where decisions are made using an embedded 
+[TensorFlow](Background-TensorFlow.md) model. 
 The embedded TensorFlow model represents a learned policy and the Brain 
 directly uses this model to determine the action for each Agent.
 * **Player** - where decisions are made using real input from a keyboard or 
@@ -213,11 +218,6 @@ shortly, this enables additional training modes.
 
 _An example of how a scene containing multiple Agents and Brains might be 
 configured._
-
-ML-Agents includes several
-[example environments](Learning-Environment-Examples.md) and a 
-[Making a new Learning Environment](Learning-Environment-Create-New.md) 
-tutorial to help you get started.
 
 ## Training Modes
 
@@ -254,7 +254,7 @@ library.**
 
 The
 [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
-tutorial covers this training mode with the Balance Ball sample environment.
+tutorial covers this training mode with the **Balance Ball** sample environment.
 
 ### Custom Training and Inference
 
@@ -309,9 +309,9 @@ elements of the environment related to difficulty or complexity to be
 dynamically adjusted based on training progress.
 
 The [Curriculum Learning](Training-Curriculum-Learning.md)
-tutorial covers this training mode with the Wall Area sample environment.
+tutorial covers this training mode with the **Wall Area** sample environment.
 
-### Imitation Learning (coming soon)
+### Imitation Learning
 
 It is often more intuitive to simply demonstrate the behavior we
 want an agent to perform, rather than attempting to have it learn via
@@ -324,18 +324,8 @@ will be recorded and sent to the Python API. The imitation learning algorithm
 will then use these pairs of observations and actions from the human player
 to learn a policy.
 
-The [Imitation Learning](Training-Imitation-Learning.md) tutorial covers this training
-mode with the **Anti-Graviator** sample environment.
-
-### Recurrent Neural Networks
-In some scenarios, agents must learn to remember the past in order to take the 
-best decision. When an agent only has partial observability of the environment, 
-keeping track of past observations can help the agent learn. We provide an 
-implementation of [LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory) in 
-our trainers that enable the agent to store memories to be used in future steps.
-
-The [Training with LSTM](Training-LSTM.md) tutorial covers this feature and 
-the **Hallway** environment demonstrates its capabilities.
+The [Imitation Learning](Training-Imitation-Learning.md) tutorial covers this 
+training mode with the **Banana Collector** sample environment.
 
 ## Flexible Training Scenarios
 
@@ -383,6 +373,25 @@ Beyond the flexible training scenarios available, ML-Agents includes
 additional features which improve the flexibility and interpretability of the
 training process.
 
+* **On Demand Decision Making** - With ML-Agents it is possible to have agents 
+request decisions only when needed as opposed to requesting decisions at 
+every step of the environment. This enables training of turn based games, 
+games where agents 
+must react to events or games where agents can take actions of variable 
+duration. Switching between decision taking at every step and 
+on-demand-decision is one button click away. You can learn more about the 
+on-demand-decision feature [here](Feature-On-Demand-Decision.md).
+
+* **Memory-enhanced Agents** - In some scenarios, agents must learn to 
+remember the past in order to take the 
+best decision. When an agent only has partial observability of the environment, 
+keeping track of past observations can help the agent learn. We provide an 
+implementation of _Long Short-term Memory_ 
+([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory))
+in our trainers that enable the agent to store memories to be used in future 
+steps. You can learn more about enabling LSTM during training
+[here](Feature-Memory.md).
+
 * **Monitoring Agent’s Decision Making** - Since communication in ML-Agents
 is a two-way street, we provide an agent Monitor class in Unity which can
 display aspects of the trained agent, such as the agents perception on how
@@ -398,7 +407,9 @@ multiple cameras to be used for observations per agent. This enables agents to
 learn to integrate information from multiple visual streams. This can be
 helpful in several scenarios such as training a self-driving car which requires 
 multiple cameras with different viewpoints, or a navigational agent which might 
-need to integrate aerial and first-person visuals.
+need to integrate aerial and first-person visuals. You can learn more about
+adding visual observations to an agent 
+[here](Learning-Environment-Design-Agents.md#visual-observations).
         
 * **Broadcasting** - As discussed earlier, an External Brain sends the
 observations for all its Agents to the Python API by default. This is helpful 
@@ -412,10 +423,18 @@ However, this could also be helpful for the Heuristic and Internal Brains,
 particularly when debugging agent behaviors. You can learn more about using 
 the broadcasting feature [here](Feature-Broadcasting.md).
 
-* **On Demand Decision** - With ML-Agents it is possible to have agents 
-request decisions only when needed as opposed to requesting decisions at 
-every step. This enables training of turn based games, games where agents 
-must react to events or games where agents can take actions of variable 
-duration. Switching between decision taking at every step and 
-on-demand-decision is one button click away. You can learn more about the 
-on-demand-decision feature [here](Learning-Environment-On-Demand-Decision)
+## Summary and Next Steps
+
+To briefly summarize: ML-Agents enables games and simulations built in Unity
+to serve as the platform for training intelligent agents. It is designed
+to enable a large variety of training modes and scenarios and comes packed
+with several features to enable researchers and developers to leverage
+(and enhance) machine learning within Unity.
+
+To help you use ML-Agents, we've created several in-depth tutorials 
+for [installing ML-Agents](Installation.md), 
+[getting started](Getting-Started-with-Balance-Ball.md) 
+with a sample Balance Ball environment (one of our many 
+[sample environments](Learning-Environment-Examples.md)) and 
+[making your own environment](Learning-Environment-Create-New.md).
+
