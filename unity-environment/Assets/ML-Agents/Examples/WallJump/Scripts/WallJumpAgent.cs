@@ -147,7 +147,7 @@ public class WallJumpAgent : Agent
 
 
         Vector3 goalPos = goal.transform.position - agentRB.position;  //pos of goal rel to agent
-        Vector3 shortBlockPos = shortBlockRB.transform.position - agentRB.position;  //pos of goal rel to agent
+        Vector3 shortBlockPos = shortBlockRB.transform.position - ground.transform.position;  //pos of goal rel to agent
 		Vector3 agentPos = agentRB.position - ground.transform.position;  //pos of agent rel to ground
 
 		//COLLECTIN STATES
@@ -182,51 +182,93 @@ public class WallJumpAgent : Agent
 
 
 
-		//AGENT ACTIONS
-		// this is where we define the actions our agent can use...stuff like "go left", "go forward", "turn" ...etc.
+        //AGENT ACTIONS
+        // this is where we define the actions our agent can use...stuff like "go left", "go forward", "turn" ...etc.
 
-		//Continuous control Vs. Discrete control
+        //Continuous control Vs. Discrete control
 
-		//If we're using Continuous control you will need to change the Action
+        //If we're using Continuous control you will need to change the Action
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
 
             AddReward(-0.0001f); //existential penalty
-			
+
             act[0] = Mathf.Clamp(act[0], -1, 1);
             act[1] = Mathf.Clamp(act[1], -1, 1);
-			float speedX = 0;
-			float speedZ = 0;
-			if(act[0] != 0)
-			{
-				speedX = grounded? act[0]: act[0]/2; //if we are in the air, our move speed should be a fraction of normal speed.
-			}
-			if(act[1] != 0)
-			{
-				speedZ= grounded? act[1]: act[1]/2; //if we are in the air, our move speed should be a fraction of normal speed.
-			}
+            float speedX = 0;
+            float speedZ = 0;
+            if (act[0] != 0)
+            {
+                speedX = grounded ? act[0] : act[0] / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+            }
+            if (act[1] != 0)
+            {
+                speedZ = grounded ? act[1] : act[1] / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+            }
 
-			Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
+            Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
             Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
-        	Vector3 dirToGo = directionX + directionZ; //the dir we want to go
+            Vector3 dirToGo = directionX + directionZ; //the dir we want to go
 
-            if(act[2] > 0 && !(jumpingTime > 0f) && grounded)
-			{
-				//jump
+            if (act[2] > 0 && !(jumpingTime > 0f) && grounded)
+            {
+                //jump
                 AddReward(-0.001f); //energy conservation penalty
                 //StartCoroutine(Jump());
                 Jump();
-			}
+            }
 
             //add force
             agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
-            //agentRB.velocity = dirToGo * academy.agentRunSpeed;
-			//rotate the player forward
-			if(dirToGo != Vector3.zero)
-			{
-				//agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
+                                                                                         //agentRB.velocity = dirToGo * academy.agentRunSpeed;
+                                                                                         //rotate the player forward
+            if (dirToGo != Vector3.zero)
+            {
+                //agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
                 agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.fixedDeltaTime * academy.agentRotationSpeed);
-			}
+            }
+        }
+        else
+        {
+            float speedX = 0;
+            float speedZ = 0;
+            AddReward(-0.0001f); //existential penalty
+            int action = (int)(act[0]);
+            if (action == 1)
+            {
+                speedX = grounded ? -1f : -1f / 2;
+            }
+            else if (action == 2)
+            {
+                speedX = grounded ? 1f : 1f / 2;
+            }
+            else if (action == 3)
+            {
+                speedZ = grounded ? 1f : 1f / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+            }
+            else if (action == 4)
+            {
+                speedZ = grounded ? -1f : -1f / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+            }
+            else if ((action == 5) && !(jumpingTime > 0f) && grounded)
+            {
+                AddReward(-0.001f); //energy conservation penalty
+                //StartCoroutine(Jump());
+                Jump();
+            }
+
+            Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
+            Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
+            Vector3 dirToGo = directionX + directionZ; //the dir we want to go
+            agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
+                                                                                         //agentRB.velocity = dirToGo * academy.agentRunSpeed;
+                                                                                         //rotate the player forward
+            if (dirToGo != Vector3.zero)
+            {
+                //agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
+                agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.fixedDeltaTime * academy.agentRotationSpeed);
+            }
+
         }
     }
 
