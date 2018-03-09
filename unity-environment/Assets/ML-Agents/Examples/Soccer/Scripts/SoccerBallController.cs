@@ -6,17 +6,15 @@ public class SoccerBallController : MonoBehaviour {
 
 	[HideInInspector]
 	public SoccerFieldArea area;
-	Rigidbody rb;
 	public AgentSoccer lastTouchedBy; //who was the last to touch the ball
-	// public string wallTag; //will be used to check if collided with wall
 	public string agentTag; //will be used to check if collided with a agent
 	public string redGoalTag; //will be used to check if collided with red goal
 	public string blueGoalTag; //will be used to check if collided with blue goal
 
 	// Use this for initialization
 	void Start () {
-		rb = GetComponent<Rigidbody>();
-	}
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -27,11 +25,11 @@ public class SoccerBallController : MonoBehaviour {
 	{
 		if(col.gameObject.CompareTag(redGoalTag)) //ball touched red goal
 		{
-			area.RedGoalTouched();
+            area.GoalTouched(AgentSoccer.Team.blue);
 		}
 		if(col.gameObject.CompareTag(blueGoalTag)) //ball touched blue goal
 		{
-			area.BlueGoalTouched();
+            area.GoalTouched(AgentSoccer.Team.red);
 		}
 	}
 }

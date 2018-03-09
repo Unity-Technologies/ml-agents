@@ -11,43 +11,28 @@ public class AgentSoccer : Agent
     }
     public enum AgentRole
     {
-        striker, defender, goalie
+        striker, goalie
     }
-    // ReadRewardData readRewardData;
     public Team team;
     public AgentRole agentRole;
     float kickPower;
-    // public float teamFloat;
-    // public float playerID;
-    public int playerIndex;
+    int playerIndex;
     public SoccerFieldArea area;
     [HideInInspector]
     public Rigidbody agentRB;
-    public bool showRaycastRays;
-    // [HideInInspector]
-    // public Vector3 startingPos;
-
-    public List<float> myState = new List<float>(); //list for state data. to be updated every FixedUpdate in this script
     SoccerAcademy academy;
     Renderer renderer;
-    public Vector3 playerDirToTargetGoal;
-    public Vector3 playerDirToDefendGoal;
-
-    public float agentEnergy = 100;
-    public bool tired = false;
 
     public void ChooseRandomTeam()
     {
         team = (Team)Random.Range(0, 2);
         renderer.material = team == Team.red ? academy.redMaterial : academy.blueMaterial;
-        // area.playerStates[playerIndex].defendGoal = team == Team.red? area.redGoal: area.blueGoal;
     }
 
     public void JoinRedTeam(AgentRole role)
     {
         agentRole = role;
         team = Team.red;
-        // area.playerStates[playerIndex].a
         renderer.material = academy.redMaterial;
     }
 
@@ -55,18 +40,16 @@ public class AgentSoccer : Agent
     {
         agentRole = role;
         team = Team.blue;
-        // area.playerStates[playerIndex].a
         renderer.material = academy.blueMaterial;
     }
 
     void Awake()
     {
         renderer = GetComponent<Renderer>();
-        academy = FindObjectOfType<SoccerAcademy>(); //get the academy
-        //brain = agentRole == AgentRole.striker ? academy.brainStriker : agentRole == AgentRole.defender ? academy.brainStriker : academy.brainGoalie;
+        academy = FindObjectOfType<SoccerAcademy>();
         PlayerState playerState = new PlayerState();
-        playerState.agentRB = GetComponent<Rigidbody>(); //cache the RB
-        agentRB = GetComponent<Rigidbody>(); //cache the RB
+        playerState.agentRB = GetComponent<Rigidbody>();
+        agentRB = GetComponent<Rigidbody>();
         agentRB.maxAngularVelocity = 500;
         playerState.startingPos = transform.position;
         playerState.agentScript = this;
@@ -81,18 +64,23 @@ public class AgentSoccer : Agent
     }
 
     public void RayPerception(float rayDistance,
-                             float[] rayAngles, string[] detectableObjects, float startHeight, float endHeight)
+                             float[] rayAngles, string[] detectableObjects,
+                              float startHeight, float endHeight)
     {
         foreach (float angle in rayAngles)
         {
             float noise = 0f;
             float noisyAngle = angle + Random.Range(-noise, noise);
-            Vector3 position = transform.TransformDirection(GiveCatersian(rayDistance, noisyAngle));
+            Vector3 position = transform.TransformDirection(
+                GiveCatersian(rayDistance, noisyAngle));
             position.y = endHeight;
-            Debug.DrawRay(transform.position + new Vector3(0f, endHeight, 0f), position, Color.red, 0.1f, true);
+            Debug.DrawRay(transform.position + new Vector3(0f, startHeight, 0f),
+                          position, Color.red, 0.1f, true);
             RaycastHit hit;
             float[] subList = new float[detectableObjects.Length + 2];
-            if (Physics.SphereCast(transform.position + new Vector3(0f, endHeight, 0f), 1.0f, position, out hit, rayDistance))
+            if (Physics.SphereCast(transform.position +
+                                   new Vector3(0f, startHeight, 0f), 1.0f,
+                                   position, out hit, rayDistance))
             {
                 for (int i = 0; i < detectableObjects.Length; i++)
                 {
@@ -132,11 +120,13 @@ public class AgentSoccer : Agent
         string[] detectableObjects;
         if (team == Team.red)
         {
-            detectableObjects = new string[] { "ball", "redGoal", "blueGoal", "wall", "redAgent", "blueAgent" };
+            detectableObjects = new string[] { "ball", "redGoal", "blueGoal",
+                "wall", "redAgent", "blueAgent" };
         }
         else
         {
-            detectableObjects = new string[] { "ball", "blueGoal", "redGoal", "wall", "blueAgent", "redAgent" };
+            detectableObjects = new string[] { "ball", "blueGoal", "redGoal",
+                "wall", "blueAgent", "redAgent" };
         }
         RayPerception(rayDistance, rayAngles, detectableObjects, 0f, 0f);
         RayPerception(rayDistance, rayAngles, detectableObjects, 1f, 1f);
@@ -147,110 +137,93 @@ public class AgentSoccer : Agent
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
+        int action = Mathf.FloorToInt(act[0]);
 
-        // If we're using Continuous control you will need to change the Action
-        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+        // Goalies and Strikers have slightly different action spaces.
+        if (agentRole == AgentRole.goalie)
         {
-            //// Larger the value, the less the penalty is.
-            float energyConservPenaltyModifier = 10000;
+            kickPower = 0f;
+            if (action == 0)
+            {
+                dirToGo = transform.forward * 1f;
+                kickPower = 1f;
+            }
+            else if (action == 1)
+            {
+                dirToGo = transform.forward * -1f;
+            }
+            else if (action == 3)
+            {
+                dirToGo = transform.right * -1f;
+            }
+            else if (action == 2)
+            {
+                dirToGo = transform.right * 1f;
+            }
 
-            //// The larger the movement, the greater the penalty given.
-            AddReward(-Mathf.Abs(act[0]) / energyConservPenaltyModifier);
-            AddReward(-Mathf.Abs(act[1]) / energyConservPenaltyModifier);
-
-            dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
-            rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-            kickPower = Mathf.Clamp(act[2], 0f, 1f);
         }
         else
         {
-            int action = Mathf.FloorToInt(act[0]);
-
-            if (agentRole == AgentRole.goalie)
+            kickPower = 0f;
+            if (action == 0)
             {
-                kickPower = 0f;
-                if (action == 0)
-                {
-                    dirToGo = transform.forward * 1f;
-                    kickPower = 1f;
-                }
-                else if (action == 1)
-                {
-                    dirToGo = transform.forward * -1f;
-                }
-                else if (action == 3)
-                {
-                    dirToGo = transform.right * -1f;
-                }
-                else if (action == 2)
-                {
-                    dirToGo = transform.right * 1f;
-                }
-
+                dirToGo = transform.forward * 1f;
+                kickPower = 1f;
             }
-            else 
+            else if (action == 1)
             {
-                kickPower = 0f;
-                if (action == 0)
-                {
-                    dirToGo = transform.forward * 1f;
-                    kickPower = 1f;
-                }
-                else if (action == 1)
-                {
-                    dirToGo = transform.forward * -1f;
-                }
-                else if (action == 2)
-                {
-                    rotateDir = transform.up * 1f;
-                }
-                else if (action == 3)
-                {
-                    rotateDir = transform.up * -1f;
-                }
-                else if (action == 4)
-                {
-                    dirToGo = transform.right * -1f;
-                }
-                else if (action == 5)
-                {
-                    dirToGo = transform.right * 1f;
-                }
+                dirToGo = transform.forward * -1f;
+            }
+            else if (action == 2)
+            {
+                rotateDir = transform.up * 1f;
+            }
+            else if (action == 3)
+            {
+                rotateDir = transform.up * -1f;
+            }
+            else if (action == 4)
+            {
+                dirToGo = transform.right * -1f;
+            }
+            else if (action == 5)
+            {
+                dirToGo = transform.right * 1f;
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); // GO
+        agentRB.AddForce(dirToGo * academy.agentRunSpeed,
+                         ForceMode.VelocityChange);
 
     }
 
+
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        // Existential penalty for strikers.
         if (agentRole == AgentRole.striker)
         {
             AddReward(-1f / 3000f);
         }
+        // Existential bonus for goalies.
         if (agentRole == AgentRole.goalie)
         {
             AddReward(1f / 3000f);
         }
-        MoveAgent(vectorAction); //perform agent actions
+        MoveAgent(vectorAction);
 
     }
 
+    /// <summary>
+    /// Used to provide a "kick" to the ball.
+    /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        // force is how forcefully we will push the player away from the enemy.
         float force = 2000f * kickPower;
-
-        // If the object we hit is the enemy
         if (c.gameObject.tag == "ball")
         {
-            // Calculate Angle Between the collision point and the player
             Vector3 dir = c.contacts[0].point - transform.position;
-            // We then get the opposite (-Vector3) and normalize it
             dir = dir.normalized;
-            // And finally we add force in the direction of dir and multiply it by force. 
-            // This will push back the player
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
         }
     }
@@ -273,8 +246,9 @@ public class AgentSoccer : Agent
             JoinBlueTeam(agentRole);
             transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
-        transform.position = area.GetRandomSpawnPos(team.ToString(), agentRole.ToString());
-        agentRB.velocity = Vector3.zero; //we want the agent's vel to return to zero on reset
+        transform.position = area.GetRandomSpawnPos(team.ToString(),
+                                                    agentRole.ToString());
+        agentRB.velocity = Vector3.zero;
         agentRB.angularVelocity = Vector3.zero;
         area.ResetBall();
     }

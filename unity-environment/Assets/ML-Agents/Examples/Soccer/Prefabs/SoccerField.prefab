@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 4631200763749478}
   - component: {fileID: 114954162751405156}
   m_Layer: 0
-  m_Name: SoccerFieldStriker
+  m_Name: SoccerField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1020,8 +1020,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1816469340983272}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.14, y: 3.6950457, z: 0.815}
-  m_LocalScale: {x: 0.28493124, y: 18.326893, z: 0.6}
+  m_LocalPosition: {x: -0.14, y: 3.6950457, z: 0.647}
+  m_LocalScale: {x: 0.28493124, y: 18.326893, z: 0.3}
   m_Children: []
   m_Father: {fileID: 4026533803897040}
   m_RootOrder: 0
@@ -1300,8 +1300,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1770857904153946}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.22, y: 3.6950457, z: -0.816}
-  m_LocalScale: {x: 0.28493124, y: 18.326893, z: 0.6}
+  m_LocalPosition: {x: -0.22, y: 3.6950457, z: -0.637}
+  m_LocalScale: {x: 0.28493124, y: 18.326893, z: 0.3}
   m_Children: []
   m_Father: {fileID: 4026533803897040}
   m_RootOrder: 1
@@ -1378,8 +1378,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1030067314217290}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.02, y: 3.6950457, z: -0.798}
-  m_LocalScale: {x: 0.3, y: 18, z: 0.6}
+  m_LocalPosition: {x: -0.02, y: 3.6950457, z: -0.648}
+  m_LocalScale: {x: 0.3, y: 18, z: 0.3}
   m_Children: []
   m_Father: {fileID: 4519139450879734}
   m_RootOrder: 1
@@ -1460,8 +1460,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1544090449727710}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.15, y: 3.6950457, z: 0.779}
-  m_LocalScale: {x: 0.3, y: 18, z: 0.6}
+  m_LocalPosition: {x: -0.15, y: 3.6950457, z: 0.635}
+  m_LocalScale: {x: 0.3, y: 18, z: 0.3}
   m_Children: []
   m_Father: {fileID: 4519139450879734}
   m_RootOrder: 0
@@ -1554,7 +1554,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1696603867868642}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1869,7 +1869,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1786528336847394}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2079,7 +2079,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1231219063786542}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2429,7 +2429,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1431035091868842}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2675,7 +2675,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1650997621399536}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -3060,7 +3060,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1311257902022182}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -3873,15 +3873,8 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 5
   team: 0
   agentRole: 0
-  playerIndex: 0
   area: {fileID: 114954162751405156}
   agentRB: {fileID: 0}
-  showRaycastRays: 0
-  myState: []
-  playerDirToTargetGoal: {x: 0, y: 0, z: 0}
-  playerDirToDefendGoal: {x: 0, y: 0, z: 0}
-  agentEnergy: 100
-  tired: 0
 --- !u!114 &114596667793315248
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3919,15 +3912,8 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 5
   team: 1
   agentRole: 0
-  playerIndex: 0
   area: {fileID: 114954162751405156}
   agentRB: {fileID: 0}
-  showRaycastRays: 0
-  myState: []
-  playerDirToTargetGoal: {x: 0, y: 0, z: 0}
-  playerDirToDefendGoal: {x: 0, y: 0, z: 0}
-  agentEnergy: 100
-  tired: 0
 --- !u!114 &114752126749391496
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3982,15 +3968,8 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 5
   team: 0
   agentRole: 2
-  playerIndex: 0
   area: {fileID: 114954162751405156}
   agentRB: {fileID: 0}
-  showRaycastRays: 0
-  myState: []
-  playerDirToTargetGoal: {x: 0, y: 0, z: 0}
-  playerDirToDefendGoal: {x: 0, y: 0, z: 0}
-  agentEnergy: 100
-  tired: 0
 --- !u!114 &114848174355100558
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4012,15 +3991,8 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 5
   team: 1
   agentRole: 2
-  playerIndex: 0
   area: {fileID: 114954162751405156}
   agentRB: {fileID: 0}
-  showRaycastRays: 0
-  myState: []
-  playerDirToTargetGoal: {x: 0, y: 0, z: 0}
-  playerDirToDefendGoal: {x: 0, y: 0, z: 0}
-  agentEnergy: 100
-  tired: 0
 --- !u!114 &114954162751405156
 MonoBehaviour:
   m_ObjectHideFlags: 1
