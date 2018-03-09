@@ -114,7 +114,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &19045170
+--- !u!1001 &22918144
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -131,7 +131,129 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 21.21
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 114458726074197592, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 114848174355100558, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &53410259
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 29.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &202418448
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -29.5
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalRotation.x
@@ -153,30 +275,20 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
     - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_Name
       value: SoccerFieldStriker (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -184,7 +296,7 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
   m_IsPrefabParent: 0
---- !u!1001 &92022788
+--- !u!1001 &232497735
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -193,7 +305,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -80.9
+      value: -86.9
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.y
@@ -201,7 +313,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 21.21
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalRotation.x
@@ -221,32 +333,22 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_RootOrder
-      value: 16
+      value: 14
       objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
     - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (10)
-      objectReference: {fileID: 0}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -316,7 +418,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &319787519
+--- !u!1001 &347490244
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -325,7 +427,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -40.7
+      value: -86.9
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.y
@@ -333,244 +435,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (8)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!1001 &459718773
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -40.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 21.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 19
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (13)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &561391453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: 23d5c6995479d44b389afef3046d28bd, type: 3}
-  graphScope: BrainSoccerREDGoalie/
-  graphPlaceholders:
-  - name: epsilon
-    valueType: 1
-    minValue: -2
-    maxValue: 2
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 1379650626}
---- !u!1001 &618480526
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 63.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (3)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!1001 &674510262
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -80.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
+      value: -29.5
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalRotation.x
@@ -592,30 +457,20 @@ Prefab:
       propertyPath: m_RootOrder
       value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
     - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_Name
       value: SoccerFieldStriker (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -623,6 +478,139 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
   m_IsPrefabParent: 0
+--- !u!1001 &493091655
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -43.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 29.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &620757712
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 43.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 58.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
+--- !u!114 &664692824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 1379650626}
 --- !u!1 &740390944
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,7 +626,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &740390945
 Light:
   m_ObjectHideFlags: 0
@@ -688,6 +676,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 152.6, y: -129.808, z: -374.526}
+--- !u!114 &750244855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  graphModel: {fileID: 4900000, guid: 1e7a46c23c21a453cbda8b5b1f8c0932, type: 3}
+  graphScope: GoalieBrain
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
+  brain: {fileID: 1379650626}
 --- !u!1 &762086410
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,76 +764,49 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 30, y: -129.808, z: -374.526}
---- !u!1001 &832101079
-Prefab:
+--- !u!114 &776834324
+MonoBehaviour:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 40.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 42.29
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (6)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  continuousPlayerActions:
+  - key: 97
+    index: 0
+    value: -1
+  - key: 100
+    index: 0
+    value: 1
+  - key: 119
+    index: 1
+    value: 1
+  - key: 115
+    index: 1
+    value: -1
+  - key: 32
+    index: 2
+    value: 1
+  discretePlayerActions:
+  - key: 97
+    value: 3
+  - key: 100
+    value: 2
+  - key: 119
+    value: 0
+  - key: 115
+    value: 1
+  - key: 113
+    value: 4
+  - key: 101
+    value: 5
+  defaultAction: -1
+  brain: {fileID: 1890643319}
 --- !u!1 &859908934
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,19 +872,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 152.6, y: -129.808, z: -374.526}
---- !u!114 &862422947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 1890643319}
---- !u!1001 &998197373
+--- !u!1001 &981097815
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -909,7 +881,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -40.7
+      value: -43.2
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.y
@@ -917,7 +889,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 42.29
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalRotation.x
@@ -937,32 +909,22 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_RootOrder
-      value: 20
+      value: 16
       objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
     - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (14)
-      objectReference: {fileID: 0}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -992,8 +954,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1009000883}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -19.89, y: 125, z: 30}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -17.844376, y: 263.85947, z: 12.488956}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1017,7 +979,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 40
+  field of view: 27.2
   orthographic: 0
   orthographic size: 6.98
   m_Depth: 2
@@ -1035,7 +997,7 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!1001 &1149353033
+--- !u!1001 &1308126941
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1044,7 +1006,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -80.9
+      value: 43.7
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1052,7 +1014,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 42.29
+      value: 29.3
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1072,32 +1034,22 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_RootOrder
-      value: 17
+      value: 13
       objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
     - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (11)
-      objectReference: {fileID: 0}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -1105,46 +1057,126 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1226423279
-MonoBehaviour:
+--- !u!1001 &1373632435
+Prefab:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 0}
---- !u!114 &1304672023
-MonoBehaviour:
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -86.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 29.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1373778411
+Prefab:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: 23d5c6995479d44b389afef3046d28bd, type: 3}
-  graphScope: BrainSoccerBLUEGoalie/
-  graphPlaceholders:
-  - name: epsilon
-    valueType: 1
-    minValue: -2
-    maxValue: 2
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 1890643319}
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -43.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 58.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1379650624
 GameObject:
   m_ObjectHideFlags: 0
@@ -1161,7 +1193,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1379650625
 Transform:
   m_ObjectHideFlags: 0
@@ -1189,24 +1221,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 24
-    numStackedVectorObservations: 1
-    vectorActionSize: 3
+    vectorObservationSize: 112
+    numStackedVectorObservations: 3
+    vectorActionSize: 4
     cameraResolutions: []
     vectorActionDescriptions:
     - 
     - 
     - 
-    vectorActionSpaceType: 1
+    - 
+    vectorActionSpaceType: 0
     vectorObservationSpaceType: 1
-  brainType: 0
+  brainType: 3
   CoreBrains:
-  - {fileID: 1562328870}
-  - {fileID: 2087771790}
-  - {fileID: 1451559935}
-  - {fileID: 561391453}
-  instanceID: 694958
---- !u!1001 &1402987730
+  - {fileID: 1733604305}
+  - {fileID: 664692824}
+  - {fileID: 1590472990}
+  - {fileID: 750244855}
+  instanceID: 1070392
+--- !u!1001 &1404545643
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1215,7 +1248,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 40.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1223,7 +1256,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 58.8
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1245,30 +1278,20 @@ Prefab:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
     - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_Name
       value: SoccerFieldStriker (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -1276,7 +1299,20 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
   m_IsPrefabParent: 0
---- !u!1001 &1407482784
+--- !u!114 &1489939125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 0}
+--- !u!1001 &1563928646
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1285,7 +1321,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 43.7
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1293,7 +1329,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 42.29
+      value: -29.5
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1313,32 +1349,22 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_RootOrder
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
     - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (2)
-      objectReference: {fileID: 0}
     - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -1346,58 +1372,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1451559935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 1379650626}
---- !u!114 &1562328870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  continuousPlayerActions:
-  - key: 97
-    index: 0
-    value: -1
-  - key: 100
-    index: 0
-    value: 1
-  - key: 119
-    index: 1
-    value: 1
-  - key: 115
-    index: 1
-    value: -1
-  discretePlayerActions:
-  - key: 97
-    value: 1
-  - key: 100
-    value: 2
-  - key: 119
-    value: 3
-  - key: 115
-    value: 4
-  - key: 107
-    value: 5
-  - key: 108
-    value: 6
-  defaultAction: 0
-  brain: {fileID: 1379650626}
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -1437,7 +1411,7 @@ MonoBehaviour:
     width: 1280
     height: 720
     qualityLevel: 5
-    timeScale: 1
+    timeScale: 2
     targetFrameRate: 60
   resetParameters:
     resetParameters:
@@ -1451,7 +1425,7 @@ MonoBehaviour:
   blueMaterial: {fileID: 2100000, guid: 00d852aac9443402984416f9dbcd22ea, type: 2}
   spawnAreaMarginMultiplier: 0
   gravityMultiplier: 1
-  randomizePlayersTeamForTraining: 1
+  randomizePlayersTeamForTraining: 0
   randomizeFieldOrientationForTraining: 0
   maxAgentSteps: 0
   agentRunSpeed: 2
@@ -1479,215 +1453,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1602848522
-Prefab:
+--- !u!114 &1590472990
+MonoBehaviour:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 135669828904592588, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1,
-        type: 2}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!1001 &1703657854
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -80.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 63.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 18
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (12)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!1001 &1828301388
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -40.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 63.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 21
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (15)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &1834703845
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 1379650626}
+--- !u!114 &1733604305
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1696,7 +1474,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
   continuousPlayerActions:
@@ -1712,23 +1490,28 @@ MonoBehaviour:
   - key: 115
     index: 1
     value: -1
-  - key: 32
-    index: 2
-    value: 1
   discretePlayerActions:
-  - key: 97
-    value: 3
-  - key: 100
-    value: 2
   - key: 119
     value: 0
   - key: 115
     value: 1
-  - key: 113
-    value: 4
-  - key: 101
-    value: 5
+  - key: 97
+    value: 3
+  - key: 100
+    value: 2
   defaultAction: -1
+  brain: {fileID: 1379650626}
+--- !u!114 &1855921370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
   brain: {fileID: 1890643319}
 --- !u!1 &1890643317
 GameObject:
@@ -1774,7 +1557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 84
+    vectorObservationSize: 112
     numStackedVectorObservations: 3
     vectorActionSize: 6
     cameraResolutions: []
@@ -1787,154 +1570,14 @@ MonoBehaviour:
     - 
     vectorActionSpaceType: 0
     vectorObservationSpaceType: 1
-  brainType: 2
+  brainType: 3
   CoreBrains:
-  - {fileID: 1834703845}
-  - {fileID: 1226423279}
-  - {fileID: 862422947}
-  - {fileID: 1304672023}
-  instanceID: 696442
---- !u!1001 &1924182183
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 40.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 63.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 13
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (7)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!1001 &1969548800
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 40.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 21.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_RootOrder
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 114745643959277844, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 114182201682752268, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1379650626}
-    - target: {fileID: 114677967743686142, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1890643319}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_Name
-      value: SoccerFieldStriker (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &2087771790
+  - {fileID: 776834324}
+  - {fileID: 1489939125}
+  - {fileID: 1855921370}
+  - {fileID: 1907029072}
+  instanceID: 1071798
+--- !u!114 &1907029072
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1942,8 +1585,198 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 1379650626}
+  broadcast: 0
+  graphModel: {fileID: 4900000, guid: 1e7a46c23c21a453cbda8b5b1f8c0932, type: 3}
+  graphScope: StrikerBrain
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
+  brain: {fileID: 1890643319}
+--- !u!1001 &2021930930
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 43.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &2028741382
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -86.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 58.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &2052540063
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -43.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -29.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631200763749478, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_RootOrder
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1379650626}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_Name
+      value: SoccerFieldStriker (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 1890643319}
+    - target: {fileID: 1116492406312002, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
+  m_IsPrefabParent: 0

@@ -238,7 +238,7 @@ public class SoccerFieldArea : MonoBehaviour
             }
         }
         randomSpawnPos = ground.transform.position + new Vector3(xOffset, 0f, 0f) + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 1;
+        randomSpawnPos.y = ground.transform.position.y + 2;
         return randomSpawnPos;
     }
 

@@ -132,11 +132,11 @@ public class AgentSoccer : Agent
         string[] detectableObjects;
         if (team == Team.red)
         {
-            detectableObjects = new string[] { "ball", "redGoal", "blueGoal", "wall" };
+            detectableObjects = new string[] { "ball", "redGoal", "blueGoal", "wall", "redAgent", "blueAgent" };
         }
         else
         {
-            detectableObjects = new string[] { "ball", "blueGoal", "redGoal", "wall" };
+            detectableObjects = new string[] { "ball", "blueGoal", "redGoal", "wall", "blueAgent", "redAgent" };
         }
         RayPerception(rayDistance, rayAngles, detectableObjects, 0f, 0f);
         RayPerception(rayDistance, rayAngles, detectableObjects, 1f, 1f);
@@ -164,32 +164,58 @@ public class AgentSoccer : Agent
         }
         else
         {
-            kickPower = 0f;
             int action = Mathf.FloorToInt(act[0]);
-            if (action == 0)
+
+            if (agentRole == AgentRole.goalie)
             {
-                dirToGo = transform.forward * 1f;
-                kickPower = 1f;
+                kickPower = 0f;
+                if (action == 0)
+                {
+                    dirToGo = transform.forward * 1f;
+                    kickPower = 1f;
+                }
+                else if (action == 1)
+                {
+                    dirToGo = transform.forward * -1f;
+                }
+                else if (action == 3)
+                {
+                    dirToGo = transform.right * -1f;
+                }
+                else if (action == 2)
+                {
+                    dirToGo = transform.right * 1f;
+                }
+
             }
-            else if (action == 1)
+            else 
             {
-                dirToGo = transform.forward * -1f;
-            }
-            else if (action == 2)
-            {
-                rotateDir = transform.up * 1f;
-            }
-            else if (action == 3)
-            {
-                rotateDir = transform.up * -1f;
-            }
-            else if (action == 4)
-            {
-                dirToGo = transform.right * -1f;
-            }
-            else if (action == 5)
-            {
-                dirToGo = transform.right * 1f;
+                kickPower = 0f;
+                if (action == 0)
+                {
+                    dirToGo = transform.forward * 1f;
+                    kickPower = 1f;
+                }
+                else if (action == 1)
+                {
+                    dirToGo = transform.forward * -1f;
+                }
+                else if (action == 2)
+                {
+                    rotateDir = transform.up * 1f;
+                }
+                else if (action == 3)
+                {
+                    rotateDir = transform.up * -1f;
+                }
+                else if (action == 4)
+                {
+                    dirToGo = transform.right * -1f;
+                }
+                else if (action == 5)
+                {
+                    dirToGo = transform.right * 1f;
+                }
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
@@ -208,26 +234,7 @@ public class AgentSoccer : Agent
             AddReward(1f / 3000f);
         }
         MoveAgent(vectorAction); //perform agent actions
-        if (agentRole == AgentRole.goalie)
-        {
-            if (playerDirToDefendGoal.sqrMagnitude < 4)
-            {
-                AddReward(0.001f);  //COACH SAYS: good job
-            }
-            else
-            {
-                AddReward(-0.001f); //COACH SAYS: stay by the goal idiot
-            }
-        }
-        float sqrMagnitudeFromAgentToBall = (area.ballRB.position - agentRB.position).sqrMagnitude;
 
-        if (!Physics.Raycast(agentRB.position, Vector3.down, 20)) //if the block has gone over the edge, we done.
-        {
-            // fail = true; //fell off bro
-            AddReward(-1f); // BAD AGENT
-                          // ResetBlock(shortBlockRB); //reset block pos
-            Done(); //if we mark an agent as done it will be reset automatically. AgentReset() will be called.
-        }
     }
 
     void OnCollisionEnter(Collision c)
@@ -258,11 +265,13 @@ public class AgentSoccer : Agent
 
         if (team == Team.red)
         {
-            transform.rotation = Quaternion.Euler(0f, -90f + Random.Range(-10f, 10f), 0f);
+            JoinRedTeam(agentRole);
+            transform.rotation = Quaternion.Euler(0f, -90f, 0f);
         }
         else
         {
-            transform.rotation = Quaternion.Euler(0f, 90f + Random.Range(-10f, 10f), 0f);
+            JoinBlueTeam(agentRole);
+            transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
         transform.position = area.GetRandomSpawnPos(team.ToString(), agentRole.ToString());
         agentRB.velocity = Vector3.zero; //we want the agent's vel to return to zero on reset

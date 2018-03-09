@@ -29,7 +29,18 @@ PushBlockBrain:
     num_layers: 2
 
 StrikerBrain:
-    max_steps: 5.0e5
+    max_steps: 5.0e4
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 128
+    num_layers: 2
+    normalize: false
+
+GoalieBrain:
+    max_steps: 5.0e4
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
