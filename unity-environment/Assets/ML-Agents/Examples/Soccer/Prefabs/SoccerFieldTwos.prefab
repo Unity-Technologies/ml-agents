@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 4631200763749478}
   - component: {fileID: 114954162751405156}
   m_Layer: 0
-  m_Name: SoccerField
+  m_Name: SoccerFieldTwos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
