@@ -16,7 +16,8 @@ provide an overview for each of these classes of machine learning, as well as in
 
 ## Unsupervised Learning
 
-The goal of unsupervised learning is to group or cluster similar items in a 
+The goal of 
+[unsupervised learning](https://en.wikipedia.org/wiki/Unsupervised_learning) is to group or cluster similar items in a 
 data set. For example, consider the players of a game. We may want to group 
 the players depending on how engaged they are with the game. This would enable
 us to target different groups (e.g. for highly-engaged players we might
@@ -44,7 +45,8 @@ learning algorithms which accept input labels in addition to attributes.
 
 ## Supervised Learning
 
-In supervised learning, we do not want to just group similar items but directly
+In [supervised learning](https://en.wikipedia.org/wiki/Supervised_learning),
+we do not want to just group similar items but directly
 learn a mapping from each item to the group (or class) that it belongs to.
 Returning to our earlier example of
 clustering players, let's say we now wish to predict which of our players are
@@ -81,7 +83,8 @@ machine learning algorithms, and arguably the one most relevant for ML-Agents.
 
 ## Reinforcement Learning
 
-Reinforcement learning can be viewed as a form of learning for sequential
+[Reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning)
+can be viewed as a form of learning for sequential
 decision making that is commonly associated with controlling robots (but is,
 in fact, much more general). Consider an autonomous firefighting robot that is
 tasked with navigating into an area, finding the fire and neutralizing it. At
@@ -178,6 +181,22 @@ observation-action-reward tuples.
 
 ## Deep Learning
 
-To be completed.
+[Deep learning](https://en.wikipedia.org/wiki/Deep_learning) is a family of 
+algorithms that can be used to address any of the problems introduced 
+above. More specifically, they can be used to solve both attribute and 
+model selection tasks. Deep learning has gained popularity in recent 
+years due to its outstanding performance on several challenging machine learning 
+tasks. One example is [AlphaGo](https://en.wikipedia.org/wiki/AlphaGo), 
+a  [computer Go](https://en.wikipedia.org/wiki/Computer_Go) program, that 
+leverages deep learning, that was able to beat Lee Sedol (a Go world champion).
 
-Link to TensorFlow background page.
+A key characteristic of deep learning algorithms is their ability learn very
+complex functions from large amounts of training data. This makes them a
+natural choice for reinforcement learning tasks when a large amount of data
+can be generated, say through the use of a simulator or engine such as Unity.
+By generating hundreds of thousands of simulations of
+the environment within Unity, we can learn policies for very complex environments
+(a complex environment is one where the number of observations an agent percieves
+and the number of actions they can take are large).
+Many of the algorithms we provide in ML-Agents use some form of deep learning,
+built on top of the open-source library, [TensorFlow](Background-TensorFlow.md).
