@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class WallJumpAgent : Agent
 {
@@ -55,7 +56,7 @@ public class WallJumpAgent : Agent
     public override void InitializeAgent()
     {
         configuration = Random.Range(0, 5);
-		StartGroundCheck();
+		//StartGroundCheck();
 
 		agentRB	= GetComponent<Rigidbody>(); //cache the agent rigidbody
 		shortBlockRB = shortBlock.GetComponent<Rigidbody>(); //cache the block rigidbody
@@ -100,33 +101,58 @@ public class WallJumpAgent : Agent
 	// GROUND CHECK
 	public void DoGroundCheck()
 	{
+        hitGroundColliders = new Collider[3];
+        Physics.OverlapBoxNonAlloc(agentRB.position + new Vector3(0, -0.1f, 0),
+                                   agentRB.transform.localScale/2.05f,
+                                           hitGroundColliders,
+                                   Quaternion.identity);
+        grounded = false;
+        foreach (Collider col in hitGroundColliders)
+        {
+            
+            if (col != null && col.transform != this.transform && col.CompareTag("walkableSurface"))
+            {
+                grounded = true; //then we're grounded
+                break;
+            }
+        }
 
-		Vector3 posToUse = agentRB.position + groundCheckOffset;
-		int numberGroundCollidersHit = Physics.OverlapSphereNonAlloc(posToUse, groundCheckRadius, hitGroundColliders); //chose .6 radius because this should make a sphere a little bit bigger than our cube that is a scale of 1 unit. sphere will be 1.2 units. 
-		if (numberGroundCollidersHit > 1 )
-		{
-			grounded = false;
-			foreach(Collider col in hitGroundColliders)
-			{
-				if(col != null && col.transform != this.transform && col.CompareTag("walkableSurface"))
-				{
-					//build a random position to use for a groundcheck raycast
-					Vector3 randomRaycastPos = agentRB.position;
-					randomRaycastPos += agentRB.transform.forward * Random.Range(-.5f, .5f); // random forward/back
-					randomRaycastPos += agentRB.transform.right * Random.Range(-.5f, .5f); // plus a random left/right
-					if (Physics.Raycast(randomRaycastPos, Vector3.down, .8f)) //if we hit
-					{
-						grounded = true; //then we're grounded
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			grounded = false;
-		}
+		//Vector3 posToUse = agentRB.position + groundCheckOffset;
+		//int numberGroundCollidersHit = Physics.OverlapSphereNonAlloc(posToUse, groundCheckRadius, hitGroundColliders); //chose .6 radius because this should make a sphere a little bit bigger than our cube that is a scale of 1 unit. sphere will be 1.2 units. 
+		//if (numberGroundCollidersHit > 1 )
+		//{
+		//	grounded = false;
+		//	foreach(Collider col in hitGroundColliders)
+		//	{
+		//		if(col != null && col.transform != this.transform && col.CompareTag("walkableSurface"))
+		//		{
+		//			//build a random position to use for a groundcheck raycast
+		//			Vector3 randomRaycastPos = agentRB.position;
+		//			randomRaycastPos += agentRB.transform.forward * Random.Range(-.5f, .5f); // random forward/back
+		//			randomRaycastPos += agentRB.transform.right * Random.Range(-.5f, .5f); // plus a random left/right
+		//			if (Physics.Raycast(randomRaycastPos, Vector3.down, .8f)) //if we hit
+		//			{
+		//				grounded = true; //then we're grounded
+		//				break;
+		//			}
+		//		}
+		//	}
+		//}
+		//else
+		//{
+		//	grounded = false;
+		//}
 	}
+
+    //Draw the Box Overlap as a gizmo to show where it currently is testing. Click the Gizmos button to see this
+    //void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    //Check that it is being run in Play Mode, so it doesn't try to draw this in Editor mode
+    //    //Draw a cube where the OverlapBox is (positioned where your GameObject is as well as a size)
+    //    Gizmos.DrawWireCube(agentRB.position + new Vector3(0, -0.1f, 0),
+    //                               agentRB.transform.localScale);
+    //}
 
 	//moves a rigidbody towards a position with a smooth controlled movement.
 	void MoveTowards(Vector3 targetPos, Rigidbody rb, float targetVel, float maxVel)
@@ -150,12 +176,14 @@ public class WallJumpAgent : Agent
         Vector3 shortBlockPos = shortBlockRB.transform.position - ground.transform.position;  //pos of goal rel to agent
 		Vector3 agentPos = agentRB.position - ground.transform.position;  //pos of agent rel to ground
 
-		//COLLECTIN STATES
+        //COLLECTIN STATES
+        AddVectorObs((shortBlockRB.transform.position - agentRB.position) / 20f);
         AddVectorObs(agentPos /20f);  //pos of agent rel to ground
         AddVectorObs(goalPos / 20f);  //pos of goal rel to ground
         AddVectorObs(shortBlockPos / 20f);  //pos of short block rel to ground
         AddVectorObs(agentRB.velocity / 20f); //agent's vel
         AddVectorObs(agentRB.transform.rotation.eulerAngles /180f - Vector3.one); //agent's rotation
+        AddVectorObs(grounded ? 1 : 0);
 	}
 
 	//use the ground's bounds to pick a random spawn pos
@@ -191,65 +219,65 @@ public class WallJumpAgent : Agent
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
 
-            AddReward(-0.0001f); //existential penalty
+            //AddReward(-0.0001f); //existential penalty
 
-            act[0] = Mathf.Clamp(act[0], -1, 1);
-            act[1] = Mathf.Clamp(act[1], -1, 1);
-            float speedX = 0;
-            float speedZ = 0;
-            if (act[0] != 0)
-            {
-                speedX = grounded ? act[0] : act[0] / 2; //if we are in the air, our move speed should be a fraction of normal speed.
-            }
-            if (act[1] != 0)
-            {
-                speedZ = grounded ? act[1] : act[1] / 2; //if we are in the air, our move speed should be a fraction of normal speed.
-            }
+            //act[0] = Mathf.Clamp(act[0], -1, 1);
+            //act[1] = Mathf.Clamp(act[1], -1, 1);
+            //float speedX = 0;
+            //float speedZ = 0;
+            //if (act[0] != 0)
+            //{
+            //    speedX = grounded ? act[0] : act[0] / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+            //}
+            //if (act[1] != 0)
+            //{
+            //    speedZ = grounded ? act[1] : act[1] / 2; //if we are in the air, our move speed should be a fraction of normal speed.
+            //}
 
-            Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
-            Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
-            Vector3 dirToGo = directionX + directionZ; //the dir we want to go
+            //Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
+            //Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
+            //Vector3 dirToGo = directionX + directionZ; //the dir we want to go
 
-            if (act[2] > 0 && !(jumpingTime > 0f) && grounded)
-            {
-                //jump
-                AddReward(-0.001f); //energy conservation penalty
-                //StartCoroutine(Jump());
-                Jump();
-            }
+            //if (act[2] > 0 && !(jumpingTime > 0f) && grounded)
+            //{
+            //    //jump
+            //    //AddReward(-0.0005f); //energy conservation penalty
+            //    //StartCoroutine(Jump());
+            //    Jump();
+            //}
 
-            if (jumpingTime > 0f)
-            {
+            //if (jumpingTime > 0f)
+            //{
 
-                //agentRB.AddForce(Vector3.up * 10, ForceMode.VelocityChange); 
-                jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z) + dirToGo/2;// + transform.forward / 4;
+            //    //agentRB.AddForce(Vector3.up * 10, ForceMode.VelocityChange); 
+            //    jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z) + dirToGo/2;// + transform.forward / 4;
 
-                MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity, academy.agentJumpVelocityMaxChange);
+            //    MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity, academy.agentJumpVelocityMaxChange);
 
-            }
+            //}
 
-            if (!(jumpingTime > 0f) && !grounded) //add some downward force so it's not floaty
-            {
-                agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
-            }
-            jumpingTime -= Time.fixedDeltaTime;
+            //if (!(jumpingTime > 0f) && !grounded) //add some downward force so it's not floaty
+            //{
+            //    agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
+            //}
+            //jumpingTime -= Time.fixedDeltaTime;
 
 
-            //add force
-            agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
-                                                                                         //agentRB.velocity = dirToGo * academy.agentRunSpeed;
-                                                                                         //rotate the player forward
-            if (dirToGo != Vector3.zero)
-            {
-                //agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
-                agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.fixedDeltaTime * academy.agentRotationSpeed);
-            }
+            ////add force
+            //agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
+            //                                                                             //agentRB.velocity = dirToGo * academy.agentRunSpeed;
+            //                                                                             //rotate the player forward
+            //if (dirToGo != Vector3.zero)
+            //{
+            //    //agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
+            //    agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.fixedDeltaTime * academy.agentRotationSpeed);
+            //}
         }
         else
         {
             float speedX = 0;
             float speedZ = 0;
-            AddReward(-0.0001f); //existential penalty
+            AddReward(-0.0005f); //existential penalty
             int action = (int)(act[0]);
             if (action == 1)
             {
@@ -267,18 +295,26 @@ public class WallJumpAgent : Agent
             {
                 speedZ = grounded ? -1f : -0.5f ; //if we are in the air, our move speed should be a fraction of normal speed.
             }
-            else if ((action == 5) && !(jumpingTime > 0f) && grounded)
+            else if ((action == 5) && (jumpingTime <= 0f) && grounded)
             {
-                AddReward(-0.001f); //energy conservation penalty
+                //AddReward(-0.001f); //energy conservation penalty
                 //StartCoroutine(Jump());
                 Jump();
             }
 
+
+
+            Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
+            Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
+            Vector3 dirToGo = directionX + directionZ; //the dir we want to go
+            agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
+                                                                                         //agentRB.velocity = dirToGo * academy.agentRunSpeed;
+                                                                                         //rotate the player forward
             if (jumpingTime > 0f)
             {
 
                 //agentRB.AddForce(Vector3.up * 10, ForceMode.VelocityChange); 
-                jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z);// + transform.forward / 4;
+                jumpTargetPos = new Vector3(agentRB.position.x, jumpStartingPos.y + academy.agentJumpHeight, agentRB.position.z)+dirToGo;// + transform.forward / 4;
 
                 MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity, academy.agentJumpVelocityMaxChange);
 
@@ -289,13 +325,6 @@ public class WallJumpAgent : Agent
                 agentRB.AddForce(Vector3.down * fallingForce, ForceMode.Acceleration);
             }
             jumpingTime -= Time.fixedDeltaTime;
-
-            Vector3 directionX = Vector3.right * speedX;  //go left or right in world space
-            Vector3 directionZ = Vector3.forward * speedZ; //go forward or back in world space
-            Vector3 dirToGo = directionX + directionZ; //the dir we want to go
-            agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange); //GO
-                                                                                         //agentRB.velocity = dirToGo * academy.agentRunSpeed;
-                                                                                         //rotate the player forward
             if (dirToGo != Vector3.zero)
             {
                 //agentRB.rotation = Quaternion.Lerp(agentRB.rotation, Quaternion.LookRotation(dirToGo), Time.deltaTime * academy.agentRotationSpeed);
@@ -307,7 +336,7 @@ public class WallJumpAgent : Agent
 
 	public override void AgentAction(float[] vectorAction, string textAction)
 	{
-
+        DoGroundCheck();
         MoveAgent(vectorAction); //perform agent actions
 		bool fail = false;  // did the agent or block get pushed off the edge?
 
@@ -364,7 +393,8 @@ public class WallJumpAgent : Agent
 	public override void AgentReset()
 	{
 		ResetBlock(shortBlockRB);
-		transform.position =  GetRandomSpawnPos();
+        //transform.position = GetRandomSpawnPos();
+        transform.localPosition = new Vector3(9 * 2*( Random.value-0.5f), 1, -12);
         configuration = Random.Range(0, 5);
 
         //if (ground.transform.parent.position.x >= 0)
