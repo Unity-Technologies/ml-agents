@@ -2,11 +2,22 @@
 
 The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. 
 
-Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
+Use the Brain class directly, rather than a subclass. Brain behavior is determined by the **Brain Type**. ML-Agents defines four Brain Types:
+
+* [External](Learning-Environment-External-Brains.md) — The **External** and **Internal** types typically work together; set **External** when training your agents. You can also use the **External** brain to communicate with a Python script via the Python `UnityEnvironment` class included in the Python portion of the ML-Agents SDK.
+* [Internal](Learning-Environment-Internal-Brains.md) – Set **Internal**  to make use of a trained model.
+* [Heuristic](Learning-Environment-Heuristic-Brains.md) – Set **Heuristic** to hand-code the agent's logic by extending the Decision class.
+* [Player](Learning-Environment-Player-Brains.md) – Set **Player** to map keyboard keys to agent actions, which can be useful to test your agent code.
+
+Each of these types is an implementation of the CoreBrain interface. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
+
+During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. 
 
 The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `Vector Observation Space Size` property must match the length of the feature vector created by an agent exactly. See [Agents](Learning-Environment-Design-Agents.md) for information about creating agents and setting up a Brain instance correctly.
 
 ## Brain Properties
+
+The Brain Inspector window in the Unity Editor displays the properties assigned to a Brain component:
 
 ![Brain Inspector](images/brain.png)
 
@@ -23,10 +34,10 @@ values (in _Discrete_ space type).
 values (in _Discrete_ action space).
 		* `Action Descriptions` - A list of strings used to name the available actions for the Brain.
 * `Type of Brain` - Describes how the Brain will decide actions.
-    * `External` - Actions are decided using Python API.
+    * `External` - Actions are decided by an external process, such as the PPO training process.
     * `Internal` - Actions are decided using internal TensorFlowSharp model.
     * `Player` - Actions are decided using Player input mappings.
-    * `Heuristic` - Actions are decided using custom `Decision` script, which should be attached to the Brain game object.
+    * `Heuristic` - Actions are decided using custom `Decision` script, which must be attached to the Brain game object.
 
 ### Internal Brain
 
@@ -48,7 +59,6 @@ values (in _Discrete_ action space).
 
 ### Player Brain
 
-![Player Brain Inspector](images/player_brain.png)
+The Brain property settings must match the Agent implementation. For example, if you specify that the Brain use the **Continuous State Space** and a **State Size** of 23, then the Agent must provide a state vector with 23 elements. See [Agents](Learning-Environment-Design-Agents.md) for more information about programming agents.
 
-If the action space is discrete, you must map input keys to their corresponding integer values. If the action space is continuous, you must map input keys to their corresponding indices and float values.
 

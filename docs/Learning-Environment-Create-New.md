@@ -309,7 +309,7 @@ With the action and reward logic outlined above, the final version of the `Agent
     public float speed = 10;
     private float previousDistance = float.MaxValue;
     
-    public override void AgentAct(float[] action)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
         // Rewards
         float distanceToTarget = Vector3.Distance(this.transform.position, 
@@ -341,8 +341,8 @@ With the action and reward logic outlined above, the final version of the `Agent
 
         // Actions, size = 2
         Vector3 controlSignal = Vector3.zero;
-        controlSignal.x = Mathf.Clamp(action[0], -1, 1);
-        controlSignal.z = Mathf.Clamp(action[1], -1, 1);
+        controlSignal.x = Mathf.Clamp(vectorAction[0], -1, 1);
+        controlSignal.z = Mathf.Clamp(vectorAction[1], -1, 1);
         rBody.AddForce(controlSignal * speed);
      }
 
