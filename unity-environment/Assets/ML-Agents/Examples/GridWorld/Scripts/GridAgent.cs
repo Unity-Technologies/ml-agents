@@ -86,7 +86,7 @@ public class GridAgent : Agent
 
     private void WaitTimeInference()
     {
-        if (!academy.isInference)
+        if (!academy.GetIsInference())
         {
             RequestDecision();
         }

@@ -18,8 +18,7 @@ public class Ball3DAgent : Agent
         AddVectorObs(gameObject.transform.rotation.x);
         AddVectorObs((ball.transform.position - gameObject.transform.position));
         AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity);
-        SetTextObs("Testing "+gameObject.GetInstanceID());
-
+        SetTextObs("Testing " + gameObject.GetInstanceID());
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -39,8 +38,8 @@ public class Ball3DAgent : Agent
                 gameObject.transform.Rotate(new Vector3(1, 0, 0), action_x);
             }
 
-             SetReward(0.1f);
-            
+            SetReward(0.1f);
+
         }
         if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
             Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
