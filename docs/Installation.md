@@ -40,9 +40,6 @@ to refer to either Python 2 or 3, depending on your installation.
 
 ### Windows Users
 
-If you are a Windows user who is new to Python and TensorFlow, follow 
-[this guide](https://unity3d.college/2017/10/25/machine-learning-in-unity3d-setting-up-the-environment-tensorflow-for-agentml-on-windows-10/)
-to set up your Python environment.
 
 ### Mac and Unix Users
 
