@@ -19,24 +19,26 @@ default:
     use_recurrent: false
 
 SmallWallBrain: 
-    max_steps: 2.0e5
-    batch_size: 1048
-    buffer_size: 10240
-    beta: 1.0e-2
-    hidden_units: 128
+    max_steps: 5.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
     summary_freq: 2000
-    time_horizon: 64
+    time_horizon: 128
     num_layers: 2
+    normalize: false
 
 BigWallBrain: 
-    max_steps: 1.0e5
-    batch_size: 1048
-    buffer_size: 10240
-    beta: 1.0e-2
-    hidden_units: 128
+    max_steps: 5.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
     summary_freq: 2000
-    time_horizon: 64
+    time_horizon: 128
     num_layers: 2
+    normalize: false
 
 PushBlockBrain:
     max_steps: 1.0e5

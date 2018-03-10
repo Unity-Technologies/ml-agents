@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 23546212824591690}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: walkableSurface
+  m_TagString: wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 54027918861229180}
   m_Layer: 0
   m_Name: shortBlock
-  m_TagString: walkableSurface
+  m_TagString: block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -215,7 +215,7 @@ Transform:
   m_GameObject: {fileID: 1395477826315484}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.51, y: 2.05, z: -3.86}
-  m_LocalScale: {x: 4, y: 2, z: 4}
+  m_LocalScale: {x: 3, y: 2, z: 3}
   m_Children: []
   m_Father: {fileID: 4768003208014390}
   m_RootOrder: 3
@@ -227,7 +227,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1195095783991828}
   m_LocalRotation: {x: -0, y: 0.96758014, z: -0, w: 0.25256422}
-  m_LocalPosition: {x: -1, y: 1, z: -12}
+  m_LocalPosition: {x: -8.2, y: 1, z: -12.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4930287780304116}
@@ -641,7 +641,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 50, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65551840025329434
 BoxCollider:
@@ -709,7 +709,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   visualizeGroundCheckSphere: 0
-  grounded: 1
   performingGroundCheck: 1
   groundCheckRadius: 0.48
   groundCheckOffset: {x: 0, y: -0.4, z: 0}
