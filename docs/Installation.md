@@ -26,13 +26,17 @@ The `unity-environment` directory in this repository contains the Unity Assets
 to add to your projects. The `python` directory contains the training code.
 Both directories are located at the root of the repository. 
 
-## Install Python
+## Install Python (with Dependencies)
 
 In order to use ML-Agents, you need Python (2 or 3; 64 bit required) along with
 the dependencies listed in the [requirements file](../python/requirements.txt).
 Some of the primary dependencies include:
 - [TensorFlow](Background-TensorFlow.md) 
 - [Jupyter](Background-Jupyter.md) 
+
+We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2
+in future releases. In all of our subsequent instructions, we use `python` 
+to refer to either Python 2 or 3, depending on your installation.
 
 ### Windows Users
 
