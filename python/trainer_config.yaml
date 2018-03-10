@@ -18,6 +18,12 @@ default:
     summary_freq: 1000
     use_recurrent: false
 
+BananaBrain:
+    normalize: false
+    batch_size: 1024
+    beta: 5.0e-3
+    buffer_size: 10240
+
 PushBlockBrain:
     max_steps: 2.0e5
     batch_size: 1048
