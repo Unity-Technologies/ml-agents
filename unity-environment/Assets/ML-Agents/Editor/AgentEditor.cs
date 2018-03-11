@@ -59,7 +59,7 @@ public class AgentEditor : Editor
         EditorGUILayout.PropertyField(
             isODD,
             new GUIContent(
-                "On Demand Decision",
+                "On Demand Decisions",
                 "If checked, you must manually request decisions."));
         if (!isODD.boolValue)
         {
