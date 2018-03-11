@@ -21,31 +21,31 @@ public class AgentSoccer : Agent
     [HideInInspector]
     public Rigidbody agentRB;
     SoccerAcademy academy;
-    Renderer renderer;
+    Renderer soccerRenderer;
 
     public void ChooseRandomTeam()
     {
         team = (Team)Random.Range(0, 2);
-        renderer.material = team == Team.red ? academy.redMaterial : academy.blueMaterial;
+        soccerRenderer.material = team == Team.red ? academy.redMaterial : academy.blueMaterial;
     }
 
     public void JoinRedTeam(AgentRole role)
     {
         agentRole = role;
         team = Team.red;
-        renderer.material = academy.redMaterial;
+        soccerRenderer.material = academy.redMaterial;
     }
 
     public void JoinBlueTeam(AgentRole role)
     {
         agentRole = role;
         team = Team.blue;
-        renderer.material = academy.blueMaterial;
+        soccerRenderer.material = academy.blueMaterial;
     }
 
     void Awake()
     {
-        renderer = GetComponent<Renderer>();
+        soccerRenderer = GetComponent<Renderer>();
         academy = FindObjectOfType<SoccerAcademy>();
         PlayerState playerState = new PlayerState();
         playerState.agentRB = GetComponent<Rigidbody>();
