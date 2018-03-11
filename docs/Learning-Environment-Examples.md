@@ -104,16 +104,16 @@ If you would like to contribute environments, please see our
 
 * Set-up: A platforming environment where the agent can jump over a wall.
 * Goal: The agent must use the block to scale the wall and reach the goal.
-* Agents: The environment contains one agent linked to a single brain.
+* Agents: The environment contains one agent linked to two different brains. The brain the agent is linked to changes depending on the height of the wall.
 * Agent Reward Function: 
-    * -0.01 for every step.
+    * -0.0005 for every step.
     * +1.0 if the agent touches the goal.
     * -1.0 if the agent falls off the platform.
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
-    * Vector Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Vector Action space: (Discrete) Size of 74, corresponding to 14 raycasts each detecting 4 possible objects. plus the global position of the agent and whether or not the agent is grounded.
     * Visual Observations: None.
-* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of the wall for Curriculum Learning.
+* Reset Parameters: 4, corresponding to the height of the possible walls.
 
 ## Reacher
 
