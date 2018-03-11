@@ -19,7 +19,7 @@ default:
     use_recurrent: false
 
 SmallWallBrain: 
-    max_steps: 5.0e5
+    max_steps: 2.0e5
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
@@ -30,7 +30,7 @@ SmallWallBrain:
     normalize: false
 
 BigWallBrain: 
-    max_steps: 5.0e5
+    max_steps: 2.0e5
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
