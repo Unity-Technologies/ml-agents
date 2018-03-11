@@ -118,7 +118,7 @@ public class PushAgentBasic : Agent
         Done();
 
         // Swap ground material for a bit to indicate we scored.
-        StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 1));
+        StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 0.5f));
     }
 
     /// <summary>
@@ -214,4 +214,3 @@ public class PushAgentBasic : Agent
         agentRB.angularVelocity = Vector3.zero;
     }
 }
-
