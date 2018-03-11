@@ -78,8 +78,8 @@ GameObject:
   - component: {fileID: 65694772044352326}
   - component: {fileID: 23564461918312698}
   m_Layer: 0
-  m_Name: GoalB
-  m_TagString: goal
+  m_Name: redGoal
+  m_TagString: redGoal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -130,8 +130,8 @@ GameObject:
   - component: {fileID: 65575186354124900}
   - component: {fileID: 23052381252885230}
   m_Layer: 0
-  m_Name: GoalA
-  m_TagString: goal
+  m_Name: orangeGoal
+  m_TagString: orangeGoal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 23122298029829586}
   - component: {fileID: 54112968250075710}
   - component: {fileID: 114286701363010626}
+  - component: {fileID: 114569343444552314}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -417,7 +418,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1185286572034058}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7, y: 0.5, z: 8.7}
+  m_LocalPosition: {x: 7, y: 0.5, z: 9}
   m_LocalScale: {x: 5, y: 0.32738775, z: 5}
   m_Children:
   - {fileID: 4152465931272056}
@@ -467,7 +468,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1390180936769712}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7, y: 0.5, z: 8.699999}
+  m_LocalPosition: {x: -7, y: 0.5, z: 9}
   m_LocalScale: {x: 5, y: 0.32739, z: 5}
   m_Children:
   - {fileID: 4184627531154506}
@@ -1146,7 +1147,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1537906118403888}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8c6374adc4d814c2eb5ecdfe810d813b, type: 2}
   m_IsTrigger: 0
   m_Enabled: 0
   serializedVersion: 2
@@ -1206,7 +1207,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1699348701669618}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8c6374adc4d814c2eb5ecdfe810d813b, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1218,7 +1219,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1143687295388296}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8c6374adc4d814c2eb5ecdfe810d813b, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1230,7 +1231,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1931145547757896}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8c6374adc4d814c2eb5ecdfe810d813b, type: 2}
   m_IsTrigger: 0
   m_Enabled: 0
   serializedVersion: 2
@@ -1284,16 +1285,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  stepCounter: 0
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 6
+    numberOfActionsBetweenDecisions: 5
   ground: {fileID: 1360208130907292}
   area: {fileID: 1745841960385024}
   goalA: {fileID: 1185286572034058}
   goalB: {fileID: 1390180936769712}
   orangeBlock: {fileID: 1699348701669618}
   violetBlock: {fileID: 1143687295388296}
+--- !u!114 &114569343444552314
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1471560210313468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -19,7 +19,7 @@ public class RayPerception : MonoBehaviour
                 GiveCatersian(rayDistance, noisyAngle));
             position.y = endOffset;
             Debug.DrawRay(transform.position + new Vector3(0f, startOffset, 0f),
-                          position, Color.red, 0.1f, true);
+                          position, Color.black, 0.01f, true);
             RaycastHit hit;
             float[] subList = new float[detectableObjects.Length + 2];
             if (Physics.SphereCast(transform.position +

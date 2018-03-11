@@ -40,6 +40,7 @@ public class PushAgentBasic : Agent
     Rigidbody blockRB;  //cached on initialization
     Rigidbody agentRB;  //cached on initialization
     Material groundMaterial; //cached on Awake()
+    RayPerception rayPer;
 
     /// <summary>
     /// We will be changing the ground material based on success/failue
@@ -58,6 +59,7 @@ public class PushAgentBasic : Agent
         base.InitializeAgent();
         goalDetect = block.GetComponent<GoalDetect>();
         goalDetect.agent = this;
+        rayPer = GetComponent<RayPerception>();
 
         // Cache the agent rigidbody
         agentRB = GetComponent<Rigidbody>();
@@ -73,31 +75,18 @@ public class PushAgentBasic : Agent
 
     public override void CollectObservations()
     {
-        // Block position relative to goal.
-        Vector3 blockPosRelToGoal = blockRB.position - goal.transform.position;
-        // Block position relative to agent.
-        Vector3 blockPosRelToAgent = blockRB.position - agentRB.position;
-        // Obstacle position relative to agent.
-
-        // Agent position relative to ground.
-        Vector3 agentPos = agentRB.position - area.transform.position;
-        // Goal position relative to ground.
-        Vector3 goalPos = goal.transform.position - ground.transform.position;
-
-        AddVectorObs(agentPos);
-        AddVectorObs(goalPos);
-        AddVectorObs(blockPosRelToGoal);
-        AddVectorObs(blockPosRelToAgent);
-
-        // Add velocity of block and agent to observations.
-        AddVectorObs(blockRB.velocity);
-        AddVectorObs(agentRB.velocity);
+        float rayDistance = 12f;
+        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+        string[] detectableObjects;
+        detectableObjects = new string[] { "block", "goal", "wall" };
+        AddVectorObs(rayPer.Percieve(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Percieve(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
     }
 
     /// <summary>
     /// Use the ground's bounds to pick a random spawn position.
     /// </summary>
-    public Vector3 GetRandomSpawnPos(float spawnHeight)
+    public Vector3 GetRandomSpawnPos()
     {
         bool foundNewSpawnLocation = false;
         Vector3 randomSpawnPos = Vector3.zero;
@@ -147,60 +136,37 @@ public class PushAgentBasic : Agent
     /// </summary>
 	public void MoveAgent(float[] act)
     {
-        // AGENT ACTIONS
-        // Here we define the actions our agent can use, such as
-        // "go left", "go forward", "turn", etc.
 
-        // In the brain we  define the number of axes we want to use here. 
-        // In this example we need 2 axes to define:
-        // Right/left movement (act[0])
-        // Forward/back movement (act[1])
+        Vector3 dirToGo = Vector3.zero;
+        Vector3 rotateDir = Vector3.zero;
 
-        // Example: Right/Left Movement. It is defined in this line:
-        // Vector3 directionX = Vector3.right * Mathf.Clamp(act[0], -1f, 1f);
+        int action = Mathf.FloorToInt(act[0]);
 
-        // The neural network is setting the act[0] value.
-        // If it chooses 1 then the agent will go right. 
-        // If it chooses -1 the agent will go left. 
-        // If it chooses .42 then it will go a little bit right
-        // If it chooses -.8 then it will go left (well...80% left)
-
-        // Energy Conservation Penalties
-        // Give penalties based on how fast the agent chooses to go. 
-        // The agent should only exert as much energy as necessary.
-        // This is how animals work as well. 
-        // i.e. You're probably not running in place at all times.
-
-        // Larger the value, the less the penalty is.
-        float energyConservPenaltyModifier = 10000;
-
-        // The larger the movement, the greater the penalty given.
-        AddReward(-Mathf.Abs(act[0]) / energyConservPenaltyModifier);
-        AddReward(-Mathf.Abs(act[1]) / energyConservPenaltyModifier);
-
-        Vector3 directionX = Vector3.zero;
-        Vector3 directionZ = Vector3.zero;
-
-
-        // Move left or right in world space.
-        directionX = Vector3.right * Mathf.Clamp(act[0], -1f, 1f);
-
-        // Move forward or back in world space.
-        directionZ = Vector3.forward * Mathf.Clamp(act[1], -1f, 1f);
-
-        // Add directions together. This is the direction we want the agent
-        // to move in.
-        Vector3 dirToGo = directionX + directionZ;
-
-        // Apply movement force!
-        agentRB.AddForce(dirToGo * academy.agentRunSpeed, ForceMode.VelocityChange);
-        if (dirToGo != Vector3.zero)
+        // Goalies and Strikers have slightly different action spaces.
+        switch (action)
         {
-            // Rotate the agent appropriately.
-            agentRB.rotation = Quaternion.Lerp(agentRB.rotation,
-                                               Quaternion.LookRotation(dirToGo),
-                                               Time.deltaTime * academy.agentRotationSpeed);
+            case 0:
+                dirToGo = transform.forward * 1f;
+                break;
+            case 1:
+                dirToGo = transform.forward * -1f;
+                break;
+            case 2:
+                rotateDir = transform.up * 1f;
+                break;
+            case 3:
+                rotateDir = transform.up * -1f;
+                break;
+            case 4:
+                dirToGo = transform.right * -1f;
+                break;
+            case 5:
+                dirToGo = transform.right * 1f;
+                break;
         }
+        transform.Rotate(rotateDir, Time.deltaTime * 200f);
+        agentRB.AddForce(dirToGo * academy.agentRunSpeed,
+                         ForceMode.VelocityChange);
 
     }
 
@@ -213,44 +179,7 @@ public class PushAgentBasic : Agent
         MoveAgent(vectorAction);
 
         // Penalty given each step to encourage agent to finish task quickly.
-        AddReward(-.00005f);
-
-        // Did the agent or block get pushed off the edge?
-        bool fail = false;
-
-        // If the agent has gone over the edge, end the episode.
-        if (!Physics.Raycast(agentRB.position, Vector3.down, 3))
-        {
-            // Fell off bro
-            fail = true;
-
-            // BAD AGENT
-            SetReward(-1f);
-
-            // If we mark an agent as done it will be reset automatically. 
-            // AgentReset() will be called.
-            Done();
-        }
-
-        // If the block has gone over the edge, end the episode.
-        if (!Physics.Raycast(blockRB.position, Vector3.down, 3))
-        {
-            // Fell off bro
-            fail = true;
-
-            // BAD AGENT
-            SetReward(-1f);
-
-            // If we mark an agent as done it will be reset automatically. 
-            // AgentReset() will be called.
-            Done();
-        }
-
-        if (fail)
-        {
-            // Swap ground material to indicate failure of the episode.
-            StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, 1f));
-        }
+        AddReward(-1f / 5000);
     }
 
     /// <summary>
@@ -259,7 +188,7 @@ public class PushAgentBasic : Agent
     void ResetBlock()
     {
         // Get a random position for the block.
-        block.transform.position = GetRandomSpawnPos(1.5f);
+        block.transform.position = GetRandomSpawnPos();
 
         // Reset block velocity back to zero.
         blockRB.velocity = Vector3.zero;
@@ -280,7 +209,7 @@ public class PushAgentBasic : Agent
         area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
         ResetBlock();
-        transform.position = GetRandomSpawnPos(1.5f);
+        transform.position = GetRandomSpawnPos();
         agentRB.velocity = Vector3.zero;
         agentRB.angularVelocity = Vector3.zero;
     }
