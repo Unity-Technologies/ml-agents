@@ -15,8 +15,7 @@ Using ML-Agents in a Unity project involves the following basic steps:
 3. Add one or more Brain objects to the scene as children of the Academy.
 4. Implement your Agent subclasses. An Agent subclass defines the code an agent uses to observe its environment, to carry out assigned actions, and to calculate the rewards used for reinforcement training. You can also implement optional methods to reset the agent when it has finished or failed its task.
 5. Add your Agent subclasses to appropriate GameObjects, typically, the object in the scene that represents the agent in the simulation. Each Agent object must be assigned a Brain object.
-6. If training, set the Brain type to External and [run the training process](Training-PPO.md).  
-
+6. If training, set the Brain type to External and [run the training process](Training-ML-Agents.md).  
 
 **Note:** If you are unfamiliar with Unity, refer to [Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html) in the Unity Manual if an Editor task isn't explained sufficiently in this tutorial.
 
@@ -145,7 +144,7 @@ Then, edit the new `RollerAgent` script:
 2. In the editor, change the base class from `MonoBehaviour` to `Agent`.
 3. Delete the `Update()` method, but we will use the `Start()` function, so leave it alone for now.
 
-So far, these are the basic steps that you would use to add ML-Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube.
+So far, these are the basic steps that you would use to add ML-Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube using reinforcement learning.
 
 In this simple scenario, we don't use the Academy object to control the environment. If we wanted to change the environment, for example change the size of the floor or add or remove agents or other objects before or during the simulation, we could implement the appropriate methods in the Academy. Instead, we will have the Agent do all the work of resetting itself and the target when it succeeds or falls trying. 
 
@@ -192,7 +191,7 @@ Next, let's implement the Agent.CollectObservations() function.
 
 **Observing the Environment**
 
-The Agent sends the information we collect to the Brain, which uses it to make a decision. When you train the agent using the PPO training algorithm (or use a trained PPO model), the data is fed into a neural network as a feature vector. For an agent to successfully learn a task, we need to provide the correct information. A good rule of thumb for deciding what information to collect is to consider what you would need to calculate an analytical solution to the problem. 
+The Agent sends the information we collect to the Brain, which uses it to make a decision. When you train the agent (or use a trained model), the data is fed into a neural network as a feature vector. For an agent to successfully learn a task, we need to provide the correct information. A good rule of thumb for deciding what information to collect is to consider what you would need to calculate an analytical solution to the problem. 
 
 In our case, the information our agent collects includes:
 
@@ -265,7 +264,7 @@ The agent clamps the action values to the range [-1,1] for two reasons. First, t
 
 **Rewards**
 
-Rewards are also assigned in the AgentAct() function. The learning algorithm uses the rewards assigned to the agent property at each step in the simulation and learning process to determine whether it is giving the agent to optimal actions. You want to reward an agent for completing the assigned task (reaching the Target cube, in this case) and punish the agent if it irrevocably fails (falls off the platform). You can sometimes speed up training with sub-rewards that encourage behavior that helps the agent complete the task. For example, the RollerAgent reward system provides a small reward if the agent moves closer to the target in a step. 
+Reinforcement learning requires rewards. Assign rewards in the `AgentAct()` function. The learning algorithm uses the rewards assigned to the agent at each step in the simulation and learning process to determine whether it is giving the agent to optimal actions. You want to reward an agent for completing the assigned task (reaching the Target cube, in this case) and punish the agent if it irrevocably fails (falls off the platform). You can sometimes speed up training with sub-rewards that encourage behavior that helps the agent complete the task. For example, the RollerAgent reward system provides a small reward if the agent moves closer to the target in a step and a small negative reward at each step which encourages the agent to complete its task quickly. 
 
 The RollerAgent calculates the distance to detect when it reaches the target. When it does, the code increments the Agent.reward variable by 1.0 and marks the agent as finished by setting the agent to done. 
 
@@ -391,5 +390,5 @@ The **Index** value corresponds to the index of the action array passed to `Agen
 
 Press **Play** to run the scene and use the WASD keys to move the agent around the platform. Make sure that there are no errors displayed in the Unity editor Console window and that the agent resets when it reaches its target or falls from the platform. Note that for more involved debugging, the ML-Agents SDK includes a convenient Monitor class that you can use to easily display agent status information in the Game window.
 
-Now you can train the Agent. To get ready for training, you must first to change the **Brain Type** from **Player** to **External**. From there the process is the same as described in [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md).
+Now you can train the Agent. To get ready for training, you must first to change the **Brain Type** from **Player** to **External**. From there, the process is the same as described in [Training ML-Agents](Training-ML-Agents.md). 
 

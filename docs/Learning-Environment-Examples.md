@@ -2,7 +2,7 @@
 
 Unity ML-Agents contains an expanding set of example environments which
 demonstrate various features of the platform. Environments are located in 
-`unity-environment/Assets/ML-Agents/Examples` and summarised below. 
+`unity-environment/Assets/ML-Agents/Examples` and summarized below. 
 Additionally, our 
 [first ML Challenge](https://connect.unity.com/challenges/ml-agents-1)
 contains environments created by the community.
@@ -125,7 +125,7 @@ If you would like to contribute environments, please see our
 * Agent Reward Function (independent): 
     * +0.1 Each step agent's hand is in goal location.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm rigidbodies.
+    * Vector Observation space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm Rigidbodies.
     * Vector Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
     * Visual Observations: None
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
