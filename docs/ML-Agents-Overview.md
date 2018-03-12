@@ -254,7 +254,7 @@ library.**
 
 The
 [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
-tutorial covers this training mode with the **Balance Ball** sample environment.
+tutorial covers this training mode with the **3D Balance Ball** sample environment.
 
 ### Custom Training and Inference
 
@@ -434,7 +434,7 @@ with several features to enable researchers and developers to leverage
 To help you use ML-Agents, we've created several in-depth tutorials 
 for [installing ML-Agents](Installation.md), 
 [getting started](Getting-Started-with-Balance-Ball.md) 
-with a sample Balance Ball environment (one of our many 
+with the 3D Balance Ball environment (one of our many 
 [sample environments](Learning-Environment-Examples.md)) and 
 [making your own environment](Learning-Environment-Create-New.md).
 
