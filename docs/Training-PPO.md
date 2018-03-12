@@ -1,6 +1,6 @@
 # Training with Proximal Policy Optimization
 
-This section is still to be written. Refer to [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md) for a walk-through of the PPO training process.
+This section is still to be written. Refer to [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md) for a walk-through of the PPO training process.
 
 ## Best Practices when training with PPO
 

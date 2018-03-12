@@ -31,9 +31,9 @@ If you would like to contribute environments, please see our
     * Visual Observations: 0
 * Reset Parameters: None
 
-## 3DBall
+## 3DBall: 3D Balance Ball
 
-![Balance Ball](images/balance.png)
+![3D Balance Ball](images/balance.png)
 
 * Set-up: A balance-ball task, where the agent controls the platform. 
 * Goal: The agent must balance the platform in order to keep the ball on it for as long as possible.
