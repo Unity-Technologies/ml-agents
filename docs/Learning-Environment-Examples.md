@@ -198,3 +198,29 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) 3 corresponding to agent force applied for the jump.
     * Visual Observations: None
 * Reset Parameters: None
+
+## Soccer Twos
+
+![SoccerTwos](images/soccer.png)
+
+* Set-up: Environment where four agents compete in a 2 vs 2 toy soccer game. 
+* Goal:
+    * Striker: Get the ball into the opponent's goal.
+    * Goalie: Prevent the ball from entering its own goal.
+* Agents: The environment contains four agents, with two linked to one brain (strikers) and two linked to another (goalies).
+* Agent Reward Function (dependent):
+    * Striker:
+        * +1 When ball enters opponent's goal.
+        * -0.1 When ball enters own team's goal.
+        * -0.001 Existential penalty.
+    * Goalie:
+        * -1 When ball enters team's goal.
+        * +0.1 When ball enters opponents goal.
+        * +0.001 Existential bonus.
+* Brains: Two brain with the following observation/action space:
+    * Vector Observation space: (Continuous) 112 corresponding to local 14 ray casts, each detecting 7 possible object types, along with the object's distance. Perception is in 180 degree view from front of agent.
+    * Vector Action space: (Discrete) 
+        * Striker: 6 corresponding to forward, backward, sideways movement, as well as rotation.
+        * Goalie: 4 corresponding to forward, backward, sideways movement.
+    * Visual Observations: None
+* Reset Parameters: None
