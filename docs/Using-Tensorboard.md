@@ -15,7 +15,7 @@ start TensorBoard:
 
 4. Open a browser window and navigate to [localhost:6006](http://localhost:6006).
 
-**Note:** If you don't assign a `run-id` identifier, `learn.py` uses the default string, "ppo". All the statistics will be saved to the same sub-folder and displayed as one session in TensorBoard. After a few runs, the displays can become difficult to interprete in this situation. You can delete the folders under the `summaries` directory to clear out old statistics.
+**Note:** If you don't assign a `run-id` identifier, `learn.py` uses the default string, "ppo". All the statistics will be saved to the same sub-folder and displayed as one session in TensorBoard. After a few runs, the displays can become difficult to interpret in this situation. You can delete the folders under the `summaries` directory to clear out old statistics.
 
 On the left side of the TensorBoard window, you can select which of the training runs you want to display. You can select multiple run-ids to compare statistics. The TensorBoard window also provides options for how to display and smooth graphs.
  

@@ -13,7 +13,7 @@ Note the differences between the discrete and continuous action spaces. When a b
 | **Property** |    | **Description** |
 | :--                  |:-- | :--                       |
 |**Continuous Player Actions**|| The mapping for the continuous vector action space. Shown when the action space is **Continuous**|. 
-|| **Size** | The number of key commands defined. You can assign more than one command to the same action index in order to send different values for that action. (If you press both keys at the same time, deterministic results are not guarenteed.)|
+|| **Size** | The number of key commands defined. You can assign more than one command to the same action index in order to send different values for that action. (If you press both keys at the same time, deterministic results are not guaranteed.)|
 ||**Element 0–N**| The mapping of keys to action values. |
 || **Key** | The key on the keyboard. |
 || **Index** | The element of the agent's action vector to set when this key is pressed. The index value cannot exceed the size of the Action Space (minus 1, since it is an array index).|

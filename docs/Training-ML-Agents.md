@@ -10,7 +10,7 @@ For an broader overview of reinforcement learning, imitation learning and the ML
 
 ## Training with Learn.py
 
-Use the Python `Learn.py` program to train agents. `Learn.py` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioural cloning imitation learning](Training-Imitation-Learning.md).
+Use the Python `Learn.py` program to train agents. `Learn.py` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioral cloning imitation learning](Training-Imitation-Learning.md).
 
 Run `Learn.py` from the command line to launch the training process. Use the command line patterns and the `trainer_config.yaml` file to control training options.
 
@@ -20,7 +20,7 @@ The basic command for training is:
 
 where `<env_file_path>` is the path to your Unity executable containing the agents to be trained and `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
-For example, suppose you have a project in Unity named "CatsOnBycycles" which contains agents ready to train. To perform the training:
+For example, suppose you have a project in Unity named "CatsOnBicyclesCatsOnBicycles" which contains agents ready to train. To perform the training:
 
 1. Build the project, making sure that you only include the training scene.
 2. Open a terminal or console window.
@@ -39,14 +39,14 @@ When training is finished, you can find the saved model in the `python/models` f
 
 While this example used the default training hyperparameters, you can edit the [training_config.yaml file](#training-config-file) with a text editor to set different values. 
 
-### Commandline training options
+### Command line training options
 
-In addition to passing the path of the Unity executable containing your training environment, you can set the following commandline options when invoking `learn.py`:
+In addition to passing the path of the Unity executable containing your training environment, you can set the following command line options when invoking `learn.py`:
 
 * `--curriculum=<file>` – Specify a curriculum json file for defining the lessons for curriculum training. See [Curriculum Training](Training-Curriculum-Learning.md) for more information.
 * `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to keep. Checkpoints are saved after the number of steps specified by the `save-freq` option. Once the maximum number of checkpoints has been reached, the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>` – Specify which lesson to start with when performing curriculum training. Defaults to 0.
-* `--load` – If set, the training code loads an already trained model to initialize the neural network before training. The learning code looks for the model in `python/models/<run-id>/` (which is also where it saves models at the end of training). When not set (the default), the neural network weigths are randomly initialized and an existing model is not loaded.
+* `--load` – If set, the training code loads an already trained model to initialize the neural network before training. The learning code looks for the model in `python/models/<run-id>/` (which is also where it saves models at the end of training). When not set (the default), the neural network weights are randomly initialized and an existing model is not loaded.
 * `--run-id=<path>` – Specifies an identifier for each training run. This identifier is used to name the subdirectories in which the trained model and summary statistics are saved as well as the saved model itself. The default id is "ppo". If you use TensorBoard to view the training statistics, always set a unique run-id for each training run. (The statistics for all runs with the same id are combined as if they were produced by a the same session.)
 * `--save-freq=<n>` Specifies how often (in  steps) to save the model during training. Defaults to 50000.
 * `--seed=<n>` – Specifies a number to use as a seed for the random number generator used by the training code.
@@ -67,17 +67,17 @@ The training config file, `trainer_config.yaml` specifies the training method, t
 | brain_to_imitate | For imitation learning, the name of the GameObject containing the Brain component to imitate. | BC |
 | buffer_size | The number of experiences to collect before updating the policy model. | PPO, BC |
 | epsilon | Influences how rapidly the policy can evolve during training.| PPO, BC |
-| gamma | The reward discount rate for the Generalized Advantage Estimater (GAE).  | PPO  |
+| gamma | The reward discount rate for the Generalized Advantage Estimator (GAE).  | PPO  |
 | hidden_units | The number of units in the hidden layers of the neural network. | PPO, BC |
 | lambd | The regularization parameter. | PPO  |
 | learning_rate | The initial learning rate for gradient descent. | PPO,  BC |
 | max_steps | The maximum number of simulation steps to run during a training session. | PPO, BC |
 | memory_size | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md). | PPO, BC |
 | normalize | Whether to automatically normalize observations. | PPO, BC |
-| num_epoch | The number of passes to makethrough the experience buffer when performing gradient descent optimization. | PPO, BC |
+| num_epoch | The number of passes to make through the experience buffer when performing gradient descent optimization. | PPO, BC |
 | num_layers | The number of hidden layers in the neural network. | PPO, BC |
 | sequence_length | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md). | PPO, BC |
-| summary_freq | How often, in steps, to save training statistics. This determines the number of data points shown by Tensorboard. | PPO, BC |
+| summary_freq | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard. | PPO, BC |
 | time_horizon | How many steps of experience to collect per-agent before adding it to the experience buffer. | PPO, BC |
 | trainer | The type of training to perform: "ppo" or "imitation".| PPO, BC |
 | use_recurrent | Train using a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md).| PPO, BC |
