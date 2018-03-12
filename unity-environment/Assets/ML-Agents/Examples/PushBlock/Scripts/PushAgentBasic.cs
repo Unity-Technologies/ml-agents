@@ -79,8 +79,8 @@ public class PushAgentBasic : Agent
         float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
         string[] detectableObjects;
         detectableObjects = new string[] { "block", "goal", "wall" };
-        AddVectorObs(rayPer.Percieve(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(rayPer.Percieve(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
     }
 
     /// <summary>
@@ -158,13 +158,13 @@ public class PushAgentBasic : Agent
                 rotateDir = transform.up * -1f;
                 break;
             case 4:
-                dirToGo = transform.right * -1f;
+                dirToGo = transform.right * -0.75f;
                 break;
             case 5:
-                dirToGo = transform.right * 1f;
+                dirToGo = transform.right * 0.75f;
                 break;
         }
-        transform.Rotate(rotateDir, Time.deltaTime * 200f);
+        transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
         agentRB.AddForce(dirToGo * academy.agentRunSpeed,
                          ForceMode.VelocityChange);
 
@@ -179,7 +179,7 @@ public class PushAgentBasic : Agent
         MoveAgent(vectorAction);
 
         // Penalty given each step to encourage agent to finish task quickly.
-        AddReward(-1f / 5000);
+        AddReward(-1f / agentParameters.maxStep);
     }
 
     /// <summary>

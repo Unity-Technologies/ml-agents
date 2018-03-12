@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class HallwayAgent : Agent
 {
-    public GameObject ground; 
+    public GameObject ground;
     public GameObject area;
     public GameObject orangeGoal;
     public GameObject redGoal;
     public GameObject orangeBlock;
     public GameObject redBlock;
     RayPerception rayPer;
-    Rigidbody shortBlockRB; 
+    Rigidbody shortBlockRB;
     Rigidbody agentRB;
     Material groundMaterial;
     Renderer groundRenderer;
@@ -24,9 +24,9 @@ public class HallwayAgent : Agent
         academy = FindObjectOfType<HallwayAcademy>();
         brain = FindObjectOfType<Brain>();
         rayPer = GetComponent<RayPerception>();
-        agentRB = GetComponent<Rigidbody>(); 
+        agentRB = GetComponent<Rigidbody>();
         groundRenderer = ground.GetComponent<Renderer>();
-        groundMaterial = groundRenderer.material; 
+        groundMaterial = groundRenderer.material;
     }
 
     public override void CollectObservations()
@@ -35,7 +35,7 @@ public class HallwayAgent : Agent
         float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
         string[] detectableObjects = { "orangeGoal", "redGoal", "orangeBlock", "redBlock", "wall" };
         AddVectorObs((float)GetStepCount() / (float)agentParameters.maxStep);
-        AddVectorObs(rayPer.Percieve(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
     }
 
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
@@ -82,25 +82,25 @@ public class HallwayAgent : Agent
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         AddReward(-1f / agentParameters.maxStep);
-        MoveAgent(vectorAction); 
+        MoveAgent(vectorAction);
     }
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag("orangeGoal") || col.gameObject.CompareTag("redGoal")) 
+        if (col.gameObject.CompareTag("orangeGoal") || col.gameObject.CompareTag("redGoal"))
         {
-            if ((selection == 0 && col.gameObject.CompareTag("orangeGoal")) || 
+            if ((selection == 0 && col.gameObject.CompareTag("orangeGoal")) ||
                 (selection == 1 && col.gameObject.CompareTag("redGoal")))
             {
-                SetReward(1f); 
-                StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 0.5f)); 
+                SetReward(1f);
+                StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 0.5f));
             }
             else
             {
-                SetReward(-0.1f); 
-                StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, 0.5f)); 
+                SetReward(-0.1f);
+                StartCoroutine(GoalScoredSwapGroundMaterial(academy.failMaterial, 0.5f));
             }
-            Done(); 
+            Done();
         }
     }
 
@@ -111,11 +111,11 @@ public class HallwayAgent : Agent
         selection = Random.Range(0, 2);
         if (selection == 0)
         {
-            orangeBlock.transform.position = 
-                new Vector3(0f + Random.Range(-3f, 3f), 2f, blockOffset + Random.Range(-5f, 5f)) 
+            orangeBlock.transform.position =
+                new Vector3(0f + Random.Range(-3f, 3f), 2f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
-            redBlock.transform.position = 
-                new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f)) 
+            redBlock.transform.position =
+                new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
         }
         else
@@ -123,13 +123,13 @@ public class HallwayAgent : Agent
             orangeBlock.transform.position =
                            new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
                            + ground.transform.position;
-            redBlock.transform.position = 
-                new Vector3(0f, 2f, blockOffset + Random.Range(-5f, 5f)) 
+            redBlock.transform.position =
+                new Vector3(0f, 2f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
         }
 
-        transform.position = new Vector3(0f+ Random.Range(-3f, 3f), 
-                                         1f, agentOffset + Random.Range(-5f, 5f)) 
+        transform.position = new Vector3(0f + Random.Range(-3f, 3f),
+                                         1f, agentOffset + Random.Range(-5f, 5f))
             + ground.transform.position;
         transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
         agentRB.velocity *= 0f;

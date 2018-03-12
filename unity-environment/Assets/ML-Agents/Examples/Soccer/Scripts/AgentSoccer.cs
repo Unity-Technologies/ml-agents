@@ -44,8 +44,9 @@ public class AgentSoccer : Agent
         agentRenderer.material = academy.blueMaterial;
     }
 
-    void Awake()
+    public override void InitializeAgent()
     {
+        base.InitializeAgent();
         agentRenderer = GetComponent<Renderer>();
         rayPer = GetComponent<RayPerception>();
         academy = FindObjectOfType<SoccerAcademy>();
@@ -58,11 +59,6 @@ public class AgentSoccer : Agent
         area.playerStates.Add(playerState);
         playerIndex = area.playerStates.IndexOf(playerState);
         playerState.playerIndex = playerIndex;
-    }
-
-    public override void InitializeAgent()
-    {
-        base.InitializeAgent();
     }
 
     public override void CollectObservations()
@@ -80,8 +76,8 @@ public class AgentSoccer : Agent
             detectableObjects = new string[] { "ball", "blueGoal", "redGoal",
                 "wall", "blueAgent", "redAgent" };
         }
-        AddVectorObs(rayPer.Percieve(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(rayPer.Percieve(rayDistance, rayAngles, detectableObjects, 1f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1f, 0f));
     }
 
     public void MoveAgent(float[] act)
@@ -131,10 +127,10 @@ public class AgentSoccer : Agent
                     rotateDir = transform.up * -1f;
                     break;
                 case 4:
-                    dirToGo = transform.right * -1f;
+                    dirToGo = transform.right * -0.75f;
                     break;
                 case 5:
-                    dirToGo = transform.right * 1f;
+                    dirToGo = transform.right * 0.75f;
                     break;
             }
         }
