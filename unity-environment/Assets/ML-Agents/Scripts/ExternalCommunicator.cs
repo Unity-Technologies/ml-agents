@@ -36,7 +36,7 @@ public class ExternalCommunicator : Communicator
     StreamWriter logWriter;
     string logPath;
 
-    const string api = "API-3";
+    const string _version_ = "API-3";
 
     /// Placeholder for state information to send.
     [System.Serializable]
@@ -132,7 +132,7 @@ public class ExternalCommunicator : Communicator
         accParamerters.brainParameters = new List<BrainParameters>();
         accParamerters.brainNames = new List<string>();
         accParamerters.externalBrainNames = new List<string>();
-        accParamerters.apiNumber = api;
+        accParamerters.apiNumber = _version_;
         accParamerters.logPath = logPath;
         foreach (Brain b in brains)
         {
