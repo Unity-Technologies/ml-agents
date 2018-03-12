@@ -169,7 +169,7 @@ If you would like to contribute environments, please see our
 
 ![Hallway](images/hallway.png)
 
-* Set-up: Environment where the agent needs to find information in a room, remeber it, and use it to move to the correct goal.
+* Set-up: Environment where the agent needs to find information in a room, remember it, and use it to move to the correct goal.
 * Goal: Move to the goal which corresponds to the color of the block in the room.
 * Agents: The environment contains one agent linked to a single brain.
 * Agent Reward Function (independent):

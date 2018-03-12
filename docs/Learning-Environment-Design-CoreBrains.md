@@ -95,6 +95,8 @@ For your CoreBrain implementation to appear in the list of Brain Types, you must
 
 When the Brain creates an instance of your CoreBrain, it adds the enum name to the string, "CoreBrain". Thus, the class name for the Internal brain is `CoreBrainInternal`. If you created a class named, `CoreBrainFuzzyLogic`, you would add an enum named, "FuzzyLogic", to the BrainType enum.
 
+<!--
 ## Example CoreBrain implementation
 
 Once you have determined that the existing CoreBrain implementations do not fill your needs, you can implement your own. Use `SendState()` to collect the observations from your agents and store them for use in `DecideAction()`.
+-->

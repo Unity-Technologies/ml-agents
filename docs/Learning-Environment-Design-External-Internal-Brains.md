@@ -1,21 +1,33 @@
-# Internal Brain
+# External and Internal Brains
 
-The Internal Brain type uses a [TensorFlow model](https://www.tensorflow.org/get_started/get_started_for_beginners#models_and_training) to make decisions. The Proximal Policy Optimization (PPO) algorithm included with the ML-Agents SDK produces a trained TensorFlow model that you can use with the Internal Brain type.
+The **External** and **Internal** types of Brains work in different phases of training. When training your agents, set their brain types to **External**; when using the trained models, set their brain types to **Internal**.
+
+## External Brain
+
+When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least one Brain object in a scene must be set to **External**. This allows the training process to collect the observations of agents using that brain and give the agents their actions.
+
+In addition to using an External brain for training using the ML-Agents learning algorithms, you can use an External brain to control agents in a Unity environment using an external Python program. See [Python API](Python-API.md) for more information.
+
+Unlike the other types, the External Brain has no properties to set in the Unity Inspector window.
+
+## Internal Brain
+
+The Internal Brain type uses a [TensorFlow model](https://www.tensorflow.org/get_started/get_started_for_beginners#models_and_training) to make decisions. The Proximal Policy Optimization (PPO) and Behavioral Cloning algorithms included with the ML-Agents SDK produce trained TensorFlow models that you can use with the Internal Brain type.
 
 A __model__ is a mathematical relationship mapping an agent's observations to its actions. TensorFlow is a software library for performing numerical computation through data flow graphs. A TensorFlow model, then, defines the mathematical relationship between your agent's observations and its actions using a TensorFlow data flow graph. 
 
-## Creating a graph model
+### Creating a graph model
 
-The PPO algorithm included with the ML-Agents SDK produces a TensorFlow graph model as the end result of the training process. See [Training with Proximal Policy Optimization](Training-PPO.md) for intructions on how to create and train a model using PPO.
+The training algorithma included in the ML-Agents SDK produce TensorFlow graph models as the end result of the training process. See [Training ML-Agents](Training-ML-Agents.md) for instructions on how to train a model.
 
-## Using a graph model
+### Using a graph model
 
 To use a graph model:
 
 1. Select the Brain GameObject in the **Hierarchy** window of the Unity Editor. (The Brain GameObject must be a child of the Academy Gameobject and must have a Brain component.)
 2. Set the **Brain Type** to **Internal**.
 
-    **Note:** In order to see the **Internal** Brain Type option, you must [enable TensorFlowSharp](link).  
+    **Note:** In order to see the **Internal** Brain Type option, you must [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).  
 
 3. Import the `environment_run-id.bytes` file produced by the PPO training program. (Where `environment_run-id` is the name of the model file, which is constructed from the name of your Unity environment executable and the run-id value you assigned when running the training process.)
 
@@ -23,18 +35,18 @@ To use a graph model:
     
 4. Once the `environment.bytes` file is imported, drag it from the **Project** window to the **Graph Model** field of the Brain component.
 
-If you are using a model produced by the ML-Agents PPO program, use the default values for the other Internal Brain parameters.
+If you are using a model produced by the ML-Agents `learn.py` program, use the default values for the other Internal Brain parameters.
 
-## Internal Brain properties
+### Internal Brain properties
 
-The default values of the TensorFlow graph parameters work with the model produced by the PPO training code in the ML-Agents SDK. To use a default PPO model, the only parameter that you need to set is the `Graph Model`, which must be set to the .bytes file containing the trained model itself. 
+The default values of the TensorFlow graph parameters work with the model produced by the PPO and BC training code in the ML-Agents SDK. To use a default ML-Agents model, the only parameter that you need to set is the `Graph Model`, which must be set to the .bytes file containing the trained model itself. 
 
 ![Internal Brain Inspector](images/internal_brain.png)
 
 
    *  `Graph Model` : This must be the `bytes` file corresponding to the pretrained Tensorflow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
 
-Only change the following Internal Brain properties if you have created your own TensorFlow model and are not using the ML-Agents PPO model:
+Only change the following Internal Brain properties if you have created your own TensorFlow model and are not using an ML-Agents model:
 
    *  `Graph Scope` : If you set a scope while training your TensorFlow model, all your placeholder name will have a prefix. You must specify that prefix here.
    *  `Batch Size Node Name` : If the batch size is one of the inputs of your graph, you must specify the name if the placeholder here. The brain will make the batch size equal to the number of agents connected to the brain automatically.

@@ -1,6 +1,6 @@
 # Training ML-Agents
 
-ML-Agents conducts training using an external Python training process. During training, this external process communicates with the Academy object in the Unity scene to generate a block of agent experiences. These experiences become the training set for a neural network used to optimize the agent's policy (which is essentially a mathematical function mapping observations to actions). In reinforcement learning, the neural network optimizes the policy by maximizing the expected rewards. In imitation learning, the neural network optimizes the policy to achieve the smallest difference between the actions chosen by the agent trainee and the imitated actions. 
+ML-Agents conducts training using an external Python training process. During training, this external process communicates with the Academy object in the Unity scene to generate a block of agent experiences. These experiences become the training set for a neural network used to optimize the agent's policy (which is essentially a mathematical function mapping observations to actions). In reinforcement learning, the neural network optimizes the policy by maximizing the expected rewards. In imitation learning, the neural network optimizes the policy to achieve the smallest difference between the actions chosen by the agent trainee and the actions chosen by the expert in the same situation. 
 
 The output of the training process is a model file containing the optimized policy. This model file is a TensorFlow data graph containing the mathematical operations and the optimized weights selected during the training process. You can use the generated model file with the Internal Brain type in your Unity project to decide the best course of action for an agent. 
 
@@ -10,7 +10,7 @@ For an broader overview of reinforcement learning, imitation learning and the ML
 
 ## Training with Learn.py
 
-Use the Python `Learn.py` program to train agents. `Learn.py` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioural cloning imitation learning](link).
+Use the Python `Learn.py` program to train agents. `Learn.py` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioural cloning imitation learning](Training-Imitation-Learning.md).
 
 Run `Learn.py` from the command line to launch the training process. Use the command line patterns and the `trainer_config.yaml` file to control training options.
 
@@ -44,10 +44,10 @@ While this example used the default training hyperparameters, you can edit the [
 In addition to passing the path of the Unity executable containing your training environment, you can set the following commandline options when invoking `learn.py`:
 
 * `--curriculum=<file>` – Specify a curriculum json file for defining the lessons for curriculum training. See [Curriculum Training](Training-Curriculum-Learning.md) for more information.
-* `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to keep. Checkpoints are saved after the number of steps specified by the `save-freq` option. Once the maximum number of checkpoints has been reached, the oldest checkpoint is overwritten. Defaults to 5.
+* `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to keep. Checkpoints are saved after the number of steps specified by the `save-freq` option. Once the maximum number of checkpoints has been reached, the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>` – Specify which lesson to start with when performing curriculum training. Defaults to 0.
-* `--load` – If set, the training code loads an already trained model to initialize the neural network before training. A trained model must exist. The learning code looks for the model in `python/models/<run-id>/` (which is also where it saves models at the end of training). When not set (the default), the neural network weigths are randomly initialized and an existing model is not loaded.
-* `--run-id=<path>` – Specifies an identifier for each training run. This identifier is used to name the subdirectories in which the trained model and summary statistics are saved. The default id is "ppo". If you use TensorBoard to view the training statistics, always set a unique run-id for each training run. (Otherwise, the statistics for all runs with the same id are all mashed together.)
+* `--load` – If set, the training code loads an already trained model to initialize the neural network before training. The learning code looks for the model in `python/models/<run-id>/` (which is also where it saves models at the end of training). When not set (the default), the neural network weigths are randomly initialized and an existing model is not loaded.
+* `--run-id=<path>` – Specifies an identifier for each training run. This identifier is used to name the subdirectories in which the trained model and summary statistics are saved as well as the saved model itself. The default id is "ppo". If you use TensorBoard to view the training statistics, always set a unique run-id for each training run. (The statistics for all runs with the same id are combined as if they were produced by a the same session.)
 * `--save-freq=<n>` Specifies how often (in  steps) to save the model during training. Defaults to 50000.
 * `--seed=<n>` – Specifies a number to use as a seed for the random number generator used by the training code.
 * `--slow` – Specify this option to run the Unity environment at normal, game speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate** specified in the Academy's **Inference Configuration**. By default, training runs using the speeds specified in your Academy's **Training Configuration**. See [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
@@ -59,60 +59,35 @@ In addition to passing the path of the Unity executable containing your training
 
 The training config file, `trainer_config.yaml` specifies the training method, the hyperparameters, and a few additional values to use during training. The file is divided into sections. The **default** section defines the default values for all the available settings. You can also add new sections to override these defaults to train specific Brains. Name each of these override sections after the GameObject containing the Brain component that should use these settings. (This GameObject will be a child of the Academy in your scene.) Sections for the example environments are included in the provided config file. `Learn.py` finds the config file by name and looks for it in the same directory as itself.
 
-| ** Setting ** | **Description** |
-| :--               | :--                     |
-| batch_size | The number of experiences in each iteration of gradient descent.|
-| batches_per_epoch | In imitation learning, the number of batches of training examples to collect before training the model.|
-| beta | the strength of entropy regularization.|
-| brain_to_imitate | For imitation learning, the name of the GameObject containing the Brain component to imitate. |
-| buffer_size | The number of experiences to collect before  |
-| epsilon | Influences how rapidly the policy can evolve during training.|
-| gamma | The reward discount rate for the Generalized Advantage Estimater (GAE). |
-| hidden_units | The number of units in the hidden layers of the neural network. |
-| lambd | The regularization parameter. |
-| learning_rate | The initial learning rate for gradient descent. |
-| max_steps | The maximum number of simulation steps to run during a training session. |
-| memory_size |  |
-| normalize | Whether to automatically normalize observations. |
-| num_epoch | The number of passes to makethrough the experience buffer when performing gradient descent optimization. |
-| num_layers | The number of hidden layers in the neural network. |
-| sequence_length | |
-| summary_freq | How often, in steps, to save training statistics. This determines the number of data points shown by Tensorboard. |
-| time_horizon | h|
-| trainer | c|
-| use_recurrent |c|
+| ** Setting ** | **Description** | **Applies To Trainer**|
+| :--                | :--                       | :--                                  |
+| batch_size | The number of experiences in each iteration of gradient descent.| PPO, BC |
+| batches_per_epoch | In imitation learning, the number of batches of training examples to collect before training the model.| BC |
+| beta | The strength of entropy regularization.| PPO, BC |
+| brain_to_imitate | For imitation learning, the name of the GameObject containing the Brain component to imitate. | BC |
+| buffer_size | The number of experiences to collect before updating the policy model. | PPO, BC |
+| epsilon | Influences how rapidly the policy can evolve during training.| PPO, BC |
+| gamma | The reward discount rate for the Generalized Advantage Estimater (GAE).  | PPO  |
+| hidden_units | The number of units in the hidden layers of the neural network. | PPO, BC |
+| lambd | The regularization parameter. | PPO  |
+| learning_rate | The initial learning rate for gradient descent. | PPO,  BC |
+| max_steps | The maximum number of simulation steps to run during a training session. | PPO, BC |
+| memory_size | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md). | PPO, BC |
+| normalize | Whether to automatically normalize observations. | PPO, BC |
+| num_epoch | The number of passes to makethrough the experience buffer when performing gradient descent optimization. | PPO, BC |
+| num_layers | The number of hidden layers in the neural network. | PPO, BC |
+| sequence_length | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md). | PPO, BC |
+| summary_freq | How often, in steps, to save training statistics. This determines the number of data points shown by Tensorboard. | PPO, BC |
+| time_horizon | How many steps of experience to collect per-agent before adding it to the experience buffer. | PPO, BC |
+| trainer | The type of training to perform: "ppo" or "imitation".| PPO, BC |
+| use_recurrent | Train using a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md).| PPO, BC |
+|| PPO = Proximal Policy Optimization, BC = Behavioral Cloning (Imitation)) ||
 
-## Observing Training Progress
+For specific advice on setting hyperparameters based on the type of training you are conducting, see:
 
-Once you start training using `learn.py` in the way described in the previous section, the `ml-agents` folder will 
-contain a `summaries` directory. In order to observe the training process 
-in more detail, you can use TensorBoard. From the command line run :
+* [Training with PPO](Training-PPO.md)
+* [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md)
+* [Imitation Learning](Training-Imitation-Learning.md)
+* [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 
-`tensorboard --logdir=summaries`
-
-Then navigate to `localhost:6006`.
-
-From TensorBoard, you will see the summary statistics:
-
-* Lesson - only interesting when performing
-[curriculum training](Training-Curriculum-Learning.md). 
-This is not used in the 3d Balance Ball environment. 
-* Cumulative Reward - The mean cumulative episode reward over all agents. 
-Should increase during a successful training session.
-* Entropy - How random the decisions of the model are. Should slowly decrease 
-during a successful training process. If it decreases too quickly, the `beta` 
-hyperparameter should be increased.
-* Episode Length - The mean length of each episode in the environment for all 
-agents.
-* Learning Rate - How large a step the training algorithm takes as it searches 
-for the optimal policy. Should decrease over time.
-* Policy Loss - The mean loss of the policy function update. Correlates to how
-much the policy (process for deciding actions) is changing. The magnitude of 
-this should decrease during a successful training session.
-* Value Estimate - The mean value estimate for all states visited by the agent. 
-Should increase during a successful training session.
-* Value Loss - The mean loss of the value function update. Correlates to how
-well the model is able to predict the value of each state. This should decrease
-during a successful training session.
-
-![Example TensorBoard Run](images/mlagents-TensorBoard.png)
+You can also compare the [example environments](Learning-Environment-Examples.md) to the corresponding sections of the `trainer-config.yaml` file for each example to see how the hyperparameters and other configuration variables have been changed from the defaults.

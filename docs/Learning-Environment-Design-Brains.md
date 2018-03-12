@@ -4,8 +4,8 @@ The Brain encapsulates the decision making process. Brain objects must be childr
 
 Use the Brain class directly, rather than a subclass. Brain behavior is determined by the **Brain Type**. ML-Agents defines four Brain Types:
 
-* [External](Learning-Environment-External-Brains.md) — The **External** and **Internal** types typically work together; set **External** when training your agents. You can also use the **External** brain to communicate with a Python script via the Python `UnityEnvironment` class included in the Python portion of the ML-Agents SDK.
-* [Internal](Learning-Environment-Internal-Brains.md) – Set **Internal**  to make use of a trained model.
+* [External](Learning-Environment-External-Internal-Brains.md) — The **External** and **Internal** types typically work together; set **External** when training your agents. You can also use the **External** brain to communicate with a Python script via the Python `UnityEnvironment` class included in the Python portion of the ML-Agents SDK.
+* [Internal](Learning-Environment-External-Internal-Brains.md) – Set **Internal**  to make use of a trained model.
 * [Heuristic](Learning-Environment-Heuristic-Brains.md) – Set **Heuristic** to hand-code the agent's logic by extending the Decision class.
 * [Player](Learning-Environment-Player-Brains.md) – Set **Player** to map keyboard keys to agent actions, which can be useful to test your agent code.
 
@@ -36,29 +36,8 @@ values (in _Discrete_ action space).
 * `Type of Brain` - Describes how the Brain will decide actions.
     * `External` - Actions are decided by an external process, such as the PPO training process.
     * `Internal` - Actions are decided using internal TensorFlowSharp model.
-    * `Player` - Actions are decided using Player input mappings.
-    * `Heuristic` - Actions are decided using custom `Decision` script, which must be attached to the Brain game object.
+    * `Player` - Actions are decided using keyboard input mappings.
+    * `Heuristic` - Actions are decided using a custom `Decision` script, which must be attached to the Brain game object.
 
-### Internal Brain
-
-![Internal Brain Inspector](images/internal_brain.png)
-
-   *  `Graph Model` : This must be the `bytes` file corresponding to the pretrained Tensorflow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
-   *  `Graph Scope` : If you set a scope while training your TensorFlow model, all your placeholder name will have a prefix. You must specify that prefix here.
-   *  `Batch Size Node Name` : If the batch size is one of the inputs of your graph, you must specify the name if the placeholder here. The brain will make the batch size equal to the number of agents connected to the brain automatically.
-   *  `Vector Observation Node Name` : If your graph uses a vector observation as an input, you must specify the name if the placeholder here.
-   *  `Recurrent Input Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the input placeholder here.
-   *  `Recurrent Output Node Name` : If your graph uses a recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if the output placeholder here.
-   * `Visual Observation Placeholder Name` : If your graph uses observations as input, you must specify it here. Note that the number of observations is equal to the length of `Camera Resolutions` in the brain parameters.
-   * `Action Node Name` : Specify the name of the placeholder corresponding to the actions of the brain in your graph. If the action space type is continuous, the output must be a one dimensional tensor of float of length `Action Space Size`, if the action space type is discrete, the output must be a one dimensional tensor of int of length 1.
-   * `Graph Placeholder` : If your graph takes additional inputs that are fixed (example: noise level) you can specify them here. Note that in your graph, these must correspond to one dimensional tensors of int or float of size 1.
-     * `Name` : Corresponds to the name of the placeholdder.
-     * `Value Type` : Either Integer or Floating Point.
-     * `Min Value` and `Max Value` : Specify the range of the value here. The value will be sampled from the uniform distribution ranging from `Min Value` to `Max Value` inclusive.
-
-
-### Player Brain
-
-The Brain property settings must match the Agent implementation. For example, if you specify that the Brain use the **Continuous State Space** and a **State Size** of 23, then the Agent must provide a state vector with 23 elements. See [Agents](Learning-Environment-Design-Agents.md) for more information about programming agents.
 
 
