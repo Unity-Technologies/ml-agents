@@ -36,7 +36,7 @@ public class ExternalCommunicator : Communicator
     StreamWriter logWriter;
     string logPath;
 
-    const string api = "API-2";
+    const string api = "API-3";
 
     /// Placeholder for state information to send.
     [System.Serializable]
