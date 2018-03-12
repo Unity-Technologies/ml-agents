@@ -1,4 +1,4 @@
-# Migrating from v0.2 to v0.3 of ML-Agents
+# Migrating from v0.2 to v0.3
 
 There area number of new features and improvements in ML-Agents v0.3 which change both the training process and Unity API in ways which will cause imcompatabilities with environments made using older versions. This page is designed to highlight those changes for users familiar with v0.2 in order to make the trainsition simple.
 
