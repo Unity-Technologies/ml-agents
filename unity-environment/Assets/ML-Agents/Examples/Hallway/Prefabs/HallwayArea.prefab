@@ -1290,13 +1290,13 @@ MonoBehaviour:
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+    numberOfActionsBetweenDecisions: 6
   ground: {fileID: 1360208130907292}
   area: {fileID: 1745841960385024}
-  goalA: {fileID: 1185286572034058}
-  goalB: {fileID: 1390180936769712}
+  orangeGoal: {fileID: 1390180936769712}
+  redGoal: {fileID: 1185286572034058}
   orangeBlock: {fileID: 1699348701669618}
-  violetBlock: {fileID: 1143687295388296}
+  redBlock: {fileID: 1143687295388296}
 --- !u!114 &114569343444552314
 MonoBehaviour:
   m_ObjectHideFlags: 1
