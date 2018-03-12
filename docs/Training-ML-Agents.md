@@ -6,7 +6,7 @@ The output of the training process is a model file containing the optimized poli
 
 Use the Python program, `learn.py` to train your agents. This program can be found in the `python` directory of the ML-Agents SDK. The [configuration file](#training-config-file), `trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
 
-For an broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Overview](ML-Agents-Overview.md).
+For a broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Overview](ML-Agents-Overview.md).
 
 ## Training with Learn.py
 

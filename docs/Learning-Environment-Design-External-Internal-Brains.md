@@ -18,7 +18,7 @@ A __model__ is a mathematical relationship mapping an agent's observations to it
 
 ### Creating a graph model
 
-The training algorithma included in the ML-Agents SDK produce TensorFlow graph models as the end result of the training process. See [Training ML-Agents](Training-ML-Agents.md) for instructions on how to train a model.
+The training algorithms included in the ML-Agents SDK produce TensorFlow graph models as the end result of the training process. See [Training ML-Agents](Training-ML-Agents.md) for instructions on how to train a model.
 
 ### Using a graph model
 
