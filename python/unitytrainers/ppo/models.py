@@ -58,7 +58,7 @@ class PPOModel(LearningModel):
         """
 
         self.returns_holder = tf.placeholder(shape=[None], dtype=tf.float32, name='discounted_rewards')
-        self.advantage = tf.placeholder(shape=[None], dtype=tf.float32, name='advantages')
+        self.advantage = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='advantages')
         self.learning_rate = tf.train.polynomial_decay(lr, self.global_step, max_step, 1e-10, power=1.0)
 
         self.old_value = tf.placeholder(shape=[None], dtype=tf.float32, name='old_value_estimates')
