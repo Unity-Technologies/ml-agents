@@ -169,7 +169,7 @@ Make sure to replace the relevant directory location with the one you have insta
         width="500" border="10" />
 </p>
 
-Lastly, you should test to see if everything installed properly.  You can do this to see if TensorFlow can identify your GPU. In an Anaconda Prompt, with the ml-agents Conda environment activated, type in the following command: 
+Lastly, you should test to see if everything installed properly and that TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the following command:
 
 ```
 python
