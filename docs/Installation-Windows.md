@@ -10,6 +10,13 @@ _Before installing, please make sure you __close any running instances of Unity 
 
 Run the installer and select the Express option.  Note the directory where you installed the CUDA toolkit.  In this guide, we installed in the directory `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`
 
+<p align="center">
+    <img src="images/install_nvidia_cuda_toolkit.PNG" 
+        alt="install nvidia cuda toolkit" 
+        width="500" border="10" />
+</p>
+
+
 ## Step 2: Install Nvidia cuDNN library
 <a href="https://developer.nvidia.com/cudnn" target="_blank">Download</a> and install the cuDNN library from Nvidia.  cuDNN is is a GPU-accelerated library of primitives for deep neural networks.  Before you can download, you will need to sign up for free to the Nvidia Developer Program.
 
@@ -21,12 +28,48 @@ Run the installer and select the Express option.  Note the directory where you i
 
 Once you've signed up, go back to the cuDNN <a href="https://developer.nvidia.com/cudnn" target="_blank">downloads page</a>.  You may or may not be asked to fill out a short survey.  When you get to the list cuDNN releases, __make sure you are downloading the right version for the CUDA toolkit you installed in Step 1.__  In this guide, we are using version 7.1.1 for CUDA toolkit version 9.1+ ([direct link](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v7.1.1/prod/9.1_20180214/cudnn-9.1-windows10-x64-v7.1)).
 
-After you have downloaded the cuDNN files, you will need to extract the files into the CUDA toolkit directory.  In the cuDNN zip file, there are three folders called `bin`, `include`, and `lib`.  Copy these three folders into the CUDA toolkit directory.  In this guide, the CUDA toolkit directory is located at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`
+After you have downloaded the cuDNN files, you will need to extract the files into the CUDA toolkit directory.  In the cuDNN zip file, there are three folders called `bin`, `include`, and `lib`.  
 
-## Step 4: Set Environment Variables
+<p align="center">
+    <img src="images/cudnn_zip_files.PNG" 
+        alt="cuDNN zip files" 
+        width="500" border="10" />
+</p>
+
+Copy these three folders into the CUDA toolkit directory.  In this guide, the CUDA toolkit directory is located at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`
+
+<p align="center">
+    <img src="images/cuda_toolkit_directory.PNG" 
+        alt="cuda toolkit directory" 
+        width="500" border="10" />
+</p>
+
+## Step 3: Set Environment Variables
 You will need to add one environment variable and two path variables.
 
-To set the environment variable, type `environment variables` in the search bar (this can be reached by hitting the Windows key or the bottom left Windows button).  You should see an option called __Edit the system environment variables__.  From here, click the __Environment Variables__ button.  Click __New__ to add a new system variable _(make sure you do this under __System variables__ and not User variables_.  For __Variable Name__, enter `CUDA_HOME`.  For the variable value, put the directory location for the CUDA toolkit.  In this guide, the directory location is `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`.  Press __OK__ once.
+To set the environment variable, type `environment variables` in the search bar (this can be reached by hitting the Windows key or the bottom left Windows button).  You should see an option called __Edit the system environment variables__.  
+
+<p align="center">
+    <img src="images/edit_env_var.png" 
+        alt="edit env variables" 
+        width="250" border="10" />
+</p>
+
+From here, click the __Environment Variables__ button.  Click __New__ to add a new system variable _(make sure you do this under __System variables__ and not User variables_.  
+
+<p align="center">
+    <img src="images/new_system_variable.PNG" 
+        alt="new system variable" 
+        width="500" border="10" />
+</p>
+
+For __Variable Name__, enter `CUDA_HOME`.  For the variable value, put the directory location for the CUDA toolkit.  In this guide, the directory location is `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`.  Press __OK__ once.
+
+<p align="center">
+    <img src="images/system_variable_name_value.PNG" 
+        alt="system variable names and values" 
+        width="500" border="10" />
+</p>
 
 To set the two path variables, inside the same __Enviornment Variables__ window and under the second box called __System Variables__, find a variable called `PATH` and click __Edit__.  You will add  two directories to the list.  For this guide, the two entries would look like:
 
@@ -35,10 +78,28 @@ To set the two path variables, inside the same __Enviornment Variables__ window 
 
 Make sure to replace the relevant directory location with the one you have installed.  _Please note that case sensitivity matters_.
 
+<p align="center">
+    <img src="images/path_variables.PNG" 
+        alt="Path variables" 
+        width="500" border="10" />
+</p>
+
 ## Step 4: Install Python via Anaconda
 <a href="https://www.anaconda.com/download/#windows" target="_blank">Download</a> and install Anaconda for Windows.  By using Anaconda, you can use manage separate environments for different distributions of Python.  We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2 in future releases.  In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
 
+<p align="center">
+    <img src="images/anaconda_install.PNG" 
+        alt="Anaconda Install" 
+        width="500" border="10" />
+</p>
+
 We recommend the default _advanced installation options_.  However, select what would work for your specific situation.
+
+<p align="center">
+    <img src="images/anaconda_default.PNG" 
+        alt="Anaconda Install" 
+        width="500" border="10" />
+</p>
 
 After installation, you will need to open __Anaconda Navigator__ to finish.  From the Windows search bar, type _anaconda navigator_.  You can close Anaconda Navigator after it opens.
 
@@ -49,7 +110,15 @@ Open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the
 
     conda create -n ml-agents python=3.6
 
-You may be asked to install NEW packages.  Type `y` and press enter _(make sure you are connected to the internet)_.  You will need these new packages.  This will create a new Conda environment called ml-agents using Python version 3.6.  To use this environment, you will need to activate it.  _(In the future, if you need to use this environment again, you can run the same command)_.  In the same Anaconda Prompt, type in the following command:
+You may be asked to install NEW packages.  Type `y` and press enter _(make sure you are connected to the internet)_.  You will need these new packages.  This will create a new Conda environment called ml-agents using Python version 3.6.  
+
+<p align="center">
+    <img src="images/conda_new.PNG" 
+        alt="Anaconda Install" 
+        width="500" border="10" />
+</p>
+
+To use this environment, you will need to activate it.  _(In the future, if you need to use this environment again, you can run the same command)_.  In the same Anaconda Prompt, type in the following command:
 
     conda activate ml-agents
 
