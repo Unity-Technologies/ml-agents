@@ -14,7 +14,7 @@ To use ML-Agents, you install Python and the required Python packages as outline
         width="500" border="10" />
 </p>
 
-We recommend the default _advanced installation options_.  However, select what would work for your specific situation.
+We recommend the default _advanced installation options_. However, select the options appropriate for your specific situation.
 
 <p align="center">
     <img src="images/anaconda_default.PNG" 
@@ -22,7 +22,7 @@ We recommend the default _advanced installation options_.  However, select what 
         width="500" border="10" />
 </p>
 
-After installation, you will need to open __Anaconda Navigator__ to finish.  From the Windows search bar, type _anaconda navigator_.  You can close Anaconda Navigator after it opens.
+After installation, you must open __Anaconda Navigator__ to finish the setup. From the Windows search bar, type _anaconda navigator_. You can close Anaconda Navigator after it opens.
 
 ## Step 2: Setup and Activate a New Conda Environment
 
