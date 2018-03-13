@@ -22,11 +22,12 @@ Python-side communication happens through `UnityEnvironment` which is located in
 
 ```python
 from unityagents import UnityEnvironment
-env = UnityEnvironment(file_name="3DBall", worker_id=0)
+env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 ```
 
 * `file_name` is the name of the environment binary (located in the root directory of the python project).
 * `worker_id` indicates which port to use for communication with the environment. For use in parallel training regimes such as A3C.
+* `seed` indicates the seed to use when generating random numbers during the training process. In environments which do not involve physics calculations, setting the seed enables reproducible experimentation by ensuring that the environment and trainers utilize the same random seed.
 
 ## Interacting with a Unity Environment
 
