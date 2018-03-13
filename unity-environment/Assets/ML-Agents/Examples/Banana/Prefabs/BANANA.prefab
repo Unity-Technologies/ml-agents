@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 65445686293066652}
   - component: {fileID: 114475702868436998}
   m_Layer: 0
-  m_Name: BANANA
+  m_Name: Banana
   m_TagString: banana
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,6 +57,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: 29857f71905e1484ba5cf296a5749a5f, type: 2}
   m_StaticBatchInfo:
@@ -124,3 +125,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawn: 0
+  myArea: {fileID: 0}
