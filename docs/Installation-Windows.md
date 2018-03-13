@@ -24,7 +24,7 @@ Once you've signed up, go back to the cuDNN <a href="https://developer.nvidia.co
 ## Step 3: Install Python via Anaconda
 <a href="https://www.anaconda.com/download/#windows" target="_blank">Download</a> and install Anaconda for Windows.  By using Anaconda, we can use manage seperate enviornments for different distributions of Python.  We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2 in future releases.  In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).  
 
-## Step 4: Install Required Python Pacakges
+## Step 4: Install Required Python Packages
 ML-Agents includes a list of Python dependencies needed to run.  This can be installed by using `pip` - which is a package management system used to install Python packages.
 
 If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win) and opening up a CMD or Powershell prompt and typing:
