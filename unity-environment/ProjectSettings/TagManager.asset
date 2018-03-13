@@ -16,6 +16,12 @@ TagManager:
   - blueGoal
   - blueAgent
   - redAgent
+  - redBlock
+  - goal
+  - ground
+  - orangeBlock
+  - block
+  - orangeGoal
   layers:
   - Default
   - TransparentFX

@@ -21,31 +21,34 @@ public class AgentSoccer : Agent
     [HideInInspector]
     public Rigidbody agentRB;
     SoccerAcademy academy;
-    Renderer renderer;
+    Renderer agentRenderer;
+    RayPerception rayPer;
 
     public void ChooseRandomTeam()
     {
         team = (Team)Random.Range(0, 2);
-        renderer.material = team == Team.red ? academy.redMaterial : academy.blueMaterial;
+        agentRenderer.material = team == Team.red ? academy.redMaterial : academy.blueMaterial;
     }
 
     public void JoinRedTeam(AgentRole role)
     {
         agentRole = role;
         team = Team.red;
-        renderer.material = academy.redMaterial;
+        agentRenderer.material = academy.redMaterial;
     }
 
     public void JoinBlueTeam(AgentRole role)
     {
         agentRole = role;
         team = Team.blue;
-        renderer.material = academy.blueMaterial;
+        agentRenderer.material = academy.blueMaterial;
     }
 
-    void Awake()
+    public override void InitializeAgent()
     {
-        renderer = GetComponent<Renderer>();
+        base.InitializeAgent();
+        agentRenderer = GetComponent<Renderer>();
+        rayPer = GetComponent<RayPerception>();
         academy = FindObjectOfType<SoccerAcademy>();
         PlayerState playerState = new PlayerState();
         playerState.agentRB = GetComponent<Rigidbody>();
@@ -56,61 +59,6 @@ public class AgentSoccer : Agent
         area.playerStates.Add(playerState);
         playerIndex = area.playerStates.IndexOf(playerState);
         playerState.playerIndex = playerIndex;
-    }
-
-    public override void InitializeAgent()
-    {
-        base.InitializeAgent();
-    }
-
-    public void RayPerception(float rayDistance,
-                             float[] rayAngles, string[] detectableObjects,
-                              float startHeight, float endHeight)
-    {
-        foreach (float angle in rayAngles)
-        {
-            float noise = 0f;
-            float noisyAngle = angle + Random.Range(-noise, noise);
-            Vector3 position = transform.TransformDirection(
-                GiveCatersian(rayDistance, noisyAngle));
-            position.y = endHeight;
-            Debug.DrawRay(transform.position + new Vector3(0f, startHeight, 0f),
-                          position, Color.red, 0.1f, true);
-            RaycastHit hit;
-            float[] subList = new float[detectableObjects.Length + 2];
-            if (Physics.SphereCast(transform.position +
-                                   new Vector3(0f, startHeight, 0f), 1.0f,
-                                   position, out hit, rayDistance))
-            {
-                for (int i = 0; i < detectableObjects.Length; i++)
-                {
-                    if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
-                    {
-                        subList[i] = 1;
-                        subList[detectableObjects.Length + 1] = hit.distance / rayDistance;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                subList[detectableObjects.Length] = 1f;
-            }
-            foreach (float f in subList)
-                AddVectorObs(f);
-        }
-    }
-
-    public Vector3 GiveCatersian(float radius, float angle)
-    {
-        float x = radius * Mathf.Cos(DegreeToRadian(angle));
-        float z = radius * Mathf.Sin(DegreeToRadian(angle));
-        return new Vector3(x, 1f, z);
-    }
-
-    public float DegreeToRadian(float degree)
-    {
-        return degree * Mathf.PI / 180f;
     }
 
     public override void CollectObservations()
@@ -128,8 +76,8 @@ public class AgentSoccer : Agent
             detectableObjects = new string[] { "ball", "blueGoal", "redGoal",
                 "wall", "blueAgent", "redAgent" };
         }
-        RayPerception(rayDistance, rayAngles, detectableObjects, 0f, 0f);
-        RayPerception(rayDistance, rayAngles, detectableObjects, 1f, 1f);
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1f, 0f));
     }
 
     public void MoveAgent(float[] act)
@@ -143,52 +91,47 @@ public class AgentSoccer : Agent
         if (agentRole == AgentRole.goalie)
         {
             kickPower = 0f;
-            if (action == 0)
+            switch (action)
             {
-                dirToGo = transform.forward * 1f;
-                kickPower = 1f;
+                case 0:
+                    dirToGo = transform.forward * 1f;
+                    kickPower = 1f;
+                    break;
+                case 1:
+                    dirToGo = transform.forward * -1f;
+                    break;
+                case 3:
+                    dirToGo = transform.right * -1f;
+                    break;
+                case 2:
+                    dirToGo = transform.right * 1f;
+                    break;
             }
-            else if (action == 1)
-            {
-                dirToGo = transform.forward * -1f;
-            }
-            else if (action == 3)
-            {
-                dirToGo = transform.right * -1f;
-            }
-            else if (action == 2)
-            {
-                dirToGo = transform.right * 1f;
-            }
-
         }
         else
         {
             kickPower = 0f;
-            if (action == 0)
+            switch (action)
             {
-                dirToGo = transform.forward * 1f;
-                kickPower = 1f;
-            }
-            else if (action == 1)
-            {
-                dirToGo = transform.forward * -1f;
-            }
-            else if (action == 2)
-            {
-                rotateDir = transform.up * 1f;
-            }
-            else if (action == 3)
-            {
-                rotateDir = transform.up * -1f;
-            }
-            else if (action == 4)
-            {
-                dirToGo = transform.right * -1f;
-            }
-            else if (action == 5)
-            {
-                dirToGo = transform.right * 1f;
+                case 0:
+                    dirToGo = transform.forward * 1f;
+                    kickPower = 1f;
+                    break;
+                case 1:
+                    dirToGo = transform.forward * -1f;
+                    break;
+                case 2:
+                    rotateDir = transform.up * 1f;
+                    break;
+                case 3:
+                    rotateDir = transform.up * -1f;
+                    break;
+                case 4:
+                    dirToGo = transform.right * -0.75f;
+                    break;
+                case 5:
+                    dirToGo = transform.right * 0.75f;
+                    break;
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);

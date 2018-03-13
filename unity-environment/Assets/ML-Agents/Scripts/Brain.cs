@@ -54,7 +54,7 @@ public class BrainParameters
      * the state
      * <br> If discrete : The number of possible values the state can take*/
 
-    [Range(1, 10)]
+    [Range(1, 50)]
     public int numStackedVectorObservations = 1;
 
     public int vectorActionSize = 1;
