@@ -50,7 +50,7 @@ conda activate ml-agents
 
 You should see `(ml-agents)` prepended on the last line.
 
-After this, you will need to install `tensorflow` and `tensorflow-gpu`.  This can be installed by using `pip` - which is a package management system used to install Python packages.  In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
+Next, install `tensorflow` and `tensorflow-gpu`. Install these packages using `pip` - which is a package management system used to install Python packages. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
 
 ```
 pip install tensorflow tensorflow-gpu
