@@ -1,5 +1,5 @@
 # Installing ML-Agents for Windows
-In order to get ML-Agents working with Windows, you will need to have Windows 10 installed.  While it is possible for ML-Agents to work on other versions of Windows, we have only tested with a local installation of Windows 10 (not using VM like Bootcamp or Parallels).
+In order to get ML-Agents working with Windows, you will need to have Windows 10 installed.  While it is possible for ML-Agents to work on other versions of Windows, we have only tested with a local installation of Windows 10 (not using a VM like Bootcamp or Parallels).
 
 Additionally, you will need to check if your GPU is CUDA compatible.  Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
