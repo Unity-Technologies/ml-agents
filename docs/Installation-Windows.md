@@ -1,6 +1,6 @@
 # Installing ML-Agents for Windows
 
-ML-Agents supports Windows 10. While it might be possible to run ML-Agents using other versions of Windows, we only test Windows 10. (We also do not test running Windows on a VM like Bootcamp or Parallels).
+ML-Agents supports Windows 10. While it might be possible to run ML-Agents using other versions of Windows, it has not been tested on other versions. Furthermore, ML-Agents has not been tested on a Windows VM such as Bootcamp or Parallels.
 
 To use ML-Agents, you install Python and the required Python packages as outlined below. This guide also covers how set up GPU-based training (for advanced users). GPU-based training is not required for the v0.3 release of ML-Agents. However, training on a GPU might be required by future versions and features.
 
