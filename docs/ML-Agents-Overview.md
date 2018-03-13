@@ -380,7 +380,7 @@ games where agents
 must react to events or games where agents can take actions of variable 
 duration. Switching between decision taking at every step and 
 on-demand-decision is one button click away. You can learn more about the 
-on-demand-decision feature [here](Feature-On-Demand-Decision.md).
+on-demand-decision feature [here](Feature-On-Demand-Decisions.md).
 
 * **Memory-enhanced Agents** - In some scenarios, agents must learn to 
 remember the past in order to take the 
