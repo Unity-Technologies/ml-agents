@@ -59,7 +59,7 @@ public class Monitor : MonoBehaviour
     /// If sidplayType is <slider>, value must be a float.
     /// If sidplayType is <hist>, value must be a List or Array of floats.
     /// If sidplayType is <bar>, value must be a list or Array of positive floats.
-    /// Note that <slider> and<hist> caps values between -1 and 1.
+    /// Note that <slider> and <hist> caps values between -1 and 1.
     /// </summary>
     /// <returns>The log.</returns>
     /// <param name="key">The name of the information you wish to Log.</param>
