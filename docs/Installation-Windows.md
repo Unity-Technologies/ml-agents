@@ -1,9 +1,11 @@
 # Installing ML-Agents for Windows
+
 In order to get ML-Agents working with Windows, you will need to have Windows 10 installed.  While it is possible for ML-Agents to work on other versions of Windows, we have only tested with a local installation of Windows 10 (not using a VM like Bootcamp or Parallels).
 
 Additionally, you will need to check if your GPU is CUDA compatible.  Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
 ## Step 1: Install Nvidia CUDA toolkit
+
 <a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank">Download</a> and install the CUDA toolkit from Nvidia's archive.  The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ compiler and a runtime library and is needed to run ML-Agents.  You can select the latest or previous releases.  In this guide, we are using version 9.1.85.3 ([direct link](https://developer.nvidia.com/compute/cuda/9.1/Prod/patches/3/cuda_9.1.85.3_windows)).  
 
 _Before installing, please make sure you __close any running instances of Unity or Visual Studio.___
@@ -18,6 +20,7 @@ Run the installer and select the Express option.  Note the directory where you i
 
 
 ## Step 2: Install Nvidia cuDNN library
+
 <a href="https://developer.nvidia.com/cudnn" target="_blank">Download</a> and install the cuDNN library from Nvidia.  cuDNN is is a GPU-accelerated library of primitives for deep neural networks.  Before you can download, you will need to sign up for free to the Nvidia Developer Program.
 
 <p align="center">
@@ -45,6 +48,7 @@ Copy these three folders into the CUDA toolkit directory.  In this guide, the CU
 </p>
 
 ## Step 3: Set Environment Variables
+
 You will need to add one environment variable and two path variables.
 
 To set the environment variable, type `environment variables` in the search bar (this can be reached by hitting the Windows key or the bottom left Windows button).  You should see an option called __Edit the system environment variables__.  
@@ -85,6 +89,7 @@ Make sure to replace the relevant directory location with the one you have insta
 </p>
 
 ## Step 4: Install Python via Anaconda
+
 <a href="https://www.anaconda.com/download/#windows" target="_blank">Download</a> and install Anaconda for Windows.  By using Anaconda, you can use manage separate environments for different distributions of Python.  We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2 in future releases.  In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
 
 <p align="center">
@@ -104,6 +109,7 @@ We recommend the default _advanced installation options_.  However, select what 
 After installation, you will need to open __Anaconda Navigator__ to finish.  From the Windows search bar, type _anaconda navigator_.  You can close Anaconda Navigator after it opens.
 
 ## Step 5: Setup and Activate a New Conda Environment
+
 You will create a new Conda environment to be used with ML-Agents.  This means that all the packages that you install are localized to just this environment.  It will not affect any other installation of Python or other environments.  Whenever you want to run ML-Agents, you will need activate this Conda environment.
 
 To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the following command:
@@ -144,6 +150,7 @@ Found device 0 with properties ...
 ```
 
 ## Step 6: Install Required Python Packages
+
 ML-Agents includes a list of Python dependencies needed to run.  Similarly in Step 5, you will be using `pip` to install these Python packages.
 
 If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in a new or same Anaconda Prompt (_if you closed the prompt from Step 5, you can activate the ml-agents Conda environment by typing `activate ml-agents`_):
