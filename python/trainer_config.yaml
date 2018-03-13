@@ -18,15 +18,43 @@ default:
     summary_freq: 1000
     use_recurrent: false
 
-PushBlockBrain:
-    max_steps: 2.0e5
-    batch_size: 1048
+BananaBrain:
+    normalize: false
+    batch_size: 1024
+    beta: 5.0e-3
     buffer_size: 10240
+
+PushBlockBrain:
+    max_steps: 5.0e4
+    batch_size: 128
+    buffer_size: 2048
     beta: 1.0e-2
-    hidden_units: 128
+    hidden_units: 256
     summary_freq: 2000
     time_horizon: 64
     num_layers: 2
+
+SmallWallBrain: 
+    max_steps: 2.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 128
+    num_layers: 2
+    normalize: false
+
+BigWallBrain: 
+    max_steps: 2.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 128
+    num_layers: 2
+    normalize: false
 
 StrikerBrain:
     max_steps: 1.0e5
@@ -104,42 +132,17 @@ Ball3DHardBrain:
     batch_size: 32
     buffer_size: 320
 
-HallwayBrainDC:
-    num_layers: 3
-    hidden_units: 256
-    beta: 1.0e-2
-    gamma: 0.99
-    num_epoch: 3
-    buffer_size: 512
-    batch_size: 64
-    max_steps: 5.0e5
-    summary_freq: 1000
-    time_horizon: 64
-
-BrainWallJumpDC:
+HallwayBrain:
     use_recurrent: true
     sequence_length: 64
     num_layers: 2
     hidden_units: 128
+    memory_size: 256
     beta: 1.0e-2
     gamma: 0.99
     num_epoch: 3
-    buffer_size: 16
-    batch_size: 2
-    max_steps: 5.0e5
-    summary_freq: 1000
-    time_horizon: 64
-
-HallwayBrainDCLSTM:
-    use_recurrent: true
-    sequence_length: 64
-    num_layers: 2
-    hidden_units: 128
-    beta: 1.0e-2
-    gamma: 0.99
-    num_epoch: 3
-    buffer_size: 16
-    batch_size: 2
+    buffer_size: 1024
+    batch_size: 128
     max_steps: 5.0e5
     summary_freq: 1000
     time_horizon: 64
