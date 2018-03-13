@@ -19,11 +19,11 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 3. Calls the  `CollectObservations()` function for each agent in the scene.
 4. Uses each agent's Brain class to decide on the agent's next action. 
 5. Calls your subclass's `AcademyAct()` function.
-6. Calls the `AgentAct()` function for each agent in the scene, passing in the action chosen by the agent's brain. (This function is not called if the agent is done.)
+6. Calls the `AgentAction()` function for each agent in the scene, passing in the action chosen by the agent's brain. (This function is not called if the agent is done.)
 7. Calls the agent's `AgentOnDone()` function if the agent has reached its `Max Step` count or has otherwise marked itself as `done`. Optionally, you can set an agent to restart if it finishes before the end of an episode. In this case, the Academy calls the `AgentReset()` function.
 8. When the Academy reaches its own `Max Step` count, it starts the next episode again by calling your Academy subclass's `AcademyReset()` function.
 
-To create a training environment, extend the Academy and Agent classes to implement the above methods. The `Agent.CollectObservations()` and `Agent.AgentAct()` functions are required; the other methods are optional — whether you need to implement them or not depends on your specific scenario.
+To create a training environment, extend the Academy and Agent classes to implement the above methods. The `Agent.CollectObservations()` and `Agent.AgentAction()` functions are required; the other methods are optional — whether you need to implement them or not depends on your specific scenario.
   
 **Note:** The API used by the Python PPO training process to communicate with and control the Academy during training can be used for other purposes as well. For example, you could use the API to use Unity as the simulation engine for your own machine learning algorithms. See [External ML API](Python-API.md) for more information.
 
@@ -43,7 +43,7 @@ You must create a subclass of the Academy class (since the base class is abstrac
 
 * `InitializeAcademy()` — Prepare the environment the first time it launches.
 * `AcademyReset()` — Prepare the environment and agents for the next training episode. Use this function to place and initialize entities in the scene as necessary.
-* `AcademyStep()` — Prepare the environment for the next simulation step. The base Academy class calls this function before calling any `AgentAct()` methods for the current step. You can use this function to update other objects in the scene before the agents take their actions. Note that the agents have already collected their observations and chosen an action before the Academy invokes this method.
+* `AcademyStep()` — Prepare the environment for the next simulation step. The base Academy class calls this function before calling any `AgentAction()` methods for the current step. You can use this function to update other objects in the scene before the agents take their actions. Note that the agents have already collected their observations and chosen an action before the Academy invokes this method.
 
 The base Academy classes also defines several important properties that you can set in the Unity Editor Inspector. For training, the most important of these properties is `Max Steps`, which determines how long each training episode lasts. Once the Academy's step counter reaches this value, it calls the `AcademyReset()` function to start the next episode. 
   
@@ -63,14 +63,14 @@ See [Brains](Learning-Environment-Design-Brains.md) for a complete list of the B
 
 The Agent class represents an actor in the scene that collects observations and carries out actions. The Agent class is typically attached to the GameObject in the scene that otherwise represents the actor — for example, to a player object in a football game or a car object in a vehicle simulation. Every Agent must be assigned a Brain.  
 
-To create an agent, extend the Agent class and implement the essential `CollectObservations()` and `AgentAct()` methods:
+To create an agent, extend the Agent class and implement the essential `CollectObservations()` and `AgentAction()` methods:
 
 * `CollectObservations()` — Collects the agent's observation of its environment.
-* `AgentAct()` — Carries out the action chosen by the agent's brain and assigns a reward to the current state.
+* `AgentAction()` — Carries out the action chosen by the agent's brain and assigns a reward to the current state.
 
 Your implementations of these functions determine how the properties of the Brain assigned to this agent must be set.
  
-You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentAct()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. When the Academy reaches its own `Max Steps` count, it starts the next episode. If you set an agent's `ResetOnDone` property to true, then the agent can attempt its task several times in one episode. (Use the `Agent.AgentReset()` function to prepare the agent to start again.) 
+You must also determine how an Agent finishes its task or times out. You can manually set an agent to done in your `AgentAction()` function when the agent has finished (or irrevocably failed) its task. You can also set the agent's `Max Steps` property to a positive value and the agent will consider itself done after it has taken that many steps. When the Academy reaches its own `Max Steps` count, it starts the next episode. If you set an agent's `ResetOnDone` property to true, then the agent can attempt its task several times in one episode. (Use the `Agent.AgentReset()` function to prepare the agent to start again.) 
 
 See [Agents](Learning-Environment-Design-Agents.md) for detailed information about programing your own agents.
 

@@ -20,7 +20,7 @@ In the agent inspector, there is a checkbox called
  request a new decision every `Decision Frequency` steps and 
  perform an action every step. In the example above, 
  `CollectObservations()` will be called every 5 steps and 
- `AgentAct()` will be called at every step. This means that the 
+ `AgentAction()` will be called at every step. This means that the 
  agent will reuse the decision the brain has given it. 
 
  * If `On Demand Decision` is checked, you are in charge of telling 
@@ -34,4 +34,4 @@ In the agent inspector, there is a checkbox called
    * `RequestAction()` Call this method to signal the agent that 
    it must reuse its previous action at the next step of the 
    simulation. The Agent will not ask the brain for a new decision, 
-   it will just call `AgentAct()` with the same action.
+   it will just call `AgentAction()` with the same action.
