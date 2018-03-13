@@ -32,7 +32,9 @@ to the wider research and game developer communities.
 ## Documentation and References
 
 **For more information, in addition to installation and usage
-instructions, see our [documentation home](docs/README.md).**
+instructions, see our [documentation home](docs/README.md).** If you have
+used a version of ML-Agents prior to v0.3, we strongly recommend 
+our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
 
 We have also published a series of blog posts that are relevant for ML-Agents:
 - Overviewing reinforcement learning concepts

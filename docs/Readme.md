@@ -30,9 +30,9 @@
  * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Help
+ * [Migrating to ML-Agents v0.3](Migrating-v0.3.md)
  * [ML-Agents Glossary](Glossary.md)
  * [Limitations & Common Issues](Limitations-and-Common-Issues.md)
- * [Migrating to ML-Agents v0.3](Migrating-v0.3.md)
  
 ## C# API and Components
  * Academy
