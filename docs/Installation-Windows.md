@@ -1,5 +1,5 @@
 # Installing ML-Agents for Windows
-We have provided a step by step guide to getting ML-Agents working on Windows.  
+We have provided a step by step guide to get ML-Agents working on Windows.  
 
 In oreder to get ML-Agents working with Windows, you will need to have Windows 10 installed.  While it is possible for ML-Agents to work on other versions of Windows, we have only tested with a local installation of Windows 10 (not using VM like Bootcamp or Parallels).
 
