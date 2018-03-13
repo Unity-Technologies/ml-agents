@@ -58,9 +58,9 @@ pip install tensorflow tensorflow-gpu
 
 ## Step 3: Install Required Python Packages
 
-ML-Agents includes a list of Python dependencies needed to run.  Similarly in Step 4, you will be using `pip` to install these Python packages.
+ML-Agents depends on a number of Python packages. Use `pip` to install these Python dependencies.
 
-If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in a new or same Anaconda Prompt (_if you closed the prompt from Step 5, you can activate the ml-agents Conda environment by typing `activate ml-agents`_):
+If you haven't already, clone the ML-Agents Github repository to your local computer. You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in an Anaconda Prompt _(if you open a new prompt, be sure to activate the ml-agents Conda environment by typing `activate ml-agents`)_:
 
 ```
 git clone git@github.com:Unity-Technologies/ml-agents.git
