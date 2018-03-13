@@ -26,7 +26,7 @@ After installation, you must open __Anaconda Navigator__ to finish the setup. Fr
 
 ## Step 2: Setup and Activate a New Conda Environment
 
-You will create a new Conda environment to be used with ML-Agents.  This means that all the packages that you install are localized to just this environment.  It will not affect any other installation of Python or other environments.  Whenever you want to run ML-Agents, you will need activate this Conda environment.
+You will create a new [Conda environment](https://conda.io/docs/) to be used with ML-Agents.  This means that all the packages that you install are localized to just this environment.  It will not affect any other installation of Python or other environments.  Whenever you want to run ML-Agents, you will need activate this Conda environment.
 
 To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the following command:
 
