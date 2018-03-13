@@ -40,6 +40,7 @@ to refer to either Python 2 or 3, depending on your installation.
 
 ### Windows Users
 
+If you are a Windows user who is new to Python and TensorFlow, follow [this guide](Installation-Windows.md) to set up your Python environment.
 
 ### Mac and Unix Users
 
