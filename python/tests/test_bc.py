@@ -15,7 +15,7 @@ def test_cc_bc_model():
       "brainNames": ["RealFakeBrain"],
       "externalBrainNames": ["RealFakeBrain"],
       "logPath":"RealFakePath",
-      "apiNumber":"API-2",
+      "apiNumber":"API-3",
       "brainParameters": [{
           "vectorObservationSize": 3,
           "numStackedVectorObservations": 2,
@@ -60,7 +60,7 @@ def test_dc_bc_model():
       "brainNames": ["RealFakeBrain"],
       "externalBrainNames": ["RealFakeBrain"],
       "logPath":"RealFakePath",
-      "apiNumber":"API-2",
+      "apiNumber":"API-3",
       "brainParameters": [{
           "vectorObservationSize": 3,
           "numStackedVectorObservations": 2,
