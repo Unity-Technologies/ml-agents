@@ -25,8 +25,6 @@ actions of variable duration.
 
 When you turn on **On Demand Decisions** for an agent, your agent code must call the `Agent.RequestDecision()` function. This function call starts one iteration of the observation-decision-action-reward cycle. The Brain invokes the agent's `CollectObservations()` method, makes a decision and returns it by calling the `AgentAction()` method. The Brain waits for the agent to request the next decision before starting another iteration.
 
-See [On Demand Decision Making](Feature-On-Demand-Decision.md).
-
 ## Observations
 
 To make decisions, an agent must observe its environment to determine its current state. A state observation can take the following forms:
