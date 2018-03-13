@@ -23,3 +23,24 @@ Once you've signed up, go back to the cuDNN <a href="https://developer.nvidia.co
 
 ## Step 3: Install Python via Anaconda
 <a href="https://www.anaconda.com/download/#windows" target="_blank">Download</a> and install Anaconda for Windows.  By using Anaconda, we can use manage seperate enviornments for different distributions of Python.  We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2 in future releases.  In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).  
+
+## Step 4: Install Required Python Pacakges
+ML-Agents includes a list of Python dependencies needed to run.  This can be installed by using `pip` - which is a package management system used to install Python packages.
+
+If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win) and opening up a CMD or Powershell prompt and typing:
+
+    git clone git@github.com:Unity-Technologies/ml-agents.git
+
+If you don't want to use Git, you can always directly download all the files [here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
+
+In our example, the files are located in C:\Downloads.  After you have either cloned or downloaded the files, in a CMD or Powershell prompt, change to the python directory inside the ML-agents directory:
+
+    cd C:\Downloads\ml-agents\python
+
+Make sure you are connected to the internet and then type in the following two commands:
+
+    conda install –force html5lib 
+    
+    pip install .
+
+This will complete the installation of all the required Python packages to run ML-Agents.  
