@@ -22,18 +22,47 @@ _Before installing, please make sure you __close any running instances of Unity 
 Once you've signed up, go back to the cuDNN <a href="https://developer.nvidia.com/cudnn" target="_blank">downloads page</a>.  You may or may not be asked to fill out a short survey.  When you get to the list cuDNN releases, __make sure you are downloading the right version for the CUDA toolkit you installed in Step 1.__  In this guide, we are using version 7.1.1 for CUDA toolkit version 9.1+ ([direct link](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v7.1.1/prod/9.1_20180214/cudnn-9.1-windows10-x64-v7.1)).  
 
 ## Step 3: Install Python via Anaconda
-<a href="https://www.anaconda.com/download/#windows" target="_blank">Download</a> and install Anaconda for Windows.  By using Anaconda, we can use manage seperate enviornments for different distributions of Python.  We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2 in future releases.  In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).  
+<a href="https://www.anaconda.com/download/#windows" target="_blank">Download</a> and install Anaconda for Windows.  By using Anaconda, you can use manage seperate enviornments for different distributions of Python.  We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2 in future releases.  In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).  
 
-## Step 4: Install Required Python Packages
-ML-Agents includes a list of Python dependencies needed to run.  This can be installed by using `pip` - which is a package management system used to install Python packages.
+## Step 4: Setup a New Conda Environment
+You will create a new Conda enviornment from our installation of Anaconda.  This new enviornment will be specifically for ML-Agents.  This means that all packages that you install are localized to just this enviornment.  It will not effect any other installation of Python.  Whenever you want to run ML-Agents, you can do some from this new Conda enviornment.
 
-If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win) and opening up a CMD or Powershell prompt and typing:
+Open a new CMD or Powershell prompt and type in the following command:
+
+    conda create -n ml-agents python=3.6
+
+This will create a new Conda environment called ml-agents using Python version 3.6.  To use this enviornment, you will need to activate it.  _(In the future, if you need to use this enviornment again, you can run the same command)_.  In the same CMD or Powershell prompt, type in the following command:
+
+    activate ml-agents
+
+After this, you will need to install `tensorflow-gpu.`  This can be installed by using `pip` - which is a package management system used to install Python packages.  In the same CMD or Powershell prompt, type in the following command:
+
+    pip install tensorflow-gpu
+
+Lastly, you should test to see if everything installed properly.  You can do this to see if TensorFlow can identify your GPU. In the same CMD or Powershell prompt, type in the following command: 
+
+    python
+    
+    import tensorflow as tf
+    
+    sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+
+You should see something similar to:
+
+```
+Found device 0 with properties ...
+```
+
+## Step 5: Install Required Python Packages
+ML-Agents includes a list of Python dependencies needed to run.  Similarly in Step 4, you will be using `pip` to install these Python packages.
+
+If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in a new or same CMD or Powershell window from Step 4:
 
     git clone git@github.com:Unity-Technologies/ml-agents.git
 
 If you don't want to use Git, you can always directly download all the files [here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
 
-In our example, the files are located in C:\Downloads.  After you have either cloned or downloaded the files, in a CMD or Powershell prompt, change to the python directory inside the ML-agents directory:
+In our example, the files are located in C:\Downloads.  After you have either cloned or downloaded the files, in the same CMD or Powershell window from Step 4, change to the python directory inside the ML-agents directory (_if you closed this window, you can activate the right Conda enviornment by typing `activate ml-agents`_):
 
     cd C:\Downloads\ml-agents\python
 
