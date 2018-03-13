@@ -49,11 +49,12 @@ docker run --name <container-name> \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            <image-name>:latest <environment-name> \
            --docker-target-name=unity-volume \
-           --train --run-id=<run-id>
+           --train \
+           --run-id=<run-id>
 ```
 
 Notes on argument values:
-- `<container-name>` is used to identify the container (in case you want to interrupt and terminate it). This is optional and Docker will set a random string if this is not set. _Note that this must be unique for every run of a Docker Image_
+- `<container-name>` is used to identify the container (in case you want to interrupt and terminate it). This is optional and Docker will generate a random name if this is not set. _Note that this must be unique for every run of a Docker image._
 - `<image-name>` and `<environment-name>`: References the image and environment names, respectively.
 - `source`: Reference to the path in your host OS where you will store the Unity executable. 
 - `target`: Tells Docker to mount the `source` path as a disk with this name. 
@@ -67,7 +68,8 @@ docker run --name 3DBallContainer.first.trial \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            balance.ball.v0.1:latest 3Dball \
            --docker-target-name=unity-volume \
-           --train --run-id=3dball_first_trial
+           --train \
+           --run-id=3dball_first_trial
 ```
 
 For more detail on Docker mounts, check out [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
@@ -75,11 +77,10 @@ For more detail on Docker mounts, check out [these](https://docs.docker.com/stor
 
 ### Stopping Container and Saving State
 
-
-If you are satisfied with the progress being made by the algorithm in training, you can stop the docker container, while saving state using the following :
+If you are satisfied with the training progress, you can stop the Docker container while saving state using the following command:
 
 ```
 docker kill --signal=SIGINT <container-name>
 ```
 
-`<container-name>` is the name of the container that you set during the `docker run`. If you didn't set the container name there, you can find the automatically generated identifier by running `docker container ls`.
+`<container-name>` is the name of the container specified in the earlier `docker run` command. If you didn't specify one, you can find the randomly generated identifier by running `docker container ls`.
