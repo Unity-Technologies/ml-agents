@@ -4,7 +4,7 @@
 * It is often helpful to start with the simplest version of the problem, to ensure the agent can learn it. From there increase
 complexity over time. This can either be done manually, or via Curriculum Learning, where a set of lessons which progressively increase in difficulty are presented to the agent ([learn more here](Training-Curriculum-Learning.md)).
 * When possible, it is often helpful to ensure that you can complete the task by using a Player Brain to control the agent.
-* It is often helpful to train a brain that are attached to n exactly same agents, so that the brain can get more feedback information from all these attached agents, which helps it train faster. 
+* It is often helpful to make many copies of the agent, and attach the brain to be trained to all of these agents. In this way the brain can get more feedback information from all of these agents, which helps it train faster. 
 
 ## Rewards
 * The magnitude of any given reward should typically not be greater than 1.0 in order to ensure a more stable learning process.
