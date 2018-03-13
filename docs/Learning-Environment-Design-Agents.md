@@ -112,7 +112,13 @@ Rotations and angles should also be normalized. For angles between 0 and 360 deg
 Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network. You can use camera observations and either continuous feature vector or discrete state observations at the same time.
  
 Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
-  
+
+To add a visual observation to an agent, click on the `Add Camera` button on the Agent's inspector. Then drag the camera you want to use in the placeholder box. 
+
+![Agent Camera](images/visual-observation.png) 
+
+You need to make sure that the brain the agent is attached to is expecting a visual observation
+ 
 ### Discrete Vector Observation Space: Table Lookup
 
 You can use the discrete vector observation space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](Learning-Environment-Examples.md) in the ML Agent SDK defines an agent with a discrete vector observation space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
