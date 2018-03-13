@@ -77,19 +77,17 @@ Found device 0 with properties ...
 ## Step 6: Install Required Python Packages
 ML-Agents includes a list of Python dependencies needed to run.  Similarly in Step 5, you will be using `pip` to install these Python packages.
 
-If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in a new or same Anaconda Prompt _(if you are in a new Anaconda Prompt, make sure to activate the ml-agents Conda environment)_:
+If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in a new or same Anaconda Prompt (_if you closed the prompt from Step 5, you can activate the ml-agents Conda environment by typing `activate ml-agents`_):
 
     git clone git@github.com:Unity-Technologies/ml-agents.git
 
 If you don't want to use Git, you can always directly download all the files [here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
 
-In our example, the files are located in `C:\Downloads`.  After you have either cloned or downloaded the files, in the same CMD or Powershell window from Step 4, change to the python directory inside the ML-agents directory (_if you closed this window, you can activate the right Conda environment by typing `activate ml-agents`_):
+In our example, the files are located in `C:\Downloads`.  After you have either cloned or downloaded the files, from the Anaconda Prompt, change to the python directory inside the ML-agents directory:
 
     cd C:\Downloads\ml-agents\python
 
-Make sure you are connected to the internet and then type in the following two commands:
-
-    conda install –-force html5lib 
+Make sure you are connected to the internet and then type in the Anaconda Prompt:
     
     pip install .
 
