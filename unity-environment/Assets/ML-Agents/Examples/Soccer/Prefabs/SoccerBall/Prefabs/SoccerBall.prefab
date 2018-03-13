@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114729878072981838}
   - component: {fileID: 54501682632205078}
   m_Layer: 0
-  m_Name: Soccer Ball
+  m_Name: SoccerBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,6 +57,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: cff0f8a4e9c85a045be6d610d20b87b3, type: 2}
   - {fileID: 2100000, guid: fb69c479c3cec624b96dfe20d305c1b9, type: 2}
@@ -114,7 +115,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   area: {fileID: 0}
   lastTouchedBy: {fileID: 0}
-  wallTag: wall
   agentTag: agent
   redGoalTag: redGoal
   blueGoalTag: blueGoal

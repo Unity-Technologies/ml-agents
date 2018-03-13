@@ -112,7 +112,7 @@ GameObject:
   - component: {fileID: 54981857909711866}
   - component: {fileID: 114179676407730186}
   m_Layer: 0
-  m_Name: Agent 1
+  m_Name: Agent1
   m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1085,9 +1085,7 @@ MonoBehaviour:
   myAcademyObj: {fileID: 0}
   area: {fileID: 0}
   turnSpeed: 150
-  xForce: 125
-  yForce: 300
-  zForce: 125
+  moveSpeed: 2
   normalMaterial: {fileID: 2100000, guid: e7f88a1493a3046458934f58f23dc35a, type: 2}
   badMaterial: {fileID: 2100000, guid: baad74f40a7944620a17e25311910b34, type: 2}
   goodMaterial: {fileID: 2100000, guid: 8172bbc45544341beb1c63c52c91c3b7, type: 2}
