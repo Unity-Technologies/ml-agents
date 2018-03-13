@@ -119,8 +119,8 @@ HallwayBrain:
     beta: 1.0e-2
     gamma: 0.99
     num_epoch: 3
-    buffer_size: 16
-    batch_size: 2
+    buffer_size: 1024
+    batch_size: 128
     max_steps: 5.0e5
     summary_freq: 1000
     time_horizon: 64
