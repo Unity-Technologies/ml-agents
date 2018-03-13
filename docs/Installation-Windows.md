@@ -104,13 +104,13 @@ We recommend the default _advanced installation options_.  However, select what 
 After installation, you will need to open __Anaconda Navigator__ to finish.  From the Windows search bar, type _anaconda navigator_.  You can close Anaconda Navigator after it opens.
 
 ## Step 5: Setup and Activate a New Conda Environment
-You will create a new Conda environment from our installation of Anaconda.  This new environment will be specifically for ML-Agents.  This means that all packages that you install are localized to just this environment.  It will not affect any other installation of Python or other environments.  Whenever you want to run ML-Agents, you can reactivate this Conda environment.
+You will create a new Conda environment to be used with ML-Agents.  This means that all the packages that you install are localized to just this environment.  It will not affect any other installation of Python or other environments.  Whenever you want to run ML-Agents, you will need activate this Conda environment.
 
-Open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the following command:
+To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the following command:
 
     conda create -n ml-agents python=3.6
 
-You may be asked to install NEW packages.  Type `y` and press enter _(make sure you are connected to the internet)_.  You will need these new packages.  This will create a new Conda environment called ml-agents using Python version 3.6.  
+You may be asked to install new packages.  Type `y` and press enter _(make sure you are connected to the internet)_.  You will need to install these packages.  This command will create a new Conda environment called ml-agents using Python version 3.6.  
 
 <p align="center">
     <img src="images/conda_new.PNG" 
@@ -124,7 +124,7 @@ To use this environment, you will need to activate it.  _(In the future, if you 
 
 You should see `(ml-agents)` prepended on the last line.
 
-After this, you will need to install `tensorflow-gpu.`  This can be installed by using `pip` - which is a package management system used to install Python packages.  In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
+After this, you will need to install `tensorflow` and `tensorflow-gpu`.  This can be installed by using `pip` - which is a package management system used to install Python packages.  In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
 
     pip install tensorflow tensorflow-gpu
 
