@@ -34,7 +34,7 @@ To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_
 conda create -n ml-agents python=3.6
 ```
 
-You may be asked to install new packages.  Type `y` and press enter _(make sure you are connected to the internet)_.  You will need to install these packages.  This command will create a new Conda environment called ml-agents using Python version 3.6.  
+You may be asked to install new packages. Type `y` and press enter _(make sure you are connected to the internet)_. You must install these required packages. The new Conda environment is called ml-agents and uses Python version 3.6.
 
 <p align="center">
     <img src="images/conda_new.PNG" 
