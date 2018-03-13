@@ -156,7 +156,7 @@ For __Variable Name__, enter `CUDA_HOME`.  For the variable value, put the direc
         width="500" border="10" />
 </p>
 
-To set the two path variables, inside the same __Enviornment Variables__ window and under the second box called __System Variables__, find a variable called `PATH` and click __Edit__.  You will add two directories to the list.  For this guide, the two entries would look like:
+To set the two path variables, inside the same __Environment Variables__ window and under the second box called __System Variables__, find a variable called `PATH` and click __Edit__.  You will add two directories to the list.  For this guide, the two entries would look like:
 
     C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\lib\x64
     C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\extras\CUPTI\libx64
