@@ -30,7 +30,7 @@ You will create a new Conda environment to be used with ML-Agents.  This means t
 
 To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the following command:
 
-    conda create -n ml-agents python=3.6
+```conda create -n ml-agents python=3.6```
 
 You may be asked to install new packages.  Type `y` and press enter _(make sure you are connected to the internet)_.  You will need to install these packages.  This command will create a new Conda environment called ml-agents using Python version 3.6.  
 
@@ -42,22 +42,27 @@ You may be asked to install new packages.  Type `y` and press enter _(make sure 
 
 To use this environment, you will need to activate it.  _(In the future, if you need to use this environment again, you can run the same command)_.  In the same Anaconda Prompt, type in the following command:
 
-    conda activate ml-agents
+```
+conda activate ml-agents
+```
 
 You should see `(ml-agents)` prepended on the last line.
 
 After this, you will need to install `tensorflow` and `tensorflow-gpu`.  This can be installed by using `pip` - which is a package management system used to install Python packages.  In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
 
-    pip install tensorflow tensorflow-gpu
-
+```
+pip install tensorflow tensorflow-gpu
+```
 
 Lastly, you should test to see if everything installed properly.  You can do this to see if TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the following command: 
 
-    python
-    
-    import tensorflow as tf
-    
-    sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+```
+python
+
+import tensorflow as tf
+
+sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+```
 
 You should see something similar to:
 
@@ -71,17 +76,23 @@ ML-Agents includes a list of Python dependencies needed to run.  Similarly in St
 
 If you haven't already, make sure to clone the repository.  You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in a new or same Anaconda Prompt (_if you closed the prompt from Step 5, you can activate the ml-agents Conda environment by typing `activate ml-agents`_):
 
-    git clone git@github.com:Unity-Technologies/ml-agents.git
+```
+git clone git@github.com:Unity-Technologies/ml-agents.git
+```
 
 If you don't want to use Git, you can always directly download all the files [here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
 
 In our example, the files are located in `C:\Downloads`.  After you have either cloned or downloaded the files, from the Anaconda Prompt, change to the python directory inside the ML-agents directory:
 
-    cd C:\Downloads\ml-agents\python
+```
+cd C:\Downloads\ml-agents\python
+```
 
 Make sure you are connected to the internet and then type in the Anaconda Prompt:
-    
-    pip install .
+
+```
+pip install .
+```
 
 This will complete the installation of all the required Python packages to run ML-Agents.  
 
