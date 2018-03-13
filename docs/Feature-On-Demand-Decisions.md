@@ -28,7 +28,7 @@ To enable or disable on demand decision making, use the checkbox called
  Agent will reuse the decision the Brain has given it. 
 
  * If `On Demand Decisions` is checked, the Agent controls when to receive
- decisions and actions. To do so, the Agent may leverage one or two methods:
+ decisions, and take actions. To do so, the Agent may leverage one or two methods:
    * `RequestDecision()` Signals that the Agent is requesting a decision.
    This causes the Agent to collect its observations and ask the Brain for a 
    decision at the next step of the simulation. Note that when an Agent 
