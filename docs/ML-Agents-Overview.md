@@ -421,7 +421,8 @@ leveraged by Imitation Learning, where the observations and actions for a
 Player Brain are used to learn the policies of an agent through demonstration.
 However, this could also be helpful for the Heuristic and Internal Brains,
 particularly when debugging agent behaviors. You can learn more about using 
-the broadcasting feature [here](Feature-Broadcasting.md).
+the broadcasting feature 
+[here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
 
 * **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents
 without installing Python or TensorFlow directly, we provide a 
