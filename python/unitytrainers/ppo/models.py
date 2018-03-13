@@ -77,10 +77,14 @@ class PPOModel(LearningModel):
         v_opt_b = tf.squared_difference(self.returns_holder, clipped_value_estimate)
         self.value_loss = tf.reduce_mean(tf.boolean_mask(tf.maximum(v_opt_a, v_opt_b), self.mask))
 
+        # Here we calculate PPO policy loss. In continuous control this is done independently for each action gaussian
+        # and then averaged together. This provides significantly better performance than treating the probability
+        # as an average of probabilities, or as a joint probability.
         self.r_theta = probs / (old_probs + 1e-10)
         self.p_opt_a = self.r_theta * self.advantage
         self.p_opt_b = tf.clip_by_value(self.r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
         self.policy_loss = -tf.reduce_mean(tf.boolean_mask(tf.minimum(self.p_opt_a, self.p_opt_b), self.mask))
+
         self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(
             tf.boolean_mask(entropy, self.mask))
         self.update_batch = optimizer.minimize(self.loss)

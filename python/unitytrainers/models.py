@@ -209,6 +209,8 @@ class LearningModel(object):
         self.selected_actions = c_layers.one_hot_encoding(self.action_holder, self.a_size)
 
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
+
+        # We reshape these tensors to [batch x 1] in order to be of the same rank as continuous control probabilities.
         self.probs = tf.expand_dims(tf.reduce_sum(self.all_probs * self.selected_actions, axis=1), 1)
         self.old_probs = tf.expand_dims(tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1), 1)
 
@@ -243,10 +245,11 @@ class LearningModel(object):
         a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output) - self.mu, 2) / (2 * self.sigma_sq))
         b = 1 / tf.sqrt(2 * self.sigma_sq * np.pi)
         self.all_probs = tf.multiply(a, b, name="action_probs")
-        self.probs = tf.identity(self.all_probs)
         self.entropy = tf.reduce_mean(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
         self.value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32,
                                             name='old_probabilities')
+        # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
+        self.probs = tf.identity(self.all_probs)
         self.old_probs = tf.identity(self.all_old_probs)
