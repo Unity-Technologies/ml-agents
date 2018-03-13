@@ -37,7 +37,7 @@ class UnityEnvironment(object):
         atexit.register(self.close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._python_api = "API-2"
+        self._version_ = "API-3"
         self._loaded = False
         self._open_socket = False
 
@@ -115,14 +115,14 @@ class UnityEnvironment(object):
                     .format(str(file_name)))
 
             if "apiNumber" not in p:
-                self._unity_api = "API-1"
+                self._unity_version = "API-1"
             else:
-                self._unity_api = p["apiNumber"]
-            if self._unity_api != self._python_api:
+                self._unity_version = p["apiNumber"]
+            if self._unity_version != self._version_:
                 raise UnityEnvironmentException(
                     "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
                     "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
-                    "of ML-Agents.".format(self._python_api, self._unity_api))
+                    "of ML-Agents.".format(self._version_, self._unity_version))
             self._data = {}
             self._global_done = None
             self._academy_name = p["AcademyName"]
