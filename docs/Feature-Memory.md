@@ -1,4 +1,4 @@
-# Using Recurrent Neural Network in ML-Agents
+# Using Recurrent Neural Networks in ML-Agents
 
 ## What are memories for?
 Have you ever entered a room to get something and immediately forgot
@@ -25,7 +25,7 @@ file, add the following parameters to the Brain you want to use.
 	memory_size: 256
 ```
 
-* `use_recurent` is a flag that notifies the  trainer that you want 
+* `use_recurrent` is a flag that notifies the  trainer that you want 
 to use a Recurrent Neural Network.
 * `sequence_length` defines how long the sequences of experiences 
 must be while training. In order to use a LSTM, training requires 

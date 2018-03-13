@@ -15,8 +15,7 @@ Using ML-Agents in a Unity project involves the following basic steps:
 3. Add one or more Brain objects to the scene as children of the Academy.
 4. Implement your Agent subclasses. An Agent subclass defines the code an agent uses to observe its environment, to carry out assigned actions, and to calculate the rewards used for reinforcement training. You can also implement optional methods to reset the agent when it has finished or failed its task.
 5. Add your Agent subclasses to appropriate GameObjects, typically, the object in the scene that represents the agent in the simulation. Each Agent object must be assigned a Brain object.
-6. If training, set the Brain type to External and [run the training process](Training-PPO.md).  
-
+6. If training, set the Brain type to External and [run the training process](Training-ML-Agents.md).  
 
 **Note:** If you are unfamiliar with Unity, refer to [Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html) in the Unity Manual if an Editor task isn't explained sufficiently in this tutorial.
 
@@ -145,7 +144,7 @@ Then, edit the new `RollerAgent` script:
 2. In the editor, change the base class from `MonoBehaviour` to `Agent`.
 3. Delete the `Update()` method, but we will use the `Start()` function, so leave it alone for now.
 
-So far, these are the basic steps that you would use to add ML-Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube.
+So far, these are the basic steps that you would use to add ML-Agents to any Unity project. Next, we will add the logic that will let our agent learn to roll to the cube using reinforcement learning.
 
 In this simple scenario, we don't use the Academy object to control the environment. If we wanted to change the environment, for example change the size of the floor or add or remove agents or other objects before or during the simulation, we could implement the appropriate methods in the Academy. Instead, we will have the Agent do all the work of resetting itself and the target when it succeeds or falls trying. 
 
@@ -192,7 +191,7 @@ Next, let's implement the Agent.CollectObservations() function.
 
 **Observing the Environment**
 
-The Agent sends the information we collect to the Brain, which uses it to make a decision. When you train the agent using the PPO training algorithm (or use a trained PPO model), the data is fed into a neural network as a feature vector. For an agent to successfully learn a task, we need to provide the correct information. A good rule of thumb for deciding what information to collect is to consider what you would need to calculate an analytical solution to the problem. 
+The Agent sends the information we collect to the Brain, which uses it to make a decision. When you train the agent (or use a trained model), the data is fed into a neural network as a feature vector. For an agent to successfully learn a task, we need to provide the correct information. A good rule of thumb for deciding what information to collect is to consider what you would need to calculate an analytical solution to the problem. 
 
 In our case, the information our agent collects includes:
 
@@ -245,11 +244,11 @@ In total, the state observation contains 8 values and we need to use the continu
         AddVectorObs(rBody.velocity.z/5);
     }
 
-The final part of the Agent code is the Agent.AgentAct() function, which receives the decision from the Brain.
+The final part of the Agent code is the Agent.AgentAction() function, which receives the decision from the Brain.
 
 **Actions**
 
-The decision of the Brain comes in the form of an action array passed to the `AgentAct()` function. The number of elements in this array is determined by the `Vector Action Space Type` and `Vector Action Space Size` settings of the agent's Brain. The RollerAgent uses the continuous vector action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Vector Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Vector Action Size` to 3. Note the Brain really has no idea what the values in the action array mean. The training process adjust the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
+The decision of the Brain comes in the form of an action array passed to the `AgentAction()` function. The number of elements in this array is determined by the `Vector Action Space Type` and `Vector Action Space Size` settings of the agent's Brain. The RollerAgent uses the continuous vector action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Vector Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Vector Action Size` to 3. Note the Brain really has no idea what the values in the action array mean. The training process adjust the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
 
 Before we can add a force to the agent, we need a reference to its Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) A good place to set references to other components of the same GameObject is in the standard Unity `Start()` method:
 
@@ -265,7 +264,7 @@ The agent clamps the action values to the range [-1,1] for two reasons. First, t
 
 **Rewards**
 
-Rewards are also assigned in the AgentAct() function. The learning algorithm uses the rewards assigned to the agent property at each step in the simulation and learning process to determine whether it is giving the agent to optimal actions. You want to reward an agent for completing the assigned task (reaching the Target cube, in this case) and punish the agent if it irrevocably fails (falls off the platform). You can sometimes speed up training with sub-rewards that encourage behavior that helps the agent complete the task. For example, the RollerAgent reward system provides a small reward if the agent moves closer to the target in a step. 
+Reinforcement learning requires rewards. Assign rewards in the `AgentAction()` function. The learning algorithm uses the rewards assigned to the agent at each step in the simulation and learning process to determine whether it is giving the agent the optimal actions. You want to reward an agent for completing the assigned task (reaching the Target cube, in this case) and punish the agent if it irrevocably fails (falls off the platform). You can sometimes speed up training with sub-rewards that encourage behavior that helps the agent complete the task. For example, the RollerAgent reward system provides a small reward if the agent moves closer to the target in a step and a small negative reward at each step which encourages the agent to complete its task quickly. 
 
 The RollerAgent calculates the distance to detect when it reaches the target. When it does, the code increments the Agent.reward variable by 1.0 and marks the agent as finished by setting the agent to done. 
 
@@ -302,14 +301,14 @@ Finally, to punish the agent for falling off the platform, assign a large negati
         AddReward(-1.0f);
     }
 
-**AgentAct()**
+**AgentAction()**
  
-With the action and reward logic outlined above, the final version of the `AgentAct()` function looks like:
+With the action and reward logic outlined above, the final version of the `AgentAction()` function looks like:
 
     public float speed = 10;
     private float previousDistance = float.MaxValue;
     
-    public override void AgentAct(float[] action)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
         // Rewards
         float distanceToTarget = Vector3.Distance(this.transform.position, 
@@ -341,8 +340,8 @@ With the action and reward logic outlined above, the final version of the `Agent
 
         // Actions, size = 2
         Vector3 controlSignal = Vector3.zero;
-        controlSignal.x = Mathf.Clamp(action[0], -1, 1);
-        controlSignal.z = Mathf.Clamp(action[1], -1, 1);
+        controlSignal.x = Mathf.Clamp(vectorAction[0], -1, 1);
+        controlSignal.z = Mathf.Clamp(vectorAction[1], -1, 1);
         rBody.AddForce(controlSignal * speed);
      }
 
@@ -387,9 +386,9 @@ It is always a good idea to test your environment manually before embarking on a
 | Element 2 | W  | 1        | 1        |
 | Element 3 | S   | 1        | -1       |
 
-The **Index** value corresponds to the index of the action array passed to `AgentAct()` function. **Value** is assigned to action[Index] when **Key** is pressed.
+The **Index** value corresponds to the index of the action array passed to `AgentAction()` function. **Value** is assigned to action[Index] when **Key** is pressed.
 
 Press **Play** to run the scene and use the WASD keys to move the agent around the platform. Make sure that there are no errors displayed in the Unity editor Console window and that the agent resets when it reaches its target or falls from the platform. Note that for more involved debugging, the ML-Agents SDK includes a convenient Monitor class that you can use to easily display agent status information in the Game window.
 
-Now you can train the Agent. To get ready for training, you must first to change the **Brain Type** from **Player** to **External**. From there the process is the same as described in [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md).
+Now you can train the Agent. To get ready for training, you must first to change the **Brain Type** from **Player** to **External**. From there, the process is the same as described in [Training ML-Agents](Training-ML-Agents.md). 
 
