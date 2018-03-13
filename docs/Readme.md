@@ -8,7 +8,7 @@
  * [Installation & Set-up](Installation.md)
     * [Background: Jupyter Notebooks](Background-Jupyter.md)
     * [Docker Set-up (Experimental)](Using-Docker.md)
- * [Getting Started with the Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
+ * [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
  * [Example Environments](Learning-Environment-Examples.md)
 
 ## Creating Learning Environments
@@ -32,6 +32,7 @@
 ## Help
  * [ML-Agents Glossary](Glossary.md)
  * [Limitations & Common Issues](Limitations-and-Common-Issues.md)
+ * [Migrating to ML-Agents v0.3](Migrating-v0.3.md)
  
 ## C# API and Components
  * Academy

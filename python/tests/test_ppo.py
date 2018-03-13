@@ -15,7 +15,7 @@ def test_ppo_model_continuous():
       "brainNames": ["RealFakeBrain"],
       "externalBrainNames": ["RealFakeBrain"],
       "logPath":"RealFakePath",
-      "apiNumber":"API-2",
+      "apiNumber":"API-3",
       "brainParameters": [{
           "vectorObservationSize": 3,
           "numStackedVectorObservations": 2,
@@ -61,7 +61,7 @@ def test_ppo_model_discrete():
       "brainNames": ["RealFakeBrain"],
       "externalBrainNames": ["RealFakeBrain"],
       "logPath":"RealFakePath",
-      "apiNumber":"API-2",
+      "apiNumber":"API-3",
       "brainParameters": [{
           "vectorObservationSize": 3,
           "numStackedVectorObservations": 2,

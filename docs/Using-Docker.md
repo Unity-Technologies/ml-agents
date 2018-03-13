@@ -45,13 +45,16 @@ Replace `<image-name>` with a name for the Docker image, e.g. `balance.ball.v0.1
 
 Run the Docker container by calling the following command at the top-level of the repository:
 ```
-docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
-     <image-name>:latest <environment-name> \
-     --docker-target-name=unity-volume \
-     --train --run-id=<run-id>
+docker run --name <container-name> \
+           --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
+           <image-name>:latest <environment-name> \
+           --docker-target-name=unity-volume \
+           --train \
+           --run-id=<run-id>
 ```
 
 Notes on argument values:
+- `<container-name>` is used to identify the container (in case you want to interrupt and terminate it). This is optional and Docker will generate a random name if this is not set. _Note that this must be unique for every run of a Docker image._
 - `<image-name>` and `<environment-name>`: References the image and environment names, respectively.
 - `source`: Reference to the path in your host OS where you will store the Unity executable. 
 - `target`: Tells Docker to mount the `source` path as a disk with this name. 
@@ -61,10 +64,23 @@ Notes on argument values:
 For the `3DBall` environment, for example this would be:
 
 ```
-docker run --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
-     balance.ball.v0.1:latest 3Dball \
-     --docker-target-name=unity-volume \
-     --train --run-id=3dball_first_trial
+docker run --name 3DBallContainer.first.trial \
+           --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
+           balance.ball.v0.1:latest 3Dball \
+           --docker-target-name=unity-volume \
+           --train \
+           --run-id=3dball_first_trial
 ```
 
 For more detail on Docker mounts, check out [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
+
+
+### Stopping Container and Saving State
+
+If you are satisfied with the training progress, you can stop the Docker container while saving state using the following command:
+
+```
+docker kill --signal=SIGINT <container-name>
+```
+
+`<container-name>` is the name of the container specified in the earlier `docker run` command. If you didn't specify one, you can find the randomly generated identifier by running `docker container ls`.

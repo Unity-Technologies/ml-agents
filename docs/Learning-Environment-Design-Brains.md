@@ -1,6 +1,6 @@
 # Brains
 
-The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. 
+The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. You can also create several Brains, attach each of the Brain to one or more than one Agent.  
 
 Use the Brain class directly, rather than a subclass. Brain behavior is determined by the **Brain Type**. ML-Agents defines four Brain Types:
 

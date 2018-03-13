@@ -1,4 +1,4 @@
-# Getting Started with the 3D Balance Ball Example
+# Getting Started with the 3D Balance Ball Environment
 
 This tutorial walks through the end-to-end process of opening an ML-Agents 
 example environment in Unity, building the Unity executable, training an agent 
@@ -10,7 +10,7 @@ can be used. These environments can also serve as templates for new
 environments or as ways to test new ML algorithms. After reading this tutorial, 
 you should be able to explore and build the example environments.
 
-![Balance Ball](images/balance.png)
+![3D Balance Ball](images/balance.png)
 
 This walk-through uses the **3D Balance Ball** environment. 3D Balance Ball contains 
 a number of platforms and balls (which are all copies of each other). 
@@ -27,7 +27,7 @@ Let's get started!
 In order to install and set up ML-Agents, the Python dependencies and Unity, 
 see the [installation instructions](Installation.md).
 
-## Understanding a Unity Environment (Balance Ball)
+## Understanding a Unity Environment (3D Balance Ball)
 
 An agent is an autonomous actor that observes and interacts with an 
 _environment_. In the context of Unity, an environment is a scene containing 
@@ -44,7 +44,7 @@ Inspector window. The Inspector shows every component on a GameObject.
  
 The first thing you may notice after opening the 3D Balance Ball scene is that 
 it contains not one, but several platforms.  Each platform in the scene is an 
-independent agent, but they all share the same brain.  Balance Ball does this 
+independent agent, but they all share the same brain. 3D Balance Ball does this 
 to speed up training since all twelve agents contribute to training in parallel.
 
 ### Academy
@@ -237,7 +237,12 @@ current scene is included in the build).
 ## Training the Brain with Reinforcement Learning
 
 Now that we have a Unity executable containing the simulation environment, we 
-can perform the training. 
+can perform the training. To first ensure that your environment and the Python 
+API work as expected, you can use the `python/Basics` 
+[Jupyter notebook](Background-Jupyter.md). 
+This notebook contains a simple walkthrough of the functionality of the API. 
+Within `Basics`, be sure to set `env_name` to the name of the environment file 
+you built earlier.
 
 ### Training with PPO
 
@@ -287,7 +292,7 @@ From TensorBoard, you will see the summary statistics:
 
 * Lesson - only interesting when performing
 [curriculum training](Training-Curriculum-Learning.md). 
-This is not used in the 3d Balance Ball environment. 
+This is not used in the 3D Balance Ball environment. 
 * Cumulative Reward - The mean cumulative episode reward over all agents. 
 Should increase during a successful training session.
 * Entropy - How random the decisions of the model are. Should slowly decrease 
