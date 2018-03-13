@@ -13,6 +13,16 @@ The observation-decision-action-reward cycle repeats after a configurable number
 
 To control the frequency of step-based decision making, set the **Decision Frequency** value for the Agent object in the Unity Inspector window. Agents using the same Brain instance can use a different frequency. During simulation steps in which no decision is requested, the agent receives the same action chosen by the previous decision.
 
+### On Demand Decision Making
+
+On demand decision making allows agents to request decisions from their 
+brains only when needed instead of receiving decisions at a fixed 
+frequency. This is useful when the agents commit to an action for a 
+variable number of steps or when the agents cannot make decisions 
+at the same time. This typically the case for turn based games, games 
+where agents must react to events or games where agents can take 
+actions of variable duration.
+
 When you turn on **On Demand Decisions** for an agent, your agent code must call the `Agent.RequestDecision()` function. This function call starts one iteration of the observation-decision-action-reward cycle. The Brain invokes the agent's `CollectObservations()` method, makes a decision and returns it by calling the `AgentAction()` method. The Brain waits for the agent to request the next decision before starting another iteration.
 
 See [On Demand Decision Making](Feature-On-Demand-Decision.md).
@@ -257,6 +267,22 @@ The `Ball3DAgent` also assigns a negative penalty when the ball falls off the pl
 * `Max Step` - The per-agent maximum number of steps. Once this number is reached, the agent will be reset if `Reset On Done` is checked.
 * `Reset On Done` - Whether the agent's `AgentReset()` function should be called when the agent reaches its `Max Step` count or is marked as done in code.
 * `On Demand Decision` - Whether the agent requests decisions at a fixed step interval or explicitly requests decisions by calling `RequestDecision()`.
+     * If not checked, the Agent will request a new 
+        decision every `Decision Frequency` steps and 
+        perform an action every step. In the example above, 
+        `CollectObservations()` will be called every 5 steps and 
+        `AgentAction()` will be called at every step. This means that the 
+        Agent will reuse the decision the Brain has given it. 
+     * If checked, the Agent controls when to receive
+        decisions, and take actions. To do so, the Agent may leverage one or two methods:
+        * `RequestDecision()` Signals that the Agent is requesting a decision.
+            This causes the Agent to collect its observations and ask the Brain for a 
+            decision at the next step of the simulation. Note that when an Agent 
+            requests a decision, it also request an action. 
+            This is to ensure that all decisions lead to an action during training.
+        * `RequestAction()` Signals that the Agent is requesting an action. The
+            action provided to the Agent in this case is the same action that was
+            provided the last time it requested a decision. 
 * `Decision Frequency` - The number of steps between decision requests. Not used if `On Demand Decision`, is true. 
 
 ## Instantiating an Agent at Runtime
