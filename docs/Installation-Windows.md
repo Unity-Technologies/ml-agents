@@ -93,7 +93,7 @@ Make sure you are connected to the internet and then type in the Anaconda Prompt
 
 This will complete the installation of all the required Python packages to run ML-Agents.  
 
-## Step 6: Acknowledgements
+## Acknowledgements
 
 We would like to thank [Jason Weimann](https://unity3d.college/2017/10/25/machine-learning-in-unity3d-setting-up-the-environment-tensorflow-for-agentml-on-windows-10/) and [Nitish S. Mutha](http://blog.nitishmutha.com/tensorflow/2017/01/22/TensorFlow-with-gpu-for-windows.html) for writing the original articles which were used to create this guide.
 
