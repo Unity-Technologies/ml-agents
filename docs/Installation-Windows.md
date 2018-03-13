@@ -35,7 +35,7 @@ To set the two path variables, inside the same __Enviornment Variables__ window 
     C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\lib\x64
     C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\extras\CUPTI\libx64
 
-Make sure to replace the relevant directory location with the one you have installed.
+Make sure to replace the relevant directory location with the one you have installed.  _Please note that case sensitivity matters_.
 
 ## Step 4: Install Python via Anaconda
 <a href="https://www.anaconda.com/download/#windows" target="_blank">Download</a> and install Anaconda for Windows.  By using Anaconda, you can use manage separate environments for different distributions of Python.  We **strongly** recommend using Python 3 as we do not guarantee supporting Python 2 in future releases.  In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).  
@@ -89,3 +89,8 @@ Make sure you are connected to the internet and then type in the following two c
     pip install .
 
 This will complete the installation of all the required Python packages to run ML-Agents.  
+
+## Step 6: Acknowledgements
+
+We would like to thank [Jason Weimann](https://unity3d.college/2017/10/25/machine-learning-in-unity3d-setting-up-the-environment-tensorflow-for-agentml-on-windows-10/) and [Nitish S. Mutha](http://blog.nitishmutha.com/tensorflow/2017/01/22/TensorFlow-with-gpu-for-windows.html) for writing the original articles which were used to create this guide.
+
