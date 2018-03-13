@@ -1,6 +1,6 @@
 # Using the Broadcast Feature
 
-The Player, Heuristic and Internal brains have been updated to support broadcast. The broadcast feature allows you to collect data from your agents in using a Python program without controlling them.  
+The Player, Heuristic and Internal brains have been updated to support broadcast. The broadcast feature allows you to collect data from your agents using a Python program without controlling them.  
 
 ## How to use : Unity
 
@@ -10,7 +10,7 @@ To turn it on in Unity, simply check the `Broadcast` box as shown bellow:
 
 ## How to use : Python 
 
-When you launch your Unity Environment from a Python program, you can see what the agents connected to non-external brains are doing. When calling `step` or `reset` on your environment, you retrieve a dictionary from brain names to `BrainInfo` objects. Each `BrainInfo` the non-external brains set to broadcast.  
+When you launch your Unity Environment from a Python program, you can see what the agents connected to non-external brains are doing. When calling `step` or `reset` on your environment, you retrieve a dictionary mapping brain names to `BrainInfo` objects. The  dictionary contains a `BrainInfo` object for each non-external brain set to broadcast as well as for any external brains.  
 
 Just like with an external brain, the `BrainInfo` object contains the fields for `visual_observations`, `vector_observations`,  `text_observations`, `memories`,`rewards`, `local_done`, `max_reached`, `agents` and `previous_actions`. Note that `previous_actions` corresponds to the actions that were taken by the agents at the previous step, not the current one.  
 
