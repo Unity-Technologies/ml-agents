@@ -56,22 +56,6 @@ After this, you will need to install `tensorflow` and `tensorflow-gpu`.  This ca
 pip install tensorflow tensorflow-gpu
 ```
 
-Lastly, you should test to see if everything installed properly.  You can do this to see if TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the following command: 
-
-```
-python
-
-import tensorflow as tf
-
-sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
-```
-
-You should see something similar to:
-
-```
-Found device 0 with properties ...
-```
-
 ## Step 3: Install Required Python Packages
 
 ML-Agents includes a list of Python dependencies needed to run.  Similarly in Step 4, you will be using `pip` to install these Python packages.
@@ -184,6 +168,22 @@ Make sure to replace the relevant directory location with the one you have insta
         alt="Path variables" 
         width="500" border="10" />
 </p>
+
+Lastly, you should test to see if everything installed properly.  You can do this to see if TensorFlow can identify your GPU. In an Anaconda Prompt, with the ml-agents Conda environment activated, type in the following command: 
+
+```
+python
+
+import tensorflow as tf
+
+sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+```
+
+You should see something similar to:
+
+```
+Found device 0 with properties ...
+```
 
 ## Acknowledgements
 
