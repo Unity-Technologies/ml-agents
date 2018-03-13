@@ -123,7 +123,7 @@ After you have downloaded the cuDNN files, you will need to extract the files in
         width="500" border="10" />
 </p>
 
-Copy these three folders into the CUDA toolkit directory.  In this guide, the CUDA toolkit directory is located at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`
+Copy these three folders into the CUDA toolkit directory.  The CUDA toolkit directory is located at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`
 
 <p align="center">
     <img src="images/cuda_toolkit_directory.PNG" 
