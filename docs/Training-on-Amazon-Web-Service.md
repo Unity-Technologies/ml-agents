@@ -2,13 +2,19 @@
 
 This page contains instructions for setting up an EC2 instance on Amazon Web Service for use in training ML-Agents environments. You can run "headless" training if none of the agents in the environment use visual observations. 
 
+## Pre-Configured AMI
+A public pre-configured AMI is available with the ID: `ami-30ec184a` in the `us-east-1` region. It was created as a modification of the Amazon Deep Learning [AMI](https://aws.amazon.com/marketplace/pp/B01M0AXXQB). 
+
 ## Configuring your own Instance
 
 1. To begin with, you will need an EC2 instance which contains the latest Nvidia drivers, CUDA8, and cuDNN.  There are a number of external tutorials which describe this, such as:
     * [Getting CUDA 8 to Work With openAI Gym on AWS and Compiling TensorFlow for CUDA 8 Compatibility](https://davidsanwald.github.io/2016/11/13/building-tensorflow-with-gpu-support.html)
     * [Installing TensorFlow on an AWS EC2 P2 GPU Instance](http://expressionflow.com/2016/10/09/installing-tensorflow-on-an-aws-ec2-p2-gpu-instance/)
     * [Updating Nvidia CUDA to 8.0.x in Ubuntu 16.04 – EC2 Gx instance](https://aichamp.wordpress.com/2016/11/09/updating-nvidia-cuda-to-8-0-x-in-ubuntu-16-04-ec2-gx-instance/)
-2. Move `python` to remote instance.
+
+## Installing ML-Agents
+
+2. Move `python` sub-folder of this repo to remote instance.
 2. Install the required packages with `pip3 install .`.
 
 ## Testing
