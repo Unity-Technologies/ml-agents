@@ -95,46 +95,46 @@ To load and use a TensorFlow data graph in Unity:
 
 2. At the top off your C# script, add the line:
 
-        ```csharp
-        using TensorFlow;
-        ```
+```csharp
+using TensorFlow;
+```
 
 3. If you will be building for android, you must add this block at the start of your code :
 
-        ```csharp
-        #if UNITY_ANDROID
-        TensorFlowSharp.Android.NativeBinding.Init();
-        #endif
-        ```
+```csharp
+#if UNITY_ANDROID
+TensorFlowSharp.Android.NativeBinding.Init();
+#endif
+```
 
 4. Load your graph as a text asset into a variable, such as `graphModel`:
 
-        ```csharp
-        TextAsset graphModel = Resources.Load (your_name_graph) as TextAsset;
-        ```
+```csharp
+TextAsset graphModel = Resources.Load (your_name_graph) as TextAsset;
+```
 
 5. You then must instantiate the graph in Unity by adding the code :
 
-        ```csharp
-        graph = new TFGraph ();
-        graph.Import (graphModel.bytes);
-        session = new TFSession (graph);
-        ```
+```csharp
+graph = new TFGraph ();
+graph.Import (graphModel.bytes);
+session = new TFSession (graph);
+```
 
 6. Assign the input tensors for the graph. For example, the following code assigns a one dimensional input tensor of size 2:
 
-        ```csharp
-        var runner = session.GetRunner ();
-        runner.AddInput (graph ["input_placeholder_name"] [0], new float[]{ placeholder_value1, placeholder_value2 });
-        ```
+```csharp
+var runner = session.GetRunner ();
+runner.AddInput (graph ["input_placeholder_name"] [0], new float[]{ placeholder_value1, placeholder_value2 });
+```
 
-    You must provide all required inputs to the graph. Supply one input per TensorFlow placeholder.
+You must provide all required inputs to the graph. Supply one input per TensorFlow placeholder.
 
 7. To calculate and access the output of your graph, run the following code.
 
-        ```csharp
-        runner.Fetch (graph["output_placeholder_name"][0]);
-        float[,] recurrent_tensor = runner.Run () [0].GetValue () as float[,];
-        ```
+```csharp
+runner.Fetch (graph["output_placeholder_name"][0]);
+float[,] recurrent_tensor = runner.Run () [0].GetValue () as float[,];
+```
 
-     Note that this example assumes the output array is a two-dimensional tensor of floats. Cast to a long array if your outputs are integers.
+Note that this example assumes the output array is a two-dimensional tensor of floats. Cast to a long array if your outputs are integers.
