@@ -58,8 +58,6 @@ For examples of various state observation functions, you can look at the [Exampl
         AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
     }
 
-<!-- Note that the above values aren't normalized, which we recommend! -->
-
 The feature vector must always contain the same number of elements and observations must always be in the same position within the list. If the number of observed entities in an environment can vary you can pad the feature vector with zeros for any missing entities in a specific observation or you can limit an agent's observations to a fixed subset. For example, instead of observing every enemy agent in an environment, you could only observe the closest five. 
 
 When you set up an Agent's brain in the Unity Editor, set the following properties to use a continuous vector observation:
@@ -93,11 +91,6 @@ Type enumerations should be encoded in the _one-hot_ style. That is, add an elem
         }
     }
 
-
-<!-- 
-How to handle things like large numbers of words or symbols? Should you use a very long one-hot vector? Or a single index into a table? 
-Colors? Better to use a single color number or individual components?
--->
 
 #### Normalization
 
