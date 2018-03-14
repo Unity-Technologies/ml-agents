@@ -1350,6 +1350,26 @@ Prefab:
       propertyPath: m_DynamicOccludee
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 23658098095345942, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 214660f4189b04cada2137381f5c3607, type: 2}
+    - target: {fileID: 23149278028506196, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 214660f4189b04cada2137381f5c3607, type: 2}
+    - target: {fileID: 23242721846513294, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 214660f4189b04cada2137381f5c3607, type: 2}
+    - target: {fileID: 23154762680579788, guid: 03bcc81e249714a22bb411dddcc5d15e,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 214660f4189b04cada2137381f5c3607, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 03bcc81e249714a22bb411dddcc5d15e, type: 2}
   m_IsPrefabParent: 0
