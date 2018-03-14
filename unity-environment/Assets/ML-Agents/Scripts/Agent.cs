@@ -180,7 +180,7 @@ public class AgentParameters
 /// see the Examples/ directory within this Unity project.
 /// </remarks>
 [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
-         "docs/Learning-Environment-Design-Agent.md")]
+         "docs/Learning-Environment-Design-Agents.md")]
 [System.Serializable]
 public abstract class Agent : MonoBehaviour
 {

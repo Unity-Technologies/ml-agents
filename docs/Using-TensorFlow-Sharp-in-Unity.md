@@ -1,4 +1,4 @@
-# Using TensorFlowSharp in Unity _[Experimental]_
+# Using TensorFlowSharp in Unity (Experimental)
 
 ML-Agents allows you to use pre-trained [TensorFlow graphs](https://www.tensorflow.org/programmers_guide/graphs) inside your Unity games. This support is possible thanks to [the TensorFlowSharp project](https://github.com/migueldeicaza/TensorFlowSharp). The primary purpose for this support is to use the TensorFlow models produced by the ML-Agents own training programs, but a side benefit is that you can use any TensorFlow model.
 

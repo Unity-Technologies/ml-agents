@@ -496,7 +496,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             "order to use the internal brain.", MessageType.Error);
         if (GUILayout.Button("Show me how"))
         {
-            Application.OpenURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md#setting-up-tensorflowsharp-support");
+            Application.OpenURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md#embedding-the-trained-brain-into-the-unity-environment-experimental");
         }
 #endif
     }
