@@ -327,7 +327,7 @@ the `Internal` Brain mode will only be available once completing these steps.
 
 1. Make sure the TensorFlowSharp plugin is in your `Assets` folder. A Plugins 
 folder which includes TF# can be downloaded 
-[here](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage). 
+[here](https://s3.amazonaws.com/unity-agents/0.3/TFSharpPlugin.unitypackage). 
 Double click and import it once downloaded.  You can see if this was
 successfully installed by checking the TensorFlow files in the Project tab
 under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
