@@ -57,7 +57,7 @@ Next, we will create a very simple scene to act as our ML-Agents environment. Th
 2. Name the GameObject "Target"
 3. Select Target to view its properties in the Inspector window.
 4. Set Transform to Position = (3,0.5,3), Rotation = (0,0,0), Scale = (1,1,1).
-5. On the Cube's Mesh Renderer, expand the Materials property and change the default-material to *block*.
+5. On the Cube's Mesh Renderer, expand the Materials property and change the default-material to *Block*.
 
 ![The Target Cube in the Inspector window](images/mlagents-NewTutBlock.png)
 
@@ -114,15 +114,13 @@ The default settings for the Academy properties are also fine for this environme
 
 ## Add a Brain
 
-The Brain object encapsulates the decision making process. An Agent sends its observations to its Brain and expects a decision in return. The Brain Type setting determines how the Brain makes decisions. Unlike the Academy and Agent classes, you don't make your own Brain subclasses. (You can extend CoreBrain to make your own *types* of Brain, but the four built-in brain types should cover almost all scenarios.)
+The Brain object encapsulates the decision making process. An Agent sends its observations to its Brain and expects a decision in return. The Brain Type setting determines how the Brain makes decisions. Unlike the Academy and Agent classes, you don't make your own Brain subclasses. 
 
 To create the Brain:
 
-1. Right-click the Academy GameObject in the Hierarchy window and choose *Create Empty* to add a child GameObject.
-2. Name the new GameObject, "Brain".
-3. Select the Brain GameObject to show its properties in the Inspector window.
-4. Click **Add Component**.
-5. Select the **Scripts/Brain** component to add it to the GameObject.
+1. Select the Brain GameObject created earlier to show its properties in the Inspector window.
+2. Click **Add Component**.
+3. Select the **Scripts/Brain** component to add it to the GameObject.
 
 We will come back to the Brain properties later, but leave the Brain Type as **Player** for now.
 
@@ -221,7 +219,6 @@ All the values are divided by 5 to normalize the inputs to the neural network to
 
 In total, the state observation contains 8 values and we need to use the continuous state space when we get around to setting the Brain properties:
 
-    List<float> observation = new List<float>();
     public override void CollectObservations()
     {
         
@@ -247,7 +244,7 @@ The final part of the Agent code is the Agent.AgentAction() function, which rece
 
 **Actions**
 
-The decision of the Brain comes in the form of an action array passed to the `AgentAction()` function. The number of elements in this array is determined by the `Vector Action Space Type` and `Vector Action Space Size` settings of the agent's Brain. The RollerAgent uses the continuous vector action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Vector Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Vector Action Size` to 3. Note the Brain really has no idea what the values in the action array mean. The training process adjust the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
+The decision of the Brain comes in the form of an action array passed to the `AgentAction()` function. The number of elements in this array is determined by the `Vector Action Space Type` and `Vector Action Space Size` settings of the agent's Brain. The RollerAgent uses the continuous vector action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Vector Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Vector Action Size` to 3. Note the Brain really has no idea what the values in the action array mean. The training process just adjusts the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
 
 Before we can add a force to the agent, we need a reference to its Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) A good place to set references to other components of the same GameObject is in the standard Unity `Start()` method:
 
@@ -360,10 +357,10 @@ Also, drag the Target GameObject from the Hierarchy window to the RollerAgent Ta
 
 Finally, select the Brain GameObject so that you can see its properties in the Inspector window. Set the following properties:
 
-* `Vector Observation Space Size` = 8
-* `Vector Action Space Size` = 2
-* `Vector Action Space Type` = **Continuous**
 * `Vector Observation Space Type` = **Continuous**
+* `Vector Observation Space Size` = 8
+* `Vector Action Space Type` = **Continuous**
+* `Vector Action Space Size` = 2
 * `Brain Type` = **Player**
 
 Now you are ready to test the environment before training.
