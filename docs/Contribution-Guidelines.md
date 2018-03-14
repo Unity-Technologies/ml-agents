@@ -25,7 +25,7 @@ issues with the `contributions welcome` label.
 
 Starting with v0.3, we adopted the 
 [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/).
-Consequently, the `master` branch corresponds to the latest major release of 
+Consequently, the `master` branch corresponds to the latest release of 
 the project, while the `develop` branch corresponds to the most recent, stable,
 version of the project.
 
@@ -35,7 +35,7 @@ and make sure that your Pull Request (PR) contains the following:
 * Corresponding changes to documentation, unit tests and sample environments 
 (if applicable)
 * Summary of the tests performed to validate your changes
-* Issue numbers that this PR resolves (if any)
+* Issue numbers that the PR resolves (if any)
 
 ### Environments
 
