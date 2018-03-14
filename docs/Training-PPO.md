@@ -115,7 +115,7 @@ Typical Range: `32` - `512`
 
 The below hyperparameters are only used when `use_recurrent` is set to true.
 
-#### Sequence Lenght
+#### Sequence Length
 
 `sequence_length` corresponds to the length of the sequences of experience passed through the network during training. This should be long enough to capture whatever information your agent might need to remember over time. For example, if your agent needs to remember the velocity of objects, then this can be a small value. If your agent needs to remember a piece of information given only once at the beginning of an episode, then this should be a larger value.
 
