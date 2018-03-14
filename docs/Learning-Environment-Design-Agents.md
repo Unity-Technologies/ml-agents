@@ -117,7 +117,7 @@ To add a visual observation to an agent, click on the `Add Camera` button on the
 
 ![Agent Camera](images/visual-observation.png) 
 
-You need to make sure that the brain the agent is attached to is expecting a visual observation
+You need to make sure that the brain the agent is attached to is expecting a visual observation. To do so, in the brain inspector, in `Brain Parameters` -> `Visual Observations` specify the number of Cameras the brain will expect along with their width/height in pixels and wether or not they are black and white.
  
 ### Discrete Vector Observation Space: Table Lookup
 
