@@ -8,7 +8,7 @@ If you are using the recurrent neural network (RNN) to utilize memory, see [Usin
 
 If you are using curriculum training to pace the difficulty of the learning task presented to an agent, see [Training with Curriculum Learning](Training-Curriculum-Learning.md).
 
-For information about imitation learning, which uses a different training algorithm, see [Training with Imitation Learning](Training-Imitation-Learning).
+For information about imitation learning, which uses a different training algorithm, see [Training with Imitation Learning](Training-Imitation-Learning.md).
 
 ## Best Practices when training with PPO
 
