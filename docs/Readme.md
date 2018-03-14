@@ -12,7 +12,7 @@
  * [Example Environments](Learning-Environment-Examples.md)
 
 ## Creating Learning Environments
- * [Making a new Learning Environment](Learning-Environment-Create-New.md)
+ * [Making a New Learning Environment](Learning-Environment-Create-New.md)
  * [Designing a Learning Environment](Learning-Environment-Design.md)
      * [Agents](Learning-Environment-Design-Agents.md)
      * [Academy](Learning-Environment-Design-Academy.md)
