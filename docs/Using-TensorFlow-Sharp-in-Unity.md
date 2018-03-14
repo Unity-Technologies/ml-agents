@@ -15,7 +15,7 @@ _Notice: This feature is still experimental. While it is possible to embed train
 ## Requirements
 
 * Unity 2017.1 or above
-* Unity TensorFlow Plugin ([Download here](https://s3.amazonaws.com/unity-agents/0.3/TFSharpPlugin.unitypackage))
+* Unity TensorFlow Plugin ([Download here](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage))
 
 # Using TensorFlowSharp with ML-Agents
 
