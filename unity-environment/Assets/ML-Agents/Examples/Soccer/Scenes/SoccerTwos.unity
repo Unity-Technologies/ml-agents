@@ -843,7 +843,7 @@ MonoBehaviour:
     - 
     vectorActionSpaceType: 0
     vectorObservationSpaceType: 1
-  brainType: 3
+  brainType: 0
   CoreBrains:
   - {fileID: 393649381}
   - {fileID: 331361653}
@@ -1208,7 +1208,7 @@ MonoBehaviour:
     - 
     vectorActionSpaceType: 0
     vectorObservationSpaceType: 1
-  brainType: 3
+  brainType: 0
   CoreBrains:
   - {fileID: 1862093289}
   - {fileID: 472089316}
