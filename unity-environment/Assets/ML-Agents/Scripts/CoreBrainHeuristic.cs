@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-/// CoreBrain which decides actions using developer-provided Decision.cs script.
+/// CoreBrain which decides actions using developer-provided Decision script.
 public class CoreBrainHeuristic : ScriptableObject, CoreBrain
 {
     [SerializeField]
