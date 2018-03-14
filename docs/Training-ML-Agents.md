@@ -16,7 +16,7 @@ Run `Learn.py` from the command line to launch the training process. Use the com
 
 The basic command for training is:
 
-    python learn.py <env_file_path> --run-id=<run-identifier> --train
+    python3 learn.py <env_file_path> --run-id=<run-identifier> --train
 
 where `<env_file_path>` is the path to your Unity executable containing the agents to be trained and `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
@@ -27,7 +27,7 @@ For example, suppose you have a project in Unity named "CatsOnBicyclesCatsOnBicy
 3. Navigate to the ml-agents `python` folder.
 4. Run the following to launch the training process using the path to the Unity environment you built in step 1:
 
-        python learn.py ../../projects/Cats/CatsOnBicycles.app --run-id=cob_1 --train
+        python3 learn.py ../../projects/Cats/CatsOnBicycles.app --run-id=cob_1 --train
 
 During a training session, the training program prints out and saves updates at regular intervals (specified by the `summary_freq` option). The saved statistics are grouped by the `run-id` value so you should assign a unique id to each training run if you plan to view the statistics. You can view these statistics using TensorBoard during or after training by running the following command (from the ML-Agents python directory):
 

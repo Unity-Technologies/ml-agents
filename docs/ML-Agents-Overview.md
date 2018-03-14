@@ -380,7 +380,8 @@ games where agents
 must react to events or games where agents can take actions of variable 
 duration. Switching between decision taking at every step and 
 on-demand-decision is one button click away. You can learn more about the 
-on-demand-decision feature [here](Feature-On-Demand-Decisions.md).
+on-demand-decision feature 
+[here](Learning-Environment-Design-Agents.md#on-demand-decision-making).
 
 * **Memory-enhanced Agents** - In some scenarios, agents must learn to 
 remember the past in order to take the 
@@ -421,7 +422,20 @@ leveraged by Imitation Learning, where the observations and actions for a
 Player Brain are used to learn the policies of an agent through demonstration.
 However, this could also be helpful for the Heuristic and Internal Brains,
 particularly when debugging agent behaviors. You can learn more about using 
-the broadcasting feature [here](Feature-Broadcasting.md).
+the broadcasting feature 
+[here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
+
+* **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents
+without installing Python or TensorFlow directly, we provide a 
+[guide](Using-Docker.md) on how
+to create and run a Docker container. Due to limitations on rendering visual
+observations, this feature is marked experimental.
+
+* **Cloud Training on AWS** - To facilitate using ML-Agents on
+Amazon Web Services (AWS) machines, we provide a 
+[guide](Training-on-Amazon-Web-Service.md)
+on how to set-up EC2 instances in addition to a public pre-configured Amazon 
+Machine Image (AMI).
 
 ## Summary and Next Steps
 

@@ -256,7 +256,7 @@ explaining it.
 
 
 To train the agents within the Ball Balance environment, we will be using the python 
-package. We have provided a convenient python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
+package. We have provided a convenient Python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
 
 
 We will pass to this script the path of the environment executable that we just built. (Optionally) We can
@@ -271,7 +271,7 @@ To summarize, go to your command line, enter the `ml-agents` directory and type:
 
 ```
 
-python python/learn.py <env_file_path> --run-id=<run-identifier> --train 
+python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
 
 ```
 

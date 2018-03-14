@@ -10,7 +10,7 @@ The key objects in the Python API include:
 
 These classes are all defined in the `python/unityagents` folder of the ML-Agents SDK.
 
-To communicate with an agent in a Unity environment from a Python program, the agent must either use an **External** brain or use a brain that is broadcasting (has its **Broadcast** property set to true). Your code is expected to return actions for agents with external brains, but can only observe broadcasting brains (the information you receive for an agent is the same in both cases). See [Using the Broadcast Feature](Feature-Broadcast.md).
+To communicate with an agent in a Unity environment from a Python program, the agent must either use an **External** brain or use a brain that is broadcasting (has its **Broadcast** property set to true). Your code is expected to return actions for agents with external brains, but can only observe broadcasting brains (the information you receive for an agent is the same in both cases). See [Using the Broadcast Feature](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
 
 For a simple example of using the Python API to interact with a Unity environment, see the Basic [Jupyter](Background-Jupyter.md) notebook, which opens an environment, runs a few simulation steps taking random actions, and closes the environment. 
 
@@ -22,11 +22,12 @@ Python-side communication happens through `UnityEnvironment` which is located in
 
 ```python
 from unityagents import UnityEnvironment
-env = UnityEnvironment(file_name="3DBall", worker_id=0)
+env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 ```
 
 * `file_name` is the name of the environment binary (located in the root directory of the python project).
 * `worker_id` indicates which port to use for communication with the environment. For use in parallel training regimes such as A3C.
+* `seed` indicates the seed to use when generating random numbers during the training process. In environments which do not involve physics calculations, setting the seed enables reproducible experimentation by ensuring that the environment and trainers utilize the same random seed.
 
 ## Interacting with a Unity Environment
 

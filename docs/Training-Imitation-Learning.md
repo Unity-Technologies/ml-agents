@@ -12,7 +12,7 @@ There are a variety of possible imitation learning algorithms which can be used,
 4. Link the brains to the desired agents (one agent as the teacher and at least one agent as a student).
 5. Build the Unity executable for your desired platform.
 6. In `trainer_config.yaml`,  add an entry for the "Student" brain. Set the `trainer` parameter of this entry to `imitation`, and the `brain_to_imitate` parameter to the name of the teacher brain: "Teacher". Additionally, set `batches_per_epoch`, which controls how much training to do each moment. Increase the `max_steps` option if you'd like to keep training the agents for a longer period of time.
-7. Launch the training process with `python python/learn.py <env_name> --train --slow`, where `<env_name>` is the path to your built Unity executable.
+7. Launch the training process with `python3 python/learn.py <env_name> --train --slow`, where `<env_name>` is the path to your built Unity executable.
 8. From the Unity window, control the agent with the Teacher brain by providing "teacher demonstrations" of the behavior you would like to see.
 9. Watch as the agent(s) with the student brain attached begin to behave similarly to the demonstrations.
 10. Once the Student agents are exhibiting the desired behavior, end the training process with `CTL+C` from the command line.

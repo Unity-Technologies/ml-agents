@@ -53,7 +53,7 @@ then receive a timeout error, there may be a number of possible causes.
 
 If you receive an exception `"Couldn't launch new environment because 
 communication port {} is still in use. "`, you can change the worker 
-number in the python script when calling 
+number in the Python script when calling 
 
 `UnityEnvironment(file_name=filename, worker_id=X)`
 

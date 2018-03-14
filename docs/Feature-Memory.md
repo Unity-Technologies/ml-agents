@@ -38,7 +38,7 @@ the neural network will take longer to train.
 ## Limitations
 * LSTM does not work well with continuous vector action space. 
 Please use discrete vector action space for better results.
-* Since the memories must be sent back and forth between python 
+* Since the memories must be sent back and forth between Python 
 and Unity, using too large `memory_size` will slow down training.
 * Adding a recurrent layer increases the complexity of the neural 
 network, it is recommended to decrease `num_layers` when using recurrent.
