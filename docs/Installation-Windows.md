@@ -96,12 +96,6 @@ _Before installing, please make sure you __close any running instances of Unity 
 
 Run the installer and select the Express option.  Note the directory where you installed the CUDA toolkit.  In this guide, we installed in the directory `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0`
 
-<p align="center">
-    <img src="images/install_nvidia_cuda_toolkit.PNG" 
-        alt="install nvidia cuda toolkit" 
-        width="500" border="10" />
-</p>
-
 ## (Optional) Step 2: Install Nvidia cuDNN library
 
 <a href="https://developer.nvidia.com/cudnn" target="_blank">Download</a> and install the cuDNN library from Nvidia.  cuDNN is is a GPU-accelerated library of primitives for deep neural networks.  Before you can download, you will need to sign up for free to the Nvidia Developer Program.
