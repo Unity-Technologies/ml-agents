@@ -9,11 +9,11 @@ A public pre-configured AMI is available with the ID: `ami-30ec184a` in the `us-
 Instructions here are adapted from this [Medium post](https://medium.com/towards-data-science/how-to-run-unity-on-amazon-cloud-or-without-monitor-3c10ce022639) on running general Unity applications in the cloud.
 
 1. To begin with, you will need an EC2 instance which contains the latest Nvidia drivers, CUDA8, and cuDNN.  There are a number of external tutorials which describe this, such as:
-    * [Getting CUDA 8 to Work With openAI Gym on AWS and Compiling Tensorflow for CUDA 8 Compatibility](https://davidsanwald.github.io/2016/11/13/building-tensorflow-with-gpu-support.html)
+    * [Getting CUDA 8 to Work With openAI Gym on AWS and Compiling TensorFlow for CUDA 8 Compatibility](https://davidsanwald.github.io/2016/11/13/building-tensorflow-with-gpu-support.html)
     * [Installing TensorFlow on an AWS EC2 P2 GPU Instance](http://expressionflow.com/2016/10/09/installing-tensorflow-on-an-aws-ec2-p2-gpu-instance/)
     * [Updating Nvidia CUDA to 8.0.x in Ubuntu 16.04 – EC2 Gx instance](https://aichamp.wordpress.com/2016/11/09/updating-nvidia-cuda-to-8-0-x-in-ubuntu-16-04-ec2-gx-instance/)
 2. Move `python` to remote instance.
-2. Install the required packages with `pip install .`.
+2. Install the required packages with `pip3 install .`.
 3. Run the following commands to install Xorg:
     ```
     sudo apt-get update
@@ -33,7 +33,7 @@ If you run `nvidia-smi`, you will have a list of processes running on the GPU, X
     sudo /usr/bin/X :0 &
     export DISPLAY=:0
     ```
-3. To ensure the installation was succesful, run `glxgears`. If there are no errors, then Xorg is correctly configured.
+3. To ensure the installation was successful, run `glxgears`. If there are no errors, then Xorg is correctly configured.
 4. There is a bug in _Unity 2017.1_ which requires the uninstallation of `libxrandr2`, which can be removed with :
 ```
 sudo apt-get remove --purge libwxgtk3.0-0v5

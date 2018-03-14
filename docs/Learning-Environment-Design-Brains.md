@@ -24,7 +24,7 @@ The Brain Inspector window in the Unity Editor displays the properties assigned 
     	* `Space Type` - Corresponds to whether the observation vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
     	* `Space Size` - Length of vector observation for brain (In _Continuous_ space type). Or number of possible values (in _Discrete_ space type).
 		* `Stacked Vectors` - The number of previous vector observations that will be stacked before being sent to the brain.
-	* `Visual Observations`	- Describes height, width, and whether to greyscale visual observations for the Brain.
+	* `Visual Observations`	- Describes height, width, and whether to grayscale visual observations for the Brain.
 	* `Vector Action`
 		* `Space Type` - Corresponds to whether action vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
 		* `Space Size` - Length of action vector for brain (In _Continuous_ state space). Or number of possible values (in _Discrete_ action space).

@@ -24,7 +24,7 @@ The training algorithms included in the ML-Agents SDK produce TensorFlow graph m
 
 To use a graph model:
 
-1. Select the Brain GameObject in the **Hierarchy** window of the Unity Editor. (The Brain GameObject must be a child of the Academy Gameobject and must have a Brain component.)
+1. Select the Brain GameObject in the **Hierarchy** window of the Unity Editor. (The Brain GameObject must be a child of the Academy GameObject and must have a Brain component.)
 2. Set the **Brain Type** to **Internal**.
 
     **Note:** In order to see the **Internal** Brain Type option, you must [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).  
@@ -44,7 +44,7 @@ The default values of the TensorFlow graph parameters work with the model produc
 ![Internal Brain Inspector](images/internal_brain.png)
 
 
-   *  `Graph Model` : This must be the `bytes` file corresponding to the pretrained Tensorflow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
+   *  `Graph Model` : This must be the `bytes` file corresponding to the pre-trained TensorFlow graph. (You must first drag this file into your Resources folder and then from the Resources folder into the inspector)
 
 Only change the following Internal Brain properties if you have created your own TensorFlow model and are not using an ML-Agents model:
 

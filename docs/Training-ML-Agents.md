@@ -43,7 +43,7 @@ While this example used the default training hyperparameters, you can edit the [
 
 In addition to passing the path of the Unity executable containing your training environment, you can set the following command line options when invoking `learn.py`:
 
-* `--curriculum=<file>` – Specify a curriculum json file for defining the lessons for curriculum training. See [Curriculum Training](Training-Curriculum-Learning.md) for more information.
+* `--curriculum=<file>` – Specify a curriculum JSON file for defining the lessons for curriculum training. See [Curriculum Training](Training-Curriculum-Learning.md) for more information.
 * `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to keep. Checkpoints are saved after the number of steps specified by the `save-freq` option. Once the maximum number of checkpoints has been reached, the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>` – Specify which lesson to start with when performing curriculum training. Defaults to 0.
 * `--load` – If set, the training code loads an already trained model to initialize the neural network before training. The learning code looks for the model in `python/models/<run-id>/` (which is also where it saves models at the end of training). When not set (the default), the neural network weights are randomly initialized and an existing model is not loaded.

@@ -161,7 +161,6 @@ So far, our RollerAgent script looks like:
     
     public class RollerAgent : Agent 
     {
-        
         Rigidbody rBody;
         void Start () {
             rBody = GetComponent<Rigidbody>();
@@ -195,7 +194,7 @@ The Agent sends the information we collect to the Brain, which uses it to make a
 
 In our case, the information our agent collects includes:
 
-* Position of the target. In general, it is better to use the relative position of other objects rather than the absolute position for more generalizable training. Note that the agent only collects the x and z coordinates since the floor is aligned with the xz plane and the y component of the target's position never changes.
+* Position of the target. In general, it is better to use the relative position of other objects rather than the absolute position for more generalizable training. Note that the agent only collects the x and z coordinates since the floor is aligned with the x-z plane and the y component of the target's position never changes.
 
         // Calculate relative position
         Vector3 relativePosition = Target.position - this.transform.position;

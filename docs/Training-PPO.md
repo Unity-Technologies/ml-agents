@@ -26,7 +26,7 @@ Typical Range: `2048` - `409600`
 #### Batch Size
 
 `batch_size` is the number of experiences used for one iteration of a gradient descent update. **This should always be a fraction of the 
-`buffer_size`**. If you are using a continuous action space, this value should be large (in the order of  1000s). If you are using a discrete action space, this value 
+`buffer_size`**. If you are using a continuous action space, this value should be large (in the order of 1000s). If you are using a discrete action space, this value 
 should be smaller (in order of 10s). 
 
 Typical Range (Continuous): `512` - `5120`
