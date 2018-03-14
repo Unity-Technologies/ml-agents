@@ -107,31 +107,6 @@ ReacherBrain:
     max_steps: 1e6
     summary_freq: 3000
 
-BrainWallJumpCC:
-    max_steps: 2.0e5
-    num_layers: 2
-    beta: 5.0e-4
-    hidden_units: 256
-    use_recurrent: true
-    sequence_length: 32
-    time_horizon: 32
-    batch_size: 32
-    buffer_size: 320
-
-Ball3DHardBrain:
-    max_steps: 5.0e4
-    num_layers: 2
-    normalize: true
-    num_epoch: 3
-    beta: 5.0e-4
-    hidden_units: 64
-
-    use_recurrent: true
-    sequence_length: 8
-    time_horizon: 8
-    batch_size: 32
-    buffer_size: 320
-
 HallwayBrain:
     use_recurrent: true
     sequence_length: 64
