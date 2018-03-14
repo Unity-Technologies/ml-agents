@@ -14,7 +14,7 @@ A public pre-configured AMI is available with the ID: `ami-30ec184a` in the `us-
 
 ## Installing ML-Agents
 
-2. Move `python` sub-folder of this repo to remote instance.
+2. Move `python` sub-folder of this repo to remote instance, and set as working directory.
 2. Install the required packages with `pip3 install .`.
 
 ## Testing
