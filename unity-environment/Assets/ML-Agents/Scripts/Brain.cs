@@ -75,7 +75,8 @@ public class BrainParameters
     /**< \brief Defines if the state is discrete or continuous */
 }
 
-[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Agents-Editor-Interface.md#brain")]
+[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
+         "docs/Learning-Environment-Design-Brains.md")]
 /**
  * Contains all high-level Brain logic. 
  * Add this component to an empty GameObject in your scene and drag this 

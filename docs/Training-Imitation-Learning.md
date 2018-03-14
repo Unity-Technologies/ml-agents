@@ -16,7 +16,7 @@ There are a variety of possible imitation learning algorithms which can be used,
 8. From the Unity window, control the agent with the Teacher brain by providing "teacher demonstrations" of the behavior you would like to see.
 9. Watch as the agent(s) with the student brain attached begin to behave similarly to the demonstrations.
 10. Once the Student agents are exhibiting the desired behavior, end the training process with `CTL+C` from the command line.
-11. Move the resulting `*.bytes` file into the `TFModels` sub-directory of the Assets folder (or a sub-directority within Assets of your choosing) , and use with `Internal` brain.
+11. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the Assets folder (or a subdirectory within Assets of your choosing) , and use with `Internal` brain.
 
 ### BC Teacher Helper
 

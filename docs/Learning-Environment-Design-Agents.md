@@ -58,8 +58,6 @@ For examples of various state observation functions, you can look at the [Exampl
         AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
     }
 
-<!-- Note that the above values aren't normalized, which we recommend! -->
-
 The feature vector must always contain the same number of elements and observations must always be in the same position within the list. If the number of observed entities in an environment can vary you can pad the feature vector with zeros for any missing entities in a specific observation or you can limit an agent's observations to a fixed subset. For example, instead of observing every enemy agent in an environment, you could only observe the closest five. 
 
 When you set up an Agent's brain in the Unity Editor, set the following properties to use a continuous vector observation:
@@ -94,11 +92,6 @@ Type enumerations should be encoded in the _one-hot_ style. That is, add an elem
     }
 
 
-<!-- 
-How to handle things like large numbers of words or symbols? Should you use a very long one-hot vector? Or a single index into a table? 
-Colors? Better to use a single color number or individual components?
--->
-
 #### Normalization
 
 For the best results when training, you should normalize the components of your feature vector to the range [-1, +1] or [0, 1]. When you normalize the values, the PPO neural network can often converge to a solution faster. Note that it isn't always necessary to normalize to these recommended ranges, but it is considered a best practice when using neural networks. The greater the variation in ranges between the components of your observation, the more likely that training will be affected.
@@ -129,7 +122,7 @@ In addition, make sure that the Agent's Brain expects a visual observation. In t
  
 ### Discrete Vector Observation Space: Table Lookup
 
-You can use the discrete vector observation space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](Learning-Environment-Examples.md) in the ML Agent SDK defines an agent with a discrete vector observation space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
+You can use the discrete vector observation space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](Learning-Environment-Examples.md) in ML-Agents defines an agent with a discrete vector observation space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
 
 More generally, the discrete vector observation identifier could be an index into a table of the possible states. However, tables quickly become unwieldy as the environment becomes more complex. For example, even a simple game like [tic-tac-toe has 765 possible states](https://en.wikipedia.org/wiki/Game_complexity) (far more if you don't reduce the number of observations by combining those that are rotations or reflections of each other).
 
@@ -310,7 +303,7 @@ To add an Agent to an environment at runtime, use the Unity `GameObject.Instanti
 
 ## Destroying an Agent
 
-Before destroying an Agent Gameobject, you must mark it as done (and wait for the next step in the simulation) so that the Brain knows that this agent is no longer active. Thus, the best place to destroy an agent is in the `Agent.AgentOnDone()` function:
+Before destroying an Agent GameObject, you must mark it as done (and wait for the next step in the simulation) so that the Brain knows that this agent is no longer active. Thus, the best place to destroy an agent is in the `Agent.AgentOnDone()` function:
 
 ```csharp
 public override void AgentOnDone()

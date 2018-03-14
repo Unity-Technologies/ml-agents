@@ -313,7 +313,7 @@ during a successful training session.
 
 ![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 
-## Embedding the Trained Brain into the Unity Environment _[Experimental]_
+## Embedding the Trained Brain into the Unity Environment (Experimental)
 
 Once the training process completes, and the training process saves the model 
 (denoted by the `Saved Model` message) you can add it to the Unity project and 
