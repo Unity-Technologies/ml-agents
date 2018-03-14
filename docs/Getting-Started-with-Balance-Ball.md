@@ -269,10 +269,8 @@ on the same graph.
 
 To summarize, go to your command line, enter the `ml-agents` directory and type: 
 
-```
-
+```python
 python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
-
 ```
 
 The `--train` flag tells ML-Agents to run in training mode. `env_file_path` should be the path to the Unity executable that was just created. 
@@ -282,7 +280,7 @@ The `--train` flag tells ML-Agents to run in training mode. `env_file_path` shou
 
 Once you start training using `learn.py` in the way described in the previous section, the `ml-agents` folder will 
 contain a `summaries` directory. In order to observe the training process 
-in more detail, you can use TensorBoard. From the command line run :
+in more detail, you can use TensorBoard. From the command line run:
 
 `tensorboard --logdir=summaries`
 

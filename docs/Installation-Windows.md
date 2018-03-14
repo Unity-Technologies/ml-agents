@@ -174,9 +174,7 @@ pip install tensorflow-gpu
 
 Lastly, you should test to see if everything installed properly and that TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the following command:
 
-```
-python
-
+```python
 import tensorflow as tf
 
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))

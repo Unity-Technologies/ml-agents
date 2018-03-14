@@ -8,12 +8,14 @@ When you set the **Brain Type** property of a Brain to **Heuristic**, you must a
 
 When creating your Decision class, extend MonoBehaviour (so you can use the class as a Unity component) and extend the Decision interface.
 
-    using UnityEngine;
-    
-    public class HeuristicLogic : MonoBehaviour, Decision 
-    {
-        // ...
-    }
+```csharp
+using UnityEngine;
+
+public class HeuristicLogic : MonoBehaviour, Decision 
+{
+    // ...
+}
+```
 
 The Decision interface defines two methods, `Decide()` and `MakeMemory()`. 
 

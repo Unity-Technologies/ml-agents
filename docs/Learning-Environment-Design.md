@@ -53,9 +53,9 @@ The base Academy classes also defines several important properties that you can 
  
 The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. 
 
-Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. See [Brain topic](Learning-Environment-Design-Brains.md) for details on using the different types of brains. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
+Use the Brain class directly, rather than a subclass. Brain behavior is determined by the brain type. During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. See [Brains](Learning-Environment-Design-Brains.md) for details on using the different types of brains. You can extend the CoreBrain class to create different brain types if the four built-in types don't do what you need.
 
-The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `Vector Observation Space Size` property must match the length of the feature vector created by an agent exactly. See [Agent topic]() for information about creating agents and setting up a Brain instance correctly.
+The Brain class has several important properties that you can set using the Inspector window. These properties must be appropriate for the agents using the brain. For example, the `Vector Observation Space Size` property must match the length of the feature vector created by an agent exactly. See [Agents](Learning-Environment-Design-Agents.md) for information about creating agents and setting up a Brain instance correctly.
 
 See [Brains](Learning-Environment-Design-Brains.md) for a complete list of the Brain properties.
 

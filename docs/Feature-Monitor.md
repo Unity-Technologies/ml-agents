@@ -6,7 +6,7 @@ The monitor allows visualizing information related to the agents or training pro
 
 You can track many different things both related and unrelated to the agents themselves. To use the Monitor, call the Log function anywhere in your code :
 ```csharp
-   Monitor.Log(key, value, displayType , target)
+Monitor.Log(key, value, displayType , target)
 ```
  * *`key`* is the name of the information you want to display.
  * *`value`* is the information you want to display.
