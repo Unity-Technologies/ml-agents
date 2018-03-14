@@ -260,9 +260,6 @@ The decision of the Brain comes in the form of an action array passed to the `Ag
 
 The RollerAgent applies the values from the action[] array to its Rigidbody component, `rBody`, using the `Rigidbody.AddForce` function:
 
-
-With the reference to the Rigidbody, the agent can apply the values from the action[] array using the `Rigidbody.AddForce` function:
-
 ```csharp
 Vector3 controlSignal = Vector3.zero;
 controlSignal.x = Mathf.Clamp(action[0], -1, 1);
