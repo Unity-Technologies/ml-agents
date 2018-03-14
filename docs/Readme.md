@@ -35,12 +35,13 @@
  * [ML-Agents Glossary](Glossary.md)
  * [Limitations & Common Issues](Limitations-and-Common-Issues.md)
  
-## C# API and Components
- * Academy
- * Agent
- * Decision
- * Monitor
+## API Docs
+ * [C#](html/annotated.html)
+ 	* [Academy](html/classAcademy.html)
+	* [Agent](html/classAgent.html)
+	* [Decision](html/interfaceDecision.html)
+	* [Monitor](html/classMonitor.html)
+ * Python (coming soon)
 
 ## Python API
  * [How to use the Python API](Python-API.md)
- 
