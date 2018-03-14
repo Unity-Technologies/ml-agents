@@ -393,7 +393,25 @@ Press **Play** to run the scene and use the WASD keys to move the agent around t
 One additional test you can perform is to first ensure that your environment 
 and the Python API work as expected using the `python/Basics` 
 [Jupyter notebook](Background-Jupyter.md). Within `Basics`, be sure to set 
-`env_name` to the name of the environment file you built earlier.
+`env_name` to the name of the environment file you specify when building
+this environment.
 
 Now you can train the Agent. To get ready for training, you must first to change the **Brain Type** from **Player** to **External**. From there, the process is the same as described in [Training ML-Agents](Training-ML-Agents.md). 
 
+## Review: Scene Layout
+
+This section briefly reviews how to organize your scene when using 
+Agents in your Unity environment.
+
+There are three kinds of game objects you need to include in your scene in order to use Unity ML-Agents:
+ * Academy  
+ * Brain  
+ * Agents  
+
+Keep in mind:
+ * There can only be one Academy game object in a scene.   
+ * You can have multiple Brain game objects but they must be child of the Academy game object.  
+
+Here is an example of what your scene hierarchy should look like:
+
+![Scene Hierarchy](images/scene-hierarchy.png)
