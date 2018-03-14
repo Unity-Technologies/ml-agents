@@ -49,7 +49,7 @@ Prints all parameters relevant to the loaded environment and the external brains
 - **Reset : `env.reset(train_model=True, config=None)`**  
 Send a reset signal to the environment, and provides a dictionary mapping brain names to BrainInfo objects.  
     - `train_model` indicates whether to run the environment in train (`True`) or test (`False`) mode.
-    - `config` is an optional dictionary of configuration flags specific to the environment. For more information on adding optional config flags to an environment, see [here](Making-a-new-Unity-Environment.md#implementing-yournameacademy). For generic environments, `config` can be ignored. `config` is a dictionary of strings to floats where the keys are the names of the `resetParameters` and the values are their corresponding float values.  
+    - `config` is an optional dictionary of configuration flags specific to the environment. For generic environments, `config` can be ignored. `config` is a dictionary of strings to floats where the keys are the names of the `resetParameters` and the values are their corresponding float values.  
 - **Step : `env.step(action, memory=None, text_action=None)`**  
 Sends a step signal to the environment using the actions. For each brain : 
     - `action` can be one dimensional arrays or two dimensional arrays if you have multiple agents per brains.
