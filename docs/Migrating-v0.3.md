@@ -17,6 +17,7 @@ There are a large number of new features and improvements in ML-Agents v0.3 whic
  * `AgentStep()` has been replaced by `AgentAction()`.
  * `WaitTime()` has been removed.
  * The `Frame Skip` field of the Academy is replaced by the Agent's `Decision Frequency` field, enabling agent to make decisions at different frequencies.
+ * The names of the inputs in the internal brain have been changed. You must replace `state` with `vector_observation` and `observation` with `visual_observation`.
 
 ## Semantics
 In order to more closely align with the terminology used in the Reinforcement Learning field, and to be more descriptive, we have changed the names of some of the concepts used in ML-Agents. The changes are highlighted in the table below.
