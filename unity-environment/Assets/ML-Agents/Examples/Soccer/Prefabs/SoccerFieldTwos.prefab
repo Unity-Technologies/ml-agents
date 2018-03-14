@@ -60,6 +60,7 @@ GameObject:
   - component: {fileID: 54772345883176444}
   - component: {fileID: 114458726074197592}
   - component: {fileID: 135686062229982952}
+  - component: {fileID: 114160412694341414}
   m_Layer: 13
   m_Name: Striker
   m_TagString: blueAgent
@@ -222,6 +223,7 @@ GameObject:
   - component: {fileID: 54036483735287226}
   - component: {fileID: 114785077592236372}
   - component: {fileID: 135511907325471372}
+  - component: {fileID: 114610970550092466}
   m_Layer: 11
   m_Name: Goalie (1)
   m_TagString: blueAgent
@@ -298,6 +300,7 @@ GameObject:
   - component: {fileID: 54694529037160224}
   - component: {fileID: 114848174355100558}
   - component: {fileID: 135402610058252724}
+  - component: {fileID: 114805879230357400}
   m_Layer: 11
   m_Name: Goalie
   m_TagString: blueAgent
@@ -512,6 +515,7 @@ GameObject:
   - component: {fileID: 54986089821135754}
   - component: {fileID: 114707577830819224}
   - component: {fileID: 135030037949278310}
+  - component: {fileID: 114112160084609870}
   m_Layer: 13
   m_Name: Striker (1)
   m_TagString: blueAgent
@@ -2508,7 +2512,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 00d852aac9443402984416f9dbcd22ea, type: 2}
+  - {fileID: 2100000, guid: 4df2264df8daf450d82b3584d732c8aa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2613,7 +2617,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 776dd8b57653342839c3fb5f46ce664e, type: 2}
+  - {fileID: 2100000, guid: 6cac5d0b9689c45b8809b67eb2c95f86, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3852,6 +3856,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114112160084609870
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1555791983229206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114160412694341414
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1060120010984970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114458726074197592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3864,7 +3890,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  stepCounter: 0
   agentParameters:
     agentCameras: []
     maxStep: 3000
@@ -3891,6 +3916,17 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114610970550092466
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1241552893761096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114707577830819224
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3903,7 +3939,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  stepCounter: 0
   agentParameters:
     agentCameras: []
     maxStep: 3000
@@ -3959,7 +3994,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  stepCounter: 0
   agentParameters:
     agentCameras: []
     maxStep: 3000
@@ -3967,9 +4001,20 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   team: 0
-  agentRole: 2
+  agentRole: 1
   area: {fileID: 114954162751405156}
   agentRB: {fileID: 0}
+--- !u!114 &114805879230357400
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1280263969241142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114848174355100558
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3982,7 +4027,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
-  stepCounter: 0
   agentParameters:
     agentCameras: []
     maxStep: 3000
@@ -3990,7 +4034,7 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   team: 1
-  agentRole: 2
+  agentRole: 1
   area: {fileID: 114954162751405156}
   agentRB: {fileID: 0}
 --- !u!114 &114954162751405156
