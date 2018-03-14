@@ -283,6 +283,13 @@ The `Ball3DAgent` also assigns a negative penalty when the ball falls off the pl
             provided the last time it requested a decision. 
 * `Decision Frequency` - The number of steps between decision requests. Not used if `On Demand Decision`, is true. 
 
+## Monitoring Agents
+
+We created a helpful `Monitor` class that enables visualizing variables within
+a Unity environment. While this was built for monitoring an Agent's value
+function throughout the training process, we imagine it can be more broadly
+useful. You can learn more [here](Feature-Monitor.md).
+
 ## Instantiating an Agent at Runtime
 
 To add an Agent to an environment at runtime, use the Unity `GameObject.Instantiate()` function. It is typically easiest to instantiate an agent from a [Prefab](https://docs.unity3d.com/Manual/Prefabs.html) (otherwise, you have to instantiate every GameObject and Component that make up your agent individually). In addition, you must assign a Brain instance to the new Agent and initialize it by calling its `AgentReset()` method. For example, the following function creates a new agent given a Prefab, Brain instance, location, and orientation:

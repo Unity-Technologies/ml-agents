@@ -16,8 +16,9 @@
  * [Designing a Learning Environment](Learning-Environment-Design.md)
      * [Agents](Learning-Environment-Design-Agents.md)
      * [Academy](Learning-Environment-Design-Academy.md)
-     * [Brains](Learning-Environment-Design-Brains.md)
+     * [Brains](Learning-Environment-Design-Brains.md): [Player](Learning-Environment-Design-Player-Brains.md), [Heuristic](Learning-Environment-Design-Heuristic-Brains.md), [Internal & External](Learning-Environment-Design-External-Internal-Brains.md)
  * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
+ * [Using the Monitor](Feature-Monitor.md)
  * [TensorFlowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
  
 ## Training
@@ -36,9 +37,7 @@
  
 ## C# API and Components
  * Academy
- * Brain
  * Agent
- * CoreBrain
  * Decision
  * Monitor
 
