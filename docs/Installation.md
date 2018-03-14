@@ -54,6 +54,14 @@ and run from the command line:
 If you'd like to use Docker for ML-Agents, please follow 
 [this guide](Using-Docker.md). 
 
+## Unity Packages
+
+You can download ML-Agents as Unity Packages files:
+
+ * [ML-Agents with TensorflowSharp Plugin](https://s3.amazonaws.com/unity-ml-agents/0.3/ML-AgentsWithPlugin.unitypackage)
+ * [ML-Agents without TensorflowSharp Plugin](https://s3.amazonaws.com/unity-ml-agents/0.3/ML-AgentsNoPlugin.unitypackage)
+ * [TensorflowSharp Plugin Only](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)
+
 ## Help
 
 If you run into any problems installing ML-Agents, 
