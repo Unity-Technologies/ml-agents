@@ -9,7 +9,7 @@ To generate the API reference,
 [download Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) and run
 the following command within the `docs/` directory:
 
-    doxygen ml-agents.conf
+    doxygen dox-ml-agents.conf
 
 `ml-agents.conf` is a configuration file that includes the classes
 that have been properly formatted. The generated HTML files will be placed
