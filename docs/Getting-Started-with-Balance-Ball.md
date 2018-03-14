@@ -72,7 +72,7 @@ There are three functions you can implement, though they are all optional:
 
 * Academy.InitializeAcademy() — Called once when the environment is launched.
 * Academy.AcademyStep() — Called at every simulation step before 
-Agent.AgentAct() (and after the agents collect their observations).
+Agent.AgentAction() (and after the agents collect their observations).
 * Academy.AcademyReset() — Called when the Academy starts or restarts the 
 simulation (including the first time).
 
@@ -172,11 +172,11 @@ collecting the agent's observations of the environment. Since the Brain
 instance assigned to the agent is set to the continuous vector observation
 space with a state size of 8, the `CollectObservations()` must call 
 `AddVectorObs` 8 times.
-* Agent.AgentAct() — Called every simulation step. Receives the action chosen
+* Agent.AgentAction() — Called every simulation step. Receives the action chosen
 by the brain. The Ball3DAgent example handles both the continuous and the 
 discrete action space types. There isn't actually much difference between the 
 two state types in this environment — both vector action spaces result in a
-small change in platform rotation at each step. The `AgentAct()` function
+small change in platform rotation at each step. The `AgentAction()` function
 assigns a reward to the agent; in this example, an agent receives a small 
 positive reward for each step it keeps the ball on the platform and a larger, 
 negative reward for dropping the ball. An agent is also marked as done when it
@@ -256,7 +256,7 @@ explaining it.
 
 
 To train the agents within the Ball Balance environment, we will be using the python 
-package. We have provided a convenient python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
+package. We have provided a convenient Python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
 
 
 We will pass to this script the path of the environment executable that we just built. (Optionally) We can
@@ -271,7 +271,7 @@ To summarize, go to your command line, enter the `ml-agents` directory and type:
 
 ```
 
-python python/learn.py <env_file_path> --run-id=<run-identifier> --train 
+python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
 
 ```
 

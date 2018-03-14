@@ -1,4 +1,4 @@
-# Using Recurrent Neural Network in ML-Agents
+# Using Recurrent Neural Networks in ML-Agents
 
 ## What are memories for?
 Have you ever entered a room to get something and immediately forgot
@@ -25,7 +25,7 @@ file, add the following parameters to the Brain you want to use.
 	memory_size: 256
 ```
 
-* `use_recurent` is a flag that notifies the  trainer that you want 
+* `use_recurrent` is a flag that notifies the  trainer that you want 
 to use a Recurrent Neural Network.
 * `sequence_length` defines how long the sequences of experiences 
 must be while training. In order to use a LSTM, training requires 
@@ -38,7 +38,7 @@ the neural network will take longer to train.
 ## Limitations
 * LSTM does not work well with continuous vector action space. 
 Please use discrete vector action space for better results.
-* Since the memories must be sent back and forth between python 
+* Since the memories must be sent back and forth between Python 
 and Unity, using too large `memory_size` will slow down training.
 * Adding a recurrent layer increases the complexity of the neural 
 network, it is recommended to decrease `num_layers` when using recurrent.

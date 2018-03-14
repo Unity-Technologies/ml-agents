@@ -1,12 +1,20 @@
 # Training with Proximal Policy Optimization
 
-This section is still to be written. Refer to [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md) for a walk-through of the PPO training process.
+ML-Agents uses a reinforcement learning technique called [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/). PPO uses a neural network to approximate the ideal function that maps an agent's observations to the best action an agent can take in a given state. The ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate Python process (communicating with the running Unity application over a socket). 
+
+See [Training ML-Agents](Training ML-Agents.md) for instructions on running the training program, `learn.py`.
+
+If you are using the recurrent neural network (RNN) to utilize memory, see [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md) for RNN-specific training details.
+
+If you are using curriculum training to pace the difficulty of the learning task presented to an agent, see [Training with Curriculum Learning](Training-Curriculum-Learning.md).
+
+For information about imitation learning, which uses a different training algorithm, see [Imitation Learning](Training-Imitation-Learning).
+
+<!-- Need a description of PPO that provides a general overview of the algorithm and, more specifically, puts all the hyperparameters and Academy/Brain/Agent settings (like max_steps and done) into context. Oh, and which is also short and understandable by laymen. -->
 
 ## Best Practices when training with PPO
 
-The process of training a Reinforcement Learning model can often involve the need to tune the hyperparameters in order to achieve
-a level of performance that is desirable. This guide contains some best practices for tuning the training process when the default
-parameters don't seem to be giving the level of performance you would like.
+Successfully training a Reinforcement Learning model often involves tuning the training hyperparameters. This guide contains some best practices for tuning the training process when the default parameters don't seem to be giving the level of performance you would like.
 
 ### Hyperparameters
 

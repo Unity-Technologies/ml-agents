@@ -1,21 +1,39 @@
 # Agents
 
-An agent is an actor that can observe its environment and decide on the best course of action using those observations. Create agents in Unity by extending the Agent class. The most important aspects of creating agents that can successfully learn are the observations the agent collects and the reward you assign to estimate the value of the agent's current state toward accomplishing its tasks.
+An agent is an actor that can observe its environment and decide on the best course of action using those observations. Create agents in Unity by extending the Agent class. The most important aspects of creating agents that can successfully learn are the observations the agent collects and, for reinforcement learning, the reward you assign to estimate the value of the agent's current state toward accomplishing its tasks.
 
-In the ML-Agents framework, an agent passes its observations to its brain at each simulation step. The brain, then, makes a decision and passes the chosen action back to the agent. The agent code executes the action, for example, it moves the agent in one direction or another, and also calculates a reward based on the current state. In training, the reward is used to discover the optimal decision-making policy. (The reward is not used by already trained agents.)
+An agent passes its observations to its brain. The brain, then, makes a decision and passes the chosen action back to the agent. Your agent code must execute the action, for example, move the agent in one direction or another. In order to train an agent using [reinforcement learning](Learning-Environment-Design.md), your agent must calculate a reward value at each action. The reward is used to discover the optimal decision-making policy. (A reward is not used by already trained agents or for imitation learning.) 
 
 The Brain class abstracts out the decision making logic from the agent itself so that you can use the same brain in multiple agents. 
-How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. During training, the ML-Agents [reinforcement learning](Learning-Environment-Design.md) algorithm adjusts its internal policy parameters to make decisions that optimize the rewards received over time. An Internal brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Brains](Learning-Environment-Design-Brains.md).
+How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. An **Internal** brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Brains](Learning-Environment-Design-Brains.md).
   
+## Decisions
+
+The observation-decision-action-reward cycle repeats after a configurable number of simulation steps (the frequency defaults to once-per-step). You can also set up an agent to request decisions on demand. Making decisions at regular step intervals is generally most appropriate for physics-based simulations. Making decisions on demand is generally appropriate for situations where agents only respond to specific events or take actions of variable duration. For example, an agent in a robotic simulator that must provide fine-control of joint torques should make its decisions every step of the simulation. On the other hand, an agent that only needs to make decisions when certain game or simulation events occur, should use on-demand decision making.  
+
+To control the frequency of step-based decision making, set the **Decision Frequency** value for the Agent object in the Unity Inspector window. Agents using the same Brain instance can use a different frequency. During simulation steps in which no decision is requested, the agent receives the same action chosen by the previous decision.
+
+### On Demand Decision Making
+
+On demand decision making allows agents to request decisions from their 
+brains only when needed instead of receiving decisions at a fixed 
+frequency. This is useful when the agents commit to an action for a 
+variable number of steps or when the agents cannot make decisions 
+at the same time. This typically the case for turn based games, games 
+where agents must react to events or games where agents can take 
+actions of variable duration.
+
+When you turn on **On Demand Decisions** for an agent, your agent code must call the `Agent.RequestDecision()` function. This function call starts one iteration of the observation-decision-action-reward cycle. The Brain invokes the agent's `CollectObservations()` method, makes a decision and returns it by calling the `AgentAction()` method. The Brain waits for the agent to request the next decision before starting another iteration.
+
 ## Observations
 
 To make decisions, an agent must observe its environment to determine its current state. A state observation can take the following forms:
 
-* **Continuous** — a feature vector consisting of an array of numbers. 
-* **Discrete** — an index into a state table (typically only useful for the simplest of environments).
-* **Camera** — one or more camera images.
+* **Continuous Vector** — a feature vector consisting of an array of numbers. 
+* **Discrete Vector** — an index into a state table (typically only useful for the simplest of environments).
+* **Visual Observations** — one or more camera images.
 
-When you use the **Continuous** or **Discrete** vector observation space for an agent, implement the `Agent.CollectObservations()` method to create the feature vector or state index. When you use camera observations, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectObservations()` method.
+When you use the **Continuous** or **Discrete** vector observation space for an agent, implement the `Agent.CollectObservations()` method to create the feature vector or state index. When you use **Visual Observations**, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectObservations()` method when your agent uses visual observations (unless it also uses vector observations).
 
 ### Continuous Vector Observation Space: Feature Vectors
 
@@ -118,9 +136,9 @@ To implement a discrete state observation, implement the `CollectObservations()`
 
 ## Vector Actions
 
-An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentAct()` function. When you specify that the vector action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Vector Action Space Size` property.  When you specify a **Discrete** vector action space type, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** vector action space type, the `Vector Action Space Size` is the number of elements in your action table. Set the `Vector Action Space Size` and `Vector Action Space Type` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
+An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentAction()` function. When you specify that the vector action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Vector Action Space Size` property.  When you specify a **Discrete** vector action space type, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** vector action space type, the `Vector Action Space Size` is the number of elements in your action table. Set the `Vector Action Space Size` and `Vector Action Space Type` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
 
-Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentAct()` function. You simply specify the type of vector action space, and, for the continuous vector action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionAct()`.
+Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentAction()` function. You simply specify the type of vector action space, and, for the continuous vector action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionAct()`.
 
 For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete vector actions. In the continuous case, you would set the vector action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would set the vector action size to four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to four.  
 
@@ -130,7 +148,7 @@ The [3DBall and Area example projects](Learning-Environment-Examples.md) are set
 
 ### Continuous Action Space
 
-When an agent uses a brain set to the **Continuous** vector action space, the action parameter passed to the agent's `AgentAct()` function is an array with length equal to the Brain object's `Vector Action Space Size` property value.  The individual values in the array have whatever meanings that you ascribe to them. If you assign an element in the array as the speed of an agent, for example, the training process learns to control the speed of the agent though this parameter. 
+When an agent uses a brain set to the **Continuous** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array with length equal to the Brain object's `Vector Action Space Size` property value.  The individual values in the array have whatever meanings that you ascribe to them. If you assign an element in the array as the speed of an agent, for example, the training process learns to control the speed of the agent though this parameter. 
 
 The [Reacher example](Learning-Environment-Examples.md) defines a continuous action space with four control values. 
 
@@ -138,7 +156,7 @@ The [Reacher example](Learning-Environment-Examples.md) defines a continuous act
 
 These control values are applied as torques to the bodies making up the arm :
 
-    public override void AgentAct(float[] act)
+    public override void AgentAction(float[] act)
     {
         float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
         float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
@@ -153,7 +171,7 @@ You should clamp continuous action values to a reasonable value (typically [-1,1
  
 ### Discrete Action Space
 
-When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAct()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete vector action space, `Vector Action Space Size` represents the number of actions in your action table.
+When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete vector action space, `Vector Action Space Size` represents the number of actions in your action table.
 
 The [Area example](Learning-Environment-Examples.md) defines five actions for the discrete vector action space: a jump action and one action for each cardinal direction:
 
@@ -176,15 +194,17 @@ Note that the above code example is a simplified extract from the AreaAgent clas
 
 ## Rewards
 
-A reward is a signal that the agent has done something right. The PPO reinforcement learning algorithm works by optimizing the choices an agent makes such that the agent earns the highest cumulative reward over time. The better your reward mechanism, the better your agent will learn.
+In reinforcement learning, the reward is a signal that the agent has done something right. The PPO reinforcement learning algorithm works by optimizing the choices an agent makes such that the agent earns the highest cumulative reward over time. The better your reward mechanism, the better your agent will learn.
 
+**Note:** Rewards are not used during inference by a brain using an already trained policy and is also not used during imitation learning.
+ 
 Perhaps the best advice is to start simple and only add complexity as needed. In general, you should reward results rather than actions you think will lead to the desired results. To help develop your rewards, you can use the Monitor class to display the cumulative reward received by an agent. You can even use a Player brain to control the agent while watching how it accumulates rewards.
 
-Allocate rewards to an agent by calling the `AddReward()` method in the `AgentAct()` function. The reward assigned in any step should be in the range [-1,1].  Values outside this range can lead to unstable training. The `reward` value is reset to zero at every step. 
+Allocate rewards to an agent by calling the `AddReward()` method in the `AgentAction()` function. The reward assigned in any step should be in the range [-1,1].  Values outside this range can lead to unstable training. The `reward` value is reset to zero at every step. 
 
 **Examples**
 
-You can examine the `AgentAct()` functions defined in the [Examples](Learning-Environment-Examples.md) to see how those projects allocate rewards.
+You can examine the `AgentAction()` functions defined in the [Examples](Learning-Environment-Examples.md) to see how those projects allocate rewards.
 
 The `GridAgent` class in the [GridWorld example](Learning-Environment-Examples.md) uses a very simple reward system:
 
@@ -244,8 +264,31 @@ The `Ball3DAgent` also assigns a negative penalty when the ball falls off the pl
 * `Visual Observations` - A list of `Cameras` which will be used to generate observations.
 * `Max Step` - The per-agent maximum number of steps. Once this number is reached, the agent will be reset if `Reset On Done` is checked.
 * `Reset On Done` - Whether the agent's `AgentReset()` function should be called when the agent reaches its `Max Step` count or is marked as done in code.
-* `On Demand Decision` - Whether the agent will request decision at a fixed frequency or if he will be manually have to request decisions with `RequestDecision()`
-* Decision Frequency` - If the agent is not `On Demand Decision`, this is the number of steps between decision requests.
+* `On Demand Decision` - Whether the agent requests decisions at a fixed step interval or explicitly requests decisions by calling `RequestDecision()`.
+     * If not checked, the Agent will request a new 
+        decision every `Decision Frequency` steps and 
+        perform an action every step. In the example above, 
+        `CollectObservations()` will be called every 5 steps and 
+        `AgentAction()` will be called at every step. This means that the 
+        Agent will reuse the decision the Brain has given it. 
+     * If checked, the Agent controls when to receive
+        decisions, and take actions. To do so, the Agent may leverage one or two methods:
+        * `RequestDecision()` Signals that the Agent is requesting a decision.
+            This causes the Agent to collect its observations and ask the Brain for a 
+            decision at the next step of the simulation. Note that when an Agent 
+            requests a decision, it also request an action. 
+            This is to ensure that all decisions lead to an action during training.
+        * `RequestAction()` Signals that the Agent is requesting an action. The
+            action provided to the Agent in this case is the same action that was
+            provided the last time it requested a decision. 
+* `Decision Frequency` - The number of steps between decision requests. Not used if `On Demand Decision`, is true. 
+
+## Monitoring Agents
+
+We created a helpful `Monitor` class that enables visualizing variables within
+a Unity environment. While this was built for monitoring an Agent's value
+function throughout the training process, we imagine it can be more broadly
+useful. You can learn more [here](Feature-Monitor.md).
 
 ## Instantiating an Agent at Runtime
 
