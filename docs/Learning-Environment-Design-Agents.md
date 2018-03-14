@@ -107,17 +107,17 @@ Rotations and angles should also be normalized. For angles between 0 and 360 deg
   
  For angles that can be outside the range [0,360], you can either reduce the angle, or, if the number of turns is significant, increase the maximum value used in your normalization formula.
  
-### Visual Observations
+### Multiple Visual Observations
 
 Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network. You can use camera observations and either continuous feature vector or discrete state observations at the same time.
  
 Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
 
-To add a visual observation to an agent, click on the `Add Camera` button on the Agent's inspector. Then drag the camera you want to use in the placeholder box. 
+To add a visual observation to an agent, click on the `Add Camera` button in the Agent inspector. Then drag the camera you want to add to the `Camera` field. You can have more than one camera attached to an agent.
 
 ![Agent Camera](images/visual-observation.png) 
 
-You need to make sure that the brain the agent is attached to is expecting a visual observation. To do so, in the brain inspector, in `Brain Parameters` -> `Visual Observations` specify the number of Cameras the brain will expect along with their width/height in pixels and wether or not they are black and white.
+In addition, make sure that the agent's brain expects a visual observation. In the Brain inspector, under `Brain Parameters` -> `Visual Observations`, specify the number of Cameras the agent is using for its visual observations. For each visual observation, set the width and height of the render texture (in pixels) and whether or not the observation is black and white.
  
 ### Discrete Vector Observation Space: Table Lookup
 
