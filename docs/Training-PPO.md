@@ -10,8 +10,6 @@ If you are using curriculum training to pace the difficulty of the learning task
 
 For information about imitation learning, which uses a different training algorithm, see [Imitation Learning](Training-Imitation-Learning).
 
-<!-- Need a description of PPO that provides a general overview of the algorithm and, more specifically, puts all the hyperparameters and Academy/Brain/Agent settings (like max_steps and done) into context. Oh, and which is also short and understandable by laymen. -->
-
 ## Best Practices when training with PPO
 
 Successfully training a Reinforcement Learning model often involves tuning the training hyperparameters. This guide contains some best practices for tuning the training process when the default parameters don't seem to be giving the level of performance you would like.
@@ -28,7 +26,7 @@ Typical Range: `2048` - `409600`
 #### Batch Size
 
 `batch_size` is the number of experiences used for one iteration of a gradient descent update. **This should always be a fraction of the 
-`buffer_size`**. If you are using a continuous action space, this value should be large (in the order of  1000s). If you are using a discrete action space, this value 
+`buffer_size`**. If you are using a continuous action space, this value should be large (in the order of 1000s). If you are using a discrete action space, this value 
 should be smaller (in order of 10s). 
 
 Typical Range (Continuous): `512` - `5120`

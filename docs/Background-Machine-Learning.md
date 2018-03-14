@@ -194,7 +194,7 @@ natural choice for reinforcement learning tasks when a large amount of data
 can be generated, say through the use of a simulator or engine such as Unity.
 By generating hundreds of thousands of simulations of
 the environment within Unity, we can learn policies for very complex environments
-(a complex environment is one where the number of observations an agent percieves
+(a complex environment is one where the number of observations an agent perceives
 and the number of actions they can take are large).
 Many of the algorithms we provide in ML-Agents use some form of deep learning,
 built on top of the open-source library, [TensorFlow](Background-TensorFlow.md).

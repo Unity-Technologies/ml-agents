@@ -15,7 +15,7 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 
 ## Vector Observations
 * Vector Observations should include all variables relevant to allowing the agent to take the optimally informed decision.
-* Categorical variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (ie `3` -> `0, 0, 1`).
+* Categorical variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`).
 * Besides encoding non-numeric values, all inputs should be normalized to be in the range 0 to +1 (or -1 to 1). For example, the `x` position information of an agent where the maximum possible value is `maxValue` should be recorded as `AddVectorObs(transform.position.x / maxValue);` rather than `AddVectorObs(transform.position.x);`. See the equation below for one approach of normalization. 
 * Positional information of relevant GameObjects should be encoded in relative coordinates wherever possible. This is often relative to the agent position.
 
@@ -23,4 +23,4 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 
 ## Vector Actions
 * When using continuous control, action values should be clipped to an appropriate range.
-* Be sure to set the Vector Action's Space Size to the number of used Vector Actions, and not greater, as doing the latter can interfere with the efficency of the training process.
+* Be sure to set the Vector Action's Space Size to the number of used Vector Actions, and not greater, as doing the latter can interfere with the efficiency of the training process.

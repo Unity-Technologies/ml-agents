@@ -38,7 +38,7 @@ A BrainInfo object contains the following fields:
 * **`text_observations`** : A list of string corresponding to the agents text observations.
 * **`memories`** : A two dimensional numpy array of dimension `(batch size, memory size)` which corresponds to the memories sent at the previous step.
 * **`rewards`** : A list as long as the number of agents using the brain containing the rewards they each obtained at the previous step. 
-* **`local_done`** : A list as long as the number of agents using the brain containing  `done` flags (wether or not the agent is done). 
+* **`local_done`** : A list as long as the number of agents using the brain containing  `done` flags (whether or not the agent is done). 
 * **`max_reached`** : A list as long as the number of agents using the brain containing true if the agents reached their max steps.
 * **`agents`** : A list of the unique ids of the agents using the brain.
 * **`previous_actions`** : A two dimensional numpy array of dimension `(batch size, vector action size)` if the vector action space is continuous and `(batch size, 1)` if the vector action space is discrete.

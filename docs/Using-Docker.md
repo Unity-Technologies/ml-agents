@@ -14,7 +14,7 @@ add the _Linux Build Support_ Component
 - [Download](https://www.docker.com/community-edition#/download) and
 install Docker if you don't have it setup on your machine.
 
-- Since Docker runs a container in an environment that is isolated from the host machine, a mounted directory in your host machine is used to share data, e.g. the Unity executable, curriculum files and tensorflow graph. For convenience, we created an empty `unity-volume` directory at the root of the repository for this purpose, but feel free to use any other directory. The remainder of this guide assumes that the `unity-volume` directory is the one used.
+- Since Docker runs a container in an environment that is isolated from the host machine, a mounted directory in your host machine is used to share data, e.g. the Unity executable, curriculum files and TensorFlow graph. For convenience, we created an empty `unity-volume` directory at the root of the repository for this purpose, but feel free to use any other directory. The remainder of this guide assumes that the `unity-volume` directory is the one used.
 
 ## Usage
 
