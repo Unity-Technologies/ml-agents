@@ -86,13 +86,15 @@ This will complete the installation of all the required Python packages to run M
 
 Not required to use v0.3 for ML-Agents.  This is a guide for advanced users who want to train using GPUs.  Additionally, you will need to check if your GPU is CUDA compatible.  Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
+As of ML-Agents v0.3, only CUDA 8 and cuDNN 6 is supported.
+
 ## (Optional) Step 1: Install Nvidia CUDA toolkit
 
-<a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank">Download</a> and install the CUDA toolkit from Nvidia's archive.  The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ compiler and a runtime library and is needed to run ML-Agents.  You can select the latest or previous releases.  In this guide, we are using version 9.1.85.3 ([direct link](https://developer.nvidia.com/compute/cuda/9.1/Prod/patches/3/cuda_9.1.85.3_windows)).  
+<a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank">Download</a> and install the CUDA toolkit from Nvidia's archive.  The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ compiler and a runtime library and is needed to run ML-Agents.  In this guide, we are using version 8.0.61 ([direct link](https://developer.nvidia.com/compute/cuda/8.0/Prod2/network_installers/cuda_8.0.61_win10_network-exe)).  
 
 _Before installing, please make sure you __close any running instances of Unity or Visual Studio.___
 
-Run the installer and select the Express option.  Note the directory where you installed the CUDA toolkit.  In this guide, we installed in the directory `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`
+Run the installer and select the Express option.  Note the directory where you installed the CUDA toolkit.  In this guide, we installed in the directory `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0`
 
 <p align="center">
     <img src="images/install_nvidia_cuda_toolkit.PNG" 
@@ -110,7 +112,7 @@ Run the installer and select the Express option.  Note the directory where you i
         width="500" border="10" />
 </p>
 
-Once you've signed up, go back to the cuDNN <a href="https://developer.nvidia.com/cudnn" target="_blank">downloads page</a>.  You may or may not be asked to fill out a short survey.  When you get to the list cuDNN releases, __make sure you are downloading the right version for the CUDA toolkit you installed in Step 1.__  In this guide, we are using version 7.1.1 for CUDA toolkit version 9.1+ ([direct link](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v7.1.1/prod/9.1_20180214/cudnn-9.1-windows10-x64-v7.1)).
+Once you've signed up, go back to the cuDNN <a href="https://developer.nvidia.com/cudnn" target="_blank">downloads page</a>.  You may or may not be asked to fill out a short survey.  When you get to the list cuDNN releases, __make sure you are downloading the right version for the CUDA toolkit you installed in Step 1.__  In this guide, we are using version 6.0 for CUDA toolkit version 8.0 ([direct link](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v6/prod/8.0_20170307/cudnn-8.0-windows10-x64-v6.0-zip)).
 
 After you have downloaded the cuDNN files, you will need to extract the files into the CUDA toolkit directory.  In the cuDNN zip file, there are three folders called `bin`, `include`, and `lib`.  
 
@@ -120,7 +122,7 @@ After you have downloaded the cuDNN files, you will need to extract the files in
         width="500" border="10" />
 </p>
 
-Copy these three folders into the CUDA toolkit directory.  The CUDA toolkit directory is located at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`
+Copy these three folders into the CUDA toolkit directory.  The CUDA toolkit directory is located at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0`
 
 <p align="center">
     <img src="images/cuda_toolkit_directory.PNG" 
@@ -148,7 +150,7 @@ From here, click the __Environment Variables__ button.  Click __New__ to add a n
         width="500" border="10" />
 </p>
 
-For __Variable Name__, enter `CUDA_HOME`.  For the variable value, put the directory location for the CUDA toolkit.  In this guide, the directory location is `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1`.  Press __OK__ once.
+For __Variable Name__, enter `CUDA_HOME`.  For the variable value, put the directory location for the CUDA toolkit.  In this guide, the directory location is `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0`.  Press __OK__ once.
 
 <p align="center">
     <img src="images/system_variable_name_value.PNG" 
@@ -158,8 +160,8 @@ For __Variable Name__, enter `CUDA_HOME`.  For the variable value, put the direc
 
 To set the two path variables, inside the same __Environment Variables__ window and under the second box called __System Variables__, find a variable called `PATH` and click __Edit__.  You will add two directories to the list.  For this guide, the two entries would look like:
 
-    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\lib\x64
-    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\extras\CUPTI\libx64
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\x64
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\extras\CUPTI\libx64
 
 Make sure to replace the relevant directory location with the one you have installed.  _Please note that case sensitivity matters_.
 
