@@ -118,14 +118,14 @@ public class AgentParameters
     public bool resetOnDone = true;
 
     /// <summary>
-    /// Whether to enable On Demand Decision Making or make a decision at 
+    /// Whether to enable On Demand Decisions or make a decision at 
     /// every step.
     /// </summary>
     public bool onDemandDecision;
 
     /// <summary>
-    /// Number of actions between decisions (used when On Demand Decision
-    /// Making is turned off).
+    /// Number of actions between decisions (used when On Demand Decisions
+    /// is turned off).
     /// </summary>
     public int numberOfActionsBetweenDecisions;
 }
@@ -237,7 +237,7 @@ public abstract class Agent : MonoBehaviour
     int stepCount;
 
     // Flag to signify that an agent has been reset but the fact that it is
-    // done has not been communicated (required for On Demand Decision Making).
+    // done has not been communicated (required for On Demand Decisions).
     bool hasAlreadyReset;
 
     // Flag to signify that an agent is done and should not reset until
