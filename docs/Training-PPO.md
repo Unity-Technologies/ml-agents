@@ -2,7 +2,7 @@
 
 ML-Agents uses a reinforcement learning technique called [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/). PPO uses a neural network to approximate the ideal function that maps an agent's observations to the best action an agent can take in a given state. The ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate Python process (communicating with the running Unity application over a socket). 
 
-See [Training ML-Agents](Training ML-Agents.md) for instructions on running the training program, `learn.py`.
+See [Training ML-Agents](Training-ML-Agents.md) for instructions on running the training program, `learn.py`.
 
 If you are using the recurrent neural network (RNN) to utilize memory, see [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md) for RNN-specific training details.
 
