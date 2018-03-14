@@ -14,7 +14,19 @@ For information about imitation learning, which uses a different training algori
 
 Successfully training a Reinforcement Learning model often involves tuning the training hyperparameters. This guide contains some best practices for tuning the training process when the default parameters don't seem to be giving the level of performance you would like.
 
-### Hyperparameters
+## Hyperparameters
+
+#### Gamma
+
+`gamma` corresponds to the discount factor for future rewards. This can be thought of as how far into the future the agent should care about possible rewards. In situations when the agent should be acting in the present in order to prepare for rewards in the distant future, this value should be large. In cases when rewards are more immediate, it can be smaller.
+
+Typical Range: `0.8` - `0.995`
+
+#### Lambda
+
+`lambd` corresponds to the `lambda` parameter used when calculating the Generalized Advantage Estimate ([GAE](https://arxiv.org/abs/1506.02438)). This can be thought of as how much the agent relies on its current value estimate when calculating an updated value estimate. Low values correspond to relying more on the current value estimate (which can be high bias), and high values correspond to relying more on the actual rewards received in the environment (which can be high variance). 
+
+Typical Range: `0.9` - `0.95`
 
 #### Buffer Size
 
@@ -99,7 +111,23 @@ the action is a very complex interaction between the observation variables, this
 
 Typical Range: `32` - `512`
 
-### Training Statistics
+### (Optional) Recurrent Neural Network Hyperparameters
+
+The below hyperparameters are only used when `use_recurrent` is set to true.
+
+#### Sequence Lenght
+
+`sequence_length` corresponds to the length of the sequences of experience passed through the network during training. This should be long enough to capture whatever information your agent might need to remember over time. For example, if your agent needs to remember the velocity of objects, then this can be a small value. If your agent needs to remember a piece of information given only once at the beginning of an episode, then this should be a larger value.
+
+Typical Range: `4` - `128`
+
+#### Memory Size
+
+`memory_size` corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network. This should be a multiple of 4, and should scale with the amount of information you expect the agent to need to remember to successfully complete the task.
+
+Typical Range: `64` - `512`
+
+## Training Statistics
 
 To view training statistics, use TensorBoard. For information on launching and using TensorBoard, see [here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
 
