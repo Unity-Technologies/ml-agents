@@ -10,7 +10,7 @@ The key objects in the Python API include:
 
 These classes are all defined in the `python/unityagents` folder of the ML-Agents SDK.
 
-To communicate with an agent in a Unity environment from a Python program, the agent must either use an **External** brain or use a brain that is broadcasting (has its **Broadcast** property set to true). Your code is expected to return actions for agents with external brains, but can only observe broadcasting brains (the information you receive for an agent is the same in both cases). See [Using the Broadcast Feature](Feature-Broadcast.md).
+To communicate with an agent in a Unity environment from a Python program, the agent must either use an **External** brain or use a brain that is broadcasting (has its **Broadcast** property set to true). Your code is expected to return actions for agents with external brains, but can only observe broadcasting brains (the information you receive for an agent is the same in both cases). See [Using the Broadcast Feature](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
 
 For a simple example of using the Python API to interact with a Unity environment, see the Basic [Jupyter](Background-Jupyter.md) notebook, which opens an environment, runs a few simulation steps taking random actions, and closes the environment. 
 
