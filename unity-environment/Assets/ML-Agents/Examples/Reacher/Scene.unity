@@ -2661,7 +2661,7 @@ MonoBehaviour:
   graphScope: 
   graphPlaceholders: []
   BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: state
+  VectorObservationPlacholderName: vector_observation
   RecurrentInPlaceholderName: recurrent_in
   RecurrentOutPlaceholderName: recurrent_out
   VisualObservationPlaceholderName: []
