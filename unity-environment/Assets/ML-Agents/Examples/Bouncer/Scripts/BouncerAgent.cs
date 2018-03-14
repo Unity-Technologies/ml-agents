@@ -6,7 +6,9 @@ public class BouncerAgent : Agent {
 
     [Header("Bouncer Specific")]
     public GameObject banana;
+    public GameObject bodyObject;
     Rigidbody rb;
+    Vector3 lookDir;
     public float strength = 10f;
     float jumpCooldown = 0f;
     int numberJumps = 20;
@@ -15,6 +17,7 @@ public class BouncerAgent : Agent {
     public override void InitializeAgent()
     {
         rb = gameObject.GetComponent<Rigidbody>();
+        lookDir = Vector3.zero;
     }
 
     public override void CollectObservations()
@@ -35,6 +38,7 @@ public class BouncerAgent : Agent {
             vectorAction[1] * vectorAction[1] +
             vectorAction[2] * vectorAction[2]) / 3f);
 
+        lookDir = new Vector3(x, y, z);
     }
 
     public override void AgentReset()
@@ -85,10 +89,14 @@ public class BouncerAgent : Agent {
             Done();
             return;
         }
-        if (jumpLeft == 0f)
+        if (jumpLeft == 0)
         {
             Done();
         }
+
+        bodyObject.transform.rotation = Quaternion.Lerp(bodyObject.transform.rotation,
+                                  Quaternion.LookRotation(lookDir),
+                                  Time.fixedDeltaTime * 10f);
 
     }
 }
