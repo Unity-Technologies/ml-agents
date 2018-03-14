@@ -9,11 +9,11 @@ contains environments created by the community.
 
 This page only overviews the example environments we provide. To learn more
 on how to design and build your own environments see our 
-[Making a new Learning Environment](Learning-Environment-Create-New.md)
+[Making a New Learning Environment](Learning-Environment-Create-New.md)
 page.
 
 If you would like to contribute environments, please see our 
-[contribution guidelines](CONTRIBUTING.md) page. 
+[contribution guidelines](../CONTRIBUTING.md) page. 
 
 ## Basic
 

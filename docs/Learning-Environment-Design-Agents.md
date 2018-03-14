@@ -2,7 +2,7 @@
 
 An agent is an actor that can observe its environment and decide on the best course of action using those observations. Create agents in Unity by extending the Agent class. The most important aspects of creating agents that can successfully learn are the observations the agent collects and, for reinforcement learning, the reward you assign to estimate the value of the agent's current state toward accomplishing its tasks.
 
-An agent passes its observations to its brain. The brain, then, makes a decision and passes the chosen action back to the agent. Your agent code must execute the action, for example, move the agent in one direction or another. In order to train an agent using [reinforcement learning](Learning-Environment-Design.md), your agent must calculate a reward value at each action. The reward is used to discover the optimal decision-making policy. (A reward is not used by already trained agents or for imitation learning.) 
+An agent passes its observations to its brain. The brain, then, makes a decision and passes the chosen action back to the agent. Your agent code must execute the action, for example, move the agent in one direction or another. In order to [train an agent using reinforcement learning](Learning-Environment-Design.md), your agent must calculate a reward value at each action. The reward is used to discover the optimal decision-making policy. (A reward is not used by already trained agents or for imitation learning.) 
 
 The Brain class abstracts out the decision making logic from the agent itself so that you can use the same brain in multiple agents. 
 How a brain makes its decisions depends on the type of brain it is. An **External** brain simply passes the observations from its agents to an external process and then passes the decisions made externally back to the agents. An **Internal** brain uses the trained policy parameters to make decisions (and no longer adjusts the parameters in search of a better decision). The other types of brains do not directly involve training, but you might find them useful as part of a training project. See [Brains](Learning-Environment-Design-Brains.md).
@@ -41,22 +41,24 @@ For agents using a continuous state space, you create a feature vector to repres
 
 The observation must include all the information an agent needs to accomplish its task. Without sufficient and relevant information, an agent may learn poorly or may not learn at all. A reasonable approach for determining what information should be included is to consider what you would need to calculate an analytical solution to the problem. 
 
-For examples of various state observation functions, you can look at the [Examples](Learning-Environment-Examples.md) included in the ML-Agents SDK.  For instance, the 3DBall example uses the rotation of the platform, the relative position of the ball, and the velocity of the ball as its state observation. As an experiment, you can remove the velocity components from the observation and retrain the 3DBall agent. While it will learn to balance the ball reasonably well, the performance of the agent without using velocity is noticeably worse.
+For examples of various state observation functions, you can look at the [example environments](Learning-Environment-Examples.md) included in the ML-Agents SDK.  For instance, the 3DBall example uses the rotation of the platform, the relative position of the ball, and the velocity of the ball as its state observation. As an experiment, you can remove the velocity components from the observation and retrain the 3DBall agent. While it will learn to balance the ball reasonably well, the performance of the agent without using velocity is noticeably worse.
 
-    public GameObject ball;
-    
-    private List<float> state = new List<float>();
-    public override void CollectObservations()
-    {
-        AddVectorObs(gameObject.transform.rotation.z);
-        AddVectorObs(gameObject.transform.rotation.x);
-        AddVectorObs((ball.transform.position.x - gameObject.transform.position.x));
-        AddVectorObs((ball.transform.position.y - gameObject.transform.position.y));
-        AddVectorObs((ball.transform.position.z - gameObject.transform.position.z));
-        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.x);
-        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.y);
-        AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
-    }
+```csharp
+public GameObject ball;
+
+private List<float> state = new List<float>();
+public override void CollectObservations()
+{
+    AddVectorObs(gameObject.transform.rotation.z);
+    AddVectorObs(gameObject.transform.rotation.x);
+    AddVectorObs((ball.transform.position.x - gameObject.transform.position.x));
+    AddVectorObs((ball.transform.position.y - gameObject.transform.position.y));
+    AddVectorObs((ball.transform.position.z - gameObject.transform.position.z));
+    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.x);
+    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.y);
+    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
+}
+```
 
 The feature vector must always contain the same number of elements and observations must always be in the same position within the list. If the number of observed entities in an environment can vary you can pad the feature vector with zeros for any missing entities in a specific observation or you can limit an agent's observations to a fixed subset. For example, instead of observing every enemy agent in an environment, you could only observe the closest five. 
 
@@ -70,27 +72,32 @@ The observation feature vector is a list of floating point numbers, which means 
 
 Integers can be be added directly to the observation vector. You must explicitly convert Boolean values to a number:
 
-    AddVectorObs(isTrueOrFalse ? 1 : 0);
+```csharp
+AddVectorObs(isTrueOrFalse ? 1 : 0);
+```
 
 For entities like positions and rotations, you can add their components to the feature list individually.  For example:
 
-    Vector3 speed = ball.transform.GetComponent<Rigidbody>().velocity;
-    AddVectorObs(speed.x);
-    AddVectorObs(speed.y);
-    AddVectorObs(speed.z);
+```csharp
+Vector3 speed = ball.transform.GetComponent<Rigidbody>().velocity;
+AddVectorObs(speed.x);
+AddVectorObs(speed.y);
+AddVectorObs(speed.z);
+```
 
 Type enumerations should be encoded in the _one-hot_ style. That is, add an element to the feature vector for each element of enumeration, setting the element representing the observed member to one and set the rest to zero. For example, if your enumeration contains \[Sword, Shield, Bow\] and the agent observes that the current item is a Bow, you would add the elements: 0, 0, 1 to the feature vector. The following code example illustrates how to add 
 
-    enum CarriedItems { Sword, Shield, Bow, LastItem }
-    private List<float> state = new List<float>();
-    public override void CollectObservations()
+```csharp
+enum CarriedItems { Sword, Shield, Bow, LastItem }
+private List<float> state = new List<float>();
+public override void CollectObservations()
+{
+    for (int ci = 0; ci < (int)CarriedItems.LastItem; ci++)
     {
-        for (int ci = 0; ci < (int)CarriedItems.LastItem; ci++)
-        {
-            AddVectorObs((int)currentItem == ci ? 1.0f : 0.0f);            
-        }
+        AddVectorObs((int)currentItem == ci ? 1.0f : 0.0f);            
     }
-
+}
+```
 
 #### Normalization
 
@@ -98,15 +105,19 @@ For the best results when training, you should normalize the components of your 
 
 To normalize a value to [0, 1], you can use the following formula:
 
-    normalizedValue = (currentValue - minValue)/(maxValue - minValue)
+```csharp
+normalizedValue = (currentValue - minValue)/(maxValue - minValue)
+```
 
 Rotations and angles should also be normalized. For angles between 0 and 360 degrees, you can use the following formulas:
 
-    Quaternion rotation = transform.rotation;
-    Vector3 normalized = rotation.eulerAngles/180.0f - Vector3.one;  // [-1,1]
-    Vector3 normalized = rotation.eulerAngles/360.0f;  // [0,1]
-  
- For angles that can be outside the range [0,360], you can either reduce the angle, or, if the number of turns is significant, increase the maximum value used in your normalization formula.
+```csharp
+Quaternion rotation = transform.rotation;
+Vector3 normalized = rotation.eulerAngles / 180.0f - Vector3.one;  // [-1,1]
+Vector3 normalized = rotation.eulerAngles / 360.0f;  // [0,1]
+```
+
+For angles that can be outside the range [0,360], you can either reduce the angle, or, if the number of turns is significant, increase the maximum value used in your normalization formula.
  
 ### Multiple Visual Observations
 
@@ -122,16 +133,18 @@ In addition, make sure that the Agent's Brain expects a visual observation. In t
  
 ### Discrete Vector Observation Space: Table Lookup
 
-You can use the discrete vector observation space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](Learning-Environment-Examples.md) in ML-Agents defines an agent with a discrete vector observation space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
+You can use the discrete vector observation space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](Learning-Environment-Examples.md#basic) in ML-Agents defines an agent with a discrete vector observation space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
 
 More generally, the discrete vector observation identifier could be an index into a table of the possible states. However, tables quickly become unwieldy as the environment becomes more complex. For example, even a simple game like [tic-tac-toe has 765 possible states](https://en.wikipedia.org/wiki/Game_complexity) (far more if you don't reduce the number of observations by combining those that are rotations or reflections of each other).
 
 To implement a discrete state observation, implement the `CollectObservations()` method of your Agent subclass and return a `List` containing a single number representing the state:
 
-    public override void CollectObservations()
-    {
-        AddVectorObs(stateIndex);  // stateIndex is the state identifier
-    }
+```csharp
+public override void CollectObservations()
+{
+    AddVectorObs(stateIndex);  // stateIndex is the state identifier
+}
+```
 
 ## Vector Actions
 
@@ -143,28 +156,30 @@ For example, if you designed an agent to move in two dimensions, you could use e
 
 Note that when you are programming actions for an agent, it is often helpful to test your action logic using a **Player** brain, which lets you map keyboard commands to actions. See [Brains](Learning-Environment-Design-Brains.md).
 
-The [3DBall and Area example projects](Learning-Environment-Examples.md) are set up to use either the continuous or the discrete vector action spaces. 
+The [3DBall](Learning-Environment-Examples.md#3dball-3d-balance-ball) and [Area](Learning-Environment-Examples.md#push-block) example environments are set up to use either the continuous or the discrete vector action spaces. 
 
 ### Continuous Action Space
 
 When an agent uses a brain set to the **Continuous** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array with length equal to the Brain object's `Vector Action Space Size` property value.  The individual values in the array have whatever meanings that you ascribe to them. If you assign an element in the array as the speed of an agent, for example, the training process learns to control the speed of the agent though this parameter. 
 
-The [Reacher example](Learning-Environment-Examples.md) defines a continuous action space with four control values. 
+The [Reacher example](Learning-Environment-Examples.md#reacher) defines a continuous action space with four control values. 
 
 ![](images/reacher.png)
 
 These control values are applied as torques to the bodies making up the arm :
 
-    public override void AgentAction(float[] act)
-    {
-        float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
-        float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
-        rbA.AddTorque(new Vector3(torque_x, 0f, torque_z));
-    
-        torque_x = Mathf.Clamp(act[2], -1, 1) * 100f;
-        torque_z = Mathf.Clamp(act[3], -1, 1) * 100f;
-        rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
-    }
+```csharp
+public override void AgentAction(float[] act)
+{
+    float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
+    float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
+    rbA.AddTorque(new Vector3(torque_x, 0f, torque_z));
+
+    torque_x = Mathf.Clamp(act[2], -1, 1) * 100f;
+    torque_z = Mathf.Clamp(act[3], -1, 1) * 100f;
+    rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
+}
+```
 
 You should clamp continuous action values to a reasonable value (typically [-1,1]) to avoid introducing instability while training the agent with the PPO algorithm. As shown above, you can scale the control values as needed after clamping them. 
  
@@ -172,22 +187,24 @@ You should clamp continuous action values to a reasonable value (typically [-1,1
 
 When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete vector action space, `Vector Action Space Size` represents the number of actions in your action table.
 
-The [Area example](Learning-Environment-Examples.md) defines five actions for the discrete vector action space: a jump action and one action for each cardinal direction:
+The [Area example](Learning-Environment-Examples.md#push-block) defines five actions for the discrete vector action space: a jump action and one action for each cardinal direction:
 
-    // Get the action index
-    int movement = Mathf.FloorToInt(act[0]); 
-    
-    // Look up the index in the action list:
-    if (movement == 1) { directionX = -1; }
-    if (movement == 2) { directionX = 1; }
-    if (movement == 3) { directionZ = -1; }
-    if (movement == 4) { directionZ = 1; }
-    if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
-    
-    // Apply the action results to move the agent
-    gameObject.GetComponent<Rigidbody>().AddForce(
-        new Vector3(
-            directionX * 40f, directionY * 300f, directionZ * 40f));
+```csharp
+// Get the action index
+int movement = Mathf.FloorToInt(act[0]); 
+
+// Look up the index in the action list:
+if (movement == 1) { directionX = -1; }
+if (movement == 2) { directionX = 1; }
+if (movement == 3) { directionZ = -1; }
+if (movement == 4) { directionZ = 1; }
+if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+
+// Apply the action results to move the agent
+gameObject.GetComponent<Rigidbody>().AddForce(
+    new Vector3(
+        directionX * 40f, directionY * 300f, directionZ * 40f));
+```
 
 Note that the above code example is a simplified extract from the AreaAgent class, which provides alternate implementations for both the discrete and the continuous action spaces.
 
@@ -203,55 +220,61 @@ Allocate rewards to an agent by calling the `AddReward()` method in the `AgentAc
 
 **Examples**
 
-You can examine the `AgentAction()` functions defined in the [Examples](Learning-Environment-Examples.md) to see how those projects allocate rewards.
+You can examine the `AgentAction()` functions defined in the [example environments](Learning-Environment-Examples.md) to see how those projects allocate rewards.
 
-The `GridAgent` class in the [GridWorld example](Learning-Environment-Examples.md) uses a very simple reward system:
+The `GridAgent` class in the [GridWorld example](Learning-Environment-Examples.md#gridworld) uses a very simple reward system:
 
-    Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position, 
-                                               new Vector3(0.3f, 0.3f, 0.3f));
-    if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
-    {
-        AddReward(1.0f);
-        Done();
-    }
-    if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
-    {
-        AddReward(-1f);
-        Done();
-    }
+```csharp
+Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position, 
+                                           new Vector3(0.3f, 0.3f, 0.3f));
+if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
+{
+    AddReward(1.0f);
+    Done();
+}
+if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
+{
+    AddReward(-1f);
+    Done();
+}
+```
 
 The agent receives a positive reward when it reaches the goal and a negative reward when it falls into the pit. Otherwise, it gets no rewards. This is an example of a _sparse_ reward system. The agent must explore a lot to find the infrequent reward.
 
-In contrast, the `AreaAgent` in the [Area example](Learning-Environment-Examples.md) gets a small negative reward every step. In order to get the maximum reward, the agent must finish its task of reaching the goal square as quickly as possible:
+In contrast, the `AreaAgent` in the [Area example](Learning-Environment-Examples.md#push-block) gets a small negative reward every step. In order to get the maximum reward, the agent must finish its task of reaching the goal square as quickly as possible:
 
-    AddReward( -0.005f);
-    MoveAgent(act);
-    
-	if (gameObject.transform.position.y < 0.0f || 
-        Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
-        Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
-	{
-		Done();
-		AddReward(-1f);
-	}
+```csharp
+AddReward( -0.005f);
+MoveAgent(act);
+
+if (gameObject.transform.position.y < 0.0f || 
+    Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f || 
+    Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
+{
+    Done();
+    AddReward(-1f);
+}
+```
 
 The agent also gets a larger negative penalty if it falls off the playing surface.
 
-The `Ball3DAgent` in the [3DBall](Learning-Environment-Examples.md) takes a similar approach, but allocates a small positive reward as long as the agent balances the ball. The agent can maximize its rewards by keeping the ball on the platform:
+The `Ball3DAgent` in the [3DBall](Learning-Environment-Examples.md#3dball-3d-balance-ball) takes a similar approach, but allocates a small positive reward as long as the agent balances the ball. The agent can maximize its rewards by keeping the ball on the platform:
 
-    if (IsDone() == false)
-    {
-        SetReward(0.1f);
-    }
-    
-    //When ball falls mark agent as done and give a negative penalty
-    if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
-        Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
-        Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
-    {
-        Done();
-        SetReward(-1f);
-    }
+```csharp
+if (IsDone() == false)
+{
+    SetReward(0.1f);
+}
+
+// When ball falls mark agent as done and give a negative penalty
+if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
+    Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
+    Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
+{
+    Done();
+    SetReward(-1f);
+}
+```
 
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the platform.
 
@@ -293,13 +316,15 @@ useful. You can learn more [here](Feature-Monitor.md).
 
 To add an Agent to an environment at runtime, use the Unity `GameObject.Instantiate()` function. It is typically easiest to instantiate an agent from a [Prefab](https://docs.unity3d.com/Manual/Prefabs.html) (otherwise, you have to instantiate every GameObject and Component that make up your agent individually). In addition, you must assign a Brain instance to the new Agent and initialize it by calling its `AgentReset()` method. For example, the following function creates a new agent given a Prefab, Brain instance, location, and orientation:
 
-    private void CreateAgent(GameObject agentPrefab, Brain brain, Vector3 position, Quaternion orientation)
-    {
-        GameObject agentObj = Instantiate(agentPrefab, position, orientation);
-        Agent agent = agentObj.GetComponent<Agent>();
-        agent.GiveBrain(brain);
-        agent.AgentReset();
-    }
+```csharp
+private void CreateAgent(GameObject agentPrefab, Brain brain, Vector3 position, Quaternion orientation)
+{
+    GameObject agentObj = Instantiate(agentPrefab, position, orientation);
+    Agent agent = agentObj.GetComponent<Agent>();
+    agent.GiveBrain(brain);
+    agent.AgentReset();
+}
+```
 
 ## Destroying an Agent
 

@@ -1,4 +1,4 @@
-# Using Recurrent Neural Networks in ML-Agents
+# Memory-enhanced Agents using Recurrent Neural Networks
 
 ## What are memories for?
 Have you ever entered a room to get something and immediately forgot
@@ -19,10 +19,10 @@ track of what is important to remember with [LSTM](https://en.wikipedia.org/wiki
 When configuring the trainer parameters in the `trainer_config.yaml` 
 file, add the following parameters to the Brain you want to use.
 
-```
-	use_recurrent: true
-	sequence_length: 64
-	memory_size: 256
+```json
+use_recurrent: true
+sequence_length: 64
+memory_size: 256
 ```
 
 * `use_recurrent` is a flag that notifies the  trainer that you want 
@@ -43,5 +43,3 @@ and Unity, using too large `memory_size` will slow down training.
 * Adding a recurrent layer increases the complexity of the neural 
 network, it is recommended to decrease `num_layers` when using recurrent.
 * It is required that `memory_size` be divisible by 4.
-
-

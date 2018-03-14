@@ -85,7 +85,7 @@ If you followed these instructions well, the agents in your environment that use
 
 Beyond controlling an in-game agent, you can also use TensorFlowSharp for more general computation. The following instructions describe how to generally embed TensorFlow models without using the ML-Agents framework.
 
-You must have a TensorFlow graph, such as `your_name_graph.bytes`, made using TensorFlow's `freeze_graph.py`. The process to create such graph is explained in[Using your own trained graphs](#using-your-own-trained-graphs).
+You must have a TensorFlow graph, such as `your_name_graph.bytes`, made using TensorFlow's `freeze_graph.py`. The process to create such graph is explained in the [Using your own trained graphs](#using-your-own-trained-graphs) section.
 
 ## Inside of Unity
 

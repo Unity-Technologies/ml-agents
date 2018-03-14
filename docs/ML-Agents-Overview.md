@@ -308,7 +308,7 @@ custom environment parameters within the Academy. This allows
 elements of the environment related to difficulty or complexity to be
 dynamically adjusted based on training progress.
 
-The [Curriculum Learning](Training-Curriculum-Learning.md)
+The [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 tutorial covers this training mode with the **Wall Area** sample environment.
 
 ### Imitation Learning
@@ -324,7 +324,7 @@ will be recorded and sent to the Python API. The imitation learning algorithm
 will then use these pairs of observations and actions from the human player
 to learn a policy.
 
-The [Imitation Learning](Training-Imitation-Learning.md) tutorial covers this 
+The [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers this 
 training mode with the **Banana Collector** sample environment.
 
 ## Flexible Training Scenarios
@@ -410,7 +410,7 @@ helpful in several scenarios such as training a self-driving car which requires
 multiple cameras with different viewpoints, or a navigational agent which might 
 need to integrate aerial and first-person visuals. You can learn more about
 adding visual observations to an agent 
-[here](Learning-Environment-Design-Agents.md#visual-observations).
+[here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
         
 * **Broadcasting** - As discussed earlier, an External Brain sends the
 observations for all its Agents to the Python API by default. This is helpful 

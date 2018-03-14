@@ -72,22 +72,22 @@ The training config file, `trainer_config.yaml` specifies the training method, t
 | lambd | The regularization parameter. | PPO  |
 | learning_rate | The initial learning rate for gradient descent. | PPO,  BC |
 | max_steps | The maximum number of simulation steps to run during a training session. | PPO, BC |
-| memory_size | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md). | PPO, BC |
+| memory_size | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, BC |
 | normalize | Whether to automatically normalize observations. | PPO, BC |
 | num_epoch | The number of passes to make through the experience buffer when performing gradient descent optimization. | PPO, BC |
 | num_layers | The number of hidden layers in the neural network. | PPO, BC |
-| sequence_length | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md). | PPO, BC |
+| sequence_length | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, BC |
 | summary_freq | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard. | PPO, BC |
 | time_horizon | How many steps of experience to collect per-agent before adding it to the experience buffer. | PPO, BC |
 | trainer | The type of training to perform: "ppo" or "imitation".| PPO, BC |
-| use_recurrent | Train using a recurrent neural network. See [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md).| PPO, BC |
+| use_recurrent | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).| PPO, BC |
 || PPO = Proximal Policy Optimization, BC = Behavioral Cloning (Imitation)) ||
 
 For specific advice on setting hyperparameters based on the type of training you are conducting, see:
 
 * [Training with PPO](Training-PPO.md)
-* [Using Recurrent Neural Networks in ML-Agents](Feature-Memory.md)
-* [Imitation Learning](Training-Imitation-Learning.md)
+* [Using Recurrent Neural Networks](Feature-Memory.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
+* [Training with Imitation Learning](Training-Imitation-Learning.md)
 
 You can also compare the [example environments](Learning-Environment-Examples.md) to the corresponding sections of the `trainer-config.yaml` file for each example to see how the hyperparameters and other configuration variables have been changed from the defaults.
