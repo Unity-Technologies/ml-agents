@@ -50,10 +50,10 @@ conda activate ml-agents
 
 You should see `(ml-agents)` prepended on the last line.
 
-Next, install `tensorflow` and `tensorflow-gpu`. Install these packages using `pip` - which is a package management system used to install Python packages. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
+Next, install `tensorflow`. Install this package using `pip` - which is a package management system used to install Python packages. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
 
 ```
-pip install tensorflow tensorflow-gpu
+pip install tensorflow
 ```
 
 ## Step 3: Install Required Python Packages
@@ -168,6 +168,13 @@ Make sure to replace the relevant directory location with the one you have insta
         alt="Path variables" 
         width="500" border="10" />
 </p>
+
+## (Optional) Step 4: Install TensorFlow GPU
+Next, install `tensorflow-gpu` using `pip`. In an Anaconda Prompt with the Conda environment ml-agents activated, type in the following command _(make sure you are connected to the internet)_:
+
+```
+pip install tensorflow-gpu
+```
 
 Lastly, you should test to see if everything installed properly and that TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the following command:
 
