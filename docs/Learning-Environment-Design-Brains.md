@@ -4,10 +4,10 @@ The Brain encapsulates the decision making process. Brain objects must be childr
 
 Use the Brain class directly, rather than a subclass. Brain behavior is determined by the **Brain Type**. ML-Agents defines four Brain Types:
 
-* [External](Learning-Environment-External-Internal-Brains.md) — The **External** and **Internal** types typically work together; set **External** when training your agents. You can also use the **External** brain to communicate with a Python script via the Python `UnityEnvironment` class included in the Python portion of the ML-Agents SDK.
-* [Internal](Learning-Environment-External-Internal-Brains.md) – Set **Internal**  to make use of a trained model.
-* [Heuristic](Learning-Environment-Heuristic-Brains.md) – Set **Heuristic** to hand-code the agent's logic by extending the Decision class.
-* [Player](Learning-Environment-Player-Brains.md) – Set **Player** to map keyboard keys to agent actions, which can be useful to test your agent code.
+* [External](Learning-Environment-Design-External-Internal-Brains.md) — The **External** and **Internal** types typically work together; set **External** when training your agents. You can also use the **External** brain to communicate with a Python script via the Python `UnityEnvironment` class included in the Python portion of the ML-Agents SDK.
+* [Internal](Learning-Environment-Design-External-Internal-Brains.md) – Set **Internal**  to make use of a trained model.
+* [Heuristic](Learning-Environment-Design-Heuristic-Brains.md) – Set **Heuristic** to hand-code the agent's logic by extending the Decision class.
+* [Player](Learning-Environment-Design-Player-Brains.md) – Set **Player** to map keyboard keys to agent actions, which can be useful to test your agent code.
 
 During training, set your agent's brain type to **External**. To use the trained model, import the model file into the Unity project and change the brain type to **Internal**. 
 

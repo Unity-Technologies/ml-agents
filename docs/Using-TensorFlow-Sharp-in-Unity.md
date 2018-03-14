@@ -66,7 +66,7 @@ In the Unity Editor, you must specify the names of the nodes used by your graph 
 
 ![Internal Brain Inspector](images/internal_brain.png)
 
-See [Internal Brain](Learning-Environments-Internal-Brains.md) for more information about using the InternalBrain object.
+See [Internal Brain](Learning-Environments-Design-External-Internal-Brains.md#internal-brain) for more information about using the Internal Brains.
 
 If you followed these instructions well, the agents in your environment that use this brain will use your fully trained network to make decisions.
 
