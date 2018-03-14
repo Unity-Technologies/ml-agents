@@ -13,7 +13,7 @@ on how to design and build your own environments see our
 page.
 
 If you would like to contribute environments, please see our 
-[contribution guidelines](Contribution-Guidelines.md) page. 
+[contribution guidelines](CONTRIBUTING.md) page. 
 
 ## Basic
 

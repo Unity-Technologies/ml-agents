@@ -32,7 +32,7 @@ to the wider research and game developer communities.
 ## Documentation and References
 
 **For more information, in addition to installation and usage
-instructions, see our [documentation home](docs/README.md).** If you have
+instructions, see our [documentation home](docs/Readme.md).** If you have
 used a version of ML-Agents prior to v0.3, we strongly recommend 
 our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
 
@@ -55,7 +55,7 @@ In addition to our own documentation, here are some additional, relevant article
 
 ML-Agents is an open-source project and we encourage and welcome contributions.
 If you wish to contribute, be sure to review our 
-[contribution guidelines](docs/Contribution-Guidelines.md) and 
+[contribution guidelines](CONTRIBUTING.md) and 
 [code of conduct](CODE_OF_CONDUCT.md).
 
 You can connect with us and the broader community
