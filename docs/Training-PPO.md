@@ -123,7 +123,7 @@ Typical Range: `4` - `128`
 
 #### Memory Size
 
-`memory_size` corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network. This should be a multiple of 4, and should scale with the amount of information you expect the agent needs to remember to successfully complete the task.
+`memory_size` corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network. This value must be a multiple of 4, and should scale with the amount of information you expect the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `64` - `512`
 
