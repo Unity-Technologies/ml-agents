@@ -27,13 +27,15 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         public int index;
         public float value;
     }
-        
+
     ExternalCommunicator coord;
 
     [SerializeField]
+    [Tooltip("The list of keys and the value they correspond to for continuous control.")]
     /// Contains the mapping from input to continuous actions
     private ContinuousPlayerAction[] continuousPlayerActions;
     [SerializeField]
+    [Tooltip("The list of keys and the value they correspond to for discrete control.")]
     /// Contains the mapping from input to discrete actions
     private DiscretePlayerAction[] discretePlayerActions;
     [SerializeField]
@@ -49,74 +51,65 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     }
 
     /// Nothing to implement
-    public void InitializeCoreBrain()
+    public void InitializeCoreBrain(Communicator communicator)
     {
-        if ((brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if ((communicator == null)
             || (!broadcast))
         {
             coord = null;
         }
-        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        else if (communicator is ExternalCommunicator)
         {
-            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord = (ExternalCommunicator)communicator;
             coord.SubscribeBrain(brain);
         }
     }
 
     /// Uses the continuous inputs or dicrete inputs of the player to 
     /// decide action
-    public void DecideAction()
+    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+		if (coord != null)
+		{
+			coord.GiveBrainInfo(brain, agentInfo);
+		}
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            float[] action = new float[brain.brainParameters.actionSize];
-            foreach (ContinuousPlayerAction cha in continuousPlayerActions)
+            foreach (Agent agent in agentInfo.Keys)
             {
-                if (Input.GetKey(cha.key))
+                var action = new float[brain.brainParameters.vectorActionSize];
+                foreach (ContinuousPlayerAction cha in continuousPlayerActions)
                 {
-                    action[cha.index] = cha.value;
+                    if (Input.GetKey(cha.key))
+                    {
+                        action[cha.index] = cha.value;
+                    }
                 }
-            }
-            Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
-            foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
-            {
-                actions.Add(idAgent.Key, action);
-            }
-            brain.SendActions(actions);
-        }
-        else
-        {
-            float[] action = new float[1] { defaultAction };
-            foreach (DiscretePlayerAction dha in discretePlayerActions)
-            {
-                if (Input.GetKey(dha.key))
-                {
-                    action[0] = (float)dha.value;
-                    break;
-                }
-            }
-            Dictionary<int, float[]> actions = new Dictionary<int, float[]>();
-            foreach (KeyValuePair<int, Agent> idAgent in brain.agents)
-            {
-                actions.Add(idAgent.Key, action);
-            }
-            brain.SendActions(actions);
-        }
-    }
 
-    /// Nothing to implement, the Player does not use the state to make 
-    /// decisions
-    public void SendState()
-    {
-        if (coord != null)
-        {
-            coord.giveBrainInfo(brain);
+                agent.UpdateVectorAction(action);
+            }
+
         }
         else
         {
-            //The states are collected in order to debug the CollectStates method.
-            brain.CollectStates();
+            foreach (Agent agent in agentInfo.Keys)
+            {
+                var action = new float[1] { defaultAction };
+                foreach (DiscretePlayerAction dha in discretePlayerActions)
+                {
+                    if (Input.GetKey(dha.key))
+                    {
+                        action[0] = (float)dha.value;
+                        break;
+                    }
+                }
+
+
+                agent.UpdateVectorAction(action);
+                
+            }
         }
+
     }
 
     /// Displays continuous or discrete input mapping in the inspector
@@ -124,12 +117,13 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     {
 #if UNITY_EDITOR
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-        broadcast = EditorGUILayout.Toggle("Broadcast", broadcast);
-        SerializedObject serializedBrain = new SerializedObject(this);
-        if (brain.brainParameters.actionSpaceType == StateType.continuous)
+        broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
+                      "If checked, the brain will broadcast states and actions to Python."), broadcast);
+        var serializedBrain = new SerializedObject(this);
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            GUILayout.Label("Edit the continuous inputs for you actions", EditorStyles.boldLabel);
-            SerializedProperty chas = serializedBrain.FindProperty("continuousPlayerActions");
+            GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
+            var chas = serializedBrain.FindProperty("continuousPlayerActions");
             serializedBrain.Update();
             EditorGUILayout.PropertyField(chas, true);
             serializedBrain.ApplyModifiedProperties();
@@ -139,19 +133,19 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
             }
             foreach (ContinuousPlayerAction cha in continuousPlayerActions)
             {
-                if (cha.index >= brain.brainParameters.actionSize)
+                if (cha.index >= brain.brainParameters.vectorActionSize)
                 {
                     EditorGUILayout.HelpBox(string.Format("Key {0} is assigned to index {1} but the action size is only of size {2}"
-                        , cha.key.ToString(), cha.index.ToString(), brain.brainParameters.actionSize.ToString()), MessageType.Error);
+                        , cha.key.ToString(), cha.index.ToString(), brain.brainParameters.vectorActionSize.ToString()), MessageType.Error);
                 }
             }
 
         }
         else
         {
-            GUILayout.Label("Edit the discrete inputs for you actions", EditorStyles.boldLabel);
+            GUILayout.Label("Edit the discrete inputs for your actions", EditorStyles.boldLabel);
             defaultAction = EditorGUILayout.IntField("Default Action", defaultAction);
-            SerializedProperty dhas = serializedBrain.FindProperty("discretePlayerActions");
+            var dhas = serializedBrain.FindProperty("discretePlayerActions");
             serializedBrain.Update();
             EditorGUILayout.PropertyField(dhas, true);
             serializedBrain.ApplyModifiedProperties();

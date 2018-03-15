@@ -1,31 +1,50 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-/// Generic functions for Decision Interface
+/// <summary>
+/// Interface for implementing the behavior of an Agent that uses a Heuristic
+/// Brain. The behavior of an Agent in this case is fully decided using the
+/// implementation of these methods and no training or inference takes place.
+/// Currently, the Heuristic Brain does not support text observations and actions.
+/// </summary>
 public interface Decision
 {
-    /// \brief Implement this method to define the logic of decision making 
-    /// for the CoreBrainHeuristic
-    /** Given the information about the agent, return a vector of actions.
-	* @param state The state of the agent
-	* @param observation The cameras the agent uses
-	* @param reward The reward the agent had at the previous step
-	* @param done Weather or not the agent is done
-	* @param memory The memories stored from the previous step with MakeMemory()
-	* @return The vector of actions the agent will take at the next step
-	*/
-    float[] Decide(List<float> state, List<Camera> observation, float reward, bool done, float[] memory);
+    /// <summary>
+    /// Defines the decision-making logic of the agent. Given the information 
+    /// about the agent, returns a vector of actions.
+    /// </summary>
+    /// <returns>Vector action vector.</returns>
+    /// <param name="vectorObs">The vector observations of the agent.</param>
+    /// <param name="visualObs">The cameras the agent uses for visual observations.</param>
+    /// <param name="reward">The reward the agent received at the previous step.</param>
+    /// <param name="done">Whether or not the agent is done.</param>
+    /// <param name="memory">
+    /// The memories stored from the previous step with 
+    /// <see cref="MakeMemory(List{float}, List{Texture2D}, float, bool, List{float})"/>
+    /// </param>
+    float[] Decide(
+        List<float>
+        vectorObs,
+        List<Texture2D> visualObs,
+        float reward,
+        bool done,
+        List<float> memory);
 
-    /// \brief Implement this method to define the logic of memory making for 
-    /// the CoreBrainHeuristic
-    /** Given the information about the agent, return the new memory vector for the agent.
-	* @param state The state of the agent
-	* @param observation The cameras the agent uses
-	* @param reward The reward the agent had at the previous step
-	* @param done Weather or not the agent is done
-	* @param memory The memories stored from the previous step with MakeMemory()
-	* @return The vector of memories the agent will use at the next step
-	*/
-    float[] MakeMemory(List<float> state, List<Camera> observation, float reward, bool done, float[] memory);
+    /// <summary>
+    /// Defines the logic for creating the memory vector for the Agent.
+    /// </summary>
+    /// <returns>The vector of memories the agent will use at the next step.</returns>
+    /// <param name="vectorObs">The vector observations of the agent.</param>
+    /// <param name="visualObs">The cameras the agent uses for visual observations.</param>
+    /// <param name="reward">The reward the agent received at the previous step.</param>
+    /// <param name="done">Whether or not the agent is done.</param>
+    /// <param name="memory">
+    /// The memories stored from the previous call to this method.
+    /// </param>
+    List<float> MakeMemory(
+        List<float> vectorObs,
+        List<Texture2D> visualObs,
+        float reward,
+        bool done,
+        List<float> memory);
 }

@@ -8,15 +8,15 @@ public class ReacherGoal : MonoBehaviour {
     public GameObject hand;
     public GameObject goalOn;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Use this for initialization
+    void Start () {
+        
+    }
+    
+    // Update is called once per frame
+    void Update () {
+        
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -34,13 +34,11 @@ public class ReacherGoal : MonoBehaviour {
         }
     }
 
-
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other) 
     {
         if (other.gameObject == hand)
         {
-            agent.GetComponent<ReacherAgent>().reward = 0.1f;
-            //agent.GetComponent<PendulumAgent>().done = true;
+            agent.GetComponent<ReacherAgent>().AddReward(0.01f);
         }
     }
 }

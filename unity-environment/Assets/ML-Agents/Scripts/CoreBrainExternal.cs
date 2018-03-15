@@ -5,9 +5,8 @@ using UnityEngine;
 /// CoreBrain which decides actions via communication with an external system such as Python.
 public class CoreBrainExternal : ScriptableObject, CoreBrain
 {
-
-    public Brain brain;
     /**< Reference to the brain that uses this CoreBrainExternal */
+    public Brain brain;
 
     ExternalCommunicator coord;
 
@@ -19,9 +18,9 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
 
     /// Generates the communicator for the Academy if none was present and
     ///  subscribe to ExternalCommunicator if it was present.
-    public void InitializeCoreBrain()
+    public void InitializeCoreBrain(Communicator communicator)
     {
-        if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator == null)
+        if (communicator == null)
         {
             coord = null;
             throw new UnityAgentsException(string.Format("The brain {0} was set to" +
@@ -29,9 +28,9 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
                 " but Unity was unable to read the" +
                 " arguments passed at launch.", brain.gameObject.name));
         }
-        else if (brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator is ExternalCommunicator)
+        else if (communicator is ExternalCommunicator)
         {
-            coord = (ExternalCommunicator)brain.gameObject.transform.parent.gameObject.GetComponent<Academy>().communicator;
+            coord = (ExternalCommunicator)communicator;
             coord.SubscribeBrain(brain);
         }
 
@@ -39,24 +38,13 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
 
     /// Uses the communicator to retrieve the actions, memories and values and
     ///  sends them to the agents
-    public void DecideAction()
+    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
         if (coord != null)
         {
-            brain.SendActions(coord.GetDecidedAction(brain.gameObject.name));
-            brain.SendMemories(coord.GetMemories(brain.gameObject.name));
-            brain.SendValues(coord.GetValues(brain.gameObject.name));
+            coord.GiveBrainInfo(brain, agentInfo);
         }
-    }
-
-    /// Uses the communicator to send the states, observations, rewards and
-    ///  dones outside of Unity
-    public void SendState()
-    {
-        if (coord != null)
-        {
-            coord.giveBrainInfo(brain);
-        }
+        return ;
     }
 
     /// Nothing needs to appear in the inspector 

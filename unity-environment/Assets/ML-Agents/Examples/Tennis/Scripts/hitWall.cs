@@ -5,12 +5,33 @@ using UnityEngine;
 public class hitWall : MonoBehaviour
 {
     public GameObject areaObject;
-    int lastAgentHit;
+    public int lastAgentHit;
 
     // Use this for initialization
     void Start()
     {
         lastAgentHit = -1;
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        TennisArea area = areaObject.GetComponent<TennisArea>();
+        TennisAgent agentA = area.agentA.GetComponent<TennisAgent>();
+        TennisAgent agentB = area.agentB.GetComponent<TennisAgent>();
+
+        if (other.name == "over")
+        {
+            if (lastAgentHit == 0)
+            {
+                agentA.AddReward( 0.1f);
+            }
+            else
+            {
+                agentB.AddReward(0.1f);
+            }
+            lastAgentHit = 0;
+
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -25,14 +46,14 @@ public class hitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.reward = -0.1f;
-                    agentB.reward = 0;
+                    agentA.AddReward( -0.01f);
+                    agentB.SetReward(0);
                     agentB.score += 1;
                 }
                 else
                 {
-                    agentA.reward = 0;
-                    agentB.reward = -0.1f;
+                    agentA.SetReward(0);
+                    agentB.AddReward(-0.01f);
                     agentA.score += 1;
                 }
             }
@@ -40,45 +61,45 @@ public class hitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.reward = -0.1f;
-                    agentB.reward = 0;
+                    agentA.AddReward( -0.01f);
+                    agentB.SetReward(0);
                     agentB.score += 1;
                 }
                 else
                 {
-                    agentA.reward = 0;
-                    agentB.reward = -0.1f;
+                    agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
                     agentA.score += 1;
                 }
             }
             else if (collision.gameObject.name == "floorA")
             {
-                if (lastAgentHit != 1)
+                if (lastAgentHit == 0 || lastAgentHit == -1)
                 {
-                    agentA.reward = -0.1f;
-                    agentB.reward = 0;
+                    agentA.AddReward( -0.01f);
+                    agentB.SetReward(0);
                     agentB.score += 1;
                 }
                 else
                 {
-                    agentA.reward = -0.1f;
-                    agentB.reward = 0.1f;
+                    agentA.AddReward( -0.01f);
+                    agentB.SetReward(0);
                     agentB.score += 1;
 
                 }
             }
             else if (collision.gameObject.name == "floorB")
             {
-                if (lastAgentHit == 0)
+                if (lastAgentHit == 1 || lastAgentHit == -1)
                 {
-                    agentA.reward = 0.1f;
-                    agentB.reward = -0.1f;
+                    agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
                     agentA.score += 1;
                 }
                 else
                 {
-                    agentA.reward = 0;
-                    agentB.reward = -0.1f;
+                    agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
                     agentA.score += 1;
                 }
             }
@@ -86,48 +107,30 @@ public class hitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.reward = -0.1f;
-                    agentB.reward = 0.0f;
+                    agentA.AddReward( -0.01f);
+                    agentB.SetReward(0);
                     agentB.score += 1;
                 }
                 else
                 {
-                    agentA.reward = 0.0f;
-                    agentB.reward = -0.1f;
+                    agentA.SetReward(0);
+                    agentB.AddReward( -0.01f);
                     agentA.score += 1;
                 }
             }
+            agentA.Done();
+            agentB.Done();
             area.MatchReset();
-            agentA.done = true;
-            agentB.done = true;
         }
 
         if (collision.gameObject.tag == "agent")
         {
             if (collision.gameObject.name == "AgentA")
             {
-                if (lastAgentHit != 0)
-                {
-                    agentA.reward += 0.1f;
-                    agentB.reward += 0.05f;
-                }
-                else 
-                {
-                    agentA.reward += 0.01f;
-                }
                 lastAgentHit = 0;
             }
             else
             {
-                if (lastAgentHit != 1)
-                {
-                    agentB.reward += 0.1f;
-                    agentA.reward += 0.05f;
-                }
-                else
-                {
-                    agentB.reward += 0.01f;
-                }
                 lastAgentHit = 1;
             }
         }

@@ -31,12 +31,10 @@ The `AcademyStep()` function is called at every step in the simulation before an
 ![Academy Inspector](images/academy.png)
 
 * `Max Steps` - Total number of steps per-episode. `0` corresponds to episodes without a maximum number of steps. Once the step counter reaches maximum, the environment will reset.
-* `Frames To Skip` - How many steps of the environment to skip before asking Brains for decisions.
-* `Wait Time` - How many seconds to wait between steps when running in `Inference`.
 * `Configuration` - The engine-level settings which correspond to rendering quality and engine speed.
     * `Width` - Width of the environment window in pixels.
     * `Height` - Width of the environment window in pixels.
     * `Quality Level` - Rendering quality of environment. (Higher is better)
     * `Time Scale` - Speed at which environment is run. (Higher is faster)
     * `Target Frame Rate` - FPS engine attempts to maintain. 
-* `Default Reset Parameters` - List of custom parameters that can be changed in the environment on reset.
+* `Reset Parameters` - List of custom parameters that can be changed in the environment on reset.

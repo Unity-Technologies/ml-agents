@@ -1,7 +1,10 @@
 import json
-import numpy as np
 
 from .exception import UnityEnvironmentException
+
+import logging
+
+logger = logging.getLogger("unityagents")
 
 
 class Curriculum(object):
@@ -11,8 +14,8 @@ class Curriculum(object):
         :param location: Path to JSON defining curriculum.
         :param default_reset_parameters: Set of reset parameters for environment.
         """
-        self.lesson_number = 0
         self.lesson_length = 0
+        self.max_lesson_number = 0
         self.measure_type = None
         if location is None:
             self.data = None
@@ -20,7 +23,7 @@ class Curriculum(object):
             try:
                 with open(location) as data_file:
                     self.data = json.load(data_file)
-            except FileNotFoundError:
+            except IOError:
                 raise UnityEnvironmentException(
                     "The file {0} could not be found.".format(location))
             except UnicodeDecodeError:
@@ -45,11 +48,13 @@ class Curriculum(object):
                         "The parameter {0} in Curriculum {1} must have {2} values "
                         "but {3} were found".format(key, location,
                                                     self.max_lesson_number + 1, len(parameters[key])))
+        self.set_lesson_number(0)
 
     @property
     def measure(self):
         return self.measure_type
 
+    @property
     def get_lesson_number(self):
         return self.lesson_number
 
@@ -57,14 +62,13 @@ class Curriculum(object):
         self.lesson_length = 0
         self.lesson_number = max(0, min(value, self.max_lesson_number))
 
-    def get_lesson(self, progress):
+    def increment_lesson(self, progress):
         """
-        Returns reset parameters which correspond to current lesson.
+        Increments the lesson number depending on the progree given.
         :param progress: Measure of progress (either reward or percentage steps completed).
-        :return: Dictionary containing reset parameters.
         """
         if self.data is None or progress is None:
-            return {}
+            return
         if self.data["signal_smoothing"]:
             progress = self.smoothing_value * 0.25 + 0.75 * progress
             self.smoothing_value = progress
@@ -74,8 +78,27 @@ class Curriculum(object):
                     (self.lesson_length > self.data['min_lesson_length'])):
                 self.lesson_length = 0
                 self.lesson_number += 1
+                config = {}
+                parameters = self.data["parameters"]
+                for key in parameters:
+                    config[key] = parameters[key][self.lesson_number]
+                logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
+                            .format(self.lesson_number,
+                                    ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
+
+    def get_config(self, lesson=None):
+        """
+        Returns reset parameters which correspond to the lesson.
+        :param lesson: The lesson you want to get the config of. If None, the current lesson is returned.
+        :return: The configuration of the reset parameters.
+        """
+        if self.data is None:
+            return {}
+        if lesson is None:
+            lesson = self.lesson_number
+        lesson = max(0, min(lesson, self.max_lesson_number))
         config = {}
         parameters = self.data["parameters"]
         for key in parameters:
-            config[key] = parameters[key][self.lesson_number]
+            config[key] = parameters[key][lesson]
         return config

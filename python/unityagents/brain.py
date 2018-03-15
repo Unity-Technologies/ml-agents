@@ -1,15 +1,26 @@
+from typing import Dict
+
+
 class BrainInfo:
-    def __init__(self, observation, state, memory=None, reward=None, agents=None, local_done=None, action =None):
+    def __init__(self, visual_observation, vector_observation, text_observations, memory=None,
+                reward=None, agents=None, local_done=None,
+                vector_action=None, text_action=None, max_reached=None):
         """
         Describes experience at current step of all agents linked to a brain.
         """
-        self.observations = observation
-        self.states = state
+        self.visual_observations = visual_observation
+        self.vector_observations = vector_observation
+        self.text_observations = text_observations
         self.memories = memory
         self.rewards = reward
         self.local_done = local_done
+        self.max_reached = max_reached
         self.agents = agents
-        self.previous_actions = action
+        self.previous_vector_actions = vector_action
+        self.previous_text_actions = text_action
+
+
+AllBrainInfo = Dict[str, BrainInfo]
 
 
 class BrainParameters:
@@ -20,26 +31,28 @@ class BrainParameters:
         :param brain_param: Dictionary of brain parameters.
         """
         self.brain_name = brain_name
-        self.state_space_size = brain_param["stateSize"]
-        self.number_observations = len(brain_param["cameraResolutions"])
+        self.vector_observation_space_size = brain_param["vectorObservationSize"]
+        self.num_stacked_vector_observations = brain_param["numStackedVectorObservations"]
+        self.number_visual_observations = len(brain_param["cameraResolutions"])
         self.camera_resolutions = brain_param["cameraResolutions"]
-        self.action_space_size = brain_param["actionSize"]
-        self.memory_space_size = brain_param["memorySize"]
-        self.action_descriptions = brain_param["actionDescriptions"]
-        self.action_space_type = ["discrete", "continuous"][brain_param["actionSpaceType"]]
-        self.state_space_type = ["discrete", "continuous"][brain_param["stateSpaceType"]]
+        self.vector_action_space_size = brain_param["vectorActionSize"]
+        self.vector_action_descriptions = brain_param["vectorActionDescriptions"]
+        self.vector_action_space_type = ["discrete", "continuous"][brain_param["vectorActionSpaceType"]]
+        self.vector_observation_space_type = ["discrete", "continuous"][brain_param["vectorObservationSpaceType"]]
 
     def __str__(self):
         return '''Unity brain name: {0}
-        Number of observations (per agent): {1}
-        State space type: {2}
-        State space size (per agent): {3}
-        Action space type: {4}
-        Action space size (per agent): {5}
-        Memory space size (per agent): {6}
-        Action descriptions: {7}'''.format(self.brain_name,
-                                           str(self.number_observations), self.state_space_type,
-                                           str(self.state_space_size), self.action_space_type,
-                                           str(self.action_space_size),
-                                           str(self.memory_space_size),
-                                           ', '.join(self.action_descriptions))
+        Number of Visual Observations (per agent): {1}
+        Vector Observation space type: {2}
+        Vector Observation space size (per agent): {3}
+        Number of stacked Vector Observation: {4}
+        Vector Action space type: {5}
+        Vector Action space size (per agent): {6}
+        Vector Action descriptions: {7}'''.format(self.brain_name,
+                                           str(self.number_visual_observations),
+                                           self.vector_observation_space_type,
+                                           str(self.vector_observation_space_size),
+                                           str(self.num_stacked_vector_observations),
+                                           self.vector_action_space_type,
+                                           str(self.vector_action_space_size),
+                                           ', '.join(self.vector_action_descriptions))

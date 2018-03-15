@@ -5,12 +5,39 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/ML-Agents/Examples/3DBall/Scene.unity
-    guid: a83e830ec5bcd4b1db836428921d59b0
   - enabled: 0
     path: Assets/ML-Agents/Examples/GridWorld/GridWorld.unity
     guid: 7c777442467e245108558a5155153927
   - enabled: 0
     path: Assets/ML-Agents/Examples/Tennis/Tennis.unity
     guid: 25c0c9e81e55c4e129e1a5c0ac254100
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Banana/BananaImitation.unity
+    guid: 3ae10073cde7641f488ef7c87862333a
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/PushBlock/Scenes/PushBlock.unity
+    guid: ae8cc75939e3e4d07a79c8c6a08b54f4
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/3DBall/3DScene.unity
+    guid: 6f62a2ccb3830437ea4e85a617e856b3
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/3DBall/3DHardScene.unity
+    guid: 35c41099ceec44889bdbe95ed86c97ac
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Banana/BananaRL.unity
+    guid: 11583205ab5b74bb4bb1b9951cf9e437
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Basic/Scene.unity
+    guid: cf1d119a8748d406e90ecb623b45f92f
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Bouncer/Bouncer.unity
+    guid: 2c29359d4c9fe49219b21cd83e246596
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Crawler/Crawler.unity
+    guid: 4cf841b0478fb4b33971627b40c6420b
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Hallway/Scenes/Hallway.unity
+    guid: d6d6a33ed0e18459a8d61817d600978a
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Reacher/Scene.unity
+    guid: e58a3c10c43de4b6b91b7149838d1dfb

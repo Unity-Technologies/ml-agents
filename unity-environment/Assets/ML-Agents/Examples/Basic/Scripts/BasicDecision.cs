@@ -1,19 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class BasicDecision : MonoBehaviour, Decision
 {
-
-    public float[] Decide(List<float> state, List<Camera> observation, float reward, bool done, float[] memory)
+    public float[] Decide(
+        List<float> vectorObs,
+        List<Texture2D> visualObs,
+        float reward,
+        bool done,
+        List<float> memory)
     {
-        return new float[1]{ 1f };
-
+        return new float[1] { 1f };
     }
 
-    public float[] MakeMemory(List<float> state, List<Camera> observation, float reward, bool done, float[] memory)
+    public List<float> MakeMemory(
+        List<float> vectorObs,
+        List<Texture2D> visualObs,
+        float reward,
+        bool done,
+        List<float> memory)
     {
-        return new float[0];
-
+        return new List<float>();
     }
 }

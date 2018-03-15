@@ -8,16 +8,16 @@ public class ReacherAcademy : Academy {
     public float goalSpeed;
 
 
-	public override void AcademyReset()
-	{
+    public override void AcademyReset()
+    {
         goalSize = (float)resetParameters["goal_size"];
         goalSpeed = (float)resetParameters["goal_speed"];
-	}
+    }
 
-	public override void AcademyStep()
-	{
+    public override void AcademyStep()
+    {
 
 
-	}
+    }
 
 }

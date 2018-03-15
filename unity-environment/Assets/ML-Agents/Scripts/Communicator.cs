@@ -9,21 +9,27 @@ using UnityEngine;
  */
 public struct AcademyParameters
 {
-    public string AcademyName;
     /**< \brief The name of the Academy. If the communicator is External, 
      * it will be the name of the Academy GameObject */
-    public string apiNumber;
+    public string AcademyName;
+
     /**< \brief The API number for the communicator. */
+    public string apiNumber;
+
+    /**< \brief The location of the logfile*/
     public string logPath;
-	/**< \brief The location of the logfile*/
-	public Dictionary<string, float> resetParameters;
+
     /**< \brief The default reset parameters are sent via socket*/
-    public List<string> brainNames;
+    public Dictionary<string, float> resetParameters;
+
     /**< \brief A list of the all the brains names sent via socket*/
-    public List<BrainParameters> brainParameters;
+    public List<string> brainNames;
+
     /**< \brief  A list of the External brains parameters sent via socket*/
-    public List<string> externalBrainNames;
+    public List<BrainParameters> brainParameters;
+
     /**< \brief  A list of the External brains names sent via socket*/
+    public List<string> externalBrainNames;
 }
 
 public enum ExternalCommand
@@ -59,9 +65,16 @@ public interface Communicator
     /// was given outside of Unity
     ExternalCommand GetCommand();
 
+    void UpdateCommand();
+    void SetCommand(ExternalCommand c);
+
     /// Implement this method to return the new dictionary of resetParameters 
     /// that was given outside of Unity
     Dictionary<string, float> GetResetParameters();
 
+
+
+    Dictionary<string, bool> GetHasTried();
+    Dictionary<string, bool> GetSent();
 
 }
