@@ -67,15 +67,15 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 
     /// Uses the continuous inputs or dicrete inputs of the player to 
     /// decide action
-    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
+    public void DecideAction(Dictionary<AgentInfo, AgentAction> agentRequest)
     {
 		if (coord != null)
 		{
-			coord.GiveBrainInfo(brain, agentInfo);
+			coord.GiveBrainInfo(brain, agentRequest);
 		}
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            foreach (Agent agent in agentInfo.Keys)
+            foreach (AgentInfo info in agentRequest.Keys)
             {
                 var action = new float[brain.brainParameters.vectorActionSize];
                 foreach (ContinuousPlayerAction cha in continuousPlayerActions)
@@ -85,14 +85,14 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
                         action[cha.index] = cha.value;
                     }
                 }
-
-                agent.UpdateVectorAction(action);
+                agentRequest[info].vectorActions = action;
+                //agent.UpdateVectorAction(action);
             }
 
         }
         else
         {
-            foreach (Agent agent in agentInfo.Keys)
+            foreach (AgentInfo info in agentRequest.Keys)
             {
                 var action = new float[1] { defaultAction };
                 foreach (DiscretePlayerAction dha in discretePlayerActions)
@@ -105,7 +105,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
                 }
 
 
-                agent.UpdateVectorAction(action);
+                agentRequest[info].vectorActions = action;
                 
             }
         }

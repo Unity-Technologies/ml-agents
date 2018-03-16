@@ -6,7 +6,7 @@ using UnityEngine;
 /// Struct that contains all the information for an Agent, including its 
 /// observations, actions and current status, that is sent to the Brain.
 /// </summary>
-public struct AgentInfo
+public class AgentInfo
 {
     /// <summary>
     /// Most recent agent vector (i.e. numeric) observation.
@@ -74,11 +74,12 @@ public struct AgentInfo
 /// Struct that contains the action information sent from the Brain to the 
 /// Agent.
 /// </summary>
-public struct AgentAction
+public class AgentAction
 {
     public float[] vectorActions;
     public string textActions;
     public List<float> memories;
+
 }
 
 /// <summary>
@@ -563,7 +564,7 @@ public abstract class Agent : MonoBehaviour
         info.maxStepReached = maxStepReached;
         info.id = id;
 
-        brain.SendState(this, info);
+        brain.Request(info, action);
         info.textObservation = "";
     }
 
@@ -728,33 +729,6 @@ public abstract class Agent : MonoBehaviour
         ResetData();
         stepCount = 0;
         AgentReset();
-    }
-
-    /// <summary>
-    /// Updates the vector action.
-    /// </summary>
-    /// <param name="vectorActions">Vector actions.</param>
-    public void UpdateVectorAction(float[] vectorActions)
-    {
-        action.vectorActions = vectorActions;
-    }
-
-    /// <summary>
-    /// Updates the memories action.
-    /// </summary>
-    /// <param name="memories">Memories.</param>
-    public void UpdateMemoriesAction(List<float> memories)
-    {
-        action.memories = memories;
-    }
-
-    /// <summary>
-    /// Updates the text action.
-    /// </summary>
-    /// <param name="textActions">Text actions.</param>
-    public void UpdateTextAction(string textActions)
-    {
-        action.textActions = textActions;
     }
 
     /// <summary>
