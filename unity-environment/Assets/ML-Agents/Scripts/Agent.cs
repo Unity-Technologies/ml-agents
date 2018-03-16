@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 /// <summary>
-/// Struct that contains all the information for an Agent, including its 
+/// Class that contains all the information for an Agent, including its 
 /// observations, actions and current status, that is sent to the Brain.
 /// </summary>
 public class AgentInfo
@@ -71,8 +71,9 @@ public class AgentInfo
 }
 
 /// <summary>
-/// Struct that contains the action information sent from the Brain to the 
-/// Agent.
+/// Class that contains the action information sent from the Brain to the 
+/// Agent. The AgentAction is a reference that enables the brain to directly
+/// modify its values.
 /// </summary>
 public class AgentAction
 {
@@ -201,10 +202,10 @@ public abstract class Agent : MonoBehaviour
     public AgentParameters agentParameters;
 
     /// Current Agent information (message sent to Brain).
-    AgentInfo info;
+    AgentInfo info = new AgentInfo();
 
     /// Current Agent action (message sent from Brain).
-    AgentAction action;
+    AgentAction action = new AgentAction();
 
     /// Represents the reward the agent accumulated during the current step.
     /// It is reset to 0 at the beginning of every step.
