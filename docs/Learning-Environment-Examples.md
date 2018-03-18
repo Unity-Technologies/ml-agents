@@ -109,7 +109,7 @@ If you would like to contribute environments, please see our
     * -0.0005 for every step.
     * +1.0 if the agent touches the goal.
     * -1.0 if the agent falls off the platform.
-* Brains: One brain with the following observation/action space.
+* Brains: Two brains, each with the following observation/action space.
     * Vector Observation space: (Continuous) 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
     * Vector Action space: (Discrete) Size of 74, corresponding to 14 raycasts each detecting 4 possible objects. plus the global position of the agent and whether or not the agent is grounded.
     * Visual Observations: None.
