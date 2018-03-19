@@ -166,10 +166,10 @@ Make sure to replace the relevant directory location with the one you have insta
 </p>
 
 ### Install TensorFlow GPU
-Next, install `tensorflow-gpu` using `pip`. In an Anaconda Prompt with the Conda environment ml-agents activated, type in the following command _(make sure you are connected to the internet)_:
+Next, install `tensorflow-gpu` using `pip`. You'll need version 1.4.0 as newer version require CUDA 9 which is not yet supported. In an Anaconda Prompt with the Conda environment ml-agents activated, type in the following command _(make sure you are connected to the internet)_:
 
 ```
-pip install tensorflow-gpu
+pip install tensorflow-gpu==1.4.0
 ```
 
 Lastly, you should test to see if everything installed properly and that TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the following command:
