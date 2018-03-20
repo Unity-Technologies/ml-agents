@@ -83,11 +83,36 @@ public class BananaAgent : Agent
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
+
         if (!frozen)
         {
-            dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
-            rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-            if (Mathf.Clamp(act[2], 0f, 1f) > 0.5f)
+            bool shootCommand = false;
+            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            {
+                dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
+                rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
+                shootCommand = Mathf.Clamp(act[2], 0f, 1f) > 0.5f;
+
+            }
+            else
+            {
+                switch ((int)(act[0]))
+                {
+                    case 1:
+                        dirToGo = transform.forward;
+                        break;
+                    case 2:
+                        shootCommand = true;
+                        break;
+                    case 3:
+                        rotateDir = -transform.up;
+                        break;
+                    case 4:
+                        rotateDir = transform.up;
+                        break;
+                }
+            }
+            if (shootCommand)
             {
                 shoot = true;
                 dirToGo *= 0.5f;
@@ -121,8 +146,8 @@ public class BananaAgent : Agent
             myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
 
         }
-
     }
+
 
     void Freeze()
     {
@@ -182,8 +207,8 @@ public class BananaAgent : Agent
         agentRB.velocity = Vector3.zero;
         bananas = 0;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
-        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 
-                                         2f, Random.Range(-myArea.range, myArea.range)) 
+        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range),
+                                         2f, Random.Range(-myArea.range, myArea.range))
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
     }
