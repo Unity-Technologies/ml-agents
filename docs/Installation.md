@@ -29,7 +29,7 @@ Both directories are located at the root of the repository.
 ## Install Python (with Dependencies)
 
 In order to use ML-Agents, you need Python 3 along with
-the dependencies listed in the [requirements file](../python/requirements.txt).
+the dependencies listed in the [requirements file](../python/requirements.txt). You can install these dependencies using pip3 in the next step.  Additionally, you can download and install Python 3 from [here](https://www.python.org/downloads/).
 Some of the primary dependencies include:
 - [TensorFlow](Background-TensorFlow.md) 
 - [Jupyter](Background-Jupyter.md) 
