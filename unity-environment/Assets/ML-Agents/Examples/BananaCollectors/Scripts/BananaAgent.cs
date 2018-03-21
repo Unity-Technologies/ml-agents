@@ -92,7 +92,6 @@ public class BananaAgent : Agent
                 dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
                 rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
                 shootCommand = Mathf.Clamp(act[2], 0f, 1f) > 0.5f;
-
             }
             else
             {
