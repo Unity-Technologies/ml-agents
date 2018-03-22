@@ -513,7 +513,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             pixels = 1;
         else
             pixels = 3;
-        float[,,,] result = new float[batchSize, width, height, pixels];
+        float[,,,] result = new float[batchSize, height, width, pixels];
 
         for (int b = 0; b < batchSize; b++)
         {

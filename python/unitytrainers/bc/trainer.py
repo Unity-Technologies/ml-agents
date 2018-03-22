@@ -54,7 +54,8 @@ class BehavioralCloningTrainer(Trainer):
         self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
 
         self.training_buffer = Buffer()
-        self.is_continuous = (env.brains[brain_name].vector_action_space_type == "continuous")
+        self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
+        self.is_continuous_observation = (env.brains[brain_name].vector_observation_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_visual_observations > 0)
         if self.use_observations:
             logger.info('Cannot use observations with imitation learning')
@@ -286,12 +287,16 @@ class BehavioralCloningTrainer(Trainer):
             end = (j + 1) * self.n_sequences
             batch_states = np.array(_buffer['vector_observations'][start:end])
             batch_actions = np.array(_buffer['actions'][start:end])
-            feed_dict = {self.model.true_action: batch_actions.reshape([-1, self.brain.vector_action_space_size]),
-                         self.model.dropout_rate: 0.5,
+
+            feed_dict = {self.model.dropout_rate: 0.5,
                          self.model.batch_size: self.n_sequences,
                          self.model.sequence_length: self.sequence_length}
-            if not self.is_continuous:
-                feed_dict[self.model.vector_in] = batch_states.reshape([-1, 1])
+            if self.is_continuous_action:
+                feed_dict[self.model.true_action] = batch_actions.reshape([-1, self.brain.vector_action_space_size])
+            else:
+                feed_dict[self.model.true_action] = batch_actions.reshape([-1])
+            if not self.is_continuous_observation:
+                feed_dict[self.model.vector_in] = batch_states.reshape([-1, self.brain.num_stacked_vector_observations])
             else:
                 feed_dict[self.model.vector_in] = batch_states.reshape([-1, self.brain.vector_observation_space_size *
                                                                        self.brain.num_stacked_vector_observations])
