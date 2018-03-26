@@ -267,7 +267,7 @@ for each training run. In other words, "BalanceBall1" for the first run,
 every training run are saved to the same directory and will all be included 
 on the same graph.
 
-To summarize, go to your command line, enter the `ml-agents` directory and type: 
+To summarize, go to your Anaconda command line, activate the ml-agents environment, enter the `ml-agents` directory and type: 
 
 ```python
 python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
@@ -316,6 +316,7 @@ during a successful training session.
 Once the training process completes, and the training process saves the model 
 (denoted by the `Saved Model` message) you can add it to the Unity project and 
 use it with agents having an **Internal** brain type.
+**Note** You shouldn't just close the unity window once the `Saved Model` message appears. Press Ctrl+C in the Anaconda prompt, and this will formally end the triaing session and export the .byted file. Otherwise,, the byte file will neevr be exported into the ml-agents folder.
 
 ### Setting up TensorFlowSharp Support
 
