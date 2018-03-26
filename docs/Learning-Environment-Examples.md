@@ -2,18 +2,18 @@
 
 Unity ML-Agents contains an expanding set of example environments which
 demonstrate various features of the platform. Environments are located in 
-`unity-environment/Assets/ML-Agents/Examples` and summarised below. 
+`unity-environment/Assets/ML-Agents/Examples` and summarized below. 
 Additionally, our 
 [first ML Challenge](https://connect.unity.com/challenges/ml-agents-1)
 contains environments created by the community.
 
 This page only overviews the example environments we provide. To learn more
 on how to design and build your own environments see our 
-[Making a new Learning Environment](Learning-Environment-Create-New.md)
+[Making a New Learning Environment](Learning-Environment-Create-New.md)
 page.
 
 If you would like to contribute environments, please see our 
-[contribution guidelines](Contribution-Guidelines.md) page. 
+[contribution guidelines](../CONTRIBUTING.md) page. 
 
 ## Basic
 
@@ -31,9 +31,9 @@ If you would like to contribute environments, please see our
     * Visual Observations: 0
 * Reset Parameters: None
 
-## 3DBall
+## 3DBall: 3D Balance Ball
 
-![Balance Ball](images/balance.png)
+![3D Balance Ball](images/balance.png)
 
 * Set-up: A balance-ball task, where the agent controls the platform. 
 * Goal: The agent must balance the platform in order to keep the ball on it for as long as possible.
@@ -72,7 +72,7 @@ If you would like to contribute environments, please see our
 
 * Set-up: Two-player game where agents control rackets to bounce ball over a net. 
 * Goal: The agents must bounce ball between one another while not dropping or sending ball out of bounds.
-* Agents: The environment contains two agent linked to a single brain.
+* Agents: The environment contains two agent linked to a single brain named TennisBrain. After training you can attach another brain named MyBrain to one of the agent to play against your trained model. 
 * Agent Reward Function (independent): 
     * +0.1 To agent when hitting ball over net.
     * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
@@ -82,9 +82,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
-## Area 
-
-### Push Area
+## Push Block
 
 ![Push](images/push.png)
 
@@ -92,31 +90,30 @@ If you would like to contribute environments, please see our
 * Goal: The agent must push the block to the goal.
 * Agents: The environment contains one agent linked to a single brain.
 * Agent Reward Function: 
-    * -0.01 for every step.
+    * -0.0025 for every step.
     * +1.0 if the block touches the goal.
-    * -1.0 if the agent falls off the platform.
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
-    * Vector Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
     * Visual Observations: None.
-* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of elements for Curriculum Learning.
+* Reset Parameters: None.
 
-### Wall Area
+## Wall Jump
 
 ![Wall](images/wall.png)
 
 * Set-up: A platforming environment where the agent can jump over a wall.
 * Goal: The agent must use the block to scale the wall and reach the goal.
-* Agents: The environment contains one agent linked to a single brain.
+* Agents: The environment contains one agent linked to two different brains. The brain the agent is linked to changes depending on the height of the wall.
 * Agent Reward Function: 
-    * -0.01 for every step.
+    * -0.0005 for every step.
     * +1.0 if the agent touches the goal.
     * -1.0 if the agent falls off the platform.
-* Brains: One brain with the following observation/action space.
+* Brains: Two brains, each with the following observation/action space.
     * Vector Observation space: (Continuous) 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
-    * Vector Action space: (Discrete) Size of 6, corresponding to movement in cardinal directions, jumping, and no movement.
+    * Vector Action space: (Discrete) Size of 74, corresponding to 14 raycasts each detecting 4 possible objects. plus the global position of the agent and whether or not the agent is grounded.
     * Visual Observations: None.
-* Reset Parameters: One, corresponding to number of steps in training. Used to adjust size of the wall for Curriculum Learning.
+* Reset Parameters: 4, corresponding to the height of the possible walls.
 
 ## Reacher
 
@@ -128,7 +125,7 @@ If you would like to contribute environments, please see our
 * Agent Reward Function (independent): 
     * +0.1 Each step agent's hand is in goal location.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm rigidbodies.
+    * Vector Observation space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm Rigidbodies.
     * Vector Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
     * Visual Observations: None
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
@@ -172,7 +169,7 @@ If you would like to contribute environments, please see our
 
 ![Hallway](images/hallway.png)
 
-* Set-up: Environment where the agent needs to find information in a room, remeber it, and use it to move to the correct goal.
+* Set-up: Environment where the agent needs to find information in a room, remember it, and use it to move to the correct goal.
 * Goal: Move to the goal which corresponds to the color of the block in the room.
 * Agents: The environment contains one agent linked to a single brain.
 * Agent Reward Function (independent):
@@ -183,4 +180,47 @@ If you would like to contribute environments, please see our
     * Vector Observation space: (Continuous) 30 corresponding to local ray-casts detecting objects, goals, and walls.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
     * Visual Observations (Optional): First-person view for the agent.
+* Reset Parameters: None
+
+## Bouncer
+
+![Bouncer](images/bouncer.png)
+
+* Set-up: Environment where the agent needs on-demand decision making. The agent must decide how perform its next bounce only when it touches the ground.
+* Goal: Catch the floating banana. Only has a limited number of jumps.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function (independent):
+    * +1 For catching the banana.
+    * -1 For bouncing out of bounds.
+    * -0.05 Times the action squared. Energy expenditure penalty.
+* Brains: One brain with the following observation/action space:
+    * Vector Observation space: (Continuous) 6 corresponding to local position of agent and banana.
+    * Vector Action space: (Continuous) 3 corresponding to agent force applied for the jump.
+    * Visual Observations: None
+* Reset Parameters: None
+
+## Soccer Twos
+
+![SoccerTwos](images/soccer.png)
+
+* Set-up: Environment where four agents compete in a 2 vs 2 toy soccer game. 
+* Goal:
+    * Striker: Get the ball into the opponent's goal.
+    * Goalie: Prevent the ball from entering its own goal.
+* Agents: The environment contains four agents, with two linked to one brain (strikers) and two linked to another (goalies).
+* Agent Reward Function (dependent):
+    * Striker:
+        * +1 When ball enters opponent's goal.
+        * -0.1 When ball enters own team's goal.
+        * -0.001 Existential penalty.
+    * Goalie:
+        * -1 When ball enters team's goal.
+        * +0.1 When ball enters opponents goal.
+        * +0.001 Existential bonus.
+* Brains: Two brain with the following observation/action space:
+    * Vector Observation space: (Continuous) 112 corresponding to local 14 ray casts, each detecting 7 possible object types, along with the object's distance. Perception is in 180 degree view from front of agent.
+    * Vector Action space: (Discrete) 
+        * Striker: 6 corresponding to forward, backward, sideways movement, as well as rotation.
+        * Goalie: 4 corresponding to forward, backward, sideways movement.
+    * Visual Observations: None
 * Reset Parameters: None

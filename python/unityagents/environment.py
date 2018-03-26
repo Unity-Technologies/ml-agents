@@ -37,7 +37,7 @@ class UnityEnvironment(object):
         atexit.register(self.close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._python_api = "API-2"
+        self._version_ = "API-3"
         self._loaded = False
         self._open_socket = False
 
@@ -115,14 +115,14 @@ class UnityEnvironment(object):
                     .format(str(file_name)))
 
             if "apiNumber" not in p:
-                self._unity_api = "API-1"
+                self._unity_version = "API-1"
             else:
-                self._unity_api = p["apiNumber"]
-            if self._unity_api != self._python_api:
+                self._unity_version = p["apiNumber"]
+            if self._unity_version != self._version_:
                 raise UnityEnvironmentException(
                     "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
                     "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
-                    "of ML-Agents.".format(self._python_api, self._unity_api))
+                    "of ML-Agents.".format(self._version_, self._unity_version))
             self._data = {}
             self._global_done = None
             self._academy_name = p["AcademyName"]
@@ -139,7 +139,7 @@ class UnityEnvironment(object):
             for i in range(self._num_brains):
                 self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
             self._loaded = True
-            logger.info("\n'{}' started successfully!".format(self._academy_name))
+            logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
             if self._num_external_brains == 0:
                 logger.warning(" No External Brains found in the Unity Environment. "
                                "You will not be able to pass actions to your agent(s).")

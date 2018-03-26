@@ -95,14 +95,14 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID
-		// This needs to ba called only once and will raise an exception if 
+        // This needs to ba called only once and will raise an exception if 
         // there are multiple internal brains
-		try{
-			TensorFlowSharp.Android.NativeBinding.Init();
-		}
-		catch{
-			
-		}
+        try{
+            TensorFlowSharp.Android.NativeBinding.Init();
+        }
+        catch{
+            
+        }
 #endif
         if ((communicator == null)
         || (!broadcast))
@@ -164,10 +164,10 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
 #if ENABLE_TENSORFLOW
-		if (coord != null)
-		{
-			coord.GiveBrainInfo(brain, agentInfo);
-		}
+        if (coord != null)
+        {
+            coord.GiveBrainInfo(brain, agentInfo);
+        }
         int currentBatchSize = agentInfo.Count();
         List<Agent> agentList = agentInfo.Keys.ToList();
         if (currentBatchSize == 0)
@@ -205,7 +205,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             var i = 0;
             foreach (Agent agent in agentList)
             {
-                float[] action_list = agentInfo[agent].StoredVectorActions;
+                float[] action_list = agentInfo[agent].storedVectorActions;
                 inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
                 i++;
             }
@@ -491,7 +491,13 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         serializedBrain.ApplyModifiedProperties();
 #endif
 #if !ENABLE_TENSORFLOW && UNITY_EDITOR
-        EditorGUILayout.HelpBox (@"You need to install the TensorflowSharp plugin in order to use the internal brain.", MessageType.Error);
+        EditorGUILayout.HelpBox (
+            "You need to install and enable the TensorflowSharp plugin in"+ 
+            "order to use the internal brain.", MessageType.Error);
+        if (GUILayout.Button("Show me how"))
+        {
+            Application.OpenURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md#embedding-the-trained-brain-into-the-unity-environment-experimental");
+        }
 #endif
     }
 
@@ -507,7 +513,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             pixels = 1;
         else
             pixels = 3;
-        float[,,,] result = new float[batchSize, width, height, pixels];
+        float[,,,] result = new float[batchSize, height, width, pixels];
 
         for (int b = 0; b < batchSize; b++)
         {

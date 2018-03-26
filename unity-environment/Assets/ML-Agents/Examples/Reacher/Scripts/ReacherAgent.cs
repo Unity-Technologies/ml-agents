@@ -25,53 +25,37 @@ public class ReacherAgent : Agent {
     /// We collect the normalized rotations, angularal velocities, and velocities of both
     /// limbs of the reacher as well as the relative position of the target and hand.
     /// </summary>
-	public override void CollectObservations()
-	{
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.x / 180.0f - 1.0f);
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.y / 180.0f - 1.0f);
-        AddVectorObs(pendulumA.transform.rotation.eulerAngles.z / 180.0f - 1.0f);
-        AddVectorObs(rbA.angularVelocity.x);
-        AddVectorObs(rbA.angularVelocity.y);
-        AddVectorObs(rbA.angularVelocity.z);
-        AddVectorObs(rbA.velocity.x);
-        AddVectorObs(rbA.velocity.y);
-        AddVectorObs(rbA.velocity.z);
+    public override void CollectObservations()
+    {
+        AddVectorObs(pendulumA.transform.rotation);
+        AddVectorObs(rbA.angularVelocity);
+        AddVectorObs(rbA.velocity);
 
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.x / 180.0f - 1.0f);
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.y / 180.0f - 1.0f);
-        AddVectorObs(pendulumB.transform.rotation.eulerAngles.z / 180.0f - 1.0f);
-        AddVectorObs(rbB.angularVelocity.x);
-        AddVectorObs(rbB.angularVelocity.y);
-        AddVectorObs(rbB.angularVelocity.z);
-        AddVectorObs(rbB.velocity.x);
-        AddVectorObs(rbB.velocity.y);
-        AddVectorObs(rbB.velocity.z);
+        AddVectorObs(pendulumB.transform.rotation);
+        AddVectorObs(rbB.angularVelocity);
+        AddVectorObs(rbB.velocity);
 
         Vector3 localGoalPosition = goal.transform.position - transform.position;
-        AddVectorObs(localGoalPosition.x);
-        AddVectorObs(localGoalPosition.y);
-        AddVectorObs(localGoalPosition.z);
+        AddVectorObs(localGoalPosition);
 
         Vector3 localHandPosition = hand.transform.position - transform.position;
-        AddVectorObs(localHandPosition.x);
-        AddVectorObs(localHandPosition.y);
-        AddVectorObs(localHandPosition.z);
+        AddVectorObs(localHandPosition);
 	}
 
     /// <summary>
     /// The agent's four actions correspond to torques on each of the two joints.
     /// </summary>
-	public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
 	{
         goalDegree += goalSpeed;
         UpdateGoalPosition();
 
-        float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
-        float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
+        float torque_x = Mathf.Clamp(vectorAction[0], -1, 1) * 100f;
+        float torque_z = Mathf.Clamp(vectorAction[1], -1, 1) * 100f;
         rbA.AddTorque(new Vector3(torque_x, 0f, torque_z));
 
-        torque_x = Mathf.Clamp(act[2], -1, 1) * 100f;
-        torque_z = Mathf.Clamp(act[3], -1, 1) * 100f;
+        torque_x = Mathf.Clamp(vectorAction[2], -1, 1) * 100f;
+        torque_z = Mathf.Clamp(vectorAction[3], -1, 1) * 100f;
         rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
 	}
 
@@ -111,5 +95,4 @@ public class ReacherAgent : Agent {
 
         goal.transform.localScale = new Vector3(goalSize, goalSize, goalSize);
     }
-
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -54,7 +54,7 @@ public class BrainParameters
      * the state
      * <br> If discrete : The number of possible values the state can take*/
 
-    [Range(1, 10)]
+    [Range(1, 50)]
     public int numStackedVectorObservations = 1;
 
     public int vectorActionSize = 1;
@@ -75,7 +75,8 @@ public class BrainParameters
     /**< \brief Defines if the state is discrete or continuous */
 }
 
-[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Agents-Editor-Interface.md#brain")]
+[HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
+         "docs/Learning-Environment-Design-Brains.md")]
 /**
  * Contains all high-level Brain logic. 
  * Add this component to an empty GameObject in your scene and drag this 
@@ -85,6 +86,7 @@ public class BrainParameters
  */
 public class Brain : MonoBehaviour
 {
+    private bool isInitialized = false;
 
     private Dictionary<Agent, AgentInfo> agentInfos =
         new Dictionary<Agent, AgentInfo>(1024);
@@ -101,7 +103,7 @@ public class Brain : MonoBehaviour
 
     //[HideInInspector]
     ///**<  \brief Keeps track of the agents which subscribe to this brain*/
-    //public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
+    // public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
 
     [SerializeField]
     ScriptableObject[] CoreBrains;
@@ -109,14 +111,14 @@ public class Brain : MonoBehaviour
     /**<  \brief Reference to the current CoreBrain used by the brain*/
     public CoreBrain coreBrain;
 
-    //Ensures the coreBrains are not dupplicated with the brains
+    // Ensures the coreBrains are not dupplicated with the brains
     [SerializeField]
     private int instanceID;
 
     /// Ensures the brain has an up to date array of coreBrains
     /** Is called when the inspector is modified and into InitializeBrain. 
-	 * If the brain gameObject was just created, it generates a list of 
-	 * coreBrains (one for each brainType) */
+     * If the brain gameObject was just created, it generates a list of 
+     * coreBrains (one for each brainType) */
     public void UpdateCoreBrains()
     {
 
@@ -128,7 +130,7 @@ public class Brain : MonoBehaviour
             CoreBrains = new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
-                CoreBrains[(int)bt] = 
+                CoreBrains[(int)bt] =
                     ScriptableObject.CreateInstance(
                         "CoreBrain" + bt.ToString());
             }
@@ -142,7 +144,7 @@ public class Brain : MonoBehaviour
                     break;
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
@@ -154,7 +156,7 @@ public class Brain : MonoBehaviour
         if (CoreBrains.Length < System.Enum.GetValues(typeof(BrainType)).Length)
         {
             int numCoreBrains = System.Enum.GetValues(typeof(BrainType)).Length;
-            ScriptableObject[] new_CoreBrains = 
+            ScriptableObject[] new_CoreBrains =
                 new ScriptableObject[numCoreBrains];
             foreach (BrainType bt in System.Enum.GetValues(typeof(BrainType)))
             {
@@ -164,7 +166,7 @@ public class Brain : MonoBehaviour
                 }
                 else
                 {
-                    new_CoreBrains[(int)bt] = 
+                    new_CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
@@ -181,13 +183,13 @@ public class Brain : MonoBehaviour
             {
                 if (CoreBrains[(int)bt] == null)
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.CreateInstance(
                             "CoreBrain" + bt.ToString());
                 }
                 else
                 {
-                    CoreBrains[(int)bt] = 
+                    CoreBrains[(int)bt] =
                         ScriptableObject.Instantiate(CoreBrains[(int)bt]);
                 }
             }
@@ -206,11 +208,31 @@ public class Brain : MonoBehaviour
         UpdateCoreBrains();
         coreBrain.InitializeCoreBrain(communicator);
         aca.BrainDecideAction += DecideAction;
+        isInitialized = true;
     }
 
     public void SendState(Agent agent, AgentInfo info)
     {
-        agentInfos.Add(agent, info);
+        // If the brain is not active or not properly initialized, an error is
+        // thrown.
+        if (!gameObject.activeSelf)
+        {
+            throw new UnityAgentsException(
+                string.Format("Agent {0} tried to request an action " +
+                "from brain {1} but it is not active.",
+                             agent.gameObject.name, gameObject.name));
+        }
+        else if (!isInitialized)
+        {
+            throw new UnityAgentsException(
+                string.Format("Agent {0} tried to request an action " +
+                "from brain {1} but it was not initialized.",
+                             agent.gameObject.name, gameObject.name));
+        }
+        else
+        {
+            agentInfos.Add(agent, info);
+        }
 
     }
 
@@ -218,7 +240,5 @@ public class Brain : MonoBehaviour
     {
         coreBrain.DecideAction(agentInfos);
         agentInfos.Clear();
-
     }
-
 }

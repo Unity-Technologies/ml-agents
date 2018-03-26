@@ -1,4 +1,4 @@
-# Getting Started with the 3D Balance Ball Example
+# Getting Started with the 3D Balance Ball Environment
 
 This tutorial walks through the end-to-end process of opening an ML-Agents 
 example environment in Unity, building the Unity executable, training an agent 
@@ -10,10 +10,10 @@ can be used. These environments can also serve as templates for new
 environments or as ways to test new ML algorithms. After reading this tutorial, 
 you should be able to explore and build the example environments.
 
-![Balance Ball](images/balance.png)
+![3D Balance Ball](images/balance.png)
 
-This walkthrough uses the **3D Balance Ball** environment. 3D Balance Ball 
-contains a number of platforms and balls (which are all copies of each other). 
+This walk-through uses the **3D Balance Ball** environment. 3D Balance Ball contains 
+a number of platforms and balls (which are all copies of each other). 
 Each platform tries to keep its ball from falling by rotating either 
 horizontally or vertically. In this environment, a platform is an **agent** 
 that receives a reward for every step that it balances the ball. An agent is 
@@ -27,7 +27,7 @@ Let's get started!
 In order to install and set up ML-Agents, the Python dependencies and Unity, 
 see the [installation instructions](Installation.md).
 
-## Understanding a Unity Environment (Balance Ball)
+## Understanding a Unity Environment (3D Balance Ball)
 
 An agent is an autonomous actor that observes and interacts with an 
 _environment_. In the context of Unity, an environment is a scene containing 
@@ -44,7 +44,7 @@ Inspector window. The Inspector shows every component on a GameObject.
  
 The first thing you may notice after opening the 3D Balance Ball scene is that 
 it contains not one, but several platforms.  Each platform in the scene is an 
-independent agent, but they all share the same brain.  Balance Ball does this 
+independent agent, but they all share the same brain. 3D Balance Ball does this 
 to speed up training since all twelve agents contribute to training in parallel.
 
 ### Academy
@@ -72,7 +72,7 @@ There are three functions you can implement, though they are all optional:
 
 * Academy.InitializeAcademy() — Called once when the environment is launched.
 * Academy.AcademyStep() — Called at every simulation step before 
-Agent.AgentAct() (and after the agents collect their observations).
+Agent.AgentAction() (and after the agents collect their observations).
 * Academy.AcademyReset() — Called when the Academy starts or restarts the 
 simulation (including the first time).
 
@@ -130,7 +130,7 @@ each element of the vector means is defined by the agent logic (the PPO
 training process just learns what values are better given particular state 
 observations based on the rewards received when it tries different values). 
 For example, an element might represent a force or torque applied to a 
-Rigidbody in the agent. The **Discrete** action vector space defines its
+`RigidBody` in the agent. The **Discrete** action vector space defines its
 actions as a table. A specific action given to the agent is an index into 
 this table. 
 
@@ -172,11 +172,11 @@ collecting the agent's observations of the environment. Since the Brain
 instance assigned to the agent is set to the continuous vector observation
 space with a state size of 8, the `CollectObservations()` must call 
 `AddVectorObs` 8 times.
-* Agent.AgentAct() — Called every simulation step. Receives the action chosen
+* Agent.AgentAction() — Called every simulation step. Receives the action chosen
 by the brain. The Ball3DAgent example handles both the continuous and the 
 discrete action space types. There isn't actually much difference between the 
 two state types in this environment — both vector action spaces result in a
-small change in platform rotation at each step. The `AgentAct()` function
+small change in platform rotation at each step. The `AgentAction()` function
 assigns a reward to the agent; in this example, an agent receives a small 
 positive reward for each step it keeps the ball on the platform and a larger, 
 negative reward for dropping the ball. An agent is also marked as done when it
@@ -237,7 +237,12 @@ current scene is included in the build).
 ## Training the Brain with Reinforcement Learning
 
 Now that we have a Unity executable containing the simulation environment, we 
-can perform the training. 
+can perform the training. To first ensure that your environment and the Python 
+API work as expected, you can use the `python/Basics` 
+[Jupyter notebook](Background-Jupyter.md). 
+This notebook contains a simple walkthrough of the functionality of the API. 
+Within `Basics`, be sure to set `env_name` to the name of the environment file 
+you built earlier.
 
 ### Training with PPO
 
@@ -249,25 +254,33 @@ example algorithm for use with ML-Agents. For more information on PPO,
 OpenAI has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/) 
 explaining it.
 
-In order to train the agents within the Ball Balance environment:
 
-1. Open `python/PPO.ipynb` notebook from Jupyter.
-2. Set `env_name` to the name of your environment file earlier.
-3. (optional) In order to get the best results quickly, set `max_steps` to 
-50000, set `buffer_size` to 5000, and set `batch_size` to 512.  For this 
-exercise, this will train the model in approximately ~5-10 minutes.
-4. (optional) Set `run_path` directory to your choice. When using TensorBoard 
-to observe the training statistics, it helps to set this to a sequential value 
+To train the agents within the Ball Balance environment, we will be using the python 
+package. We have provided a convenient Python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
+
+
+We will pass to this script the path of the environment executable that we just built. (Optionally) We can
+use `run_id` to identify the experiment and create a folder where the model and summary statistics are stored. When 
+using TensorBoard to observe the training statistics, it helps to set this to a sequential value 
 for each training run. In other words, "BalanceBall1" for the first run, 
 "BalanceBall2" or the second, and so on. If you don't, the summaries for 
 every training run are saved to the same directory and will all be included 
 on the same graph.
-5. Run all cells of notebook with the exception of the last one under "Export 
-the trained Tensorflow graph."
+
+To summarize, go to your command line, enter the `ml-agents` directory and type: 
+
+```python
+python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
+```
+
+The `--train` flag tells ML-Agents to run in training mode. `env_file_path` should be the path to the Unity executable that was just created. 
+
 
 ### Observing Training Progress
-In order to observe the training process in more detail, you can use 
-TensorBoard. In your command line, enter into `python` directory and then run :
+
+Once you start training using `learn.py` in the way described in the previous section, the `ml-agents` folder will 
+contain a `summaries` directory. In order to observe the training process 
+in more detail, you can use TensorBoard. From the command line run:
 
 `tensorboard --logdir=summaries`
 
@@ -277,7 +290,7 @@ From TensorBoard, you will see the summary statistics:
 
 * Lesson - only interesting when performing
 [curriculum training](Training-Curriculum-Learning.md). 
-This is not used in the 3d Balance Ball environment. 
+This is not used in the 3D Balance Ball environment. 
 * Cumulative Reward - The mean cumulative episode reward over all agents. 
 Should increase during a successful training session.
 * Entropy - How random the decisions of the model are. Should slowly decrease 
@@ -298,7 +311,7 @@ during a successful training session.
 
 ![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 
-## Embedding the Trained Brain into the Unity Environment _[Experimental]_
+## Embedding the Trained Brain into the Unity Environment (Experimental)
 
 Once the training process completes, and the training process saves the model 
 (denoted by the `Saved Model` message) you can add it to the Unity project and 
@@ -312,7 +325,7 @@ the `Internal` Brain mode will only be available once completing these steps.
 
 1. Make sure the TensorFlowSharp plugin is in your `Assets` folder. A Plugins 
 folder which includes TF# can be downloaded 
-[here](https://s3.amazonaws.com/unity-agents/0.2/TFSharpPlugin.unitypackage). 
+[here](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage). 
 Double click and import it once downloaded.  You can see if this was
 successfully installed by checking the TensorFlow files in the Project tab
 under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
@@ -329,9 +342,10 @@ under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
 
 ### Embedding the trained model into Unity
 
-1. Run the final cell of the notebook under "Export the trained TensorFlow
-graph" to produce an `<env_name >.bytes` file.
-2. Move `<env_name>.bytes` from `python/models/ppo/` into 
+1. The trained model is stored in `models/<run-identifier>` in the `ml-agents` folder. Once the 
+training is complete, there will be a `<env_name>.bytes` file in that location where `<env_name>` is the name 
+of the executable used during training. 
+ 2. Move `<env_name>.bytes` from `python/models/ppo/` into 
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 3. Open the Unity Editor, and select the `3DBall` scene as described above.
 4. Select the `Ball3DBrain` object from the Scene hierarchy.

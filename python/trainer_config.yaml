@@ -11,12 +11,72 @@ default:
     max_steps: 5.0e4
     memory_size: 256
     normalize: false
-    num_epoch: 5
+    num_epoch: 3
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
+
+BananaBrain:
+    normalize: false
+    batch_size: 1024
+    beta: 5.0e-3
+    buffer_size: 10240
+
+PushBlockBrain:
+    max_steps: 5.0e4
+    batch_size: 128
+    buffer_size: 2048
+    beta: 1.0e-2
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 64
+    num_layers: 2
+
+SmallWallBrain: 
+    max_steps: 2.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 128
+    num_layers: 2
+    normalize: false
+
+BigWallBrain: 
+    max_steps: 2.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 128
+    num_layers: 2
+    normalize: false
+
+StrikerBrain:
+    max_steps: 1.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 128
+    num_layers: 2
+    normalize: false
+
+GoalieBrain:
+    max_steps: 1.0e5
+    batch_size: 128
+    buffer_size: 2048
+    beta: 5.0e-3
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 128
+    num_layers: 2
+    normalize: false
 
 BrainCurio:
     trainer: 'ppo-curio'
@@ -30,6 +90,12 @@ BrainCurio:
 
 Ball3DBrain:
     normalize: true
+
+BouncerBrain:
+    normalize: true
+    max_steps: 5.0e5
+    num_layers: 2
+    hidden_units: 56
 
 CrawlerBrain:
     normalize: true
@@ -51,67 +117,17 @@ ReacherBrain:
     max_steps: 1e6
     summary_freq: 3000
 
-BrainWallJumpCC:
-    max_steps: 2.0e5
-    num_layers: 2
-    beta: 5.0e-4
-    hidden_units: 256
-    use_recurrent: true
-    sequence_length: 32
-    time_horizon: 32
-    batch_size: 32
-    buffer_size: 320
-
-Ball3DHardBrain:
-    max_steps: 5.0e4
-    num_layers: 2
-    normalize: true
-    num_epoch: 3
-    beta: 5.0e-4
-    hidden_units: 64
-
-    use_recurrent: true
-    sequence_length: 8
-    time_horizon: 8
-    batch_size: 32
-    buffer_size: 320
-
-HallwayBrainDC:
-    num_layers: 3
-    hidden_units: 256
-    beta: 1.0e-2
-    gamma: 0.99
-    num_epoch: 3
-    buffer_size: 512
-    batch_size: 64
-    max_steps: 5.0e5
-    summary_freq: 1000
-    time_horizon: 64
-
-BrainWallJumpDC:
+HallwayBrain:
     use_recurrent: true
     sequence_length: 64
     num_layers: 2
     hidden_units: 128
+    memory_size: 256
     beta: 1.0e-2
     gamma: 0.99
     num_epoch: 3
-    buffer_size: 16
-    batch_size: 2
-    max_steps: 5.0e5
-    summary_freq: 1000
-    time_horizon: 64
-
-HallwayBrainDCLSTM:
-    use_recurrent: true
-    sequence_length: 64
-    num_layers: 2
-    hidden_units: 128
-    beta: 1.0e-2
-    gamma: 0.99
-    num_epoch: 3
-    buffer_size: 16
-    batch_size: 2
+    buffer_size: 1024
+    batch_size: 128
     max_steps: 5.0e5
     summary_freq: 1000
     time_horizon: 64

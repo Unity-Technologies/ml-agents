@@ -194,7 +194,7 @@ class PPOTrainer(Trainer):
         values = self.sess.run(run_list, feed_dict=feed_dict)
         run_out = dict(zip(run_list, values))
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
-        self.stats['entropy'].append(run_out[self.model.entropy])
+        self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
         if self.use_recurrent:
             return (run_out[self.model.output],
@@ -341,7 +341,7 @@ class PPOTrainer(Trainer):
         total_v, total_p = 0, 0
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
-            (advantages - advantages.mean()) / advantages.std() + 1e-10)
+            (advantages - advantages.mean()) / (advantages.std() + 1e-10))
         for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
@@ -355,7 +355,7 @@ class PPOTrainer(Trainer):
                              self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape(
                                  [-1]),
                              self.model.old_value: np.array(_buffer['value_estimates'][start:end]).reshape([-1]),
-                             self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1]),
+                             self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1, 1]),
                              self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.vector_action_space_size])}
                 if self.is_continuous:
@@ -380,9 +380,7 @@ class PPOTrainer(Trainer):
                         _obs = np.array(_buffer['observations%d' % i][start:end])
                         (_batch, _seq, _w, _h, _c) = _obs.shape
                         feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
-                # Memories are zeros
                 if self.use_recurrent:
-                    # feed_dict[self.model.memory_in] = np.zeros([batch_size, self.m_size])
                     feed_dict[self.model.memory_in] = np.array(_buffer['memory'][start:end])[:, 0, :]
                 v_loss, p_loss, _ = self.sess.run(
                     [self.model.value_loss, self.model.policy_loss,

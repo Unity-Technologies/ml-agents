@@ -11,6 +11,17 @@ TagManager:
   - badBanana
   - pit
   - frozenAgent
+  - ball
+  - redGoal
+  - blueGoal
+  - blueAgent
+  - redAgent
+  - redBlock
+  - goal
+  - ground
+  - orangeBlock
+  - block
+  - orangeGoal
   layers:
   - Default
   - TransparentFX
@@ -22,10 +33,10 @@ TagManager:
   - 
   - invisible
   - ball
-  - 
-  - 
-  - 
-  - 
+  - goalieWall
+  - goalie
+  - strikerWall
+  - striker
   - 
   - 
   - 

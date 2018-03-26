@@ -27,10 +27,10 @@ public class GridAgent : Agent
     }
 
     // to be implemented by the developer
-    public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
         AddReward(-0.01f);
-        int action = Mathf.FloorToInt(act[0]);
+        int action = Mathf.FloorToInt(vectorAction[0]);
 
         // 0 - Forward, 1 - Backward, 2 - Left, 3 - Right
         Vector3 targetPos = transform.position;
@@ -86,7 +86,7 @@ public class GridAgent : Agent
 
     private void WaitTimeInference()
     {
-        if (!academy.isInference)
+        if (!academy.GetIsInference())
         {
             RequestDecision();
         }

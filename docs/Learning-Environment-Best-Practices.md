@@ -4,6 +4,7 @@
 * It is often helpful to start with the simplest version of the problem, to ensure the agent can learn it. From there increase
 complexity over time. This can either be done manually, or via Curriculum Learning, where a set of lessons which progressively increase in difficulty are presented to the agent ([learn more here](Training-Curriculum-Learning.md)).
 * When possible, it is often helpful to ensure that you can complete the task by using a Player Brain to control the agent.
+* It is often helpful to make many copies of the agent, and attach the brain to be trained to all of these agents. In this way the brain can get more feedback information from all of these agents, which helps it train faster. 
 
 ## Rewards
 * The magnitude of any given reward should typically not be greater than 1.0 in order to ensure a more stable learning process.
@@ -13,13 +14,14 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 * Overly-large negative rewards can cause undesirable behavior where an agent learns to avoid any behavior which might produce the negative reward, even if it is also behavior which can eventually lead to a positive reward.
 
 ## Vector Observations
-* Vector observations should include all variables relevant to allowing the agent to take the optimally informed decision.
-* Categorical variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (ie `3` -> `0, 0, 1`).
-* Besides encoding non-numeric values, all inputs should be normalized to be in the range 0 to +1 (or -1 to 1). For example rotation information on GameObjects should be recorded as `AddVectorObs(transform.rotation.eulerAngles.y/180.0f-1.0f);` rather than `AddVectorObs(transform.rotation.y);`. See the equation below for one approach of normalization. 
+* Vector Observations should include all variables relevant to allowing the agent to take the optimally informed decision.
+* In cases where Vector Observations need to be remembered or compared over time, increase the `Stacked Vectors` value to allow the agent to keep track of multiple observations into the past. 
+* Categorical variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`).
+* Besides encoding non-numeric values, all inputs should be normalized to be in the range 0 to +1 (or -1 to 1). For example, the `x` position information of an agent where the maximum possible value is `maxValue` should be recorded as `AddVectorObs(transform.position.x / maxValue);` rather than `AddVectorObs(transform.position.x);`. See the equation below for one approach of normalization. 
 * Positional information of relevant GameObjects should be encoded in relative coordinates wherever possible. This is often relative to the agent position.
 
 ![normalization](images/normalization.png)
 
 ## Vector Actions
 * When using continuous control, action values should be clipped to an appropriate range.
-* Be sure to set the action-space-size to the number of used vector actions, and not greater, as doing the latter can interfere with the efficency of the training process.
+* Be sure to set the Vector Action's Space Size to the number of used Vector Actions, and not greater, as doing the latter can interfere with the efficiency of the training process.

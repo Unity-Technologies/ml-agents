@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-/// CoreBrain which decides actions using developer-provided Decision.cs script.
+/// CoreBrain which decides actions using developer-provided Decision script.
 public class CoreBrainHeuristic : ScriptableObject, CoreBrain
 {
     [SerializeField]
@@ -46,19 +46,19 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     /// Uses the Decision Component to decide that action to take
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-	    if (coord!=null)
-	    {
+        if (coord!=null)
+        {
             coord.GiveBrainInfo(brain, agentInfo);
-	    }
-		if (decision == null)
+        }
+
+        if (decision == null)
         {
             throw new UnityAgentsException("The Brain is set to Heuristic, but no decision script attached to it");
         }
 
-
         foreach (Agent agent in agentInfo.Keys)
         {
-			agent.UpdateVectorAction(decision.Decide(
+            agent.UpdateVectorAction(decision.Decide(
                 agentInfo[agent].stackedVectorObservation,
                 agentInfo[agent].visualObservations,
                 agentInfo[agent].reward,
@@ -66,29 +66,30 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
                 agentInfo[agent].memories));
             
         }
+
         foreach (Agent agent in agentInfo.Keys)
         {
             agent.UpdateMemoriesAction(decision.MakeMemory(
-				agentInfo[agent].stackedVectorObservation,
-				agentInfo[agent].visualObservations,
-				agentInfo[agent].reward,
-				agentInfo[agent].done,
-				agentInfo[agent].memories));
+                agentInfo[agent].stackedVectorObservation,
+                agentInfo[agent].visualObservations,
+                agentInfo[agent].reward,
+                agentInfo[agent].done,
+                agentInfo[agent].memories));
         }
     }
 
     /// Displays an error if no decision component is attached to the brain
     public void OnInspector()
     {
-#if UNITY_EDITOR
-        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-		broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
-					  "If checked, the brain will broadcast states and actions to Python."), broadcast);
-        if (brain.gameObject.GetComponent<Decision>() == null)
-        {
+        #if UNITY_EDITOR
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
+            "If checked, the brain will broadcast states and actions to Python."), broadcast);
+            if (brain.gameObject.GetComponent<Decision>() == null)
+            {
             EditorGUILayout.HelpBox("You need to add a 'Decision' component to this gameObject", MessageType.Error);
-        }
-#endif
+            }
+        #endif
     }
 
 }

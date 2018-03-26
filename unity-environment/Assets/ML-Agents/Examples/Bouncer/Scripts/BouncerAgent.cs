@@ -6,67 +6,97 @@ public class BouncerAgent : Agent {
 
     [Header("Bouncer Specific")]
     public GameObject banana;
+    public GameObject bodyObject;
     Rigidbody rb;
-    float speed = 10f;
+    Vector3 lookDir;
+    public float strength = 10f;
+    float jumpCooldown = 0f;
+    int numberJumps = 20;
+    int jumpLeft = 20;
 
     public override void InitializeAgent()
     {
         rb = gameObject.GetComponent<Rigidbody>();
-        rb.velocity = new Vector3((1 - 2 * Random.value) * 15, 0, (1 - 2 * Random.value) * 15);
-        rb.velocity = rb.velocity.normalized * speed;
+        lookDir = Vector3.zero;
     }
 
-	public override void CollectObservations()
-	{
-        AddVectorObs(gameObject.transform.position.x / 25f);
-        AddVectorObs(gameObject.transform.position.z / 25f);
-        AddVectorObs(banana.transform.position.x / 25f);
-        AddVectorObs(banana.transform.position.z / 25f);
-	}
+    public override void CollectObservations()
+    {
+        AddVectorObs(gameObject.transform.localPosition);
+        AddVectorObs(banana.transform.localPosition);
+    }
 
-	public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
 	{
-        float x = Mathf.Clamp(act[0], -1, 1);
-        float z = Mathf.Clamp(act[1], -1, 1);
-        rb.velocity = new Vector3(x, 0, z) ;
-        if (rb.velocity.magnitude < 0.01f){
+        float x = Mathf.Clamp(vectorAction[0], -1, 1);
+        float y = Mathf.Clamp(vectorAction[1], 0, 1);
+        float z = Mathf.Clamp(vectorAction[2], -1, 1);
+        rb.AddForce( new Vector3(x, y+1, z) *strength);
+
+        AddReward(-0.05f * (
+            vectorAction[0] * vectorAction[0] +
+            vectorAction[1] * vectorAction[1] +
+            vectorAction[2] * vectorAction[2]) / 3f);
+
+        lookDir = new Vector3(x, y, z);
+    }
+
+    public override void AgentReset()
+    {
+
+        gameObject.transform.localPosition = new Vector3(
+            (1 - 2 * Random.value) *5, 2, (1 - 2 * Random.value)*5);
+        rb.velocity = default(Vector3);
+        GameObject environment = gameObject.transform.parent.gameObject;
+        BouncerBanana[] bananas = 
+            environment.GetComponentsInChildren<BouncerBanana>();
+        foreach (BouncerBanana bb in bananas)
+        {
+            bb.Respawn();
+        }
+        jumpLeft = numberJumps;
+    }
+
+    public override void AgentOnDone()
+    {
+
+    }
+
+    private void FixedUpdate()
+    {
+        if ((Physics.Raycast(transform.position, new Vector3(0f,-1f,0f), 0.51f))
+            && jumpCooldown <= 0f)
+        {
+            RequestDecision();
+            jumpLeft -= 1;
+            jumpCooldown = 0.1f;
+            rb.velocity = default(Vector3);
+        }
+        jumpCooldown -= Time.fixedDeltaTime;
+        if (gameObject.transform.position.y < -1)
+        {
             AddReward(-1);
             Done();
             return;
         }
-        rb.velocity = rb.velocity.normalized * speed;
-        if ((gameObject.transform.position.x + rb.velocity.x * 2 > 24)
-            || (gameObject.transform.position.z + rb.velocity.z * 2 > 24)
-            || (gameObject.transform.position.x + rb.velocity.x * 2 < -24)
-            || (gameObject.transform.position.z + rb.velocity.z * 2 < -24))
+        if ((gameObject.transform.localPosition.x < -19)
+            ||(gameObject.transform.localPosition.x >19)
+            || (gameObject.transform.localPosition.z < -19)
+            || (gameObject.transform.localPosition.z > 19)
+           )
+        {
+            AddReward(-1);
+            Done();
+            return;
+        }
+        if (jumpLeft == 0)
         {
             Done();
-            AddReward(-1);
         }
-        else
-        {
-            //AddReward(0.05f);
-        }
-	}
 
-	public override void AgentReset()
-	{
+        bodyObject.transform.rotation = Quaternion.Lerp(bodyObject.transform.rotation,
+                                  Quaternion.LookRotation(lookDir),
+                                  Time.fixedDeltaTime * 10f);
 
-        Vector3 oldPosition = gameObject.transform.position;
-        gameObject.transform.position = new Vector3((1 - 2 * Random.value) * 15, oldPosition.y, (1 - 2 * Random.value) * 15);
-        rb.velocity = new Vector3((1 - 2 * Random.value) * 15, 0, (1 - 2 * Random.value) * 15);
-        rb.velocity = rb.velocity.normalized * speed;
-	}
-
-	public override void AgentOnDone()
-	{
-
-	}
-
-    private void OnTriggerEnter(Collider collision)
-    {
-        if ( collision.gameObject.name.Contains("Wall")){
-            RequestDecision();
-        }
     }
 }

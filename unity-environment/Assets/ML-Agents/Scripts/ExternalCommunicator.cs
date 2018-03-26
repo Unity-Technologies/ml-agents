@@ -36,7 +36,7 @@ public class ExternalCommunicator : Communicator
     StreamWriter logWriter;
     string logPath;
 
-    const string api = "API-2";
+    const string _version_ = "API-3";
 
     /// Placeholder for state information to send.
     [System.Serializable]
@@ -132,7 +132,7 @@ public class ExternalCommunicator : Communicator
         accParamerters.brainParameters = new List<BrainParameters>();
         accParamerters.brainNames = new List<string>();
         accParamerters.externalBrainNames = new List<string>();
-        accParamerters.apiNumber = api;
+        accParamerters.apiNumber = _version_;
         accParamerters.logPath = logPath;
         foreach (Brain b in brains)
         {
@@ -152,16 +152,17 @@ public class ExternalCommunicator : Communicator
         sMessage.agents = new List<int>(defaultNumAgents);
         sMessage.vectorObservations = new List<float>(defaultNumAgents * defaultNumObservations);
         sMessage.rewards = new List<float>(defaultNumAgents);
-        sMessage.memories= new List<float>(defaultNumAgents * defaultNumObservations);
+        sMessage.memories = new List<float>(defaultNumAgents * defaultNumObservations);
         sMessage.dones = new List<bool>(defaultNumAgents);
         sMessage.previousVectorActions = new List<float>(defaultNumAgents * defaultNumObservations);
         sMessage.previousTextActions = new List<string>(defaultNumAgents);
-        sMessage.maxes= new List<bool>(defaultNumAgents);
+        sMessage.maxes = new List<bool>(defaultNumAgents);
         sMessage.textObservations = new List<string>(defaultNumAgents);
 
-        //Initialize the list of brains the Communicator must listen to
+        // Initialize the list of brains the Communicator must listen to
         // Issue : This assumes all brains are broadcasting.
-        foreach(string k in accParamerters.brainNames){
+        foreach (string k in accParamerters.brainNames)
+        {
             current_agents[k] = new List<Agent>(defaultNumAgents);
             hasSentState[k] = false;
             triedSendState[k] = false;
@@ -217,7 +218,7 @@ public class ExternalCommunicator : Communicator
         sender.Send(Encoding.ASCII.GetBytes("CONFIG_REQUEST"));
         Receive();
         var resetParams = JsonConvert.DeserializeObject<ResetParametersMessage>(rMessageString.ToString());
-        academy.isInference = !resetParams.train_model;
+        academy.SetIsInference(!resetParams.train_model);
         return resetParams.parameters;
     }
 
@@ -239,7 +240,6 @@ public class ExternalCommunicator : Communicator
                 inputSeed = args[i + 1];
             }
         }
-
         comPort = int.Parse(inputPort);
         randomSeed = int.Parse(inputSeed);
         Random.InitState(randomSeed);
@@ -338,11 +338,13 @@ public class ExternalCommunicator : Communicator
                 sMessage.vectorObservations.AddRange(agentInfo[agent].stackedVectorObservation);
                 sMessage.rewards.Add(agentInfo[agent].reward);
                 sMessage.memories.AddRange(agentInfo[agent].memories);
-                for (int j = 0; j < memorySize - agentInfo[agent].memories.Count; j++ )
+                for (int j = 0; j < memorySize - agentInfo[agent].memories.Count; j++)
+                {
                     sMessage.memories.Add(0f);
+                }
                 sMessage.dones.Add(agentInfo[agent].done);
-                sMessage.previousVectorActions.AddRange(agentInfo[agent].StoredVectorActions.ToList());
-                sMessage.previousTextActions.Add(agentInfo[agent].StoredTextActions);
+                sMessage.previousVectorActions.AddRange(agentInfo[agent].storedVectorActions.ToList());
+                sMessage.previousTextActions.Add(agentInfo[agent].storedTextActions);
                 sMessage.maxes.Add(agentInfo[agent].maxStepReached);
                 sMessage.textObservations.Add(agentInfo[agent].textObservation);
 
@@ -368,7 +370,7 @@ public class ExternalCommunicator : Communicator
         }
         if (triedSendState.Values.All(x => x))
         {
-            if (hasSentState.Values.Any(x => x))
+            if (hasSentState.Values.Any(x => x) || academy.IsDone())
             {
                 // if all the brains listed have sent their state
                 sender.Send(AppendLength(Encoding.ASCII.GetBytes("END_OF_MESSAGE:" + (academy.IsDone() ? "True" : "False"))));
@@ -390,14 +392,15 @@ public class ExternalCommunicator : Communicator
 
     }
 
-    public Dictionary<string, bool> GetHasTried(){
+    public Dictionary<string, bool> GetHasTried()
+    {
         return triedSendState;
     }
 
-	public Dictionary<string, bool> GetSent()
-	{
+    public Dictionary<string, bool> GetSent()
+    {
         return hasSentState;
-	}
+    }
 
     /// Listens for actions, memories, and values and sends them 
     /// to the corrensponding brains.
@@ -413,6 +416,10 @@ public class ExternalCommunicator : Communicator
             {
                 var brainName = brain.gameObject.name;
 
+                if (current_agents[brainName].Count() == 0)
+                {
+                    continue;
+                }
                 var memorySize = rMessage.memory[brainName].Count() / current_agents[brainName].Count();
 
                 for (int i = 0; i < current_agents[brainName].Count(); i++)
