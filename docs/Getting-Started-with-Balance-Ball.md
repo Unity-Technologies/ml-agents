@@ -267,11 +267,12 @@ for each training run. In other words, "BalanceBall1" for the first run,
 every training run are saved to the same directory and will all be included 
 on the same graph.
 
-To summarize, go to your Anaconda command line, activate the ml-agents environment, enter the `ml-agents` directory and type: 
+To summarize, go to your command line, enter the `ml-agents` directory and type: 
 
 ```python
 python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
 ```
+**Note**: If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
 The `--train` flag tells ML-Agents to run in training mode. `env_file_path` should be the path to the Unity executable that was just created. 
 
