@@ -317,7 +317,7 @@ during a successful training session.
 Once the training process completes, and the training process saves the model 
 (denoted by the `Saved Model` message) you can add it to the Unity project and 
 use it with agents having an **Internal** brain type.
-**Note** If you're using Anaconda, you shouldn't just close the Unity Window once the `Saved Model` message appears. Press Ctrl+C in the Anaconda prompt, and this will formally end the training session and export the .bytes file. Otherwise, the .bytes file will never be exported into the ml-agents folder.
+**Note:** Do not just close the Unity Window once the `Saved Model` message appears. Either wait for the training process to close the window or press Ctrl+C at the command-line prompt. If you simply close the window manually, the .bytes file containing the trained model is not exported into the ml-agents folder.
 
 ### Setting up TensorFlowSharp Support
 
