@@ -42,10 +42,12 @@ class TrainerController(object):
                     .replace('.x86', ''))  # Strip out executable extensions if passed
         # Recognize and use docker volume if one is passed as an argument
         if docker_target_name == '':
+            self.docker_training = False
             self.model_path = './models/{run_id}'.format(run_id=run_id)
             self.curriculum_file = curriculum_file
             self.summaries_dir = './summaries'
         else:
+            self.docker_training = True
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
@@ -74,7 +76,8 @@ class TrainerController(object):
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
-                                    curriculum=self.curriculum_file, seed=self.seed)
+                                    curriculum=self.curriculum_file, seed=self.seed,
+                                    docker_training=self.docker_training)
         self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
 
     def _get_progress(self):

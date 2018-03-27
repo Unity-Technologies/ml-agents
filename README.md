@@ -27,7 +27,7 @@ to the wider research and game developer communities.
 * Built-in support for Imitation Learning
 * Flexible Agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
-* Simplified set-up with Docker (Experimental)
+* Simplified set-up with Docker
 
 ## Documentation and References
 
