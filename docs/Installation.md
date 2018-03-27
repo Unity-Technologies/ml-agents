@@ -2,7 +2,7 @@
 
 To install and use ML-Agents, you need install Unity, clone this repository
 and install Python with additional dependencies. Each of the subsections
-below overviews each step, in addition to an experimental Docker set-up.
+below overviews each step, in addition to a Docker set-up.
 
 ## Install **Unity 2017.1** or Later
 
@@ -49,7 +49,7 @@ and run from the command line:
 
     pip3 install .
 
-## Docker-based Installation (Experimental)
+## Docker-based Installation
 
 If you'd like to use Docker for ML-Agents, please follow 
 [this guide](Using-Docker.md). 

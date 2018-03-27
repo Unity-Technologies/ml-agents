@@ -214,7 +214,6 @@ class PPOTrainer(Trainer):
         :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
         :param take_action_outputs: The outputs of the take action method.
         """
-
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
 
