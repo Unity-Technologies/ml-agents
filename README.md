@@ -43,25 +43,44 @@ to the wider research and game developer communities.
 
 You can get the ML-Agents code and all the packages it depends on with:
 
-    git clone https://github.com/Unity-Technologies/ml-agents.git
-    cd ml-agents/python
-    pip install .
+```
+git clone https://github.com/Unity-Technologies/ml-agents.git
+cd ml-agents/python
+pip install .
+```
 
-### Import TensorflowSharp Plugin into Unity
+### Setting up TensorflowSharp Support
 
-[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) and import the downloaded TensorflowSharp plugin into Unity. 
+1. Make sure the TensorFlowSharp plugin is in your `Assets` folder. A Plugins 
+folder which includes TF# can be downloaded 
+[here](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage). 
+Double click and import it once downloaded.  You can see if this was
+successfully installed by checking the TensorFlow files in the Project tab
+under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
+2. Go to `Edit` -> `Project Settings` -> `Player`
+3. For each of the platforms you target 
+(**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
+    1. Go into `Other Settings`.
+    2. Select `Scripting Runtime Version` to 
+    `Experimental (.NET 4.6 Equivalent)`
+    3. In `Scripting Defined Symbols`, add the flag `ENABLE_TENSORFLOW`. 
+    After typing in, press Enter.
+4. Go to `File` -> `Save Project`
+5. Restart the Unity Editor.
 
-### Play 3DBall example environment as a human
+### Play an example environment using pretrained model
 
-Open Unity then 
+1. Open Unity and import the cloned repo into Unity. 
+2. In the Project window, go to `Assets` -> `ML-Agents` -> `Examples` -> `3DBall` folder and open the `3DBall` scene file. 
+3. In the Hierarchy window, click on `Ball3DAcademy` -> `Ball3DBrain`. 
+4. In the Inspector window, under `Brain (Script)` -> `Brain Type`, change the `Brain Type` to `Internal`. 
+5. Click the `Play` button and you will see the platforms automatically adjusts itself using the pretrained model. (Will attach a GIF below)
 
-### Play 3DBall example environment using pretrained model
+### Where to go from here? (I plan to incorporate this with the documentation and community page below, still working on it)
 
-### Further information
-
-
-If you want to understand how this model file is trained, please go [here](docs/Training-ML-Agents.md). 
-
+1. If you want to understand how the model file gets trained, please go [here](docs/Training-ML-Agents.md). 
+2. If you are stuck somewhere, please refer to our [FAQ](), also you can follow our 
+3. If you don't want to have all these mess, you can also use docker [here](docs/Using-Docker.md)
 
 
 ## Documentation and References
