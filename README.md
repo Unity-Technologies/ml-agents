@@ -29,6 +29,41 @@ to the wider research and game developer communities.
 * Visualizing network outputs within the environment
 * Simplified set-up with Docker (Experimental)
 
+## Quick Start Guide
+
+### Get **Unity**
+
+[Download](https://store.unity.com/download) and install Unity, ML-Agents works with versions that are 2017.1 and above. 
+
+### Get Anaconda environment
+
+[Download](https://www.anaconda.com/download) and install Anaconda with Python 3.6 version. 
+
+### Clone the repo and install dependencies
+
+You can get the ML-Agents code and all the packages it depends on with:
+
+    git clone https://github.com/Unity-Technologies/ml-agents.git
+    cd ml-agents/python
+    pip install .
+
+### Import TensorflowSharp Plugin into Unity
+
+[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) and import the downloaded TensorflowSharp plugin into Unity. 
+
+### Play 3DBall example environment as a human
+
+Open Unity then 
+
+### Play 3DBall example environment using pretrained model
+
+### Further information
+
+
+If you want to understand how this model file is trained, please go [here](docs/Training-ML-Agents.md). 
+
+
+
 ## Documentation and References
 
 **For more information, in addition to installation and usage
