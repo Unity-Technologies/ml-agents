@@ -23,7 +23,13 @@ We recommend the default _advanced installation options_. However, select the op
 </p>
 
 After installation, you must open __Anaconda Navigator__ to finish the setup. From the Windows search bar, type _anaconda navigator_. You can close Anaconda Navigator after it opens.
-
+If environmental variables were not created, in System Variables "Path" add:
+```
+    C:\ProgramData\Anaconda3\Scripts\conda.exe
+    C:\ProgramData\Anaconda3\Scripts
+    C:\ProgramData\Anaconda3\
+    C:\ProgramData\Anaconda3\python.exe
+```
 ## Step 2: Setup and Activate a New Conda Environment
 
 You will create a new [Conda environment](https://conda.io/docs/) to be used with ML-Agents. This means that all the packages that you install are localized to just this environment. It will not affect any other installation of Python or other environments. Whenever you want to run ML-Agents, you will need activate this Conda environment.
@@ -31,7 +37,7 @@ You will create a new [Conda environment](https://conda.io/docs/) to be used wit
 To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the following command:
 
 ```
-conda create -n ml-agents python=3.6
+conda create -n ml-agents python=3.5
 ```
 
 You may be asked to install new packages. Type `y` and press enter _(make sure you are connected to the internet)_. You must install these required packages. The new Conda environment is called ml-agents and uses Python version 3.6.
@@ -53,7 +59,7 @@ You should see `(ml-agents)` prepended on the last line.
 Next, install `tensorflow`. Install this package using `pip` - which is a package management system used to install Python packages. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
 
 ```
-pip install tensorflow
+pip install tensorflow==1.4.0
 ```
 
 ## Step 3: Install Required Python Packages
@@ -78,6 +84,7 @@ Make sure you are connected to the internet and then type in the Anaconda Prompt
 
 ```
 pip install .
+pip install docopt
 ```
 
 This will complete the installation of all the required Python packages to run ML-Agents. 
@@ -90,7 +97,7 @@ As of ML-Agents v0.3, only CUDA 8 and cuDNN 6 is supported.
 
 ### Install Nvidia CUDA toolkit
 
-[Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the CUDA toolkit from Nvidia's archive. The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ compiler and a runtime library and is needed to run ML-Agents. In this guide, we are using version 8.0.61 ([direct link](https://developer.nvidia.com/compute/cuda/8.0/Prod2/network_installers/cuda_8.0.61_win10_network-exe)). 
+[Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the CUDA toolkit from Nvidia's archive. The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ (Step: Visual Studio 2015) compiler and a runtime library and is needed to run ML-Agents. In this guide, we are using version 8.0.61 ([direct link](https://developer.nvidia.com/compute/cuda/8.0/Prod2/network_installers/cuda_8.0.61_win10_network-exe)). 
 
 Before installing, please make sure you __close any running instances of Unity or Visual Studio__.
 
@@ -169,7 +176,7 @@ Make sure to replace the relevant directory location with the one you have insta
 Next, install `tensorflow-gpu` using `pip`. In an Anaconda Prompt with the Conda environment ml-agents activated, type in the following command _(make sure you are connected to the internet)_:
 
 ```
-pip install tensorflow-gpu
+pip install tensorflow-gpu==1.4.0
 ```
 
 Lastly, you should test to see if everything installed properly and that TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the following command:
@@ -185,6 +192,12 @@ You should see something similar to:
 ```
 Found device 0 with properties ...
 ```
+<p>
+    Step Visual Studio 2015: unistall Visual Studio 2017 that comes with the Unity installation, download Visual Studio Enterprise 2015 and install the SDK when installing. If you don't want to install Visual Studio Enterprise 2015, at least install Visual C++ Redistributable for Visual Studio 2015 and Visual Studio 2015 Windows SDK. 
+    Had to paste this “lib” folder from C:\Program Files (x86)\Microsoft Visual Studio 14.0\lib
+    Into C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\PlatformSDK\lib
+</p>
+
 
 ## Acknowledgements
 
