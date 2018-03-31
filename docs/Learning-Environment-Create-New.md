@@ -88,7 +88,7 @@ You can adjust the camera angles to give a better view of the scene at runtime. 
 
 ## Implement an Academy
 
-The Academy object coordinates the ML-Agents in the scene and drives the decision-making portion of the simulation loop. Every ML-Agent scene needs one Academy instance. Since the base Academy classis abstract, you must make your own subclass even if you don't need to use any of the methods for a particular environment.
+The Academy object coordinates the ML-Agents in the scene and drives the decision-making portion of the simulation loop. Every ML-Agent scene needs one Academy instance. Since the base Academy class is abstract, you must make your own subclass even if you don't need to use any of the methods for a particular environment.
 
 First, add a New Script component to the Academy GameObject created earlier: 
 
