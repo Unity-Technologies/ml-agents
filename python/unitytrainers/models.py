@@ -57,8 +57,8 @@ class LearningModel(object):
                 self.update_mean = tf.assign(self.running_mean, self.new_mean)
                 self.update_variance = tf.assign(self.running_variance, self.new_variance)
 
-                self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / tf.sqrt(
-                    self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)), -5, 5,
+                self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / (tf.sqrt(
+                    self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)) + 1e-10), -5, 5,
                                                          name="normalized_state")
             else:
                 self.normalized_state = self.vector_in
