@@ -118,7 +118,7 @@ class LearningModel(object):
         brain = self.brain
         s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
         if brain.vector_action_space_type == "continuous":
-            activation_fn = tf.nn.tanh
+            activation_fn = self.swish
         else:
             activation_fn = self.swish
 
@@ -236,9 +236,11 @@ class LearningModel(object):
         beta = 1.0 + tf.layers.dense(hidden_policy, self.a_size, activation=tf.nn.softplus, use_bias=False)
 
         self.beta = tf.distributions.Beta(alpha, beta)
-        self.entropy = tf.reduce_mean(self.beta.entropy(), axis=1)
-        self.output = self.beta.sample(name="action")
+        self.entropy = -tf.reduce_mean(self.beta.entropy(), axis=1)
+        self.output = self.beta.sample()
+        self.output = tf.identity(self.output, name="action")
         self.all_probs = self.beta.prob(self.output)
+        self.all_probs = tf.identity(self.all_probs, name="action_probs")
 
         self.value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")

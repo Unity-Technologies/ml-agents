@@ -75,7 +75,7 @@ public class CrawlerAgentConfigurable : Agent
         float[] toUse = new float[vectorAction.Length];
         for (int k = 0; k < vectorAction.Length; k++)
         {
-            toUse[k] = (vectorAction[k] - 0.5f) * 2f;
+            toUse[k] = (vectorAction[k] - 0.5f) * 4f;
         }
         
         limbRBs[0].AddTorque(-limbs[0].transform.right * strength * toUse[0]);
