@@ -53,18 +53,12 @@ public class ReacherAgent : Agent {
         goalDegree += goalSpeed;
         UpdateGoalPosition();
 
-	    var torqueX = Mathf.Clamp(vectorAction[0], -2f, 2f) * 100f;
-	    var torqueZ = Mathf.Clamp(vectorAction[1], -2f, 2f) * 100f;
-
-	    //var torqueX = (vectorAction[0] - 0.5f) * 4f * 100f;
-	    //var torqueZ = (vectorAction[1] - 0.5f) * 4f * 100f;
+	    var torqueX = ScaleContinuousAction(vectorAction[0], -2f, 2f) * 100f;
+	    var torqueZ = ScaleContinuousAction(vectorAction[1], -2f, 2f) * 100f;
         rbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 
-		torqueX = Mathf.Clamp(vectorAction[2], -2f, 2f) * 100f;
-		torqueZ = Mathf.Clamp(vectorAction[3], -2f, 2f) * 100f;
-
-	    //torqueX = (vectorAction[2] - 0.5f) * 4f * 100f;
-	    //torqueZ = (vectorAction[3] - 0.5f) * 4f * 100f;
+	    torqueX = ScaleContinuousAction(vectorAction[2], -2f, 2f) * 100f;
+	    torqueZ = ScaleContinuousAction(vectorAction[3], -2f, 2f) * 100f;
         rbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 	}
 

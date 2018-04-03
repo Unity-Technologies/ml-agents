@@ -24,15 +24,14 @@ public class Ball3DAgent : Agent
     {
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            //var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
-            var actionZ = (vectorAction[0] - 0.5f) * 4f;
+            var actionZ = ScaleContinuousAction(vectorAction[0], -2f, 2f);
             if (gameObject.transform.rotation.z < 0.25f && actionZ > 0f ||
                 gameObject.transform.rotation.z > -0.25f && actionZ < 0f)
             {
                 gameObject.transform.Rotate(new Vector3(0, 0, 1), actionZ);
             }
-            //var actionX = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);
-            var actionX = (vectorAction[1] - 0.5f) * 4f;
+
+            var actionX = ScaleContinuousAction(vectorAction[1], -2f, 2f);
             if (gameObject.transform.rotation.x < 0.25f && actionX > 0f ||
                 gameObject.transform.rotation.x > -0.25f && actionX < 0f)
             {
