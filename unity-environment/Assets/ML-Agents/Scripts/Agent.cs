@@ -677,6 +677,20 @@ public abstract class Agent : MonoBehaviour
     }
 
     /// <summary>
+    /// Scales continous action from [0-1] range to arbitrary range.
+    /// </summary>
+    /// <param name="rawAction"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    protected float ScaleContinuousAction(float rawAction, float min, float max)
+    {
+        var middle = (min + max) / 2;
+        var range = max - min;
+        return (rawAction - 0.5f) * range + middle;
+    }
+
+    /// <summary>
     /// Sets the text observation.
     /// </summary>
     /// <param name="textObservation">The text observation.</param>

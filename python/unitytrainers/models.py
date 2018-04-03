@@ -118,7 +118,7 @@ class LearningModel(object):
         brain = self.brain
         s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
         if brain.vector_action_space_type == "continuous":
-            activation_fn = self.swish
+            activation_fn = tf.nn.tanh
         else:
             activation_fn = self.swish
 
@@ -237,7 +237,13 @@ class LearningModel(object):
 
         self.beta = tf.distributions.Beta(alpha, beta)
         self.entropy = -tf.reduce_mean(self.beta.entropy(), axis=1)
-        self.output = self.beta.sample()
+
+        alpha_sample = tf.random_gamma([1], alpha)
+        beta_sample = tf.random_gamma([1], beta)
+        self.output = alpha_sample / (alpha_sample + beta_sample + 1e-10)
+        self.output = tf.reshape(self.output, [-1, self.a_size])
+
+        # self.output = self.beta.sample()
         self.output = tf.identity(self.output, name="action")
         self.all_probs = self.beta.prob(self.output)
         self.all_probs = tf.identity(self.all_probs, name="action_probs")

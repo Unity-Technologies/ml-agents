@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -77,7 +78,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         {
             foreach (Agent agent in agentInfo.Keys)
             {
-                var action = new float[brain.brainParameters.vectorActionSize];
+                float[] action = Enumerable.Repeat(0.5f, brain.brainParameters.vectorActionSize).ToArray();
                 foreach (ContinuousPlayerAction cha in continuousPlayerActions)
                 {
                     if (Input.GetKey(cha.key))
@@ -88,7 +89,6 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 
                 agent.UpdateVectorAction(action);
             }
-
         }
         else
         {

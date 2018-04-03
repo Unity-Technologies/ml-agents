@@ -188,7 +188,6 @@ class PPOTrainer(Trainer):
             feed_dict[self.model.new_mean] = new_mean
             feed_dict[self.model.new_variance] = new_variance
             run_list = run_list + [self.model.update_mean, self.model.update_variance]
-
         values = self.sess.run(run_list, feed_dict=feed_dict)
         run_out = dict(zip(run_list, values))
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
@@ -254,7 +253,6 @@ class PPOTrainer(Trainer):
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
-
 
     def process_experiences(self, all_info: AllBrainInfo):
         """
