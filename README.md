@@ -35,13 +35,17 @@ to the wider research and game developer communities.
 
 [Download](https://store.unity.com/download) and install Unity, ML-Agents works with versions that are 2017.1 and above. 
 
-### Get Anaconda environment
+### Get Python 3 environment
 
-[Download](https://www.anaconda.com/download) and install Anaconda with Python 3.6 version. 
+Option 1: [Download](https://www.python.org/downloads/release/python-364/) and install Python 3.6.4, (Python 3.6.5 doesn't work with Tensorflow yet). 
+
+Option 2: [Download](https://www.anaconda.com/download) and install Anaconda with Python 3.6 version. 
+
+(For Windows) Choose to add to PATH if you don't know how to do it yourself, see [here](https://docs.python.org/3/using/windows.html) for more details. 
 
 ### Clone the repo and install dependencies
 
-You can get the ML-Agents code and all the packages it depends on with:
+You can get the ML-Agents code and all the packages it depends on by running the following in your command line tool. 
 
 ```
 git clone https://github.com/Unity-Technologies/ml-agents.git
@@ -49,14 +53,11 @@ cd ml-agents/python
 pip install .
 ```
 
-### Setting up TensorflowSharp Support
+(For Windows) If you don't have git, download it [here](https://git-scm.com/download/win) and install it, then reopen your cmd and try again. 
 
-1. Make sure the TensorFlowSharp plugin is in your `Assets` folder. A Plugins 
-folder which includes TF# can be downloaded 
-[here](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage). 
-Double click and import it once downloaded.  You can see if this was
-successfully installed by checking the TensorFlow files in the Project tab
-under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
+### Setting up ML-Agent within Unity
+
+1. Open Unity and use it to open folder `ml-agents`/`unity-environment`. 
 2. Go to `Edit` -> `Project Settings` -> `Player`
 3. For each of the platforms you target 
 (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
@@ -68,25 +69,32 @@ under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`
 4. Go to `File` -> `Save Project`
 5. Restart the Unity Editor.
 
+### Setting up TensorflowSharp Support
+
+[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) TensorflowSharp plugin, and
+import it into Unity once downloaded by double clicking on it.  You can see if this was
+successfully imported by checking the TensorFlow files in the Project window
+under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`. If you don't see anything under `Assets`, drag the folder `ml-agents`/`unity-environment`/`Assets`/`ML-Agents` folder under `Assets` within Project window.
+
+
 ### Play an example environment using pretrained model
 
-1. Open Unity and import the cloned repo into Unity. 
 2. In the Project window, go to `Assets` -> `ML-Agents` -> `Examples` -> `3DBall` folder and open the `3DBall` scene file. 
-3. In the Hierarchy window, click on `Ball3DAcademy` -> `Ball3DBrain`. 
-4. In the Inspector window, under `Brain (Script)` -> `Brain Type`, change the `Brain Type` to `Internal`. 
-5. Click the `Play` button and you will see the platforms automatically adjusts itself using the pretrained model. (Will attach a GIF below)
 
-### Where to go from here? (I plan to incorporate this with the documentation and community page below, still working on it)
+6. In the Hierarchy window, click on `Ball3DAcademy` -> `Ball3DBrain`. 
+7. In the Inspector window, under `Brain (Script)` -> `Brain Type`, change the `Brain Type` to `Internal`. 
+8. Click the `Play` button and you will see the platforms automatically adjusts itself using the pretrained model.
 
-1. If you want to understand how the model file gets trained, please go [here](docs/Training-ML-Agents.md). 
-2. If you are stuck somewhere, please refer to our [FAQ](), also you can follow our 
-3. If you don't want to have all these mess, you can also use docker [here](docs/Using-Docker.md)
+## Documentation
 
+You can find ML-Agents documentation [here](docs/Readme.md)
 
-## Documentation and References
+* [Hello World Example](docs/Getting-Started-with-Balance-Ball.md)
+* [Installation](docs/Installation.md)
+* 
 
-**For more information, in addition to installation and usage
-instructions, see our [documentation home](docs/Readme.md).** If you have
+### Migration from v0.2
+If you have
 used a version of ML-Agents prior to v0.3, we strongly recommend 
 our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
 
