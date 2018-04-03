@@ -75,7 +75,8 @@ class PPOTrainer(Trainer):
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
         self.episode_steps = {}
-        self.is_continuous = (env.brains[brain_name].vector_action_space_type == "continuous")
+        self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
+        self.is_continuous_observation = (env.brains[brain_name].vector_observation_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_visual_observations > 0)
         self.use_states = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
@@ -181,7 +182,7 @@ class PPOTrainer(Trainer):
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
             run_list += [self.model.memory_out]
-        if (self.is_training and self.brain.vector_observation_space_type == "continuous" and
+        if (self.is_training and self.is_continuous_observation and
                 self.use_states and self.trainer_parameters['normalize']):
             new_mean, new_variance = self.running_average(
                 curr_brain_info.vector_observations, steps, self.model.running_mean, self.model.running_variance)
@@ -279,7 +280,7 @@ class PPOTrainer(Trainer):
                         if info.memories.shape[1] == 0:
                             info.memories = np.zeros((len(info.vector_observations), self.m_size))
                         feed_dict[self.model.memory_in] = info.memories
-                    if not self.is_continuous and self.use_recurrent:
+                    if not self.is_continuous_action and self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.reshape(info.previous_vector_actions, [-1])
                     value_next = self.sess.run(self.model.value, feed_dict)[l]
                 agent_id = info.agents[l]
@@ -361,7 +362,7 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.prev_action] = np.array(
                             _buffer['prev_action'][start:end]).reshape([-1])
                 if self.use_states:
-                    if self.brain.vector_observation_space_type == "continuous":
+                    if self.is_continuous_observation:
                         feed_dict[self.model.vector_in] = np.array(
                             _buffer['states'][start:end]).reshape(
                             [-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
