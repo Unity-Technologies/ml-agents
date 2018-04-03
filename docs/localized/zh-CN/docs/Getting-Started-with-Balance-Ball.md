@@ -24,15 +24,13 @@ ML-Agents 包含大量[示例环境](Learning-Environment-Examples.md)，
 
 ## 安装
 
-为了安装和设置 ML-Agents、Python 依赖关系和 Unity，
+为了安装和设置 ML-Agents、Python 所依赖的库和 Unity 软件，
 请参阅[安装说明](Installation.md)。
 
 ## 了解 Unity 环境 (3D Balance Ball)
 
 agent 是一种观测并与_环境_交互的
-自主参与者 (actor)。在 Unity 上下文中，环境是一种场景，
-其中包含一个 Academy 和一个或多个 Brain 和 Agent 对象，
-当然还有 agent 可以交互的其他实体。
+自主参与者 (actor)。在 ML-Agent的语境下，环境是一个包含一个 Academy， 一个或多个 Brain， 一个或多个Agent， Agent 与其他实体交互的场景。
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
@@ -49,21 +47,20 @@ Inspector 窗口。Inspector 会显示游戏对象上的每个组件。
 
 ### Academy
 
-场景的 Academy 对象放置在 Ball3DAcademy 游戏对象上。
-当您查看 Inspector 中的 Academy 组件时，可以看到若干
-用于控制环境工作方式的属性。例如，
-**Training** 和 **Inference Configuration** 属性用于设置 Unity 应用程序的
-图形和时间刻度属性。Academy 在训练期间使用 
+在这个示例场景中的 Academy 对象是 Ball3DAcademy 游戏对象。
+当您在 Inspector 中查看该 Academy 组件时，可以看到若干
+用于控制环境工作方式的属性。例如，Inspector中可以看到
+**Training** 和 **Inference Configuration** 属性， 在其中我们可以设置之后生成的 Unity 可执行文件的
+图形和 Time Scale 属性。Academy 在训练期间使用 
 **Training Configuration**，而在不训练时使用 
-**Inference Configuration**。（*Inference* 意味着，换句话说，在**不**进行训练的
-任何时候，agent 使用的是经过训练的模型或启发式方法或直接控制。）
+**Inference Configuration**。（*Inference* 等同于**不**进行训练的任何时候，此时 agent 可以使用经过训练的模型控制，或用写定的代码控制，或让玩家直接控制。）
 通常情况下，您需要为 **Training configuration** 设置低图形质量
-和高时间刻度，而为 **Inference Configuration** 设置高图形质量和 
-`1.0` 的时间刻度。
+和高Time Scale，而为 **Inference Configuration** 设置高图形质量和 
+`1.0` 的Time Scale。
 
 **注意：**如果您想在训练期间观测环境，则可以调整 
 **Inference Configuration** 设置来使用更大的窗口和更接近 
-1:1 的时间刻度。认真训练时一定要重新设置这些参数；
+1:1 的时间刻度。当你想训练时一定要重新设置这些参数；
 否则，训练可能需要很长时间。
 
 对于环境，另一个需要关注的方面是 Academy 的实现。
