@@ -238,12 +238,7 @@ class LearningModel(object):
         self.beta = tf.distributions.Beta(alpha, beta)
         self.entropy = -tf.reduce_mean(self.beta.entropy(), axis=1)
 
-        alpha_sample = tf.random_gamma([1], alpha)
-        beta_sample = tf.random_gamma([1], beta)
-        self.output = alpha_sample / (alpha_sample + beta_sample + 1e-10)
-        self.output = tf.reshape(self.output, [-1, self.a_size])
-
-        # self.output = self.beta.sample()
+        self.output = self.beta.sample()
         self.output = tf.identity(self.output, name="action")
         self.all_probs = self.beta.prob(self.output)
         self.all_probs = tf.identity(self.all_probs, name="action_probs")
@@ -252,6 +247,7 @@ class LearningModel(object):
         self.value = tf.identity(self.value, name="value_estimate")
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32,
                                             name='old_probabilities')
+
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.probs = tf.identity(self.all_probs)
         self.old_probs = tf.identity(self.all_old_probs)
