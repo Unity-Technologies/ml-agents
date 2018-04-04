@@ -1,14 +1,14 @@
 # 学习环境示例
 
-Unity ML-Agents 包含一个扩展的环境示例集合，
-这些示例演示了该平台的各种功能。环境位于 
+Unity ML-Agents 包含一个不断扩展的环境示例集合，
+这些示例演示了该平台的各种功能。示例环境位于 
 `unity-environment/Assets/ML-Agents/Examples` 中并概括在了下方。
 此外，我们的
 [第一个 ML 挑战](https://connect.unity.com/challenges/ml-agents-1)
 包含了由社区创建的环境。
 
 此页仅概述了我们提供的示例环境。要了解更多
-关于如何设计和构建您自己的环境的信息，请参阅
+关于如何设计和构建您自己的环境，请参阅
 [创建新的学习环境](Learning-Environment-Create-New.md)
 页面。
 
@@ -53,16 +53,16 @@ Unity ML-Agents 包含一个扩展的环境示例集合，
 ![GridWorld](images/gridworld.png)
 
 * 设置：一个典型网格世界任务版本。场景包含 agent、目标和障碍。
-* 目标：agent 必须在网格中避开障碍的同时导航到目标。
+* 目标：agent 必须在网格中避开障碍的同时移动到目标。
 * Agent：环境包含一个链接到单个 brain 的 agent。
 * Agent 奖励函数：
     * 每一步 -0.01。
     * agent 导航到目标网格位置时 +1.0（场景结束）。
-    * agent 导航到障碍物时 -1.0（场景结束）。
+    * agent 移动到障碍物时 -1.0（场景结束）。
 * Brain：一个有以下观测/运动空间的 brain。
     * 向量观测空间：无
     * 向量运动空间：（离散）大小为 4，对应于基本方向的移动。
-    * 视觉观测：一个，对应于 GridWorld 自上而下的视图。
+    * 视觉观测：一个对应于 GridWorld 自上而下的视图。
 * 重置参数：三个，对应于网格大小、障碍物数量和目标数量。
 
 
@@ -71,7 +71,7 @@ Unity ML-Agents 包含一个扩展的环境示例集合，
 ![Tennis](images/tennis.png)
 
 * 设置：agent 控制球拍将球弹过球网的双人游戏。
-* 目标：agent 必须在彼此之间弹起网球，同时不能丢球或发球出界。
+* 目标：agent 必须在彼此之间弹起网球，同时不能丢球或击球出界。
 * Agent：环境包含两个链接到单个 brain（名为 TennisBrain）的 agent。在训练之后，您可以将另一个名为 MyBrain 的 brain 附加到其中一个 agent，从而与经过训练的模型进行游戏比赛。
 * Agent 奖励函数（独立）：
     * agent 击球过网时 +0.1。
@@ -191,7 +191,7 @@ Unity ML-Agents 包含一个扩展的环境示例集合，
 * Agent：环境包含一个链接到单个 brain 的 agent。
 * Agent 奖励函数（独立）：
     * 抓住香蕉时 +1。
-    * 弹跳出界时 -1。
+     弹跳出界时 -1。
     * -0.05 乘以动作平方。能量消耗惩罚。
 * Brain：一个有以下观测/运动空间的 brain：
     * 向量观测空间：（连续）6，对应于 agent 和香蕉的局部位置。
