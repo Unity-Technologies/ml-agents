@@ -1,6 +1,7 @@
-# Using Docker For ML-Agents (Experimental)
+# Using Docker For ML-Agents
 
-We currently offer an experimental solution for Windows and Mac users who would like to do training or inference using Docker. This option may be appealing to those who would like to avoid installing Python and TensorFlow themselves. The current setup forces both TensorFlow and Unity to _only_ rely on the CPU for computations. Consequently, our Docker support is limited to environments whose agents **do not** use camera-based visual observations. For example, the [GridWorld](Learning-Environment-Examples.md#gridworld) environment is **not** supported.
+We currently offer a solution for Windows and Mac users who would like to do training or inference using Docker. This option may be appealing to those who would like to avoid installing Python and TensorFlow themselves. The current setup forces both TensorFlow and Unity to _only_ rely on the CPU for computations. Consequently, our Docker simulation does not use a GPU and uses [`Xvfb`](https://en.wikipedia.org/wiki/Xvfb) to do visual rendering. `Xvfb` is a utility that enables `ML-Agents` (or any other application) to do rendering virtually i.e. it does not assume that the machine running `ML-Agents` has a GPU or a display attached to it. This means that rich environments which involve agents using camera-based visual observations might be slower.
+
 
 ## Requirements
 - Unity _Linux Build Support_ Component
@@ -26,12 +27,11 @@ Since Docker typically runs a container sharing a (linux) kernel with the host m
 Unity environment **has** to be built for the **linux platform**. When building a Unity environment, please select the following options from the the Build Settings window:
 - Set the _Target Platform_ to `Linux`
 - Set the _Architecture_ to `x86_64`
-- `Uncheck` the _Development Build_ option
-- `Check` the _Headless Mode_ option. (_This is required because the Unity binary will run in a container that does not have graphics drivers installed_.) 
-
-![Build Settings For Docker](images/docker_build_settings.png)
+- If the environment does not contain visual observations, you can select the `headless` option here.
 
 Then click `Build`, pick an environment name (e.g. `3DBall`) and set the output directory to `unity-volume`. After building, ensure that the file `<environment-name>.x86_64` and subdirectory `<environment-name>_Data/` are created under `unity-volume`.
+
+![Build Settings For Docker](images/docker_build_settings.png)
 
 ### Build the Docker Container
 
@@ -66,7 +66,7 @@ For the `3DBall` environment, for example this would be:
 ```
 docker run --name 3DBallContainer.first.trial \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
-           balance.ball.v0.1:latest 3Dball \
+           balance.ball.v0.1:latest 3DBall \
            --docker-target-name=unity-volume \
            --train \
            --run-id=3dball_first_trial
@@ -77,7 +77,7 @@ For more detail on Docker mounts, check out [these](https://docs.docker.com/stor
 
 ### Stopping Container and Saving State
 
-If you are satisfied with the training progress, you can stop the Docker container while saving state using the following command:
+If you are satisfied with the training progress, you can stop the Docker container while saving state by either using `Ctrl+C` or `⌘+C` (Mac) or by using the following command:
 
 ```
 docker kill --signal=SIGINT <container-name>
