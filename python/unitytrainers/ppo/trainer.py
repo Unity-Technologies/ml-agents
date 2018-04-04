@@ -358,7 +358,7 @@ class PPOTrainer(Trainer):
                              self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1, 1]),
                              self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.vector_action_space_size])}
-                if self.is_continuous:
+                if self.is_continuous_action:
                     feed_dict[self.model.output] = np.array(
                         _buffer['actions'][start:end]).reshape([-1, self.model.a_size])
                 else:
