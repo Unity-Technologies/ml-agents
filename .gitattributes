@@ -2,3 +2,4 @@
 *.unity binary
 *.prefab binary
 *.meta binary
+*.md text
