@@ -1,6 +1,6 @@
 # 安装和设置
 
-为了安装和使用 ML-Agents，您需要安装 Unity，克隆此存储库，
+为了安装和使用 ML-Agents，您需要安装 Unity，克隆此代码仓库，
 并安装 Python 以及其他依赖项。下面的每个小节
 都会概述每个步骤，此外还会介绍实验性的 Docker 设置。
 
@@ -16,15 +16,15 @@ _Linux Build Support_ 组件。
         width="500" border="10" />
 </p>
 
-## 克隆 ml-agents 存储库
+## 克隆 ml-agents 代码仓库
 
-安装完成后，您需要克隆 ML-Agents GitHub 存储库。
+安装完成后，您需要克隆 ML-Agents GitHub代码仓库。
 
     git clone git@github.com:Unity-Technologies/ml-agents.git
 
-此存储库中的 `unity-environment` 目录包含了要添加到项目中的 
-Unity Assets。`python` 目录包含训练代码。
-这两个目录都位于存储库的根目录。
+此代码仓库中的 `unity-environment` 目录包含了要添加到项目中的 
+Unity资源。`python` 目录包含训练代码。
+这两个目录都位于代码仓库的根目录。
 
 ## 安装 Python（以及依赖项）
 
@@ -44,7 +44,7 @@ Unity Assets。`python` 目录包含训练代码。
 [说明](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 以了解其安装方法。
 
-要安装依赖项，请进入存储库的 `python` 子目录，
+要安装依赖项，请进入代码仓库的 `python` 子目录，
 然后从命令行中运行：
 
     pip3 install .
@@ -60,7 +60,7 @@ Unity Assets。`python` 目录包含训练代码。
 
  * [带 TensorflowSharp 插件的 ML-Agents](https://s3.amazonaws.com/unity-ml-agents/0.3/ML-AgentsWithPlugin.unitypackage)
  * [不带 TensorflowSharp 插件的 ML-Agents](https://s3.amazonaws.com/unity-ml-agents/0.3/ML-AgentsNoPlugin.unitypackage)
- * [仅 TensorflowSharp 插件](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)
+ * [仅包含 TensorflowSharp 插件](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)
 
 ## 帮助
 

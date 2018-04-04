@@ -223,7 +223,7 @@ Unity 场景：
 3.打开 Build Settings 窗口（菜单：**File** > **Build Settings**）。
 4.选择目标平台。
     -（可选）选择“Development Build”以便
-    [记录调试消息](https://docs.unity3d.com/Manual/LogFiles.html)。
+        [记录调试消息](https://docs.unity3d.com/Manual/LogFiles.html)。
 5.如果 **Scenes in Build** 列表中显示了任何场景，请确保
 唯一选中的是 3DBall Scene。（如果该列表为空，则表示
 仅当前场景包含在编译中）。
@@ -270,10 +270,10 @@ TensorBoard 来观测训练统计信息时，将每次训练的此项设置为�
 总之，转到命令行，进入 `ml-agents` 目录并输入：
 
 ```python
-python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
+python3 python/learn.py <env_file_path> —run-id=<run-identifier> —train
 ```
 
-`--train` 标志告诉 ML-Agents 以训练模式运行。`env_file_path` 应该是刚才创建的 Unity 可执行文件的路径。
+`—train` 标志告诉 ML-Agents 以训练模式运行。`env_file_path` 应该是刚才创建的 Unity 可执行文件的路径。
 
 
 ### 观测训练进度
@@ -282,7 +282,7 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 包含一个 `summaries` 目录。为了更详细地观测训练过程，
 您可以使用 TensorBoard。从命令行中运行：
 
-`tensorboard --logdir=summaries`
+`tensorboard —logdir=summaries`
 
 然后导航至 `localhost:6006`。
 
@@ -334,9 +334,9 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 （**`PC, Mac and Linux Standalone`**、**`iOS`** 或 **`Android`**）：
     1.转到 `Other Settings`。
     2.选择 `Scripting Runtime Version` 为
-    `Experimental (.NET 4.6 Equivalent)`
+        `Experimental (.NET 4.6 Equivalent)`
     3.在 `Scripting Defined Symbols` 中，添加标志 `ENABLE_TENSORFLOW`。
-    输入后，按 Enter。
+        输入后，按 Enter。
 4.转到 `File` > `Save Project`
 5.重新启动 Unity Editor。
 
@@ -346,7 +346,7 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 完成后，该位置会有一个 `<env_name>.bytes` 文件，其中的 `<env_name>` 是训练期间使用的可执行文件的
 名称。
  2.将 `<env_name>.bytes` 从 `python/models/ppo/` 移入 
-`unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`。
+ `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`。
 3.打开 Unity Editor，然后选择 `3DBall` 场景（如上所述）。
 4.从 Scene 层级视图中选择 `Ball3DBrain` 对象。
 5.将 `Type of Brain` 更改为 `Internal`。
