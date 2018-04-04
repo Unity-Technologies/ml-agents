@@ -71,7 +71,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 离散观测就足够了。
 另一方面，视觉观测是附加到 agent 的摄像头
 所生成的图像，代表着 agent 在该时间点看到的
-内容。通常会将 agent 的观测与环境（或游戏）
+内容。我们通常会将 agent 的观测与环境（或游戏）
 **状态**混淆。环境状态表示包含所有游戏角色的
 整个场景的相关信息。但是，agent 观测
 仅包含 agent 了解的信息，通常是
@@ -80,7 +80,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 - **动作** - 军医可采取的动作。与观测
 类似，根据环境和 agent 的复杂性，
 动作可以是连续的或离散的。就军医而言，
-如果环境是一个只是位置很重要的简单网格世界，
+如果环境是一个只是基于位置的简单网格世界，
 那么采用四个值（东、西、南、北）之一的离散动作
 就足够了。但是，如果环境更加复杂并且军医可以
 自由移动，那么使用两个连续动作（一个对应于方向，
@@ -106,8 +106,8 @@ _训练_军医的行为了。为此需要通过许多试验来
 技术中，所学习的行为称为 **policy**，
 其本质上是从观测到动作的（最佳）映射。请注意，
 通过运行模拟来学习 policy 的过程称为
-**训练阶段**，而通过 NPC（使用其学习到的 policy）
-来玩游戏称为**推理阶段**。
+**训练阶段**，而与 NPC（使用其学习到的 policy）
+一起玩游戏称为**推理阶段**。
 
 ML-Agents 提供了所有必要工具，因此可使用 Unity 作为
 模拟引擎来学习 Unity 环境中不同对象的 policy。
@@ -190,7 +190,7 @@ Brain 收集的观测结果和奖励通过 External Communicator
 返回 Agent 需要采取的相应动作。
 * **Internal** - 使用嵌入式 
 [TensorFlow](Background-TensorFlow.md) 模型进行决策。
-嵌入式 TensorFlow 模型表示学到的 policy，Brain 直接使用
+嵌入式 TensorFlow 模型包含了学到的 policy，Brain 直接使用
 此模型来确定每个 Agent 的动作。
 * **Player** - 使用键盘或控制器的实际输入进行
 决策。这种情况下，人类玩家负责控制 Agent，由 Brain 收集的
@@ -243,7 +243,7 @@ Brain 类型在训练期间设置为 External，在推理期间设置为 Interna
 Python API，而是送入他们的（内部嵌入式）模型，
 以便生成每个军医在每个时间点上要采取的_最佳_动作。
 
-总结一下：我们的内置实现基于 TensorFlow，因此，
+总结一下：我们的实现是基于 TensorFlow 的，因此，
 在训练期间，Python API 使用收到的观测结果来学习 
 TensorFlow 模型。然后在推理过程中该模型将嵌入到 
 Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
@@ -251,7 +251,6 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 因为它仅限于 TensorFlow 模型并会利用第三方 
 [TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp)
  库。**
-
 
 [3D Balance Ball 示例入门](Getting-Started-with-Balance-Ball.md)
 教程使用 **3D Balance Ball** 示例环境介绍了此训练模式。
@@ -265,7 +264,7 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 的 Brain 类型都会设置为 External，并且场景中所有 Agent 的行为
 都将在 Python 中接受控制。
 
-我们目前没有教程重点介绍这种模式，但您可以在[这里](Python-API.md)
+我们目前没有教程介绍这种模式，但您可以在[这里](Python-API.md)
 了解有关 Python API 的更多信息。
 
 ### Curriculum Learning（课程学习）
@@ -296,7 +295,7 @@ _数学课程的示例。从简单主题到复杂主题的课程进度安排，
 当我们考虑 reinforcement learning（强化学习）的实际原理时，
 学习信号是在整个训练过程中偶尔收到的奖励。
 训练 agent 完成此任务时的起点将是一个
-随机 policy。该起始 policy 将使 agent 转圈，
+随机 policy。该起始 policy 将使 agent 原地转圈，
 在复杂环境中可能永远不会获得奖励或极少
 获得奖励。因此，通过在训练开始时简化环境，
 我们可让 agent 将随机 policy 快速更新为更有意义的 policy，
