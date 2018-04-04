@@ -339,7 +339,7 @@ class PPOTrainer(Trainer):
         """
         num_epoch = self.trainer_parameters['num_epoch']
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
-        total_v, total_p = 0, 0
+        total_v, total_p = [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
@@ -386,10 +386,10 @@ class PPOTrainer(Trainer):
                 v_loss, p_loss, _ = self.sess.run(
                     [self.model.value_loss, self.model.policy_loss,
                      self.model.update_batch], feed_dict=feed_dict)
-                total_v += v_loss
-                total_p += p_loss
-        self.stats['value_loss'].append(total_v)
-        self.stats['policy_loss'].append(total_p)
+                total_v.append(v_loss)
+                total_p.append(np.abs(p_loss))
+        self.stats['value_loss'].append(np.mean(total_v))
+        self.stats['policy_loss'].append(np.mean(total_p))
         self.training_buffer.reset_update_buffer()
 
     def write_summary(self, lesson_number):
