@@ -24,15 +24,13 @@ ML-Agents 包含大量[示例环境](Learning-Environment-Examples.md)，
 
 ## 安装
 
-为了安装和设置 ML-Agents、Python 依赖关系和 Unity，
+为了安装和设置 ML-Agents、Python 所依赖的库和 Unity 软件，
 请参阅[安装说明](Installation.md)。
 
 ## 了解 Unity 环境 (3D Balance Ball)
 
 agent 是一种观测并与_环境_交互的
-自主参与者 (actor)。在 Unity 上下文中，环境是一种场景，
-其中包含一个 Academy 和一个或多个 Brain 和 Agent 对象，
-当然还有 agent 可以交互的其他实体。
+自主参与者 (actor)。在 ML-Agent的语境下，环境是一个包含一个 Academy， 一个或多个 Brain， 一个或多个Agent， Agent 与其他实体交互的场景。
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
@@ -49,21 +47,20 @@ Inspector 窗口。Inspector 会显示游戏对象上的每个组件。
 
 ### Academy
 
-场景的 Academy 对象放置在 Ball3DAcademy 游戏对象上。
-当您查看 Inspector 中的 Academy 组件时，可以看到若干
-用于控制环境工作方式的属性。例如，
-**Training** 和 **Inference Configuration** 属性用于设置 Unity 应用程序的
-图形和时间刻度属性。Academy 在训练期间使用 
+在这个示例场景中的 Academy 对象是 Ball3DAcademy 游戏对象。
+当您在 Inspector 中查看该 Academy 组件时，可以看到若干
+用于控制环境工作方式的属性。例如，Inspector中可以看到
+**Training** 和 **Inference Configuration** 属性， 在其中我们可以设置之后生成的 Unity 可执行文件的
+图形和 Time Scale 属性。Academy 在训练期间使用 
 **Training Configuration**，而在不训练时使用 
-**Inference Configuration**。（*Inference* 意味着，换句话说，在**不**进行训练的
-任何时候，agent 使用的是经过训练的模型或启发式方法或直接控制。）
+**Inference Configuration**。（*Inference* 等同于**不**进行训练的任何时候，此时 agent 可以使用经过训练的模型控制，或用写定的代码控制，或让玩家直接控制。）
 通常情况下，您需要为 **Training configuration** 设置低图形质量
-和高时间刻度，而为 **Inference Configuration** 设置高图形质量和 
-`1.0` 的时间刻度。
+和高Time Scale，而为 **Inference Configuration** 设置高图形质量和 
+`1.0` 的Time Scale。
 
 **注意：**如果您想在训练期间观测环境，则可以调整 
 **Inference Configuration** 设置来使用更大的窗口和更接近 
-1:1 的时间刻度。认真训练时一定要重新设置这些参数；
+1:1 的时间刻度。当你要正式训练时一定要重新设置这些参数；
 否则，训练可能需要很长时间。
 
 对于环境，另一个需要关注的方面是 Academy 的实现。
@@ -108,7 +105,7 @@ Brain 不存储关于 agent 的任何信息，
 **向量观测空间**
 
 在决策之前，agent 会收集有关自己在环境中所处的状态的
-观测结果。ML-Agents 将向量观测分为两类：
+观测结果。ML-Agents 将观测分为两类：
 **Continuous** 和 **Discrete**。**Continuous** 向量观测空间
 会收集浮点数向量中的观测结果。**Discrete** 
 向量观测空间是一个状态表的索引。大多数示例环境
@@ -126,9 +123,7 @@ Brain 不存储关于 agent 的任何信息，
 brain 以*动作*的形式向 agent 提供指令。与状态
 一样，ML-Agents 将动作分为两种类型：**Continuous** 
 向量运动空间是一个可以连续变化的数字向量。向量
-每个元素的含义都是由 agent 逻辑定义的（PPO 训练过程
-只是根据特定的状态观测结果 - 这基于在尝试不同值时收到的奖励，
-了解哪些值更好）。
+每个元素的含义都是由 agent 逻辑定义的（PPO 训练过程是一个了解agent的哪种状态更好的过程，这个过程是通过学习不同agent的不同状态会对应多少奖励来实现的）。
 例如，一个元素可能表示施加到 agent 某个 
 `RigidBody` 上的力或扭矩。**Discrete** 向量运动空间将其动作
 定义为一个表。提供给 agent 的具体动作是这个表的
@@ -192,7 +187,7 @@ Unity 场景：
 2.在 Projects 对话框上，选择窗口顶部的 **Open** 选项。
 3.使用随后打开的文件对话框，找到 ML-Agents 项目内的 
 `unity-environment` 文件夹，然后单击 **Open**。
-4.在 `Project` 窗口中，导航至文件夹 
+4.在 `Project` 窗口中，找到文件夹 
 `Assets/ML-Agents/Examples/3DBall/`。
 5.双击 `Scene` 文件以加载包含 Balance Ball 环境的
 场景。
@@ -216,7 +211,7 @@ Unity 场景：
 * 没有对话需要互动
 * 正确的场景会自动加载
  
-1.打开玩家设置（菜单：**Edit** > **Project Settings** > **Player**）。
+1.打开 Player Settings（菜单：**Edit** > **Project Settings** > **Player**）。
 2.在 **Resolution and Presentation** 下方：
     - 确保选中 **Run in Background**。
     - 确保 **Display Resolution Dialog** 设置为 Disabled。
@@ -256,7 +251,7 @@ Reinforcement Learning（强化学习）算法。
 
 
 为了训练 Balance Ball 环境中的 agent，我们将使用 Python 
-包。我们提供了一个名为 `learn.py` 的方便的 Python 包装脚本，此脚本会接受用于配置训练和推理阶段的参数。
+包。我们提供了一个名为 `learn.py` 的方便的 Python 包装脚本，此脚本会接受用于配置训练和预测阶段的参数。
 
 
 我们将向这个脚本传递我们刚才构建的环境可执行文件的路径。（可选）我们可以
@@ -311,7 +306,7 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 
 ![TensorBoard 运行示例](images/mlagents-TensorBoard.png)
 
-## 将经过训练的 Brain 嵌入到 Unity 环境中（实验性）
+## 将经过训练的 Brain 嵌入到 Unity 环境中（测试功能）
 
 一旦训练过程完成，并且训练过程保存了模型
 （通过 `Saved Model` 消息可看出），您便可以将该模型添加到 Unity 项目中，
@@ -328,7 +323,7 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 [此处](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)下载一个包含 TF# 的 Plugins 文件夹。
 下载后，双击并将其导入。您可以在 Project 选项卡中
 （位于 `Assets` > `ML-Agents` > `Plugins` > `Computer` 下）
-检查 TensorFlow 文件来查看是否安装成功
+检查 TensorFlow 的相关文件来查看是否安装成功
 2.转到 `Edit` > `Project Settings` > `Player`
 3.对于每个目标平台
 （**`PC, Mac and Linux Standalone`**、**`iOS`** 或 **`Android`**）：
@@ -355,6 +350,6 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 7.按 Editor 顶部的 Play 按钮。
 
 如果您正确执行了这些步骤，您现在应该能够
-看到 Editor 中有这个用于控制平衡球行为的
-训练模型。从这里开始，您便可以重新构建 Unity 二进制文件，
-并单独运行该二进制文件，在其中内置 agent 新学到的行为。
+看到 Unity 编辑器中有这个用于控制平衡球行为的
+训练模型。从这里开始，您便可以重新构建 Unity 的可执行文件，
+并单独运行该可执行文件，在其中内置 agent 新学到的行为。

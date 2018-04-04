@@ -49,7 +49,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 除了我们自己的文档外，这里还有一些额外的相关文章：
 - [Unity AI - Unity 3D 人工智能](https://www.youtube.com/watch?v=bqsfkGbBU6k)
 - [游戏开发者学习机器学习](https://mikecann.co.uk/machine-learning/a-game-developer-learns-machine-learning-intent/)
-- [在 Intel 体系结构上单独研究 Unity Technologies ML-Agents](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
+- [在 Intel 架构上单独研究 Unity Technologies ML-Agents](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
 
 ## 社区和反馈
 
