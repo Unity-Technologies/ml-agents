@@ -195,7 +195,7 @@ class LearningModel(object):
             hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
             self.memory_out = tf.identity(self.memory_out, name='recurrent_out')
 
-        self.policy = tf.layers.dense(hidden, self.a_size, activation=None, use_bias=False,
+        self.policy = tf.layers.dense(hidden, self.a_size, activation=None,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
         self.all_probs = tf.nn.softmax(self.policy, name="action_probs")
@@ -232,11 +232,14 @@ class LearningModel(object):
             hidden_policy = hidden_streams[0]
             hidden_value = hidden_streams[1]
 
-        alpha = 1.0 + tf.layers.dense(hidden_policy, self.a_size, activation=tf.nn.softplus, use_bias=False)
-        beta = 1.0 + tf.layers.dense(hidden_policy, self.a_size, activation=tf.nn.softplus, use_bias=False)
+        # We use the Beta distribution to select actions, as per: http://proceedings.mlr.press/v70/chou17a/chou17a.pdf
+        alpha = 1.0 + tf.layers.dense(hidden_policy, self.a_size, activation=tf.nn.softplus)
+        beta = 1.0 + tf.layers.dense(hidden_policy, self.a_size, activation=tf.nn.softplus)
 
         self.beta = tf.distributions.Beta(alpha, beta)
-        self.entropy = -tf.reduce_mean(self.beta.entropy(), axis=1)
+        
+        # This isn't technically entropy, but serves the same purpose here.
+        self.entropy = -tf.reduce_mean((alpha + beta) / 2, axis=1)
 
         self.output = self.beta.sample()
         self.output = tf.identity(self.output, name="action")
