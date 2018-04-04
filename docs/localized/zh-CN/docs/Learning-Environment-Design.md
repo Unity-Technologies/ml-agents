@@ -2,9 +2,9 @@
 
 Reinforcement learning（强化学习）是一种人工智能技术，通过奖励期望的行为来训练 _agent_ 执行任务。在 reinforcement learning（强化学习）过程中，agent 会探索自己所处的环境，观测事物的状态，并根据这些观测结果采取相应动作。如果该动作带来了更好的状态，agent 会得到正奖励。如果该动作带来的状态不太理想，则 agent 不会得到奖励或会得到负奖励（惩罚）。随着 agent 在训练期间不断学习，它会优化自己的决策能力，以便随着时间的推移获得最高奖励。
 
-ML-Agents 使用一种称为 [近端策略优化 (PPO)](https://blog.openai.com/openai-baselines-ppo/) 的 reinforcement learning（强化学习）技术。PPO 使用神经网络来逼近理想函数；这种理想函数将 agent 的观测结果映射为 agent 在给定状态下可以采取的最佳动作。ML-Agents PPO 算法在 TensorFlow 中实现，并在单独的 Python 过程中运行（通过套接字与正在运行的 Unity 应用程序进行通信）。
+ML-Agents 使用一种称为 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/) 的 reinforcement learning（强化学习）技术。PPO 使用神经网络来逼近理想函数；这种理想函数将 agent 的观测结果映射为 agent 在给定状态下可以采取的最佳动作。ML-Agents PPO 算法在 TensorFlow 中实现，并在单独的 Python 过程中运行（通过套接字与正在运行的 Unity 应用程序进行通信）。
 
-**注意：**如果您并非要专门研究机器学习和 reinforcement learning（强化学习）主题，只想训练 agent 完成任务，则可以将 PPO 训练视为_黑盒_。在 Unity 内部以及在 Python 训练方面有一些与训练相关的参数可进行调整，但您不需要深入了解算法本身就可以成功创建和训练 agent。[“训练”部分](Training-ML-Agents.md)提供了执行训练过程的逐步操作程序。
+**注意：**如果您并非要专门研究机器学习和 reinforcement learning（强化学习）主题，只想训练 agent 完成任务，则可以将 PPO 训练视为_黑匣子_。在 Unity 内部以及在 Python 训练方面有一些与训练相关的参数可进行调整，但您不需要深入了解算法本身就可以成功创建和训练 agent。[“训练”部分](Training-ML-Agents.md)提供了执行训练过程的逐步操作程序。
 
 ##模拟和训练过程
 
@@ -14,18 +14,18 @@ ML-Agents 使用一种称为 [近端策略优化 (PPO)](https://blog.openai.com/
 
 ML-Agents Academy 类按如下方式编排 agent 模拟循环：
 
-1. 调用您的 Academy 子类的 `AcademyReset()` 函数。
-2. 对场景中的每个 agent 调用 `AgentReset()` 函数。
-3. 对场景中的每个 agent 调用 `CollectObservations()` 函数。
-4. 使用每个 agent 的 Brain 类来决定 agent 的下一动作。
-5. 调用您的子类的 `AcademyAct()` 函数。
-6. 对场景中的每个 agent 调用 `AgentAction()` 函数，传入由 agent 的 brain 选择的动作。（如果 agent 已完成，则不调用此函数。）
-7. 如果 agent 已达到其 `Max Step` 计数或者已将其自身标记为 `done`，则调用 agent 的 `AgentOnDone()` 函数。或者，如果某个 agent 在场景结束之前已完成，您可以将其设置为重新开始。在这种情况下，Academy 会调用 `AgentReset()` 函数。
-8. 当 Academy 达到其自身的 `Max Step` 计数时，它会通过调用您的 Academy 子类的 `AcademyReset()` 函数来再次开始下一场景。
+1.调用您的 Academy 子类的 `AcademyReset()` 函数。
+2.对场景中的每个 agent 调用 `AgentReset()` 函数。
+3.对场景中的每个 agent 调用 `CollectObservations()` 函数。
+4.使用每个 agent 的 Brain 类来决定 agent 的下一动作。
+5.调用您的子类的 `AcademyAct()` 函数。
+6.对场景中的每个 agent 调用 `AgentAction()` 函数，传入由 agent 的 brain 选择的动作。（如果 agent 已完成，则不调用此函数。）
+7.如果 agent 已达到其 `Max Step` 计数或者已将其自身标记为 `done`，则调用 agent 的 `AgentOnDone()` 函数。或者，如果某个 agent 在场景结束之前已完成，您可以将其设置为重新开始。在这种情况下，Academy 会调用 `AgentReset()` 函数。
+8.当 Academy 达到其自身的 `Max Step` 计数时，它会通过调用您的 Academy 子类的 `AcademyReset()` 函数来再次开始下一场景。
 
 要创建训练环境，请扩展 Academy 和 Agent 类以实现上述方法。`Agent.CollectObservations()` 和 `Agent.AgentAction()` 函数必须实现；而其他方法是可选的，即是否需要实现它们取决于您的具体情况。
   
-**注意：** Python PPO 训练过程在训练期间用于与 Academy 进行通信并控制 Academy 的 API 也可用于其他目的。例如，借助于该 API，您可以将 Unity 用作您自己的机器学习算法的模拟引擎。请参阅 [Python API](Python-API.md) 以了解更多信息。
+**注意：**Python PPO 训练过程在训练期间用于与 Academy 进行通信并控制 Academy 的 API 也可用于其他目的。例如，借助于该 API，您可以将 Unity 用作您自己的机器学习算法的模拟引擎。请参阅 [Python API](Python-API.md) 以了解更多信息。
 
 ## 组织 Unity 场景
 
@@ -74,7 +74,7 @@ Agent 类代表场景中负责收集观测结果并采取动作的一个参与�
 
 请参阅 [Agent](Learning-Environment-Design-Agents.md) 以详细了解如何对您自己的 agent 进行编程。
 
-## 环境
+##环境
 
 ML-Agents 中的_环境_可以是 Unity 中构建的任何场景。Unity 场景为 agent 提供了观察、行动和学习的环境。如何设置 Unity 场景来用作学习环境实际上取决于您的目标。您可能想要试图解决有限范围的特定 reinforcement learning（强化学习）问题，这种情况下可以使用同一场景来进行训练并测试受过训练的 agent。或者，您可能想要训练 agent 在复杂的游戏或模拟中行动，这种情况下创建专门构建的训练场景可能会更加高效和实用。
 

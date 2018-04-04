@@ -10,12 +10,12 @@
 
 在 Unity 项目中使用 ML-Agents 涉及以下基本步骤：
 
-1. 创建一个容纳 agent 的环境。从包含少量对象的简单 physical 模拟环境到整个游戏或生态系统，环境的形式可以多种多样。
-2. 实现一个 Academy 子类，并将这个子类添加到包含该环境的 Unity 场景中的游戏对象 (GameObject)。此游戏对象将用作场景中任何 Brain 对象的父级。您的 Academy 类可以实现一些可选的方法，从而独立于任何 agent 来对场景进行更新。例如，您可以在环境中添加、移动或删除 agent 和其他实体。
-3. 将一个或多个 Brain 对象作为 Academy 的子级添加到场景中。
-4. 实现 Agent 子类。Agent 子类定义了必要的代码供 agent 用于观测自身环境、执行指定动作以及计算用于强化训练的奖励。您还可以实现可选方法，从而在 agent 完成任务或任务失败时重置 agent。
-5. 将 Agent 子类添加到相应的游戏对象，通常是在场景内表示模拟中的 agent 的对象。必须为每个 Agent 对象分配一个 Brain 对象。
-6. 如果要进行训练，应将 Brain 类型设置为 External 并[执行训练过程](Training-ML-Agents.md)。
+1.创建一个容纳 agent 的环境。从包含少量对象的简单 physical 模拟环境到整个游戏或生态系统，环境的形式可以多种多样。
+2.实现一个 Academy 子类，并将这个子类添加到包含该环境的 Unity 场景中的游戏对象 (GameObject)。此游戏对象将用作场景中任何 Brain 对象的父级。您的 Academy 类可以实现一些可选的方法，从而独立于任何 agent 来对场景进行更新。例如，您可以在环境中添加、移动或删除 agent 和其他实体。
+3.将一个或多个 Brain 对象作为 Academy 的子级添加到场景中。
+4.实现 Agent 子类。Agent 子类定义了必要的代码供 agent 用于观测自身环境、执行指定动作以及计算用于强化训练的奖励。您还可以实现可选方法，从而在 agent 完成任务或任务失败时重置 agent。
+5.将 Agent 子类添加到相应的游戏对象，通常是在场景内表示模拟中的 agent 的对象。必须为每个 Agent 对象分配一个 Brain 对象。
+6.如果要进行训练，应将 Brain 类型设置为 External 并[执行训练过程](Training-ML-Agents.md)。
 
 **注意：**如果您不熟悉 Unity，而本教程中未充分讲解 Editor 任务的情况下，请参阅 Unity 手册中的[了解界面](https://docs.unity3d.com/Manual/LearningtheInterface.html)。
 
@@ -25,11 +25,11 @@
 
 要完成的第一项任务是创建一个新的 Unity 项目并将 ML-Agents 资产导入其中：
 
-1. 启动 Unity Editor 并创建一个名为“RollerBall”的新项目。
+1.启动 Unity Editor 并创建一个名为“RollerBall”的新项目。
 
-2. 在文件系统窗口中，导航至包含您所克隆的 ML-Agents 存储库的文件夹。
+2.在文件系统窗口中，导航至包含您所克隆的 ML-Agents 存储库的文件夹。
 
-3. 将 `ML-Agents` 文件夹从 `unity-environments/Assets` 拖到 Unity Editor Project 窗口中。
+3.将 `ML-Agents` 文件夹从 `unity-environments/Assets` 拖到 Unity Editor Project 窗口中。
 
 您的 Unity **Project** 窗口应包含以下资产：
 
@@ -41,11 +41,11 @@
 
 **创建地板平板：**
 
-1. 在 Hierarchy 窗口中右键单击，选择 3D Object > Plane。
-2. 将游戏对象命名为“Floor”。
-3. 选择 Plane 以便在 Inspector 窗口中查看其属性。
-4. 将 Transform 设置为 Position = (0,0,0)、Rotation = (0,0,0)、Scale = (1,1,1)。
-5. 在 Plane 的 Mesh Renderer 上，展开 Materials 属性并将默认材质更改为 *floor*。
+1.在 Hierarchy 窗口中右键单击，选择 3D Object > Plane。
+2.将游戏对象命名为“Floor”。
+3.选择 Plane 以便在 Inspector 窗口中查看其属性。
+4.将 Transform 设置为 Position = (0,0,0)、Rotation = (0,0,0)、Scale = (1,1,1)。
+5.在 Plane 的 Mesh Renderer 上，展开 Materials 属性并将默认材质更改为 *floor*。
 
 （要设置新材质，请单击当前材质名称旁边的小圆圈图标。此时将打开 **Object Picker** 对话框，然后便可从项目中当前所有材质的列表中选择不同的材质。）
 
@@ -53,23 +53,23 @@
 
 **添加目标立方体**
 
-1. 在 Hierarchy 窗口中右键单击，选择 3D Object > Cube。
-2. 将游戏对象命名为“Target”
-3. 选择 Target 以便在 Inspector 窗口中查看其属性。
-4. 将 Transform 设置为 Position = (3,0.5,3)、Rotation = (0,0,0)、Scale = (1,1,1)。
-5. 在 Cube 的 Mesh Renderer 上，展开 Materials 属性并将默认材质更改为 *block*。
+1.在 Hierarchy 窗口中右键单击，选择 3D Object > Cube。
+2.将游戏对象命名为“Target”
+3.选择 Target 以便在 Inspector 窗口中查看其属性。
+4.将 Transform 设置为 Position = (3,0.5,3)、Rotation = (0,0,0)、Scale = (1,1,1)。
+5.在 Cube 的 Mesh Renderer 上，展开 Materials 属性并将默认材质更改为 *block*。
 
 ![Inspector 窗口中的目标立方体](images/mlagents-NewTutBlock.png)
 
 **添加 Agent 球体**
 
-1. 在 Hierarchy 窗口中右键单击，选择 3D Object > Sphere。
-2. 将游戏对象命名为“RollerAgent”
-3. 选择 Target 以便在 Inspector 窗口中查看其属性。
-4. 将 Transform 设置为 Position = (0,0.5,0)、Rotation = (0,0,0)、Scale = (1,1,1)。
-5. 在 Sphere 的 Mesh Renderer 上，展开 Materials 属性并将默认材质更改为 *checker 1*。
-6. 单击 **Add Component**。
-7. 向 Sphere 添加 Physics/Rigidbody 组件。（添加 Rigidbody）
+1.在 Hierarchy 窗口中右键单击，选择 3D Object > Sphere。
+2.将游戏对象命名为“RollerAgent”
+3.选择 Target 以便在 Inspector 窗口中查看其属性。
+4.将 Transform 设置为 Position = (0,0.5,0)、Rotation = (0,0,0)、Scale = (1,1,1)。
+5.在 Sphere 的 Mesh Renderer 上，展开 Materials 属性并将默认材质更改为 *checker 1*。
+6.单击 **Add Component**。
+7.向 Sphere 添加 Physics/Rigidbody 组件。（添加 Rigidbody）
 
 ![Inspector 窗口中的 Agent 游戏对象](images/mlagents-NewTutSphere.png)
 
@@ -77,10 +77,10 @@
 
 **添加空游戏对象来容纳 Academy 和 Brain**
 
-1. 在 Hierarchy 窗口中右键单击，选择 Create Empty。
-2. 将游戏对象命名为“Academy”
-3. 右键单击 Academy 游戏对象，然后选择 Create Empty。
-4. 将 Academy 的此子级命名为“Brain”。
+1.在 Hierarchy 窗口中右键单击，选择 Create Empty。
+2.将游戏对象命名为“Academy”
+3.右键单击 Academy 游戏对象，然后选择 Create Empty。
+4.将 Academy 的此子级命名为“Brain”。
 
 ![场景层级视图](images/mlagents-NewTutHierarchy.png)
 
@@ -92,17 +92,17 @@ Academy 对象可在场景中协调 ML-Agents 并驱动模拟循环的决策部�
 
 首先，将一个 New Script 组件添加到先前创建的 Academy 游戏对象：
 
-1. 选择 Academy 游戏对象以便在 Inspector 窗口中查看该对象。
-2. 单击 **Add Component**。
-3. 在组件列表中单击 **New Script**（位于底部）。
-4. 将该脚本命名为“RollerAcademy”。
-5. 单击 **Create and Add**。
+1.选择 Academy 游戏对象以便在 Inspector 窗口中查看该对象。
+2.单击 **Add Component**。
+3.在组件列表中单击 **New Script**（位于底部）。
+4.将该脚本命名为“RollerAcademy”。
+5.单击 **Create and Add**。
 
 接下来，编辑新的 `RollerAcademy` 脚本：
 
-1. 在 Unity Project 窗口中，双击 `RollerAcademy` 脚本，在代码编辑器中将其打开。（默认情况下，新脚本直接放置于 **Assets** 文件夹中。）
-2. 在编辑器中，将基类从 `MonoBehaviour` 更改为 `Academy`。
-3. 删除默认添加的 `Start()` 和 `Update()` 方法。
+1.在 Unity Project 窗口中，双击 `RollerAcademy` 脚本，在代码编辑器中将其打开。（默认情况下，新脚本直接放置于 **Assets** 文件夹中。）
+2.在编辑器中，将基类从 `MonoBehaviour` 更改为 `Academy`。
+3.删除默认添加的 `Start()` 和 `Update()` 方法。
 
 在这样的基本场景中，我们不需要 Academy 初始化、重置或以其他方式控制环境中的任何对象，因此我们采用最简单的 Academy 实现：
 
@@ -120,9 +120,9 @@ Brain 对象内部封装了决策过程。Agent 将观测结果发送给自己�
 
 要创建 Brain：
 
-1. 选择先前创建的 Brain 游戏对象以便在 Inspector 窗口中显示该对象的属性。
-2. 单击 **Add Component**。
-3. 选择 **Scripts/Brain** 组件以将其添加到该游戏对象。
+1.选择先前创建的 Brain 游戏对象以便在 Inspector 窗口中显示该对象的属性。
+2.单击 **Add Component**。
+3.选择 **Scripts/Brain** 组件以将其添加到该游戏对象。
 
 我们稍后再讲解 Brain 属性，但现在将 Brain Type 保留为 **Player**。
 
@@ -132,17 +132,17 @@ Brain 对象内部封装了决策过程。Agent 将观测结果发送给自己�
 
 要创建 Agent：
 
-1. 选择 RollerAgent 游戏对象以便在 Inspector 窗口中查看该对象。
-2. 单击 **Add Component**。
-3. 在组件列表中单击 **New Script**（位于底部）。
-4. 将该脚本命名为“RollerAgent”。
-5. 单击 **Create and Add**。
+1.选择 RollerAgent 游戏对象以便在 Inspector 窗口中查看该对象。
+2.单击 **Add Component**。
+3.在组件列表中单击 **New Script**（位于底部）。
+4.将该脚本命名为“RollerAgent”。
+5.单击 **Create and Add**。
 
 然后，编辑新的 `RollerAgent` 脚本：
 
-1. 在 Unity Project 窗口中，双击 `RollerAgent` 脚本，在代码编辑器中将其打开。
-2. 在编辑器中，将基类从 `MonoBehaviour` 更改为 `Agent`。
-3. 删除 `Update()` 方法，但我们将使用 `Start()` 函数，所以暂时将其保留。
+1.在 Unity Project 窗口中，双击 `RollerAgent` 脚本，在代码编辑器中将其打开。
+2.在编辑器中，将基类从 `MonoBehaviour` 更改为 `Agent`。
+3.删除 `Update()` 方法，但我们将使用 `Start()` 函数，所以暂时将其保留。
 
 到目前为止介绍的这些，都是为了将 ML-Agents 添加到任何 Unity 项目而需要执行的基本步骤。接下来，我们将添加逻辑，让我们的 agent 能够使用 reinforcement learning（强化学习）技术学习滚动到立方体。
 
@@ -158,61 +158,33 @@ agent 到达目标时会将自己标记为完成状态，而 agent 重置功能�
 
 ```csharp
 using System.Collections.Generic;
-
 using UnityEngine;
 
-
-
 public class RollerAgent : Agent 
-
 {
-
     Rigidbody rBody;
-
     void Start () {
-
         rBody = GetComponent<Rigidbody>();
-
     }
-
-
 
     public Transform Target;
-
     public override void AgentReset()
-
     {
-
         if (this.transform.position.y < -1.0)
-
         {  
-
             // agent 掉落
-
             this.transform.position = Vector3.zero;
-
             this.rBody.angularVelocity = Vector3.zero;
-
             this.rBody.velocity = Vector3.zero;
-
         }
-
         else
-
         { 
-
             // 将目标移动到新的位置
-
             Target.position = new Vector3(Random.value * 8 - 4,
-
                                           0.5f,
-
                                           Random.value * 8 - 4);
-
         }
-
     }
-
 }
 ```
 
@@ -228,7 +200,6 @@ Agent 将我们收集的信息发送给 Brain，由 Brain 使用这些信息来�
 
 ```csharp
 // 计算相对位置
-
 Vector3 relativePosition = Target.position - this.transform.position;
 
 // 相对位置
@@ -275,7 +246,6 @@ public override void CollectObservations()
     AddVectorObs((this.transform.position.z + 5)/5);
     AddVectorObs((this.transform.position.z - 5)/5);
     
-
     // Agent 速度
     AddVectorObs(rBody.velocity.x/5);
     AddVectorObs(rBody.velocity.z/5);
@@ -292,11 +262,8 @@ RollerAgent 使用 `Rigidbody.AddForce` 函数将 action[] 数组中的值应用
 
 ```csharp
 Vector3 controlSignal = Vector3.zero;
-
 controlSignal.x = Mathf.Clamp(action[0], -1, 1);
-
 controlSignal.z = Mathf.Clamp(action[1], -1, 1);
-
 rBody.AddForce(controlSignal * speed);
 ```
 
@@ -310,19 +277,12 @@ RollerAgent 会计算到达目标所需的距离。当到达目标时，代码�
 
 ```csharp
 float distanceToTarget = Vector3.Distance(this.transform.position,
-
                                           Target.position);
-
 // 已到达目标
-
 if (distanceToTarget < 1.42f)
-
 {
-
     Done();
-
     AddReward(1.0f);
-
 }
 ```
 
@@ -332,13 +292,9 @@ if (distanceToTarget < 1.42f)
 
 ```csharp
 // 进一步接近
-
 if (distanceToTarget < previousDistance)
-
 {
-
     AddReward(0.1f);
-
 }
 ```
 
@@ -346,7 +302,6 @@ if (distanceToTarget < previousDistance)
 
 ```csharp
 // 时间惩罚
-
 AddReward(-0.05f);
 ```
 
@@ -354,15 +309,10 @@ AddReward(-0.05f);
 
 ```csharp
 // 掉下平台
-
 if (this.transform.position.y < -1.0)
-
 {
-
     Done();
-
     AddReward(-1.0f);
-
 }
 ```
 
@@ -372,81 +322,43 @@ if (this.transform.position.y < -1.0)
 
 ```csharp
 public float speed = 10;
-
 private float previousDistance = float.MaxValue;
 
-
-
 public override void AgentAction(float[] vectorAction, string textAction)
-
 {
-
     // 奖励
-
     float distanceToTarget = Vector3.Distance(this.transform.position, 
-
                                               Target.position);
-
     
-
     // 已到达目标
-
     if (distanceToTarget < 1.42f)
-
     {
-
         Done();
-
         AddReward(1.0f);
-
     }
-
     
-
     // 进一步接近
-
     if (distanceToTarget < previousDistance)
-
     {
-
         AddReward(0.1f);
-
     }
-
-
 
     // 时间惩罚
-
     AddReward(-0.05f);
 
-
-
     // 掉下平台
-
     if (this.transform.position.y < -1.0)
-
     {
-
         Done();
-
         AddReward(-1.0f);
-
     }
-
     previousDistance = distanceToTarget;
 
-
-
     // 动作，大小 = 2
-
     Vector3 controlSignal = Vector3.zero;
-
     controlSignal.x = Mathf.Clamp(vectorAction[0], -1, 1);
-
     controlSignal.z = Mathf.Clamp(vectorAction[1], -1, 1);
-
     rBody.AddForce(controlSignal * speed);
-
  }
 ```
 
@@ -456,9 +368,9 @@ public override void AgentAction(float[] vectorAction, string textAction)
 
 现在，所有游戏对象和 ML-Agent 组件都已准备就绪，因此可以在 Unity Editor 中将一切连接在一起了。这包括将 Brain 对象分配给 Agent 并设置 Brain 属性，使这些属性与我们的 agent 代码兼容。
 
-1. 在 Hierarchy 窗口中展开 Academy 游戏对象，使 Brain 对象可见。
-2. 选择 RollerAgent 游戏对象以便在 Inspector 窗口中显示该对象的属性。
-3. 将 Brain 对象从 Hierarchy 窗口拖到 RollerAgent Brain 字段。
+1.在 Hierarchy 窗口中展开 Academy 游戏对象，使 Brain 对象可见。
+2.选择 RollerAgent 游戏对象以便在 Inspector 窗口中显示该对象的属性。
+3.将 Brain 对象从 Hierarchy 窗口拖到 RollerAgent Brain 字段。
 
 ![将 Brain 分配给 RollerAgent](images/mlagents-NewTutAssignBrain.png)
 
@@ -478,11 +390,11 @@ public override void AgentAction(float[] vectorAction, string textAction)
 
 在开始长时间进行训练之前，手动测试您的环境始终是一种明智的做法。我们将 Brain 设置为 **Player** 类型的原因是，我们可以使用直接的键盘控制方式来控制 agent。但首先，您需要将键盘定义为动作映射。尽管 RollerAgent 的 `Action Size` 仅为 2，但对于每个动作，我们将用一个键指定正值，再用一个键指定负值，因此总共为四个键。
 
-1. 选择 Brain 游戏对象以便在 Inspector 中查看该对象的属性。
-2. 将 **Brain Type** 设置为 **Player**。
-3. 展开 **Continuous Player Actions** 字典（仅在使用 **Player* brain 时可见）。
-4. 将 **Size** 设置为 4。
-5. 设置以下映射：
+1.选择 Brain 游戏对象以便在 Inspector 中查看该对象的属性。
+2.将 **Brain Type** 设置为 **Player**。
+3.展开 **Continuous Player Actions** 字典（仅在使用 **Player* brain 时可见）。
+4.将 **Size** 设置为 4。
+5.设置以下映射：
 
 | 元素   | 键 | 索引 | 值 |
 | :------------ | :---: | :------: | :------: |
@@ -496,13 +408,9 @@ public override void AgentAction(float[] vectorAction, string textAction)
 按 **Play** 运行场景，并用 WASD 键在平台上移动 agent。确保在 Unity Editor Console 窗口中没有显示任何错误，并且 agent 在到达目标或掉下平台时会重置。请注意，对于较复杂的调试，ML-Agents SDK 提供了一个方便的 Monitor 类，您可以使用该类轻松地在 Game 窗口中显示 agent 状态信息。
 
 您可以执行一个额外的测试是，首先使用 `python/Basics` 
-
 [Jupyter 笔记本](Background-Jupyter.md)
-
 确保您的环境和 Python API 能正常工作。在 `Basics` 中，务必将 
-
 `env_name` 设置为您在构建此环境时指定的环境文件的
-
 名称。
 
 现在可以开始训练 Agent 了。为了准备进行训练，必须首先将 **Brain Type** 从 **Player** 更改为 **External**。此后的过程与[训练 ML-Agents](Training-ML-Agents.md) 中所述的过程相同。
@@ -510,13 +418,12 @@ public override void AgentAction(float[] vectorAction, string textAction)
 ## 回顾：场景布局
 
 本节简要回顾在 Unity 环境中使用 Agent 时
-
 如何组织场景。
 
 您需要在场景中包含三种游戏对象才能使用 Unity ML-Agents：
  * Academy
  * Brain
- * Agents
+ * Agent
 
 切记：
  * 场景中只能有一个 Academy 游戏对象。
