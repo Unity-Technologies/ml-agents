@@ -6,7 +6,7 @@ To use ML-Agents, you install Python and the required Python packages as outline
 
 ## Step 1: Install Python via Anaconda
 
-[Download](https://www.anaconda.com/download/#windows) and install Anaconda for Windows. By using Anaconda, you can manage separate environments for different distributions of Python. Python 3 is required as we no longer support Python 2. In this guide, we are using Python version 3.5 (Anaconda comes with python 3.6, we will create and environment with python 3.5) and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
+[Download](https://www.anaconda.com/download/#windows) and install Anaconda for Windows. By using Anaconda, you can manage separate environments for different distributions of Python. Python 3 is required as we no longer support Python 2. In this guide, we are using Python version 3.5 (Anaconda comes with Python 3.6, we will create an environment with python 3.5) and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
 
 <p align="center">
     <img src="images/anaconda_install.PNG" 
@@ -23,7 +23,7 @@ We recommend the default _advanced installation options_. However, select the op
 </p>
 
 After installation, you must open __Anaconda Navigator__ to finish the setup. From the Windows search bar, type _anaconda navigator_. You can close Anaconda Navigator after it opens.
-If environmental variables were not created, or if you see the error "conda is not recognized as internal or external command", in System Variables "Path" add:
+If environment variables were not created, or if you see the error "conda is not recognized as internal or external command", in System Variables, "Path" add the following new paths:
 ```
     C:\ProgramData\Anaconda3\Scripts
     C:\ProgramData\Anaconda3\Scripts\conda.exe
@@ -193,7 +193,7 @@ You should see something similar to:
 Found device 0 with properties ...
 ```
 <p>
-    Step Visual Studio 2015: CUDA 8.0 is not compatible with Visual Studio 2017, so you will need an older version. Uninstall Visual Studio 2017 that comes with Unity, download Visual Studio Enterprise 2015 and install it with the Windows SDK. If you don't want/ can't install Visual Studio Enterprise 2015, you will need Visual C++ Redistributable for Visual Studio 2015 ([direct link](https://www.microsoft.com/en-us/download/details.aspx?id=48145)) and Visual Studio Community 2015 ([direct link](https://www.visualstudio.com/vs/older-downloads/)) with Windows SDK ([direct link]( https://msdn.microsoft.com/en-us/library/mt683786.aspx)).
+    Step Visual Studio 2015: CUDA 8.0 is not compatible with Visual Studio 2017, so you will need an older version. Uninstall Visual Studio 2017 that comes with Unity, download Visual Studio Enterprise 2015 and install it with the Windows SDK. If you don't want/ can't install Visual Studio Enterprise 2015, you will need [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) and [Visual Studio Community 2015](https://www.visualstudio.com/vs/older-downloads/) with [Windows SDK ]( https://msdn.microsoft.com/en-us/library/mt683786.aspx).
 
 </p>
 
