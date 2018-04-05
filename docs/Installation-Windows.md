@@ -194,7 +194,7 @@ Found device 0 with properties ...
 ```
 
 Step Visual Studio 2015: CUDA 8.0 is not compatible with Visual Studio 2017, so you will need an older version. Uninstall Visual Studio 2017 that comes with Unity, download Visual Studio Enterprise 2015 and install it with the Windows SDK. If you don't want/ can't install Visual Studio Enterprise 2015, you will need: 
-    [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+    [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145),
     [Visual Studio Community 2015](https://www.visualstudio.com/vs/older-downloads/) + [Windows SDK](https://msdn.microsoft.com/en-us/library/mt683786.aspx).
 
 
