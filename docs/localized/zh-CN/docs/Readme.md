@@ -1,19 +1,19 @@
 # Unity ML-Agents 文档
 
 ## 入门
- * [ML-Agents 概述](ML-Agents-Overview.md)
+ * [ML-Agents 概述*](ML-Agents-Overview.md)
     * [背景：Unity](/docs/Background-Unity.md)
     * [背景：机器学习](/docs/Background-Machine-Learning.md)
     * [背景：TensorFlow](/docs/Background-TensorFlow.md)
- * [安装和设置](Installation.md)
+ * [安装和设置*](Installation.md)
     * [背景：Jupyter Notebooks](/docs/Background-Jupyter.md)
     * [Docker 设置（测试功能）](/docs/Using-Docker.md)
- * [教你快速入门 3D Balance Ball 训练环境示例](Getting-Started-with-Balance-Ball.md)
- * [官方训练环境示例](Learning-Environment-Examples.md)
+ * [教你快速入门--3D Balance Ball 训练环境示例*](Getting-Started-with-Balance-Ball.md)
+ * [官方训练环境示例*](Learning-Environment-Examples.md)
 
 ## 创建训练环境
- * [从头创建一个训练环境](Learning-Environment-Create-New.md)
- * [设计训练环境](Learning-Environment-Design.md)
+ * [从头创建一个训练环境*](Learning-Environment-Create-New.md)
+ * [设计训练环境*](Learning-Environment-Design.md)
      * [Agent](/docs/Learning-Environment-Design-Agents.md)
      * [Academy](/docs/Learning-Environment-Design-Academy.md)
      * [Brain](/docs/Learning-Environment-Design-Brains.md)：[Player](/docs/Learning-Environment-Design-Player-Brains.md)、[Heuristic](/docs/Learning-Environment-Design-Heuristic-Brains.md)、[Internal 和 External](/docs/Learning-Environment-Design-External-Internal-Brains.md)
@@ -38,3 +38,5 @@
 ## API 文档
  * [API 参考](/docs/API-Reference.md)
  * [如何使用 Python API](/docs/Python-API.md)
+
+**注:** 有翻译版的文档会在右上角标注*号。
