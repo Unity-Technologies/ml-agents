@@ -73,10 +73,10 @@ make sure to include as much detail as possible.
 For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
 
-## License
-
-[Apache License 2.0](LICENSE)
-
 ## Translation
 
 - [Chinese](docs/localized/zh-CN/README.md)
+
+## License
+
+[Apache License 2.0](LICENSE)
