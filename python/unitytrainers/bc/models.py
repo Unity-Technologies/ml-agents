@@ -22,7 +22,9 @@ class BehavioralCloningModel(LearningModel):
 
         if brain.vector_action_space_type == "discrete":
             self.action_probs = tf.nn.softmax(self.policy)
-            self.sample_action = tf.cast(tf.multinomial(self.policy, 1, name="action"), tf.int32)
+            self.sample_action_float = tf.multinomial(self.policy, 1)
+            self.sample_action_float = tf.identity(self.sample_action_float, name="action")
+            self.sample_action = tf.cast(self.sample_action_float, tf.int32)
             self.true_action = tf.placeholder(shape=[None], dtype=tf.int32, name="teacher_action")
             self.action_oh = tf.one_hot(self.true_action, self.a_size)
             self.loss = tf.reduce_sum(-tf.log(self.action_probs + 1e-10) * self.action_oh)

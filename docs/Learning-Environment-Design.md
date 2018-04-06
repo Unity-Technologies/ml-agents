@@ -31,7 +31,7 @@ To create a training environment, extend the Academy and Agent classes to implem
 
 To train and use ML-Agents in a Unity scene, the scene must contain a single Academy subclass along with as many Brain objects and Agent subclasses as you need. Any Brain instances in the scene must be attached to GameObjects that are children of the Academy in the Unity Scene Hierarchy. Agent instances should be attached to the GameObject representing that agent.
 
-[Screenshot of scene hierarchy]
+![Scene Hierarchy](images/scene-hierarchy.png)
 
 You must assign a brain to every agent, but you can share brains between multiple agents. Each agent will make its own observations and act independently, but will use the same decision-making logic and, for **Internal** brains, the same trained TensorFlow model. 
 
