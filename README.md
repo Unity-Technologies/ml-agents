@@ -2,7 +2,6 @@
 
 # Unity ML-Agents (Beta)
 
-
 **Unity Machine Learning Agents** (ML-Agents) is an open-source Unity plugin 
 that enables games and simulations to serve as environments for training
 intelligent agents. Agents can be trained using reinforcement learning,
