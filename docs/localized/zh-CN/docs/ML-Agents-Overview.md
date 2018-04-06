@@ -1,8 +1,6 @@
 # ML-Agents 概述
 
-**Unity Machine Learning Agents** (ML-Agents) 是一款开源 Unity 插件，
-可让游戏和模拟作为训练智能 agent 的
-环境。您可以使用 reinforcement learning（强化学习）、
+**Unity Machine Learning Agents** (ML-Agents) 是一款开源的 Unity 插件，使我们得以在游戏和其它模拟环境中训练智能的 agent。您可以使用 reinforcement learning（强化学习）、
 imitation learning（模仿学习）、neuroevolution（神经进化）或其他机器学习方法
 通过简单易用的 Python API 对 Agent 进行训练。我们还提供最先进算法的实现方式（基于 
 TensorFlow），让游戏开发者和业余爱好者能够轻松地
@@ -21,24 +19,22 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 我们提供了多个后台页面，其中包括有关 
 [Unity 引擎](Background-Unity.md)、
 [机器学习](Background-Machine-Learning.md)和 
-[TensorFlow](Background-TensorFlow.md) 的概述和有用资源。如果您不熟悉 Unity 场景、
-基本的机器学习概念或者以前没有听说过 TensorFlow，
-**强烈**建议您浏览相关的背景知识页面。
+[TensorFlow](Background-TensorFlow.md) 的概述和有用资源。如果您不熟悉 Unity 场景，不了解基本的机器学习概念，或者以前没有听说过 TensorFlow，**强烈**建议您浏览相关的背景知识页面。
 
-此页面的其余部分深入介绍了 ML-Agents、其重要组件、
-不同的训练模式和情形。到最后，
+此页面的其余部分深入介绍了 ML-Agents、包括其重要组件、
+支持的不同的训练模式以及这些训练模式对应的应用场景。读完后
 您应该对 ML-Agents 的_功能_有一个很好的了解。随后的文档页面
 提供了 ML-Agents _用法_的示例。
 
 ## 运行示例：训练 NPC 行为
 
 为了帮助解释此页面中的材料和术语，我们将通篇使用一个
-假设的运行示例。我们将探讨
+虚构的运行示例。我们将探讨
 在游戏中训练非玩家角色 (NPC) 行为的问题。
 （NPC 是一个永远不受人类玩家控制的游戏角色，
 其行为由游戏开发者预先定义。）更具体地说，
 我们假设我们正在开发一个由玩家控制士兵的多玩家战争主题
-游戏。在此游戏中，我们有一名担任军医的 NPC，负责寻找
+游戏。在此游戏中，我们有一名担任军医的 NPC，他会负责寻找
 和恢复受伤的玩家。最后，我们假设有两支军队，
 每支军队有五名队员和一名 NPC 军医。
 
@@ -52,26 +48,26 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 测量环境的若干属性（例如，队员位置、
 敌人位置、哪一名队员受伤以及受伤程度），
 然后决定采取的行动（例如，躲避敌人的火力、
-前往帮助其队员之一）。鉴于环境的大量设置
-以及军医可以采取的大量行动，
-人为定义和实现此类复杂的行为极具挑战性，
-并且容易出错。
+前往帮助其队员之一）。鉴于环境中存在有大量的可变参数
+以及军医可以采取的大量可能的行动，
+手工定义和实现此类复杂的行为极具挑战性，
+并且很容易出错。
 
 凭借 ML-Agents，您可以使用各种方法来_训练_这类 NPC
 （称为 **agent**）的行为。基本理念很简单。
 我们需要在游戏（称为**环境**）的每个时刻定义
 三个实体：
 - **观测** - 军医对环境的感知。
-观测可以是数字和/或可视形式。数字观测会从 agent 的视角
+观测可以是数字和/或视觉形式。数字观测会从 agent 的角度
 测量环境的属性。对于
 我们的军医来说，这将是军医可以看到的战场属性。
-根据游戏和 agent 的复杂性，观测可以是_离散_的
-或_连续_的。对于大多数有趣的环境，agent 将需要若干连续的
+根据游戏和 agent 的不同，数字观测的数据可以是_离散_的
+或_连续_的形式。对于大多数有趣的环境，agent 将需要若干连续的
 数字观测，而对于具有少量独特配置的简单环境，
 离散观测就足够了。
 另一方面，视觉观测是附加到 agent 的摄像头
 所生成的图像，代表着 agent 在该时间点看到的
-内容。我们通常会将 agent 的观测与环境（或游戏）
+内容。我们通常会将 agent 的观测与环境（或游戏）的
 **状态**混淆。环境状态表示包含所有游戏角色的
 整个场景的相关信息。但是，agent 观测
 仅包含 agent 了解的信息，通常是
@@ -92,27 +88,26 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 每当恢复受伤的队员时会得到适度的正奖励，
 而在受伤队员因缺乏救助而死亡时
 会得到适度的负奖励。请注意，奖励信号表示如何将任务的目标
-传达给 agent，所以采用的设置方式需要确保最大化的
-奖励能够产生期望的最佳行为。
+传达给 agent，所以采用的设置方式需要确保当获得的奖励达到最大值时，agent能够产生我们最期望的行为。
 
 在定义这三个实体（**reinforcement learning（强化学习）任务**
 的模块）之后，我们现在可以
 _训练_军医的行为了。为此需要通过许多试验来
 模拟环境，随着时间的推移，通过最大化未来奖励，
-使军医能够学习针对每次的观测要采取的
-最佳动作。关键在于，军医学习能够使奖励最大化的动作，
+使军医能够针对每次的观测学会采取
+最佳的动作。关键在于，军医学习能够使奖励得到最大值的动作的过程，
 便是在学习使自己成为一名优秀军医（即拯救最多生命的
-军医）的行为。在 **reinforcement learning（强化学习）**
+军医）的过程。在 **reinforcement learning（强化学习）**
 技术中，所学习的行为称为 **policy**，
-其本质上是从观测到动作的（最佳）映射。请注意，
-通过运行模拟来学习 policy 的过程称为
-**训练阶段**，而与 NPC（使用其学习到的 policy）
-一起玩游戏称为**推理阶段**。
+我们想学习的 policy 本质上是一个从每个可能的观测到该观测下最优动作的映射。请注意，
+通过运行模拟来学习 policy 的过程被称为
+**训练阶段**，而让 NPC 使用其学习到的 policy
+玩游戏的过程被称为**预测阶段**。
 
-ML-Agents 提供了所有必要工具，因此可使用 Unity 作为
+ML-Agents 提供了所有必要工具，从而使我们得以利用 Unity 作为
 模拟引擎来学习 Unity 环境中不同对象的 policy。
 在接下来的几节中，我们将讨论 ML-Agents 如何实现这一目的以及
-它提供的功能。
+它所提供的功能有什么。
 
 ## 主要组件
 
@@ -123,8 +118,8 @@ ML-Agents 是一个 Unity 插件，它包含三个高级组件：
 所有机器学习算法。请注意，
 与学习环境不同，Python API 不是 Unity 的一部分，而是位于外部
 并通过 External Communicator 与 Unity 进行通信。
-* **External Communicator** - 它将学习环境与 Python API 
-连接起来。它位于学习环境中。
+* **External Communicator** - 它将 Unity 环境与 Python API 
+连接起来。它位于 Unity 环境中。
 
 <p align="center">
     <img src="images/learning_environment_basic.png" 
@@ -136,7 +131,7 @@ _ML-Agents 的简化框图。_
 
 学习环境包含三个可帮助组织 Unity 场景的
 附加组件：
-* **Agent** - 它附加到 Unity 游戏对象（场景中的
+* **Agent** - 它可以被附加到一个 Unity 游戏对象上（场景中的
 任何角色），负责生成它的观测结果、执行它接收的动作
 并适时分配奖励（正/负）。
 每个 Agent 只与一个 Brain 相关联。
@@ -145,14 +140,13 @@ _ML-Agents 的简化框图。_
 决定了 Agent 在每种情况下应采取的动作。更具体地说，
 它是从 Agent 接收观测结果和奖励并返回动作的
 组件。
-* **Academy** - 它可编排观测和决策过程。
-在 Academy 内，可以指定若干环境范围的参数，
-例如渲染质量和环境运行速度。
+* **Academy** - 它指挥 agent 的观测和决策过程。
+在 Academy 内，可以指定若干环境参数，
+例如渲染质量和环境运行速度参数。
 External Communicator 位于 Academy 内。
 
-每个学习环境对于场景中的每个角色都会有一个全局 Academy 和
-一个 Agent。虽然每个 Agent 必须与一个 Brain 相连，
-但具有相似观测和动作的 Agent 可关联到
+每个学习环境都会有一个全局的 Academy ，与每一个游戏角色一一对应的多个 Agent。虽然每个 Agent 必须与一个 Brain 相连，
+但具有相似观测和动作的多个 Agent 可关联到
 同一个 Brain。在我们的示例游戏中，我们有两个各自拥有
 自己军医的军队。因此，在我们的学习环境中将有两个 Agent，
 每名军医对应一个 Agent，但这两个军医都可以关联到同一个 Brain。
@@ -176,18 +170,13 @@ _示例游戏的 ML-Agents 的示例框图。_
 
 我们尚未讨论 ML-Agents 如何训练行为以及 Python API 和 
 External Communicator 的作用。在我们深入了解这些细节之前，
-让我们总结一下先前的组件。每个角色附加到一个 Agent 上，
-而每个 Agent 都连接到一个 Brain。Brain 从 Agent 处接收观测结果
-和奖励并返回动作。Academy 除了能够
-控制环境范围内的设置之外，还可确保所有 Agent 和 Brain 都处于同步
-状态。那么，Brain 如何控制 Agent 的动作呢？
+让我们总结一下先前的组件。每个游戏角色上附有一个 Agent，
+而每个 Agent 都连接到一个 Brain。Brain 从 Agent 处接收观测结果和奖励并返回动作。Academy 除了能够控制环境参数之外，还可确保所有 Agent 和 Brain 都处于同步状态。那么，Brain 如何控制 Agent 的动作呢？
 
-实际上，我们有四种不同类型的 Brain，它们可以实现广泛的
-训练和推理情形：
+实际上，我们有四种不同类型的 Brain，它们可以实现广泛的训练和预测情形：
 * **External** - 使用 Python API 进行决策。这种情况下，
 Brain 收集的观测结果和奖励通过 External Communicator 
-转发给 Python API。Python API 随后
-返回 Agent 需要采取的相应动作。
+转发给 Python API。Python API 随后返回 Agent 需要采取的相应动作。
 * **Internal** - 使用嵌入式 
 [TensorFlow](Background-TensorFlow.md) 模型进行决策。
 嵌入式 TensorFlow 模型包含了学到的 policy，Brain 直接使用
@@ -195,12 +184,11 @@ Brain 收集的观测结果和奖励通过 External Communicator
 * **Player** - 使用键盘或控制器的实际输入进行
 决策。这种情况下，人类玩家负责控制 Agent，由 Brain 收集的
 观测结果和奖励不用于控制 Agent。
-* **Heuristic** - 使用硬编码行为进行决策。这类似于
-当前定义的大多数角色行为，并且可以有助于调试
-具有硬编码规则的 Agent 或将其与行为经过
-训练的 Agent 进行比较。在我们的示例中，一旦我们
+* **Heuristic** - 使用写死的逻辑行为进行决策，目前市面上大多数游戏角色行为都是这么定义的。这种类型有助于调试
+具有写死逻辑行为的 Agent。也有助于把这种由写死逻辑指挥的 Agent 与
+训练好的 Agent 进行比较。在我们的示例中，一旦我们
 为军医训练了 Brain，我们便可以为一个军队的军医分配
-经过训练的 Brain，而为另一个军队的军医分配具有硬编码行为的 
+经过训练的 Brain，而为另一个军队的军医分配具有写死逻辑行为的 
 Heuristic Brain。然后，我们可以评估哪个军医的效率更高。
 
 根据目前所述，External Communicator 和 Python API 似乎
@@ -222,13 +210,13 @@ _一个包含多个 Agent 和 Brain 的场景的
 ## 训练模式
 
 鉴于 ML-Agents 的灵活性，我们可以通过多种方式进行训练
-和推理。
+和预测。
 
-### 内置的训练和推理
+### 内置的训练和预测
 
 如前所述，ML-Agents 附带了多种用于训练智能 agent 的
 最先进算法的实现。在此模式下，
-Brain 类型在训练期间设置为 External，在推理期间设置为 Internal。
+Brain 类型在训练期间设置为 External，在预测期间设置为 Internal。
 更具体地说，在训练期间，场景中的所有军医
 通过 External Communicator 将他们的观测结果发送到 Python API
 （这是采用 External Brain 时的行为）。Python API 会处理这些观测结果并发回
@@ -236,16 +224,16 @@ Brain 类型在训练期间设置为 External，在推理期间设置为 Interna
 探索性的，旨在帮助 Python API 学习每位军医的
 最佳 policy。训练结束后，便可导出每个军医
 所学的 policy。由于我们所有的实现都基于 TensorFlow，
-因此所学的 policy 只是一个 TensorFlow 模型文件。然后在推理阶段，
+因此所学的 policy 只是一个 TensorFlow 模型文件。然后在预测阶段，
 我们将 Brain 类型切换为 Internal，并加入从训练阶段
-生成的 TensorFlow 模型。现在，在推理阶段，军医
+生成的 TensorFlow 模型。现在，在预测阶段，军医
 仍然继续生成他们的观测结果，但不再将结果发送到 
-Python API，而是送入他们的（内部嵌入式）模型，
+Python API，而是送入他们的嵌入了的 Tensorflow 模型，
 以便生成每个军医在每个时间点上要采取的_最佳_动作。
 
 总结一下：我们的实现是基于 TensorFlow 的，因此，
 在训练期间，Python API 使用收到的观测结果来学习 
-TensorFlow 模型。然后在推理过程中该模型将嵌入到 
+TensorFlow 模型。然后在预测过程中该模型将嵌入到 
 Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 最佳动作。**请注意，我们的 Internal Brain 目前是实验性的，
 因为它仅限于 TensorFlow 模型并会利用第三方 
@@ -255,12 +243,12 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 [3D Balance Ball 示例入门](Getting-Started-with-Balance-Ball.md)
 教程使用 **3D Balance Ball** 示例环境介绍了此训练模式。
 
-### 自定义训练和推理
+### 自定义训练和预测
 
 先前的模式中使用 External Brain 类型进行训练，
 从而生成 Internal Brain 类型可以理解和使用的 TensorFlow 
 模型。然而，ML-Agents 的任何用户都可以利用自己的算法
-进行训练和推理。在这种情况下，训练阶段和推理阶段
+进行训练和预测。在这种情况下，训练阶段和预测阶段
 的 Brain 类型都会设置为 External，并且场景中所有 Agent 的行为
 都将在 Python 中接受控制。
 
@@ -269,7 +257,7 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 
 ### Curriculum Learning（课程学习）
 
-此模式是_内置训练和推理_的扩展，
+此模式是_内置训练和预测_的扩展，
 在训练复杂环境中的复杂行为时特别
 有用。Curriculum learning（课程学习）是一种训练机器学习模型
 的方式，这种训练方式会逐渐引入问题较难理解的方面，
@@ -295,8 +283,8 @@ _数学课程的示例。从简单主题到复杂主题的课程进度安排，
 当我们考虑 reinforcement learning（强化学习）的实际原理时，
 学习信号是在整个训练过程中偶尔收到的奖励。
 训练 agent 完成此任务时的起点将是一个
-随机 policy。该起始 policy 将使 agent 原地转圈，
-在复杂环境中可能永远不会获得奖励或极少
+随机 policy。该起始 policy 将使 agent 随意转圈，
+这样的行为在复杂环境中可能永远不会获得奖励或极少
 获得奖励。因此，通过在训练开始时简化环境，
 我们可让 agent 将随机 policy 快速更新为更有意义的 policy，
 即，随着环境逐渐复杂化，policy 也会不断
@@ -305,7 +293,7 @@ _数学课程的示例。从简单主题到复杂主题的课程进度安排，
 （即环境复杂度）。ML-Agents 支持在 
 Academy 内设置自定义环境参数。因此，
 可以根据训练进度动态调整与难度或复杂性相关的
-环境要素。
+环境要素（比如游戏对象）。
 
 [使用 Curriculum Learning（课程学习）进行训练](Training-Curriculum-Learning.md)
 教程使用 **Wall Area** 示例环境介绍了此训练模式。
@@ -320,7 +308,7 @@ Academy 内设置自定义环境参数。因此，
 在这种模式下，训练期间的 Brain 类型设置为 Player，
 并且所有使用控制器执行的动作（不仅包括 agent 观测）
 都将被记录并发送到 Python API。imitation learning（模仿学习）
-算法随后将会使用这些来自人类玩家的成对的观测结果与动作来
+算法随后将会使用这些来自人类玩家的观测结果以及他们对应的动作来
 学习 policy。
 
 [使用 Imitation Learning（模仿学习）进行训练](Training-Imitation-Learning.md)教程
@@ -349,12 +337,7 @@ Academy 内设置自定义环境参数。因此，
 可以让 agent 变得越来越熟练，同时始终拥有完美匹配的
 对手：自身。这是训练 AlphaGo 时采用的策略，
 最近被 OpenAI 用于训练一种人类对战的 1 比 1 Dota 2 agent。
-* 协作性多 Agent。与单个或多个不同 Brain 相连的多个
-相互作用的 Agent，具有共享的奖励信号。在此
-方案中，所有 agent 必须共同完成一项不能单独完成的
-任务。示例包括这样的环境：每个 agent 只能访问部分信息，
-并且需要共享这些信息才能完成任务或
-协作解决难题。
+* 协作性多 Agent。与单个或多个不同 Brain 相连的多个相互作用的 Agent，具有共享的奖励信号。在此方案中，所有 agent 必须共同完成一项不能单独完成的任务。示例包括这样的环境：每个 agent 只能访问部分信息，并且需要共享这些信息才能完成任务或协作解决难题。
 * 竞争性多 Agent。与单个或多个不同 Brain 相连的多个
 相互作用的 Agent，具有反向奖励信号。在此
 方案中，agent 必须相互竞争才能赢得比赛，
@@ -413,7 +396,7 @@ agent 必须学会记住过去才能做出
         
 * **Broadcasting** - 如前所述，默认情况下，External Brain 会将
 其所有 Agent 的观测结果发送到 Python API。这对
-训练或推理很有帮助。Broadcasting 是一种可以为
+训练或预测很有帮助。Broadcasting 是一种可以为
 其他三种模式（Player、Internal、Heuristic）启用的功能，
 这种情况下的 Agent 观测和动作也会发送到 Python API
 （尽管 Agent **不**受 Python API 控制）。Imitation Learning（模仿学习）
@@ -424,11 +407,11 @@ agent 必须学会记住过去才能做出
 [此处](Learning-Environment-Design-Brains.md#using-the-broadcast-feature)了解更多关于使用 broadcasting 功能的
 信息。
 
-* **Docker 设置（实验性）** - 为了便于在不直接安装 
+* **Docker 设置（测试功能）** - 为了便于在不直接安装 
 Python 或 TensorFlow 的情况下设置 ML-Agents，
 我们提供了关于如何创建和运行 Docker 容器的
 [指南](Using-Docker.md)。由于渲染视觉观测的限制，
-该功能被标记为实验性功能。
+该功能被标记为测试功能。
 
 * **AWS 上的云训练** - 为了便于在 Amazon Web Services (AWS) 
 机器上使用 ML-Agents，我们提供了一份
@@ -438,11 +421,10 @@ Machine Image (AMI)。
 
 ## 总结和后续步骤
 
-简要总结一下：ML-Agents 使 Unity 中构建的游戏和模拟
-可以作为训练智能 agent 的平台。它旨在
-实现多种训练模式和方案，并且提供了多种功能，
-使研究人员和开发人员能够在 Unity 中利用（并增强）
-机器学习功能。
+简要总结一下：ML-Agents 使 Unity 中构建的游戏和模拟环境
+可以成为训练智能 agent 的平台。它旨在
+使研究人员和开发人员可以在 Unity 中采用多种训练模式和方案，应用
+机器学习技术，推动机器学习技术的发展。
 
 为了帮助您使用 ML-Agents，我们制作了几个
 关于[安装 ML-Agents](Installation.md)、

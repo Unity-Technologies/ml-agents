@@ -183,13 +183,13 @@ agent 的 Brain 实例设置为状态大小为 8 的连续向量观测空间，
 第一步是打开包含 3D Balance Ball 环境的 
 Unity 场景：
 
-1.启动 Unity。
-2.在 Projects 对话框上，选择窗口顶部的 **Open** 选项。
-3.使用随后打开的文件对话框，找到 ML-Agents 项目内的 
+1. 启动 Unity。
+2. 在 Projects 对话框上，选择窗口顶部的 **Open** 选项。
+3. 使用随后打开的文件对话框，找到 ML-Agents 项目内的 
 `unity-environment` 文件夹，然后单击 **Open**。
-4.在 `Project` 窗口中，找到文件夹 
+4. 在 `Project` 窗口中，找到文件夹 
 `Assets/ML-Agents/Examples/3DBall/`。
-5.双击 `Scene` 文件以加载包含 Balance Ball 环境的
+5. 双击 `Scene` 文件以加载包含 Balance Ball 环境的
 场景。
 
 ![3DBall 场景](images/mlagents-Open3DBall.png)
@@ -198,10 +198,10 @@ Unity 场景：
 将 agent 使用的 brain 设置为 **External**。这样 agent 在
 进行决策时能够与外部训练过程进行通信。
 
-1.在 **Scene** 窗口中，单击 Ball3DAcademy 对象旁边的三角形
+1. 在 **Scene** 窗口中，单击 Ball3DAcademy 对象旁边的三角形
 图标。
-2.选择其子对象 `Ball3DBrain`。
-3.在 Inspector 窗口中，将 **Brain Type** 设置为 `External`。
+2. 选择其子对象 `Ball3DBrain`。
+3. 在 Inspector 窗口中，将 **Brain Type** 设置为 `External`。
 
 ![将 Brain 设置为 External](images/mlagents-SetExternalBrain.png)
 
@@ -211,18 +211,18 @@ Unity 场景：
 * 没有对话需要互动
 * 正确的场景会自动加载
  
-1.打开 Player Settings（菜单：**Edit** > **Project Settings** > **Player**）。
-2.在 **Resolution and Presentation** 下方：
+1. 打开 Player Settings（菜单：**Edit** > **Project Settings** > **Player**）。
+2. 在 **Resolution and Presentation** 下方：
     - 确保选中 **Run in Background**。
     - 确保 **Display Resolution Dialog** 设置为 Disabled。
-3.打开 Build Settings 窗口（菜单：**File** > **Build Settings**）。
-4.选择目标平台。
+3. 打开 Build Settings 窗口（菜单：**File** > **Build Settings**）。
+4. 选择目标平台。
     -（可选）选择“Development Build”以便
     [记录调试消息](https://docs.unity3d.com/Manual/LogFiles.html)。
-5.如果 **Scenes in Build** 列表中显示了任何场景，请确保
+5. 如果 **Scenes in Build** 列表中显示了任何场景，请确保
 唯一选中的是 3DBall Scene。（如果该列表为空，则表示
 仅当前场景包含在编译中）。
-6.单击 *Build*：
+6. 单击 *Build*：
     a. 在 File 对话框中，导航至 ML-Agents 目录中的 `python`
     文件夹。
     b. 指定文件名，然后单击 **Save**。
@@ -318,36 +318,36 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 将其禁用。为了启用这项支持，必须遵循以下步骤。请注意，
 只有完成这些步骤后才能使用 `Internal` Brain 模式。
 
-1.确保 TensorFlowSharp 插件位于 `Assets` 文件夹中。
+1. 确保 TensorFlowSharp 插件位于 `Assets` 文件夹中。
 可在
 [此处](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)下载一个包含 TF# 的 Plugins 文件夹。
 下载后，双击并将其导入。您可以在 Project 选项卡中
 （位于 `Assets` > `ML-Agents` > `Plugins` > `Computer` 下）
 检查 TensorFlow 的相关文件来查看是否安装成功
-2.转到 `Edit` > `Project Settings` > `Player`
-3.对于每个目标平台
+2. 转到 `Edit` > `Project Settings` > `Player`
+3. 对于每个目标平台
 （**`PC, Mac and Linux Standalone`**、**`iOS`** 或 **`Android`**）：
     1.转到 `Other Settings`。
     2.选择 `Scripting Runtime Version` 为
     `Experimental (.NET 4.6 Equivalent)`
     3.在 `Scripting Defined Symbols` 中，添加标志 `ENABLE_TENSORFLOW`。
     输入后，按 Enter。
-4.转到 `File` > `Save Project`
-5.重新启动 Unity Editor。
+4. 转到 `File` > `Save Project`
+5. 重新启动 Unity Editor。
 
 ### 将经过训练的模型嵌入到 Unity 中
 
-1.经过训练的模型存储在 `ml-agents` 文件夹中的 `models/<run-identifier>` 内。训练
+1. 经过训练的模型存储在 `ml-agents` 文件夹中的 `models/<run-identifier>` 内。训练
 完成后，该位置会有一个 `<env_name>.bytes` 文件，其中的 `<env_name>` 是训练期间使用的可执行文件的
 名称。
- 2.将 `<env_name>.bytes` 从 `python/models/ppo/` 移入 
+2. 将 `<env_name>.bytes` 从 `python/models/ppo/` 移入 
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`。
-3.打开 Unity Editor，然后选择 `3DBall` 场景（如上所述）。
-4.从 Scene 层级视图中选择 `Ball3DBrain` 对象。
-5.将 `Type of Brain` 更改为 `Internal`。
-6.将 `<env_name>.bytes` 文件从 Editor 的 Project 窗口拖入 
+3. 打开 Unity Editor，然后选择 `3DBall` 场景（如上所述）。
+4. 从 Scene 层级视图中选择 `Ball3DBrain` 对象。
+5. 将 `Type of Brain` 更改为 `Internal`。
+6. 将 `<env_name>.bytes` 文件从 Editor 的 Project 窗口拖入 
 `3DBallBrain` Inspector 窗口中的 `Graph Model` 占位区域。
-7.按 Editor 顶部的 Play 按钮。
+7. 按 Editor 顶部的 Play 按钮。
 
 如果您正确执行了这些步骤，您现在应该能够
 看到 Unity 编辑器中有这个用于控制平衡球行为的
