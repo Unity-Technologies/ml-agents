@@ -2,32 +2,28 @@
 
 # Unity ML-Agents (Beta)
 
-**Unity Machine Learning Agents** (ML-Agents) 是一款开源 Unity 插件，
-可让游戏和模拟作为训练智能 agent 的
-环境。您可以使用 reinforcement learning（强化学习）、
-imitation learning（模仿学习）、neuroevolution（神经进化）或其他机器学习方法
-通过简单易用的 Python API 对 Agent 进行训练。我们还提供最先进算法的实现方式（基于 
+**Unity Machine Learning Agents** (ML-Agents) 是一款开源的 Unity 插件，
+使得我们得以在游戏环境和模拟环境中训练智能 agent。您可以使用 reinforcement learning（强化学习）、imitation learning（模仿学习）、neuroevolution（神经进化）或其他机器学习方法， 通过简单易用的 Python API进行控制，对 Agent 进行训练。我们还提供最先进算法的实现方式（基于 
 TensorFlow），让游戏开发者和业余爱好者能够轻松地
 训练用于 2D、3D 和 VR/AR 游戏的智能 agent。
 这些经过训练的 agent 可用于多种目的，
 包括控制 NPC 行为（采用各种设置，
-例如多个 agent 和对抗）、对游戏内部版本进行自动化测试
-以及评估不同游戏设计决策的预发布版本。ML-Agents 对于游戏开发者和 AI 研究人员双方
+例如多个 agent 和对抗）、对游戏内部版本进行自动化测试、以及评估不同游戏设计决策的预发布版本。ML-Agents 对于游戏开发者和 AI 研究人员双方
 都有利，因为它提供了一个集中的平台，
-可以在 Unity 的丰富环境中评估 AI 的进步情况，
-然后提供给更广泛的研究和游戏开发者社区。
+使得我们得以在 Unity 的丰富环境中测试 AI 的最新进展，
+并使结果为更多的研究者和游戏开发者所用。
 
 ## 功能
-* 来自 Python 的 Unity 环境控制
+* 用于控制 Unity 环境的 Python API
 * 10 多个示例 Unity 环境
-* 支持多种环境配置和训练方案
-* 使用深度 reinforcement learning（强化学习）技术训练记忆增强的 Agent
+* 支持多种环境配置方案和训练方案
+* 使用 deep reinforcement learning（深度强化学习）技术训练带记忆的Agent
 * 可轻松定义的 Curriculum Learning（课程学习）方案
-* 通过 Agent 行为 Broadcasting 实现监督学习
+* 通过广播 Agent 行为实现监督学习
 * 内置 Imitation Learning（模仿学习）支持
 * 通过按需决策功能实现灵活的 Agent 控制
-* 在环境中可视化网络输出
-* 通过 Docker 实现简化设置（实验性）
+* 在环境中可查看神经网络的输出
+* 通过 Docker 实现简化设置（测试功能）
 
 ## 文档和参考
 
@@ -49,7 +45,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 除了我们自己的文档外，这里还有一些额外的相关文章：
 - [Unity AI - Unity 3D 人工智能](https://www.youtube.com/watch?v=bqsfkGbBU6k)
 - [游戏开发者学习机器学习](https://mikecann.co.uk/machine-learning/a-game-developer-learns-machine-learning-intent/)
-- [在 Intel 架构上单独研究 Unity Technologies ML-Agents](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
+- [在 Intel 体系结构上单独研究 Unity Technologies ML-Agents](https://software.intel.com/en-us/articles/explore-unity-technologies-ml-agents-exclusively-on-intel-architecture)
 
 ## 社区和反馈
 

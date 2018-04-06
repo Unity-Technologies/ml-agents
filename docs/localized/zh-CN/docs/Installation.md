@@ -1,8 +1,8 @@
 # 安装和设置
 
-为了安装和使用 ML-Agents，您需要安装 Unity，克隆此代码仓库，
-并安装 Python 以及其他依赖项。下面的每个小节
-都会概述每个步骤，此外还会介绍实验性的 Docker 设置。
+为了安装和使用 ML-Agents，您需要安装 Unity，克隆这个代码仓库，
+并安装 Python 以及其他所依赖的库。下面的每个小节
+都会概述每个步骤，此外还会介绍尚在测试阶段的 Docker 的配置方法。
 
 ## 安装 **Unity 2017.1** 或更高版本
 
@@ -18,12 +18,12 @@ _Linux Build Support_ 组件。
 
 ## 克隆 ml-agents 代码仓库
 
-安装完成后，您需要克隆 ML-Agents GitHub代码仓库。
+安装完成后，您需要克隆 ML-Agents GitHub 代码仓库。
 
     git clone git@github.com:Unity-Technologies/ml-agents.git
 
 此代码仓库中的 `unity-environment` 目录包含了要添加到项目中的 
-Unity资源。`python` 目录包含训练代码。
+Unity Assets。`python` 目录包含训练代码。
 这两个目录都位于代码仓库的根目录。
 
 ## 安装 Python（以及依赖项）
@@ -49,7 +49,7 @@ Unity资源。`python` 目录包含训练代码。
 
     pip3 install .
 
-## 基于 Docker 的安装（实验性）
+## 基于 Docker 的安装（测试阶段）
 
 如果您想使用 Docker for ML-Agents，请按照
 [该指南](Using-Docker.md)进行操作。
@@ -65,6 +65,6 @@ Unity资源。`python` 目录包含训练代码。
 ## 帮助
 
 如果您在安装 ML-Agents 时遇到任何问题，请
-[提交问题](https://github.com/Unity-Technologies/ml-agents/issues)并务必
-提供有关操作系统、Python 版本和确切错误消息（如可能）的
+[提交问题](https://github.com/Unity-Technologies/ml-agents/issues)，并在提交时
+提供有关操作系统、Python 版本和相关错误消息（如可能）的
 信息。
