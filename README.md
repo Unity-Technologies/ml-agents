@@ -37,11 +37,7 @@ to the wider research and game developer communities.
 
 ### Get Python 3 environment
 
-Option 1: [Download](https://www.python.org/downloads/release/python-364/) and install Python 3.6.4, (Python 3.6.5 doesn't work with Tensorflow yet). 
-
-Option 2: [Download](https://www.anaconda.com/download) and install Anaconda with Python 3.6 version. 
-
-(For Windows) Choose to add to PATH if you don't know how to do it yourself, see [here](https://docs.python.org/3/using/windows.html) for more details. 
+[Download](https://www.python.org/downloads/release/python-354/) and install Python 3.5. 
 
 ### Clone the repo and install dependencies
 
@@ -71,30 +67,21 @@ pip install .
 
 ### Setting up TensorflowSharp Support
 
-[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) TensorflowSharp plugin, and
-import it into Unity once downloaded by double clicking on it.  You can see if this was
-successfully imported by checking the TensorFlow files in the Project window
-under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`. If you don't see anything under `Assets`, drag the folder `ml-agents`/`unity-environment`/`Assets`/`ML-Agents` folder under `Assets` within Project window.
+[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) TensorflowSharp plugin, and import it into Unity once downloaded by double clicking on it.  You can see if it was successfully imported by checking the TensorFlow files in the Project window under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`. 
 
+**Note**: If you don't see anything under `Assets`, drag the `ml-agents`/`unity-environment`/`Assets`/`ML-Agents` folder under `Assets` within Project window.
 
 ### Play an example environment using pretrained model
 
-2. In the Project window, go to `Assets` -> `ML-Agents` -> `Examples` -> `3DBall` folder and open the `3DBall` scene file. 
+1. In the Project window, go to `Assets` -> `ML-Agents` -> `Examples` -> `3DBall` folder and open the `3DBall` scene file. 
+2. In the Hierarchy window, click on `Ball3DAcademy` -> `Ball3DBrain`. 
+3. In the Inspector window, under `Brain (Script)` -> `Brain Type`, change the `Brain Type` to `Internal`. 
+4. Click the `Play` button and you will see the platforms automatically adjusts itself using the pretrained model.
 
-6. In the Hierarchy window, click on `Ball3DAcademy` -> `Ball3DBrain`. 
-7. In the Inspector window, under `Brain (Script)` -> `Brain Type`, change the `Brain Type` to `Internal`. 
-8. Click the `Play` button and you will see the platforms automatically adjusts itself using the pretrained model.
+## Documentation and References
 
-## Documentation
-
-You can find ML-Agents documentation [here](docs/Readme.md)
-
-* [Hello World Example](docs/Getting-Started-with-Balance-Ball.md)
-* [Installation](docs/Installation.md)
-* 
-
-### Migration from v0.2
-If you have
+* You can find the complete documentation [here](docs/Readme.md). 
+* If you have
 used a version of ML-Agents prior to v0.3, we strongly recommend 
 our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
 
