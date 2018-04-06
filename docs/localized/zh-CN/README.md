@@ -32,7 +32,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 **除了安装和使用说明外，如需更多信息，
 请参阅我们的[文档主页](docs/Readme.md)。**如果您使用的
 是 v0.3 之前的 ML-Agents 版本，强烈建议您参考
-我们的[关于迁移到 v0.3 的指南](docs/Migrating-v0.3.md)。
+我们的[关于迁移到 v0.3 的指南](/docs/Migrating-v0.3.md)。
 
 我们还发布了一系列与 ML-Agents 相关的博客文章：
 - reinforcement learning（强化学习）概念概述
@@ -53,8 +53,8 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 
 ML-Agents 是一个开源项目，我们鼓励并欢迎大家贡献自己的力量。
 如果您想做出贡献，请务必查看我们的
-[贡献准则](CONTRIBUTING.md)和
-[行为准则](CODE_OF_CONDUCT.md)。
+[贡献准则](/CONTRIBUTING.md)和
+[行为准则](/CODE_OF_CONDUCT.md)。
 
 您可以通过 Unity Connect 和 GitHub 与我们
 以及更广泛的社区进行交流：

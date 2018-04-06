@@ -234,7 +234,7 @@ Unity 场景：
 有了一个包含模拟环境的 Unity 可执行文件后，现在我们
 可以执行训练。为了首先确保您的环境和 Python 
 API 能正常工作，您可以使用 `python/Basics` 
-[Jupyter 笔记本](Background-Jupyter.md)。
+[Jupyter 笔记本](/docs/Background-Jupyter.md)。
 此笔记本包含了 API 功能的简单演练。
 在 `Basics` 中，务必将 `env_name` 设置为您先前构建的
 环境文件的名称。
@@ -284,7 +284,7 @@ python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train
 从 TensorBoard 中，您将看到摘要统计信息：
 
 * Lesson - 只有在进行
-[课程训练](Training-Curriculum-Learning.md)时才有意义。
+[课程训练](/docs/Training-Curriculum-Learning.md)时才有意义。
 3D Balance Ball 环境中不使用此项。
 * Cumulative Reward - 所有 agent 的平均累积场景奖励。
 在成功训练期间应该增大。

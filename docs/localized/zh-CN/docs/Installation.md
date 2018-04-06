@@ -31,12 +31,12 @@ Unity Assets。`python` 目录包含训练代码。
 为了使用 ML-Agents，您需要安装 Python 3 以及
 [要求文件](../python/requirements.txt)中列出的依赖项。
 一些主要的依赖项包括：
-- [TensorFlow](Background-TensorFlow.md)
-- [Jupyter](Background-Jupyter.md)
+- [TensorFlow](/docs/Background-TensorFlow.md)
+- [Jupyter](/docs/Background-Jupyter.md)
 
 ### Windows 用户
 
-如果您是刚接触 Python 和 TensorFlow 的 Windows 用户，请遵循[此指南](Installation-Windows.md)来设置 Python 环境。
+如果您是刚接触 Python 和 TensorFlow 的 Windows 用户，请遵循[此指南](/docs/Installation-Windows.md)来设置 Python 环境。
 
 ### Mac 和 Unix 用户
 
@@ -52,7 +52,7 @@ Unity Assets。`python` 目录包含训练代码。
 ## 基于 Docker 的安装（测试阶段）
 
 如果您想使用 Docker for ML-Agents，请按照
-[该指南](Using-Docker.md)进行操作。
+[该指南](/docs/Using-Docker.md)进行操作。
 
 ## Unity 包
 

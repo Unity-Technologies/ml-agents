@@ -4,7 +4,7 @@ Reinforcement learning（强化学习）是一种人工智能技术，通过奖�
 
 ML-Agents 使用一种称为 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/) 的 reinforcement learning（强化学习）技术。PPO 使用神经网络来逼近理想函数；这种理想函数将 agent 的观测结果映射为 agent 在给定状态下可以采取的最佳动作。ML-Agents PPO 算法在 TensorFlow 中实现，并在单独的 Python 过程中运行（通过一个socket与正在运行的 Unity 应用程序进行通信）。
 
-**注意：**如果您并非要专门研究机器学习和 reinforcement learning（强化学习）主题，只想训练 agent 完成任务，则可以将 PPO 训练视为一个_黑盒_。在 Unity 内部以及在 Python 训练方面有一些与训练相关的参数可进行调整，但您不需要深入了解算法本身就可以成功创建和训练 agent。[训练 ML-Agents](Training-ML-Agents.md)提供了执行训练过程的逐步操作程序。
+**注意：**如果您并非要专门研究机器学习和 reinforcement learning（强化学习）主题，只想训练 agent 完成任务，则可以将 PPO 训练视为一个_黑盒_。在 Unity 内部以及在 Python 训练方面有一些与训练相关的参数可进行调整，但您不需要深入了解算法本身就可以成功创建和训练 agent。[训练 ML-Agents](/docs/Training-ML-Agents.md)提供了执行训练过程的逐步操作程序。
 
 ##模拟和训练过程
 
@@ -25,7 +25,7 @@ ML-Agents Academy 类按如下方式编排 agent 模拟循环：
 
 要创建训练环境，请扩展 Academy 和 Agent 类以实现上述方法。`Agent.CollectObservations()` 和 `Agent.AgentAction()` 函数必须实现；而其他方法是可选的，即是否需要实现它们取决于您的具体情况。
   
-**注意：**在这里用到的 Python API 也可用于其他目的。例如，借助于该 API，您可以将 Unity 用作您自己的机器学习算法的模拟引擎。请参阅 [Python API](Python-API.md) 以了解更多信息。
+**注意：**在这里用到的 Python API 也可用于其他目的。例如，借助于该 API，您可以将 Unity 用作您自己的机器学习算法的模拟引擎。请参阅 [Python API](/docs/Python-API.md) 以了解更多信息。
 
 ## 组织 Unity 场景
 
@@ -47,17 +47,17 @@ Academy 对象会指挥多个 agent 的决策过程。一个场景中有且仅�
 
 Academy 基类还定义了若干可以在 Unity Editor Inspector 中设置的重要属性。对于训练而言，这些属性中最重要的是 `Max Steps`，它决定了每个训练场景的持续时间。Academy 的步骤计数器达到此值后，它将调用 `AcademyReset()` 函数来开始下一轮模拟。
   
-  请参阅 [Academy](Learning-Environment-Design-Academy.md) 以查看 Academy 属性及其用途的完整列表。
+  请参阅 [Academy](/docs/Learning-Environment-Design-Academy.md) 以查看 Academy 属性及其用途的完整列表。
 
 ### Brain
  
 Brain 内部封装了决策过程。Brain 对象必须放在 Hierarchy 视图中的 Academy 的子级。我们必须为每个 Agent 分配一个 Brain，但可以在多个 Agent 之间共享同一个 Brain。
 
-当我们使用 Brain 类的时候不需要使用其子类，而应该直接使用 Brain 这个类。Brain 的行为取决于 brain 的类型。在训练期间，应将 agent 上连接的 Brain 的 Brain Type 设置为 **External**。要使用经过训练的模型，请将模型文件导入 Unity 项目，并将对应 Brain 的 Brain  Type 更改为 **Internal**。请参阅 [Brain](Learning-Environment-Design-Brains.md) 以了解有关使用不同类型的 Brain 的详细信息。如果四种内置的类型不能满足您的需求，您可以扩展 CoreBrain 类以创建其它的 Brain 类型。
+当我们使用 Brain 类的时候不需要使用其子类，而应该直接使用 Brain 这个类。Brain 的行为取决于 brain 的类型。在训练期间，应将 agent 上连接的 Brain 的 Brain Type 设置为 **External**。要使用经过训练的模型，请将模型文件导入 Unity 项目，并将对应 Brain 的 Brain  Type 更改为 **Internal**。请参阅 [Brain](/docs/Learning-Environment-Design-Brains.md) 以了解有关使用不同类型的 Brain 的详细信息。如果四种内置的类型不能满足您的需求，您可以扩展 CoreBrain 类以创建其它的 Brain 类型。
 
-Brain 类有若干可以使用 Inspector 窗口进行设置的重要属性。对于使用 brain 的 agent，这些属性必须恰当。例如，`Vector Observation Space Size` 属性必须与 agent 创建的特征向量的长度完全匹配。请参阅 [Agent](Learning-Environment-Design-Agents.md) 以获取有关创建 agent 和正确设置 Brain 实例的信息。
+Brain 类有若干可以使用 Inspector 窗口进行设置的重要属性。对于使用 brain 的 agent，这些属性必须恰当。例如，`Vector Observation Space Size` 属性必须与 agent 创建的特征向量的长度完全匹配。请参阅 [Agent](/docs/Learning-Environment-Design-Agents.md) 以获取有关创建 agent 和正确设置 Brain 实例的信息。
 
-请参阅 [Brain](Learning-Environment-Design-Brains.md) 以查看 Brain 属性的完整列表。
+请参阅 [Brain](/docs/Learning-Environment-Design-Brains.md) 以查看 Brain 属性的完整列表。
 
 ### Agent
 
@@ -72,7 +72,7 @@ Agent 类代表场景中负责收集观测结果并采取动作的一个参与�
  
 您还必须确定 Agent 如何完成任务，以及当它超时后如何处理。agent 完成其任务（或彻底失败）后，您可以在 `AgentAction()` 函数中手动将 agent 设置为完成。您还可以将 agent 的 `Max Steps` 属性设置为正值，这样 agent 在执行了此数量的步骤后会认为自己已完成。Academy 达到自己的 `Max Steps` 计数后，会开始下一场景。如果将 agent 的 `ResetOnDone` 属性设置为 true，则 agent 可以在一个场景中多次尝试自己的任务。（在 `Agent.AgentReset()` 函数中可以设置 agent 的初始化逻辑，为下一次的任务做好准备。）
 
-请参阅 [Agent](Learning-Environment-Design-Agents.md) 以详细了解如何编写一个你自己的 agent。
+请参阅 [Agent](/docs/Learning-Environment-Design-Agents.md) 以详细了解如何编写一个你自己的 agent。
 
 ##环境
 

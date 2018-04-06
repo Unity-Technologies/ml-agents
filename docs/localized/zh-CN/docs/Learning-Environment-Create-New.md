@@ -15,7 +15,7 @@
 3. 将一个或多个 Brain 对象作为 Academy 的子级添加到场景中。
 4. 实现 Agent 子类。Agent 子类定义了必要的代码供 agent 用于观测自身环境、执行指定动作以及计算用于强化训练的奖励。您还可以实现可选方法，从而在 agent 完成任务或任务失败时重置 agent。
 5. 将 Agent 子类添加到相应的游戏对象，通常是在场景内表示模拟中的 agent 的对象。必须为每个 Agent 对象分配一个 Brain 对象。
-6. 如果要进行训练，应将 Brain 类型设置为 External 并[执行训练过程](Training-ML-Agents.md)。
+6. 如果要进行训练，应将 Brain 类型设置为 External 并[执行训练过程](/docs/Training-ML-Agents.md)。
 
 **注意：**如果您不熟悉 Unity，而本教程中未充分讲解 Editor 任务的情况下，请参阅 Unity 手册中的[了解界面](https://docs.unity3d.com/Manual/LearningtheInterface.html)。
 
@@ -408,12 +408,12 @@ public override void AgentAction(float[] vectorAction, string textAction)
 按 **Play** 运行场景，并用 WASD 键在平台上移动 agent。确保在 Unity Editor Console 窗口中没有显示任何错误，并且 agent 在到达目标或掉下平台时会重置。请注意，对于较复杂的调试，ML-Agents SDK 提供了一个方便的 Monitor 类，您可以使用该类轻松地在 Game 窗口中显示 agent 状态信息。
 
 您可以执行一个额外的测试是，首先使用 `python/Basics` 
-[Jupyter Notebook](Background-Jupyter.md)
+[Jupyter Notebook](/docs/Background-Jupyter.md)
 确保您的环境和 Python API 能正常工作。在 `Basics` 中，务必将 
 `env_name` 设置为您生成的此环境对应的可执行文件的
 名称。
 
-现在可以开始训练 Agent 了。为了准备进行训练，必须首先将 **Brain Type** 从 **Player** 更改为 **External**。此后的过程与[训练 ML-Agents](Training-ML-Agents.md) 中所述的过程相同。
+现在可以开始训练 Agent 了。为了准备进行训练，必须首先将 **Brain Type** 从 **Player** 更改为 **External**。此后的过程与[训练 ML-Agents](/docs/Training-ML-Agents.md) 中所述的过程相同。
 
 ## 回顾：场景布局
 

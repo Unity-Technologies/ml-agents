@@ -17,9 +17,9 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 您现在可能在脑海中会有非常不同的问题。
 为了让您更轻松地过渡到 ML-Agents，
 我们提供了多个后台页面，其中包括有关 
-[Unity 引擎](Background-Unity.md)、
-[机器学习](Background-Machine-Learning.md)和 
-[TensorFlow](Background-TensorFlow.md) 的概述和有用资源。如果您不熟悉 Unity 场景，不了解基本的机器学习概念，或者以前没有听说过 TensorFlow，**强烈**建议您浏览相关的背景知识页面。
+[Unity 引擎](/docs/Background-Unity.md)、
+[机器学习](/docs/Background-Machine-Learning.md)和 
+[TensorFlow](/docs/Background-TensorFlow.md) 的概述和有用资源。如果您不熟悉 Unity 场景，不了解基本的机器学习概念，或者以前没有听说过 TensorFlow，**强烈**建议您浏览相关的背景知识页面。
 
 此页面的其余部分深入介绍了 ML-Agents、包括其重要组件、
 支持的不同的训练模式以及这些训练模式对应的应用场景。读完后
@@ -178,7 +178,7 @@ External Communicator 的作用。在我们深入了解这些细节之前，
 Brain 收集的观测结果和奖励通过 External Communicator 
 转发给 Python API。Python API 随后返回 Agent 需要采取的相应动作。
 * **Internal** - 使用嵌入式 
-[TensorFlow](Background-TensorFlow.md) 模型进行决策。
+[TensorFlow](/docs/Background-TensorFlow.md) 模型进行决策。
 嵌入式 TensorFlow 模型包含了学到的 policy，Brain 直接使用
 此模型来确定每个 Agent 的动作。
 * **Player** - 使用键盘或控制器的实际输入进行
@@ -252,7 +252,7 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 的 Brain 类型都会设置为 External，并且场景中所有 Agent 的行为
 都将在 Python 中接受控制。
 
-我们目前没有教程介绍这种模式，但您可以在[这里](Python-API.md)
+我们目前没有教程介绍这种模式，但您可以在[这里](/docs/Python-API.md)
 了解有关 Python API 的更多信息。
 
 ### Curriculum Learning（课程学习）
@@ -295,7 +295,7 @@ Academy 内设置自定义环境参数。因此，
 可以根据训练进度动态调整与难度或复杂性相关的
 环境要素（比如游戏对象）。
 
-[使用 Curriculum Learning（课程学习）进行训练](Training-Curriculum-Learning.md)
+[使用 Curriculum Learning（课程学习）进行训练](/docs/Training-Curriculum-Learning.md)
 教程使用 **Wall Area** 示例环境介绍了此训练模式。
 
 ### Imitation Learning（模仿学习）
@@ -311,7 +311,7 @@ Academy 内设置自定义环境参数。因此，
 算法随后将会使用这些来自人类玩家的观测结果以及他们对应的动作来
 学习 policy。
 
-[使用 Imitation Learning（模仿学习）进行训练](Training-Imitation-Learning.md)教程
+[使用 Imitation Learning（模仿学习）进行训练](/docs/Training-Imitation-Learning.md)教程
 使用 **Banana Collector** 示例环境介绍了此训练模式。
 
 ## 灵活的训练方案
@@ -362,7 +362,7 @@ agent 必须对事件作出反应的游戏，
 或 agent 可以采取持续时间不同的动作
 的游戏。在每一步决策与按需决策之间切换
 只需点击一下按钮即可实现。您可以在
-[此处](Learning-Environment-Design-Agents.md#on-demand-decision-making)了解更多关于按需决策功能的
+[此处](/docs/Learning-Environment-Design-Agents.md#on-demand-decision-making)了解更多关于按需决策功能的
 信息。
 
 * **记忆增强 Agent** - 在某些情况下，
@@ -373,7 +373,7 @@ agent 必须学会记住过去才能做出
 ([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory))
  的实现，使 agent 能够存储要在未来步骤中
 使用的记忆。您可以在
-[此处](Feature-Memory.md)了解有关在训练中启用 LSTM 的更多信息。
+[此处](/docs/Feature-Memory.md)了解有关在训练中启用 LSTM 的更多信息。
 
 * **监控 Agent 的决策过程** - 由于 ML-Agents 中的通信
 是双向通道通信，因此我们在 Unity 中提供了一个 agent Monitor 类，
@@ -382,7 +382,7 @@ agent 必须学会记住过去才能做出
 的感知。通过利用作为可视化工具的 Unity 并实时提供
 这些输出，研究人员和开发人员可以更轻松地
 调试 agent 的行为。您可以在
-[此处](Feature-Monitor.md)了解更多关于使用 Monitor 类的信息。
+[此处](/docs/Feature-Monitor.md)了解更多关于使用 Monitor 类的信息。
 
 * **复杂的视觉观测** - 在其他平台中，agent 的观测可能
 仅限于单个向量或图像，与之不同的是，ML-Agents 允许
@@ -391,7 +391,7 @@ agent 必须学会记住过去才能做出
 都会很有用，例如训练需要多个摄像头且摄像头具有
 不同视角的自动驾驶车辆，或可能需要整合空中视觉和
 第一人称视觉的导航 agent。您可以在
-[此处](Learning-Environment-Design-Agents.md#multiple-visual-observations)了解更多关于向 agent 添加视觉观测的
+[此处](/docs/Learning-Environment-Design-Agents.md#multiple-visual-observations)了解更多关于向 agent 添加视觉观测的
 信息。
         
 * **Broadcasting** - 如前所述，默认情况下，External Brain 会将
@@ -404,18 +404,18 @@ agent 必须学会记住过去才能做出
 来通过示范的方式学习 agent 的 policy。
 不过，这对 Heuristic 和 Internal Brain 也有帮助，
 特别是在调试 agent 行为时。您可以在
-[此处](Learning-Environment-Design-Brains.md#using-the-broadcast-feature)了解更多关于使用 broadcasting 功能的
+[此处](/docs/Learning-Environment-Design-Brains.md#using-the-broadcast-feature)了解更多关于使用 broadcasting 功能的
 信息。
 
 * **Docker 设置（测试功能）** - 为了便于在不直接安装 
 Python 或 TensorFlow 的情况下设置 ML-Agents，
 我们提供了关于如何创建和运行 Docker 容器的
-[指南](Using-Docker.md)。由于渲染视觉观测的限制，
+[指南](/docs/Using-Docker.md)。由于渲染视觉观测的限制，
 该功能被标记为测试功能。
 
 * **AWS 上的云训练** - 为了便于在 Amazon Web Services (AWS) 
 机器上使用 ML-Agents，我们提供了一份
-[指南](Training-on-Amazon-Web-Service.md)
+[指南](/docs/Training-on-Amazon-Web-Service.md)
 让您了解如何设置 EC2 实例以及公共的预配置 Amazon 
 Machine Image (AMI)。
 
