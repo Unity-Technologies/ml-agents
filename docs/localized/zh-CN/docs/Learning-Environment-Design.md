@@ -1,4 +1,4 @@
-#Unity 中的 Reinforcement Learning（强化学习）
+# Unity 中的 Reinforcement Learning（强化学习）
 
 Reinforcement learning（强化学习）是一种人工智能技术，通过奖励期望的行为来训练 _agent_ 执行任务。在 reinforcement learning（强化学习）过程中，agent 会探索自己所处的环境，观测事物的状态，并根据这些观测结果采取相应动作。如果该动作带来了更好的状态，agent 会得到正奖励。如果该动作带来的状态不太理想，则 agent 不会得到奖励或会得到负奖励（惩罚）。随着 agent 在训练期间不断学习，它会优化自己的决策能力，以便随着时间的推移获得最高奖励。
 
@@ -6,7 +6,7 @@ ML-Agents 使用一种称为 [Proximal Policy Optimization (PPO)](https://blog.o
 
 **注意：**如果您并非要专门研究机器学习和 reinforcement learning（强化学习）主题，只想训练 agent 完成任务，则可以将 PPO 训练视为一个_黑盒_。在 Unity 内部以及在 Python 训练方面有一些与训练相关的参数可进行调整，但您不需要深入了解算法本身就可以成功创建和训练 agent。[训练 ML-Agents](/docs/Training-ML-Agents.md)提供了执行训练过程的逐步操作程序。
 
-##模拟和训练过程
+## 模拟和训练过程
 
 训练和模拟过程以 ML-Agents Academy 类编排的步骤进行。Academy 与场景中的 Agent 和 Brain 对象一起协作逐步完成模拟。当 Academy 已达到其最大步数或场景中的所有 agent 均_完成_时，一个训练场景即完成。
 
@@ -74,7 +74,7 @@ Agent 类代表场景中负责收集观测结果并采取动作的一个参与�
 
 请参阅 [Agent](/docs/Learning-Environment-Design-Agents.md) 以详细了解如何编写一个你自己的 agent。
 
-##环境
+## 环境
 
 ML-Agents 中的_环境_可以是 Unity 中构建的任何场景。Unity 场景为 agent 提供了观察、行动和学习的环境。如何设置 Unity 场景实际上取决于您的目标。您可能想要试图解决某个特定的reinforcement learning（强化学习）问题，这种情况下您可以在某一个场景内又进行训练又进行测试。或者，您可能想要训练 agent 在复杂的游戏或模拟条件下的做出某些行为，这种情况下创建更有针对性的训练场景可能会更加高效和实用。
 
