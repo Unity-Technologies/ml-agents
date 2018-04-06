@@ -80,8 +80,9 @@ pip install .
 
 ## Documentation and References
 
-* You can find the complete documentation [here](docs/Readme.md). 
-* If you have
+You can find the complete documentation [here](docs/Readme.md). 
+
+If you have
 used a version of ML-Agents prior to v0.3, we strongly recommend 
 our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
 
