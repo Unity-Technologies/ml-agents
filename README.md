@@ -74,7 +74,7 @@ team at ml-agents@unity3d.com.
 
 ## Translation
 
-- [Chinese](docs/localized/zh-CN/README.md)
+- [Chinese](docs/localized/zh-CN/)
 
 ## License
 
