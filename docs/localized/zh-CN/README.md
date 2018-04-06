@@ -2,6 +2,8 @@
 
 # Unity ML-Agents (Beta)
 
+**注意:** 本文档为v0.3版本文档的部分翻译版，目前并不会随着英文版文档更新而更新。若要查看更新更全的英文版文档，请查看[这里](https://github.com/Unity-Technologies/ml-agents)。
+
 **Unity Machine Learning Agents** (ML-Agents) 是一款开源的 Unity 插件，
 使得我们得以在游戏环境和模拟环境中训练智能 agent。您可以使用 reinforcement learning（强化学习）、imitation learning（模仿学习）、neuroevolution（神经进化）或其他机器学习方法， 通过简单易用的 Python API进行控制，对 Agent 进行训练。我们还提供最先进算法的实现方式（基于 
 TensorFlow），让游戏开发者和业余爱好者能够轻松地
