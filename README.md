@@ -72,7 +72,14 @@ make sure to include as much detail as possible.
 For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
 
-## Translation
+## Translations
+
+To make Unity ML-Agents accessible to the global research and
+Unity developer communities, we're attempting to create and maintain
+translations of our documentation. We've started with translating a subset
+of the documentation to one language (Chinese), but we hope to continue
+translating more pages and to other languages. Consequently,
+we welcome any enhancements and improvements from the community.
 
 - [Chinese](docs/localized/zh-CN/)
 
