@@ -29,10 +29,60 @@ to the wider research and game developer communities.
 * Visualizing network outputs within the environment
 * Simplified set-up with Docker
 
+## Quick Start Guide
+
+### Get **Unity**
+
+[Download](https://store.unity.com/download) and install Unity, ML-Agents works with versions that are 2017.1 and above. 
+
+### Get Python 3 environment
+
+[Download](https://www.python.org/downloads/release/python-354/) and install Python 3.5. 
+
+### Clone the repo and install dependencies
+
+You can get the ML-Agents code and all the packages it depends on by running the following in your command line tool. 
+
+```
+git clone https://github.com/Unity-Technologies/ml-agents.git
+cd ml-agents/python
+pip install .
+```
+
+(For Windows) If you don't have git, download it [here](https://git-scm.com/download/win) and install it, then reopen your cmd and try again. 
+
+### Setting up ML-Agent within Unity
+
+1. Open Unity and use it to open folder `ml-agents`/`unity-environment`. 
+2. Go to `Edit` -> `Project Settings` -> `Player`
+3. For each of the platforms you target 
+(**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**):
+    1. Go into `Other Settings`.
+    2. Select `Scripting Runtime Version` to 
+    `Experimental (.NET 4.6 Equivalent)`
+    3. In `Scripting Defined Symbols`, add the flag `ENABLE_TENSORFLOW`. 
+    After typing in, press Enter.
+4. Go to `File` -> `Save Project`
+5. Restart the Unity Editor.
+
+### Setting up TensorflowSharp Support
+
+[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) TensorflowSharp plugin, and import it into Unity once downloaded by double clicking on it.  You can see if it was successfully imported by checking the TensorFlow files in the Project window under `Assets` -> `ML-Agents` -> `Plugins` -> `Computer`. 
+
+**Note**: If you don't see anything under `Assets`, drag the `ml-agents`/`unity-environment`/`Assets`/`ML-Agents` folder under `Assets` within Project window.
+
+### Play an example environment using pretrained model
+
+1. In the Project window, go to `Assets` -> `ML-Agents` -> `Examples` -> `3DBall` folder and open the `3DBall` scene file. 
+2. In the Hierarchy window, click on `Ball3DAcademy` -> `Ball3DBrain`. 
+3. In the Inspector window, under `Brain (Script)` -> `Brain Type`, change the `Brain Type` to `Internal`. 
+4. Click the `Play` button and you will see the platforms automatically adjusts itself using the pretrained model.
+
 ## Documentation and References
 
-**For more information, in addition to installation and usage
-instructions, see our [documentation home](docs/Readme.md).** If you have
+You can find the complete documentation [here](docs/Readme.md). 
+
+If you have
 used a version of ML-Agents prior to v0.3, we strongly recommend 
 our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
 
