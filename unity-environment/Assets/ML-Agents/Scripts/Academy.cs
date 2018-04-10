@@ -476,7 +476,7 @@ public abstract class Academy : MonoBehaviour
             modeSwitched = false;
         }
 
-        Debug.Log("Command is : "+communicator.GetCommand().ToString());
+        //Debug.Log("Command is : "+communicator.GetCommand().ToString());
 
         if (isCommunicatorOn)
         {

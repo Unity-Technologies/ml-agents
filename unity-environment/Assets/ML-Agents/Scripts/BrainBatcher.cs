@@ -15,9 +15,15 @@ namespace MLAgents
         Communicator.Communicator communicator;
         Communicator.UnityOutput unityOutput = new Communicator.UnityOutput();
 
+        // TO delete
+        Academy academy;
+
         public BrainBatcher(Communicator.Communicator communicator)
         {
             this.communicator = communicator;
+            // This needs to disapear, the done flag of the academy should be accessible by everything
+            academy = Object.FindObjectOfType<Academy>() as Academy;
+
         }
 
         /// <summary>
@@ -41,7 +47,7 @@ namespace MLAgents
         public void GiveBrainInfo(string brainKey, Dictionary<Agent, AgentInfo> agentInfo)
         {
             //TODO : Find a way to remove this academy
-            Academy academy = Object.FindObjectOfType<Academy>() as Academy;
+
 
 
 
