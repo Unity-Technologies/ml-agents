@@ -15,7 +15,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     /**< Reference to the brain that uses this CoreBrainHeuristic */
     public Brain brain;
 
-    ExternalCommunicator coord;
+    MLAgents.BrainBatcher brainBatcher;
 
     /**< Reference to the Decision component used to decide the actions */
     public Decision decision;
@@ -27,28 +27,28 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     }
 
     /// Create the reference to decision
-    public void InitializeCoreBrain(Communicator communicator)
+    public void InitializeCoreBrain(MLAgents.BrainBatcher brainBatcher)
     {
         decision = brain.gameObject.GetComponent<Decision>();
 
-        if ((communicator == null)
+        if ((brainBatcher == null)
             || (!broadcast))
         {
-            coord = null;
+            this.brainBatcher = null;
         }
-        else if (communicator is ExternalCommunicator)
+        else
         {
-            coord = (ExternalCommunicator)communicator;
-            coord.SubscribeBrain(brain);
+            this.brainBatcher = brainBatcher; ;
+            this.brainBatcher.SubscribeBrain(brain.gameObject.name);
         }
     }
 
     /// Uses the Decision Component to decide that action to take
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-        if (coord!=null)
+        if (brainBatcher != null)
         {
-            coord.GiveBrainInfo(brain, agentInfo);
+            brainBatcher.GiveBrainInfo(brain.gameObject.name, agentInfo);
         }
 
         if (decision == null)

@@ -203,10 +203,10 @@ public class Brain : MonoBehaviour
     }
 
     /// This is called by the Academy at the start of the environemnt.
-    public void InitializeBrain(Academy aca, Communicator communicator)
+    public void InitializeBrain(Academy aca, MLAgents.BrainBatcher brainBatcher)
     {
         UpdateCoreBrains();
-        coreBrain.InitializeCoreBrain(communicator);
+        coreBrain.InitializeCoreBrain(brainBatcher);
         aca.BrainDecideAction += DecideAction;
         isInitialized = true;
     }

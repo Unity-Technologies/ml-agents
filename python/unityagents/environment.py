@@ -1,5 +1,4 @@
 import atexit
-import io
 import glob
 import json
 import logging
@@ -7,13 +6,15 @@ import numpy as np
 import os
 import socket
 import subprocess
-import struct
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
-from PIL import Image
+from communicator import UnityInput, UnityOutput, AgentAction
+
+from .grpc_communicator import GrpcCommunicator
+
 from sys import platform
 
 logging.basicConfig(level=logging.INFO)
@@ -40,20 +41,9 @@ class UnityEnvironment(object):
         self._buffer_size = 12000
         self._version_ = "API-3"
         self._loaded = False
-        self._open_socket = False
+        self.proc1 = None
 
-        try:
-            # Establish communication socket
-            self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self._socket.bind(("localhost", self.port))
-            self._open_socket = True
-        except socket.error:
-            self._open_socket = True
-            self.close()
-            raise socket.error("Couldn't launch new environment because worker number {} is still in use. "
-                               "You may need to manually close a previously opened environment "
-                               "or use a different worker number.".format(str(worker_id)))
+        self.communicator = GrpcCommunicator(worker_id, base_port)
 
         cwd = os.getcwd()
         file_name = (file_name.strip()
@@ -97,7 +87,7 @@ class UnityEnvironment(object):
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
             if docker_training == False:
-                proc1 = subprocess.Popen(
+                self.proc1 = subprocess.Popen(
                     [launch_string,
                      '--port', str(self.port),
                      '--seed', str(seed)])
@@ -124,57 +114,43 @@ class UnityEnvironment(object):
                              " {0} --port {1} --seed {2}").format(launch_string,
                                                                   str(self.port),
                                                                   str(seed))
-                proc1 = subprocess.Popen(docker_ls,
+                self.proc1 = subprocess.Popen(docker_ls,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          shell=True)
-        self._socket.settimeout(30)
+        self._loaded = True
         try:
-            try:
-                self._socket.listen(1)
-                self._conn, _ = self._socket.accept()
-                self._conn.settimeout(30)
-                p = self._conn.recv(self._buffer_size).decode('utf-8')
-                p = json.loads(p)
-            except socket.timeout as e:
-                raise UnityTimeOutException(
-                    "The Unity environment took too long to respond. Make sure {} does not need user interaction to "
-                    "launch and that the Academy and the external Brain(s) are attached to objects in the Scene."
-                    .format(str(file_name)))
-
-            if "apiNumber" not in p:
-                self._unity_version = "API-1"
-            else:
-                self._unity_version = p["apiNumber"]
-            if self._unity_version != self._version_:
-                raise UnityEnvironmentException(
-                    "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
-                    "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
-                    "of ML-Agents.".format(self._version_, self._unity_version))
-            self._data = {}
-            self._global_done = None
-            self._academy_name = p["AcademyName"]
-            self._log_path = p["logPath"]
-            # Need to instantiate new AllBrainInfo
-            self._brains = {}
-            self._brain_names = p["brainNames"]
-            self._external_brain_names = p["externalBrainNames"]
-            self._external_brain_names = [] if self._external_brain_names is None else self._external_brain_names
-            self._num_brains = len(self._brain_names)
-            self._num_external_brains = len(self._external_brain_names)
-            self._resetParameters = p["resetParameters"]
-            self._curriculum = Curriculum(curriculum, self._resetParameters)
-            for i in range(self._num_brains):
-                self._brains[self._brain_names[i]] = BrainParameters(self._brain_names[i], p["brainParameters"][i])
-            self._loaded = True
-            logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
-            if self._num_external_brains == 0:
-                logger.warning(" No External Brains found in the Unity Environment. "
-                               "You will not be able to pass actions to your agent(s).")
+            p = self.communicator.get_academy_parameters()
         except UnityEnvironmentException:
-            proc1.kill()
             self.close()
             raise
+        # TODO : think of a better way to expose the academyParameters
+        if "apiNumber" not in p:
+            self._unity_version = "API-1"
+        else:
+            self._unity_version = p["apiNumber"]
+        if self._unity_version != self._version_:
+            raise UnityEnvironmentException(
+                "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
+                "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
+                "of ML-Agents.".format(self._version_, self._unity_version))
+        self._n_agents = {}
+        self._global_done = None
+        self._academy_name = p["AcademyName"]
+        self._log_path = p["logPath"]
+        self._brains = {}
+        self._brain_names = p["brainNames"]
+        self._external_brain_names = p["externalBrainNames"]
+        self._external_brain_names = [] if self._external_brain_names is None else self._external_brain_names
+        self._num_brains = len(self._brain_names)
+        self._num_external_brains = len(self._external_brain_names)
+        self._resetParameters = p["resetParameters"]
+        self._curriculum = Curriculum(curriculum, self._resetParameters)
+        self._brains = self.communicator._brains
+        logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
+        if self._num_external_brains == 0:
+            logger.warning(" No External Brains found in the Unity Environment. "
+                           "You will not be able to pass actions to your agent(s).")
 
     @property
     def curriculum(self):
@@ -212,21 +188,6 @@ class UnityEnvironment(object):
     def external_brain_names(self):
         return self._external_brain_names
 
-    @staticmethod
-    def _process_pixels(image_bytes=None, bw=False):
-        """
-        Converts byte array observation image into numpy array, re-sizes it, and optionally converts it to grey scale
-        :param image_bytes: input byte array corresponding to image
-        :return: processed numpy array of observation from environment
-        """
-        s = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(s))
-        s = np.array(image) / 255.0
-        if bw:
-            s = np.mean(s, axis=2)
-            s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-        return s
-
     def __str__(self):
         _new_reset_param = self._curriculum.get_config()
         for k in _new_reset_param:
@@ -240,40 +201,6 @@ class UnityEnvironment(object):
                                   "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
                                          for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
-
-    def _recv_bytes(self):
-        try:
-            s = self._conn.recv(self._buffer_size)
-            message_length = struct.unpack("I", bytearray(s[:4]))[0]
-            s = s[4:]
-            while len(s) != message_length:
-                s += self._conn.recv(self._buffer_size)
-        except socket.timeout as e:
-            raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
-        return s
-
-    def _get_state_image(self, bw):
-        """
-        Receives observation from socket, and confirms.
-        :param bw:
-        :return:
-        """
-        s = self._recv_bytes()
-        s = self._process_pixels(image_bytes=s, bw=bw)
-        self._conn.send(b"RECEIVED")
-        return s
-
-    def _get_state_dict(self):
-        """
-        Receives dictionary of state information from socket, and confirms.
-        :return:
-        """
-        state = self._recv_bytes().decode('utf-8')
-        if state[:14] == "END_OF_MESSAGE":
-            return {}, state[15:] == 'True'
-        self._conn.send(b"RECEIVED")
-        state_dict = json.loads(state)
-        return state_dict, None
 
     def reset(self, train_mode=True, config=None, lesson=None) -> AllBrainInfo:
         """
@@ -295,110 +222,14 @@ class UnityEnvironment(object):
                 raise UnityEnvironmentException("The parameter '{0}' is not a valid parameter.".format(k))
 
         if self._loaded:
-            self._conn.send(b"RESET")
-            try:
-                self._conn.recv(self._buffer_size)
-            except socket.timeout as e:
-                raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
-            self._conn.send(json.dumps({"train_model": train_mode, "parameters": config}).encode('utf-8'))
-            return self._get_state()
+            outputs = self.communicator.send(self._generate_reset_input(train_mode, config))
+            s = self._get_state(outputs)
+            self._global_done = s[1]
+            for _b in self._brain_names:
+                self._n_agents[_b] = len(s[0][_b].agents)
+            return s[0]
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
-
-    def _get_state(self) -> AllBrainInfo:
-        """
-        Collects experience information from all external brains in environment at current step.
-        :return: a dictionary of BrainInfo objects.
-        """
-        self._data = {}
-        while True:
-            state_dict, end_of_message = self._get_state_dict()
-            if end_of_message is not None:
-                self._global_done = end_of_message
-                for _b in self._brain_names:
-                    if _b not in self._data:
-                        self._data[_b] = BrainInfo([], np.array([]), [], np.array([]),
-                                                   [], [], [], np.array([]), [], max_reached=[])
-                return self._data
-            b = state_dict["brain_name"]
-            n_agent = len(state_dict["agents"])
-            try:
-                if self._brains[b].vector_observation_space_type == "continuous":
-                    vector_obs = np.array(state_dict["vectorObservations"]).reshape(
-                        (n_agent, self._brains[b].vector_observation_space_size
-                         * self._brains[b].num_stacked_vector_observations))
-                else:
-                    vector_obs = np.array(state_dict["vectorObservations"]).reshape(
-                        (n_agent, self._brains[b].num_stacked_vector_observations))
-            except UnityActionException:
-                raise UnityActionException("Brain {0} has an invalid vector observation. "
-                                    "Expecting {1} {2} vector observations but received {3}."
-                                    .format(b, n_agent if self._brains[b].vector_observation_space_type == "discrete"
-                else str(self._brains[b].vector_observation_space_size * n_agent
-                         * self._brains[b].num_stacked_vector_observations),
-                                                   self._brains[b].vector_observation_space_type,
-                                                   len(state_dict["vectorObservations"])))
-
-            memories = np.array(state_dict["memories"]).reshape((n_agent, -1))
-            text_obs = state_dict["textObservations"]
-            rewards = state_dict["rewards"]
-            dones = state_dict["dones"]
-            agents = state_dict["agents"]
-            maxes = state_dict["maxes"]
-
-            if n_agent > 0:
-                vector_actions = np.array(state_dict["previousVectorActions"]).reshape((n_agent, -1))
-                text_actions = state_dict["previousTextActions"]
-            else:
-                vector_actions = np.array([])
-                text_actions = []
-            observations = []
-            for o in range(self._brains[b].number_visual_observations):
-                obs_n = []
-                for a in range(n_agent):
-                    obs_n.append(self._get_state_image(self._brains[b].camera_resolutions[o]['blackAndWhite']))
-
-                observations.append(np.array(obs_n))
-            self._data[b] = BrainInfo(observations, vector_obs, text_obs, memories, rewards,
-                                      agents, dones, vector_actions, text_actions, max_reached=maxes)
-
-    def _send_action(self, vector_action ,memory, text_action):
-        """
-        Send dictionary of actions, memories, and value estimates over socket.
-        :param vector_action: a dictionary of lists of vector actions.
-        :param memory: a dictionary of lists of of memories.
-        :param text_action: a dictionary of lists of text actions.
-        """
-        try:
-            self._conn.recv(self._buffer_size)
-        except socket.timeout as e:
-            raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
-        action_message = {"vector_action": vector_action, "memory": memory, "text_action": text_action}
-        self._conn.send(self._append_length(json.dumps(action_message).encode('utf-8')))
-
-    @staticmethod
-    def _append_length(message):
-        return struct.pack("I", len(message)) + message
-
-    @staticmethod
-    def _flatten(arr):
-        """
-        Converts dictionary of arrays to list for transmission over socket.
-        :param arr: numpy vector.
-        :return: flattened list.
-        """
-        if isinstance(arr, (int, np.int_, float, np.float_)):
-            arr = [float(arr)]
-        if isinstance(arr, np.ndarray):
-            arr = arr.tolist()
-        if len(arr) == 0:
-            return arr
-        if isinstance(arr[0], np.ndarray):
-            arr = [item for sublist in arr for item in sublist.tolist()]
-        if isinstance(arr[0], list):
-            arr = [item for sublist in arr for item in sublist]
-        arr = [float(x) for x in arr]
-        return arr
 
     def step(self,  vector_action=None, memory=None, text_action=None) -> AllBrainInfo:
         """
@@ -455,7 +286,7 @@ class UnityEnvironment(object):
                         "in the environment".format(brain_name))
 
             for b in self._external_brain_names:
-                n_agent = len(self._data[b].agents)
+                n_agent = self._n_agents[b]
                 if b not in vector_action:
                     # raise UnityActionException("You need to input an action for the brain {0}".format(b))
                     if self._brains[b].vector_action_space_type == "discrete":
@@ -494,9 +325,12 @@ class UnityEnvironment(object):
                         self._brains[b].vector_action_space_type,
                         str(vector_action[b])))
 
-            self._conn.send(b"STEP")
-            self._send_action(vector_action, memory, text_action)
-            return self._get_state()
+            outputs = self.communicator.send(self._generate_step_input(vector_action, memory, text_action))
+            s = self._get_state(outputs)
+            self._global_done = s[1]
+            for _b in self._brain_names:
+                self._n_agents[_b] = len(s[0][_b].agents)
+            return s[0]
         elif not self._loaded:
             raise UnityEnvironmentException("No Unity environment is loaded.")
         elif self._global_done:
@@ -509,11 +343,77 @@ class UnityEnvironment(object):
         """
         Sends a shutdown signal to the unity environment, and closes the socket connection.
         """
-        if self._loaded & self._open_socket:
-            self._conn.send(b"EXIT")
-            self._conn.close()
-        if self._open_socket:
-            self._socket.close()
-            self._loaded = False
+        if self._loaded:
+            self.proc1.kill()
+            self.communicator.close()
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
+
+    @staticmethod
+    def _flatten(arr):
+        """
+        Converts dictionary of arrays to list for transmission over socket.
+        :param arr: numpy vector.
+        :return: flattened list.
+        """
+        if isinstance(arr, (int, np.int_, float, np.float_)):
+            arr = [float(arr)]
+        if isinstance(arr, np.ndarray):
+            arr = arr.tolist()
+        if len(arr) == 0:
+            return arr
+        if isinstance(arr[0], np.ndarray):
+            arr = [item for sublist in arr for item in sublist.tolist()]
+        if isinstance(arr[0], list):
+            arr = [item for sublist in arr for item in sublist]
+        arr = [float(x) for x in arr]
+        return arr
+
+    def _get_state(self, output: UnityOutput) -> (AllBrainInfo, bool):
+        """
+        Collects experience information from all external brains in environment at current step.
+        :return: a dictionary of BrainInfo objects.
+        """
+        _data = {}
+        global_done = output.global_done
+        for b in output.agentInfos:
+            agent_info_list = output.agentInfos[b].value
+            vector_obs = [x.stacked_vector_observation for x in agent_info_list]
+            rewa = [x.reward for x in agent_info_list]
+            loc_done = [x.done for x in agent_info_list]
+            max_step = [x.max_step_reached for x in agent_info_list]
+            prev_action = [x.stored_vector_actions for x in agent_info_list]
+            agents = [x.id for x in agent_info_list]
+            # TODO : Visual Observations
+            _data[b] = BrainInfo([],
+                                 np.array(vector_obs),
+                                 [],
+                                 np.array([]),
+                                 rewa,
+                                 agents,
+                                 loc_done,
+                                 np.array(prev_action),
+                                 [],
+                                 max_step
+                                 )
+        # print("_get_state was called : "+str(_data.keys()) +"   " + str(global_done))
+        # print(_data['Ball3DBrain'].vector_observations)
+        return _data, global_done
+
+    def _generate_step_input(self, vector_action, memory, text_action) -> UnityInput:
+        _u_i = UnityInput()
+        # TODO
+        for b in vector_action:
+            _a_s = self._brains[b].vector_action_space_size
+            # print(_a_s)
+            for i in range(int(len(vector_action[b]) / _a_s)):
+                action = AgentAction(vector_actions = vector_action[b][i*_a_s : (i+1)*_a_s])
+                _u_i.agent_actions[b].value.extend([action])
+        _u_i.command = 0
+        return _u_i
+
+    def _generate_reset_input(self, training, config) -> UnityInput:
+        _u_i = UnityInput()
+        _u_i.command = 1
+        # TODO
+        return _u_i

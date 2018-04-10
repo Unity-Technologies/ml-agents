@@ -40,7 +40,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     }
 
-    ExternalCommunicator coord;
+    MLAgents.BrainBatcher brainBatcher;
 
     [Tooltip("This must be the bytes file corresponding to the pretrained Tensorflow graph.")]
     /// Modify only in inspector : Reference to the Graph asset
@@ -91,7 +91,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     }
 
     /// Loads the tensorflow graph model to generate a TFGraph object
-    public void InitializeCoreBrain(Communicator communicator)
+    public void InitializeCoreBrain(MLAgents.BrainBatcher brainBatcher)
     {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID
@@ -104,15 +104,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             
         }
 #endif
-        if ((communicator == null)
-        || (!broadcast))
+        if ((brainBatcher == null)
+            || (!broadcast))
         {
-            coord = null;
+            this.brainBatcher = null;
         }
-        else if (communicator is ExternalCommunicator)
+        else
         {
-            coord = (ExternalCommunicator)communicator;
-            coord.SubscribeBrain(brain);
+            this.brainBatcher = brainBatcher;
+            this.brainBatcher.SubscribeBrain(brain.gameObject.name);
         }
 
         if (graphModel != null)
@@ -164,9 +164,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
 #if ENABLE_TENSORFLOW
-        if (coord != null)
+        if (brainBatcher != null)
         {
-            coord.GiveBrainInfo(brain, agentInfo);
+            brainBatcher.GiveBrainInfo(brain.gameObject.name, agentInfo);
         }
         int currentBatchSize = agentInfo.Count();
         List<Agent> agentList = agentInfo.Keys.ToList();

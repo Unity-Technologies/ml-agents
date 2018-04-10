@@ -160,7 +160,7 @@ public abstract class Academy : MonoBehaviour
     bool modeSwitched;
 
     /// Pointer to the communicator currently in use by the Academy.
-    Communicator communicator;
+    MLAgents.Communicator.Communicator communicator;
 
     // Flag used to keep track of the first time the Academy is reset.
     bool firstAcademyReset;
@@ -208,6 +208,21 @@ public abstract class Academy : MonoBehaviour
         InitializeEnvironment();
     }
 
+    /// Used to read Python-provided environment parameters
+    private int ReadArgs()
+    {
+        string[] args = System.Environment.GetCommandLineArgs();
+        var inputPort = "";
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == "--port")
+            {
+                inputPort = args[i + 1];
+            }
+        }
+        return int.Parse(inputPort);
+    }
+
     /// <summary>
     /// Initializes the environment, configures it and initialized the Academy.
     /// </summary>
@@ -217,23 +232,62 @@ public abstract class Academy : MonoBehaviour
         List<Brain> brains = GetBrains(gameObject);
         InitializeAcademy();
 
-        // Check for existence of communicator
-        communicator = new ExternalCommunicator(this);
-        if (!communicator.CommunicatorHandShake())
+        communicator = new MLAgents.Communicator.RpcCommunicator(
+            new MLAgents.Communicator.CommunicatorParameters
+        {
+            Port = 5005
+        });
+        int port = -1;
+        try
+        {
+            port = ReadArgs();
+        }
+        catch
         {
             communicator = null;
         }
 
+        // TODO : Figure Out communicator and Brain Batcher
+        // Check for existence of communicator
+
+        MLAgents.BrainBatcher brainBatcher = new MLAgents.BrainBatcher(communicator);
+        //if (!communicator.CommunicatorHandShake())
+        //{
+        //    communicator = null;
+        //}
+
         // Initialize Brains and communicator (if present)
         foreach (Brain brain in brains)
         {
-            brain.InitializeBrain(this, communicator);
+            brain.InitializeBrain(this, brainBatcher);
         }
         if (communicator != null)
         {
             isCommunicatorOn = true;
-            communicator.InitializeCommunicator();
-            communicator.UpdateCommand();
+            // TODO : Generate the academy Parameters
+
+            MLAgents.Communicator.AcademyParameters academyParameters=
+                new MLAgents.Communicator.AcademyParameters();
+            academyParameters.Name = gameObject.name;
+            academyParameters.Version = "API-3";
+            foreach (Brain brain in brains)
+            {
+                BrainParameters bp = brain.brainParameters;
+                academyParameters.BrainParameters.Add(
+                    new MLAgents.Communicator.BrainParameters
+                    {
+                    VectorObservationSize = bp.vectorObservationSize,
+                    NumStackedVectorObservations = bp.numStackedVectorObservations,
+                    VectorActionSize = bp.vectorActionSize,
+                    //TODO : Resolution
+                    //TODO : Action Description
+                    VectorActionSpaceType = (MLAgents.Communicator.SpaceType)bp.vectorActionSpaceType,
+                    VectorObservationSpaceType = (MLAgents.Communicator.SpaceType)bp.vectorObservationSpaceType,
+                    BrainName = brain.gameObject.name,
+                    BrainType = (MLAgents.Communicator.BrainType)brain.brainType
+                    });
+            }
+            communicator.Initialize(academyParameters);
         }
 
         // If a communicator is enabled/provided, then we assume we are in
@@ -399,15 +453,6 @@ public abstract class Academy : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the Communicator currently used by the Academy.
-    /// </summary>
-    /// <returns>The commincator currently in use (may be null).</returns>
-    public Communicator GetCommunicator()
-    {
-        return communicator;
-    }
-
-    /// <summary>
     /// Forces the full reset. The done flags are not affected. Is either 
     /// called the first reset at inference and every external reset
     /// at training.
@@ -431,22 +476,26 @@ public abstract class Academy : MonoBehaviour
             modeSwitched = false;
         }
 
+        Debug.Log("Command is : "+communicator.GetCommand().ToString());
+
         if (isCommunicatorOn)
         {
-            if (communicator.GetCommand() == ExternalCommand.RESET)
+            if (communicator.GetCommand() == 
+                MLAgents.Communicator.Command.Reset)
             {
                 // Update reset parameters.
-                Dictionary<string, float> NewResetParameters =
-                    communicator.GetResetParameters();
-                foreach (KeyValuePair<string, float> kv in NewResetParameters)
+                MLAgents.Communicator.EnvironmentParameters NewResetParameters =
+                    communicator.GetEnvironmentParameters();
+                foreach (KeyValuePair<string, float> kv in 
+                         NewResetParameters.FloatParameters)
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
 
                 ForcedFullReset();
-                communicator.SetCommand(ExternalCommand.STEP);
+                //communicator.SetCommand(ExternalCommand.STEP);
             }
-            if (communicator.GetCommand() == ExternalCommand.QUIT)
+            if (communicator.GetCommand() == MLAgents.Communicator.Command.Quit)
             {
                 Application.Quit();
                 return;
