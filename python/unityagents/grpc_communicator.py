@@ -4,7 +4,9 @@ import time
 
 
 from communicator import PythonToUnityStub
-from communicator import UnityOutput, UnityInput, PythonParameters, AgentAction
+from communicator import UnityRLOutput, UnityRLInput,\
+    UnityOutput, UnityInput,\
+    PythonParameters, AgentAction
 
 import grpc
 
@@ -34,6 +36,8 @@ class GrpcCommunicator(object):
         self._brains = None
         self._stub = None
         self.channel = None
+        self._empty_message = UnityInput()
+        self._empty_message.header.status = 200
 
         try:
             # Establish communication socket
@@ -96,17 +100,22 @@ class GrpcCommunicator(object):
     #     outputs = self._stub.Send(self._generate_input(vector_action, memory, text_action))
     #     return self._get_state(outputs)
 
-    def send(self, inputs: UnityInput) -> UnityOutput:
-        outputs = self._stub.Send(inputs)
-        return outputs
-
-
-
+    def send(self, inputs: UnityRLInput) -> UnityRLOutput:
+        message_input = self._empty_message
+        message_input.rl_input.CopyFrom(inputs)
+        outputs = self._stub.Send(message_input)
+        return outputs.rl_output
 
     def close(self):
         """
         Sends a shutdown signal to the unity environment, and closes the socket connection.
         """
+        # inputs = UnityInput()
+        # inputs.command = 2
+        # How to shut gRPC down ?
+        message_input = UnityInput()
+        message_input.header.status = 400
+        self._stub.Send(message_input)
         # if self._conn is not None:
         #     self._conn.send(b"EXIT")
         #     self._conn.close()

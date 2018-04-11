@@ -11,7 +11,7 @@ from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
-from communicator import UnityInput, UnityOutput, AgentAction
+from communicator import UnityRLInput, UnityRLOutput, AgentAction
 
 from .grpc_communicator import GrpcCommunicator
 
@@ -24,7 +24,9 @@ logger = logging.getLogger("unityagents")
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
                  base_port=5005, curriculum=None,
-                 seed=0, docker_training=False):
+                 seed=0, docker_training=False,
+                 communication = "grpc",
+                 in_editor=True):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -43,81 +45,83 @@ class UnityEnvironment(object):
         self._loaded = False
         self.proc1 = None
 
-        self.communicator = GrpcCommunicator(worker_id, base_port)
+        if communication == "grpc":
+            self.communicator = GrpcCommunicator(worker_id, base_port)
 
-        cwd = os.getcwd()
-        file_name = (file_name.strip()
-                     .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
-        true_filename = os.path.basename(os.path.normpath(file_name))
-        logger.debug('The true file name is {}'.format(true_filename))
-        launch_string = None
-        if platform == "linux" or platform == "linux2":
-            candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, file_name) + '.x86')
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name + '.x86_64')
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name + '.x86')
-            if len(candidates) > 0:
-                launch_string = candidates[0]
+        if not in_editor:
+            cwd = os.getcwd()
+            file_name = (file_name.strip()
+                         .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
+            true_filename = os.path.basename(os.path.normpath(file_name))
+            logger.debug('The true file name is {}'.format(true_filename))
+            launch_string = None
+            if platform == "linux" or platform == "linux2":
+                candidates = glob.glob(os.path.join(cwd, file_name) + '.x86_64')
+                if len(candidates) == 0:
+                    candidates = glob.glob(os.path.join(cwd, file_name) + '.x86')
+                if len(candidates) == 0:
+                    candidates = glob.glob(file_name + '.x86_64')
+                if len(candidates) == 0:
+                    candidates = glob.glob(file_name + '.x86')
+                if len(candidates) > 0:
+                    launch_string = candidates[0]
 
-        elif platform == 'darwin':
-            candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', '*'))
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', '*'))
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-        elif platform == 'win32':
-            candidates = glob.glob(os.path.join(cwd, file_name + '.exe'))
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name + '.exe')
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-        if launch_string is None:
-            self.close()
-            raise UnityEnvironmentException("Couldn't launch the {0} environment. "
-                                            "Provided filename does not match any environments."
-                                            .format(true_filename))
-        else:
-            logger.debug("This is the launch string {}".format(launch_string))
-            # Launch Unity environment
-            if docker_training == False:
-                self.proc1 = subprocess.Popen(
-                    [launch_string,
-                     '--port', str(self.port),
-                     '--seed', str(seed)])
+            elif platform == 'darwin':
+                candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
+                if len(candidates) == 0:
+                    candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
+                if len(candidates) == 0:
+                    candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', '*'))
+                if len(candidates) == 0:
+                    candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', '*'))
+                if len(candidates) > 0:
+                    launch_string = candidates[0]
+            elif platform == 'win32':
+                candidates = glob.glob(os.path.join(cwd, file_name + '.exe'))
+                if len(candidates) == 0:
+                    candidates = glob.glob(file_name + '.exe')
+                if len(candidates) > 0:
+                    launch_string = candidates[0]
+            if launch_string is None:
+                self.close()
+                raise UnityEnvironmentException("Couldn't launch the {0} environment. "
+                                                "Provided filename does not match any environments."
+                                                .format(true_filename))
             else:
-                """
-                Comments for future maintenance:
-                    xvfb-run is a wrapper around Xvfb, a virtual xserver where all
-                    rendering is done to virtual memory. It automatically creates a
-                    new virtual server automatically picking a server number `auto-servernum`.
-                    The server is passed the arguments using `server-args`, we are telling
-                    Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
-                    Note that 640 X 480 are the default width and height. The main reason for
-                    us to add this is because we'd like to change the depth from the default
-                    of 8 bits to 24.
-                    Unfortunately, this means that we will need to pass the arguments through
-                    a shell which is why we set `shell=True`. Now, this adds its own
-                    complications. E.g SIGINT can bounce off the shell and not get propagated
-                    to the child processes. This is why we add `exec`, so that the shell gets
-                    launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
-                    we created with `xvfb`.
-                """
-                docker_ls = ("exec xvfb-run --auto-servernum"
-                             " --server-args='-screen 0 640x480x24'"
-                             " {0} --port {1} --seed {2}").format(launch_string,
-                                                                  str(self.port),
-                                                                  str(seed))
-                self.proc1 = subprocess.Popen(docker_ls,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         shell=True)
+                logger.debug("This is the launch string {}".format(launch_string))
+                # Launch Unity environment
+                if docker_training == False:
+                    self.proc1 = subprocess.Popen(
+                        [launch_string,
+                         '--port', str(self.port),
+                         '--seed', str(seed)])
+                else:
+                    """
+                    Comments for future maintenance:
+                        xvfb-run is a wrapper around Xvfb, a virtual xserver where all
+                        rendering is done to virtual memory. It automatically creates a
+                        new virtual server automatically picking a server number `auto-servernum`.
+                        The server is passed the arguments using `server-args`, we are telling
+                        Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
+                        Note that 640 X 480 are the default width and height. The main reason for
+                        us to add this is because we'd like to change the depth from the default
+                        of 8 bits to 24.
+                        Unfortunately, this means that we will need to pass the arguments through
+                        a shell which is why we set `shell=True`. Now, this adds its own
+                        complications. E.g SIGINT can bounce off the shell and not get propagated
+                        to the child processes. This is why we add `exec`, so that the shell gets
+                        launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
+                        we created with `xvfb`.
+                    """
+                    docker_ls = ("exec xvfb-run --auto-servernum"
+                                 " --server-args='-screen 0 640x480x24'"
+                                 " {0} --port {1} --seed {2}").format(launch_string,
+                                                                      str(self.port),
+                                                                      str(seed))
+                    self.proc1 = subprocess.Popen(docker_ls,
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE,
+                                             shell=True)
         self._loaded = True
         try:
             p = self.communicator.get_academy_parameters()
@@ -344,7 +348,8 @@ class UnityEnvironment(object):
         Sends a shutdown signal to the unity environment, and closes the socket connection.
         """
         if self._loaded:
-            self.proc1.kill()
+            if self.proc1 is not None:
+                self.proc1.kill()
             self.communicator.close()
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
@@ -369,7 +374,7 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
-    def _get_state(self, output: UnityOutput) -> (AllBrainInfo, bool):
+    def _get_state(self, output: UnityRLOutput) -> (AllBrainInfo, bool):
         """
         Collects experience information from all external brains in environment at current step.
         :return: a dictionary of BrainInfo objects.
@@ -400,8 +405,8 @@ class UnityEnvironment(object):
         # print(_data['Ball3DBrain'].vector_observations)
         return _data, global_done
 
-    def _generate_step_input(self, vector_action, memory, text_action) -> UnityInput:
-        _u_i = UnityInput()
+    def _generate_step_input(self, vector_action, memory, text_action) -> UnityRLInput:
+        _u_i = UnityRLInput()
         # TODO
         for b in vector_action:
             _a_s = self._brains[b].vector_action_space_size
@@ -412,8 +417,8 @@ class UnityEnvironment(object):
         _u_i.command = 0
         return _u_i
 
-    def _generate_reset_input(self, training, config) -> UnityInput:
-        _u_i = UnityInput()
+    def _generate_reset_input(self, training, config) -> UnityRLInput:
+        _u_i = UnityRLInput()
         _u_i.command = 1
         # TODO
         return _u_i

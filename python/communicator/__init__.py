@@ -7,6 +7,7 @@ from .command_pb2 import *
 from .communicator_parameters_pb2 import *
 from .engine_configuration_pb2 import *
 from .environment_parameters_pb2 import *
+from .header_pb2 import *
 from .python_parameters_pb2 import *
 from .python_to_unity_pb2 import *
 from .python_to_unity_pb2_grpc import *
@@ -14,4 +15,6 @@ from .resolution_pb2 import *
 from .space_type_pb2 import *
 from .unity_input_pb2 import *
 from .unity_output_pb2 import *
+from .unity_rl_input_pb2 import *
+from .unity_rl_output_pb2 import *
 from .visual_observation_pb2 import *

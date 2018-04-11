@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Google.Protobuf;
 
 namespace MLAgents
 {
@@ -13,17 +14,50 @@ namespace MLAgents
 
         Dictionary<string, List<Agent>> currentAgents = new Dictionary<string, List<Agent>>();
         Communicator.Communicator communicator;
-        Communicator.UnityOutput unityOutput = new Communicator.UnityOutput();
+        Communicator.UnityRLOutput unityOutput = new Communicator.UnityRLOutput();
+
+        bool academyDone;
+        Communicator.Command command = Communicator.Command.Reset;
+        Communicator.EnvironmentParameters environmentParameters;
 
         // TO delete
-        Academy academy;
+        //Academy academy;
 
         public BrainBatcher(Communicator.Communicator communicator)
         {
             this.communicator = communicator;
             // This needs to disapear, the done flag of the academy should be accessible by everything
-            academy = Object.FindObjectOfType<Academy>() as Academy;
+            //academy = Object.FindObjectOfType<Academy>() as Academy;
 
+        }
+
+        public void GiveAcademyParameters(Communicator.AcademyParameters academyParameters)
+        {
+            Communicator.UnityRLInput input;
+            communicator.Initialize(academyParameters, out input);
+            command = input.Command;
+            environmentParameters = input.EnvironmentParameters;
+        }
+
+        /// <summary>
+        /// Adds the done flag of the academy to the next output to be sent
+        /// to the communicator.
+        /// </summary>
+        /// <param name="done">If set to <c>true</c> 
+        /// The academy is done.</param>
+        public void GiveAcademyDone(bool done)
+        {
+            academyDone = done;
+        }
+
+        public Communicator.Command GetCommand()
+        {
+            return command;
+        }
+
+        public Communicator.EnvironmentParameters GetEnvironmentParameters()
+        {
+            return environmentParameters;
         }
 
         /// <summary>
@@ -36,7 +70,26 @@ namespace MLAgents
             triedSendState[brainKey] = false;
             hasSentState[brainKey] = false;
             currentAgents[brainKey] = new List<Agent>(NUM_AGENTS);
-            unityOutput.AgentInfos.Add(brainKey, new Communicator.UnityOutput.Types.ListAgentInfo());
+            unityOutput.AgentInfos.Add(brainKey, new Communicator.UnityRLOutput.Types.ListAgentInfo());
+        }
+
+        /// <summary>
+        /// Converts a AgentInfo to a protobuffer generated AgentInfo
+        /// </summary>
+        /// <returns>The Proto agentInfo.</returns>
+        /// <param name="info">The AgentInfo to convert.</param>
+        private static Communicator.AgentInfo AgentInfoConvertor(AgentInfo info)
+        {
+            Communicator.AgentInfo ai = new Communicator.AgentInfo();
+            ai.VectorObservation.AddRange(info.vectorObservation);
+            ai.StackedVectorObservation.AddRange(info.stackedVectorObservation);
+            ai.StoredVectorActions.AddRange(info.storedVectorActions);
+            //TODO : Visual Observations, memories and text action
+            ai.Reward = info.reward;
+            ai.MaxStepReached = info.maxStepReached;
+            ai.Done = info.done;
+            ai.Id = info.id;
+            return ai;
         }
 
         /// <summary>
@@ -64,32 +117,35 @@ namespace MLAgents
             }
             if (currentAgents[brainKey].Count > 0)
             {
-                Communicator.UnityOutput.Types.ListAgentInfo listAgentInfo =
-                    new Communicator.UnityOutput.Types.ListAgentInfo();
+
+                //Communicator.UnityOutput.Types.ListAgentInfo listAgentInfo =
+                //new Communicator.UnityOutput.Types.ListAgentInfo();
+                unityOutput.AgentInfos[brainKey].Value.Clear();
                 foreach (Agent agent in currentAgents[brainKey])
                 {
-                    Communicator.AgentInfo ai = new Communicator.AgentInfo();
-                    ai.VectorObservation.AddRange(agentInfo[agent].vectorObservation);
-                    ai.StackedVectorObservation.AddRange(agentInfo[agent].stackedVectorObservation);
-                    ai.StoredVectorActions.AddRange(agentInfo[agent].storedVectorActions);
-                    //TODO : Visual Observations and memories and text action
-                    ai.Reward = agentInfo[agent].reward;
-                    ai.MaxStepReached = agentInfo[agent].maxStepReached;
-                    ai.Done = agentInfo[agent].done;
-                    ai.Id = agentInfo[agent].id;
-                    listAgentInfo.Value.Add(ai);
+                    Communicator.AgentInfo ai = AgentInfoConvertor(agentInfo[agent]);
+                    unityOutput.AgentInfos[brainKey].Value.Add(ai);
                 }
 
                 //TODO :: If the key is present, it will raise an error
-                unityOutput.AgentInfos[brainKey] = listAgentInfo;
+                //unityOutput.AgentInfos[brainKey] = listAgentInfo;
                 hasSentState[brainKey] = true;
 
                 if (triedSendState.Values.All(x => x))
                 {
-                    if (hasSentState.Values.Any(x => x) || academy.IsDone())
+                    if (hasSentState.Values.Any(x => x) || academyDone)
                     {
                         //Debug.Log("Received the new input");
                         var input = communicator.SendOuput(unityOutput);
+
+                        if (input == null)
+                        {
+                            command = Communicator.Command.Quit;
+                            return;
+                        }
+
+                        command = input.Command;
+                        environmentParameters = input.EnvironmentParameters;
 
                         // TODO : Send the actions of the input to the agents
                         if (input.AgentActions != null)
@@ -108,9 +164,12 @@ namespace MLAgents
                                 for (int i = 0; i < currentAgents[k].Count(); i++)
                                 {
                                     currentAgents[k][i].UpdateVectorAction(input.AgentActions[k].Value[i].VectorActions.ToArray());
+                                    currentAgents[k][i].UpdateMemoriesAction(input.AgentActions[k].Value[i].Memories.ToList());
+                                    currentAgents[k][i].UpdateTextAction(input.AgentActions[k].Value[i].TextActions);
                                 }
                             }
                         }
+                        // TODO : If input is quit, you must return a completion Output
 
                         foreach (string k in currentAgents.Keys)
                         {
@@ -127,30 +186,3 @@ namespace MLAgents
 
 
 
-///// Listens for actions, memories, and values and sends them 
-///// to the corrensponding brains.
-//public void UpdateActions()
-//{
-//// TODO
-
-//foreach (Brain brain in brains)
-//{
-//    if (brain.brainType == BrainType.External)
-//    {
-//        var brainName = brain.gameObject.name;
-
-//        if (current_agents[brainName].Count() == 0)
-//        {
-//            continue;
-//        }
-
-
-//        for (int i = 0; i < current_agents[brainName].Count(); i++)
-//        {
-//            current_agents[brainName][i].UpdateVectorAction(comm.inputs.AgentActions[brainName].Value[i].VectorActions.ToArray());
-
-
-//        }
-
-//    }
-//}

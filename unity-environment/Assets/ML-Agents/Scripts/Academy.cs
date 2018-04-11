@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -160,7 +161,9 @@ public abstract class Academy : MonoBehaviour
     bool modeSwitched;
 
     /// Pointer to the communicator currently in use by the Academy.
-    MLAgents.Communicator.Communicator communicator;
+    //MLAgents.Communicator.Communicator communicator;
+    MLAgents.BrainBatcher brainBatcher;
+
 
     // Flag used to keep track of the first time the Academy is reset.
     bool firstAcademyReset;
@@ -208,7 +211,7 @@ public abstract class Academy : MonoBehaviour
         InitializeEnvironment();
     }
 
-    /// Used to read Python-provided environment parameters
+    // Used to read Python-provided environment parameters
     private int ReadArgs()
     {
         string[] args = System.Environment.GetCommandLineArgs();
@@ -231,26 +234,36 @@ public abstract class Academy : MonoBehaviour
         // Retrieve Brain and initialize Academy
         List<Brain> brains = GetBrains(gameObject);
         InitializeAcademy();
-
-        communicator = new MLAgents.Communicator.RpcCommunicator(
-            new MLAgents.Communicator.CommunicatorParameters
-        {
-            Port = 5005
-        });
-        int port = -1;
+        MLAgents.Communicator.Communicator communicator= null;
         try
         {
-            port = ReadArgs();
+            communicator = new MLAgents.Communicator.RpcCommunicator(
+                new MLAgents.Communicator.CommunicatorParameters
+                {
+                Port = ReadArgs()
+                });
         }
         catch
         {
             communicator = null;
+            foreach (Brain b in brains)
+            {
+                if (b.brainType == BrainType.External)
+                {
+                    communicator = new MLAgents.Communicator.RpcCommunicator(
+                        new MLAgents.Communicator.CommunicatorParameters
+                        {
+                            Port = 5005
+                        });
+                }
+            }
+
         }
 
         // TODO : Figure Out communicator and Brain Batcher
         // Check for existence of communicator
 
-        MLAgents.BrainBatcher brainBatcher = new MLAgents.BrainBatcher(communicator);
+        brainBatcher = new MLAgents.BrainBatcher(communicator);
         //if (!communicator.CommunicatorHandShake())
         //{
         //    communicator = null;
@@ -287,7 +300,8 @@ public abstract class Academy : MonoBehaviour
                     BrainType = (MLAgents.Communicator.BrainType)brain.brainType
                     });
             }
-            communicator.Initialize(academyParameters);
+            brainBatcher.GiveAcademyParameters(academyParameters);
+            //communicator.Initialize(academyParameters);
         }
 
         // If a communicator is enabled/provided, then we assume we are in
@@ -480,23 +494,31 @@ public abstract class Academy : MonoBehaviour
 
         if (isCommunicatorOn)
         {
-            if (communicator.GetCommand() == 
+            if (brainBatcher.GetCommand() == 
                 MLAgents.Communicator.Command.Reset)
             {
                 // Update reset parameters.
                 MLAgents.Communicator.EnvironmentParameters NewResetParameters =
-                    communicator.GetEnvironmentParameters();
-                foreach (KeyValuePair<string, float> kv in 
-                         NewResetParameters.FloatParameters)
+                            brainBatcher.GetEnvironmentParameters();
+                if (NewResetParameters != null)
                 {
-                    resetParameters[kv.Key] = kv.Value;
+                    foreach (KeyValuePair<string, float> kv in
+                             NewResetParameters.FloatParameters)
+                    {
+                        resetParameters[kv.Key] = kv.Value;
+                    }
                 }
+
+
 
                 ForcedFullReset();
                 //communicator.SetCommand(ExternalCommand.STEP);
             }
-            if (communicator.GetCommand() == MLAgents.Communicator.Command.Quit)
+            if (brainBatcher.GetCommand() == MLAgents.Communicator.Command.Quit)
             {
+#if UNITY_EDITOR
+                EditorApplication.isPlaying = false;
+#endif
                 Application.Quit();
                 return;
             }

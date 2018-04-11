@@ -25,19 +25,15 @@ namespace MLAgents.Communicator {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch9jb21tdW5pY2F0b3IvdW5pdHlfb3V0cHV0LnByb3RvEgxjb21tdW5pY2F0",
-            "b3IaHWNvbW11bmljYXRvci9hZ2VudF9pbmZvLnByb3RvIvYBCgtVbml0eU91",
-            "dHB1dBITCgtnbG9iYWxfZG9uZRgBIAEoCBI9CgphZ2VudEluZm9zGAIgAygL",
-            "MikuY29tbXVuaWNhdG9yLlVuaXR5T3V0cHV0LkFnZW50SW5mb3NFbnRyeRo3",
-            "Cg1MaXN0QWdlbnRJbmZvEiYKBXZhbHVlGAEgAygLMhcuY29tbXVuaWNhdG9y",
-            "LkFnZW50SW5mbxpaCg9BZ2VudEluZm9zRW50cnkSCwoDa2V5GAEgASgJEjYK",
-            "BXZhbHVlGAIgASgLMicuY29tbXVuaWNhdG9yLlVuaXR5T3V0cHV0Lkxpc3RB",
-            "Z2VudEluZm86AjgBQhiqAhVNTEFnZW50cy5Db21tdW5pY2F0b3JiBnByb3Rv",
-            "Mw=="));
+            "b3IaImNvbW11bmljYXRvci91bml0eV9ybF9vdXRwdXQucHJvdG8aGWNvbW11",
+            "bmljYXRvci9oZWFkZXIucHJvdG8iYwoLVW5pdHlPdXRwdXQSJAoGaGVhZGVy",
+            "GAEgASgLMhQuY29tbXVuaWNhdG9yLkhlYWRlchIuCglybF9vdXRwdXQYAiAB",
+            "KAsyGy5jb21tdW5pY2F0b3IuVW5pdHlSTE91dHB1dEIYqgIVTUxBZ2VudHMu",
+            "Q29tbXVuaWNhdG9yYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.Communicator.AgentInfoReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.Communicator.UnityRlOutputReflection.Descriptor, global::MLAgents.Communicator.HeaderReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.UnityOutput), global::MLAgents.Communicator.UnityOutput.Parser, new[]{ "GlobalDone", "AgentInfos" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo), global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo.Parser, new[]{ "Value" }, null, null, null),
-            null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.UnityOutput), global::MLAgents.Communicator.UnityOutput.Parser, new[]{ "Header", "RlOutput" }, null, null, null)
           }));
     }
     #endregion
@@ -69,8 +65,8 @@ namespace MLAgents.Communicator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityOutput(UnityOutput other) : this() {
-      globalDone_ = other.globalDone_;
-      agentInfos_ = other.agentInfos_.Clone();
+      Header = other.header_ != null ? other.Header.Clone() : null;
+      RlOutput = other.rlOutput_ != null ? other.RlOutput.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -79,25 +75,26 @@ namespace MLAgents.Communicator {
       return new UnityOutput(this);
     }
 
-    /// <summary>Field number for the "global_done" field.</summary>
-    public const int GlobalDoneFieldNumber = 1;
-    private bool globalDone_;
+    /// <summary>Field number for the "header" field.</summary>
+    public const int HeaderFieldNumber = 1;
+    private global::MLAgents.Communicator.Header header_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool GlobalDone {
-      get { return globalDone_; }
+    public global::MLAgents.Communicator.Header Header {
+      get { return header_; }
       set {
-        globalDone_ = value;
+        header_ = value;
       }
     }
 
-    /// <summary>Field number for the "agentInfos" field.</summary>
-    public const int AgentInfosFieldNumber = 2;
-    private static readonly pbc::MapField<string, global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo>.Codec _map_agentInfos_codec
-        = new pbc::MapField<string, global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForMessage(18, global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo.Parser), 18);
-    private readonly pbc::MapField<string, global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo> agentInfos_ = new pbc::MapField<string, global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo>();
+    /// <summary>Field number for the "rl_output" field.</summary>
+    public const int RlOutputFieldNumber = 2;
+    private global::MLAgents.Communicator.UnityRLOutput rlOutput_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::MapField<string, global::MLAgents.Communicator.UnityOutput.Types.ListAgentInfo> AgentInfos {
-      get { return agentInfos_; }
+    public global::MLAgents.Communicator.UnityRLOutput RlOutput {
+      get { return rlOutput_; }
+      set {
+        rlOutput_ = value;
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -113,16 +110,16 @@ namespace MLAgents.Communicator {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (GlobalDone != other.GlobalDone) return false;
-      if (!AgentInfos.Equals(other.AgentInfos)) return false;
+      if (!object.Equals(Header, other.Header)) return false;
+      if (!object.Equals(RlOutput, other.RlOutput)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (GlobalDone != false) hash ^= GlobalDone.GetHashCode();
-      hash ^= AgentInfos.GetHashCode();
+      if (header_ != null) hash ^= Header.GetHashCode();
+      if (rlOutput_ != null) hash ^= RlOutput.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -136,11 +133,14 @@ namespace MLAgents.Communicator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (GlobalDone != false) {
-        output.WriteRawTag(8);
-        output.WriteBool(GlobalDone);
+      if (header_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Header);
       }
-      agentInfos_.WriteTo(output, _map_agentInfos_codec);
+      if (rlOutput_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(RlOutput);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -149,10 +149,12 @@ namespace MLAgents.Communicator {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (GlobalDone != false) {
-        size += 1 + 1;
+      if (header_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Header);
       }
-      size += agentInfos_.CalculateSize(_map_agentInfos_codec);
+      if (rlOutput_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(RlOutput);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -164,10 +166,18 @@ namespace MLAgents.Communicator {
       if (other == null) {
         return;
       }
-      if (other.GlobalDone != false) {
-        GlobalDone = other.GlobalDone;
+      if (other.header_ != null) {
+        if (header_ == null) {
+          header_ = new global::MLAgents.Communicator.Header();
+        }
+        Header.MergeFrom(other.Header);
       }
-      agentInfos_.Add(other.agentInfos_);
+      if (other.rlOutput_ != null) {
+        if (rlOutput_ == null) {
+          rlOutput_ = new global::MLAgents.Communicator.UnityRLOutput();
+        }
+        RlOutput.MergeFrom(other.RlOutput);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -179,145 +189,23 @@ namespace MLAgents.Communicator {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            GlobalDone = input.ReadBool();
+          case 10: {
+            if (header_ == null) {
+              header_ = new global::MLAgents.Communicator.Header();
+            }
+            input.ReadMessage(header_);
             break;
           }
           case 18: {
-            agentInfos_.AddEntriesFrom(input, _map_agentInfos_codec);
+            if (rlOutput_ == null) {
+              rlOutput_ = new global::MLAgents.Communicator.UnityRLOutput();
+            }
+            input.ReadMessage(rlOutput_);
             break;
           }
         }
       }
     }
-
-    #region Nested types
-    /// <summary>Container for nested types declared in the UnityOutput message type.</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static partial class Types {
-      public sealed partial class ListAgentInfo : pb::IMessage<ListAgentInfo> {
-        private static readonly pb::MessageParser<ListAgentInfo> _parser = new pb::MessageParser<ListAgentInfo>(() => new ListAgentInfo());
-        private pb::UnknownFieldSet _unknownFields;
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public static pb::MessageParser<ListAgentInfo> Parser { get { return _parser; } }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public static pbr::MessageDescriptor Descriptor {
-          get { return global::MLAgents.Communicator.UnityOutput.Descriptor.NestedTypes[0]; }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        pbr::MessageDescriptor pb::IMessage.Descriptor {
-          get { return Descriptor; }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public ListAgentInfo() {
-          OnConstruction();
-        }
-
-        partial void OnConstruction();
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public ListAgentInfo(ListAgentInfo other) : this() {
-          value_ = other.value_.Clone();
-          _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public ListAgentInfo Clone() {
-          return new ListAgentInfo(this);
-        }
-
-        /// <summary>Field number for the "value" field.</summary>
-        public const int ValueFieldNumber = 1;
-        private static readonly pb::FieldCodec<global::MLAgents.Communicator.AgentInfo> _repeated_value_codec
-            = pb::FieldCodec.ForMessage(10, global::MLAgents.Communicator.AgentInfo.Parser);
-        private readonly pbc::RepeatedField<global::MLAgents.Communicator.AgentInfo> value_ = new pbc::RepeatedField<global::MLAgents.Communicator.AgentInfo>();
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public pbc::RepeatedField<global::MLAgents.Communicator.AgentInfo> Value {
-          get { return value_; }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public override bool Equals(object other) {
-          return Equals(other as ListAgentInfo);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public bool Equals(ListAgentInfo other) {
-          if (ReferenceEquals(other, null)) {
-            return false;
-          }
-          if (ReferenceEquals(other, this)) {
-            return true;
-          }
-          if(!value_.Equals(other.value_)) return false;
-          return Equals(_unknownFields, other._unknownFields);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public override int GetHashCode() {
-          int hash = 1;
-          hash ^= value_.GetHashCode();
-          if (_unknownFields != null) {
-            hash ^= _unknownFields.GetHashCode();
-          }
-          return hash;
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public override string ToString() {
-          return pb::JsonFormatter.ToDiagnosticString(this);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public void WriteTo(pb::CodedOutputStream output) {
-          value_.WriteTo(output, _repeated_value_codec);
-          if (_unknownFields != null) {
-            _unknownFields.WriteTo(output);
-          }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public int CalculateSize() {
-          int size = 0;
-          size += value_.CalculateSize(_repeated_value_codec);
-          if (_unknownFields != null) {
-            size += _unknownFields.CalculateSize();
-          }
-          return size;
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public void MergeFrom(ListAgentInfo other) {
-          if (other == null) {
-            return;
-          }
-          value_.Add(other.value_);
-          _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public void MergeFrom(pb::CodedInputStream input) {
-          uint tag;
-          while ((tag = input.ReadTag()) != 0) {
-            switch(tag) {
-              default:
-                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-                break;
-              case 10: {
-                value_.AddEntriesFrom(input, _repeated_value_codec);
-                break;
-              }
-            }
-          }
-        }
-
-      }
-
-    }
-    #endregion
 
   }
 

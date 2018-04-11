@@ -16,27 +16,30 @@ namespace MLAgents.Communicator
         /// <summary>
         ///  Implement this method to Send the academy communicators
         /// </summary>
-        /// <returns>The pyhton Parameters.</returns>
-        PythonParameters Initialize(AcademyParameters academyParameters);
+        /// <returns>The python Parameters and the first input</returns>
+        PythonParameters Initialize(AcademyParameters academyParameters,
+                                    out UnityRLInput unityImput);
 
         /// <summary>
         ///  Sends the UnityOutput via communication
         /// </summary>
         /// <returns>The new inputs.</returns>
         /// <param name="unityOutput">The Unity output.</param>
-        UnityInput SendOuput(UnityOutput unityOutput);
+        UnityRLInput SendOuput(UnityRLOutput unityOutput);
 
-        /// <summary>
-        /// Gets the last command received by the communicator.
-        /// </summary>
-        /// <returns>The command.</returns>
-        Command GetCommand();
+        void Close();
 
-        /// <summary>
-        /// Gets the latest environment parameters.
-        /// </summary>
-        /// <returns>The environment parameters.</returns>
-        EnvironmentParameters GetEnvironmentParameters();
+        ///// <summary>
+        ///// Gets the last command received by the communicator.
+        ///// </summary>
+        ///// <returns>The command.</returns>
+        //Command GetCommand();
+
+        ///// <summary>
+        ///// Gets the latest environment parameters.
+        ///// </summary>
+        ///// <returns>The environment parameters.</returns>
+        //EnvironmentParameters GetEnvironmentParameters();
 
     }
 }

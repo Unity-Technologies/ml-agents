@@ -28,14 +28,21 @@ namespace MLAgents.Communicator
             //public bool isInitialized = false;
             public AcademyParameters academyParameters;
             public PythonParameters pythonParameters;
-            public UnityOutput outputs = new UnityOutput();
-            public UnityInput inputs = new UnityInput();
+            public UnityRLOutput outputs = new UnityRLOutput();
+            public UnityRLInput inputs = new UnityRLInput();
 
             public Command command = Command.Step;
             // TODO : Figure this out, This should be a default...
 
             private ManualResetEvent manualResetEvent_in = new ManualResetEvent(false);
             private ManualResetEvent manualResetEvent_out = new ManualResetEvent(false);
+            UnityOutput messageOutput = new UnityOutput
+            {
+                Header = new Header
+                {
+                    Status = 200
+                }
+            };
 
             public void WaitForInput()
             {
@@ -83,7 +90,14 @@ namespace MLAgents.Communicator
                 //{
                 //    System.Threading.Thread.Sleep(5000);
                 //}
-                inputs = request;
+                if (request.Header.Status != 200)
+                {
+                    inputs = null;
+                    InputReceived();
+                    return Task.FromResult(messageOutput);
+                }
+
+                inputs = request.RlInput;
                 InputReceived();
                 WaitForOutput();
                 //command = ExternalCommand.RESET;
@@ -96,8 +110,10 @@ namespace MLAgents.Communicator
                 //TODO : convert academyParameters to MLAgents.AcademyParameters
                 //Debug.Log("About to return the reset result");
                 //Debug.Log("The inputs should have been used and new outputs generated");
-                return Task.FromResult(outputs);
+                messageOutput.RlOutput = outputs;
+                return Task.FromResult(messageOutput);
             }
+
         }
 
         CommunicatorParameters communicatorParameters;
@@ -127,7 +143,8 @@ namespace MLAgents.Communicator
         // TODO from here
 
         /// Contains the logic for the initializtation of the socket.
-        public PythonParameters Initialize(AcademyParameters academyParameters)
+        public PythonParameters Initialize(AcademyParameters academyParameters,
+                                           out UnityRLInput unityInput)
         {
 
             //TODO : Reimplement
@@ -166,8 +183,13 @@ namespace MLAgents.Communicator
 
             comm.WaitForInput();
             // TODO : You must receive an input at this point 
-
+            unityInput = comm.inputs;
             return comm.pythonParameters;
+        }
+
+        public void Close()
+        {
+            // TODO: Implement
         }
 
         void HandleLog(string logString, string stackTrace, LogType type)
@@ -179,17 +201,17 @@ namespace MLAgents.Communicator
             logWriter.Close();
         }
 
-        public EnvironmentParameters GetEnvironmentParameters()
-        {
-            return comm.inputs.EnvironmentParameters;
-        }
+        //public EnvironmentParameters GetEnvironmentParameters()
+        //{
+        //    return comm.inputs.EnvironmentParameters;
+        //}
 
-        public Command GetCommand()
-        {
-            return comm.command;
-        }
+        //public Command GetCommand()
+        //{
+        //    return comm.command;
+        //}
 
-        public UnityInput SendOuput(UnityOutput unityOutput)
+        public UnityRLInput SendOuput(UnityRLOutput unityOutput)
         {
             //Debug.Log("SendOutput is called");
             comm.outputs = unityOutput;

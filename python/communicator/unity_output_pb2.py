@@ -13,66 +13,37 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-from communicator import agent_info_pb2 as communicator_dot_agent__info__pb2
+from communicator import unity_rl_output_pb2 as communicator_dot_unity__rl__output__pb2
+from communicator import header_pb2 as communicator_dot_header__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='communicator/unity_output.proto',
   package='communicator',
   syntax='proto3',
-  serialized_pb=_b('\n\x1f\x63ommunicator/unity_output.proto\x12\x0c\x63ommunicator\x1a\x1d\x63ommunicator/agent_info.proto\"\xf6\x01\n\x0bUnityOutput\x12\x13\n\x0bglobal_done\x18\x01 \x01(\x08\x12=\n\nagentInfos\x18\x02 \x03(\x0b\x32).communicator.UnityOutput.AgentInfosEntry\x1a\x37\n\rListAgentInfo\x12&\n\x05value\x18\x01 \x03(\x0b\x32\x17.communicator.AgentInfo\x1aZ\n\x0f\x41gentInfosEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x36\n\x05value\x18\x02 \x01(\x0b\x32\'.communicator.UnityOutput.ListAgentInfo:\x02\x38\x01\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
+  serialized_pb=_b('\n\x1f\x63ommunicator/unity_output.proto\x12\x0c\x63ommunicator\x1a\"communicator/unity_rl_output.proto\x1a\x19\x63ommunicator/header.proto\"c\n\x0bUnityOutput\x12$\n\x06header\x18\x01 \x01(\x0b\x32\x14.communicator.Header\x12.\n\trl_output\x18\x02 \x01(\x0b\x32\x1b.communicator.UnityRLOutputB\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
   ,
-  dependencies=[communicator_dot_agent__info__pb2.DESCRIPTOR,])
+  dependencies=[communicator_dot_unity__rl__output__pb2.DESCRIPTOR,communicator_dot_header__pb2.DESCRIPTOR,])
 
 
 
 
-_UNITYOUTPUT_LISTAGENTINFO = _descriptor.Descriptor(
-  name='ListAgentInfo',
-  full_name='communicator.UnityOutput.ListAgentInfo',
+_UNITYOUTPUT = _descriptor.Descriptor(
+  name='UnityOutput',
+  full_name='communicator.UnityOutput',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='value', full_name='communicator.UnityOutput.ListAgentInfo.value', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=180,
-  serialized_end=235,
-)
-
-_UNITYOUTPUT_AGENTINFOSENTRY = _descriptor.Descriptor(
-  name='AgentInfosEntry',
-  full_name='communicator.UnityOutput.AgentInfosEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='communicator.UnityOutput.AgentInfosEntry.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='header', full_name='communicator.UnityOutput.header', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='value', full_name='communicator.UnityOutput.AgentInfosEntry.value', index=1,
+      name='rl_output', full_name='communicator.UnityOutput.rl_output', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -84,87 +55,29 @@ _UNITYOUTPUT_AGENTINFOSENTRY = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
   ],
-  options=_descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001')),
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=237,
-  serialized_end=327,
-)
-
-_UNITYOUTPUT = _descriptor.Descriptor(
-  name='UnityOutput',
-  full_name='communicator.UnityOutput',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='global_done', full_name='communicator.UnityOutput.global_done', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='agentInfos', full_name='communicator.UnityOutput.agentInfos', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[_UNITYOUTPUT_LISTAGENTINFO, _UNITYOUTPUT_AGENTINFOSENTRY, ],
-  enum_types=[
-  ],
   options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=81,
-  serialized_end=327,
+  serialized_start=112,
+  serialized_end=211,
 )
 
-_UNITYOUTPUT_LISTAGENTINFO.fields_by_name['value'].message_type = communicator_dot_agent__info__pb2._AGENTINFO
-_UNITYOUTPUT_LISTAGENTINFO.containing_type = _UNITYOUTPUT
-_UNITYOUTPUT_AGENTINFOSENTRY.fields_by_name['value'].message_type = _UNITYOUTPUT_LISTAGENTINFO
-_UNITYOUTPUT_AGENTINFOSENTRY.containing_type = _UNITYOUTPUT
-_UNITYOUTPUT.fields_by_name['agentInfos'].message_type = _UNITYOUTPUT_AGENTINFOSENTRY
+_UNITYOUTPUT.fields_by_name['header'].message_type = communicator_dot_header__pb2._HEADER
+_UNITYOUTPUT.fields_by_name['rl_output'].message_type = communicator_dot_unity__rl__output__pb2._UNITYRLOUTPUT
 DESCRIPTOR.message_types_by_name['UnityOutput'] = _UNITYOUTPUT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 UnityOutput = _reflection.GeneratedProtocolMessageType('UnityOutput', (_message.Message,), dict(
-
-  ListAgentInfo = _reflection.GeneratedProtocolMessageType('ListAgentInfo', (_message.Message,), dict(
-    DESCRIPTOR = _UNITYOUTPUT_LISTAGENTINFO,
-    __module__ = 'communicator.unity_output_pb2'
-    # @@protoc_insertion_point(class_scope:communicator.UnityOutput.ListAgentInfo)
-    ))
-  ,
-
-  AgentInfosEntry = _reflection.GeneratedProtocolMessageType('AgentInfosEntry', (_message.Message,), dict(
-    DESCRIPTOR = _UNITYOUTPUT_AGENTINFOSENTRY,
-    __module__ = 'communicator.unity_output_pb2'
-    # @@protoc_insertion_point(class_scope:communicator.UnityOutput.AgentInfosEntry)
-    ))
-  ,
   DESCRIPTOR = _UNITYOUTPUT,
   __module__ = 'communicator.unity_output_pb2'
   # @@protoc_insertion_point(class_scope:communicator.UnityOutput)
   ))
 _sym_db.RegisterMessage(UnityOutput)
-_sym_db.RegisterMessage(UnityOutput.ListAgentInfo)
-_sym_db.RegisterMessage(UnityOutput.AgentInfosEntry)
 
 
 DESCRIPTOR.has_options = True
 DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\025MLAgents.Communicator'))
-_UNITYOUTPUT_AGENTINFOSENTRY.has_options = True
-_UNITYOUTPUT_AGENTINFOSENTRY._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001'))
 # @@protoc_insertion_point(module_scope)
