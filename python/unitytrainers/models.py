@@ -57,8 +57,8 @@ class LearningModel(object):
                 self.update_mean = tf.assign(self.running_mean, self.new_mean)
                 self.update_variance = tf.assign(self.running_variance, self.new_variance)
 
-                self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / tf.sqrt(
-                    self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)), -5, 5,
+                self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / (tf.sqrt(
+                    self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)) + 1e-10), -5, 5,
                                                          name="normalized_state")
             else:
                 self.normalized_state = self.vector_in
@@ -196,7 +196,7 @@ class LearningModel(object):
             hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
             self.memory_out = tf.identity(self.memory_out, name='recurrent_out')
 
-        self.policy = tf.layers.dense(hidden, self.a_size, activation=None, use_bias=False,
+        self.policy = tf.layers.dense(hidden, self.a_size, activation=None,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
         self.all_probs = tf.nn.softmax(self.policy, name="action_probs")
@@ -233,24 +233,25 @@ class LearningModel(object):
             hidden_policy = hidden_streams[0]
             hidden_value = hidden_streams[1]
 
-        self.mu = tf.layers.dense(hidden_policy, self.a_size, activation=None, use_bias=False,
-                                  kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
+        # We use the Beta distribution to select actions, as per: http://proceedings.mlr.press/v70/chou17a/chou17a.pdf
+        alpha = 1.0 + tf.layers.dense(hidden_policy, self.a_size, activation=tf.nn.softplus)
+        beta = 1.0 + tf.layers.dense(hidden_policy, self.a_size, activation=tf.nn.softplus)
 
-        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size], dtype=tf.float32,
-                                            initializer=tf.zeros_initializer())
+        self.beta = tf.distributions.Beta(alpha, beta)
+        
+        # This isn't technically entropy, but serves the same purpose here.
+        self.entropy = -tf.reduce_mean((alpha + beta) / 2, axis=1)
 
-        self.sigma_sq = tf.exp(self.log_sigma_sq)
-        self.epsilon = tf.random_normal(tf.shape(self.mu), dtype=tf.float32)
-        self.output = self.mu + tf.sqrt(self.sigma_sq) * self.epsilon
-        self.output = tf.identity(self.output, name='action')
-        a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output) - self.mu, 2) / (2 * self.sigma_sq))
-        b = 1 / tf.sqrt(2 * self.sigma_sq * np.pi)
-        self.all_probs = tf.multiply(a, b, name="action_probs")
-        self.entropy = tf.reduce_mean(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
+        self.output = self.beta.sample()
+        self.output = tf.identity(self.output, name="action")
+        self.all_probs = self.beta.prob(self.output)
+        self.all_probs = tf.identity(self.all_probs, name="action_probs")
+
         self.value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32,
                                             name='old_probabilities')
+
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.probs = tf.identity(self.all_probs)
         self.old_probs = tf.identity(self.all_old_probs)

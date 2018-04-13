@@ -170,9 +170,7 @@ class PPOTrainer(Trainer):
         feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations), self.model.sequence_length: 1}
         run_list = [self.model.output, self.model.all_probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
-        if self.is_continuous_action:
-            run_list.append(self.model.epsilon)
-        elif self.use_recurrent:
+        if self.use_recurrent:
             feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
         if self.use_observations:
             for i, _ in enumerate(curr_brain_info.visual_observations):
@@ -191,7 +189,6 @@ class PPOTrainer(Trainer):
             feed_dict[self.model.new_mean] = new_mean
             feed_dict[self.model.new_variance] = new_variance
             run_list = run_list + [self.model.update_mean, self.model.update_variance]
-
         values = self.sess.run(run_list, feed_dict=feed_dict)
         run_out = dict(zip(run_list, values))
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
@@ -240,9 +237,6 @@ class PPOTrainer(Trainer):
                         if stored_info.memories.shape[1] == 0:
                             stored_info.memories = np.zeros((len(stored_info.agents), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
-                    if self.is_continuous_action:
-                        epsi = stored_take_action_outputs[self.model.epsilon]
-                        self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
                     actions = stored_take_action_outputs[self.model.output]
                     a_dist = stored_take_action_outputs[self.model.all_probs]
                     value = stored_take_action_outputs[self.model.value]
@@ -343,7 +337,7 @@ class PPOTrainer(Trainer):
         """
         num_epoch = self.trainer_parameters['num_epoch']
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
-        total_v, total_p = 0, 0
+        total_v, total_p = [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
@@ -364,8 +358,8 @@ class PPOTrainer(Trainer):
                              self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.vector_action_space_size])}
                 if self.is_continuous_action:
-                    feed_dict[self.model.epsilon] = np.array(
-                        _buffer['epsilons'][start:end]).reshape([-1, self.brain.vector_action_space_size])
+                    feed_dict[self.model.output] = np.array(
+                        _buffer['actions'][start:end]).reshape([-1, self.model.a_size])
                 else:
                     feed_dict[self.model.action_holder] = np.array(
                         _buffer['actions'][start:end]).reshape([-1])
@@ -390,10 +384,10 @@ class PPOTrainer(Trainer):
                 v_loss, p_loss, _ = self.sess.run(
                     [self.model.value_loss, self.model.policy_loss,
                      self.model.update_batch], feed_dict=feed_dict)
-                total_v += v_loss
-                total_p += p_loss
-        self.stats['value_loss'].append(total_v)
-        self.stats['policy_loss'].append(total_p)
+                total_v.append(v_loss)
+                total_p.append(np.abs(p_loss))
+        self.stats['value_loss'].append(np.mean(total_v))
+        self.stats['policy_loss'].append(np.mean(total_p))
         self.training_buffer.reset_update_buffer()
 
     def write_summary(self, lesson_number):

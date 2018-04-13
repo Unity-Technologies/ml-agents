@@ -24,6 +24,7 @@ public class BananaAgent : Agent
     public Material normalMaterial;
     public Material badMaterial;
     public Material goodMaterial;
+    public Material frozenMaterial;
     int bananas;
     public GameObject myLaser;
     public bool contribute;
@@ -64,7 +65,7 @@ public class BananaAgent : Agent
     {
         shoot = false;
 
-        if (Time.time > frozenTime + 4f && frozen)
+        if (Time.time > frozenTime + 5f && frozen)
         {
             Unfreeze();
         }
@@ -83,30 +84,29 @@ public class BananaAgent : Agent
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
-
         if (!frozen)
         {
             bool shootCommand = false;
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
-                dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
-                rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-                shootCommand = Mathf.Clamp(act[2], 0f, 1f) > 0.5f;
+                dirToGo = transform.forward * ScaleContinuousAction(act[0], -0.5f, 1.5f);
+                rotateDir = transform.up * ScaleContinuousAction(act[1], -1.5f, 1.5f);
+                shootCommand = act[2] > 0.75f;
             }
             else
             {
-                switch ((int)(act[0]))
+                switch ((int)act[0])
                 {
-                    case 1:
+                    case 0:
                         dirToGo = transform.forward;
                         break;
-                    case 2:
+                    case 1:
                         shootCommand = true;
                         break;
-                    case 3:
+                    case 2:
                         rotateDir = -transform.up;
                         break;
-                    case 4:
+                    case 3:
                         rotateDir = transform.up;
                         break;
                 }
@@ -114,8 +114,8 @@ public class BananaAgent : Agent
             if (shootCommand)
             {
                 shoot = true;
-                dirToGo *= 0.5f;
-                agentRB.velocity *= 0.75f;
+                dirToGo *= 0.0f;
+                agentRB.velocity *= 0.0f;
             }
             agentRB.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
@@ -134,7 +134,7 @@ public class BananaAgent : Agent
             RaycastHit hit;
             if (Physics.SphereCast(transform.position, 2f, position, out hit, 25f))
             {
-                if (hit.collider.gameObject.tag == "agent")
+                if (hit.collider.gameObject.CompareTag("agent"))
                 {
                     hit.collider.gameObject.GetComponent<BananaAgent>().Freeze();
                 }
@@ -147,13 +147,15 @@ public class BananaAgent : Agent
         }
     }
 
-
+    
     void Freeze()
     {
+        Unsatiate();
+        Unpoison();
         gameObject.tag = "frozenAgent";
         frozen = true;
         frozenTime = Time.time;
-        gameObject.GetComponent<Renderer>().material.color = Color.black;
+        gameObject.GetComponent<Renderer>().material = frozenMaterial;
     }
 
 
@@ -166,6 +168,8 @@ public class BananaAgent : Agent
 
     void Poison()
     {
+        Unfreeze();
+        Unsatiate();
         poisioned = true;
         effectTime = Time.time;
         gameObject.GetComponent<Renderer>().material = badMaterial;
@@ -179,6 +183,8 @@ public class BananaAgent : Agent
 
     void Satiate()
     {
+        Unpoison();
+        Unfreeze();
         satiated = true;
         effectTime = Time.time;
         gameObject.GetComponent<Renderer>().material = goodMaterial;
@@ -238,7 +244,7 @@ public class BananaAgent : Agent
         }
         if (collision.gameObject.CompareTag("wall"))
         {
-            Done();
+            // Done();
         }
     }
 

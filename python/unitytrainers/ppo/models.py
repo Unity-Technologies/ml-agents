@@ -30,7 +30,6 @@ class PPOModel(LearningModel):
         self.last_reward, self.new_reward, self.update_reward = self.create_reward_encoder()
         if brain.vector_action_space_type == "continuous":
             self.create_cc_actor_critic(h_size, num_layers)
-            self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers)
         self.create_ppo_optimizer(self.probs, self.old_probs, self.value,

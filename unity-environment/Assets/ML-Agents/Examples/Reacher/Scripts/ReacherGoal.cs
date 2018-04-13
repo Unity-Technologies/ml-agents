@@ -8,16 +8,6 @@ public class ReacherGoal : MonoBehaviour {
     public GameObject hand;
     public GameObject goalOn;
 
-    // Use this for initialization
-    void Start () {
-        
-    }
-    
-    // Update is called once per frame
-    void Update () {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject == hand)
