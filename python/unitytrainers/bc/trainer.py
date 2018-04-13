@@ -229,13 +229,14 @@ class BehavioralCloningTrainer(Trainer):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-    def process_experiences(self, info: AllBrainInfo):
+    def process_experiences(self, current_info: AllBrainInfo, next_info: AllBrainInfo):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param info: Current AllBrainInfo
+        :param current_info: Current AllBrainInfo
+        :param next_info: Next AllBrainInfo
         """
-        info_teacher = info[self.brain_to_imitate]
+        info_teacher = next_info[self.brain_to_imitate]
         for l in range(len(info_teacher.agents)):
             if ((info_teacher.local_done[l] or
                  len(self.training_buffer[info_teacher.agents[l]]['actions']) > self.trainer_parameters[
@@ -246,7 +247,7 @@ class BehavioralCloningTrainer(Trainer):
                                                           training_length=self.sequence_length)
                 self.training_buffer[agent_id].reset_agent()
 
-        info_student = info[self.brain_name]
+        info_student = next_info[self.brain_name]
         for l in range(len(info_student.agents)):
             if info_student.local_done[l]:
                 agent_id = info_student.agents[l]

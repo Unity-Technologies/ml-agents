@@ -103,11 +103,12 @@ class Trainer(object):
         """
         raise UnityTrainerException("The add_experiences method was not implemented.")
 
-    def process_experiences(self, info: AllBrainInfo):
+    def process_experiences(self, current_info: AllBrainInfo, next_info: AllBrainInfo):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param info: Dictionary of all current brains and corresponding BrainInfo.
+        :param current_info: Dictionary of all current-step brains and corresponding BrainInfo.
+        :param next_info: Dictionary of all next-step brains and corresponding BrainInfo.
         """
         raise UnityTrainerException("The process_experiences method was not implemented.")
 

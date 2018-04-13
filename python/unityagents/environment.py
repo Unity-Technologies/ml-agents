@@ -23,7 +23,7 @@ logger = logging.getLogger("unityagents")
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
                  base_port=5005, curriculum=None,
-                 seed=0):
+                 seed=0, docker_training=False):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -32,6 +32,7 @@ class UnityEnvironment(object):
         :string file_name: Name of Unity environment binary.
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
+        :param docker_training: Informs this class whether the process is being run within a container.
         """
 
         atexit.register(self.close)
@@ -95,11 +96,38 @@ class UnityEnvironment(object):
         else:
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
-            proc1 = subprocess.Popen(
-                [launch_string,
-                 '--port', str(self.port),
-                 '--seed', str(seed)])
-
+            if docker_training == False:
+                proc1 = subprocess.Popen(
+                    [launch_string,
+                     '--port', str(self.port),
+                     '--seed', str(seed)])
+            else:
+                """
+                Comments for future maintenance:
+                    xvfb-run is a wrapper around Xvfb, a virtual xserver where all
+                    rendering is done to virtual memory. It automatically creates a
+                    new virtual server automatically picking a server number `auto-servernum`.
+                    The server is passed the arguments using `server-args`, we are telling
+                    Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
+                    Note that 640 X 480 are the default width and height. The main reason for
+                    us to add this is because we'd like to change the depth from the default
+                    of 8 bits to 24.
+                    Unfortunately, this means that we will need to pass the arguments through
+                    a shell which is why we set `shell=True`. Now, this adds its own
+                    complications. E.g SIGINT can bounce off the shell and not get propagated
+                    to the child processes. This is why we add `exec`, so that the shell gets
+                    launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
+                    we created with `xvfb`.
+                """
+                docker_ls = ("exec xvfb-run --auto-servernum"
+                             " --server-args='-screen 0 640x480x24'"
+                             " {0} --port {1} --seed {2}").format(launch_string,
+                                                                  str(self.port),
+                                                                  str(seed))
+                proc1 = subprocess.Popen(docker_ls,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         shell=True)
         self._socket.settimeout(30)
         try:
             try:
