@@ -210,7 +210,7 @@ object.
 
 ![Set Brain to External](images/mlagents-SetExternalBrain.png)
 
-Next, we want the set up scene to to play correctly when the training process 
+Next, we want the set up scene to play correctly when the training process 
 launches our environment executable. This means:
 * The environment application runs in the background
 * No dialogs require interaction

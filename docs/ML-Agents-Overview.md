@@ -428,8 +428,7 @@ the broadcasting feature
 * **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents
 without installing Python or TensorFlow directly, we provide a 
 [guide](Using-Docker.md) on how
-to create and run a Docker container. Due to limitations on rendering visual
-observations, this feature is marked experimental.
+to create and run a Docker container.
 
 * **Cloud Training on AWS** - To facilitate using ML-Agents on
 Amazon Web Services (AWS) machines, we provide a 
