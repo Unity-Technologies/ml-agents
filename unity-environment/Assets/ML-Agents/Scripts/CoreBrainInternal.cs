@@ -190,7 +190,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             foreach (Agent agent in agentList)
             {
                 List<float> state_list = agentInfo[agent].stackedVectorObservation;
-                for (int j = 0; j < brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations; j++)
+                for (int j = 0; j < stateLength * brain.brainParameters.numStackedVectorObservations; j++)
                 {
                     inputState[i, j] = state_list[j];
                 }
