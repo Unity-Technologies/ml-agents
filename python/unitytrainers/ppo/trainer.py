@@ -260,15 +260,16 @@ class PPOTrainer(Trainer):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-
-    def process_experiences(self, all_info: AllBrainInfo):
+    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param current_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
 
-        info = all_info[self.brain_name]
+        info = new_info[self.brain_name]
+        last_info = current_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
@@ -276,18 +277,22 @@ class PPOTrainer(Trainer):
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
-                    feed_dict = {self.model.batch_size: len(info.vector_observations), self.model.sequence_length: 1}
+                    if info.max_reached[l]:
+                        bootstrapping_info = last_info
+                    else:
+                        bootstrapping_info = info
+                    feed_dict = {self.model.batch_size: len(bootstrapping_info.vector_observations), self.model.sequence_length: 1}
                     if self.use_observations:
-                        for i in range(len(info.visual_observations)):
-                            feed_dict[self.model.visual_in[i]] = info.visual_observations[i]
+                        for i in range(len(bootstrapping_info.visual_observations)):
+                            feed_dict[self.model.visual_in[i]] = bootstrapping_info.visual_observations[i]
                     if self.use_states:
-                        feed_dict[self.model.vector_in] = info.vector_observations
+                        feed_dict[self.model.vector_in] = bootstrapping_info.vector_observations
                     if self.use_recurrent:
-                        if info.memories.shape[1] == 0:
-                            info.memories = np.zeros((len(info.vector_observations), self.m_size))
-                        feed_dict[self.model.memory_in] = info.memories
+                        if bootstrapping_info.memories.shape[1] == 0:
+                            bootstrapping_info.memories = np.zeros((len(bootstrapping_info.vector_observations), self.m_size))
+                        feed_dict[self.model.memory_in] = bootstrapping_info.memories
                     if not self.is_continuous_action and self.use_recurrent:
-                        feed_dict[self.model.prev_action] = np.reshape(info.previous_vector_actions, [-1])
+                        feed_dict[self.model.prev_action] = np.reshape(bootstrapping_info.previous_vector_actions, [-1])
                     value_next = self.sess.run(self.model.value, feed_dict)[l]
                 agent_id = info.agents[l]
 
