@@ -24,6 +24,7 @@ public class BananaAgent : Agent
     public Material normalMaterial;
     public Material badMaterial;
     public Material goodMaterial;
+    public Material frozenMaterial;
     int bananas;
     public GameObject myLaser;
     public bool contribute;
@@ -83,19 +84,18 @@ public class BananaAgent : Agent
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
-
         if (!frozen)
         {
             bool shootCommand = false;
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
-                dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
-                rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-                shootCommand = Mathf.Clamp(act[2], 0f, 1f) > 0.5f;
+                dirToGo = 0.3f * transform.forward * Mathf.Clamp(act[0], -3f, 3f);
+                rotateDir = 0.3f * transform.up * Mathf.Clamp(act[1], -3f, 3f);
+                shootCommand = Mathf.Clamp(act[2], 0f, 3f) > 2f;
             }
             else
             {
-                switch ((int)(act[0]))
+                switch ((int)act[0])
                 {
                     case 1:
                         dirToGo = transform.forward;
@@ -134,7 +134,7 @@ public class BananaAgent : Agent
             RaycastHit hit;
             if (Physics.SphereCast(transform.position, 2f, position, out hit, 25f))
             {
-                if (hit.collider.gameObject.tag == "agent")
+                if (hit.collider.gameObject.CompareTag("agent"))
                 {
                     hit.collider.gameObject.GetComponent<BananaAgent>().Freeze();
                 }
@@ -153,7 +153,7 @@ public class BananaAgent : Agent
         gameObject.tag = "frozenAgent";
         frozen = true;
         frozenTime = Time.time;
-        gameObject.GetComponent<Renderer>().material.color = Color.black;
+        gameObject.GetComponent<Renderer>().material = frozenMaterial;
     }
 
 
@@ -235,10 +235,6 @@ public class BananaAgent : Agent
             {
                 myAcademy.totalScore -= 1;
             }
-        }
-        if (collision.gameObject.CompareTag("wall"))
-        {
-            Done();
         }
     }
 

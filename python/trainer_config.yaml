@@ -87,6 +87,9 @@ BouncerBrain:
     num_layers: 2
     hidden_units: 56
 
+TennisBrain:
+    normalize: true
+
 CrawlerBrain:
     normalize: true
     num_epoch: 3

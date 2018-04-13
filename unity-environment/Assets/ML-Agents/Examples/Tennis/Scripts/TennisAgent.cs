@@ -11,67 +11,61 @@ public class TennisAgent : Agent
     public float invertMult;
     public int score;
     public GameObject scoreText;
+    private Text textComponent;
     public GameObject myArea;
     public GameObject opponent;
+    private Rigidbody agentRb;
+    private Rigidbody ballRb;
+
+    public override void InitializeAgent()
+    {
+        agentRb = GetComponent<Rigidbody>();
+        ballRb = GetComponent<Rigidbody>();
+        textComponent = scoreText.GetComponent<Text>();
+    }
 
     public override void CollectObservations()
     {
-        AddVectorObs(invertMult * (gameObject.transform.position.x - myArea.transform.position.x));
-        AddVectorObs(gameObject.transform.position.y - myArea.transform.position.y);
-        AddVectorObs(invertMult * gameObject.GetComponent<Rigidbody>().velocity.x);
-        AddVectorObs(gameObject.GetComponent<Rigidbody>().velocity.y);
+        AddVectorObs(invertMult * (transform.position.x - myArea.transform.position.x));
+        AddVectorObs(transform.position.y - myArea.transform.position.y);
+        AddVectorObs(invertMult * agentRb.velocity.x);
+        AddVectorObs(agentRb.velocity.y);
 
         AddVectorObs(invertMult * (ball.transform.position.x - myArea.transform.position.x));
         AddVectorObs(ball.transform.position.y - myArea.transform.position.y);
-        AddVectorObs(invertMult * ball.GetComponent<Rigidbody>().velocity.x);
-        AddVectorObs(ball.GetComponent<Rigidbody>().velocity.y);
+        AddVectorObs(invertMult * ballRb.velocity.x);
+        AddVectorObs(ballRb.velocity.y);
     }
 
-    // to be implemented by the developer
+
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        float moveX = 0.0f;
-        float moveY = 0.0f;
-        moveX = 0.25f * Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
-        if (Mathf.Clamp(vectorAction[1], -1f, 1f) > 0f && gameObject.transform.position.y - transform.parent.transform.position.y < -1.5f)
+        var moveX = 0.2f * Mathf.Clamp(vectorAction[0], -3f, 3f) * invertMult;
+        var moveY = Mathf.Clamp(vectorAction[1], -3f, 3f);
+        
+        if (moveY > 0 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
-            moveY = 0.5f;
-            gameObject.GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, moveY * 12f, 0f);
+            agentRb.velocity = new Vector3(agentRb.velocity.x, 6f, 0f);
         }
 
-        gameObject.GetComponent<Rigidbody>().velocity = new Vector3(moveX * 50f, GetComponent<Rigidbody>().velocity.y, 0f);
+        agentRb.velocity = new Vector3(moveX * 50f, agentRb.velocity.y, 0f);
 
-        if (invertX)
+        if ((invertX && (transform.position.x - transform.parent.transform.position.x < -invertMult)) || 
+            (!invertX && (transform.position.x - transform.parent.transform.position.x > -invertMult)))
         {
-            if (gameObject.transform.position.x - transform.parent.transform.position.x < -invertMult)
-            {
-                gameObject.transform.position = new Vector3(-invertMult + transform.parent.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
-            }
-        }
-        else
-        {
-            if (gameObject.transform.position.x - transform.parent.transform.position.x > -invertMult)
-            {
-                gameObject.transform.position = new Vector3(-invertMult + transform.parent.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
-            }
+                transform.position = new Vector3(-invertMult + transform.parent.transform.position.x, 
+                                                            transform.position.y, 
+                                                            transform.position.z);
         }
 
-        scoreText.GetComponent<Text>().text = score.ToString();
+        textComponent.text = score.ToString();
     }
 
-    // to be implemented by the developer
     public override void AgentReset()
     {
-        if (invertX)
-        {
-            invertMult = -1f;
-        }
-        else
-        {
-            invertMult = 1f;
-        }
+        invertMult = invertX ? -1f : 1f;
 
-        gameObject.transform.position = new Vector3(-(invertMult) * Random.Range(6f, 8f), -1.5f, 0f) + transform.parent.transform.position;
-        gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+        transform.position = new Vector3(-invertMult * Random.Range(6f, 8f), -1.5f, 0f) + transform.parent.transform.position;
+        agentRb.velocity = new Vector3(0f, 0f, 0f);
     }
 }

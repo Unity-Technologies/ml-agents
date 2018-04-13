@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class Ball3DHardAgent : Agent
 {
-    [Header("Specific to Ball3DHard")]
+    [Header("Specific to Ball3D")]
     public GameObject ball;
+    private Rigidbody ballRb;
+
+    public override void InitializeAgent()
+    {
+        ballRb = ball.GetComponent<Rigidbody>();
+    }
 
     public override void CollectObservations()
     {
@@ -16,23 +22,22 @@ public class Ball3DHardAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            float action_z = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
-            if ((gameObject.transform.rotation.z < 0.25f && action_z > 0f) ||
-                (gameObject.transform.rotation.z > -0.25f && action_z < 0f))
+            var actionZ = 0.6f * Mathf.Clamp(vectorAction[0], -3f, 3f);
+            var actionX = 0.6f * Mathf.Clamp(vectorAction[1], -3f, 3f);
+
+            if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
+                (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
             {
-                gameObject.transform.Rotate(new Vector3(0, 0, 1), action_z);
+                gameObject.transform.Rotate(new Vector3(0, 0, 1), actionZ);
             }
-            float action_x = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);
-            if ((gameObject.transform.rotation.x < 0.25f && action_x > 0f) ||
-                (gameObject.transform.rotation.x > -0.25f && action_x < 0f))
+
+            if ((gameObject.transform.rotation.x < 0.25f && actionX > 0f) ||
+                (gameObject.transform.rotation.x > -0.25f && actionX < 0f))
             {
-                gameObject.transform.Rotate(new Vector3(1, 0, 0), action_x);
-            }
-            if (!IsDone())
-            {
-                SetReward( 0.1f);
+                gameObject.transform.Rotate(new Vector3(1, 0, 0), actionX);
             }
         }
         if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
@@ -42,7 +47,10 @@ public class Ball3DHardAgent : Agent
             Done();
             SetReward(-1f);
         }
-
+        else
+        {
+            SetReward(0.1f);
+        }
     }
 
     public override void AgentReset()
@@ -50,7 +58,10 @@ public class Ball3DHardAgent : Agent
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         gameObject.transform.Rotate(new Vector3(1, 0, 0), Random.Range(-10f, 10f));
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
-        ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-        ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f)) + gameObject.transform.position;
+        ballRb.velocity = new Vector3(0f, 0f, 0f);
+        ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f))
+                                  + gameObject.transform.position;
+
     }
+
 }

@@ -232,19 +232,23 @@ class LearningModel(object):
             hidden_policy = hidden_streams[0]
             hidden_value = hidden_streams[1]
 
-        self.mu = tf.layers.dense(hidden_policy, self.a_size, activation=None, use_bias=False,
+        self.mu = tf.layers.dense(hidden_policy, self.a_size, activation=None,
                                   kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
         self.log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size], dtype=tf.float32,
                                             initializer=tf.zeros_initializer())
 
         self.sigma_sq = tf.exp(self.log_sigma_sq)
+        
         self.epsilon = tf.random_normal(tf.shape(self.mu), dtype=tf.float32)
         self.output = self.mu + tf.sqrt(self.sigma_sq) * self.epsilon
         self.output = tf.identity(self.output, name='action')
+
+        # Compute probability of model output.
         a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output) - self.mu, 2) / (2 * self.sigma_sq))
         b = 1 / tf.sqrt(2 * self.sigma_sq * np.pi)
         self.all_probs = tf.multiply(a, b, name="action_probs")
+
         self.entropy = tf.reduce_mean(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
         self.value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(self.value, name="value_estimate")

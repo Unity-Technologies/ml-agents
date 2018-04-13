@@ -240,9 +240,6 @@ class PPOTrainer(Trainer):
                         if stored_info.memories.shape[1] == 0:
                             stored_info.memories = np.zeros((len(stored_info.agents), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
-                    if self.is_continuous_action:
-                        epsi = stored_take_action_outputs[self.model.epsilon]
-                        self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
                     actions = stored_take_action_outputs[self.model.output]
                     a_dist = stored_take_action_outputs[self.model.all_probs]
                     value = stored_take_action_outputs[self.model.value]
@@ -359,8 +356,8 @@ class PPOTrainer(Trainer):
                              self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.vector_action_space_size])}
                 if self.is_continuous_action:
-                    feed_dict[self.model.epsilon] = np.array(
-                        _buffer['epsilons'][start:end]).reshape([-1, self.brain.vector_action_space_size])
+                    feed_dict[self.model.output] = np.array(
+                        _buffer['actions'][start:end]).reshape([-1, self.brain.vector_action_space_size])
                 else:
                     feed_dict[self.model.action_holder] = np.array(
                         _buffer['actions'][start:end]).reshape([-1])
