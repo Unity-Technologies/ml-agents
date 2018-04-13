@@ -1,14 +1,14 @@
 import logging
 import numpy as np
 import time
+import socket
+import struct
 
 
 from communicator import PythonToUnityStub
 from communicator import UnityRLOutput, UnityRLInput,\
     UnityOutput, UnityInput,\
     PythonParameters, AgentAction, AcademyParameters
-
-import grpc
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityActionException, UnityTimeOutException
@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("unityagents")
 
 
-class GrpcCommunicator(object):
+class SocketCommunicator(object):
     def __init__(self, worker_id=0,
                  base_port=5005):
         """
@@ -29,14 +29,19 @@ class GrpcCommunicator(object):
         """
 
         port = base_port + worker_id
-        self._stub = None
-        self.channel = None
+        self._buffer_size = 12000
         self._empty_message = UnityInput()
         self._empty_message.header.status = 200
 
         try:
             # Establish communication socket
-            self.channel = grpc.insecure_channel('localhost:' + str(port))
+            self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self._socket.bind(("localhost", port))
+            self._socket.settimeout(30)
+            self._socket.listen(1)
+            self._conn, _ = self._socket.accept()
+            self._conn.settimeout(30)
             # self._stub = PythonToUnityStub(channel)
         except :
             raise UnityTimeOutException("Couldn't start socket communication because worker number {} is still in use. "
@@ -45,23 +50,33 @@ class GrpcCommunicator(object):
 
     def get_academy_parameters(self) -> AcademyParameters:
         # This must take in PythonParameters
-        try:
-            grpc.channel_ready_future(self.channel).result(timeout=30)
-        except grpc.FutureTimeoutError:
-            raise UnityTimeOutException("gRPC Timeout")
-        else:
-            self._stub = PythonToUnityStub(self.channel)
-        print("Client Connected")
-
-        # Put the seed and the logpath here
-        aca_params = self._stub.Initialize(PythonParameters(), )
+        python_parameters = PythonParameters(seed=2)
+        self._communicator_send(python_parameters.SerializeToString())
+        aca_params = AcademyParameters()
+        aca_params.ParseFromString(serialized=self._communicator_receive())
         return aca_params
+
+    def _communicator_receive(self):
+        try:
+            s = self._conn.recv(self._buffer_size)
+            message_length = struct.unpack("I", bytearray(s[:4]))[0]
+            s = s[4:]
+            while len(s) != message_length:
+                s += self._conn.recv(self._buffer_size)
+        except socket.timeout as e:
+            raise UnityTimeOutException("The environment took too long to respond.")
+        return s
+
+    def _communicator_send(self, message):
+        self._conn.send(struct.pack("I", len(message)) + message)
 
     def send(self, inputs: UnityRLInput) -> UnityRLOutput:
         message_input = self._empty_message
         message_input.rl_input.CopyFrom(inputs)
-        outputs = self._stub.Send(message_input)
-        return outputs.rl_output
+        self._communicator_send(message_input.SerializeToString())
+        result = UnityOutput()
+        result.ParseFromString(self._communicator_receive())
+        return result.rl_output
 
     def close(self):
         """
@@ -73,7 +88,7 @@ class GrpcCommunicator(object):
         try:
             message_input = UnityInput()
             message_input.header.status = 400
-            self._stub.Send(message_input)
+            self._communicator_send(message_input.SerializeToString())
         except :
             pass
         # if self._conn is not None:

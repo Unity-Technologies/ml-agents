@@ -25,14 +25,15 @@ namespace MLAgents.Communicator {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cidjb21tdW5pY2F0b3IvZW5naW5lX2NvbmZpZ3VyYXRpb24ucHJvdG8SDGNv",
-            "bW11bmljYXRvciJ6ChNFbmdpbmVDb25maWd1cmF0aW9uEg0KBXdpZHRoGAEg",
-            "ASgFEg4KBmhlaWdodBgCIAEoBRIVCg1xdWFsaXR5X2xldmVsGAMgASgFEhIK",
-            "CnRpbWVfc2NhbGUYBCABKAISGQoRdGFyZ2V0X2ZyYW1lX3JhdGUYBSABKAVC",
-            "GKoCFU1MQWdlbnRzLkNvbW11bmljYXRvcmIGcHJvdG8z"));
+            "bW11bmljYXRvciKQAQoTRW5naW5lQ29uZmlndXJhdGlvbhINCgV3aWR0aBgB",
+            "IAEoBRIOCgZoZWlnaHQYAiABKAUSFQoNcXVhbGl0eV9sZXZlbBgDIAEoBRIS",
+            "Cgp0aW1lX3NjYWxlGAQgASgCEhkKEXRhcmdldF9mcmFtZV9yYXRlGAUgASgF",
+            "EhQKDHNob3dfbW9uaXRvchgGIAEoCEIYqgIVTUxBZ2VudHMuQ29tbXVuaWNh",
+            "dG9yYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.EngineConfiguration), global::MLAgents.Communicator.EngineConfiguration.Parser, new[]{ "Width", "Height", "QualityLevel", "TimeScale", "TargetFrameRate" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.EngineConfiguration), global::MLAgents.Communicator.EngineConfiguration.Parser, new[]{ "Width", "Height", "QualityLevel", "TimeScale", "TargetFrameRate", "ShowMonitor" }, null, null, null)
           }));
     }
     #endregion
@@ -69,6 +70,7 @@ namespace MLAgents.Communicator {
       qualityLevel_ = other.qualityLevel_;
       timeScale_ = other.timeScale_;
       targetFrameRate_ = other.targetFrameRate_;
+      showMonitor_ = other.showMonitor_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -132,6 +134,17 @@ namespace MLAgents.Communicator {
       }
     }
 
+    /// <summary>Field number for the "show_monitor" field.</summary>
+    public const int ShowMonitorFieldNumber = 6;
+    private bool showMonitor_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool ShowMonitor {
+      get { return showMonitor_; }
+      set {
+        showMonitor_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as EngineConfiguration);
@@ -150,6 +163,7 @@ namespace MLAgents.Communicator {
       if (QualityLevel != other.QualityLevel) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(TimeScale, other.TimeScale)) return false;
       if (TargetFrameRate != other.TargetFrameRate) return false;
+      if (ShowMonitor != other.ShowMonitor) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -161,6 +175,7 @@ namespace MLAgents.Communicator {
       if (QualityLevel != 0) hash ^= QualityLevel.GetHashCode();
       if (TimeScale != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(TimeScale);
       if (TargetFrameRate != 0) hash ^= TargetFrameRate.GetHashCode();
+      if (ShowMonitor != false) hash ^= ShowMonitor.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -194,6 +209,10 @@ namespace MLAgents.Communicator {
         output.WriteRawTag(40);
         output.WriteInt32(TargetFrameRate);
       }
+      if (ShowMonitor != false) {
+        output.WriteRawTag(48);
+        output.WriteBool(ShowMonitor);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -216,6 +235,9 @@ namespace MLAgents.Communicator {
       }
       if (TargetFrameRate != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(TargetFrameRate);
+      }
+      if (ShowMonitor != false) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -242,6 +264,9 @@ namespace MLAgents.Communicator {
       }
       if (other.TargetFrameRate != 0) {
         TargetFrameRate = other.TargetFrameRate;
+      }
+      if (other.ShowMonitor != false) {
+        ShowMonitor = other.ShowMonitor;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -272,6 +297,10 @@ namespace MLAgents.Communicator {
           }
           case 40: {
             TargetFrameRate = input.ReadInt32();
+            break;
+          }
+          case 48: {
+            ShowMonitor = input.ReadBool();
             break;
           }
         }

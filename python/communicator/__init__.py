@@ -17,4 +17,3 @@ from .unity_input_pb2 import *
 from .unity_output_pb2 import *
 from .unity_rl_input_pb2 import *
 from .unity_rl_output_pb2 import *
-from .visual_observation_pb2 import *

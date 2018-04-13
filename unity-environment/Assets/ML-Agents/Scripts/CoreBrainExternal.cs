@@ -8,7 +8,7 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
     /**< Reference to the brain that uses this CoreBrainExternal */
     public Brain brain;
 
-    MLAgents.BrainBatcher brainBatcher;
+    MLAgents.Batcher brainBatcher;
 
     /// Creates the reference to the brain
     public void SetBrain(Brain b)
@@ -18,7 +18,7 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
 
     /// Generates the communicator for the Academy if none was present and
     ///  subscribe to ExternalCommunicator if it was present.
-    public void InitializeCoreBrain(MLAgents.BrainBatcher brainBatcher)
+    public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
     {
         if (brainBatcher == null)
         {

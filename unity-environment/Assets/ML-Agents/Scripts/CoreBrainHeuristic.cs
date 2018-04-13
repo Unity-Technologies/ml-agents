@@ -15,7 +15,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     /**< Reference to the brain that uses this CoreBrainHeuristic */
     public Brain brain;
 
-    MLAgents.BrainBatcher brainBatcher;
+    MLAgents.Batcher brainBatcher;
 
     /**< Reference to the Decision component used to decide the actions */
     public Decision decision;
@@ -27,7 +27,7 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     }
 
     /// Create the reference to decision
-    public void InitializeCoreBrain(MLAgents.BrainBatcher brainBatcher)
+    public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
     {
         decision = brain.gameObject.GetComponent<Decision>();
 

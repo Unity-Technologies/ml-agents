@@ -25,24 +25,22 @@ namespace MLAgents.Communicator {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiFjb21tdW5pY2F0b3IvdW5pdHlfcmxfaW5wdXQucHJvdG8SDGNvbW11bmlj",
-            "YXRvchofY29tbXVuaWNhdG9yL2FnZW50X2FjdGlvbi5wcm90bxonY29tbXVu",
-            "aWNhdG9yL2VuZ2luZV9jb25maWd1cmF0aW9uLnByb3RvGiljb21tdW5pY2F0",
-            "b3IvZW52aXJvbm1lbnRfcGFyYW1ldGVycy5wcm90bxoaY29tbXVuaWNhdG9y",
-            "L2NvbW1hbmQucHJvdG8inwMKDFVuaXR5UkxJbnB1dBJDCg1hZ2VudF9hY3Rp",
-            "b25zGAEgAygLMiwuY29tbXVuaWNhdG9yLlVuaXR5UkxJbnB1dC5BZ2VudEFj",
-            "dGlvbnNFbnRyeRJDChZlbnZpcm9ubWVudF9wYXJhbWV0ZXJzGAIgASgLMiMu",
-            "Y29tbXVuaWNhdG9yLkVudmlyb25tZW50UGFyYW1ldGVycxI/ChRlbmdpbmVf",
-            "Y29uZmlndXJhdGlvbhgDIAEoCzIhLmNvbW11bmljYXRvci5FbmdpbmVDb25m",
-            "aWd1cmF0aW9uEiYKB2NvbW1hbmQYBCABKA4yFS5jb21tdW5pY2F0b3IuQ29t",
-            "bWFuZBo7Cg9MaXN0QWdlbnRBY3Rpb24SKAoFdmFsdWUYASADKAsyGS5jb21t",
-            "dW5pY2F0b3IuQWdlbnRBY3Rpb24aXwoRQWdlbnRBY3Rpb25zRW50cnkSCwoD",
-            "a2V5GAEgASgJEjkKBXZhbHVlGAIgASgLMiouY29tbXVuaWNhdG9yLlVuaXR5",
-            "UkxJbnB1dC5MaXN0QWdlbnRBY3Rpb246AjgBQhiqAhVNTEFnZW50cy5Db21t",
-            "dW5pY2F0b3JiBnByb3RvMw=="));
+            "YXRvchofY29tbXVuaWNhdG9yL2FnZW50X2FjdGlvbi5wcm90bxopY29tbXVu",
+            "aWNhdG9yL2Vudmlyb25tZW50X3BhcmFtZXRlcnMucHJvdG8aGmNvbW11bmlj",
+            "YXRvci9jb21tYW5kLnByb3RvIvMCCgxVbml0eVJMSW5wdXQSQwoNYWdlbnRf",
+            "YWN0aW9ucxgBIAMoCzIsLmNvbW11bmljYXRvci5Vbml0eVJMSW5wdXQuQWdl",
+            "bnRBY3Rpb25zRW50cnkSQwoWZW52aXJvbm1lbnRfcGFyYW1ldGVycxgCIAEo",
+            "CzIjLmNvbW11bmljYXRvci5FbnZpcm9ubWVudFBhcmFtZXRlcnMSEwoLaXNf",
+            "dHJhaW5pbmcYAyABKAgSJgoHY29tbWFuZBgEIAEoDjIVLmNvbW11bmljYXRv",
+            "ci5Db21tYW5kGjsKD0xpc3RBZ2VudEFjdGlvbhIoCgV2YWx1ZRgBIAMoCzIZ",
+            "LmNvbW11bmljYXRvci5BZ2VudEFjdGlvbhpfChFBZ2VudEFjdGlvbnNFbnRy",
+            "eRILCgNrZXkYASABKAkSOQoFdmFsdWUYAiABKAsyKi5jb21tdW5pY2F0b3Iu",
+            "VW5pdHlSTElucHV0Lkxpc3RBZ2VudEFjdGlvbjoCOAFCGKoCFU1MQWdlbnRz",
+            "LkNvbW11bmljYXRvcmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.Communicator.AgentActionReflection.Descriptor, global::MLAgents.Communicator.EngineConfigurationReflection.Descriptor, global::MLAgents.Communicator.EnvironmentParametersReflection.Descriptor, global::MLAgents.Communicator.CommandReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.Communicator.AgentActionReflection.Descriptor, global::MLAgents.Communicator.EnvironmentParametersReflection.Descriptor, global::MLAgents.Communicator.CommandReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.UnityRLInput), global::MLAgents.Communicator.UnityRLInput.Parser, new[]{ "AgentActions", "EnvironmentParameters", "EngineConfiguration", "Command" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.UnityRLInput.Types.ListAgentAction), global::MLAgents.Communicator.UnityRLInput.Types.ListAgentAction.Parser, new[]{ "Value" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.UnityRLInput), global::MLAgents.Communicator.UnityRLInput.Parser, new[]{ "AgentActions", "EnvironmentParameters", "IsTraining", "Command" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.UnityRLInput.Types.ListAgentAction), global::MLAgents.Communicator.UnityRLInput.Types.ListAgentAction.Parser, new[]{ "Value" }, null, null, null),
             null, })
           }));
     }
@@ -77,7 +75,7 @@ namespace MLAgents.Communicator {
     public UnityRLInput(UnityRLInput other) : this() {
       agentActions_ = other.agentActions_.Clone();
       EnvironmentParameters = other.environmentParameters_ != null ? other.EnvironmentParameters.Clone() : null;
-      EngineConfiguration = other.engineConfiguration_ != null ? other.EngineConfiguration.Clone() : null;
+      isTraining_ = other.isTraining_;
       command_ = other.command_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -108,14 +106,14 @@ namespace MLAgents.Communicator {
       }
     }
 
-    /// <summary>Field number for the "engine_configuration" field.</summary>
-    public const int EngineConfigurationFieldNumber = 3;
-    private global::MLAgents.Communicator.EngineConfiguration engineConfiguration_;
+    /// <summary>Field number for the "is_training" field.</summary>
+    public const int IsTrainingFieldNumber = 3;
+    private bool isTraining_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::MLAgents.Communicator.EngineConfiguration EngineConfiguration {
-      get { return engineConfiguration_; }
+    public bool IsTraining {
+      get { return isTraining_; }
       set {
-        engineConfiguration_ = value;
+        isTraining_ = value;
       }
     }
 
@@ -145,7 +143,7 @@ namespace MLAgents.Communicator {
       }
       if (!AgentActions.Equals(other.AgentActions)) return false;
       if (!object.Equals(EnvironmentParameters, other.EnvironmentParameters)) return false;
-      if (!object.Equals(EngineConfiguration, other.EngineConfiguration)) return false;
+      if (IsTraining != other.IsTraining) return false;
       if (Command != other.Command) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -155,7 +153,7 @@ namespace MLAgents.Communicator {
       int hash = 1;
       hash ^= AgentActions.GetHashCode();
       if (environmentParameters_ != null) hash ^= EnvironmentParameters.GetHashCode();
-      if (engineConfiguration_ != null) hash ^= EngineConfiguration.GetHashCode();
+      if (IsTraining != false) hash ^= IsTraining.GetHashCode();
       if (Command != 0) hash ^= Command.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -175,9 +173,9 @@ namespace MLAgents.Communicator {
         output.WriteRawTag(18);
         output.WriteMessage(EnvironmentParameters);
       }
-      if (engineConfiguration_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(EngineConfiguration);
+      if (IsTraining != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(IsTraining);
       }
       if (Command != 0) {
         output.WriteRawTag(32);
@@ -195,8 +193,8 @@ namespace MLAgents.Communicator {
       if (environmentParameters_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(EnvironmentParameters);
       }
-      if (engineConfiguration_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(EngineConfiguration);
+      if (IsTraining != false) {
+        size += 1 + 1;
       }
       if (Command != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Command);
@@ -219,11 +217,8 @@ namespace MLAgents.Communicator {
         }
         EnvironmentParameters.MergeFrom(other.EnvironmentParameters);
       }
-      if (other.engineConfiguration_ != null) {
-        if (engineConfiguration_ == null) {
-          engineConfiguration_ = new global::MLAgents.Communicator.EngineConfiguration();
-        }
-        EngineConfiguration.MergeFrom(other.EngineConfiguration);
+      if (other.IsTraining != false) {
+        IsTraining = other.IsTraining;
       }
       if (other.Command != 0) {
         Command = other.Command;
@@ -250,11 +245,8 @@ namespace MLAgents.Communicator {
             input.ReadMessage(environmentParameters_);
             break;
           }
-          case 26: {
-            if (engineConfiguration_ == null) {
-              engineConfiguration_ = new global::MLAgents.Communicator.EngineConfiguration();
-            }
-            input.ReadMessage(engineConfiguration_);
+          case 24: {
+            IsTraining = input.ReadBool();
             break;
           }
           case 32: {

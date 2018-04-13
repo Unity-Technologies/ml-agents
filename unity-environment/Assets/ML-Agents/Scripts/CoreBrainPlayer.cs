@@ -28,7 +28,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         public float value;
     }
 
-    MLAgents.BrainBatcher brainBatcher;
+    MLAgents.Batcher brainBatcher;
 
     [SerializeField]
     [Tooltip("The list of keys and the value they correspond to for continuous control.")]
@@ -52,7 +52,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
 
     /// Nothing to implement
     /// Nothing to implement
-    public void InitializeCoreBrain(MLAgents.BrainBatcher brainBatcher)
+    public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
     {
         if ((brainBatcher == null)
             || (!broadcast))

@@ -1,21 +1,23 @@
 import atexit
 import glob
-import json
+import io
 import logging
 import numpy as np
 import os
-import socket
 import subprocess
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
-from communicator import UnityRLInput, UnityRLOutput, AgentAction
+from communicator import UnityRLInput, UnityRLOutput, AgentAction, EngineConfiguration, EnvironmentParameters
 
 from .grpc_communicator import GrpcCommunicator
+from .socket_communicator import SocketCommunicator
+
 
 from sys import platform
+from PIL import Image
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("unityagents")
@@ -24,9 +26,7 @@ logger = logging.getLogger("unityagents")
 class UnityEnvironment(object):
     def __init__(self, file_name, worker_id=0,
                  base_port=5005, curriculum=None,
-                 seed=0, docker_training=False,
-                 communication = "grpc",
-                 in_editor=True):
+                 seed=0, docker_training=False):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -45,10 +45,10 @@ class UnityEnvironment(object):
         self._loaded = False
         self.proc1 = None
 
-        if communication == "grpc":
-            self.communicator = GrpcCommunicator(worker_id, base_port)
+        self.communicator = GrpcCommunicator(worker_id, base_port)
+        # self.communicator = SocketCommunicator(worker_id, base_port)
 
-        if not in_editor:
+        if file_name != 'editor':
             cwd = os.getcwd()
             file_name = (file_name.strip()
                          .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
@@ -124,15 +124,12 @@ class UnityEnvironment(object):
                                              shell=True)
         self._loaded = True
         try:
-            p = self.communicator.get_academy_parameters()
+            aca_params = self.communicator.get_academy_parameters()
         except UnityEnvironmentException:
             self.close()
             raise
         # TODO : think of a better way to expose the academyParameters
-        if "apiNumber" not in p:
-            self._unity_version = "API-1"
-        else:
-            self._unity_version = p["apiNumber"]
+        self._unity_version = aca_params.version
         if self._unity_version != self._version_:
             raise UnityEnvironmentException(
                 "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
@@ -140,17 +137,34 @@ class UnityEnvironment(object):
                 "of ML-Agents.".format(self._version_, self._unity_version))
         self._n_agents = {}
         self._global_done = None
-        self._academy_name = p["AcademyName"]
-        self._log_path = p["logPath"]
+        self._academy_name = aca_params.name
+        self._log_path = aca_params.log_path
         self._brains = {}
-        self._brain_names = p["brainNames"]
-        self._external_brain_names = p["externalBrainNames"]
-        self._external_brain_names = [] if self._external_brain_names is None else self._external_brain_names
+        self._brain_names = []
+        self._external_brain_names = []
+        for brain_param in aca_params.brain_parameters:
+            self._brain_names += [brain_param.brain_name]
+            resolution = [{
+                "height": x.height,
+                "width": x.width,
+                "blackAndWhite": x.gray_scale
+            } for x in brain_param.camera_resolutions]
+            self._brains[brain_param.brain_name] = \
+                BrainParameters(brain_param.brain_name, {
+                    "vectorObservationSize": brain_param.vector_observation_size,
+                    "numStackedVectorObservations": brain_param.num_stacked_vector_observations,
+                    "cameraResolutions": resolution,
+                    "vectorActionSize": brain_param.vector_action_size,
+                    "vectorActionDescriptions": brain_param.vector_action_descriptions,
+                    "vectorActionSpaceType": brain_param.vector_action_space_type,
+                    "vectorObservationSpaceType": brain_param.vector_observation_space_type
+                })
+            if brain_param.brain_type == 2:
+                self._external_brain_names += [brain_param.brain_name]
         self._num_brains = len(self._brain_names)
         self._num_external_brains = len(self._external_brain_names)
-        self._resetParameters = p["resetParameters"]
+        self._resetParameters = dict(aca_params.environment_parameters.float_parameters) # TODO
         self._curriculum = Curriculum(curriculum, self._resetParameters)
-        self._brains = self.communicator._brains
         logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
         if self._num_external_brains == 0:
             logger.warning(" No External Brains found in the Unity Environment. "
@@ -310,7 +324,7 @@ class UnityEnvironment(object):
                     text_action[b] = [""] * n_agent
                 else:
                     if text_action[b] is None:
-                        text_action[b] = []
+                        text_action[b] = [""] * n_agent
                     if isinstance(text_action[b], str):
                         text_action[b] = [text_action[b]] * n_agent
                 if not ((len(text_action[b]) == n_agent) or len(text_action[b]) == 0):
@@ -348,8 +362,8 @@ class UnityEnvironment(object):
         Sends a shutdown signal to the unity environment, and closes the socket connection.
         """
         if self._loaded:
-            if self.proc1 is not None:
-                self.proc1.kill()
+            # if self.proc1 is not None:
+            #     self.proc1.kill()
             self.communicator.close()
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
@@ -374,6 +388,51 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
+    @staticmethod
+    def _bytes_to_array(image_bytes, gray_scale):
+        s = bytearray(image_bytes)
+        image = Image.open(io.BytesIO(s))
+        s = np.array(image) / 255.0
+        if gray_scale:
+            s = np.mean(s, axis=2)
+            s = np.reshape(s, [s.shape[0], s.shape[1], 1])
+        return s
+
+    # def _aca_param_to_p(self, aca_params):
+    #     p = {}
+    #     self._brain_names = []
+    #     self._brains = {}
+    #     external_brain_names = []
+    #     for brain_param in aca_params.brain_parameters:
+    #         self._brain_names += [brain_param.brain_name]
+    #         resolution = [{
+    #             "height": x.height,
+    #             "width": x.width,
+    #             "blackAndWhite": x.gray_scale
+    #         } for x in brain_param.camera_resolutions]
+    #         self._brains[brain_param.brain_name] = \
+    #             BrainParameters(brain_param.brain_name, {
+    #                 "vectorObservationSize": brain_param.vector_observation_size,
+    #                 "numStackedVectorObservations": brain_param.num_stacked_vector_observations,
+    #                 "cameraResolutions": resolution,
+    #                 "vectorActionSize": brain_param.vector_action_size,
+    #                 "vectorActionDescriptions": brain_param.vector_action_descriptions,
+    #                 "vectorActionSpaceType": brain_param.vector_action_space_type,
+    #                 "vectorObservationSpaceType": brain_param.vector_observation_space_type
+    #             })
+    #         if brain_param.brain_type == 2:
+    #             external_brain_names += [brain_param.brain_name]
+    #     self._log_path = ''  # TODO : Change
+    #
+    #     p["apiNumber"] = aca_params.version
+    #     p["AcademyName"] = aca_params.name
+    #     p["logPath"] = self._log_path
+    #     p["brainNames"] = self._brain_names
+    #     p["externalBrainNames"] = external_brain_names
+    #     p["brainParameters"] = self._brains
+    #     p["resetParameters"] = {}
+    #     return p
+
     def _get_state(self, output: UnityRLOutput) -> (AllBrainInfo, bool):
         """
         Collects experience information from all external brains in environment at current step.
@@ -383,42 +442,47 @@ class UnityEnvironment(object):
         global_done = output.global_done
         for b in output.agentInfos:
             agent_info_list = output.agentInfos[b].value
-            vector_obs = [x.stacked_vector_observation for x in agent_info_list]
-            rewa = [x.reward for x in agent_info_list]
-            loc_done = [x.done for x in agent_info_list]
-            max_step = [x.max_step_reached for x in agent_info_list]
-            prev_action = [x.stored_vector_actions for x in agent_info_list]
-            agents = [x.id for x in agent_info_list]
-            # TODO : Visual Observations
-            _data[b] = BrainInfo([],
-                                 np.array(vector_obs),
-                                 [],
-                                 np.array([]),
-                                 rewa,
-                                 agents,
-                                 loc_done,
-                                 np.array(prev_action),
-                                 [],
-                                 max_step
-                                 )
-        # print("_get_state was called : "+str(_data.keys()) +"   " + str(global_done))
-        # print(_data['Ball3DBrain'].vector_observations)
+            vis_obs = []
+            for i in range(self.brains[b].number_visual_observations):
+                obs = [
+                    self._bytes_to_array(x.visual_observations[i], self.brains[b].camera_resolutions[i]['blackAndWhite'])
+                    for x in agent_info_list]
+                vis_obs += [np.array(obs)]
+            _data[b] = BrainInfo(
+                visual_observation=vis_obs,
+                vector_observation=np.array([x.stacked_vector_observation for x in agent_info_list]),
+                text_observations=[x.text_observation for x in agent_info_list],
+                memory=np.array([x.memories for x in agent_info_list]),
+                reward=[x.reward for x in agent_info_list],
+                agents=[x.id for x in agent_info_list],
+                local_done=[x.done for x in agent_info_list],
+                vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
+                text_action=[x.stored_text_actions for x in agent_info_list],
+                max_reached=[x.max_step_reached for x in agent_info_list]
+                )
         return _data, global_done
 
     def _generate_step_input(self, vector_action, memory, text_action) -> UnityRLInput:
         _u_i = UnityRLInput()
-        # TODO
         for b in vector_action:
-            _a_s = self._brains[b].vector_action_space_size
-            # print(_a_s)
-            for i in range(int(len(vector_action[b]) / _a_s)):
-                action = AgentAction(vector_actions = vector_action[b][i*_a_s : (i+1)*_a_s])
+            n_agents = self._n_agents[b]
+            _a_s = len(vector_action[b]) // n_agents
+            _m_s = len(memory[b]) // n_agents
+            for i in range(n_agents):
+                action = AgentAction(
+                    vector_actions=vector_action[b][i*_a_s: (i+1)*_a_s],
+                    memories=memory[b][i*_m_s: (i+1)*_m_s],
+                    text_actions=text_action[b][i]
+                )
                 _u_i.agent_actions[b].value.extend([action])
         _u_i.command = 0
         return _u_i
 
     def _generate_reset_input(self, training, config) -> UnityRLInput:
         _u_i = UnityRLInput()
+        _u_i.is_training = training
+        _u_i.environment_parameters.CopyFrom(EnvironmentParameters())
+        for key in config:
+            _u_i.environment_parameters.float_parameters[key] = config[key]
         _u_i.command = 1
-        # TODO
         return _u_i

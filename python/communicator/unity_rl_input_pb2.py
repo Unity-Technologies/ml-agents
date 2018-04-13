@@ -14,7 +14,6 @@ _sym_db = _symbol_database.Default()
 
 
 from communicator import agent_action_pb2 as communicator_dot_agent__action__pb2
-from communicator import engine_configuration_pb2 as communicator_dot_engine__configuration__pb2
 from communicator import environment_parameters_pb2 as communicator_dot_environment__parameters__pb2
 from communicator import command_pb2 as communicator_dot_command__pb2
 
@@ -23,9 +22,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='communicator/unity_rl_input.proto',
   package='communicator',
   syntax='proto3',
-  serialized_pb=_b('\n!communicator/unity_rl_input.proto\x12\x0c\x63ommunicator\x1a\x1f\x63ommunicator/agent_action.proto\x1a\'communicator/engine_configuration.proto\x1a)communicator/environment_parameters.proto\x1a\x1a\x63ommunicator/command.proto\"\x9f\x03\n\x0cUnityRLInput\x12\x43\n\ragent_actions\x18\x01 \x03(\x0b\x32,.communicator.UnityRLInput.AgentActionsEntry\x12\x43\n\x16\x65nvironment_parameters\x18\x02 \x01(\x0b\x32#.communicator.EnvironmentParameters\x12?\n\x14\x65ngine_configuration\x18\x03 \x01(\x0b\x32!.communicator.EngineConfiguration\x12&\n\x07\x63ommand\x18\x04 \x01(\x0e\x32\x15.communicator.Command\x1a;\n\x0fListAgentAction\x12(\n\x05value\x18\x01 \x03(\x0b\x32\x19.communicator.AgentAction\x1a_\n\x11\x41gentActionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x39\n\x05value\x18\x02 \x01(\x0b\x32*.communicator.UnityRLInput.ListAgentAction:\x02\x38\x01\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
+  serialized_pb=_b('\n!communicator/unity_rl_input.proto\x12\x0c\x63ommunicator\x1a\x1f\x63ommunicator/agent_action.proto\x1a)communicator/environment_parameters.proto\x1a\x1a\x63ommunicator/command.proto\"\xf3\x02\n\x0cUnityRLInput\x12\x43\n\ragent_actions\x18\x01 \x03(\x0b\x32,.communicator.UnityRLInput.AgentActionsEntry\x12\x43\n\x16\x65nvironment_parameters\x18\x02 \x01(\x0b\x32#.communicator.EnvironmentParameters\x12\x13\n\x0bis_training\x18\x03 \x01(\x08\x12&\n\x07\x63ommand\x18\x04 \x01(\x0e\x32\x15.communicator.Command\x1a;\n\x0fListAgentAction\x12(\n\x05value\x18\x01 \x03(\x0b\x32\x19.communicator.AgentAction\x1a_\n\x11\x41gentActionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x39\n\x05value\x18\x02 \x01(\x0b\x32*.communicator.UnityRLInput.ListAgentAction:\x02\x38\x01\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
   ,
-  dependencies=[communicator_dot_agent__action__pb2.DESCRIPTOR,communicator_dot_engine__configuration__pb2.DESCRIPTOR,communicator_dot_environment__parameters__pb2.DESCRIPTOR,communicator_dot_command__pb2.DESCRIPTOR,])
+  dependencies=[communicator_dot_agent__action__pb2.DESCRIPTOR,communicator_dot_environment__parameters__pb2.DESCRIPTOR,communicator_dot_command__pb2.DESCRIPTOR,])
 
 
 
@@ -56,8 +55,8 @@ _UNITYRLINPUT_LISTAGENTACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=456,
-  serialized_end=515,
+  serialized_start=371,
+  serialized_end=430,
 )
 
 _UNITYRLINPUT_AGENTACTIONSENTRY = _descriptor.Descriptor(
@@ -93,8 +92,8 @@ _UNITYRLINPUT_AGENTACTIONSENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=517,
-  serialized_end=612,
+  serialized_start=432,
+  serialized_end=527,
 )
 
 _UNITYRLINPUT = _descriptor.Descriptor(
@@ -119,9 +118,9 @@ _UNITYRLINPUT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='engine_configuration', full_name='communicator.UnityRLInput.engine_configuration', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='is_training', full_name='communicator.UnityRLInput.is_training', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -144,8 +143,8 @@ _UNITYRLINPUT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=197,
-  serialized_end=612,
+  serialized_start=156,
+  serialized_end=527,
 )
 
 _UNITYRLINPUT_LISTAGENTACTION.fields_by_name['value'].message_type = communicator_dot_agent__action__pb2._AGENTACTION
@@ -154,7 +153,6 @@ _UNITYRLINPUT_AGENTACTIONSENTRY.fields_by_name['value'].message_type = _UNITYRLI
 _UNITYRLINPUT_AGENTACTIONSENTRY.containing_type = _UNITYRLINPUT
 _UNITYRLINPUT.fields_by_name['agent_actions'].message_type = _UNITYRLINPUT_AGENTACTIONSENTRY
 _UNITYRLINPUT.fields_by_name['environment_parameters'].message_type = communicator_dot_environment__parameters__pb2._ENVIRONMENTPARAMETERS
-_UNITYRLINPUT.fields_by_name['engine_configuration'].message_type = communicator_dot_engine__configuration__pb2._ENGINECONFIGURATION
 _UNITYRLINPUT.fields_by_name['command'].enum_type = communicator_dot_command__pb2._COMMAND
 DESCRIPTOR.message_types_by_name['UnityRLInput'] = _UNITYRLINPUT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)

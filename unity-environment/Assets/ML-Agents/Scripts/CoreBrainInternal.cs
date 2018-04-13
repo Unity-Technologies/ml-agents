@@ -40,7 +40,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     }
 
-    MLAgents.BrainBatcher brainBatcher;
+    MLAgents.Batcher brainBatcher;
 
     [Tooltip("This must be the bytes file corresponding to the pretrained Tensorflow graph.")]
     /// Modify only in inspector : Reference to the Graph asset
@@ -91,7 +91,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     }
 
     /// Loads the tensorflow graph model to generate a TFGraph object
-    public void InitializeCoreBrain(MLAgents.BrainBatcher brainBatcher)
+    public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
     {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID

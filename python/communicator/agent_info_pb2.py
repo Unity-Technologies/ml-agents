@@ -13,16 +13,14 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-from communicator import visual_observation_pb2 as communicator_dot_visual__observation__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='communicator/agent_info.proto',
   package='communicator',
   syntax='proto3',
-  serialized_pb=_b('\n\x1d\x63ommunicator/agent_info.proto\x12\x0c\x63ommunicator\x1a%communicator/visual_observation.proto\"\xb5\x02\n\tAgentInfo\x12\x1a\n\x12vector_observation\x18\x01 \x03(\x02\x12\"\n\x1astacked_vector_observation\x18\x02 \x03(\x02\x12<\n\x13visual_observations\x18\x03 \x03(\x0b\x32\x1f.communicator.VisualObservation\x12\x18\n\x10text_observation\x18\x04 \x01(\t\x12\x1d\n\x15stored_vector_actions\x18\x05 \x03(\x02\x12\x1b\n\x13stored_text_actions\x18\x06 \x01(\t\x12\x10\n\x08memories\x18\x07 \x03(\x02\x12\x0e\n\x06reward\x18\x08 \x01(\x02\x12\x0c\n\x04\x64one\x18\t \x01(\x08\x12\x18\n\x10max_step_reached\x18\n \x01(\x08\x12\n\n\x02id\x18\x0b \x01(\x05\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
-  ,
-  dependencies=[communicator_dot_visual__observation__pb2.DESCRIPTOR,])
+  serialized_pb=_b('\n\x1d\x63ommunicator/agent_info.proto\x12\x0c\x63ommunicator\"\x94\x02\n\tAgentInfo\x12\x1a\n\x12vector_observation\x18\x01 \x03(\x02\x12\"\n\x1astacked_vector_observation\x18\x02 \x03(\x02\x12\x1b\n\x13visual_observations\x18\x03 \x03(\x0c\x12\x18\n\x10text_observation\x18\x04 \x01(\t\x12\x1d\n\x15stored_vector_actions\x18\x05 \x03(\x02\x12\x1b\n\x13stored_text_actions\x18\x06 \x01(\t\x12\x10\n\x08memories\x18\x07 \x03(\x02\x12\x0e\n\x06reward\x18\x08 \x01(\x02\x12\x0c\n\x04\x64one\x18\t \x01(\x08\x12\x18\n\x10max_step_reached\x18\n \x01(\x08\x12\n\n\x02id\x18\x0b \x01(\x05\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
+)
 
 
 
@@ -50,7 +48,7 @@ _AGENTINFO = _descriptor.Descriptor(
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='visual_observations', full_name='communicator.AgentInfo.visual_observations', index=2,
-      number=3, type=11, cpp_type=10, label=3,
+      number=3, type=12, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -123,11 +121,10 @@ _AGENTINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=87,
-  serialized_end=396,
+  serialized_start=48,
+  serialized_end=324,
 )
 
-_AGENTINFO.fields_by_name['visual_observations'].message_type = communicator_dot_visual__observation__pb2._VISUALOBSERVATION
 DESCRIPTOR.message_types_by_name['AgentInfo'] = _AGENTINFO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

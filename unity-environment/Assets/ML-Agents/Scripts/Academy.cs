@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -162,7 +165,9 @@ public abstract class Academy : MonoBehaviour
 
     /// Pointer to the communicator currently in use by the Academy.
     //MLAgents.Communicator.Communicator communicator;
-    MLAgents.BrainBatcher brainBatcher;
+    MLAgents.Batcher brainBatcher;
+    StreamWriter logWriter;
+    string logPath;
 
 
     // Flag used to keep track of the first time the Academy is reset.
@@ -263,7 +268,7 @@ public abstract class Academy : MonoBehaviour
         // TODO : Figure Out communicator and Brain Batcher
         // Check for existence of communicator
 
-        brainBatcher = new MLAgents.BrainBatcher(communicator);
+        brainBatcher = new MLAgents.Batcher(communicator);
         //if (!communicator.CommunicatorHandShake())
         //{
         //    communicator = null;
@@ -287,21 +292,29 @@ public abstract class Academy : MonoBehaviour
             {
                 BrainParameters bp = brain.brainParameters;
                 academyParameters.BrainParameters.Add(
-                    new MLAgents.Communicator.BrainParameters
-                    {
-                    VectorObservationSize = bp.vectorObservationSize,
-                    NumStackedVectorObservations = bp.numStackedVectorObservations,
-                    VectorActionSize = bp.vectorActionSize,
-                    //TODO : Resolution
-                    //TODO : Action Description
-                    VectorActionSpaceType = (MLAgents.Communicator.SpaceType)bp.vectorActionSpaceType,
-                    VectorObservationSpaceType = (MLAgents.Communicator.SpaceType)bp.vectorObservationSpaceType,
-                    BrainName = brain.gameObject.name,
-                    BrainType = (MLAgents.Communicator.BrainType)brain.brainType
-                    });
+                    MLAgents.Batcher.BrainParametersConvertor(
+                        bp,
+                        brain.gameObject.name,
+                        (MLAgents.Communicator.BrainType)brain.brainType));
+
+            }
+            academyParameters.EnvironmentParameters =
+                new MLAgents.Communicator.EnvironmentParameters();
+            foreach (string key in resetParameters.Keys)
+            {
+                academyParameters.EnvironmentParameters.FloatParameters.Add(
+                    key, resetParameters[key]
+                );
             }
             brainBatcher.GiveAcademyParameters(academyParameters);
             //communicator.Initialize(academyParameters);
+            Application.logMessageReceived += HandleLog;
+            logPath = Path.GetFullPath(".") + "/unity-environment.log";
+            logWriter = new StreamWriter(logPath, false);
+            logWriter.WriteLine(System.DateTime.Now.ToString());
+            logWriter.WriteLine(" ");
+            logWriter.Close();
+
         }
 
         // If a communicator is enabled/provided, then we assume we are in
@@ -319,6 +332,15 @@ public abstract class Academy : MonoBehaviour
         // Configure the environment using the configurations provided by
         // the developer in the Editor.
         ConfigureEnvironment();
+    }
+
+    void HandleLog(string logString, string stackTrace, LogType type)
+    {
+        logWriter = new StreamWriter(logPath, true);
+        logWriter.WriteLine(type.ToString());
+        logWriter.WriteLine(logString);
+        logWriter.WriteLine(stackTrace);
+        logWriter.Close();
     }
 
     /// <summary>
@@ -508,8 +530,7 @@ public abstract class Academy : MonoBehaviour
                         resetParameters[kv.Key] = kv.Value;
                     }
                 }
-
-
+                SetIsInference(!brainBatcher.GetIsTraining());
 
                 ForcedFullReset();
                 //communicator.SetCommand(ExternalCommand.STEP);

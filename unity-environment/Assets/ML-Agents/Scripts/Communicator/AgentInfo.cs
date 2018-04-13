@@ -25,17 +25,15 @@ namespace MLAgents.Communicator {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch1jb21tdW5pY2F0b3IvYWdlbnRfaW5mby5wcm90bxIMY29tbXVuaWNhdG9y",
-            "GiVjb21tdW5pY2F0b3IvdmlzdWFsX29ic2VydmF0aW9uLnByb3RvIrUCCglB",
-            "Z2VudEluZm8SGgoSdmVjdG9yX29ic2VydmF0aW9uGAEgAygCEiIKGnN0YWNr",
-            "ZWRfdmVjdG9yX29ic2VydmF0aW9uGAIgAygCEjwKE3Zpc3VhbF9vYnNlcnZh",
-            "dGlvbnMYAyADKAsyHy5jb21tdW5pY2F0b3IuVmlzdWFsT2JzZXJ2YXRpb24S",
-            "GAoQdGV4dF9vYnNlcnZhdGlvbhgEIAEoCRIdChVzdG9yZWRfdmVjdG9yX2Fj",
-            "dGlvbnMYBSADKAISGwoTc3RvcmVkX3RleHRfYWN0aW9ucxgGIAEoCRIQCght",
-            "ZW1vcmllcxgHIAMoAhIOCgZyZXdhcmQYCCABKAISDAoEZG9uZRgJIAEoCBIY",
-            "ChBtYXhfc3RlcF9yZWFjaGVkGAogASgIEgoKAmlkGAsgASgFQhiqAhVNTEFn",
-            "ZW50cy5Db21tdW5pY2F0b3JiBnByb3RvMw=="));
+            "IpQCCglBZ2VudEluZm8SGgoSdmVjdG9yX29ic2VydmF0aW9uGAEgAygCEiIK",
+            "GnN0YWNrZWRfdmVjdG9yX29ic2VydmF0aW9uGAIgAygCEhsKE3Zpc3VhbF9v",
+            "YnNlcnZhdGlvbnMYAyADKAwSGAoQdGV4dF9vYnNlcnZhdGlvbhgEIAEoCRId",
+            "ChVzdG9yZWRfdmVjdG9yX2FjdGlvbnMYBSADKAISGwoTc3RvcmVkX3RleHRf",
+            "YWN0aW9ucxgGIAEoCRIQCghtZW1vcmllcxgHIAMoAhIOCgZyZXdhcmQYCCAB",
+            "KAISDAoEZG9uZRgJIAEoCBIYChBtYXhfc3RlcF9yZWFjaGVkGAogASgIEgoK",
+            "AmlkGAsgASgFQhiqAhVNTEFnZW50cy5Db21tdW5pY2F0b3JiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.Communicator.VisualObservationReflection.Descriptor, },
+          new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.AgentInfo), global::MLAgents.Communicator.AgentInfo.Parser, new[]{ "VectorObservation", "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id" }, null, null, null)
           }));
@@ -110,11 +108,11 @@ namespace MLAgents.Communicator {
 
     /// <summary>Field number for the "visual_observations" field.</summary>
     public const int VisualObservationsFieldNumber = 3;
-    private static readonly pb::FieldCodec<global::MLAgents.Communicator.VisualObservation> _repeated_visualObservations_codec
-        = pb::FieldCodec.ForMessage(26, global::MLAgents.Communicator.VisualObservation.Parser);
-    private readonly pbc::RepeatedField<global::MLAgents.Communicator.VisualObservation> visualObservations_ = new pbc::RepeatedField<global::MLAgents.Communicator.VisualObservation>();
+    private static readonly pb::FieldCodec<pb::ByteString> _repeated_visualObservations_codec
+        = pb::FieldCodec.ForBytes(26);
+    private readonly pbc::RepeatedField<pb::ByteString> visualObservations_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::MLAgents.Communicator.VisualObservation> VisualObservations {
+    public pbc::RepeatedField<pb::ByteString> VisualObservations {
       get { return visualObservations_; }
     }
 

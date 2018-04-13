@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -203,7 +203,7 @@ public class Brain : MonoBehaviour
     }
 
     /// This is called by the Academy at the start of the environemnt.
-    public void InitializeBrain(Academy aca, MLAgents.BrainBatcher brainBatcher)
+    public void InitializeBrain(Academy aca, MLAgents.Batcher brainBatcher)
     {
         UpdateCoreBrains();
         coreBrain.InitializeCoreBrain(brainBatcher);

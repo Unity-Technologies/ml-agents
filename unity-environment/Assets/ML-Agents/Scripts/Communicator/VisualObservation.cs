@@ -25,13 +25,12 @@ namespace MLAgents.Communicator {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiVjb21tdW5pY2F0b3IvdmlzdWFsX29ic2VydmF0aW9uLnByb3RvEgxjb21t",
-            "dW5pY2F0b3IiVQoRVmlzdWFsT2JzZXJ2YXRpb24SDQoFd2lkdGgYASABKAUS",
-            "DgoGaGVpZ2h0GAIgASgFEhIKCmdyYXlfc2NhbGUYAyABKAgSDQoFdmFsdWUY",
-            "BCADKAVCGKoCFU1MQWdlbnRzLkNvbW11bmljYXRvcmIGcHJvdG8z"));
+            "dW5pY2F0b3IiJAoRVmlzdWFsT2JzZXJ2YXRpb24SDwoHdGV4dHVyZRgBIAMo",
+            "DEIYqgIVTUxBZ2VudHMuQ29tbXVuaWNhdG9yYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.VisualObservation), global::MLAgents.Communicator.VisualObservation.Parser, new[]{ "Width", "Height", "GrayScale", "Value" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.VisualObservation), global::MLAgents.Communicator.VisualObservation.Parser, new[]{ "Texture" }, null, null, null)
           }));
     }
     #endregion
@@ -63,10 +62,7 @@ namespace MLAgents.Communicator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public VisualObservation(VisualObservation other) : this() {
-      width_ = other.width_;
-      height_ = other.height_;
-      grayScale_ = other.grayScale_;
-      value_ = other.value_.Clone();
+      texture_ = other.texture_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -75,47 +71,14 @@ namespace MLAgents.Communicator {
       return new VisualObservation(this);
     }
 
-    /// <summary>Field number for the "width" field.</summary>
-    public const int WidthFieldNumber = 1;
-    private int width_;
+    /// <summary>Field number for the "texture" field.</summary>
+    public const int TextureFieldNumber = 1;
+    private static readonly pb::FieldCodec<pb::ByteString> _repeated_texture_codec
+        = pb::FieldCodec.ForBytes(10);
+    private readonly pbc::RepeatedField<pb::ByteString> texture_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Width {
-      get { return width_; }
-      set {
-        width_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "height" field.</summary>
-    public const int HeightFieldNumber = 2;
-    private int height_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Height {
-      get { return height_; }
-      set {
-        height_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "gray_scale" field.</summary>
-    public const int GrayScaleFieldNumber = 3;
-    private bool grayScale_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool GrayScale {
-      get { return grayScale_; }
-      set {
-        grayScale_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "value" field.</summary>
-    public const int ValueFieldNumber = 4;
-    private static readonly pb::FieldCodec<int> _repeated_value_codec
-        = pb::FieldCodec.ForInt32(34);
-    private readonly pbc::RepeatedField<int> value_ = new pbc::RepeatedField<int>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<int> Value {
-      get { return value_; }
+    public pbc::RepeatedField<pb::ByteString> Texture {
+      get { return texture_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -131,20 +94,14 @@ namespace MLAgents.Communicator {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Width != other.Width) return false;
-      if (Height != other.Height) return false;
-      if (GrayScale != other.GrayScale) return false;
-      if(!value_.Equals(other.value_)) return false;
+      if(!texture_.Equals(other.texture_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Width != 0) hash ^= Width.GetHashCode();
-      if (Height != 0) hash ^= Height.GetHashCode();
-      if (GrayScale != false) hash ^= GrayScale.GetHashCode();
-      hash ^= value_.GetHashCode();
+      hash ^= texture_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -158,19 +115,7 @@ namespace MLAgents.Communicator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Width != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(Width);
-      }
-      if (Height != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Height);
-      }
-      if (GrayScale != false) {
-        output.WriteRawTag(24);
-        output.WriteBool(GrayScale);
-      }
-      value_.WriteTo(output, _repeated_value_codec);
+      texture_.WriteTo(output, _repeated_texture_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -179,16 +124,7 @@ namespace MLAgents.Communicator {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Width != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Width);
-      }
-      if (Height != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Height);
-      }
-      if (GrayScale != false) {
-        size += 1 + 1;
-      }
-      size += value_.CalculateSize(_repeated_value_codec);
+      size += texture_.CalculateSize(_repeated_texture_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -200,16 +136,7 @@ namespace MLAgents.Communicator {
       if (other == null) {
         return;
       }
-      if (other.Width != 0) {
-        Width = other.Width;
-      }
-      if (other.Height != 0) {
-        Height = other.Height;
-      }
-      if (other.GrayScale != false) {
-        GrayScale = other.GrayScale;
-      }
-      value_.Add(other.value_);
+      texture_.Add(other.texture_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -221,21 +148,8 @@ namespace MLAgents.Communicator {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            Width = input.ReadInt32();
-            break;
-          }
-          case 16: {
-            Height = input.ReadInt32();
-            break;
-          }
-          case 24: {
-            GrayScale = input.ReadBool();
-            break;
-          }
-          case 34:
-          case 32: {
-            value_.AddEntriesFrom(input, _repeated_value_codec);
+          case 10: {
+            texture_.AddEntriesFrom(input, _repeated_texture_codec);
             break;
           }
         }

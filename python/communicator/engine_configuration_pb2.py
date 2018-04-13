@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='communicator/engine_configuration.proto',
   package='communicator',
   syntax='proto3',
-  serialized_pb=_b('\n\'communicator/engine_configuration.proto\x12\x0c\x63ommunicator\"z\n\x13\x45ngineConfiguration\x12\r\n\x05width\x18\x01 \x01(\x05\x12\x0e\n\x06height\x18\x02 \x01(\x05\x12\x15\n\rquality_level\x18\x03 \x01(\x05\x12\x12\n\ntime_scale\x18\x04 \x01(\x02\x12\x19\n\x11target_frame_rate\x18\x05 \x01(\x05\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
+  serialized_pb=_b('\n\'communicator/engine_configuration.proto\x12\x0c\x63ommunicator\"\x90\x01\n\x13\x45ngineConfiguration\x12\r\n\x05width\x18\x01 \x01(\x05\x12\x0e\n\x06height\x18\x02 \x01(\x05\x12\x15\n\rquality_level\x18\x03 \x01(\x05\x12\x12\n\ntime_scale\x18\x04 \x01(\x02\x12\x19\n\x11target_frame_rate\x18\x05 \x01(\x05\x12\x14\n\x0cshow_monitor\x18\x06 \x01(\x08\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
 )
 
 
@@ -67,6 +67,13 @@ _ENGINECONFIGURATION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='show_monitor', full_name='communicator.EngineConfiguration.show_monitor', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -79,8 +86,8 @@ _ENGINECONFIGURATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=57,
-  serialized_end=179,
+  serialized_start=58,
+  serialized_end=202,
 )
 
 DESCRIPTOR.message_types_by_name['EngineConfiguration'] = _ENGINECONFIGURATION

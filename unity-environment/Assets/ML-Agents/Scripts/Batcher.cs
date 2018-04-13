@@ -6,7 +6,7 @@ using Google.Protobuf;
 namespace MLAgents
 {
 
-    public class BrainBatcher
+    public class Batcher
     {
         const int NUM_AGENTS = 32;
         Dictionary<string, bool> hasSentState = new Dictionary<string, bool>();
@@ -19,11 +19,12 @@ namespace MLAgents
         bool academyDone;
         Communicator.Command command = Communicator.Command.Reset;
         Communicator.EnvironmentParameters environmentParameters;
+        bool isTraining;
 
         // TO delete
         //Academy academy;
 
-        public BrainBatcher(Communicator.Communicator communicator)
+        public Batcher(Communicator.Communicator communicator)
         {
             this.communicator = communicator;
             // This needs to disapear, the done flag of the academy should be accessible by everything
@@ -37,6 +38,7 @@ namespace MLAgents
             communicator.Initialize(academyParameters, out input);
             command = input.Command;
             environmentParameters = input.EnvironmentParameters;
+            isTraining = input.IsTraining;
         }
 
         /// <summary>
@@ -60,6 +62,11 @@ namespace MLAgents
             return environmentParameters;
         }
 
+        public bool GetIsTraining()
+        {
+            return isTraining;
+        }
+
         /// <summary>
         /// Adds the brain to the list of brains which have already decided their
         /// actions.
@@ -78,18 +85,56 @@ namespace MLAgents
         /// </summary>
         /// <returns>The Proto agentInfo.</returns>
         /// <param name="info">The AgentInfo to convert.</param>
-        private static Communicator.AgentInfo AgentInfoConvertor(AgentInfo info)
+        public static Communicator.AgentInfo AgentInfoConvertor(AgentInfo info)
         {
+
             Communicator.AgentInfo ai = new Communicator.AgentInfo();
             ai.VectorObservation.AddRange(info.vectorObservation);
             ai.StackedVectorObservation.AddRange(info.stackedVectorObservation);
             ai.StoredVectorActions.AddRange(info.storedVectorActions);
+            ai.Memories.AddRange(info.memories);
+            ai.StoredTextActions = info.storedTextActions;
+            ai.TextObservation = info.textObservation;
+            foreach (Texture2D obs in info.visualObservations)
+            {
+                ai.VisualObservations.Add(
+                    ByteString.CopyFrom(obs.EncodeToJPG())
+                );
+            }
             //TODO : Visual Observations, memories and text action
             ai.Reward = info.reward;
             ai.MaxStepReached = info.maxStepReached;
             ai.Done = info.done;
             ai.Id = info.id;
             return ai;
+        }
+
+        public static Communicator.BrainParameters BrainParametersConvertor(
+            BrainParameters bp, string name, Communicator.BrainType type)
+        {
+
+            Communicator.BrainParameters brainParameters = new Communicator.BrainParameters
+            {
+                VectorObservationSize = bp.vectorObservationSize,
+                NumStackedVectorObservations = bp.numStackedVectorObservations,
+                VectorActionSize = bp.vectorActionSize,
+                VectorActionSpaceType = (Communicator.SpaceType)bp.vectorActionSpaceType,
+                VectorObservationSpaceType = (Communicator.SpaceType)bp.vectorObservationSpaceType,
+                BrainName = name,
+                BrainType = type
+            };
+            brainParameters.VectorActionDescriptions.AddRange(bp.vectorActionDescriptions);
+            foreach (resolution res in bp.cameraResolutions)
+            {
+                brainParameters.CameraResolutions.Add(
+                    new Communicator.Resolution
+                    {
+                        Width = res.width,
+                        Height = res.height,
+                        GrayScale = res.blackAndWhite
+                    });
+                                                  }
+            return brainParameters;
         }
 
         /// <summary>
@@ -100,7 +145,6 @@ namespace MLAgents
         public void GiveBrainInfo(string brainKey, Dictionary<Agent, AgentInfo> agentInfo)
         {
             //TODO : Find a way to remove this academy
-
 
 
 
@@ -117,7 +161,6 @@ namespace MLAgents
             }
             if (currentAgents[brainKey].Count > 0)
             {
-
                 //Communicator.UnityOutput.Types.ListAgentInfo listAgentInfo =
                 //new Communicator.UnityOutput.Types.ListAgentInfo();
                 unityOutput.AgentInfos[brainKey].Value.Clear();
@@ -135,7 +178,6 @@ namespace MLAgents
                 {
                     if (hasSentState.Values.Any(x => x) || academyDone)
                     {
-                        //Debug.Log("Received the new input");
                         var input = communicator.SendOuput(unityOutput);
 
                         if (input == null)
@@ -146,6 +188,7 @@ namespace MLAgents
 
                         command = input.Command;
                         environmentParameters = input.EnvironmentParameters;
+                        isTraining = input.IsTraining;
 
                         // TODO : Send the actions of the input to the agents
                         if (input.AgentActions != null)

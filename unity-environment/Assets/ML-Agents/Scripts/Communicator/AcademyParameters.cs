@@ -26,14 +26,17 @@ namespace MLAgents.Communicator {
           string.Concat(
             "CiVjb21tdW5pY2F0b3IvYWNhZGVteV9wYXJhbWV0ZXJzLnByb3RvEgxjb21t",
             "dW5pY2F0b3IaI2NvbW11bmljYXRvci9icmFpbl9wYXJhbWV0ZXJzLnByb3Rv",
-            "InwKEUFjYWRlbXlQYXJhbWV0ZXJzEgwKBG5hbWUYASABKAkSDwoHdmVyc2lv",
-            "bhgCIAEoCRIPCgdsb2dQYXRoGAMgASgJEjcKEGJyYWluX3BhcmFtZXRlcnMY",
-            "BSADKAsyHS5jb21tdW5pY2F0b3IuQnJhaW5QYXJhbWV0ZXJzQhiqAhVNTEFn",
-            "ZW50cy5Db21tdW5pY2F0b3JiBnByb3RvMw=="));
+            "Giljb21tdW5pY2F0b3IvZW52aXJvbm1lbnRfcGFyYW1ldGVycy5wcm90byLC",
+            "AQoRQWNhZGVteVBhcmFtZXRlcnMSDAoEbmFtZRgBIAEoCRIPCgd2ZXJzaW9u",
+            "GAIgASgJEhAKCGxvZ19wYXRoGAMgASgJEjcKEGJyYWluX3BhcmFtZXRlcnMY",
+            "BSADKAsyHS5jb21tdW5pY2F0b3IuQnJhaW5QYXJhbWV0ZXJzEkMKFmVudmly",
+            "b25tZW50X3BhcmFtZXRlcnMYBiABKAsyIy5jb21tdW5pY2F0b3IuRW52aXJv",
+            "bm1lbnRQYXJhbWV0ZXJzQhiqAhVNTEFnZW50cy5Db21tdW5pY2F0b3JiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.Communicator.BrainParametersReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.Communicator.BrainParametersReflection.Descriptor, global::MLAgents.Communicator.EnvironmentParametersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.AcademyParameters), global::MLAgents.Communicator.AcademyParameters.Parser, new[]{ "Name", "Version", "LogPath", "BrainParameters" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.Communicator.AcademyParameters), global::MLAgents.Communicator.AcademyParameters.Parser, new[]{ "Name", "Version", "LogPath", "BrainParameters", "EnvironmentParameters" }, null, null, null)
           }));
     }
     #endregion
@@ -72,6 +75,7 @@ namespace MLAgents.Communicator {
       version_ = other.version_;
       logPath_ = other.logPath_;
       brainParameters_ = other.brainParameters_.Clone();
+      EnvironmentParameters = other.environmentParameters_ != null ? other.EnvironmentParameters.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -102,7 +106,7 @@ namespace MLAgents.Communicator {
       }
     }
 
-    /// <summary>Field number for the "logPath" field.</summary>
+    /// <summary>Field number for the "log_path" field.</summary>
     public const int LogPathFieldNumber = 3;
     private string logPath_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -123,6 +127,17 @@ namespace MLAgents.Communicator {
       get { return brainParameters_; }
     }
 
+    /// <summary>Field number for the "environment_parameters" field.</summary>
+    public const int EnvironmentParametersFieldNumber = 6;
+    private global::MLAgents.Communicator.EnvironmentParameters environmentParameters_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.Communicator.EnvironmentParameters EnvironmentParameters {
+      get { return environmentParameters_; }
+      set {
+        environmentParameters_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as AcademyParameters);
@@ -140,6 +155,7 @@ namespace MLAgents.Communicator {
       if (Version != other.Version) return false;
       if (LogPath != other.LogPath) return false;
       if(!brainParameters_.Equals(other.brainParameters_)) return false;
+      if (!object.Equals(EnvironmentParameters, other.EnvironmentParameters)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -150,6 +166,7 @@ namespace MLAgents.Communicator {
       if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (LogPath.Length != 0) hash ^= LogPath.GetHashCode();
       hash ^= brainParameters_.GetHashCode();
+      if (environmentParameters_ != null) hash ^= EnvironmentParameters.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -176,6 +193,10 @@ namespace MLAgents.Communicator {
         output.WriteString(LogPath);
       }
       brainParameters_.WriteTo(output, _repeated_brainParameters_codec);
+      if (environmentParameters_ != null) {
+        output.WriteRawTag(50);
+        output.WriteMessage(EnvironmentParameters);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -194,6 +215,9 @@ namespace MLAgents.Communicator {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(LogPath);
       }
       size += brainParameters_.CalculateSize(_repeated_brainParameters_codec);
+      if (environmentParameters_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(EnvironmentParameters);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -215,6 +239,12 @@ namespace MLAgents.Communicator {
         LogPath = other.LogPath;
       }
       brainParameters_.Add(other.brainParameters_);
+      if (other.environmentParameters_ != null) {
+        if (environmentParameters_ == null) {
+          environmentParameters_ = new global::MLAgents.Communicator.EnvironmentParameters();
+        }
+        EnvironmentParameters.MergeFrom(other.EnvironmentParameters);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -240,6 +270,13 @@ namespace MLAgents.Communicator {
           }
           case 42: {
             brainParameters_.AddEntriesFrom(input, _repeated_brainParameters_codec);
+            break;
+          }
+          case 50: {
+            if (environmentParameters_ == null) {
+              environmentParameters_ = new global::MLAgents.Communicator.EnvironmentParameters();
+            }
+            input.ReadMessage(environmentParameters_);
             break;
           }
         }

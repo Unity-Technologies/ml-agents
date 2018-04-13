@@ -14,15 +14,16 @@ _sym_db = _symbol_database.Default()
 
 
 from communicator import brain_parameters_pb2 as communicator_dot_brain__parameters__pb2
+from communicator import environment_parameters_pb2 as communicator_dot_environment__parameters__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='communicator/academy_parameters.proto',
   package='communicator',
   syntax='proto3',
-  serialized_pb=_b('\n%communicator/academy_parameters.proto\x12\x0c\x63ommunicator\x1a#communicator/brain_parameters.proto\"|\n\x11\x41\x63\x61\x64\x65myParameters\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0f\n\x07logPath\x18\x03 \x01(\t\x12\x37\n\x10\x62rain_parameters\x18\x05 \x03(\x0b\x32\x1d.communicator.BrainParametersB\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
+  serialized_pb=_b('\n%communicator/academy_parameters.proto\x12\x0c\x63ommunicator\x1a#communicator/brain_parameters.proto\x1a)communicator/environment_parameters.proto\"\xc2\x01\n\x11\x41\x63\x61\x64\x65myParameters\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x10\n\x08log_path\x18\x03 \x01(\t\x12\x37\n\x10\x62rain_parameters\x18\x05 \x03(\x0b\x32\x1d.communicator.BrainParameters\x12\x43\n\x16\x65nvironment_parameters\x18\x06 \x01(\x0b\x32#.communicator.EnvironmentParametersB\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
   ,
-  dependencies=[communicator_dot_brain__parameters__pb2.DESCRIPTOR,])
+  dependencies=[communicator_dot_brain__parameters__pb2.DESCRIPTOR,communicator_dot_environment__parameters__pb2.DESCRIPTOR,])
 
 
 
@@ -49,7 +50,7 @@ _ACADEMYPARAMETERS = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='logPath', full_name='communicator.AcademyParameters.logPath', index=2,
+      name='log_path', full_name='communicator.AcademyParameters.log_path', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -59,6 +60,13 @@ _ACADEMYPARAMETERS = _descriptor.Descriptor(
       name='brain_parameters', full_name='communicator.AcademyParameters.brain_parameters', index=3,
       number=5, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='environment_parameters', full_name='communicator.AcademyParameters.environment_parameters', index=4,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -74,11 +82,12 @@ _ACADEMYPARAMETERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=92,
-  serialized_end=216,
+  serialized_start=136,
+  serialized_end=330,
 )
 
 _ACADEMYPARAMETERS.fields_by_name['brain_parameters'].message_type = communicator_dot_brain__parameters__pb2._BRAINPARAMETERS
+_ACADEMYPARAMETERS.fields_by_name['environment_parameters'].message_type = communicator_dot_environment__parameters__pb2._ENVIRONMENTPARAMETERS
 DESCRIPTOR.message_types_by_name['AcademyParameters'] = _ACADEMYPARAMETERS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

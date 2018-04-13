@@ -456,6 +456,8 @@ public abstract class Agent : MonoBehaviour
             action.vectorActions = new float[1];
             info.storedVectorActions = new float[1];
         }
+        if (info.textObservation==null)
+            info.textObservation = "";
         action.textActions = "";
         info.memories = new List<float>();
         action.memories = new List<float>();
