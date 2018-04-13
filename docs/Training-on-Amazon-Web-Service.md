@@ -23,7 +23,7 @@ To verify that all steps worked correctly:
 
 1. In the Unity Editor, load a project containing an ML-Agents environment (you can use one of the example environments if you have not created your own).
 2. Open the Build Settings window (menu: File > Build Settings).
-3. Select Linux as the Target Platform, and x64_86 as the target architecture.
+3. Select Linux as the Target Platform, and x86_64 as the target architecture.
 4. Check Headless Mode (unless you have enabled a virtual screen following the instructions below).
 5. Click Build to build the Unity environment executable.
 6. Upload the executable to your EC2 instance.

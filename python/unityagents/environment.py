@@ -398,41 +398,6 @@ class UnityEnvironment(object):
             s = np.reshape(s, [s.shape[0], s.shape[1], 1])
         return s
 
-    # def _aca_param_to_p(self, aca_params):
-    #     p = {}
-    #     self._brain_names = []
-    #     self._brains = {}
-    #     external_brain_names = []
-    #     for brain_param in aca_params.brain_parameters:
-    #         self._brain_names += [brain_param.brain_name]
-    #         resolution = [{
-    #             "height": x.height,
-    #             "width": x.width,
-    #             "blackAndWhite": x.gray_scale
-    #         } for x in brain_param.camera_resolutions]
-    #         self._brains[brain_param.brain_name] = \
-    #             BrainParameters(brain_param.brain_name, {
-    #                 "vectorObservationSize": brain_param.vector_observation_size,
-    #                 "numStackedVectorObservations": brain_param.num_stacked_vector_observations,
-    #                 "cameraResolutions": resolution,
-    #                 "vectorActionSize": brain_param.vector_action_size,
-    #                 "vectorActionDescriptions": brain_param.vector_action_descriptions,
-    #                 "vectorActionSpaceType": brain_param.vector_action_space_type,
-    #                 "vectorObservationSpaceType": brain_param.vector_observation_space_type
-    #             })
-    #         if brain_param.brain_type == 2:
-    #             external_brain_names += [brain_param.brain_name]
-    #     self._log_path = ''  # TODO : Change
-    #
-    #     p["apiNumber"] = aca_params.version
-    #     p["AcademyName"] = aca_params.name
-    #     p["logPath"] = self._log_path
-    #     p["brainNames"] = self._brain_names
-    #     p["externalBrainNames"] = external_brain_names
-    #     p["brainParameters"] = self._brains
-    #     p["resetParameters"] = {}
-    #     return p
-
     def _get_state(self, output: UnityRLOutput) -> (AllBrainInfo, bool):
         """
         Collects experience information from all external brains in environment at current step.

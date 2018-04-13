@@ -154,15 +154,15 @@ If you would like to contribute environments, please see our
 ![Banana](images/banana.png)
 
 * Set-up: A multi-agent environment where agents compete to collect bananas. 
-* Goal: The agents must learn to move to as many yellow bananas as possible while avoiding red bananas.
-* Agents: The environment contains 10 agents linked to a single brain.
+* Goal: The agents must learn to move to as many yellow bananas as possible while avoiding blue bananas.
+* Agents: The environment contains 5 agents linked to a single brain.
 * Agent Reward Function (independent): 
     * +1 for interaction with yellow banana
-    * -1 for interaction with red banana.
+    * -1 for interaction with blue banana.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 51 corresponding to velocity of agent, plus ray-based perception of objects around agent's forward direction.
+    * Vector Observation space: (Continuous) 53 corresponding to velocity of agent (2), whether agent is frozen and/or shot its laser (2), plus ray-based perception of objects around agent's forward direction (49; 7 raycast angles with 7 measurements for each).
     * Vector Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
-    * Visual Observations (Optional): First-person view for each agent. 
+    * Visual Observations (Optional; None by default): First-person view for each agent. 
 * Reset Parameters: None
 
 ## Hallway
