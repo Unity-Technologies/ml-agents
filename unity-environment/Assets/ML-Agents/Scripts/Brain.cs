@@ -88,8 +88,8 @@ public class Brain : MonoBehaviour
 {
     private bool isInitialized = false;
 
-    private Dictionary<Agent, AgentInfo> agentInfos =
-        new Dictionary<Agent, AgentInfo>(1024);
+    private Dictionary<AgentInfo, AgentAction> agentRequests =
+        new Dictionary<AgentInfo, AgentAction>(1024);
 
     [Tooltip("Define state, observation, and action spaces for the Brain.")]
     /**< \brief Defines brain specific parameters such as the state size*/
@@ -211,34 +211,31 @@ public class Brain : MonoBehaviour
         isInitialized = true;
     }
 
-    public void SendState(Agent agent, AgentInfo info)
+    public void Request(AgentInfo info, AgentAction action)
     {
-        // If the brain is not active or not properly initialized, an error is
-        // thrown.
         if (!gameObject.activeSelf)
         {
             throw new UnityAgentsException(
-                string.Format("Agent {0} tried to request an action " +
-                "from brain {1} but it is not active.",
-                             agent.gameObject.name, gameObject.name));
+                string.Format("Attempt to request an action " +
+                "from brain {1} but it is not active.", 
+                              gameObject.name));
         }
         else if (!isInitialized)
         {
             throw new UnityAgentsException(
-                string.Format("Agent {0} tried to request an action " +
+                string.Format("Attempt to request an action " +
                 "from brain {1} but it was not initialized.",
-                             agent.gameObject.name, gameObject.name));
+                              gameObject.name));
         }
         else
         {
-            agentInfos.Add(agent, info);
+            agentRequests.Add(info, action);
         }
-
     }
 
     void DecideAction()
     {
-        coreBrain.DecideAction(agentInfos);
-        agentInfos.Clear();
+        coreBrain.DecideAction(agentRequests);
+        agentRequests.Clear();
     }
 }

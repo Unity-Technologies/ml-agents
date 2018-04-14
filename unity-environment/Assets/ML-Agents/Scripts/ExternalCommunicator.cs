@@ -16,7 +16,8 @@ public class ExternalCommunicator : Communicator
     ExternalCommand command = ExternalCommand.QUIT;
     Academy academy;
 
-    Dictionary<string, List<Agent>> current_agents;
+    IEnumerable<AgentInfo> agentInfos;
+    Dictionary<string, List<AgentAction>> agentActions;
 
     List<Brain> brains;
     Dictionary<string, bool> hasSentState;
@@ -81,7 +82,8 @@ public class ExternalCommunicator : Communicator
     {
         academy = aca;
         brains = new List<Brain>();
-        current_agents = new Dictionary<string, List<Agent>>();
+        agentInfos = new List<AgentInfo>();
+        agentActions = new Dictionary<string, List<AgentAction>>();
 
         hasSentState = new Dictionary<string, bool>();
         triedSendState = new Dictionary<string, bool>();
@@ -163,7 +165,7 @@ public class ExternalCommunicator : Communicator
         // Issue : This assumes all brains are broadcasting.
         foreach (string k in accParamerters.brainNames)
         {
-            current_agents[k] = new List<Agent>(defaultNumAgents);
+            agentActions[k] = new List<AgentAction>(defaultNumAgents);
             hasSentState[k] = false;
             triedSendState[k] = false;
         }
@@ -301,18 +303,19 @@ public class ExternalCommunicator : Communicator
     }
 
     /// Collects the information from the brains and sends it accross the socket
-    public void GiveBrainInfo(Brain brain, Dictionary<Agent, AgentInfo> agentInfo)
+    public void GiveBrainInfo(Brain brain, Dictionary<AgentInfo, AgentAction> agentRequest)
     {
         var brainName = brain.gameObject.name;
         triedSendState[brainName] = true;
 
 
-        current_agents[brainName].Clear();
-        foreach (Agent agent in agentInfo.Keys)
+        agentActions[brainName].Clear();
+        agentInfos = agentRequest.Keys;
+        foreach (AgentInfo info in agentInfos)
         {
-            current_agents[brainName].Add(agent);
+            agentActions[brainName].Add(agentRequest[info]);
         }
-        if (current_agents[brainName].Count() > 0)
+        if (agentActions[brainName].Count() > 0)
         {
             hasSentState[brainName] = true;
             sMessage.brain_name = brainName;
@@ -327,26 +330,26 @@ public class ExternalCommunicator : Communicator
             sMessage.textObservations.Clear();
 
             int memorySize = 0;
-            foreach (Agent agent in current_agents[brainName])
+            foreach (AgentInfo info in agentInfos)
             {
-                memorySize = Mathf.Max(agentInfo[agent].memories.Count, memorySize);
+                memorySize = Mathf.Max(info.memories.Count, memorySize);
             }
 
-            foreach (Agent agent in current_agents[brainName])
+            foreach (AgentInfo info in agentInfos)
             {
-                sMessage.agents.Add(agentInfo[agent].id);
-                sMessage.vectorObservations.AddRange(agentInfo[agent].stackedVectorObservation);
-                sMessage.rewards.Add(agentInfo[agent].reward);
-                sMessage.memories.AddRange(agentInfo[agent].memories);
-                for (int j = 0; j < memorySize - agentInfo[agent].memories.Count; j++)
+                sMessage.agents.Add(info.id);
+                sMessage.vectorObservations.AddRange(info.stackedVectorObservation);
+                sMessage.rewards.Add(info.reward);
+                sMessage.memories.AddRange(info.memories);
+                for (int j = 0; j < memorySize - info.memories.Count; j++)
                 {
                     sMessage.memories.Add(0f);
                 }
-                sMessage.dones.Add(agentInfo[agent].done);
-                sMessage.previousVectorActions.AddRange(agentInfo[agent].storedVectorActions.ToList());
-                sMessage.previousTextActions.Add(agentInfo[agent].storedTextActions);
-                sMessage.maxes.Add(agentInfo[agent].maxStepReached);
-                sMessage.textObservations.Add(agentInfo[agent].textObservation);
+                sMessage.dones.Add(info.done);
+                sMessage.previousVectorActions.AddRange(info.storedVectorActions);
+                sMessage.previousTextActions.Add(info.storedTextActions);
+                sMessage.maxes.Add(info.maxStepReached);
+                sMessage.textObservations.Add(info.textObservation);
 
             }
 
@@ -358,9 +361,9 @@ public class ExternalCommunicator : Communicator
             int i = 0;
             foreach (resolution res in brain.brainParameters.cameraResolutions)
             {
-                foreach (Agent agent in current_agents[brainName])
+                foreach (AgentInfo info in agentInfos)
                 {
-                    sender.Send(AppendLength(TexToByteArray(agentInfo[agent].visualObservations[i])));
+                    sender.Send(AppendLength(TexToByteArray(info.visualObservations[i])));
                     Receive();
                 }
                 i++;
@@ -383,7 +386,7 @@ public class ExternalCommunicator : Communicator
                 }
             }
 
-            foreach (string k in current_agents.Keys)
+            foreach (string k in agentActions.Keys)
             {
                 hasSentState[k] = false;
                 triedSendState[k] = false;
@@ -416,37 +419,38 @@ public class ExternalCommunicator : Communicator
             {
                 var brainName = brain.gameObject.name;
 
-                if (current_agents[brainName].Count() == 0)
+                if (agentActions[brainName].Count() == 0)
                 {
                     continue;
                 }
-                var memorySize = rMessage.memory[brainName].Count() / current_agents[brainName].Count();
+                var memorySize = rMessage.memory[brainName].Count() / agentActions[brainName].Count();
 
-                for (int i = 0; i < current_agents[brainName].Count(); i++)
+                for (int i = 0; i < agentActions[brainName].Count(); i++)
                 {
                     if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
                     {
-                        current_agents[brainName][i].UpdateVectorAction(rMessage.vector_action[brainName].GetRange(
-                            i * brain.brainParameters.vectorActionSize, brain.brainParameters.vectorActionSize).ToArray());
+                        agentActions[brainName][i].vectorActions =
+                            rMessage.vector_action[brainName].GetRange(
+                                i * brain.brainParameters.vectorActionSize, brain.brainParameters.vectorActionSize).ToArray();
                     }
                     else
                     {
-                        current_agents[brainName][i].UpdateVectorAction(rMessage.vector_action[brainName].GetRange(i, 1).ToArray());
+                        agentActions[brainName][i].vectorActions =
+                            rMessage.vector_action[brainName].GetRange(i, 1).ToArray();
 
                     }
 
-                    current_agents[brainName][i].UpdateMemoriesAction(
-                        rMessage.memory[brainName].GetRange(i * memorySize, memorySize));
+                    agentActions[brainName][i].memories =
+                        rMessage.memory[brainName].GetRange(i * memorySize, memorySize);
 
                     if (rMessage.text_action[brainName].Count > 0)
-                        current_agents[brainName][i].UpdateTextAction(rMessage.text_action[brainName][i]);
-
+                    {
+                        agentActions[brainName][i].textActions =
+                                                      rMessage.text_action[brainName][i];
+                    }
                 }
 
             }
         }
     }
-
-
-
 }

@@ -44,11 +44,11 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
     }
 
     /// Uses the Decision Component to decide that action to take
-    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
+    public void DecideAction(Dictionary<AgentInfo, AgentAction> agentRequest)
     {
         if (coord!=null)
         {
-            coord.GiveBrainInfo(brain, agentInfo);
+            coord.GiveBrainInfo(brain, agentRequest);
         }
 
         if (decision == null)
@@ -56,25 +56,27 @@ public class CoreBrainHeuristic : ScriptableObject, CoreBrain
             throw new UnityAgentsException("The Brain is set to Heuristic, but no decision script attached to it");
         }
 
-        foreach (Agent agent in agentInfo.Keys)
+        foreach (AgentInfo info in agentRequest.Keys)
         {
-            agent.UpdateVectorAction(decision.Decide(
-                agentInfo[agent].stackedVectorObservation,
-                agentInfo[agent].visualObservations,
-                agentInfo[agent].reward,
-                agentInfo[agent].done,
-                agentInfo[agent].memories));
+            agentRequest[info].vectorActions = 
+                decision.Decide(
+                    info.stackedVectorObservation,
+                    info.visualObservations,
+                    info.reward,
+                    info.done,
+                    info.memories);
             
         }
 
-        foreach (Agent agent in agentInfo.Keys)
+        foreach (AgentInfo info in agentRequest.Keys)
         {
-            agent.UpdateMemoriesAction(decision.MakeMemory(
-                agentInfo[agent].stackedVectorObservation,
-                agentInfo[agent].visualObservations,
-                agentInfo[agent].reward,
-                agentInfo[agent].done,
-                agentInfo[agent].memories));
+            agentRequest[info].memories = 
+                decision.MakeMemory(
+                    info.stackedVectorObservation,
+                    info.visualObservations,
+                    info.reward,
+                    info.done,
+                    info.memories);
         }
     }
 

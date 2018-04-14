@@ -3,10 +3,10 @@ using UnityEngine;
 
 
 /// <summary>
-/// Struct that contains all the information for an Agent, including its 
+/// Class that contains all the information for an Agent, including its 
 /// observations, actions and current status, that is sent to the Brain.
 /// </summary>
-public struct AgentInfo
+public class AgentInfo
 {
     /// <summary>
     /// Most recent agent vector (i.e. numeric) observation.
@@ -71,14 +71,16 @@ public struct AgentInfo
 }
 
 /// <summary>
-/// Struct that contains the action information sent from the Brain to the 
-/// Agent.
+/// Class that contains the action information sent from the Brain to the 
+/// Agent. The AgentAction is a reference that enables the brain to directly
+/// modify its values.
 /// </summary>
-public struct AgentAction
+public class AgentAction
 {
     public float[] vectorActions;
     public string textActions;
     public List<float> memories;
+
 }
 
 /// <summary>
@@ -200,10 +202,10 @@ public abstract class Agent : MonoBehaviour
     public AgentParameters agentParameters;
 
     /// Current Agent information (message sent to Brain).
-    AgentInfo info;
+    AgentInfo info = new AgentInfo();
 
     /// Current Agent action (message sent from Brain).
-    AgentAction action;
+    AgentAction action = new AgentAction();
 
     /// Represents the reward the agent accumulated during the current step.
     /// It is reset to 0 at the beginning of every step.
@@ -563,7 +565,7 @@ public abstract class Agent : MonoBehaviour
         info.maxStepReached = maxStepReached;
         info.id = id;
 
-        brain.SendState(this, info);
+        brain.Request(info, action);
         info.textObservation = "";
     }
 
@@ -728,33 +730,6 @@ public abstract class Agent : MonoBehaviour
         ResetData();
         stepCount = 0;
         AgentReset();
-    }
-
-    /// <summary>
-    /// Updates the vector action.
-    /// </summary>
-    /// <param name="vectorActions">Vector actions.</param>
-    public void UpdateVectorAction(float[] vectorActions)
-    {
-        action.vectorActions = vectorActions;
-    }
-
-    /// <summary>
-    /// Updates the memories action.
-    /// </summary>
-    /// <param name="memories">Memories.</param>
-    public void UpdateMemoriesAction(List<float> memories)
-    {
-        action.memories = memories;
-    }
-
-    /// <summary>
-    /// Updates the text action.
-    /// </summary>
-    /// <param name="textActions">Text actions.</param>
-    public void UpdateTextAction(string textActions)
-    {
-        action.textActions = textActions;
     }
 
     /// <summary>

@@ -161,15 +161,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     /// Uses the stored information to run the tensorflow graph and generate 
     /// the actions.
-    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
+    public void DecideAction(Dictionary<AgentInfo, AgentAction> agentRequest)
     {
 #if ENABLE_TENSORFLOW
         if (coord != null)
         {
-            coord.GiveBrainInfo(brain, agentInfo);
+            coord.GiveBrainInfo(brain, agentRequest);
         }
-        int currentBatchSize = agentInfo.Count();
-        List<Agent> agentList = agentInfo.Keys.ToList();
+        int currentBatchSize = agentRequest.Count();
+        List<AgentInfo> agentInfoList = agentRequest.Keys.ToList();
         if (currentBatchSize == 0)
         {
             return;
@@ -187,9 +187,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             inputState = new float[currentBatchSize, stateLength * brain.brainParameters.numStackedVectorObservations];
 
             var i = 0;
-            foreach (Agent agent in agentList)
+            foreach (AgentInfo info in agentInfoList)
             {
-                List<float> state_list = agentInfo[agent].stackedVectorObservation;
+                List<float> state_list = info.stackedVectorObservation;
                 for (int j = 0; j < brain.brainParameters.vectorObservationSize * brain.brainParameters.numStackedVectorObservations; j++)
                 {
                     inputState[i, j] = state_list[j];
@@ -203,9 +203,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             inputPrevAction = new int[currentBatchSize];
             var i = 0;
-            foreach (Agent agent in agentList)
+            foreach (AgentInfo info in agentInfoList)
             {
-                float[] action_list = agentInfo[agent].storedVectorActions;
+                float[] action_list = info.storedVectorActions;
                 inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
                 i++;
             }
@@ -215,8 +215,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         observationMatrixList.Clear();
         for (int observationIndex = 0; observationIndex < brain.brainParameters.cameraResolutions.Count(); observationIndex++){
             texturesHolder.Clear();
-            foreach (Agent agent in agentList){
-                texturesHolder.Add(agentInfo[agent].visualObservations[observationIndex]);
+            foreach (AgentInfo info in agentRequest.Keys)
+            {
+                texturesHolder.Add(info.visualObservations[observationIndex]);
             }
             observationMatrixList.Add(
                 BatchVisualObservations(texturesHolder, brain.brainParameters.cameraResolutions[observationIndex].blackAndWhite));
@@ -229,9 +230,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             // Need to have variable memory size
             inputOldMemories = new float[currentBatchSize, memorySize];
             var i = 0;
-            foreach (Agent agent in agentList)
+            foreach (AgentInfo info in agentInfoList)
             {
-                float[] m = agentInfo[agent].memories.ToArray();
+                float[] m = info.memories.ToArray();
                 for (int j = 0; j < m.Count(); j++)
                 {
                     inputOldMemories[i, j] = m[j];
@@ -342,14 +343,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
             float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
 
             var i = 0;
-            foreach (Agent agent in agentList)
+            foreach (AgentInfo info in agentInfoList)
             {
                 var m = new float[memorySize];
                 for (int j = 0; j < memorySize; j++)
                 {
                     m[j] = recurrent_tensor[i, j];
                 }
-                agent.UpdateMemoriesAction(m.ToList());
+                //agent.UpdateMemoriesAction(m.ToList());
+                agentRequest[info].memories = m.ToList();
                 i++;
             }
 
@@ -359,14 +361,15 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             var output = networkOutput[0].GetValue() as float[,];
             var i = 0;
-            foreach (Agent agent in agentList)
+            foreach (AgentInfo info in agentInfoList)
             {
                 var a = new float[brain.brainParameters.vectorActionSize];
                 for (int j = 0; j < brain.brainParameters.vectorActionSize; j++)
                 {
                     a[j] = output[i, j];
                 }
-                agent.UpdateVectorAction(a);
+                agentRequest[info].vectorActions = a;
+                //agent.UpdateVectorAction(a);
                 i++;
             }
         }
@@ -374,10 +377,11 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
         {
             long[,] output = networkOutput[0].GetValue() as long[,];
             var i = 0;
-            foreach (Agent agent in agentList)
+            foreach (AgentInfo info in agentInfoList)
             {
                 var a = new float[1] { (float)(output[i, 0]) };
-                agent.UpdateVectorAction(a);
+                agentRequest[info].vectorActions = a;
+                //agent.UpdateVectorAction(a);
                 i++;
             }
         }
@@ -386,7 +390,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
 
 #else
-        if (agentInfo.Count > 0)
+        if (agentRequest.Count > 0)
         {
             throw new UnityAgentsException(string.Format(@"The brain {0} was set to Internal but the Tensorflow 
                         library is not present in the Unity project.",

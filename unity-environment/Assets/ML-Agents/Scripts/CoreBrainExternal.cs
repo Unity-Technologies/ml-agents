@@ -38,11 +38,11 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
 
     /// Uses the communicator to retrieve the actions, memories and values and
     ///  sends them to the agents
-    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
+    public void DecideAction(Dictionary<AgentInfo, AgentAction> agentRequest)
     {
         if (coord != null)
         {
-            coord.GiveBrainInfo(brain, agentInfo);
+            coord.GiveBrainInfo(brain, agentRequest);
         }
         return ;
     }
