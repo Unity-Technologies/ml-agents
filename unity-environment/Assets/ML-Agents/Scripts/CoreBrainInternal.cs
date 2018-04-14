@@ -525,9 +525,9 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                     Color32 currentPixel = cc[h * width + w];
                     if (!BlackAndWhite)
                     {
-                        result[b, textures[b].height - h - 1, w, 0] = currentPixel.r;
-                        result[b, textures[b].height - h - 1, w, 1] = currentPixel.g;
-                        result[b, textures[b].height - h - 1, w, 2] = currentPixel.b;
+                        result[b, textures[b].height - h - 1, w, 0] = currentPixel.r / 255.0f;
+                        result[b, textures[b].height - h - 1, w, 1] = currentPixel.g / 255.0f;
+                        result[b, textures[b].height - h - 1, w, 2] = currentPixel.b / 255.0f;
                     }
                     else
                     {
