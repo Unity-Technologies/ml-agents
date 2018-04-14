@@ -58,7 +58,7 @@ If you'd like to use Docker for ML-Agents, please follow
 
 ## Unity Packages
 
-You can download the [TensorFlowSharp plugin](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) as a Unity package.
+You can download the [TensorFlowSharp](Background-TensorFlow.md#tensorflowsharp) plugin as a Unity package [here](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage).
 
 ## Help
 
