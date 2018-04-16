@@ -511,7 +511,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     /// height corresponds to the height of the texture,
     /// width corresponds to the width of the texture,
     /// channel corresponds to the number of channels extracted from the
-    /// input textures (based on the input BlackAndWhite flag
+    /// input textures (based on the input blackAndWhite flag
     /// (3 if the flag is false, 1 otherwise).
     /// The values of the Tensor are between 0 and 1.
     /// </returns>
@@ -519,18 +519,18 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
     /// The list of textures to be put into the tensor.
     /// Note that the textures must have same width and height.
     /// </param>
-    /// <param name="BlackAndWhite">
+    /// <param name="blackAndWhite">
     /// If set to <c>true</c> the textures
     /// will be converted to grayscale before being stored in the tensor.
     /// </param>
     public static float[,,,] BatchVisualObservations(
-        List<Texture2D> textures, bool BlackAndWhite)
+        List<Texture2D> textures, bool blackAndWhite)
     {
         int batchSize = textures.Count();
         int width = textures[0].width;
         int height = textures[0].height;
         int pixels = 0;
-        if (BlackAndWhite)
+        if (blackAndWhite)
             pixels = 1;
         else
             pixels = 3;
@@ -544,7 +544,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
                 for (int h = 0; h < height; h++)
                 {
                     Color32 currentPixel = cc[h * width + w];
-                    if (!BlackAndWhite)
+                    if (!blackAndWhite)
                     {
                         // For Color32, the r, g and b values are between
                         // 0 and 255.
