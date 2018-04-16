@@ -265,14 +265,7 @@ public abstract class Academy : MonoBehaviour
 
         }
 
-        // TODO : Figure Out communicator and Brain Batcher
-        // Check for existence of communicator
-
         brainBatcher = new MLAgents.Batcher(communicator);
-        //if (!communicator.CommunicatorHandShake())
-        //{
-        //    communicator = null;
-        //}
 
         // Initialize Brains and communicator (if present)
         foreach (Brain brain in brains)
@@ -282,7 +275,6 @@ public abstract class Academy : MonoBehaviour
         if (communicator != null)
         {
             isCommunicatorOn = true;
-            // TODO : Generate the academy Parameters
 
             MLAgents.Communicator.AcademyParameters academyParameters=
                 new MLAgents.Communicator.AcademyParameters();
@@ -307,7 +299,6 @@ public abstract class Academy : MonoBehaviour
                 );
             }
             brainBatcher.GiveAcademyParameters(academyParameters);
-            //communicator.Initialize(academyParameters);
             Application.logMessageReceived += HandleLog;
             logPath = Path.GetFullPath(".") + "/unity-environment.log";
             logWriter = new StreamWriter(logPath, false);

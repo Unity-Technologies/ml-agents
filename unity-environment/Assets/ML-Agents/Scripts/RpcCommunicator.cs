@@ -79,11 +79,6 @@ namespace MLAgents.Communicator
 
         PythonUnityImpl comm = new PythonUnityImpl();
 
-
-
-
-        //TODO : Job of the Academy ? 
-
         public RpcCommunicator(CommunicatorParameters communicatorParameters)
         {
             this.communicatorParameters = communicatorParameters;
@@ -130,9 +125,7 @@ namespace MLAgents.Communicator
         /// Ends connection and closes environment
         private void OnApplicationQuit()
         {
-
-            //TODO
-
+            // TODO Implement
         }
 
     }

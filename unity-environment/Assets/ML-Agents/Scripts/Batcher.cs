@@ -21,15 +21,9 @@ namespace MLAgents
         Communicator.EnvironmentParameters environmentParameters;
         bool isTraining;
 
-        // TO delete
-        //Academy academy;
-
         public Batcher(Communicator.Communicator communicator)
         {
             this.communicator = communicator;
-            // This needs to disapear, the done flag of the academy should be accessible by everything
-            //academy = Object.FindObjectOfType<Academy>() as Academy;
-
         }
 
         public void GiveAcademyParameters(Communicator.AcademyParameters academyParameters)
@@ -101,7 +95,6 @@ namespace MLAgents
                     ByteString.CopyFrom(obs.EncodeToJPG())
                 );
             }
-            //TODO : Visual Observations, memories and text action
             ai.Reward = info.reward;
             ai.MaxStepReached = info.maxStepReached;
             ai.Done = info.done;
@@ -144,10 +137,6 @@ namespace MLAgents
         /// <param name="agentInfo">Agent info.</param>
         public void GiveBrainInfo(string brainKey, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            //TODO : Find a way to remove this academy
-
-
-
             if (communicator == null)
             {
                 return;
@@ -161,8 +150,6 @@ namespace MLAgents
             }
             if (currentAgents[brainKey].Count > 0)
             {
-                //Communicator.UnityOutput.Types.ListAgentInfo listAgentInfo =
-                //new Communicator.UnityOutput.Types.ListAgentInfo();
                 unityOutput.AgentInfos[brainKey].Value.Clear();
                 foreach (Agent agent in currentAgents[brainKey])
                 {
@@ -170,8 +157,6 @@ namespace MLAgents
                     unityOutput.AgentInfos[brainKey].Value.Add(ai);
                 }
 
-                //TODO :: If the key is present, it will raise an error
-                //unityOutput.AgentInfos[brainKey] = listAgentInfo;
                 hasSentState[brainKey] = true;
 
                 if (triedSendState.Values.All(x => x))
@@ -190,10 +175,8 @@ namespace MLAgents
                         environmentParameters = input.EnvironmentParameters;
                         isTraining = input.IsTraining;
 
-                        // TODO : Send the actions of the input to the agents
                         if (input.AgentActions != null)
                         {
-                            //Debug.Log(input.AgentActions["Ball3DBrain"].Value.Count);
                             foreach (string k in input.AgentActions.Keys)
                             {
                                 if (currentAgents[k].Count() == 0)
