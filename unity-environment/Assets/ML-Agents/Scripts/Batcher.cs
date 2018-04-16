@@ -26,6 +26,11 @@ namespace MLAgents
             this.communicator = communicator;
         }
 
+        /// <summary>
+        /// Gives the academy parameters. Is used by the academy to send the
+        /// AcademyParameters to the communicator.
+        /// </summary>
+        /// <param name="academyParameters">Academy parameters.</param>
         public void GiveAcademyParameters(Communicator.AcademyParameters academyParameters)
         {
             Communicator.UnityRLInput input;
@@ -46,11 +51,21 @@ namespace MLAgents
             academyDone = done;
         }
 
+        /// <summary>
+        /// Gets the command. Is used by the academy to get reset or quit
+        /// signal.
+        /// </summary>
+        /// <returns>The command.</returns>
         public Communicator.Command GetCommand()
         {
             return command;
         }
 
+        /// <summary>
+        /// Gets the environment parameters. Is used by the academy to update
+        /// the environment parameters.
+        /// </summary>
+        /// <returns>The environment parameters.</returns>
         public Communicator.EnvironmentParameters GetEnvironmentParameters()
         {
             return environmentParameters;
@@ -62,8 +77,8 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Adds the brain to the list of brains which have already decided their
-        /// actions.
+        /// Adds the brain to the list of brains which have already decided
+        /// their actions.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
         public void SubscribeBrain(string brainKey)
@@ -102,6 +117,13 @@ namespace MLAgents
             return ai;
         }
 
+        /// <summary>
+        /// Converts a Brain into to a Protobuff BrainInfo so it can be sent
+        /// </summary>
+        /// <returns>The parameters convertor.</returns>
+        /// <param name="bp">The BrainParameters.</param>
+        /// <param name="name">The name of the brain.</param>
+        /// <param name="type">The type of brain.</param>
         public static Communicator.BrainParameters BrainParametersConvertor(
             BrainParameters bp, string name, Communicator.BrainType type)
         {
@@ -131,17 +153,24 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Gives the brain info.
+        /// Gives the brain info. If at least one brain has an agent in need of
+        /// a decision or if the academy is done, the data is sent via 
+        /// Communicator. Else, a new step is realized. The data can only be
+        /// sent once all the brains that subscribed to the batcher have tried
+        /// to send information.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
         /// <param name="agentInfo">Agent info.</param>
         public void GiveBrainInfo(string brainKey, Dictionary<Agent, AgentInfo> agentInfo)
         {
+            // If no communicator is initialized, the Batcher will not transmit
+            // BrainInfo
             if (communicator == null)
             {
                 return;
             }
 
+            // The brain tried called GiveBrainInfo
             triedSendState[brainKey] = true;
             currentAgents[brainKey].Clear();
             foreach (Agent agent in agentInfo.Keys)
@@ -157,6 +186,8 @@ namespace MLAgents
                     unityOutput.AgentInfos[brainKey].Value.Add(ai);
                 }
 
+                // The brain had information to send (this means that data
+                // must be sent via communicator.
                 hasSentState[brainKey] = true;
 
                 if (triedSendState.Values.All(x => x))
@@ -196,12 +227,11 @@ namespace MLAgents
                             }
                         }
                         // TODO : If input is quit, you must return a completion Output
-
-                        foreach (string k in currentAgents.Keys)
-                        {
-                            hasSentState[k] = false;
-                            triedSendState[k] = false;
-                        }
+                    }
+                    foreach (string k in currentAgents.Keys)
+                    {
+                        hasSentState[k] = false;
+                        triedSendState[k] = false;
                     }
                 }
 
