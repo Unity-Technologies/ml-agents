@@ -230,7 +230,6 @@ All the values are divided by 5 to normalize the inputs to the neural network to
 In total, the state observation contains 8 values and we need to use the continuous state space when we get around to setting the Brain properties:
 
 ```csharp
-List<float> observation = new List<float>();
 public override void CollectObservations()
 {
     // Calculate relative position
