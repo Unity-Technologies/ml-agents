@@ -43,10 +43,12 @@ class TrainerController(object):
                     .replace('.x86', ''))  # Strip out executable extensions if passed
         # Recognize and use docker volume if one is passed as an argument
         if docker_target_name == '':
+            self.docker_training = False
             self.model_path = './models/{run_id}'.format(run_id=run_id)
             self.curriculum_file = curriculum_file
             self.summaries_dir = './summaries'
         else:
+            self.docker_training = True
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
@@ -75,7 +77,8 @@ class TrainerController(object):
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
-                                    curriculum=self.curriculum_file, seed=self.seed)
+                                    curriculum=self.curriculum_file, seed=self.seed,
+                                    docker_training=self.docker_training)
         self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
 
     def _get_progress(self):
@@ -255,13 +258,11 @@ class TrainerController(object):
 
                     for brain_name, trainer in self.trainers.items():
                         trainer.add_experiences(curr_info, new_info, take_action_outputs[brain_name])
-                    curr_info = new_info
-                    for brain_name, trainer in self.trainers.items():
-                        trainer.process_experiences(curr_info)
+                        trainer.process_experiences(curr_info, new_info)
                         if trainer.is_ready_update() and self.train_model and trainer.get_step <= trainer.get_max_steps:
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
-                        # Write training statistics to tensorboard.
+                        # Write training statistics to Tensorboard.
                         trainer.write_summary(self.env.curriculum.lesson_number)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step()
@@ -271,7 +272,7 @@ class TrainerController(object):
                     if global_step % self.save_freq == 0 and global_step != 0 and self.train_model:
                         # Save Tensorflow model
                         self._save_model(sess, steps=global_step, saver=saver)
-
+                    curr_info = new_info
                 # Final save Tensorflow model
                 if global_step != 0 and self.train_model:
                     self._save_model(sess, steps=global_step, saver=saver)
