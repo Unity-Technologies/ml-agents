@@ -179,7 +179,7 @@ namespace MLAgents
             }
             if (currentAgents[brainKey].Count > 0)
             {
-                unityOutput.AgentInfos[brainKey].Value.Clear();
+                //unityOutput.AgentInfos[brainKey].Value.Clear();
                 foreach (Agent agent in currentAgents[brainKey])
                 {
                     Communicator.AgentInfo ai = AgentInfoConvertor(agentInfo[agent]);
@@ -196,6 +196,10 @@ namespace MLAgents
                     {
                         var input = communicator.SendOuput(unityOutput);
 
+                        foreach (string k in unityOutput.AgentInfos.Keys)
+                        {
+                            unityOutput.AgentInfos[k].Value.Clear();
+                        }
                         if (input == null)
                         {
                             command = Communicator.Command.Quit;

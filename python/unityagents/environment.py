@@ -431,6 +431,8 @@ class UnityEnvironment(object):
         _u_i = UnityRLInput()
         for b in vector_action:
             n_agents = self._n_agents[b]
+            if n_agents == 0:
+                continue
             _a_s = len(vector_action[b]) // n_agents
             _m_s = len(memory[b]) // n_agents
             for i in range(n_agents):
