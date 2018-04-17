@@ -77,7 +77,7 @@ public class CrawlerAgentConfigurable : Agent
         
         for (int k = 0; k < vectorAction.Length; k++)
         {
-            toUse[k] = 0.5f * Mathf.Clamp(vectorAction[k], -3f, 3f);
+            toUse[k] = 1.5f * vectorAction[k];
             torquePenalty += toUse[k] * toUse[k];
         }
 
