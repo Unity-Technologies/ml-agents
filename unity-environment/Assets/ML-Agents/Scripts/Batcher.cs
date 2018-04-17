@@ -97,23 +97,24 @@ namespace MLAgents
         public static Communicator.AgentInfo AgentInfoConvertor(AgentInfo info)
         {
 
-            Communicator.AgentInfo ai = new Communicator.AgentInfo();
-            ai.VectorObservation.AddRange(info.vectorObservation);
-            ai.StackedVectorObservation.AddRange(info.stackedVectorObservation);
-            ai.StoredVectorActions.AddRange(info.storedVectorActions);
-            ai.Memories.AddRange(info.memories);
-            ai.StoredTextActions = info.storedTextActions;
-            ai.TextObservation = info.textObservation;
+            Communicator.AgentInfo ai = new Communicator.AgentInfo { 
+                VectorObservation = { info.vectorObservation },
+                StackedVectorObservation = { info.stackedVectorObservation },
+                StoredVectorActions = { info.storedVectorActions },
+                Memories = { info.memories },
+                StoredTextActions = info.storedTextActions,
+                TextObservation = info.textObservation,
+                Reward = info.reward,
+                MaxStepReached = info.maxStepReached,
+                Done = info.done,
+                Id = info.id,
+            };
             foreach (Texture2D obs in info.visualObservations)
             {
                 ai.VisualObservations.Add(
                     ByteString.CopyFrom(obs.EncodeToJPG())
                 );
             }
-            ai.Reward = info.reward;
-            ai.MaxStepReached = info.maxStepReached;
-            ai.Done = info.done;
-            ai.Id = info.id;
             return ai;
         }
 
