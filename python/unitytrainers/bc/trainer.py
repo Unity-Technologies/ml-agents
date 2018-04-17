@@ -186,7 +186,8 @@ class BehavioralCloningTrainer(Trainer):
                 idx = stored_info_teacher.agents.index(agent_id)
                 next_idx = next_info_teacher.agents.index(agent_id)
                 if stored_info_teacher.text_observations[idx] != "":
-                    info_teacher_record, info_teacher_reset = stored_info_teacher.text_observations[idx].lower().split(",")
+                    info_teacher_record, info_teacher_reset = \
+                        stored_info_teacher.text_observations[idx].lower().split(",")
                     next_info_teacher_record, next_info_teacher_reset = next_info_teacher.text_observations[idx].\
                         lower().split(",")
                     if next_info_teacher_reset == "true":
