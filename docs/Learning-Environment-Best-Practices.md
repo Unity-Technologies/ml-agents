@@ -23,5 +23,5 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 ![normalization](images/normalization.png)
 
 ## Vector Actions
-* When using continuous control, action values should be clipped to an appropriate range.
+* When using continuous control, action values should be clipped to an appropriate range. The provided PPO model automatically clips these values between -1 and 1, but third party training systems may not do so.
 * Be sure to set the Vector Action's Space Size to the number of used Vector Actions, and not greater, as doing the latter can interfere with the efficiency of the training process.
