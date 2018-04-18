@@ -269,9 +269,10 @@ on the same graph.
 
 To summarize, go to your command line, enter the `ml-agents` directory and type: 
 
-```python
+```
 python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
 ```
+**Note**: If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
 The `--train` flag tells ML-Agents to run in training mode. `env_file_path` should be the path to the Unity executable that was just created. 
 
@@ -316,6 +317,7 @@ during a successful training session.
 Once the training process completes, and the training process saves the model 
 (denoted by the `Saved Model` message) you can add it to the Unity project and 
 use it with agents having an **Internal** brain type.
+**Note:** Do not just close the Unity Window once the `Saved Model` message appears. Either wait for the training process to close the window or press Ctrl+C at the command-line prompt. If you simply close the window manually, the .bytes file containing the trained model is not exported into the ml-agents folder.
 
 ### Setting up TensorFlowSharp Support
 
