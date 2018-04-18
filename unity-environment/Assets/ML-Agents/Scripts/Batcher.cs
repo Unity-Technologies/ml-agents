@@ -97,8 +97,9 @@ namespace MLAgents
         public static Communicator.AgentInfo AgentInfoConvertor(AgentInfo info)
         {
 
-            Communicator.AgentInfo ai = new Communicator.AgentInfo { 
-                VectorObservation = { info.vectorObservation },
+            Communicator.AgentInfo ai = new Communicator.AgentInfo
+            {
+                //VectorObservation = { info.vectorObservation },
                 StackedVectorObservation = { info.stackedVectorObservation },
                 StoredVectorActions = { info.storedVectorActions },
                 Memories = { info.memories },
@@ -149,7 +150,7 @@ namespace MLAgents
                         Height = res.height,
                         GrayScale = res.blackAndWhite
                     });
-                                                  }
+            }
             return brainParameters;
         }
 
