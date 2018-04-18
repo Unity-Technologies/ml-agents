@@ -12,7 +12,7 @@ public class CrawlerLegContact : MonoBehaviour {
     }
 
     void OnCollisionStay(Collision other){
-        if (other.gameObject.name == "Platform")
+        if (other.gameObject.name == "Ground")
         {
             agent.leg_touching[index] = true;
         }
