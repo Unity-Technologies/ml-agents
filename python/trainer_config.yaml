@@ -87,6 +87,15 @@ Ball3DBrain:
     gamma: 0.995
     beta: 0.001
 
+Ball3DHardBrain:
+    normalize: true
+    batch_size: 1200
+    buffer_size: 12000
+    summary_freq: 1000
+    time_horizon: 1000
+    gamma: 0.995
+    beta: 0.001
+
 BouncerBrain:
     normalize: true
     max_steps: 5.0e5
@@ -95,7 +104,6 @@ BouncerBrain:
 
 TennisBrain:
     normalize: true
-    max_steps: 1e5
 
 CrawlerBrain:
     normalize: true

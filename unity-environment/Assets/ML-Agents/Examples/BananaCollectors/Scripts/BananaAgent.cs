@@ -14,7 +14,8 @@ public class BananaAgent : Agent
     bool shoot;
     float frozenTime;
     float effectTime;
-    Rigidbody agentRB;
+    Rigidbody agentRb;
+    private int bananas;
 
     // Speed of agent rotation.
     public float turnSpeed = 300;
@@ -25,15 +26,14 @@ public class BananaAgent : Agent
     public Material badMaterial;
     public Material goodMaterial;
     public Material frozenMaterial;
-    int bananas;
     public GameObject myLaser;
     public bool contribute;
-    RayPerception rayPer;
+    private RayPerception rayPer;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        agentRB = GetComponent<Rigidbody>();
+        agentRb = GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<BananaArea>();
         rayPer = GetComponent<RayPerception>();
@@ -46,19 +46,19 @@ public class BananaAgent : Agent
         float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
         string[] detectableObjects = { "banana", "agent", "wall", "badBanana", "frozenAgent" };
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        Vector3 localVelocity = transform.InverseTransformDirection(agentRB.velocity);
+        Vector3 localVelocity = transform.InverseTransformDirection(agentRb.velocity);
         AddVectorObs(localVelocity.x);
         AddVectorObs(localVelocity.z);
         AddVectorObs(System.Convert.ToInt32(frozen));
         AddVectorObs(System.Convert.ToInt32(shoot));
     }
 
-    public Color32 ToColor(int HexVal)
+    public Color32 ToColor(int hexVal)
     {
-        byte R = (byte)((HexVal >> 16) & 0xFF);
-        byte G = (byte)((HexVal >> 8) & 0xFF);
-        byte B = (byte)((HexVal) & 0xFF);
-        return new Color32(R, G, B, 255);
+        byte r = (byte)((hexVal >> 16) & 0xFF);
+        byte g = (byte)((hexVal >> 8) & 0xFF);
+        byte b = (byte)(hexVal & 0xFF);
+        return new Color32(r, g, b, 255);
     }
 
     public void MoveAgent(float[] act)
@@ -115,15 +115,15 @@ public class BananaAgent : Agent
             {
                 shoot = true;
                 dirToGo *= 0.5f;
-                agentRB.velocity *= 0.75f;
+                agentRb.velocity *= 0.75f;
             }
-            agentRB.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+            agentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
         }
 
-        if (agentRB.velocity.sqrMagnitude > 25f) // slow it down
+        if (agentRb.velocity.sqrMagnitude > 25f) // slow it down
         {
-            agentRB.velocity *= 0.95f;
+            agentRb.velocity *= 0.95f;
         }
 
         if (shoot)
@@ -203,7 +203,7 @@ public class BananaAgent : Agent
         Unpoison();
         Unsatiate();
         shoot = false;
-        agentRB.velocity = Vector3.zero;
+        agentRb.velocity = Vector3.zero;
         bananas = 0;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = new Vector3(Random.Range(-myArea.range, myArea.range),
