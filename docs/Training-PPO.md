@@ -145,12 +145,12 @@ This will decrease over time on a linear schedule.
 
 #### Policy Loss
 
-These values will oscillate with training.
+These values will oscillate during training. Generally they should be less than 1.0. 
 
 #### Value Estimate
 
-These values should increase with the reward. They corresponds to how much future reward the agent predicts itself receiving at any given point.
+These values should increase as the cumulative reward increases. They correspond to how much future reward the agent predicts itself receiving at any given point.
 
 #### Value Loss
 
-These values will increase as the reward increases, and should decrease when reward becomes stable.
+These values will increase as the reward increases, and then should decrease once reward becomes stable.
