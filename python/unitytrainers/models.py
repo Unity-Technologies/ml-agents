@@ -243,8 +243,10 @@ class LearningModel(object):
 
         epsilon = tf.random_normal(tf.shape(mu), dtype=tf.float32)
 
+        # Clip and scale output to ensure actions are always within [-1, 1] range.
         self.output_pre = mu + tf.sqrt(sigma_sq) * epsilon
-        self.output = tf.clip_by_value(self.output_pre, -3, 3, name='action') / 3
+        output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
+        self.output = tf.identity(output_post, name='action')
 
         # Compute probability of model output.
         a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output_pre) - mu, 2) / (2 * sigma_sq))

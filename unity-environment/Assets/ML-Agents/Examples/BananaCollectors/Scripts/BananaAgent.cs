@@ -89,9 +89,9 @@ public class BananaAgent : Agent
             bool shootCommand = false;
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
-                dirToGo = 0.3f * transform.forward * Mathf.Clamp(act[0], -3f, 3f);
-                rotateDir = 0.3f * transform.up * Mathf.Clamp(act[1], -3f, 3f);
-                shootCommand = Mathf.Clamp(act[2], 0f, 3f) > 2f;
+                dirToGo = transform.forward * act[0];
+                rotateDir = transform.up * act[1];
+                shootCommand = act[2] > 0.5f;
             }
             else
             {

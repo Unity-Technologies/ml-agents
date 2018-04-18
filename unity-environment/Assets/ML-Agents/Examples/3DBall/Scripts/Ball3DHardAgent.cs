@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ball3DHardAgent : Agent
 {
-    [Header("Specific to Ball3D")]
+    [Header("Specific to Ball3DHard")]
     public GameObject ball;
     private Rigidbody ballRb;
 
@@ -25,8 +25,8 @@ public class Ball3DHardAgent : Agent
         
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            var actionZ = 0.6f * Mathf.Clamp(vectorAction[0], -3f, 3f);
-            var actionX = 0.6f * Mathf.Clamp(vectorAction[1], -3f, 3f);
+            var actionZ = 2f * vectorAction[0];
+            var actionX = 2f * vectorAction[1];
 
             if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
                 (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))

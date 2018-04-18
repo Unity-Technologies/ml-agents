@@ -95,6 +95,7 @@ BouncerBrain:
 
 TennisBrain:
     normalize: true
+    max_steps: 1e5
 
 CrawlerBrain:
     normalize: true

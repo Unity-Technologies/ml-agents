@@ -8,14 +8,15 @@ public class TennisAgent : Agent
     [Header("Specific to Tennis")]
     public GameObject ball;
     public bool invertX;
-    public float invertMult;
     public int score;
     public GameObject scoreText;
-    private Text textComponent;
     public GameObject myArea;
     public GameObject opponent;
+
+    private Text textComponent;
     private Rigidbody agentRb;
     private Rigidbody ballRb;
+    private float invertMult;
 
     public override void InitializeAgent()
     {
@@ -40,18 +41,18 @@ public class TennisAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        var moveX = 0.2f * Mathf.Clamp(vectorAction[0], -3f, 3f) * invertMult;
-        var moveY = Mathf.Clamp(vectorAction[1], -3f, 3f);
+        var moveX = vectorAction[0] * invertMult;
+        var moveY = vectorAction[1];
         
-        if (moveY > 0 && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
-            agentRb.velocity = new Vector3(agentRb.velocity.x, 6f, 0f);
+            agentRb.velocity = new Vector3(agentRb.velocity.x, 7f, 0f);
         }
 
-        agentRb.velocity = new Vector3(moveX * 50f, agentRb.velocity.y, 0f);
+        agentRb.velocity = new Vector3(moveX * 30f, agentRb.velocity.y, 0f);
 
-        if ((invertX && (transform.position.x - transform.parent.transform.position.x < -invertMult)) || 
-            (!invertX && (transform.position.x - transform.parent.transform.position.x > -invertMult)))
+        if (invertX && transform.position.x - transform.parent.transform.position.x < -invertMult || 
+            !invertX && transform.position.x - transform.parent.transform.position.x > -invertMult)
         {
                 transform.position = new Vector3(-invertMult + transform.parent.transform.position.x, 
                                                             transform.position.y, 

@@ -14,7 +14,6 @@ public class HitWall : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        lastAgentHit = -1;
         area = areaObject.GetComponent<TennisArea>();
         agentA = area.agentA.GetComponent<TennisAgent>();
         agentB = area.agentB.GetComponent<TennisAgent>();
@@ -124,14 +123,7 @@ public class HitWall : MonoBehaviour
 
         if (collision.gameObject.CompareTag("agent"))
         {
-            if (collision.gameObject.name == "AgentA")
-            {
-                lastAgentHit = 0;
-            }
-            else
-            {
-                lastAgentHit = 1;
-            }
+            lastAgentHit = collision.gameObject.name == "AgentA" ? 0 : 1;
         }
     }
 }
