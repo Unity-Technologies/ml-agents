@@ -1,9 +1,6 @@
 using Grpc.Core;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
-using NUnit.Framework;
-
 
 namespace MLAgents.Communicator
 {
