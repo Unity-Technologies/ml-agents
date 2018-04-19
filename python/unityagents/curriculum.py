@@ -17,6 +17,8 @@ class Curriculum(object):
         self.lesson_length = 0
         self.max_lesson_number = 0
         self.measure_type = None
+        self.threshold_operator = None
+        self.threshold_amount = None
         if location is None:
             self.data = None
         else:
@@ -29,14 +31,25 @@ class Curriculum(object):
             except UnicodeDecodeError:
                 raise UnityEnvironmentException("There was an error decoding {}".format(location))
             self.smoothing_value = 0
-            for key in ['parameters', 'measure', 'thresholds',
-                        'min_lesson_length', 'signal_smoothing']:
+            necessaryParams = ['parameters', 'measure',
+                        'min_lesson_length', 'signal_smoothing']
+            if(self.data['measure'] == "multibrain_reward"): 
+                self.smoothing_values = {}
+                necessaryParams.append('threshold_operator')
+                necessaryParams.append('threshold_amount')
+            else:    
+                necessaryParams.append('thresholds')
+            for key in necessaryParams:
                 if key not in self.data:
                     raise UnityEnvironmentException("{0} does not contain a "
                                                     "{1} field.".format(location, key))
             parameters = self.data['parameters']
             self.measure_type = self.data['measure']
-            self.max_lesson_number = len(self.data['thresholds'])
+            if(self.measure_type == "multibrain_reward"):
+                self.max_lesson_number = self.data['threshold_amount']
+                self.threshold_operator = self.data['threshold_operator']
+            else:
+                self.max_lesson_number = len(self.data['thresholds'])
             for key in parameters:
                 if key not in default_reset_parameters:
                     raise UnityEnvironmentException(
@@ -64,18 +77,36 @@ class Curriculum(object):
 
     def increment_lesson(self, progress):
         """
-        Increments the lesson number depending on the progree given.
+        Increments the lesson number depending on the progress given.
         :param progress: Measure of progress (either reward or percentage steps completed).
         """
         if self.data is None or progress is None:
             return
-        if self.data["signal_smoothing"]:
-            progress = self.smoothing_value * 0.25 + 0.75 * progress
+        if self.measure_type == "multibrain_reward": 
+            if(self.threshold_operator == 'or'):
+                change_lesson = False
+            else:
+                change_lesson = True
+            for key, value in progress.items():
+                if (self.data["signal_smoothing"]):
+                    if (key not in self.smoothing_values):
+                        self.smoothing_values.update({key:0})
+                    value = self.smoothing_values[key] * 0.25 + 0.75 * value
+                    self.smoothing_values[key] = value
+                if self.lesson_number < self.max_lesson_number:
+                    if(self.threshold_operator == 'or'):
+                        change_lesson = change_lesson or (value > self.data[key][self.lesson_number])
+                    else:
+                        change_lesson = change_lesson and (value > self.data[key][self.lesson_number])  
+        else:
+            if self.data["signal_smoothing"]:
+                progress = self.smoothing_value * 0.25 + 0.75 * progress
             self.smoothing_value = progress
-        self.lesson_length += 1
+            if self.lesson_number < self.max_lesson_number:
+                change_lesson = (progress > self.data['thresholds'][self.lesson_number])
+        self.lesson_length += 1            
         if self.lesson_number < self.max_lesson_number:
-            if ((progress > self.data['thresholds'][self.lesson_number]) and
-                    (self.lesson_length > self.data['min_lesson_length'])):
+            if (change_lesson and (self.lesson_length > self.data['min_lesson_length'])):
                 self.lesson_length = 0
                 self.lesson_number += 1
                 config = {}
