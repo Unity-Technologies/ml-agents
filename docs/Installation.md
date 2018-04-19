@@ -60,6 +60,14 @@ If you'd like to use Docker for ML-Agents, please follow
 
 You can download the [TensorFlowSharp](Background-TensorFlow.md#tensorflowsharp) plugin as a Unity package [here](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage).
 
+## Troubleshouting
+
+If you get the error : 
+
+    system.text.builder does not contain a definition for 'clear'
+
+You need to change the _Api Comptability Level_ : Edit -> Project Settings -> Player -> Other Settings -> Scripting Runtime Version = Experimental (.Net 4.6 Equivalent)
+
 ## Help
 
 If you run into any problems installing ML-Agents, 
