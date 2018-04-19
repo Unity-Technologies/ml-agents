@@ -502,9 +502,6 @@ public abstract class Academy : MonoBehaviour
             ConfigureEnvironment();
             modeSwitched = false;
         }
-
-        //Debug.Log("Command is : "+communicator.GetCommand().ToString());
-
         if (isCommunicatorOn)
         {
             if (brainBatcher.GetCommand() == 
@@ -524,7 +521,6 @@ public abstract class Academy : MonoBehaviour
                 SetIsInference(!brainBatcher.GetIsTraining());
 
                 ForcedFullReset();
-                //communicator.SetCommand(ExternalCommand.STEP);
             }
             if (brainBatcher.GetCommand() == MLAgents.Communicator.Command.Quit)
             {

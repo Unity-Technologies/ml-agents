@@ -7,7 +7,8 @@ using UnityEngine;
 namespace MLAgents.Communicator
 {
 
-    public class SocketCommunicator : Communicator{
+    public class SocketCommunicator : Communicator
+    {
 
         const int messageLength = 12000;
         byte[] messageHolder = new byte[messageLength];
@@ -32,7 +33,10 @@ namespace MLAgents.Communicator
                                            out UnityRLInput unityInput)
         {
 
-            sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            sender = new Socket(
+                AddressFamily.InterNetwork,
+                SocketType.Stream,
+                ProtocolType.Tcp);
             sender.Connect("localhost", communicatorParameters.Port);
 
             PythonParameters pp = PythonParameters.Parser.ParseFrom(Receive());
@@ -52,10 +56,9 @@ namespace MLAgents.Communicator
             while (location != totalLength)
             {
                 int fragment = sender.Receive(messageHolder);
-                System.Buffer.BlockCopy(messageHolder, 0, result, location, fragment);
+                System.Buffer.BlockCopy(
+                    messageHolder, 0, result, location, fragment);
                 location += fragment;
-
-                //rMessageString.Append(Encoding.ASCII.GetString(messageHolder, 0, fragment));
             }
             return result;
         }
@@ -84,9 +87,7 @@ namespace MLAgents.Communicator
         /// Ends connection and closes environment
         private void OnApplicationQuit()
         {
-
             //TODO
-
         }
 
     }

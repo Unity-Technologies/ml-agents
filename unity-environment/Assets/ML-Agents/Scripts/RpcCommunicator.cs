@@ -14,7 +14,7 @@ namespace MLAgents.Communicator
         public class PythonUnityImpl : PythonToUnity.PythonToUnityBase
         {
 
-            const int TIMEOUT = 10; 
+            const int TIMEOUT = 10;
             public AcademyParameters academyParameters;
             public PythonParameters pythonParameters;
             public UnityRLOutput outputs = new UnityRLOutput();
@@ -22,8 +22,10 @@ namespace MLAgents.Communicator
 
             public Command command;
 
-            private ManualResetEvent manualResetEvent_in = new ManualResetEvent(false);
-            private ManualResetEvent manualResetEvent_out = new ManualResetEvent(false);
+            private ManualResetEvent manualResetEvent_in
+                = new ManualResetEvent(false);
+            private ManualResetEvent manualResetEvent_out
+                = new ManualResetEvent(false);
             UnityOutput messageOutput = new UnityOutput
             {
                 Header = new Header
@@ -62,7 +64,8 @@ namespace MLAgents.Communicator
                 manualResetEvent_out.Set();
             }
 
-            public override Task<AcademyParameters> Initialize(PythonParameters request, ServerCallContext context)
+            public override Task<AcademyParameters> Initialize(
+                PythonParameters request, ServerCallContext context)
             {
                 pythonParameters = request;
                 InputReceived();
@@ -70,7 +73,8 @@ namespace MLAgents.Communicator
                 return Task.FromResult(academyParameters);
             }
 
-            public override Task<UnityOutput> Send(UnityInput request, ServerCallContext context)
+            public override Task<UnityOutput> Send(
+                UnityInput request, ServerCallContext context)
             {
                 if (request.Header.Status != 200)
                 {
@@ -105,10 +109,10 @@ namespace MLAgents.Communicator
             Server server = new Server
             {
                 Services = { PythonToUnity.BindService(comm) },
-                Ports = { 
+                Ports = {
                     new ServerPort("localhost",
                     communicatorParameters.Port,
-                    ServerCredentials.Insecure) 
+                    ServerCredentials.Insecure)
                 }
             };
             server.Start();
