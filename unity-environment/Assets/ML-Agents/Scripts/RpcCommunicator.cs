@@ -1,6 +1,8 @@
 using Grpc.Core;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
+using NUnit.Framework;
 
 
 namespace MLAgents.Communicator
@@ -11,6 +13,8 @@ namespace MLAgents.Communicator
 
         public class PythonUnityImpl : PythonToUnity.PythonToUnityBase
         {
+
+            const int TIMEOUT = 10; 
             public AcademyParameters academyParameters;
             public PythonParameters pythonParameters;
             public UnityRLOutput outputs = new UnityRLOutput();
@@ -30,8 +34,14 @@ namespace MLAgents.Communicator
 
             public void WaitForInput()
             {
-                manualResetEvent_in.WaitOne();
+                var task = Task.Run(() => manualResetEvent_in.WaitOne());
+                if (!task.Wait(System.TimeSpan.FromSeconds(TIMEOUT)))
+                {
+                    throw new UnityAgentsException(
+                        "The communicator took too long to respond.");
+                }
                 manualResetEvent_in.Reset();
+
             }
             public void InputReceived()
             {
@@ -39,7 +49,12 @@ namespace MLAgents.Communicator
             }
             public void WaitForOutput()
             {
-                manualResetEvent_out.WaitOne();
+                var task = Task.Run(() => manualResetEvent_out.WaitOne());
+                if (!task.Wait(System.TimeSpan.FromSeconds(TIMEOUT)))
+                {
+                    throw new UnityAgentsException(
+                        "The Unity took too long to respond.");
+                }
                 manualResetEvent_out.Reset();
             }
             public void OutputReceived()
@@ -75,7 +90,6 @@ namespace MLAgents.Communicator
         }
 
         CommunicatorParameters communicatorParameters;
-
 
         PythonUnityImpl comm = new PythonUnityImpl();
 
