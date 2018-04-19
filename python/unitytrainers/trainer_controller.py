@@ -91,11 +91,6 @@ class TrainerController(object):
                 for brain_name in self.env.external_brain_names:
                     progress += self.trainers[brain_name].get_last_reward
                 return progress
-            elif self.env.curriculum.measure_type == "multibrain_reward":
-                progress = {}
-                for brain_name in self.env.external_brain_names:
-                    progress.update({brain_name: self.trainers[brain_name].get_last_reward}) 
-                return progress    
             else:
                 return None
         else:
