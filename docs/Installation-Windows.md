@@ -51,7 +51,7 @@ You may be asked to install new packages. Type `y` and press enter _(make sure y
 To use this environment, you must activate it. _(To use this environment In the future, you can run the same command)_. In the same Anaconda Prompt, type in the following command:
 
 ```
-conda activate ml-agents
+activate ml-agents
 ```
 
 You should see `(ml-agents)` prepended on the last line.
