@@ -243,6 +243,7 @@ class LearningModel(object):
         self.epsilon = tf.random_normal(tf.shape(self.mu), dtype=tf.float32)
         self.output = self.mu + tf.sqrt(self.sigma_sq) * self.epsilon
         self.output = tf.identity(self.output, name='action')
+        self.selected_actions = tf.identity(self.output)
         a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output) - self.mu, 2) / (2 * self.sigma_sq))
         b = 1 / tf.sqrt(2 * self.sigma_sq * np.pi)
         self.all_probs = tf.multiply(a, b, name="action_probs")

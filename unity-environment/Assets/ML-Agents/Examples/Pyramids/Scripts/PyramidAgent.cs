@@ -7,19 +7,21 @@ public class PyramidAgent : Agent
     public GameObject myAcademyObj;
     public GameObject area;
     PyramidArea myArea;
-    Rigidbody agentRB;
+    Rigidbody agentRb;
     public float turnSpeed;
     public float xForce;
     public float yForce;
     public float zForce;
     public bool contribute;
+    private RayPerception rayPer;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        agentRB = GetComponent<Rigidbody>(); //cache the RB
+        agentRb = GetComponent<Rigidbody>(); //cache the RB
         Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<PyramidArea>();
+        rayPer = GetComponent<RayPerception>();
     }
 
     public override void CollectObservations()
@@ -30,54 +32,9 @@ public class PyramidAgent : Agent
         float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
 
         string[] detectableObjects = { "block", "wall", "goal"};
-        RayPerception(rayDistance, rayAngles, detectableObjects, 0f);
-        RayPerception(rayDistance, rayAngles1, detectableObjects, 5f);
-        RayPerception(rayDistance, rayAngles2, detectableObjects, 10f);
-    }
-
-    public void RayPerception(float rayDistance,
-                                 float[] rayAngles, string[] detectableObjects, float height)
-    {
-        foreach (float angle in rayAngles)
-        {
-            float noise = 0f;
-            float noisyAngle = angle + Random.Range(-noise, noise);
-            Vector3 position = transform.TransformDirection(GiveCatersian(rayDistance, noisyAngle));
-            position.y = height;
-            Debug.DrawRay(transform.position, position, Color.red, 0.1f, true);
-            RaycastHit hit;
-            float[] subList = new float[detectableObjects.Length + 2];
-            if (Physics.SphereCast(transform.position, .1f, position, out hit, rayDistance))
-            {
-                for (int i = 0; i < detectableObjects.Length; i++)
-                {
-                    if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
-                    {
-                        subList[i] = 1;
-                        subList[detectableObjects.Length + 1] = hit.distance / rayDistance;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                subList[detectableObjects.Length] = 1f;
-            }
-            foreach (float f in subList)
-                AddVectorObs(f);
-        }
-    }
-
-    public Vector3 GiveCatersian(float radius, float angle)
-    {
-        float x = radius * Mathf.Cos(DegreeToRadian(angle));
-        float z = radius * Mathf.Sin(DegreeToRadian(angle));
-        return new Vector3(x, 1f, z);
-    }
-
-    public float DegreeToRadian(float degree)
-    {
-        return degree * Mathf.PI / 180f;
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
     }
 
     public void MoveAgent(float[] act)
@@ -112,17 +69,17 @@ public class PyramidAgent : Agent
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 200f);
-        agentRB.AddForce(dirToGo * 2f, ForceMode.VelocityChange); //GO
+        agentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange); //GO
     }
 
-    public override void AgentAction(float[] act)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
-        MoveAgent(act);
+        MoveAgent(vectorAction);
     }
 
     public override void AgentReset()
     {
-        agentRB.velocity = Vector3.zero;
+        agentRb.velocity = Vector3.zero;
         transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 
                                          2f, Random.Range(-myArea.range, myArea.range)) 
             + area.transform.position;

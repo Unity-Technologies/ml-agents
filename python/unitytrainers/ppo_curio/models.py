@@ -61,8 +61,12 @@ class PPOCurioModel(LearningModel):
         encoded_next_state = self.encode_state(self.next_state, reuse=True)
 
         combined = tf.concat([encoded_state, encoded_next_state], axis=1)
-        pred_action = tf.layers.dense(combined, a_size, activation=tf.nn.sigmoid)
-        self.inverse_loss = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions)
+        if self.brain.vector_action_space_type == "continuous":
+            pred_action = tf.layers.dense(combined, a_size, activation=None)
+            self.inverse_loss = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1))
+        else:
+            pred_action = tf.layers.dense(combined, a_size, activation=tf.nn.softmax)
+            self.inverse_loss = tf.reduce_mean(tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1))
         return encoded_state, encoded_next_state
 
     def create_forward_model(self, encoded_state, encoded_next_state):
@@ -70,9 +74,9 @@ class PPOCurioModel(LearningModel):
         hidden = tf.layers.dense(combined, 128, activation=tf.nn.elu)
         pred_next_state = tf.layers.dense(hidden, 128, activation=None)
 
-        forward_distance = tf.squared_difference(pred_next_state, encoded_next_state)
-        self.intrinsic_reward = 0.5 * tf.reduce_mean(forward_distance, axis=1)
-        self.forward_loss = tf.reduce_sum(forward_distance)
+        forward_distance = tf.reduce_mean(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
+        self.intrinsic_reward = 0.0 * forward_distance
+        self.forward_loss = tf.reduce_mean(forward_distance)
 
     def create_ppo_optimizer(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
         """

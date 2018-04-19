@@ -71,7 +71,7 @@ class PPOCurioTrainer(Trainer):
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': [], 'forward_loss': [],
-                 'inverse_loss': [], 'intrinsic_rewards': []}
+                 'inverse_loss': [], 'intrinsic_reward': []}
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -288,14 +288,14 @@ class PPOCurioTrainer(Trainer):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-    def process_experiences(self, all_info: AllBrainInfo):
+    def process_experiences(self, current_info: AllBrainInfo, next_info: AllBrainInfo):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
         :param all_info: Dictionary of all current brains and corresponding BrainInfo.
         """
 
-        info = all_info[self.brain_name]
+        info = next_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
@@ -336,7 +336,7 @@ class PPOCurioTrainer(Trainer):
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
                     self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
-                    self.stats['intrinsic_rewards'].append(self.intrinsic_rewards[agent_id])
+                    self.stats['intrinsic_reward'].append(self.intrinsic_rewards[agent_id])
                     self.stats['episode_length'].append(self.episode_steps[agent_id])
                     self.cumulative_rewards[agent_id] = 0
                     self.episode_steps[agent_id] = 0

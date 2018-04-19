@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 65790192580504696}
   - component: {fileID: 23808547102254256}
   - component: {fileID: 54432638458047110}
-  - component: {fileID: 114074111635521026}
+  - component: {fileID: 114463849738152008}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -263,7 +263,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1682411547988228}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: -45}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4039844010207600}
@@ -863,7 +863,7 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1324483255782294}
   m_Enabled: 1
---- !u!114 &114074111635521026
+--- !u!114 &114463849738152008
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -871,6 +871,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1682411547988228}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: b8db44472779248d3be46895c4d562d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brain: {fileID: 0}
+  agentParameters:
+    agentCameras: []
+    maxStep: 5000
+    resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 5
+  myAcademyObj: {fileID: 0}
+  area: {fileID: 0}
+  turnSpeed: 0
+  xForce: 0
+  yForce: 0
+  zForce: 0
+  contribute: 0
