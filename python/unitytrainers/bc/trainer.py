@@ -220,9 +220,8 @@ class BehavioralCloningTrainer(Trainer):
             if stored_info_student is None:
                 continue
             else:
-                idx = stored_info_student.agents.index(agent_id)
                 next_idx = next_info_student.agents.index(agent_id)
-                if not stored_info_student.local_done[idx]:
+                if not next_info_student.local_done[next_idx]:
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info_student.rewards[next_idx]
