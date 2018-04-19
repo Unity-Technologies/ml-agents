@@ -9,15 +9,19 @@ namespace MLAgents
     public class Batcher
     {
         const int NUM_AGENTS = 32;
-        Dictionary<string, bool> hasSentState = new Dictionary<string, bool>();
-        Dictionary<string, bool> triedSendState = new Dictionary<string, bool>();
+        Dictionary<string, bool> hasSentState =
+            new Dictionary<string, bool>();
+        Dictionary<string, bool> triedSendState =
+            new Dictionary<string, bool>();
 
-        Dictionary<string, List<Agent>> currentAgents = new Dictionary<string, List<Agent>>();
+        Dictionary<string, List<Agent>> currentAgents =
+            new Dictionary<string, List<Agent>>();
         Communicator.Communicator communicator;
-        Communicator.UnityRLOutput unityOutput = new Communicator.UnityRLOutput();
+        Communicator.UnityRLOutput unityOutput =
+            new Communicator.UnityRLOutput();
 
         bool academyDone;
-        Communicator.Command command = Communicator.Command.Reset;
+        Communicator.Command command;
         Communicator.EnvironmentParameters environmentParameters;
         bool isTraining;
 
@@ -31,7 +35,8 @@ namespace MLAgents
         /// AcademyParameters to the communicator.
         /// </summary>
         /// <param name="academyParameters">Academy parameters.</param>
-        public void GiveAcademyParameters(Communicator.AcademyParameters academyParameters)
+        public void GiveAcademyParameters(
+            Communicator.AcademyParameters academyParameters)
         {
             Communicator.UnityRLInput input;
             communicator.Initialize(academyParameters, out input);
@@ -86,7 +91,9 @@ namespace MLAgents
             triedSendState[brainKey] = false;
             hasSentState[brainKey] = false;
             currentAgents[brainKey] = new List<Agent>(NUM_AGENTS);
-            unityOutput.AgentInfos.Add(brainKey, new Communicator.UnityRLOutput.Types.ListAgentInfo());
+            unityOutput.AgentInfos.Add(
+                brainKey,
+                new Communicator.UnityRLOutput.Types.ListAgentInfo());
         }
 
         /// <summary>
@@ -99,7 +106,6 @@ namespace MLAgents
 
             Communicator.AgentInfo ai = new Communicator.AgentInfo
             {
-                //VectorObservation = { info.vectorObservation },
                 StackedVectorObservation = { info.stackedVectorObservation },
                 StoredVectorActions = { info.storedVectorActions },
                 Memories = { info.memories },
@@ -130,17 +136,21 @@ namespace MLAgents
             BrainParameters bp, string name, Communicator.BrainType type)
         {
 
-            Communicator.BrainParameters brainParameters = new Communicator.BrainParameters
-            {
-                VectorObservationSize = bp.vectorObservationSize,
-                NumStackedVectorObservations = bp.numStackedVectorObservations,
-                VectorActionSize = bp.vectorActionSize,
-                VectorActionSpaceType = (Communicator.SpaceType)bp.vectorActionSpaceType,
-                VectorObservationSpaceType = (Communicator.SpaceType)bp.vectorObservationSpaceType,
-                BrainName = name,
-                BrainType = type
-            };
-            brainParameters.VectorActionDescriptions.AddRange(bp.vectorActionDescriptions);
+            Communicator.BrainParameters brainParameters =
+                new Communicator.BrainParameters
+                {
+                    VectorObservationSize = bp.vectorObservationSize,
+                    NumStackedVectorObservations = bp.numStackedVectorObservations,
+                    VectorActionSize = bp.vectorActionSize,
+                    VectorActionSpaceType =
+                    (Communicator.SpaceType)bp.vectorActionSpaceType,
+                    VectorObservationSpaceType =
+                    (Communicator.SpaceType)bp.vectorObservationSpaceType,
+                    BrainName = name,
+                    BrainType = type
+                };
+            brainParameters.VectorActionDescriptions.AddRange(
+                bp.vectorActionDescriptions);
             foreach (resolution res in bp.cameraResolutions)
             {
                 brainParameters.CameraResolutions.Add(
@@ -163,7 +173,8 @@ namespace MLAgents
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
         /// <param name="agentInfo">Agent info.</param>
-        public void GiveBrainInfo(string brainKey, Dictionary<Agent, AgentInfo> agentInfo)
+        public void GiveBrainInfo(
+            string brainKey, Dictionary<Agent, AgentInfo> agentInfo)
         {
             // If no communicator is initialized, the Batcher will not transmit
             // BrainInfo
@@ -172,77 +183,90 @@ namespace MLAgents
                 return;
             }
 
-            // The brain tried called GiveBrainInfo
+            // The brain tried called GiveBrainInfo, update triedSendState
             triedSendState[brainKey] = true;
+            // Populate the currentAgents dictionary
             currentAgents[brainKey].Clear();
             foreach (Agent agent in agentInfo.Keys)
             {
                 currentAgents[brainKey].Add(agent);
             }
+            // If at least one agent has data to send, then append data to
+            // the message and update hasSentState
             if (currentAgents[brainKey].Count > 0)
             {
-                //unityOutput.AgentInfos[brainKey].Value.Clear();
                 foreach (Agent agent in currentAgents[brainKey])
                 {
-                    Communicator.AgentInfo ai = AgentInfoConvertor(agentInfo[agent]);
+                    Communicator.AgentInfo ai =
+                        AgentInfoConvertor(agentInfo[agent]);
                     unityOutput.AgentInfos[brainKey].Value.Add(ai);
                 }
-
-                // The brain had information to send (this means that data
-                // must be sent via communicator.
                 hasSentState[brainKey] = true;
+            }
 
-                if (triedSendState.Values.All(x => x))
+            // If any agent needs to send data, then the whole message
+            // must be sent
+            if (triedSendState.Values.All(x => x))
+            {
+                if (hasSentState.Values.Any(x => x) || academyDone)
                 {
-                    if (hasSentState.Values.Any(x => x) || academyDone)
-                    {
-                        var input = communicator.SendOuput(unityOutput);
-
-                        foreach (string k in unityOutput.AgentInfos.Keys)
-                        {
-                            unityOutput.AgentInfos[k].Value.Clear();
-                        }
-                        if (input == null)
-                        {
-                            command = Communicator.Command.Quit;
-                            return;
-                        }
-
-                        command = input.Command;
-                        environmentParameters = input.EnvironmentParameters;
-                        isTraining = input.IsTraining;
-
-                        if (input.AgentActions != null)
-                        {
-                            foreach (string k in input.AgentActions.Keys)
-                            {
-                                if (currentAgents[k].Count() == 0)
-                                {
-                                    continue;
-                                }
-                                if (input.AgentActions[k].Value.Count == 0)
-                                {
-                                    continue;
-                                }
-                                for (int i = 0; i < currentAgents[k].Count(); i++)
-                                {
-                                    currentAgents[k][i].UpdateVectorAction(input.AgentActions[k].Value[i].VectorActions.ToArray());
-                                    currentAgents[k][i].UpdateMemoriesAction(input.AgentActions[k].Value[i].Memories.ToList());
-                                    currentAgents[k][i].UpdateTextAction(input.AgentActions[k].Value[i].TextActions);
-                                }
-                            }
-                        }
-                        // TODO : If input is quit, you must return a completion Output
-                    }
-                    foreach (string k in currentAgents.Keys)
-                    {
-                        hasSentState[k] = false;
-                        triedSendState[k] = false;
-                    }
+                    SendBatchedMessageHelper();
                 }
-
+                // The message was just sent so we must reset hasSentState and
+                // triedSendState
+                foreach (string k in currentAgents.Keys)
+                {
+                    hasSentState[k] = false;
+                    triedSendState[k] = false;
+                }
             }
         }
+
+        void SendBatchedMessageHelper()
+        {
+            var input = communicator.SendOuput(unityOutput);
+
+            foreach (string k in unityOutput.AgentInfos.Keys)
+            {
+                unityOutput.AgentInfos[k].Value.Clear();
+            }
+            if (input == null)
+            {
+                command = Communicator.Command.Quit;
+                return;
+            }
+
+            command = input.Command;
+            environmentParameters = input.EnvironmentParameters;
+            isTraining = input.IsTraining;
+
+            if (input.AgentActions != null)
+            {
+                foreach (string k in input.AgentActions.Keys)
+                {
+                    if (currentAgents[k].Count() == 0)
+                    {
+                        continue;
+                    }
+                    if (input.AgentActions[k].Value.Count == 0)
+                    {
+                        continue;
+                    }
+                    for (int i = 0; i < currentAgents[k].Count(); i++)
+                    {
+                        var agent = currentAgents[k][i];
+                        var action = input.AgentActions[k].Value[i];
+                        agent.UpdateVectorAction(
+                            action.VectorActions.ToArray());
+                        agent.UpdateMemoriesAction(
+                            action.Memories.ToList());
+                        agent.UpdateTextAction(
+                            action.TextActions);
+                    }
+                }
+            }
+        }
+
     }
 }
 
