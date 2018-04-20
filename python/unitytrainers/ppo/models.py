@@ -76,7 +76,7 @@ class PPOModel(LearningModel):
         hidden = tf.layers.dense(combined, 128, activation=tf.nn.elu)
         pred_next_state = tf.layers.dense(hidden, 128, activation=None)
 
-        forward_distance = tf.reduce_mean(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
+        forward_distance = 0.5 * tf.reduce_mean(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
         self.intrinsic_reward = 0.01 * forward_distance
         self.forward_loss = tf.reduce_mean(forward_distance)
 

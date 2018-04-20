@@ -26,7 +26,7 @@ public class PyramidAgent : Agent
 
     public override void CollectObservations()
     {
-        float rayDistance = 50f;
+        float rayDistance = 30f;
         float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
         float[] rayAngles1 = { 25f, 95f, 165f, 50f, 140f, 75f, 115f };
         float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
