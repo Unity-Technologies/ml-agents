@@ -13,6 +13,8 @@ from .python_to_unity_pb2 import *
 from .python_to_unity_pb2_grpc import *
 from .resolution_pb2 import *
 from .space_type_pb2 import *
+from .unity_initialization_input_pb2 import *
+from .unity_initialization_output_pb2 import *
 from .unity_input_pb2 import *
 from .unity_output_pb2 import *
 from .unity_rl_input_pb2 import *

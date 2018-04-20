@@ -18,17 +18,17 @@ namespace MLAgents.Communicator {
   {
     static readonly string __ServiceName = "communicator.PythonToUnity";
 
-    static readonly grpc::Marshaller<global::MLAgents.Communicator.PythonParameters> __Marshaller_PythonParameters = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.Communicator.PythonParameters.Parser.ParseFrom);
-    static readonly grpc::Marshaller<global::MLAgents.Communicator.AcademyParameters> __Marshaller_AcademyParameters = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.Communicator.AcademyParameters.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::MLAgents.Communicator.UnityInitializationInput> __Marshaller_UnityInitializationInput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.Communicator.UnityInitializationInput.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::MLAgents.Communicator.UnityInitializationOutput> __Marshaller_UnityInitializationOutput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.Communicator.UnityInitializationOutput.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::MLAgents.Communicator.UnityInput> __Marshaller_UnityInput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.Communicator.UnityInput.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::MLAgents.Communicator.UnityOutput> __Marshaller_UnityOutput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.Communicator.UnityOutput.Parser.ParseFrom);
 
-    static readonly grpc::Method<global::MLAgents.Communicator.PythonParameters, global::MLAgents.Communicator.AcademyParameters> __Method_Initialize = new grpc::Method<global::MLAgents.Communicator.PythonParameters, global::MLAgents.Communicator.AcademyParameters>(
+    static readonly grpc::Method<global::MLAgents.Communicator.UnityInitializationInput, global::MLAgents.Communicator.UnityInitializationOutput> __Method_Initialize = new grpc::Method<global::MLAgents.Communicator.UnityInitializationInput, global::MLAgents.Communicator.UnityInitializationOutput>(
         grpc::MethodType.Unary,
         __ServiceName,
         "Initialize",
-        __Marshaller_PythonParameters,
-        __Marshaller_AcademyParameters);
+        __Marshaller_UnityInitializationInput,
+        __Marshaller_UnityInitializationOutput);
 
     static readonly grpc::Method<global::MLAgents.Communicator.UnityInput, global::MLAgents.Communicator.UnityOutput> __Method_Send = new grpc::Method<global::MLAgents.Communicator.UnityInput, global::MLAgents.Communicator.UnityOutput>(
         grpc::MethodType.Unary,
@@ -52,7 +52,7 @@ namespace MLAgents.Communicator {
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
-      public virtual global::System.Threading.Tasks.Task<global::MLAgents.Communicator.AcademyParameters> Initialize(global::MLAgents.Communicator.PythonParameters request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::MLAgents.Communicator.UnityInitializationOutput> Initialize(global::MLAgents.Communicator.UnityInitializationInput request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -95,7 +95,7 @@ namespace MLAgents.Communicator {
       /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
       /// <param name="cancellationToken">An optional token for canceling the call.</param>
       /// <returns>The response received from the server.</returns>
-      public virtual global::MLAgents.Communicator.AcademyParameters Initialize(global::MLAgents.Communicator.PythonParameters request, grpc::Metadata headers = null, DateTime? deadline = null, CancellationToken cancellationToken = default(CancellationToken))
+      public virtual global::MLAgents.Communicator.UnityInitializationOutput Initialize(global::MLAgents.Communicator.UnityInitializationInput request, grpc::Metadata headers = null, DateTime? deadline = null, CancellationToken cancellationToken = default(CancellationToken))
       {
         return Initialize(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
@@ -105,7 +105,7 @@ namespace MLAgents.Communicator {
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
       /// <returns>The response received from the server.</returns>
-      public virtual global::MLAgents.Communicator.AcademyParameters Initialize(global::MLAgents.Communicator.PythonParameters request, grpc::CallOptions options)
+      public virtual global::MLAgents.Communicator.UnityInitializationOutput Initialize(global::MLAgents.Communicator.UnityInitializationInput request, grpc::CallOptions options)
       {
         return CallInvoker.BlockingUnaryCall(__Method_Initialize, null, options, request);
       }
@@ -117,7 +117,7 @@ namespace MLAgents.Communicator {
       /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
       /// <param name="cancellationToken">An optional token for canceling the call.</param>
       /// <returns>The call object.</returns>
-      public virtual grpc::AsyncUnaryCall<global::MLAgents.Communicator.AcademyParameters> InitializeAsync(global::MLAgents.Communicator.PythonParameters request, grpc::Metadata headers = null, DateTime? deadline = null, CancellationToken cancellationToken = default(CancellationToken))
+      public virtual grpc::AsyncUnaryCall<global::MLAgents.Communicator.UnityInitializationOutput> InitializeAsync(global::MLAgents.Communicator.UnityInitializationInput request, grpc::Metadata headers = null, DateTime? deadline = null, CancellationToken cancellationToken = default(CancellationToken))
       {
         return InitializeAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
@@ -127,7 +127,7 @@ namespace MLAgents.Communicator {
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
       /// <returns>The call object.</returns>
-      public virtual grpc::AsyncUnaryCall<global::MLAgents.Communicator.AcademyParameters> InitializeAsync(global::MLAgents.Communicator.PythonParameters request, grpc::CallOptions options)
+      public virtual grpc::AsyncUnaryCall<global::MLAgents.Communicator.UnityInitializationOutput> InitializeAsync(global::MLAgents.Communicator.UnityInitializationInput request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncUnaryCall(__Method_Initialize, null, options, request);
       }

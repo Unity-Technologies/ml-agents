@@ -23,16 +23,17 @@ namespace MLAgents.Communicator {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiJjb21tdW5pY2F0b3IvcHl0aG9uX3RvX3VuaXR5LnByb3RvEgxjb21tdW5p",
-            "Y2F0b3IaJGNvbW11bmljYXRvci9weXRob25fcGFyYW1ldGVycy5wcm90bxol",
-            "Y29tbXVuaWNhdG9yL2FjYWRlbXlfcGFyYW1ldGVycy5wcm90bxoeY29tbXVu",
-            "aWNhdG9yL3VuaXR5X2lucHV0LnByb3RvGh9jb21tdW5pY2F0b3IvdW5pdHlf",
-            "b3V0cHV0LnByb3RvMp8BCg1QeXRob25Ub1VuaXR5Ek8KCkluaXRpYWxpemUS",
-            "Hi5jb21tdW5pY2F0b3IuUHl0aG9uUGFyYW1ldGVycxofLmNvbW11bmljYXRv",
-            "ci5BY2FkZW15UGFyYW1ldGVycyIAEj0KBFNlbmQSGC5jb21tdW5pY2F0b3Iu",
-            "VW5pdHlJbnB1dBoZLmNvbW11bmljYXRvci5Vbml0eU91dHB1dCIAQhiqAhVN",
-            "TEFnZW50cy5Db21tdW5pY2F0b3JiBnByb3RvMw=="));
+            "Y2F0b3IaLWNvbW11bmljYXRvci91bml0eV9pbml0aWFsaXphdGlvbl9pbnB1",
+            "dC5wcm90bxouY29tbXVuaWNhdG9yL3VuaXR5X2luaXRpYWxpemF0aW9uX291",
+            "dHB1dC5wcm90bxoeY29tbXVuaWNhdG9yL3VuaXR5X2lucHV0LnByb3RvGh9j",
+            "b21tdW5pY2F0b3IvdW5pdHlfb3V0cHV0LnByb3RvMq8BCg1QeXRob25Ub1Vu",
+            "aXR5El8KCkluaXRpYWxpemUSJi5jb21tdW5pY2F0b3IuVW5pdHlJbml0aWFs",
+            "aXphdGlvbklucHV0GicuY29tbXVuaWNhdG9yLlVuaXR5SW5pdGlhbGl6YXRp",
+            "b25PdXRwdXQiABI9CgRTZW5kEhguY29tbXVuaWNhdG9yLlVuaXR5SW5wdXQa",
+            "GS5jb21tdW5pY2F0b3IuVW5pdHlPdXRwdXQiAEIYqgIVTUxBZ2VudHMuQ29t",
+            "bXVuaWNhdG9yYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.Communicator.PythonParametersReflection.Descriptor, global::MLAgents.Communicator.AcademyParametersReflection.Descriptor, global::MLAgents.Communicator.UnityInputReflection.Descriptor, global::MLAgents.Communicator.UnityOutputReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.Communicator.UnityInitializationInputReflection.Descriptor, global::MLAgents.Communicator.UnityInitializationOutputReflection.Descriptor, global::MLAgents.Communicator.UnityInputReflection.Descriptor, global::MLAgents.Communicator.UnityOutputReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null));
     }
     #endregion

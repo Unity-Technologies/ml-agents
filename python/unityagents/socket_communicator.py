@@ -8,7 +8,8 @@ import struct
 from communicator import PythonToUnityStub
 from communicator import UnityRLOutput, UnityRLInput,\
     UnityOutput, UnityInput,\
-    PythonParameters, AgentAction, AcademyParameters
+    PythonParameters, AgentAction, AcademyParameters,\
+    UnityInitializationInput, UnityInitializationOutput
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityActionException, UnityTimeOutException
@@ -49,12 +50,15 @@ class SocketCommunicator(object):
                                "or use a different worker number.".format(str(worker_id)))
 
     def get_academy_parameters(self) -> AcademyParameters:
-        # This must take in PythonParameters
-        python_parameters = PythonParameters(seed=2)
-        self._communicator_send(python_parameters.SerializeToString())
-        aca_params = AcademyParameters()
-        aca_params.ParseFromString(serialized=self._communicator_receive())
-        return aca_params
+        # TODO This must take in PythonParameters
+        # TODO set the seed
+        initialization_input = UnityInitializationInput()
+        initialization_input.header.status = 200
+        initialization_input.python_parameters.CopyFrom(PythonParameters())
+        self._communicator_send(initialization_input.SerializeToString())
+        initialization_output = UnityInitializationOutput()
+        initialization_output.ParseFromString(self._communicator_receive())
+        return initialization_output.academy_parameters
 
     def _communicator_receive(self):
         try:

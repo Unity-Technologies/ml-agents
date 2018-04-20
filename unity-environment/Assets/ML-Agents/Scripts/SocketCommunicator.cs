@@ -39,8 +39,23 @@ namespace MLAgents.Communicator
                 ProtocolType.Tcp);
             sender.Connect("localhost", communicatorParameters.Port);
 
-            PythonParameters pp = PythonParameters.Parser.ParseFrom(Receive());
-            Send(academyParameters.ToByteArray());
+            UnityInitializationInput initializationInput =
+                UnityInitializationInput.Parser.ParseFrom(Receive());
+
+            PythonParameters pp =
+                initializationInput.PythonParameters;
+
+            UnityInitializationOutput unityInitializationOutput =
+                new UnityInitializationOutput
+                {
+                    Header = new Header
+                    {
+                        Status = 200
+                    },
+                    AcademyParameters = academyParameters
+                };
+
+            Send(unityInitializationOutput.ToByteArray());
 
             unityInput = UnityInput.Parser.ParseFrom(Receive()).RlInput;
             return pp;

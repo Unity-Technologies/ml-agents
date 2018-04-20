@@ -61,13 +61,20 @@ namespace MLAgents.Communicator
                 manualResetEvent_out.Set();
             }
 
-            public override Task<AcademyParameters> Initialize(
-                PythonParameters request, ServerCallContext context)
+            public override Task<UnityInitializationOutput> Initialize(
+                UnityInitializationInput request, ServerCallContext context)
             {
-                pythonParameters = request;
+                pythonParameters = request.PythonParameters;
                 InputReceived();
                 WaitForOutput();
-                return Task.FromResult(academyParameters);
+                return Task.FromResult(new UnityInitializationOutput
+                {
+                    Header = new Header
+                    {
+                        Status = 200
+                    },
+                    AcademyParameters = academyParameters
+                });
             }
 
             public override Task<UnityOutput> Send(

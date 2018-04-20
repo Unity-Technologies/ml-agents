@@ -6,7 +6,8 @@ import time
 from communicator import PythonToUnityStub
 from communicator import UnityRLOutput, UnityRLInput,\
     UnityOutput, UnityInput,\
-    PythonParameters, AgentAction, AcademyParameters
+    PythonParameters, AgentAction, AcademyParameters,\
+    UnityInitializationInput, UnityInitializationOutput
 
 import grpc
 
@@ -51,11 +52,13 @@ class GrpcCommunicator(object):
             raise UnityTimeOutException("gRPC Timeout")
         else:
             self._stub = PythonToUnityStub(self.channel)
-        print("Client Connected")
+        initialization_input = UnityInitializationInput()
+        initialization_input.header.status = 200
+
 
         # Put the seed and the logpath here
-        aca_params = self._stub.Initialize(PythonParameters(), )
-        return aca_params
+        initialization_output = self._stub.Initialize(initialization_input, )
+        return initialization_output.academy_parameters
 
     def send(self, inputs: UnityRLInput) -> UnityRLOutput:
         message_input = self._empty_message

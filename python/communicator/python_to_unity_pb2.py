@@ -13,8 +13,8 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-from communicator import python_parameters_pb2 as communicator_dot_python__parameters__pb2
-from communicator import academy_parameters_pb2 as communicator_dot_academy__parameters__pb2
+from communicator import unity_initialization_input_pb2 as communicator_dot_unity__initialization__input__pb2
+from communicator import unity_initialization_output_pb2 as communicator_dot_unity__initialization__output__pb2
 from communicator import unity_input_pb2 as communicator_dot_unity__input__pb2
 from communicator import unity_output_pb2 as communicator_dot_unity__output__pb2
 
@@ -23,9 +23,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='communicator/python_to_unity.proto',
   package='communicator',
   syntax='proto3',
-  serialized_pb=_b('\n\"communicator/python_to_unity.proto\x12\x0c\x63ommunicator\x1a$communicator/python_parameters.proto\x1a%communicator/academy_parameters.proto\x1a\x1e\x63ommunicator/unity_input.proto\x1a\x1f\x63ommunicator/unity_output.proto2\x9f\x01\n\rPythonToUnity\x12O\n\nInitialize\x12\x1e.communicator.PythonParameters\x1a\x1f.communicator.AcademyParameters\"\x00\x12=\n\x04Send\x12\x18.communicator.UnityInput\x1a\x19.communicator.UnityOutput\"\x00\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
+  serialized_pb=_b('\n\"communicator/python_to_unity.proto\x12\x0c\x63ommunicator\x1a-communicator/unity_initialization_input.proto\x1a.communicator/unity_initialization_output.proto\x1a\x1e\x63ommunicator/unity_input.proto\x1a\x1f\x63ommunicator/unity_output.proto2\xaf\x01\n\rPythonToUnity\x12_\n\nInitialize\x12&.communicator.UnityInitializationInput\x1a\'.communicator.UnityInitializationOutput\"\x00\x12=\n\x04Send\x12\x18.communicator.UnityInput\x1a\x19.communicator.UnityOutput\"\x00\x42\x18\xaa\x02\x15MLAgents.Communicatorb\x06proto3')
   ,
-  dependencies=[communicator_dot_python__parameters__pb2.DESCRIPTOR,communicator_dot_academy__parameters__pb2.DESCRIPTOR,communicator_dot_unity__input__pb2.DESCRIPTOR,communicator_dot_unity__output__pb2.DESCRIPTOR,])
+  dependencies=[communicator_dot_unity__initialization__input__pb2.DESCRIPTOR,communicator_dot_unity__initialization__output__pb2.DESCRIPTOR,communicator_dot_unity__input__pb2.DESCRIPTOR,communicator_dot_unity__output__pb2.DESCRIPTOR,])
 
 
 
@@ -41,16 +41,16 @@ _PYTHONTOUNITY = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=195,
-  serialized_end=354,
+  serialized_start=213,
+  serialized_end=388,
   methods=[
   _descriptor.MethodDescriptor(
     name='Initialize',
     full_name='communicator.PythonToUnity.Initialize',
     index=0,
     containing_service=None,
-    input_type=communicator_dot_python__parameters__pb2._PYTHONPARAMETERS,
-    output_type=communicator_dot_academy__parameters__pb2._ACADEMYPARAMETERS,
+    input_type=communicator_dot_unity__initialization__input__pb2._UNITYINITIALIZATIONINPUT,
+    output_type=communicator_dot_unity__initialization__output__pb2._UNITYINITIALIZATIONOUTPUT,
     options=None,
   ),
   _descriptor.MethodDescriptor(
