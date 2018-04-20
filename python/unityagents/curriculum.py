@@ -18,7 +18,7 @@ class Curriculum(object):
         self.max_lesson_number = 0
         self.measure_type = None
         self.threshold_operator = None
-        self.threshold_amount = None
+        self.thresholds = None
         if location is None:
             self.data = None
         else:
@@ -32,24 +32,25 @@ class Curriculum(object):
                 raise UnityEnvironmentException("There was an error decoding {}".format(location))
             self.smoothing_value = 0
             necessaryParams = ['parameters', 'measure',
-                        'min_lesson_length', 'signal_smoothing']
-            if(self.data['measure'] == "multibrain_reward"): 
+                        'min_lesson_length', 'signal_smoothing', 'thresholds']
+            if('measure' in self.data and self.data['measure'] == "multibrain_reward"): 
                 self.smoothing_values = {}
                 necessaryParams.append('threshold_operator')
-                necessaryParams.append('threshold_amount')
-            else:    
-                necessaryParams.append('thresholds')
             for key in necessaryParams:
                 if key not in self.data:
                     raise UnityEnvironmentException("{0} does not contain a "
                                                     "{1} field.".format(location, key))
             parameters = self.data['parameters']
             self.measure_type = self.data['measure']
+            self.thresholds = self.data['thresholds'] 
             if(self.measure_type == "multibrain_reward"):
-                self.max_lesson_number = self.data['threshold_amount']
                 self.threshold_operator = self.data['threshold_operator']
+                self.max_lesson_number = sys.maxsize
+                for key, value in self.thresholds.items()
+                    if(len(value) < self.max_lesson_number)
+                        self.max_lesson_number = len(value)
             else:
-                self.max_lesson_number = len(self.data['thresholds'])
+                self.max_lesson_number = len(self.thresholds)
             for key in parameters:
                 if key not in default_reset_parameters:
                     raise UnityEnvironmentException(
@@ -95,15 +96,15 @@ class Curriculum(object):
                     self.smoothing_values[key] = value
                 if self.lesson_number < self.max_lesson_number:
                     if(self.threshold_operator == 'or'):
-                        change_lesson = change_lesson or (value > self.data[key][self.lesson_number])
+                        change_lesson = change_lesson or (value > self.thresholds[key][self.lesson_number])
                     else:
-                        change_lesson = change_lesson and (value > self.data[key][self.lesson_number])  
+                        change_lesson = change_lesson and (value > self.thresholds[key][self.lesson_number])  
         else:
             if self.data["signal_smoothing"]:
                 progress = self.smoothing_value * 0.25 + 0.75 * progress
             self.smoothing_value = progress
             if self.lesson_number < self.max_lesson_number:
-                change_lesson = (progress > self.data['thresholds'][self.lesson_number])
+                change_lesson = (progress > self.thresholds[self.lesson_number])
         self.lesson_length += 1            
         if self.lesson_number < self.max_lesson_number:
             if (change_lesson and (self.lesson_length > self.data['min_lesson_length'])):
@@ -133,3 +134,5 @@ class Curriculum(object):
         for key in parameters:
             config[key] = parameters[key][lesson]
         return config
+
+        
