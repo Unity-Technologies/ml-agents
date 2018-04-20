@@ -229,16 +229,16 @@ class PPOTrainer(Trainer):
             run_list = [self.model.intrinsic_reward]
             if self.is_continuous_action:
                 run_list.append(self.model.output)
-            elif self.use_recurrent:
-                feed_dict[self.model.prev_action] = np.reshape(curr_info.previous_vector_actions, [-1])
+            else:
+                feed_dict[self.model.action_holder] = np.reshape(take_action_outputs[self.model.output], [-1])
             if self.use_observations:
                 for i, _ in enumerate(curr_info.visual_observations):
                     feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
             if self.use_states:
                 feed_dict[self.model.vector_in] = curr_info.vector_observations
                 feed_dict[self.model.next_state] = next_info.vector_observations
-                feed_dict[self.model.action_holder] = np.reshape(take_action_outputs[self.model.output], [-1])
             if self.use_recurrent:
+                feed_dict[self.model.prev_action] = np.reshape(curr_info.previous_vector_actions, [-1])
                 if curr_info.memories.shape[1] == 0:
                     curr_info.memories = np.zeros((len(curr_info.agents), self.m_size))
                 feed_dict[self.model.memory_in] = curr_info.memories
