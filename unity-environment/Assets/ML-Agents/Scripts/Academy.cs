@@ -298,7 +298,9 @@ public abstract class Academy : MonoBehaviour
                     key, resetParameters[key]
                 );
             }
-            brainBatcher.GiveAcademyParameters(academyParameters);
+            MLAgents.Communicator.PythonParameters pythonParameters =
+                        brainBatcher.GiveAcademyParameters(academyParameters);
+            Random.InitState(pythonParameters.Seed);
             Application.logMessageReceived += HandleLog;
             logPath = Path.GetFullPath(".") + "/unity-environment.log";
             logWriter = new StreamWriter(logPath, false);

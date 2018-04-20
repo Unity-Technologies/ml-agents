@@ -1,18 +1,10 @@
 import logging
-import numpy as np
-import time
-
+import grpc
 
 from communicator import PythonToUnityStub
 from communicator import UnityRLOutput, UnityRLInput,\
-    UnityOutput, UnityInput,\
-    PythonParameters, AgentAction, AcademyParameters,\
-    UnityInitializationInput, UnityInitializationOutput
-
-import grpc
-
-from .brain import BrainInfo, BrainParameters, AllBrainInfo
-from .exception import UnityActionException, UnityTimeOutException
+    UnityInput, AcademyParameters, UnityInitializationInput
+from .exception import UnityTimeOutException
 
 
 logging.basicConfig(level=logging.INFO)
@@ -36,16 +28,14 @@ class GrpcCommunicator(object):
         self._empty_message.header.status = 200
 
         try:
-            # Establish communication socket
+            # Establish communication grpc
             self.channel = grpc.insecure_channel('localhost:' + str(port))
-            # self._stub = PythonToUnityStub(channel)
         except :
             raise UnityTimeOutException("Couldn't start socket communication because worker number {} is still in use. "
                                "You may need to manually close a previously opened environment "
                                "or use a different worker number.".format(str(worker_id)))
 
-    def get_academy_parameters(self) -> AcademyParameters:
-        # This must take in PythonParameters
+    def get_academy_parameters(self, python_parameters) -> AcademyParameters:
         try:
             grpc.channel_ready_future(self.channel).result(timeout=30)
         except grpc.FutureTimeoutError:
@@ -54,7 +44,7 @@ class GrpcCommunicator(object):
             self._stub = PythonToUnityStub(self.channel)
         initialization_input = UnityInitializationInput()
         initialization_input.header.status = 200
-
+        initialization_input.python_parameters.CopyFrom(python_parameters)
 
         # Put the seed and the logpath here
         initialization_output = self._stub.Initialize(initialization_input, )

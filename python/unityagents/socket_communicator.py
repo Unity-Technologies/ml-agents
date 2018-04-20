@@ -1,18 +1,12 @@
 import logging
-import numpy as np
-import time
 import socket
 import struct
 
 
-from communicator import PythonToUnityStub
 from communicator import UnityRLOutput, UnityRLInput,\
-    UnityOutput, UnityInput,\
-    PythonParameters, AgentAction, AcademyParameters,\
+    UnityOutput, UnityInput,AcademyParameters,\
     UnityInitializationInput, UnityInitializationOutput
-
-from .brain import BrainInfo, BrainParameters, AllBrainInfo
-from .exception import UnityActionException, UnityTimeOutException
+from .exception import UnityTimeOutException
 
 
 logging.basicConfig(level=logging.INFO)
@@ -49,12 +43,10 @@ class SocketCommunicator(object):
                                "You may need to manually close a previously opened environment "
                                "or use a different worker number.".format(str(worker_id)))
 
-    def get_academy_parameters(self) -> AcademyParameters:
-        # TODO This must take in PythonParameters
-        # TODO set the seed
+    def get_academy_parameters(self, python_parameters) -> AcademyParameters:
         initialization_input = UnityInitializationInput()
         initialization_input.header.status = 200
-        initialization_input.python_parameters.CopyFrom(PythonParameters())
+        initialization_input.python_parameters.CopyFrom(python_parameters)
         self._communicator_send(initialization_input.SerializeToString())
         initialization_output = UnityInitializationOutput()
         initialization_output.ParseFromString(self._communicator_receive())

@@ -7,10 +7,11 @@ import os
 import subprocess
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
-from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
+from .exception import UnityEnvironmentException, UnityActionException
 from .curriculum import Curriculum
 
-from communicator import UnityRLInput, UnityRLOutput, AgentAction, EngineConfiguration, EnvironmentParameters
+from communicator import UnityRLInput, UnityRLOutput, AgentAction,\
+    EnvironmentParameters, PythonParameters
 
 from .grpc_communicator import GrpcCommunicator
 from .socket_communicator import SocketCommunicator
@@ -123,8 +124,12 @@ class UnityEnvironment(object):
                                              stderr=subprocess.PIPE,
                                              shell=True)
         self._loaded = True
+
+        python_parameters = PythonParameters(
+            seed=seed
+        )
         try:
-            aca_params = self.communicator.get_academy_parameters()
+            aca_params = self.communicator.get_academy_parameters(python_parameters)
         except UnityEnvironmentException:
             self.close()
             raise

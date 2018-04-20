@@ -34,15 +34,18 @@ namespace MLAgents
         /// Gives the academy parameters. Is used by the academy to send the
         /// AcademyParameters to the communicator.
         /// </summary>
+        /// <returns>The python parameters.</returns>
         /// <param name="academyParameters">Academy parameters.</param>
-        public void GiveAcademyParameters(
+        public Communicator.PythonParameters GiveAcademyParameters(
             Communicator.AcademyParameters academyParameters)
         {
             Communicator.UnityRLInput input;
-            communicator.Initialize(academyParameters, out input);
+            Communicator.PythonParameters pp = 
+                communicator.Initialize(academyParameters, out input);
             command = input.Command;
             environmentParameters = input.EnvironmentParameters;
             isTraining = input.IsTraining;
+            return pp;
         }
 
         /// <summary>
