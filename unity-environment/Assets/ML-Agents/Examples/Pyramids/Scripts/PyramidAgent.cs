@@ -84,6 +84,7 @@ public class PyramidAgent : Agent
                                          2f, Random.Range(-myArea.range, myArea.range)) 
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+        
     }
 
     void OnCollisionEnter(Collision collision)

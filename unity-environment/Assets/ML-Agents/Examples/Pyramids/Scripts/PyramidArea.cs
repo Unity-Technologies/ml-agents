@@ -21,10 +21,10 @@ public class PyramidArea : Area
 
     public void ResetPyramidArea(GameObject[] agents)
     {
-        foreach (Transform child in transform) if (child.CompareTag("pyramid")) {
-                Destroy(child.gameObject);
-            }
-
+        foreach (Transform child in transform) if (child.CompareTag("pyramid")) 
+        {
+            Destroy(child.gameObject);
+        }
 
         foreach (GameObject agent in agents)
         {

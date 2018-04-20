@@ -17,6 +17,7 @@ default:
     sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
+    use_curiosity: false
 
 BananaBrain:
     normalize: false
@@ -78,8 +79,8 @@ GoalieBrain:
     num_layers: 2
     normalize: false
 
-BrainCurio:
-    trainer: 'ppo-curio'
+PyramidBrain:
+    use_curiosity: True
     batch_size: 128
     buffer_size: 1024
     hidden_units: 256

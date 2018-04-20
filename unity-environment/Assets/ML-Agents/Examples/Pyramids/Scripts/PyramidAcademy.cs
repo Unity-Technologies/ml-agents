@@ -20,14 +20,6 @@ public class PyramidAcademy : Academy
         }
     }
 
-    void ClearObjects(GameObject[] objects)
-    {
-        foreach (GameObject bana in objects)
-        {
-            Destroy(bana);
-        }
-    }
-
     public override void AcademyStep()
     {
 
