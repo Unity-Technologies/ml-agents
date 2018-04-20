@@ -241,11 +241,13 @@ class PPOTrainer(Trainer):
                             stored_info.memories = np.zeros((len(stored_info.agents), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
                     actions = stored_take_action_outputs[self.model.output]
-                    actions_pre = stored_take_action_outputs[self.model.output_pre]
+                    if self.is_continuous_action:
+                        actions_pre = stored_take_action_outputs[self.model.output_pre]
                     a_dist = stored_take_action_outputs[self.model.all_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
-                    self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
+                    if self.is_continuous_action:
+                        self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
                     self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
