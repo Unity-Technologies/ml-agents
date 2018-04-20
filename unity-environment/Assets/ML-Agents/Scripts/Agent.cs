@@ -767,7 +767,7 @@ public abstract class Agent : MonoBehaviour
     protected float ScaleAction(float rawAction, float min, float max)
     {
         var middle = (min + max) / 2;
-        var range = max - min;
+        var range = (max - min) / 2;
         return rawAction * range + middle;
     }
 
