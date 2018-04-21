@@ -80,7 +80,7 @@ Typical Range: `5e5` - `1e7`
 
 #### Beta
 
-`beta` corresponds to the strength of the entropy regularization, which makes the policy "more random." This ensures that agents properly explore the action space during training. Increasing this will ensure more random actions are taken. This should be adjusted such that the entropy (measurable from TensorBoard) slowly decreases alongside increases in reward. If entropy drops too quickly, increase `beta`. If entropy drops too slowly, decrease `beta`.
+`beta` corresponds to the strength of the entropy regularization, which makes the policy "more random." This ensures that agents properly explore the action space during training when using discrete action space. If you are using continuous actions however, then the entropy is learned, and there is no beta to adjust. Increasing beta when using discrete actions will ensure more random actions are taken. This should be adjusted such that the entropy (measurable from TensorBoard) slowly decreases alongside increases in reward. If entropy drops too quickly, increase `beta`. If entropy drops too slowly, decrease `beta`.
 
 Typical Range: `1e-4` - `1e-2`
 
