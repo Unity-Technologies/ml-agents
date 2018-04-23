@@ -546,6 +546,8 @@ public abstract class Academy : MonoBehaviour
 
         AgentSetStatus(maxStepReached, done, stepCount);
 
+        brainBatcher.GiveAcademyDone(done);
+
         if (done)
         {
             EnvironmentReset();

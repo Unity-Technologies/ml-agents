@@ -213,6 +213,7 @@ namespace MLAgents
             {
                 if (hasSentState.Values.Any(x => x) || academyDone)
                 {
+                    unityOutput.GlobalDone = academyDone;
                     SendBatchedMessageHelper();
                 }
                 // The message was just sent so we must reset hasSentState and
