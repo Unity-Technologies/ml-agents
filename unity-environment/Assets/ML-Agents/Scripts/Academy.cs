@@ -563,12 +563,6 @@ public abstract class Academy : MonoBehaviour
 
         AgentAct();
 
-        if (done)
-        {
-            done = false;
-            maxStepReached = false;
-        }
-
         stepCount += 1;
     }
 
@@ -579,6 +573,8 @@ public abstract class Academy : MonoBehaviour
     {
         stepCount = 0;
         episodeCount++;
+        done = false;
+        maxStepReached = false;
         AcademyReset();
     }
 
