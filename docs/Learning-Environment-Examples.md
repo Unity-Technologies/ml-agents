@@ -47,6 +47,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, with one value corresponding to X-rotation, and the other to Z-rotation.
     * Visual Observations: 0
 * Reset Parameters: None
+* Benchmark Total Cumulative Reward: >100
 
 ## GridWorld
 
@@ -64,7 +65,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Discrete) Size of 4, corresponding to movement in cardinal directions.
     * Visual Observations: One corresponding to top-down view of GridWorld.
 * Reset Parameters: Three, corresponding to grid size, number of obstacles, and number of goals.
-
+* Benchmark Total Cumulative Reward: >0.8
 
 ## Tennis
 
@@ -81,6 +82,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
+* Benchmark Total Cumulative Reward: ~0
 
 ## Push Block
 
@@ -97,6 +99,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
     * Visual Observations: None.
 * Reset Parameters: None.
+* Benchmark Total Cumulative Reward: >4.5
 
 ## Wall Jump
 
@@ -129,6 +132,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
     * Visual Observations: None
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
+* Benchmark Total Cumulative Reward: >30
 
 ## Crawler
 
@@ -148,6 +152,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
     * Visual Observations: None
 * Reset Parameters: None
+* Benchmark Total Cumulative Reward: >2000
 
 ## Banana Collector
 
@@ -164,6 +169,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
     * Visual Observations (Optional; None by default): First-person view for each agent. 
 * Reset Parameters: None
+* Benchmark Total Cumulative Reward: >10
 
 ## Hallway
 
