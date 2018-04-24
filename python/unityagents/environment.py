@@ -13,8 +13,9 @@ from .curriculum import Curriculum
 from communicator import UnityRLInput, UnityRLOutput, AgentAction,\
     EnvironmentParameters, PythonParameters
 
-from .grpc_communicator import GrpcCommunicator
+from .rpc_communicator import RpcCommunicator
 from .socket_communicator import SocketCommunicator
+from .rpc_communicator_2 import RpcCommunicator2
 
 
 from sys import platform
@@ -46,8 +47,9 @@ class UnityEnvironment(object):
         self._loaded = False
         self.proc1 = None
 
-        self.communicator = GrpcCommunicator(worker_id, base_port)
+        # self.communicator = RpcCommunicator(worker_id, base_port)
         # self.communicator = SocketCommunicator(worker_id, base_port)
+        self.communicator = RpcCommunicator2(worker_id, base_port)
 
         if file_name != 'editor':
             cwd = os.getcwd()

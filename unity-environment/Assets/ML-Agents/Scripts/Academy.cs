@@ -242,7 +242,7 @@ public abstract class Academy : MonoBehaviour
         MLAgents.Communicator.Communicator communicator= null;
         try
         {
-            communicator = new MLAgents.Communicator.RpcCommunicator(
+            communicator = new MLAgents.Communicator.RpcCommunicator2(
                 new MLAgents.Communicator.CommunicatorParameters
                 {
                 Port = ReadArgs()
@@ -255,7 +255,7 @@ public abstract class Academy : MonoBehaviour
             {
                 if (b.brainType == BrainType.External)
                 {
-                    communicator = new MLAgents.Communicator.RpcCommunicator(
+                    communicator = new MLAgents.Communicator.RpcCommunicator2(
                         new MLAgents.Communicator.CommunicatorParameters
                         {
                             Port = 5005

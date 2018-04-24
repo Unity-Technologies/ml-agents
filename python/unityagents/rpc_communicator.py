@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("unityagents")
 
 
-class GrpcCommunicator(object):
+class RpcCommunicator(object):
     def __init__(self, worker_id=0,
                  base_port=5005):
         """
