@@ -675,6 +675,11 @@ public abstract class Agent : MonoBehaviour
         info.vectorObservation.Add(observation.z);
         info.vectorObservation.Add(observation.w);
     }
+    
+    protected void AddVectorObs(bool observation)
+    {
+        info.vectorObservation.Add(observation ? 1f : 0f);
+    }
 
     /// <summary>
     /// Sets the text observation.

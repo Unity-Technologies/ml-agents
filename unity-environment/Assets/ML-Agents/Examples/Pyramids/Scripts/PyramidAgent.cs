@@ -14,6 +14,7 @@ public class PyramidAgent : Agent
     public float zForce;
     public bool contribute;
     private RayPerception rayPer;
+    public GameObject areaSwitch;
 
     public override void InitializeAgent()
     {
@@ -26,15 +27,16 @@ public class PyramidAgent : Agent
 
     public override void CollectObservations()
     {
-        float rayDistance = 30f;
+        float rayDistance = 35f;
         float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
         float[] rayAngles1 = { 25f, 95f, 165f, 50f, 140f, 75f, 115f };
         float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
 
-        string[] detectableObjects = { "block", "wall", "goal"};
+        string[] detectableObjects = { "block", "wall", "goal", "switchOff", "switchOn"};
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
+        AddVectorObs(areaSwitch.GetComponent<PyramidSwitch>().GetState());
     }
 
     public void MoveAgent(float[] act)
@@ -75,6 +77,7 @@ public class PyramidAgent : Agent
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         MoveAgent(vectorAction);
+        
     }
 
     public override void AgentReset()
@@ -85,15 +88,19 @@ public class PyramidAgent : Agent
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
         
+        areaSwitch.GetComponent<PyramidSwitch>().Reset();
+        area.GetComponent<PyramidArea>().ResetPyramidArea(new[] {gameObject});
+        //area.GetComponent<PyramidArea>().CreateObject(50);
     }
 
-    void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("goal"))
         {
-            AddReward(1f);
-            Destroy(collision.gameObject.transform.parent.gameObject);
-            area.GetComponent<PyramidArea>().CreateObject(1);
+            SetReward(2f - (float)GetStepCount() / agentParameters.maxStep);
+            Done();
+            //Destroy(collision.gameObject.transform.parent.gameObject);
+            //area.GetComponent<PyramidArea>().CreateObject(1);
         }
     }
 

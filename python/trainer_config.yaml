@@ -20,12 +20,21 @@ default:
     use_curiosity: false
 
 BananaBrain:
+    use_curiosity: false
     normalize: false
     batch_size: 1024
     beta: 5.0e-3
     buffer_size: 10240
 
+BouncerBrain:
+    use_curiosity: true
+    normalize: true
+    max_steps: 5.0e5
+    num_layers: 2
+    hidden_units: 64
+
 PushBlockBrain:
+    use_curiosity: true
     max_steps: 5.0e4
     batch_size: 128
     buffer_size: 2048
@@ -80,7 +89,8 @@ GoalieBrain:
     normalize: false
 
 PyramidBrain:
-    use_curiosity: True
+    use_curiosity: false
+    time_horizon: 128
     batch_size: 128
     buffer_size: 1024
     hidden_units: 256

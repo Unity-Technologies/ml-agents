@@ -37,7 +37,7 @@ public class PyramidArea : Area
             }
         }
 
-        CreateObject(numPyra);
+        //CreateObject(numPyra);
     }
 
     public override void ResetArea()

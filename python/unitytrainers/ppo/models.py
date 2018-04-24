@@ -57,12 +57,34 @@ class PPOModel(LearningModel):
             encoded_state = tf.layers.dense(hidden_1, 128, reuse=reuse, activation=tf.nn.elu, name="encode_2")
             return encoded_state
 
+    def encode_visual_observation(self, image_input, reuse):
+        """
+        Builds a set of visual (CNN) encoders.
+        :param image_input: The placeholder for the image input to use.
+        :param h_size: Hidden layer size.
+        :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
+        :return: List of hidden layer tensors.
+        """
+        conv1 = tf.layers.conv2d(image_input, 16, kernel_size=[8, 8], strides=[4, 4],
+                                 activation=tf.nn.elu, reuse=reuse)
+        conv2 = tf.layers.conv2d(conv1, 32, kernel_size=[4, 4], strides=[2, 2],
+                                 activation=tf.nn.elu, reuse=reuse)
+        return tf.layers.flatten(conv2)
+
+
     def create_inverse_model(self, a_size, s_size):
         self.next_state = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='next_vector_observation')
-        encoded_state = self.encode_state(self.vector_in, reuse=False)
-        encoded_next_state = self.encode_state(self.next_state, reuse=True)
+        current_state_list = [self.vector_in]
 
+        if self.use_recurrent:
+            current_state_list.append(self.memory_out)
+
+        current_state = tf.concat(current_state_list, axis=1)
+        encoded_state = self.encode_state(current_state, reuse=False)
+        encoded_next_state = self.encode_state(self.next_state, reuse=True)
         combined = tf.concat([encoded_state, encoded_next_state], axis=1)
+
         if self.brain.vector_action_space_type == "continuous":
             pred_action = tf.layers.dense(combined, a_size, activation=None)
             self.inverse_loss = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1))
@@ -124,5 +146,5 @@ class PPOModel(LearningModel):
         self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(
             tf.boolean_mask(entropy, self.mask))
         if self.use_curiosity:
-            self.loss += 0.2 * self.forward_loss + 0.8 * self.inverse_loss
+            self.loss += 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
         self.update_batch = optimizer.minimize(self.loss)
