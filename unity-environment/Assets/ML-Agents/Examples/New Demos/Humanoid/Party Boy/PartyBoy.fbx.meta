@@ -1,0 +1,274 @@
+fileFormatVersion: 2
+guid: aedf75e29ce0a43b39aecf1c6f87ec00
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: ANIMAL CONTROL ARMATURE.001
+    100002: animal control hair.001
+    100004: animal control hair.003
+    100006: animal control hat.001
+    100008: animal control hat.002
+    100010: animal control hat.003
+    100012: animal control hat.004
+    100014: animal control shirt.003
+    100016: animal control shirt.004
+    100018: animal control shoes.002
+    100020: boxers.004
+    100022: chest
+    100024: crocs
+    100026: crocs.002
+    100028: fanny pack.001
+    100030: fingers.L
+    100032: fingers.R
+    100034: foot.L
+    100036: foot.R
+    100038: forearm.L
+    100040: forearm.R
+    100042: 'gas station shirt '
+    100044: gas station shirt .001
+    100046: hair.008
+    100048: hand.L
+    100050: hand.R
+    100052: head
+    100054: hips
+    100056: Human Raccoon Chaser.004
+    100058: Human Raccoon Chaser.005
+    100060: Human Raccoon Chaser.006
+    100062: Human Raccoon Chaser.007
+    100064: Human Raccoon Chaser.008
+    100066: Human Raccoon Chaser.009
+    100068: jean shorts
+    100070: jean shorts.002
+    100072: Lighthead Headband.008
+    100074: mustache
+    100076: mustache.001
+    100078: neck
+    100080: //RootNode
+    100082: shin.L
+    100084: shin.R
+    100086: shoulder.L
+    100088: shoulder.R
+    100090: spine
+    100092: sun glasses
+    100094: thigh.L
+    100096: thigh.R
+    100098: undershirt.004
+    100100: upper_arm.L
+    100102: upper_arm.R
+    100104: walkie talkie.001
+    100106: headphones
+    400000: ANIMAL CONTROL ARMATURE.001
+    400002: animal control hair.001
+    400004: animal control hair.003
+    400006: animal control hat.001
+    400008: animal control hat.002
+    400010: animal control hat.003
+    400012: animal control hat.004
+    400014: animal control shirt.003
+    400016: animal control shirt.004
+    400018: animal control shoes.002
+    400020: boxers.004
+    400022: chest
+    400024: crocs
+    400026: crocs.002
+    400028: fanny pack.001
+    400030: fingers.L
+    400032: fingers.R
+    400034: foot.L
+    400036: foot.R
+    400038: forearm.L
+    400040: forearm.R
+    400042: 'gas station shirt '
+    400044: gas station shirt .001
+    400046: hair.008
+    400048: hand.L
+    400050: hand.R
+    400052: head
+    400054: hips
+    400056: Human Raccoon Chaser.004
+    400058: Human Raccoon Chaser.005
+    400060: Human Raccoon Chaser.006
+    400062: Human Raccoon Chaser.007
+    400064: Human Raccoon Chaser.008
+    400066: Human Raccoon Chaser.009
+    400068: jean shorts
+    400070: jean shorts.002
+    400072: Lighthead Headband.008
+    400074: mustache
+    400076: mustache.001
+    400078: neck
+    400080: //RootNode
+    400082: shin.L
+    400084: shin.R
+    400086: shoulder.L
+    400088: shoulder.R
+    400090: spine
+    400092: sun glasses
+    400094: thigh.L
+    400096: thigh.R
+    400098: undershirt.004
+    400100: upper_arm.L
+    400102: upper_arm.R
+    400104: walkie talkie.001
+    400106: headphones
+    2100000: skin texture
+    2100002: clear
+    2100004: animal control hair
+    2100006: swatch
+    2100008: eyes
+    2100010: animal control pants
+    2100012: animal control pants dark
+    2100014: animal control shirt
+    2100016: animal control shirt dark
+    2100018: animal control shirt patch
+    2100020: animal control hat
+    2100022: hair
+    2100024: headband
+    2100026: Sun Glasses
+    2300000: sun glasses
+    2300002: headphones
+    3300000: sun glasses
+    3300002: headphones
+    4300000: sun glasses
+    4300002: mustache.001
+    4300004: animal control hair.003
+    4300006: jean shorts.002
+    4300008: crocs.002
+    4300010: Human Raccoon Chaser.009
+    4300012: gas station shirt .001
+    4300014: animal control hat.004
+    4300016: boxers.004
+    4300018: animal control shirt.004
+    4300020: animal control shoes.002
+    4300022: Human Raccoon Chaser.008
+    4300024: Human Raccoon Chaser.007
+    4300026: Human Raccoon Chaser.006
+    4300028: animal control shirt.003
+    4300030: animal control hat.002
+    4300032: animal control hat.001
+    4300034: mustache
+    4300036: undershirt.004
+    4300038: hair.008
+    4300040: jean shorts
+    4300042: Human Raccoon Chaser.005
+    4300044: Lighthead Headband.008
+    4300046: 'gas station shirt '
+    4300048: Human Raccoon Chaser.004
+    4300050: animal control hat.003
+    4300052: animal control hair.001
+    4300054: walkie talkie.001
+    4300056: fanny pack.001
+    4300058: crocs
+    4300060: headphones
+    9500000: //RootNode
+    13700000: animal control hair.001
+    13700002: animal control hair.003
+    13700004: animal control hat.001
+    13700006: animal control hat.002
+    13700008: animal control hat.003
+    13700010: animal control hat.004
+    13700012: animal control shirt.003
+    13700014: animal control shirt.004
+    13700016: animal control shoes.002
+    13700018: boxers.004
+    13700020: crocs
+    13700022: crocs.002
+    13700024: fanny pack.001
+    13700026: 'gas station shirt '
+    13700028: gas station shirt .001
+    13700030: hair.008
+    13700032: Human Raccoon Chaser.004
+    13700034: Human Raccoon Chaser.005
+    13700036: Human Raccoon Chaser.006
+    13700038: Human Raccoon Chaser.007
+    13700040: Human Raccoon Chaser.008
+    13700042: Human Raccoon Chaser.009
+    13700044: jean shorts
+    13700046: jean shorts.002
+    13700048: Lighthead Headband.008
+    13700050: mustache
+    13700052: mustache.001
+    13700054: undershirt.004
+    13700056: walkie talkie.001
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

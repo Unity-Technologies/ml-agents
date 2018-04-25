@@ -1,0 +1,605 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d4a95e762ad34ec1a4ee77e41d45608, type: 3}
+  m_Name: Profile Human PARTY BOY
+  m_EditorClassIdentifier: 
+  inherentCharStates: []
+  bpPropertiesList:
+  - bodyPartName: hips
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 0
+    mass: 75
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 0
+    boxCenter: {x: -1.3889221e-17, y: 0.115523376, z: 0.03339302}
+    boxSize: {x: 0.38088408, y: 0.21785073, z: 0.3073158}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: 
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: 0}
+    xMin: 0
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: spine
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 5
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0.21, z: 0}
+    colType: 0
+    boxCenter: {x: -2.8896423e-15, y: 0.19000004, z: 0.027795738}
+    boxSize: {x: 0.3556521, y: 0.20077395, z: 0.29611975}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: hips
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -15
+    xMax: 15
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: chest
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 5
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0.12, z: 0}
+    colType: 0
+    boxCenter: {x: 3.02632e-16, y: 0.12834425, z: 0.0045151543}
+    boxSize: {x: 0.32104927, y: 0.19135092, z: 0.24955839}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: spine
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -20
+    xMax: 0
+    yMin: 10
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: neck
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 0
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 5
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0.06, z: 0}
+    colType: 0
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: chest
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: 0
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 40
+  - bodyPartName: head
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 5
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0.33, z: 0}
+    colType: 2
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0.2, z: 0}
+    sphereRadius: 0.23
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: neck
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -20
+    xMax: 10
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: shoulder_L
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 0
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 0
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: chest
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -10
+    xMax: 10
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: upper_arm_L
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.18, z: 0}
+    capRadius: 0.08
+    capHeight: 0.29
+    capDirection: 1
+    connectedTo: shoulder_L
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -90
+    xMax: 30
+    yMin: 60
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: forearm_L
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.21, z: 0}
+    capRadius: 0.07
+    capHeight: 0.25
+    capDirection: 1
+    connectedTo: upper_arm_L
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -60
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: hand_L
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.1, z: 0}
+    capRadius: 0.07
+    capHeight: 0.07
+    capDirection: 1
+    connectedTo: forearm_L
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: 0
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: shoulder_R
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 0
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 0
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: chest
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -10
+    xMax: 10
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: upper_arm_R
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.18, z: 0}
+    capRadius: 0.08
+    capHeight: 0.29
+    capDirection: 1
+    connectedTo: shoulder_R
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -90
+    xMax: 30
+    yMin: 60
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: forearm_R
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.21, z: 0}
+    capRadius: 0.07
+    capHeight: 0.25
+    capDirection: 1
+    connectedTo: upper_arm_R
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -60
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: hand_R
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.1, z: 0}
+    capRadius: 0.07
+    capHeight: 0.07
+    capDirection: 1
+    connectedTo: forearm_R
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: 0
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: thigh_L
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.3, z: 0}
+    capRadius: 0.091
+    capHeight: 0.2
+    capDirection: 1
+    connectedTo: hips
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -25
+    xMax: 70
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: shin_L
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.14, z: 0}
+    capRadius: 0.06
+    capHeight: 0.25
+    capDirection: 1
+    connectedTo: thigh_L
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -80
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: foot_L
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 0
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 0
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: shin_L
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -20
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: thigh_R
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.3, z: 0}
+    capRadius: 0.091
+    capHeight: 0.2
+    capDirection: 1
+    connectedTo: hips
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -25
+    xMax: 70
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: shin_R
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 1
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 1
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0.14, z: 0}
+    capRadius: 0.06
+    capHeight: 0.25
+    capDirection: 1
+    connectedTo: thigh_R
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -80
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  - bodyPartName: foot_R
+    bodyPartTag: Untagged
+    addRB: 1
+    addColl: 0
+    usePhysicsMaterial: 0
+    addCollisionController: 0
+    joint: 1
+    mass: 3
+    drag: 0
+    angDrag: 0.05
+    useGravity: 1
+    centerOfMass: {x: 0, y: 0, z: 0}
+    colType: 0
+    boxCenter: {x: 0, y: 0, z: 0}
+    boxSize: {x: 0.1, y: 0.1, z: 0.1}
+    sphereCenter: {x: 0, y: 0, z: 0}
+    sphereRadius: 0.1
+    capCenter: {x: 0, y: 0, z: 0}
+    capRadius: 0.1
+    capHeight: 0.1
+    capDirection: 0
+    connectedTo: shin_R
+    axialType: 1
+    jointAxis: {x: 0, y: 0, z: 0}
+    jointSecondaryAxis: {x: 0, y: 0, z: -1}
+    xMin: -20
+    xMax: 0
+    yMin: 0
+    YZSpr: 0
+    zMax: 0
+  bodyPartsToConfigureList:
+  - hips
+  - spine
+  - chest
+  - neck
+  - head
+  - shoulder_L
+  - upper_arm_L
+  - forearm_L
+  - hand_L
+  - shoulder_R
+  - upper_arm_R
+  - forearm_R
+  - hand_R
+  - thigh_L
+  - shin_L
+  - foot_L
+  - thigh_R
+  - shin_R
+  - foot_R

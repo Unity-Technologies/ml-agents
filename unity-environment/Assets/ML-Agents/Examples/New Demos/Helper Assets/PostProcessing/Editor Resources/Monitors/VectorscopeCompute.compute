@@ -1,0 +1,49 @@
+#include "UnityCG.cginc"
+
+RWStructuredBuffer<uint> _Vectorscope;
+Texture2D<float4> _Source;
+
+CBUFFER_START (Params)
+    uint _IsLinear;
+    float4 _Res;
+CBUFFER_END
+
+#define GROUP_SIZE 32
+
+float3 RgbToYUV(float3 c)
+{
+    float Y =  0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+    float U = -0.169 * c.r - 0.331 * c.g + 0.500 * c.b;
+    float V =  0.500 * c.r - 0.419 * c.g - 0.081 * c.b;
+    return float3(Y, U, V);
+}
+
+#pragma kernel KVectorscope
+[numthreads(GROUP_SIZE,GROUP_SIZE,1)]
+void KVectorscope(uint2 dispatchThreadId : SV_DispatchThreadID)
+{
+    if (dispatchThreadId.x < (uint)_Res.x && dispatchThreadId.y < (uint)_Res.y)
+    {
+        float3 color = saturate(_Source[dispatchThreadId].xyz);
+        if (_IsLinear > 0)
+            color = LinearToGammaSpace(color);
+
+        float3 yuv = RgbToYUV(color);
+
+        if (length(yuv.yz) > 0.49)
+            yuv.yz = normalize(yuv.yz) * 0.49;
+
+        yuv.yz += (0.5).xx;
+        uint u = (uint)floor(yuv.y * _Res.x);
+        uint v = (uint)floor(yuv.z * _Res.y);
+        InterlockedAdd(_Vectorscope[v * _Res.x + u], 1);
+    }
+}
+
+#pragma kernel KVectorscopeClear
+[numthreads(GROUP_SIZE,GROUP_SIZE,1)]
+void KVectorscopeClear(uint2 dispatchThreadId : SV_DispatchThreadID)
+{
+    if (dispatchThreadId.x < (uint)_Res.x && dispatchThreadId.y < (uint)_Res.y)
+        _Vectorscope[dispatchThreadId.y * _Res.x + dispatchThreadId.x] = 0u;
+}

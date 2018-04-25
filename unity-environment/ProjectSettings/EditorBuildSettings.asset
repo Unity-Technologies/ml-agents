@@ -4,4 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/New Demos/Walker/Scenes/Walker Using Conf Joint
+      Angles.unity
+    guid: 36160dc1faf384eaa9a65a73f6942ce3
