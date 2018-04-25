@@ -149,7 +149,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: None
 
-## Banana Collector
+## [Banana Collector](https://youtu.be/heVMs3t9qSk)
 
 ![Banana](images/banana.png)
 
@@ -165,7 +165,7 @@ If you would like to contribute environments, please see our
     * Visual Observations (Optional; None by default): First-person view for each agent. 
 * Reset Parameters: None
 
-## Hallway
+## [Hallway](https://youtu.be/53GyfpPQRUQ)
 
 ![Hallway](images/hallway.png)
 
@@ -182,7 +182,7 @@ If you would like to contribute environments, please see our
     * Visual Observations (Optional): First-person view for the agent.
 * Reset Parameters: None
 
-## Bouncer
+## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
 
 ![Bouncer](images/bouncer.png)
 
@@ -199,7 +199,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: None
 
-## Soccer Twos
+## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
 
 ![SoccerTwos](images/soccer.png)
 

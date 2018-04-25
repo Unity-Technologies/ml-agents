@@ -42,7 +42,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 
     ExternalCommunicator coord;
 
-    [Tooltip("This must be the bytes file corresponding to the pretrained Tensorflow graph.")]
+    [Tooltip("This must be the bytes file corresponding to the pretrained TensorFlow graph.")]
     /// Modify only in inspector : Reference to the Graph asset
     public TextAsset graphModel;
 
