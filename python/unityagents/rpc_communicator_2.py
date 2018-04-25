@@ -4,6 +4,7 @@ import grpc
 from multiprocessing import Pipe
 from concurrent.futures import ThreadPoolExecutor
 
+from .communicator import Communicator
 from communicator import UnityToPythonServicer, add_UnityToPythonServicer_to_server
 from communicator import UnityRLOutput, UnityRLInput,\
     UnityInput, UnityOutput, AcademyParameters, \
@@ -19,22 +20,20 @@ class Unity2Python(UnityToPythonServicer):
     parent_conn, child_conn = Pipe()
 
     def Initialize(self, request, context):
-        print("\n\n\n Initialization is called\n\n\n")
-        # return UnityInitializationInput()
         self.child_conn.send(request)
         return self.child_conn.recv()
 
     def Send(self, request, context):
-        # return UnityInput()
         self.child_conn.send(request)
         return self.child_conn.recv()
 
 
-class RpcCommunicator2(object):
+class RpcCommunicator2(Communicator):
     def __init__(self, worker_id=0,
                  base_port=5005):
         """
-        Python side of the socket communication
+        Python side of the grpc communication. Python is the server and Unity the client
+
 
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
@@ -76,20 +75,13 @@ class RpcCommunicator2(object):
 
     def close(self):
         """
-        Sends a shutdown signal to the unity environment, and closes the socket connection.
+        Sends a shutdown signal to the unity environment, and closes the grpc connection.
         """
-        # inputs = UnityInput()
-        # inputs.command = 2
-        # How to shut gRPC down ?
         try:
             message_input = UnityInput()
             message_input.header.status = 400
             self.unity_to_python.parent_conn.send(message_input)
         except :
             pass
-        # if self._conn is not None:
-        #     self._conn.send(b"EXIT")
-        #     self._conn.close()
-        #     self._socket.close()
-        #     self._conn = None
+
 

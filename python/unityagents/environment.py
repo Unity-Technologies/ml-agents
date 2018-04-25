@@ -51,6 +51,8 @@ class UnityEnvironment(object):
         # self.communicator = SocketCommunicator(worker_id, base_port)
         self.communicator = RpcCommunicator2(worker_id, base_port)
 
+        # If the environment name is 'editor', a new environment will not be launched
+        # and the communicator will directly try to connect to an existing unity environment.
         if file_name != 'editor':
             cwd = os.getcwd()
             file_name = (file_name.strip()
@@ -378,7 +380,7 @@ class UnityEnvironment(object):
     @staticmethod
     def _flatten(arr):
         """
-        Converts dictionary of arrays to list for transmission over socket.
+        Converts arrays to list.
         :param arr: numpy vector.
         :return: flattened list.
         """
@@ -396,7 +398,12 @@ class UnityEnvironment(object):
         return arr
 
     @staticmethod
-    def _bytes_to_array(image_bytes, gray_scale):
+    def _process_pixels(image_bytes, gray_scale):
+        """
+        Converts byte array observation image into numpy array, re-sizes it, and optionally converts it to grey scale
+        :param image_bytes: input byte array corresponding to image
+        :return: processed numpy array of observation from environment
+        """
         s = bytearray(image_bytes)
         image = Image.open(io.BytesIO(s))
         s = np.array(image) / 255.0
@@ -417,7 +424,7 @@ class UnityEnvironment(object):
             vis_obs = []
             for i in range(self.brains[b].number_visual_observations):
                 obs = [
-                    self._bytes_to_array(x.visual_observations[i], self.brains[b].camera_resolutions[i]['blackAndWhite'])
+                    self._process_pixels(x.visual_observations[i], self.brains[b].camera_resolutions[i]['blackAndWhite'])
                     for x in agent_info_list]
                 vis_obs += [np.array(obs)]
             _data[b] = BrainInfo(

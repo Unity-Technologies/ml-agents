@@ -2,9 +2,9 @@ import logging
 import socket
 import struct
 
-
+from .communicator import Communicator
 from communicator import UnityRLOutput, UnityRLInput,\
-    UnityOutput, UnityInput,AcademyParameters,\
+    UnityOutput, UnityInput, AcademyParameters,\
     UnityInitializationInput, UnityInitializationOutput
 from .exception import UnityTimeOutException
 
@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("unityagents")
 
 
-class SocketCommunicator(object):
+class SocketCommunicator(Communicator):
     def __init__(self, worker_id=0,
                  base_port=5005):
         """

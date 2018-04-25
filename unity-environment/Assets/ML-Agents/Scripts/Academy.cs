@@ -163,10 +163,13 @@ public abstract class Academy : MonoBehaviour
     /// engine settings at the next environment step.
     bool modeSwitched;
 
-    /// Pointer to the communicator currently in use by the Academy.
-    //MLAgents.Communicator.Communicator communicator;
+    /// Pointer to the batcher currently in use by the Academy.
     MLAgents.Batcher brainBatcher;
+
+    /// Used to write error messages.
     StreamWriter logWriter;
+
+    /// The path to where the log should be written.
     string logPath;
 
 
@@ -240,6 +243,8 @@ public abstract class Academy : MonoBehaviour
         List<Brain> brains = GetBrains(gameObject);
         InitializeAcademy();
         MLAgents.Communicator.Communicator communicator= null;
+
+        // Try to launch the communicator by usig the arguments passed at launch
         try
         {
             communicator = new MLAgents.Communicator.RpcCommunicator2(
@@ -248,6 +253,10 @@ public abstract class Academy : MonoBehaviour
                 Port = ReadArgs()
                 });
         }
+        // If it fails, we check if there are any external brains in the scene
+        // If there are : Launch the communicator on the default port
+        // If there arn't, there is no need for a communicator and it is set
+        // to null
         catch
         {
             communicator = null;

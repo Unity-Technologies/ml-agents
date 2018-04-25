@@ -36,16 +36,23 @@ namespace MLAgents.Communicator
             output.Header = new Header { Status = 200 };
             unityInput = client.Send(output).RlInput;
 
-            EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
+            EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
 
             return result;
         }
 
         public void Close()
         {
-            UnityOutput output = new UnityOutput();
-            output.Header = new Header { Status = 400 };
-            client.Send(output); 
+            try
+            {
+                UnityOutput output = new UnityOutput();
+                output.Header = new Header { Status = 400 };
+                client.Send(output);
+            }
+            catch
+            {
+                return;
+            }
         }
 
         public UnityRLInput SendOuput(UnityRLOutput unityOutput)
@@ -53,7 +60,14 @@ namespace MLAgents.Communicator
             UnityOutput output = new UnityOutput();
             output.Header = new Header { Status = 200 };
             output.RlOutput = unityOutput;
-            return client.Send(output).RlInput; 
+            try
+            {
+                return client.Send(output).RlInput;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// Ends connection and closes environment
@@ -62,10 +76,10 @@ namespace MLAgents.Communicator
             Close();
         }
 
-        void HandleOnPlayModeChanged()
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
-            if (!EditorApplication.isPlaying)
+            if (state==PlayModeStateChange.ExitingPlayMode)
             {
                 Close();
             }

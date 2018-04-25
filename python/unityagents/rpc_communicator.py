@@ -1,6 +1,7 @@
 import logging
 import grpc
 
+from .communicator import Communicator
 from communicator import PythonToUnityStub
 from communicator import UnityRLOutput, UnityRLInput,\
     UnityInput, AcademyParameters, UnityInitializationInput
@@ -11,11 +12,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("unityagents")
 
 
-class RpcCommunicator(object):
+class RpcCommunicator(Communicator):
     def __init__(self, worker_id=0,
                  base_port=5005):
         """
-        Python side of the socket communication
+        Python side of the grpc communication. Python is the client and Unity the server
 
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
@@ -58,7 +59,7 @@ class RpcCommunicator(object):
 
     def close(self):
         """
-        Sends a shutdown signal to the unity environment, and closes the socket connection.
+        Sends a shutdown signal to the unity environment, and closes the grpc connection.
         """
         # inputs = UnityInput()
         # inputs.command = 2
