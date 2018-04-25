@@ -258,9 +258,12 @@ class UnityEnvironment(object):
         :param bw:
         :return:
         """
-        s = self._recv_bytes()
-        s = self._process_pixels(image_bytes=s, bw=bw)
-        self._conn.send(b"RECEIVED")
+        try:
+            s = self._recv_bytes()
+            s = self._process_pixels(image_bytes=s, bw=bw)
+            self._conn.send(b"RECEIVED")
+        except socket.timeout as e:
+            raise UnityTimeOutException("The environment took too long to send.", self._log_path)
         return s
 
     def _get_state_dict(self):
@@ -268,11 +271,14 @@ class UnityEnvironment(object):
         Receives dictionary of state information from socket, and confirms.
         :return:
         """
-        state = self._recv_bytes().decode('utf-8')
-        if state[:14] == "END_OF_MESSAGE":
-            return {}, state[15:] == 'True'
-        self._conn.send(b"RECEIVED")
-        state_dict = json.loads(state)
+        try:
+            state = self._recv_bytes().decode('utf-8')
+            if state[:14] == "END_OF_MESSAGE":
+                return {}, state[15:] == 'True'
+            self._conn.send(b"RECEIVED")
+            state_dict = json.loads(state)
+        except socket.timeout as e:
+            raise UnityTimeOutException("The environment took too long to recieve the state.")
         return state_dict, None
 
     def reset(self, train_mode=True, config=None, lesson=None) -> AllBrainInfo:
@@ -295,12 +301,15 @@ class UnityEnvironment(object):
                 raise UnityEnvironmentException("The parameter '{0}' is not a valid parameter.".format(k))
 
         if self._loaded:
-            self._conn.send(b"RESET")
             try:
-                self._conn.recv(self._buffer_size)
+                self._conn.send(b"RESET")
+                try:
+                    self._conn.recv(self._buffer_size)
+                except socket.timeout as e:
+                    raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
+                self._conn.send(json.dumps({"train_model": train_mode, "parameters": config}).encode('utf-8'))
             except socket.timeout as e:
-                raise UnityTimeOutException("The environment took too long to respond.", self._log_path)
-            self._conn.send(json.dumps({"train_model": train_mode, "parameters": config}).encode('utf-8'))
+                raise UnityOverTimeException("It took too long to send reset connection.")
             return self._get_state()
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
