@@ -13,7 +13,12 @@ class UnityEnvironmentException(UnityException):
     """
     pass
 
-
+class UnityOverTimeException(UnityException):
+    """
+    Related to errors which take too long to run.
+    """
+    pass
+    
 class UnityActionException(UnityException):
     """
     Related to errors with sending actions.
