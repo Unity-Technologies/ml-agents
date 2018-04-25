@@ -16,7 +16,7 @@ complexity over time. This can either be done manually, or via Curriculum Learni
 ## Vector Observations
 * Vector Observations should include all variables relevant to allowing the agent to take the optimally informed decision.
 * In cases where Vector Observations need to be remembered or compared over time, increase the `Stacked Vectors` value to allow the agent to keep track of multiple observations into the past. 
-* Categorical variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`).
+* Categorical variables such as type of object (Sword, Shield, Bow) should be encoded in one-hot fashion (i.e. `3` > `0, 0, 1`).
 * Besides encoding non-numeric values, all inputs should be normalized to be in the range 0 to +1 (or -1 to 1). For example, the `x` position information of an agent where the maximum possible value is `maxValue` should be recorded as `AddVectorObs(transform.position.x / maxValue);` rather than `AddVectorObs(transform.position.x);`. See the equation below for one approach of normalization. 
 * Positional information of relevant GameObjects should be encoded in relative coordinates wherever possible. This is often relative to the agent position.
 
