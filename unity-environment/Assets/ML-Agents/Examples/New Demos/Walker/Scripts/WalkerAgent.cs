@@ -603,6 +603,7 @@ public class WalkerAgent : Agent
         torquePenaltyFinal = 0.001f * Mathf.Clamp(torquePenalty, 0f, 500);
         velocityPenaltyFinal = 0.001f * Mathf.Clamp(velocityPenalty, 0f, 500);
         chestHeightRewardFinal = 0.2f * bodyParts[chest].rb.position.y;
+        // chestDownwardVelocityFinal = 0.2f * bodyParts[chest].rb.velocity.y;
         chestYUpRewardFinal = 0.2f * Vector3.Dot(bodyParts[chest].rb.transform.up, Vector3.up);
         AddReward(
             // - 0.001f * torquePenalty
@@ -616,10 +617,11 @@ public class WalkerAgent : Agent
             // + 0.001f * facingDirReward //are we facing our target dir? this dir should change when our target dir changes. a FacingTargetDirDot of 1 means our character is facing exactly towards our target dir
             // + 0.02f * Mathf.Clamp(bodyParts[hips].rb.velocity.x, 0f, 1000f)
             // + 0.02f * Mathf.Clamp(bodyParts[chest].rb.position.y, 0f, 100f)
+            + 0.02f * Mathf.Clamp(bodyParts[chest].rb.velocity.x, 0f, 100f)
             // + 0.01f * Mathf.Clamp(Vector3.Dot(bodyParts[chest].rb.transform.up, Vector3.up), 0f, 100f) //reward for chest up dir == world up dir
             + chestHeightRewardFinal
             // + bodyParts[chest].rb.position.y
-            + chestYUpRewardFinal
+            // + chestYUpRewardFinal
         );
         // AddReward(bodyParts[head].rb.velocity.sqrMagnitude * -.001f);
             // SetReward((ragdoll.head.Height - 1.2f) + ragdoll.head.transform.up.y * 0.1f);
