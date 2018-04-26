@@ -119,8 +119,11 @@ WalkerBrain:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
+    # epsilon: 0.2 #was .2
     batch_size: 2048
     buffer_size: 8192
+    beta: 0.001 #it was at .001
+    # learning_rate: 1.0e-3
     gamma: 0.995
     max_steps: 1e7
     summary_freq: 3000

@@ -188,7 +188,7 @@ public class WalkerAgent : Agent
             // }
             if(bp.joint)
             {
-                if(bp.rb.transform != handL && bp.rb.transform != handR && bp.rb.transform != head)
+                if(bp.rb.transform != handL && bp.rb.transform != handR)
                 {
                     var jointRotation = GetJointRotation(bp.joint);
                     AddVectorObs(jointRotation.eulerAngles); //get the joint rotation
@@ -221,6 +221,7 @@ public class WalkerAgent : Agent
         // AddVectorObs(bodyParts[chest].rb.transform.forward);
         // AddVectorObs(bodyParts[chest].rb.transform.up);
         // AddVectorObs(FacingTargetDirDot(Vector3.right));  //is our ragdoll facing towards our target dir. we should be able to plug in any vector here
+        AddVectorObs(FacingTargetDirDot(bodyParts[hips].rb.transform.forward, Vector3.right));  //is our ragdoll facing towards our target dir. we should be able to plug in any vector here
         // AddVectorObs(bodyParts[hips].rb.velocity);
         // AddVectorObs(bodyParts[hips].rb.angularVelocity);
         foreach(var item in bodyParts)
@@ -453,15 +454,15 @@ public class WalkerAgent : Agent
     //a dp of say .9 means two vectors are almost pointing the same way.
     //a dp of 0 means two vectors are perpendicular (i.e. 90 degree diff)
     //we can use DotProduct to determine if the ragdoll is facing our target dir or not
-    float FacingTargetDirDot(Vector3 targetDir)
+    float FacingTargetDirDot(Vector3 currentDir, Vector3 targetDir)
     {
         // bool facingDir = false;
         // float facingDirDot;
         // var targetDir = Vector3.right;
-        forwardDir = bodyParts[hips].rb.transform.forward;
+        // forwardDir = bodyParts[hips].rb.transform.forward;
         // forwardDir.y = 0;
         // forwardDir.z = 0;
-        facingDirReward = Vector3.Dot(forwardDir, targetDir);
+        facingDirReward = Vector3.Dot(currentDir, targetDir);
         return facingDirReward;
         // if(facingTowardsDot >= .9f)//roughly facing dir
         // {
@@ -537,21 +538,22 @@ public class WalkerAgent : Agent
 
 
 
-       SetNormalizedTargetRotation(bodyParts[chest], vectorAction[0], vectorAction[1], 0, vectorAction[2], vectorAction[3]);
-       SetNormalizedTargetRotation(bodyParts[spine], vectorAction[4], vectorAction[5], 0, vectorAction[6], vectorAction[7]);
+       SetNormalizedTargetRotation(bodyParts[chest], vectorAction[0], vectorAction[1], vectorAction[2], vectorAction[3], vectorAction[4]);
+       SetNormalizedTargetRotation(bodyParts[spine], vectorAction[5], vectorAction[6], vectorAction[7], vectorAction[8], vectorAction[9]);
 
-       SetNormalizedTargetRotation(bodyParts[thighL], vectorAction[8], vectorAction[9], 0, vectorAction[10], vectorAction[11]);
-       SetNormalizedTargetRotation(bodyParts[shinL], vectorAction[12], 0, 0, vectorAction[13], vectorAction[14]);
-       SetNormalizedTargetRotation(bodyParts[footL], vectorAction[15], vectorAction[16], vectorAction[17], vectorAction[18], vectorAction[19]);
-       SetNormalizedTargetRotation(bodyParts[thighR], vectorAction[20], vectorAction[21], 0, vectorAction[22], vectorAction[23]);
-       SetNormalizedTargetRotation(bodyParts[shinR], vectorAction[24], 0, 0, vectorAction[25], vectorAction[26]);
-       SetNormalizedTargetRotation(bodyParts[footR], vectorAction[27], vectorAction[28], vectorAction[29], vectorAction[30], vectorAction[31]);
+       SetNormalizedTargetRotation(bodyParts[thighL], vectorAction[10], vectorAction[11], 0, vectorAction[12], vectorAction[13]);
+       SetNormalizedTargetRotation(bodyParts[shinL], vectorAction[14], 0, 0, vectorAction[15], vectorAction[16]);
+       SetNormalizedTargetRotation(bodyParts[footL], vectorAction[17], vectorAction[18], vectorAction[19], vectorAction[20], vectorAction[21]);
+       SetNormalizedTargetRotation(bodyParts[thighR], vectorAction[22], vectorAction[23], 0, vectorAction[24], vectorAction[25]);
+       SetNormalizedTargetRotation(bodyParts[shinR], vectorAction[26], 0, 0, vectorAction[27], vectorAction[28]);
+       SetNormalizedTargetRotation(bodyParts[footR], vectorAction[29], vectorAction[30], vectorAction[31], vectorAction[32], vectorAction[33]);
        
-       SetNormalizedTargetRotation(bodyParts[armL], vectorAction[32], vectorAction[33], 0, vectorAction[34], vectorAction[35]);
-       SetNormalizedTargetRotation(bodyParts[forearmL], vectorAction[36], 0, 0, vectorAction[37], vectorAction[38]);
+       SetNormalizedTargetRotation(bodyParts[armL], vectorAction[34], vectorAction[35], 0, vectorAction[36], vectorAction[37]);
+       SetNormalizedTargetRotation(bodyParts[forearmL], vectorAction[38], 0, 0, vectorAction[39], vectorAction[40]);
     //    SetNormalizedTargetRotation(bodyParts[handL], vectorAction[0], 0, 0);
-       SetNormalizedTargetRotation(bodyParts[armR], vectorAction[39], vectorAction[40], 0, vectorAction[41], vectorAction[42]);
-       SetNormalizedTargetRotation(bodyParts[forearmR], vectorAction[43], 0, 0, vectorAction[44], vectorAction[45]);
+       SetNormalizedTargetRotation(bodyParts[armR], vectorAction[41], vectorAction[42], 0, vectorAction[43], vectorAction[44]);
+       SetNormalizedTargetRotation(bodyParts[forearmR], vectorAction[45], 0, 0, vectorAction[46], vectorAction[47]);
+       SetNormalizedTargetRotation(bodyParts[head], vectorAction[48], vectorAction[49], 0, vectorAction[50], vectorAction[51]);
     //    SetNormalizedTargetRotation(bodyParts[handR], vectorAction[0], 0, 0);
 
 
@@ -576,7 +578,7 @@ public class WalkerAgent : Agent
             var velSM = item.Value.rb.velocity.sqrMagnitude;
             if(velSM > maxBodyPartVelocity * maxBodyPartVelocity)
             {
-                velocityPenalty += velSM;
+                velocityPenalty += Mathf.Clamp(velSM, 0f, 100);
             }
 
 
@@ -601,7 +603,7 @@ public class WalkerAgent : Agent
         // );
         
         torquePenaltyFinal = 0.001f * Mathf.Clamp(torquePenalty, 0f, 500);
-        velocityPenaltyFinal = 0.001f * Mathf.Clamp(velocityPenalty, 0f, 500);
+        velocityPenaltyFinal = 0.001f * Mathf.Clamp(velocityPenalty, 0f, 1600);
         chestHeightRewardFinal = 0.2f * bodyParts[chest].rb.position.y;
         // chestDownwardVelocityFinal = 0.2f * bodyParts[chest].rb.velocity.y;
         chestYUpRewardFinal = 0.2f * Vector3.Dot(bodyParts[chest].rb.transform.up, Vector3.up);
@@ -617,11 +619,18 @@ public class WalkerAgent : Agent
             // + 0.001f * facingDirReward //are we facing our target dir? this dir should change when our target dir changes. a FacingTargetDirDot of 1 means our character is facing exactly towards our target dir
             // + 0.02f * Mathf.Clamp(bodyParts[hips].rb.velocity.x, 0f, 1000f)
             // + 0.02f * Mathf.Clamp(bodyParts[chest].rb.position.y, 0f, 100f)
-            + 0.02f * Mathf.Clamp(bodyParts[chest].rb.velocity.x, 0f, 100f)
             // + 0.01f * Mathf.Clamp(Vector3.Dot(bodyParts[chest].rb.transform.up, Vector3.up), 0f, 100f) //reward for chest up dir == world up dir
-            + chestHeightRewardFinal
             // + bodyParts[chest].rb.position.y
             // + chestYUpRewardFinal
+
+            // + 0.02f * Mathf.Clamp(bodyParts[chest].rb.velocity.x, 0f, 100f)
+            // + chestHeightRewardFinal
+
+
+            // + 0.02f * Mathf.Clamp(bodyParts[hips].rb.velocity.x, 0f, 1000f)
+            + 0.02f * Mathf.Clamp(bodyParts[chest].rb.velocity.x, 0f, 1000f)
+            + 0.02f * Mathf.Clamp(FacingTargetDirDot(bodyParts[hips].rb.transform.forward, Vector3.right), 0f, 100f)
+            // + 0.01f * bodyParts[chest].rb.position.y
         );
         // AddReward(bodyParts[head].rb.velocity.sqrMagnitude * -.001f);
             // SetReward((ragdoll.head.Height - 1.2f) + ragdoll.head.transform.up.y * 0.1f);
