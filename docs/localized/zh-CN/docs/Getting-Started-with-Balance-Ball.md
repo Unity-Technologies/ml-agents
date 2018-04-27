@@ -264,11 +264,11 @@ TensorBoard 来观测训练统计信息时，将每次训练的此项设置为�
 
 总之，转到命令行，进入 `ml-agents` 目录并输入：
 
-```python
-python3 python/learn.py <env_file_path> --run-id=<run-identifier> --train 
+```
+python3 python/learn.py <env_name> --run-id=<run-identifier> --train 
 ```
 
-`--train` 标志告诉 ML-Agents 以训练模式运行。`env_file_path` 应该是刚才创建的 Unity 可执行文件的路径。
+`--train` 标志告诉 ML-Agents 以训练模式运行。`env_name` 应该是刚才创建的 Unity 可执行文件的名字。
 
 
 ### 观测训练进度
