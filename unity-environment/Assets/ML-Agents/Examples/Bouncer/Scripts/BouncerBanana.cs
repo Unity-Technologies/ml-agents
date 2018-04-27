@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class BouncerBanana : MonoBehaviour {
 
-
-    void Start(){
-
-    }
-    
     // Update is called once per frame
     void FixedUpdate () {
         gameObject.transform.Rotate(new Vector3(1, 0, 0), 0.5f);
@@ -16,7 +11,6 @@ public class BouncerBanana : MonoBehaviour {
 
     private void OnTriggerEnter(Collider collision)
     {
-
         Agent agent = collision.gameObject.GetComponent<Agent>();
         if (agent != null)
         {
@@ -24,15 +18,14 @@ public class BouncerBanana : MonoBehaviour {
             Respawn();
         }
 
-
     }
 
     public void Respawn(){
         gameObject.transform.localPosition = 
             new Vector3(
-                (1 - 2 * Random.value) *5f, 
-                2f+(Random.value) *5f, 
-                (1 - 2 * Random.value) *5f);
+                (1 - 2 * Random.value) * 5f, 
+                2f+ Random.value * 5f, 
+                (1 - 2 * Random.value) * 5f);
     }
 
 }
