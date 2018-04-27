@@ -2,7 +2,9 @@ using Grpc.Core;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace MLAgents.Communicator
@@ -35,9 +37,9 @@ namespace MLAgents.Communicator
             UnityOutput output = new UnityOutput();
             output.Header = new Header { Status = 200 };
             unityInput = client.Send(output).RlInput;
-
+#if UNITY_EDITOR
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
-
+#endif
             return result;
         }
 
@@ -70,6 +72,7 @@ namespace MLAgents.Communicator
             }
         }
 
+#if UNITY_EDITOR
         /// Ends connection and closes environment
         private void OnApplicationQuit()
         {
@@ -84,6 +87,7 @@ namespace MLAgents.Communicator
                 Close();
             }
         }
+#endif
 
     }
 }
