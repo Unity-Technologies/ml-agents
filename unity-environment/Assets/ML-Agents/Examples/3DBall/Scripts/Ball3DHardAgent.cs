@@ -25,8 +25,8 @@ public class Ball3DHardAgent : Agent
         
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
-            var actionZ = 2f * vectorAction[0];
-            var actionX = 2f * vectorAction[1];
+            var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
+            var actionX = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);
 
             if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
                 (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
