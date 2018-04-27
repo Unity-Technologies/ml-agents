@@ -22,20 +22,17 @@ class LearningModel(object):
         self.use_recurrent = use_recurrent
         self.a_size = brain.vector_action_space_size
 
-    @staticmethod
-    def create_global_steps():
+    def create_global_steps(self):
         """Creates TF ops to track and increment global training step."""
         global_step = tf.Variable(0, name="global_step", trainable=False, dtype=tf.int32)
         increment_step = tf.assign(global_step, tf.add(global_step, 1))
         return global_step, increment_step
 
-    @staticmethod
-    def swish(input_activation):
+    def swish(self, input_activation):
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
 
-    @staticmethod
-    def create_visual_input(o_size_h, o_size_w, bw, name):
+    def create_visual_input(self, o_size_h, o_size_w, bw, name):
         if bw:
             c_channels = 1
         else:
@@ -62,25 +59,30 @@ class LearningModel(object):
                                                          name="normalized_state")
             else:
                 self.normalized_state = self.vector_in
+            return self.normalized_state
 
         else:
             self.vector_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='vector_observation')
+            return self.vector_in
 
-    def create_continuous_state_encoder(self, h_size, activation, num_layers):
+    def create_continuous_observation_encoder(self, observation_input, h_size, activation, num_layers, scope, reuse):
         """
         Builds a set of hidden state encoders.
+        :param scope: Graph scope for the encoder ops.
+        :param observation_input: Input vector.
         :param h_size: Hidden layer size.
         :param activation: What type of activation function to use for layers.
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
-        hidden = self.normalized_state
-        for j in range(num_layers):
-            hidden = tf.layers.dense(hidden, h_size, activation=activation,
-                                     kernel_initializer=c_layers.variance_scaling_initializer(1.0))
+        with tf.variable_scope(scope):
+            hidden = observation_input
+            for i in range(num_layers):
+                hidden = tf.layers.dense(hidden, h_size, activation=activation, reuse=reuse, name="hidden_{}".format(i),
+                                         kernel_initializer=c_layers.variance_scaling_initializer(1.0))
         return hidden
 
-    def create_visual_encoder(self, image_input, h_size, activation, num_layers):
+    def create_visual_observation_encoder(self, image_input, h_size, activation, num_layers, scope, reuse):
         """
         Builds a set of visual (CNN) encoders.
         :param image_input: The placeholder for the image input to use.
@@ -89,33 +91,37 @@ class LearningModel(object):
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
-        conv1 = tf.layers.conv2d(image_input, 16, kernel_size=[8, 8], strides=[4, 4],
-                                 activation=tf.nn.elu)
-        conv2 = tf.layers.conv2d(conv1, 32, kernel_size=[4, 4], strides=[2, 2],
-                                 activation=tf.nn.elu)
-        hidden = c_layers.flatten(conv2)
+        with tf.variable_scope(scope):
+            conv1 = tf.layers.conv2d(image_input, 16, kernel_size=[8, 8], strides=[4, 4],
+                                     activation=tf.nn.elu, reuse=reuse, name="conv_1")
+            conv2 = tf.layers.conv2d(conv1, 32, kernel_size=[4, 4], strides=[2, 2],
+                                     activation=tf.nn.elu, reuse=reuse, name="conv_2")
+            hidden = c_layers.flatten(conv2)
 
-        for j in range(num_layers):
-            hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
-        return hidden
+        hidden_flat = self.create_continuous_observation_encoder(hidden, h_size, activation, num_layers, scope, reuse)
+        return hidden_flat
 
-    def create_discrete_state_encoder(self, s_size, h_size, activation, num_layers):
+    def create_discrete_observation_encoder(self, observation_input, s_size, h_size, activation,
+                                            num_layers, scope, reuse):
         """
         Builds a set of hidden state encoders from discrete state input.
+        :param observation_input: Discrete observation.
         :param s_size: state input size (discrete).
         :param h_size: Hidden layer size.
         :param activation: What type of activation function to use for layers.
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
-        vector_in = tf.reshape(self.vector_in, [-1])
-        state_onehot = c_layers.one_hot_encoding(vector_in, s_size)
-        hidden = state_onehot
-        for j in range(num_layers):
-            hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
+        with tf.name_scope(scope):
+            vector_in = tf.reshape(observation_input, [-1])
+            state_onehot = tf.one_hot(vector_in, s_size)
+            hidden = state_onehot
+            for i in range(num_layers):
+                hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation,
+                                         reuse=reuse, name="hidden_{}".format(i))
         return hidden
 
-    def create_new_obs(self, num_streams, h_size, num_layers):
+    def create_observation_streams(self, num_streams, h_size, num_layers):
         brain = self.brain
         s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
         if brain.vector_action_space_type == "continuous":
@@ -129,7 +135,7 @@ class LearningModel(object):
             bw = brain.camera_resolutions[i]['blackAndWhite']
             visual_input = self.create_visual_input(height_size, width_size, bw, name="visual_observation_" + str(i))
             self.visual_in.append(visual_input)
-        self.create_vector_input(s_size)
+        vector_observation_input = self.create_vector_input(s_size)
 
         final_hiddens = []
         for i in range(num_streams):
@@ -137,16 +143,21 @@ class LearningModel(object):
             hidden_state, hidden_visual = None, None
             if brain.number_visual_observations > 0:
                 for j in range(brain.number_visual_observations):
-                    encoded_visual = self.create_visual_encoder(self.visual_in[j], h_size, activation_fn, num_layers)
+                    encoded_visual = self.create_visual_observation_encoder(self.visual_in[j], h_size,
+                                                                            activation_fn, num_layers,
+                                                                            "main_graph", False)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
                 s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
                 if brain.vector_observation_space_type == "continuous":
-                    hidden_state = self.create_continuous_state_encoder(h_size, activation_fn, num_layers)
+                    hidden_state = self.create_continuous_observation_encoder(vector_observation_input,
+                                                                              h_size, activation_fn, num_layers,
+                                                                              "main_graph", False)
                 else:
-                    hidden_state = self.create_discrete_state_encoder(s_size, h_size,
-                                                                      activation_fn, num_layers)
+                    hidden_state = self.create_discrete_observation_encoder(vector_observation_input, s_size,
+                                                                            h_size, activation_fn, num_layers,
+                                                                            "main_graph", False)
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
             elif hidden_state is None and hidden_visual is not None:
@@ -183,13 +194,13 @@ class LearningModel(object):
 
     def create_dc_actor_critic(self, h_size, num_layers):
         num_streams = 1
-        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
+        hidden_streams = self.create_observation_streams(num_streams, h_size, num_layers)
         hidden = hidden_streams[0]
 
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
-            self.prev_action_oh = c_layers.one_hot_encoding(self.prev_action, self.a_size)
+            self.prev_action_oh = tf.one_hot(self.prev_action, self.a_size)
             hidden = tf.concat([hidden, self.prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
@@ -207,7 +218,7 @@ class LearningModel(object):
         self.value = tf.identity(self.value, name="value_estimate")
         self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
         self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
-        self.selected_actions = c_layers.one_hot_encoding(self.action_holder, self.a_size)
+        self.selected_actions = tf.one_hot(self.action_holder, self.a_size)
 
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
 
@@ -217,7 +228,7 @@ class LearningModel(object):
 
     def create_cc_actor_critic(self, h_size, num_layers):
         num_streams = 2
-        hidden_streams = self.create_new_obs(num_streams, h_size, num_layers)
+        hidden_streams = self.create_observation_streams(num_streams, h_size, num_layers)
 
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)

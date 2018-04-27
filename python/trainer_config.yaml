@@ -89,7 +89,7 @@ GoalieBrain:
     normalize: false
 
 PyramidBrain:
-    use_curiosity: false
+    use_curiosity: true
     time_horizon: 128
     batch_size: 128
     buffer_size: 1024

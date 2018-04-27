@@ -42,36 +42,12 @@ class PPOModel(LearningModel):
         self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
 
-    @staticmethod
-    def create_reward_encoder():
+    def create_reward_encoder(self):
         """Creates TF ops to track and increment recent average cumulative reward."""
         last_reward = tf.Variable(0, name="last_reward", trainable=False, dtype=tf.float32)
         new_reward = tf.placeholder(shape=[], dtype=tf.float32, name='new_reward')
         update_reward = tf.assign(last_reward, new_reward)
         return last_reward, new_reward, update_reward
-
-    @staticmethod
-    def encode_state(state, reuse):
-        with tf.name_scope("state_encoder"):
-            hidden_1 = tf.layers.dense(state, 128, reuse=reuse, activation=tf.nn.elu, name="encode_1")
-            encoded_state = tf.layers.dense(hidden_1, 128, reuse=reuse, activation=tf.nn.elu, name="encode_2")
-            return encoded_state
-
-    def encode_visual_observation(self, image_input, reuse):
-        """
-        Builds a set of visual (CNN) encoders.
-        :param image_input: The placeholder for the image input to use.
-        :param h_size: Hidden layer size.
-        :param activation: What type of activation function to use for layers.
-        :param num_layers: number of hidden layers to create.
-        :return: List of hidden layer tensors.
-        """
-        conv1 = tf.layers.conv2d(image_input, 16, kernel_size=[8, 8], strides=[4, 4],
-                                 activation=tf.nn.elu, reuse=reuse)
-        conv2 = tf.layers.conv2d(conv1, 32, kernel_size=[4, 4], strides=[2, 2],
-                                 activation=tf.nn.elu, reuse=reuse)
-        return tf.layers.flatten(conv2)
-
 
     def create_inverse_model(self, a_size, s_size):
         self.next_state = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='next_vector_observation')
@@ -81,8 +57,11 @@ class PPOModel(LearningModel):
             current_state_list.append(self.memory_out)
 
         current_state = tf.concat(current_state_list, axis=1)
-        encoded_state = self.encode_state(current_state, reuse=False)
-        encoded_next_state = self.encode_state(self.next_state, reuse=True)
+
+        encoded_state = self.create_continuous_observation_encoder(current_state, 128, self.swish, 2,
+                                                                   "state_encoder", False)
+        encoded_next_state = self.create_continuous_observation_encoder(self.next_state, 128, self.swish, 2,
+                                                                        "state_encoder", True)
         combined = tf.concat([encoded_state, encoded_next_state], axis=1)
 
         if self.brain.vector_action_space_type == "continuous":
