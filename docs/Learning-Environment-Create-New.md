@@ -255,18 +255,16 @@ The final part of the Agent code is the Agent.AgentAction() function, which rece
 
 **Actions**
 
-The decision of the Brain comes in the form of an action array passed to the `AgentAction()` function. The number of elements in this array is determined by the `Vector Action Space Type` and `Vector Action Space Size` settings of the agent's Brain. The RollerAgent uses the continuous vector action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Vector Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Vector Action Size` to 3. Note the Brain really has no idea what the values in the action array mean. The training process just adjusts the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
+The decision of the Brain comes in the form of an action array passed to the `AgentAction()` function. The number of elements in this array is determined by the `Vector Action Space Type` and `Vector Action Space Size` settings of the agent's Brain. The RollerAgent uses the continuous vector action space and needs two continuous control signals from the brain. Thus, we will set the Brain `Vector Action Size` to 2. The first element,`action[0]` determines the force applied along the x axis; `action[1]` determines the force applied along the z axis. (If we allowed the agent to move in three dimensions, then we would need to set `Vector Action Size` to 3. Each of these values returned by the network are between `-1` and `1.` Note the Brain really has no idea what the values in the action array mean. The training process just adjusts the action values in response to the observation input and then sees what kind of rewards it gets as a result. 
 
 The RollerAgent applies the values from the action[] array to its Rigidbody component, `rBody`, using the `Rigidbody.AddForce` function:
 
 ```csharp
 Vector3 controlSignal = Vector3.zero;
-controlSignal.x = Mathf.Clamp(action[0], -1, 1);
-controlSignal.z = Mathf.Clamp(action[1], -1, 1);
+controlSignal.x = action[0];
+controlSignal.z = action[1];
 rBody.AddForce(controlSignal * speed);
 ```
-
-The agent clamps the action values to the range [-1,1] for two reasons. First, the learning algorithm has less incentive to try very large values (since there won't be any affect on agent behavior), which can avoid numeric instability in the neural network calculations. Second, nothing prevents the neural network from returning excessively large values, so we want to limit them to reasonable ranges in any case.
 
 **Rewards**
 
@@ -355,8 +353,8 @@ public override void AgentAction(float[] vectorAction, string textAction)
 
     // Actions, size = 2
     Vector3 controlSignal = Vector3.zero;
-    controlSignal.x = Mathf.Clamp(vectorAction[0], -1, 1);
-    controlSignal.z = Mathf.Clamp(vectorAction[1], -1, 1);
+    controlSignal.x = vectorAction[0];
+    controlSignal.z = vectorAction[1];
     rBody.AddForce(controlSignal * speed);
  }
 ```

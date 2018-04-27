@@ -31,9 +31,11 @@ class BehavioralCloningModel(LearningModel):
             self.action_percent = tf.reduce_mean(tf.cast(
                 tf.equal(tf.cast(tf.argmax(self.action_probs, axis=1), tf.int32), self.sample_action), tf.float32))
         else:
-            self.sample_action = tf.identity(self.policy, name="action")
+            self.clipped_sample_action = tf.clip_by_value(self.policy, -1, 1)
+            self.sample_action = tf.identity(self.clipped_sample_action, name="action")
             self.true_action = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name="teacher_action")
-            self.loss = tf.reduce_sum(tf.squared_difference(self.true_action, self.sample_action))
+            self.clipped_true_action = tf.clip_by_value(self.true_action, -1, 1)
+            self.loss = tf.reduce_sum(tf.squared_difference(self.clipped_true_action, self.sample_action))
 
         optimizer = tf.train.AdamOptimizer(learning_rate=lr)
         self.update = optimizer.minimize(self.loss)

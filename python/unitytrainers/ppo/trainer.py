@@ -177,8 +177,8 @@ class PPOTrainer(Trainer):
         run_list = [self.model.output, self.model.all_probs, self.model.value, self.model.entropy,
                     self.model.learning_rate]
         if self.is_continuous_action:
-            run_list.append(self.model.epsilon)
-        elif self.use_recurrent:
+            run_list.append(self.model.output_pre)
+        if self.use_recurrent:
             feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
         if self.use_observations:
             for i, _ in enumerate(curr_brain_info.visual_observations):
@@ -269,13 +269,14 @@ class PPOTrainer(Trainer):
                         if stored_info.memories.shape[1] == 0:
                             stored_info.memories = np.zeros((len(stored_info.agents), self.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
-                    if self.is_continuous_action:
-                        epsi = stored_take_action_outputs[self.model.epsilon]
-                        self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
                     actions = stored_take_action_outputs[self.model.output]
+                    if self.is_continuous_action:
+                        actions_pre = stored_take_action_outputs[self.model.output_pre]
                     a_dist = stored_take_action_outputs[self.model.all_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
+                    if self.is_continuous_action:
+                        self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
                     if self.use_curiosity:
@@ -407,8 +408,8 @@ class PPOTrainer(Trainer):
                              self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.vector_action_space_size])}
                 if self.is_continuous_action:
-                    feed_dict[self.model.epsilon] = np.array(
-                        _buffer['epsilons'][start:end]).reshape([-1, self.brain.vector_action_space_size])
+                    feed_dict[self.model.output_pre] = np.array(
+                        _buffer['actions_pre'][start:end]).reshape([-1, self.brain.vector_action_space_size])
                 else:
                     feed_dict[self.model.action_holder] = np.array(
                         _buffer['actions'][start:end]).reshape([-1])

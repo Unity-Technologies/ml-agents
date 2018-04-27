@@ -28,12 +28,21 @@ public class BasicAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
 	{
-        float movement = vectorAction[0];
+        var movement = (int)vectorAction[0];
+	    
 		int direction = 0;
-		if (movement == 0) { direction = -1; }
-		if (movement == 1) { direction = 1; }
+	    
+		switch (movement)
+		{
+		    case 0:
+		        direction = -1;
+		        break;
+		    case 1:
+		        direction = 1;
+		        break;
+		}
 
-        position += direction;
+	    position += direction;
         if (position < minPosition) { position = minPosition; }
         if (position > maxPosition) { position = maxPosition; }
 
