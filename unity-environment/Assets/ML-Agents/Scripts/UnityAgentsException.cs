@@ -11,7 +11,7 @@ public class UnityAgentsException : System.Exception
     /// The simulation will end since no steps will be taken.
     public UnityAgentsException(string message) : base(message)
     {
-        Time.timeScale = 0f;
+
     }
 
     /// A constructor is needed for serialization when an exception propagates 

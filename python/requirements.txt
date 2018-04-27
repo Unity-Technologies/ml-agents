@@ -6,3 +6,4 @@ jupyter
 pytest>=3.2.2
 docopt
 pyyaml
+protobuf==3.5.2

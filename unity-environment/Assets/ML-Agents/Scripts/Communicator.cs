@@ -2,79 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/** \brief AcademyParameters is a structure containing basic information about the 
- * training environment. */
-/** The AcademyParameters will be sent via socket at the start of the Environment.
- * This structure does not need to be modified.
- */
-public struct AcademyParameters
-{
-    /**< \brief The name of the Academy. If the communicator is External, 
-     * it will be the name of the Academy GameObject */
-    public string AcademyName;
 
-    /**< \brief The API number for the communicator. */
-    public string apiNumber;
-
-    /**< \brief The location of the logfile*/
-    public string logPath;
-
-    /**< \brief The default reset parameters are sent via socket*/
-    public Dictionary<string, float> resetParameters;
-
-    /**< \brief A list of the all the brains names sent via socket*/
-    public List<string> brainNames;
-
-    /**< \brief  A list of the External brains parameters sent via socket*/
-    public List<BrainParameters> brainParameters;
-
-    /**< \brief  A list of the External brains names sent via socket*/
-    public List<string> externalBrainNames;
-}
-
-public enum ExternalCommand
-{
-    STEP,
-    RESET,
-    QUIT
-}
-
-/**
- * This is the interface used to generate coordinators. 
- * This does not need to be modified nor implemented to create a 
- * Unity environment.
- */
-public interface Communicator
+namespace MLAgents.Communicator
 {
 
-    /// Implement this method to allow brains to subscribe to the 
-    /// decisions made outside of Unity
-    void SubscribeBrain(Brain brain);
+    /**
+     * This is the interface used to generate coordinators. 
+     * This does not need to be modified nor implemented to create a 
+     * Unity environment.
+     */
+    public interface Communicator
+    {
+        /// <summary>
+        ///  Implement this method to Send the academy communicators
+        /// </summary>
+        /// <returns>The python Parameters and the first input</returns>
+        PythonParameters Initialize(AcademyParameters academyParameters,
+                                    out UnityRLInput unityImput);
 
-    /// First contact between Communicator and external process
-    bool CommunicatorHandShake();
+        /// <summary>
+        ///  Sends the UnityOutput via communication
+        /// </summary>
+        /// <returns>The new inputs.</returns>
+        /// <param name="unityOutput">The Unity output.</param>
+        UnityRLInput SendOuput(UnityRLOutput unityOutput);
 
-    /// Implement this method to initialize the communicator
-    void InitializeCommunicator();
+        void Close();
 
-    /// Implement this method to receive actions from outside of Unity and 
-    /// update the actions of the brains that subscribe
-    void UpdateActions();
+        ///// <summary>
+        ///// Gets the last command received by the communicator.
+        ///// </summary>
+        ///// <returns>The command.</returns>
+        //Command GetCommand();
 
-    /// Implement this method to return the ExternalCommand that 
-    /// was given outside of Unity
-    ExternalCommand GetCommand();
+        ///// <summary>
+        ///// Gets the latest environment parameters.
+        ///// </summary>
+        ///// <returns>The environment parameters.</returns>
+        //EnvironmentParameters GetEnvironmentParameters();
 
-    void UpdateCommand();
-    void SetCommand(ExternalCommand c);
-
-    /// Implement this method to return the new dictionary of resetParameters 
-    /// that was given outside of Unity
-    Dictionary<string, float> GetResetParameters();
-
-
-
-    Dictionary<string, bool> GetHasTried();
-    Dictionary<string, bool> GetSent();
-
+    }
 }

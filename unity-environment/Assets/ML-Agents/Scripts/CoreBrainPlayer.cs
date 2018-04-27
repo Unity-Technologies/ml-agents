@@ -28,7 +28,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         public float value;
     }
 
-    ExternalCommunicator coord;
+    MLAgents.Batcher brainBatcher;
 
     [SerializeField]
     [Tooltip("The list of keys and the value they correspond to for continuous control.")]
@@ -51,17 +51,18 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     }
 
     /// Nothing to implement
-    public void InitializeCoreBrain(Communicator communicator)
+    /// Nothing to implement
+    public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
     {
-        if ((communicator == null)
+        if ((brainBatcher == null)
             || (!broadcast))
         {
-            coord = null;
+            this.brainBatcher = null;
         }
-        else if (communicator is ExternalCommunicator)
+        else
         {
-            coord = (ExternalCommunicator)communicator;
-            coord.SubscribeBrain(brain);
+            this.brainBatcher = brainBatcher;
+            this.brainBatcher.SubscribeBrain(brain.gameObject.name);
         }
     }
 
@@ -69,10 +70,10 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     /// decide action
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-		if (coord != null)
-		{
-			coord.GiveBrainInfo(brain, agentInfo);
-		}
+        if (brainBatcher != null)
+        {
+            brainBatcher.GiveBrainInfo(brain.gameObject.name, agentInfo);
+        }
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             foreach (Agent agent in agentInfo.Keys)
