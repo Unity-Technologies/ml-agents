@@ -181,7 +181,7 @@ public override void AgentAction(float[] act)
 }
 ```
 
-You should clamp continuous action values to a reasonable value (typically [-1,1]) to avoid introducing instability while training the agent with the PPO algorithm. As shown above, you can scale the control values as needed after clamping them. 
+By default the output from our provided PPO algorithm pre-clamps the values of `vectorAction` into the [-1, 1] range. It is a best practice to manually clip these as well, if you plan to use a 3rd party algorithm with your environment. As shown above, you can scale the control values as needed after clamping them. 
  
 ### Discrete Action Space
 
