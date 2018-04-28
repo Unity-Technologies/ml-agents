@@ -8,18 +8,14 @@ public class PyramidAgent : Agent
     public GameObject area;
     PyramidArea myArea;
     Rigidbody agentRb;
-    public float turnSpeed;
-    public float xForce;
-    public float yForce;
-    public float zForce;
-    public bool contribute;
     private RayPerception rayPer;
     public GameObject areaSwitch;
+    public bool useCamera;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        agentRb = GetComponent<Rigidbody>(); //cache the RB
+        agentRb = GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<PyramidArea>();
         rayPer = GetComponent<RayPerception>();
@@ -27,16 +23,19 @@ public class PyramidAgent : Agent
 
     public override void CollectObservations()
     {
-        float rayDistance = 35f;
-        float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
-        float[] rayAngles1 = { 25f, 95f, 165f, 50f, 140f, 75f, 115f };
-        float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
+        if (!useCamera)
+        {
+            float rayDistance = 35f;
+            float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
+            float[] rayAngles1 = { 25f, 95f, 165f, 50f, 140f, 75f, 115f };
+            float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
 
-        string[] detectableObjects = { "block", "wall", "goal", "switchOff", "switchOn"};
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
-        AddVectorObs(areaSwitch.GetComponent<PyramidSwitch>().GetState());
+            string[] detectableObjects = { "block", "wall", "goal", "switchOff", "switchOn"};
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
+            AddVectorObs(areaSwitch.GetComponent<PyramidSwitch>().GetState());
+        }
     }
 
     public void MoveAgent(float[] act)
@@ -44,7 +43,6 @@ public class PyramidAgent : Agent
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
-        //If we're using Continuous control you will need to change the Action
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
@@ -53,31 +51,29 @@ public class PyramidAgent : Agent
         else
         {
             int action = Mathf.FloorToInt(act[0]);
-            if (action == 0)
+            switch (action)
             {
-                dirToGo = transform.forward * 1f;
-            }
-            else if (action == 1)
-            {
-                dirToGo = transform.forward * -1f;
-            }
-            else if (action == 2)
-            {
-                rotateDir = transform.up * 1f;
-            }
-            else if (action == 3)
-            {
-                rotateDir = transform.up * -1f;
+                case 0:
+                    dirToGo = transform.forward * 1f;
+                    break;
+                case 1:
+                    dirToGo = transform.forward * -1f;
+                    break;
+                case 2:
+                    rotateDir = transform.up * 1f;
+                    break;
+                case 3:
+                    rotateDir = transform.up * -1f;
+                    break;
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 200f);
-        agentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange); //GO
+        agentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         MoveAgent(vectorAction);
-        
     }
 
     public override void AgentReset()
@@ -90,7 +86,6 @@ public class PyramidAgent : Agent
         
         areaSwitch.GetComponent<PyramidSwitch>().Reset();
         area.GetComponent<PyramidArea>().ResetPyramidArea(new[] {gameObject});
-        //area.GetComponent<PyramidArea>().CreateObject(50);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -99,8 +94,6 @@ public class PyramidAgent : Agent
         {
             SetReward(2f - (float)GetStepCount() / agentParameters.maxStep);
             Done();
-            //Destroy(collision.gameObject.transform.parent.gameObject);
-            //area.GetComponent<PyramidArea>().CreateObject(1);
         }
     }
 

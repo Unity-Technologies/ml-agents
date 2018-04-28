@@ -25,6 +25,7 @@ class PPOModel(LearningModel):
         :param m_size: Size of brain memory.
         """
         LearningModel.__init__(self, m_size, normalize, use_recurrent, brain)
+        self.brain = brain
         self.use_curiosity = use_curiosity
         if num_layers < 1:
             num_layers = 1
@@ -37,7 +38,8 @@ class PPOModel(LearningModel):
         if self.use_curiosity:
             s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
             a_size = brain.vector_action_space_size
-            encoded_state, encoded_next_state = self.create_inverse_model(a_size, s_size)
+            v_size = brain.number_visual_observations
+            encoded_state, encoded_next_state = self.create_inverse_model(a_size, s_size, v_size)
             self.create_forward_model(encoded_state, encoded_next_state)
         self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
@@ -49,32 +51,64 @@ class PPOModel(LearningModel):
         update_reward = tf.assign(last_reward, new_reward)
         return last_reward, new_reward, update_reward
 
-    def create_inverse_model(self, a_size, s_size):
-        self.next_state = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='next_vector_observation')
-        current_state_list = [self.vector_in]
+    def create_inverse_model(self, a_size, s_size, v_size):
+        self.next_vector_obs = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='next_vector_observation')
+        self.next_visual_in = []
+        for i in range(self.brain.number_visual_observations):
+            height_size, width_size = self.brain.camera_resolutions[i]['height'], self.brain.camera_resolutions[i]['width']
+            bw = self.brain.camera_resolutions[i]['blackAndWhite']
+            visual_input = self.create_visual_input(height_size, width_size, bw, name="next_visual_observation_" + str(i))
+            self.next_visual_in.append(visual_input)
+
+        combined_list = []
+        encoded_state = []
+        encoded_next_state = []
+        if s_size > 0:
+            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in, 128, self.swish, 2,
+                                                                       "vector_obs_encoder", False)
+            encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_obs, 128, self.swish, 2,
+                                                                            "vector_obs_encoder", True)
+
+            combined_list.append(encoded_vector_obs)
+            combined_list.append(encoded_next_vector_obs)
+            encoded_state.append(encoded_vector_obs)
+            encoded_next_state.append(encoded_next_vector_obs)
 
         if self.use_recurrent:
-            current_state_list.append(self.memory_out)
+            combined_list.append(self.memory_in)
 
-        current_state = tf.concat(current_state_list, axis=1)
+        if v_size > 0:
+            visual_encoders = []
+            next_visual_encoders = []
+            for i in range(v_size):
+                encoded_visual = self.create_visual_observation_encoder(self.visual_in[i], 128,
+                                                                        self.swish, 1, "visual_obs_encoder", False)
+                visual_encoders.append(encoded_visual)
+                encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i], 128,
+                                                                        self.swish, 1, "visual_obs_encoder", True)
+                next_visual_encoders.append(encoded_next_visual)
+            hidden_visual = tf.concat(visual_encoders, axis=1)
+            hidden_next_visual = tf.concat(next_visual_encoders, axis=1)
+            combined_list.append(hidden_visual)
+            combined_list.append(hidden_next_visual)
+            encoded_state.append(hidden_visual)
+            encoded_next_state.append(hidden_next_visual)
 
-        encoded_state = self.create_continuous_observation_encoder(current_state, 128, self.swish, 2,
-                                                                   "state_encoder", False)
-        encoded_next_state = self.create_continuous_observation_encoder(self.next_state, 128, self.swish, 2,
-                                                                        "state_encoder", True)
-        combined = tf.concat([encoded_state, encoded_next_state], axis=1)
-
+        combined = tf.concat(combined_list, axis=1)
         if self.brain.vector_action_space_type == "continuous":
             pred_action = tf.layers.dense(combined, a_size, activation=None)
             self.inverse_loss = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1))
         else:
             pred_action = tf.layers.dense(combined, a_size, activation=tf.nn.softmax)
             self.inverse_loss = tf.reduce_mean(tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1))
-        return encoded_state, encoded_next_state
+
+        return tf.concat(encoded_state, axis=1), tf.concat(encoded_next_state, axis=1)
 
     def create_forward_model(self, encoded_state, encoded_next_state):
         combined = tf.concat([encoded_state, self.selected_actions], axis=1)
-        hidden = tf.layers.dense(combined, 128, activation=tf.nn.elu)
+        if self.use_recurrent:
+            combined = tf.concat([combined, self.memory_in], axis=1, name="special")
+        hidden = tf.layers.dense(combined, 128, activation=self.swish)
         pred_next_state = tf.layers.dense(hidden, 128, activation=None)
 
         forward_distance = 0.5 * tf.reduce_mean(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)

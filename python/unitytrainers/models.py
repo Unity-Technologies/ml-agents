@@ -180,6 +180,7 @@ class LearningModel(object):
         s_size = input_state.get_shape().as_list()[1]
         m_size = memory_in.get_shape().as_list()[1]
         lstm_input_state = tf.reshape(input_state, shape=[-1, self.sequence_length, s_size])
+        memory_in = tf.reshape(memory_in[0, :], [-1, m_size])
         _half_point = int(m_size / 2)
         with tf.variable_scope(name):
             rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
