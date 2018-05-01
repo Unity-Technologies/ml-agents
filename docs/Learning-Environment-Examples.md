@@ -82,7 +82,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
-* Benchmark Total Cumulative Reward: ~0
+* Benchmark Total Cumulative Reward: 0
 
 ## Push Block
 
