@@ -33,7 +33,7 @@ public class WalkerGroundContact : MonoBehaviour {
             if(penalizeOnContact)
             {
                 agent.Done();
-                agent.AddReward(-1f);
+                agent.SetReward(-1f);
             }
         }
     }
