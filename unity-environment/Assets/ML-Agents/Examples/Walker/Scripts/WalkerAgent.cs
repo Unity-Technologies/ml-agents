@@ -163,10 +163,10 @@ public class WalkerAgent : Agent
     {
         bool facingDir = false;
         var targetDir = Vector3.right;
-        Vector3 forwardDir = bodyParts[hips].rb.transform.forward;
-        forwardDir.y = 0;
-        forwardDir.z = 0;
-        float facingTowardsDot = Vector3.Dot(forwardDir, targetDir);
+        Vector3 hipsForwardDir = bodyParts[hips].rb.transform.forward;
+        hipsForwardDir.y = 0;
+        hipsForwardDir.z = 0;
+        float facingTowardsDot = Vector3.Dot(hipsForwardDir, targetDir);
         if (facingTowardsDot >= .9f) //roughly facing dir
         {
             facingDir = true;
