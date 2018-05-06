@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using UnityEditor;
 #endif
 using UnityEngine;
+using MLAgents.CommunicatorObjects;
 
-namespace MLAgents.Communicator
+namespace MLAgents
 {
     /// Responsible for communication with Python API.
     public class RpcCommunicator2 : Communicator

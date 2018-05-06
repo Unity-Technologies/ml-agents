@@ -2,8 +2,8 @@ import logging
 import grpc
 
 from .communicator import Communicator
-from communicator import PythonToUnityStub
-from communicator import UnityRLOutput, UnityRLInput,\
+from communicator_objects import PythonToUnityStub
+from communicator_objects import UnityRLOutput, UnityRLInput,\
     UnityInput, AcademyParameters, UnityInitializationInput
 from .exception import UnityTimeOutException
 

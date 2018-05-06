@@ -5,8 +5,8 @@ from multiprocessing import Pipe
 from concurrent.futures import ThreadPoolExecutor
 
 from .communicator import Communicator
-from communicator import UnityToPythonServicer, add_UnityToPythonServicer_to_server
-from communicator import UnityRLOutput, UnityRLInput,\
+from communicator_objects import UnityToPythonServicer, add_UnityToPythonServicer_to_server
+from communicator_objects import UnityRLOutput, UnityRLInput,\
     UnityInput, UnityOutput, AcademyParameters, \
     UnityInitializationOutput, UnityInitializationInput
 from .exception import UnityTimeOutException

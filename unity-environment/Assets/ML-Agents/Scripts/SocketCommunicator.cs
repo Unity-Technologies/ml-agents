@@ -2,9 +2,9 @@ using Google.Protobuf;
 using Grpc.Core;
 using System.Net.Sockets;
 using UnityEngine;
+using MLAgents.CommunicatorObjects;
 
-
-namespace MLAgents.Communicator
+namespace MLAgents
 {
 
     public class SocketCommunicator : Communicator

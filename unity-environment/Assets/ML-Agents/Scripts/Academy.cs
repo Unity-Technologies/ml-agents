@@ -242,13 +242,13 @@ public abstract class Academy : MonoBehaviour
         // Retrieve Brain and initialize Academy
         List<Brain> brains = GetBrains(gameObject);
         InitializeAcademy();
-        MLAgents.Communicator.Communicator communicator= null;
+        MLAgents.Communicator communicator= null;
 
         // Try to launch the communicator by usig the arguments passed at launch
         try
         {
-            communicator = new MLAgents.Communicator.RpcCommunicator2(
-                new MLAgents.Communicator.CommunicatorParameters
+            communicator = new MLAgents.RpcCommunicator2(
+                new MLAgents.CommunicatorObjects.CommunicatorParameters
                 {
                 Port = ReadArgs()
                 });
@@ -264,8 +264,8 @@ public abstract class Academy : MonoBehaviour
             {
                 if (b.brainType == BrainType.External)
                 {
-                    communicator = new MLAgents.Communicator.RpcCommunicator2(
-                        new MLAgents.Communicator.CommunicatorParameters
+                    communicator = new MLAgents.RpcCommunicator2(
+                        new MLAgents.CommunicatorObjects.CommunicatorParameters
                         {
                             Port = 5005
                         });
@@ -285,8 +285,8 @@ public abstract class Academy : MonoBehaviour
         {
             isCommunicatorOn = true;
 
-            MLAgents.Communicator.AcademyParameters academyParameters=
-                new MLAgents.Communicator.AcademyParameters();
+            MLAgents.CommunicatorObjects.AcademyParameters academyParameters=
+                new MLAgents.CommunicatorObjects.AcademyParameters();
             academyParameters.Name = gameObject.name;
             academyParameters.Version = "API-3";
             foreach (Brain brain in brains)
@@ -296,18 +296,19 @@ public abstract class Academy : MonoBehaviour
                     MLAgents.Batcher.BrainParametersConvertor(
                         bp,
                         brain.gameObject.name,
-                        (MLAgents.Communicator.BrainType)brain.brainType));
+                        (MLAgents.CommunicatorObjects.BrainType)
+                        brain.brainType));
 
             }
             academyParameters.EnvironmentParameters =
-                new MLAgents.Communicator.EnvironmentParameters();
+                new MLAgents.CommunicatorObjects.EnvironmentParameters();
             foreach (string key in resetParameters.Keys)
             {
                 academyParameters.EnvironmentParameters.FloatParameters.Add(
                     key, resetParameters[key]
                 );
             }
-            MLAgents.Communicator.PythonParameters pythonParameters =
+            MLAgents.CommunicatorObjects.PythonParameters pythonParameters =
                         brainBatcher.GiveAcademyParameters(academyParameters);
             Random.InitState(pythonParameters.Seed);
             Application.logMessageReceived += HandleLog;
@@ -516,10 +517,11 @@ public abstract class Academy : MonoBehaviour
         if (isCommunicatorOn)
         {
             if (brainBatcher.GetCommand() == 
-                MLAgents.Communicator.Command.Reset)
+                MLAgents.CommunicatorObjects.Command.Reset)
             {
                 // Update reset parameters.
-                MLAgents.Communicator.EnvironmentParameters NewResetParameters =
+                MLAgents.CommunicatorObjects.EnvironmentParameters 
+                        NewResetParameters =
                             brainBatcher.GetEnvironmentParameters();
                 if (NewResetParameters != null)
                 {
@@ -533,7 +535,8 @@ public abstract class Academy : MonoBehaviour
 
                 ForcedFullReset();
             }
-            if (brainBatcher.GetCommand() == MLAgents.Communicator.Command.Quit)
+            if (brainBatcher.GetCommand() == 
+                MLAgents.CommunicatorObjects.Command.Quit)
             {
 #if UNITY_EDITOR
                 EditorApplication.isPlaying = false;

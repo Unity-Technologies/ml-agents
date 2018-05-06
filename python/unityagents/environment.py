@@ -10,7 +10,7 @@ from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityEnvironmentException, UnityActionException
 from .curriculum import Curriculum
 
-from communicator import UnityRLInput, UnityRLOutput, AgentAction,\
+from communicator_objects import UnityRLInput, UnityRLOutput, AgentAction,\
     EnvironmentParameters, PythonParameters
 
 from .rpc_communicator import RpcCommunicator

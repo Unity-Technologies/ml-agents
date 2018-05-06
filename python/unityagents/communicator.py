@@ -1,6 +1,6 @@
 import logging
 
-from communicator import UnityRLOutput, UnityRLInput,\
+from communicator_objects import UnityRLOutput, UnityRLInput,\
     UnityOutput, UnityInput, AcademyParameters,\
     UnityInitializationInput, UnityInitializationOutput
 

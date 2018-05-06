@@ -1,8 +1,9 @@
 using Grpc.Core;
 using System.Threading;
 using System.Threading.Tasks;
+using MLAgents.CommunicatorObjects;
 
-namespace MLAgents.Communicator
+namespace MLAgents
 {
     /// Responsible for communication with Python API.
     public class RpcCommunicator : Communicator
