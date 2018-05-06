@@ -224,3 +224,23 @@ If you would like to contribute environments, please see our
         * Goalie: 4 corresponding to forward, backward, sideways movement.
     * Visual Observations: None
 * Reset Parameters: None
+
+## Walker
+
+![Walker](images/walker.png)
+
+* Set-up: A humanoid agent with multiple degrees of freedom.
+* Goal: The agents must move its body toward the goal direction as quickly as possible without falling.
+* Agents: The environment contains 11 agent linked to a single brain.
+* Agent Reward Function (independent): 
+    * +0.03 times velocity in the goal direction.
+    * +0.01 times the head y position.
+    * +0.01 times chest direction alignment with goal direction.
+    * -0.02 times head velocity in non-goal direction
+    * -0.01 times body movement in non-goal direction.
+    * Brains: One brain with the following observation/action space.
+    * Vector Observation space: (Continuous) 212 variables corresponding to position, rotation, velocity, and angular velocities of each limb.
+    * Vector Action space: (Continuous) Size of 39, corresponding to target rotations applicable to the joints. 
+    * Visual Observations: None
+* Reset Parameters: None
+

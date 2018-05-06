@@ -2178,9 +2178,7 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  fell: 0
-  totalCharMass: 0
-  visualizeMassDistribution: 0
+  goalDirection: {x: 1, y: 0, z: 0}
   hips: {fileID: 4178980744778630}
   chest: {fileID: 4210128103550454}
   spine: {fileID: 4786283472884902}
@@ -2197,18 +2195,6 @@ MonoBehaviour:
   armR: {fileID: 4831743818914662}
   forearmR: {fileID: 4117150960505056}
   handR: {fileID: 4635009947461002}
-  disableAgentActionsForDebug: 0
-  targetJointAngularVelocityScalar: 25
-  forwardDir: {x: 0, y: 0, z: 0}
-  maxBodyPartVelocity: 50
-  torquePenalty: 0
-  velocityPenalty: 0
-  torquePenaltyFinal: 0
-  velocityPenaltyFinal: 0
-  chestHeightRewardFinal: 0
-  chestYUpRewardFinal: 0
-  facingDirReward: 0
-  actionValues: []
 --- !u!114 &114096786427879860
 MonoBehaviour:
   m_ObjectHideFlags: 1
