@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class WalkerAgent : Agent
@@ -81,7 +80,6 @@ public class WalkerAgent : Agent
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
-    /// <param name="bp"></param>
     public void BodyPartObservation(BodyPart bp)
     {
         var rb = bp.rb;
@@ -114,11 +112,6 @@ public class WalkerAgent : Agent
     /// <summary>
     /// Apply torque according to defined goal angle and force.
     /// </summary>
-    /// <param name="bp"></param>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="z"></param>
-    /// <param name="strength"></param>
     public void SetNormalizedTargetRotation(BodyPart bp, float x, float y, float z, float strength)
     {
         x = (x + 1f) * 0.5f;
@@ -138,7 +131,6 @@ public class WalkerAgent : Agent
         bp.joint.slerpDrive = jd;
     }
 
-    
     public override void AgentAction(float[] vectorAction, string textAction)
     {
 
