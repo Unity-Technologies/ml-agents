@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class WalkerAgent : Agent
@@ -34,6 +35,10 @@ public class WalkerAgent : Agent
         public WalkerGroundContact groundContactScript;
     }
 
+    /// <summary>
+    /// Create BodyPart object and add it to dictionary.
+    /// </summary>
+    /// <param name="t"></param>
     public void SetupBodyPart(Transform t)
     {
         BodyPart bp = new BodyPart
@@ -73,6 +78,10 @@ public class WalkerAgent : Agent
         return (Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
     }
 
+    /// <summary>
+    /// Add relevant information on each body part to observations.
+    /// </summary>
+    /// <param name="bp"></param>
     public void BodyPartObservation(BodyPart bp)
     {
         var rb = bp.rb;
@@ -91,6 +100,9 @@ public class WalkerAgent : Agent
         }
     }
 
+    /// <summary>
+    /// Loop over body parts to add them to observation.
+    /// </summary>
     public override void CollectObservations()
     {
         foreach (var item in bodyParts)
@@ -99,6 +111,14 @@ public class WalkerAgent : Agent
         }
     }
 
+    /// <summary>
+    /// Apply torque according to defined goal angle and force.
+    /// </summary>
+    /// <param name="bp"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <param name="strength"></param>
     public void SetNormalizedTargetRotation(BodyPart bp, float x, float y, float z, float strength)
     {
         x = (x + 1f) * 0.5f;
@@ -118,9 +138,11 @@ public class WalkerAgent : Agent
         bp.joint.slerpDrive = jd;
     }
 
+    
     public override void AgentAction(float[] vectorAction, string textAction)
     {
 
+        // Apply action to all relevant body parts. 
         SetNormalizedTargetRotation(bodyParts[chest], vectorAction[0], vectorAction[1], vectorAction[2],
             vectorAction[26]);
         SetNormalizedTargetRotation(bodyParts[spine], vectorAction[3], vectorAction[4], vectorAction[5],
@@ -141,18 +163,26 @@ public class WalkerAgent : Agent
         SetNormalizedTargetRotation(bodyParts[forearmR], vectorAction[23], 0, 0, vectorAction[37]);
         SetNormalizedTargetRotation(bodyParts[head], vectorAction[24], vectorAction[25], 0, vectorAction[38]);
 
+        // Set reward for this step according to mixture of the following elements.
+        // a. Velocity alignment with goal direction.
+        // b. Rotation alignment with goal direction.
+        // c. Encourage head height.
+        // d. Discourage head movement.
         AddReward(
-            - 0.01f * Mathf.Abs(bodyParts[chest].rb.position.z - transform.position.z)
-            - 0.01f * Mathf.Abs(bodyParts[head].rb.velocity.y)
-            - 0.01f * Mathf.Abs(bodyParts[head].rb.velocity.z)
-            + 0.01f * Vector3.Dot(goalDirection, bodyParts[chest].rb.transform.forward)
-            + 0.01f * bodyParts[head].rb.position.y
-            + 0.03f * Vector3.Dot(goalDirection, bodyParts[chest].rb.velocity)
+            + 0.03f * Vector3.Dot(goalDirection, bodyParts[hips].rb.velocity)
+            + 0.01f * Vector3.Dot(goalDirection, bodyParts[hips].rb.transform.forward)
+            + 0.01f * bodyParts[head].rb.position.y - bodyParts[hips].rb.position.y
+            - 0.01f * Mathf.Abs(bodyParts[head].rb.velocity.sqrMagnitude - bodyParts[hips].rb.velocity.sqrMagnitude)
         );
     }
 
+    /// <summary>
+    /// Loop over body parts and reset them to initial conditions.
+    /// </summary>
     public override void AgentReset()
     {
+        transform.rotation = Quaternion.LookRotation(goalDirection);
+        
         foreach (var item in bodyParts)
         {
             item.Key.position = item.Value.startingPos;
