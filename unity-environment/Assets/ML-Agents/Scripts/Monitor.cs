@@ -206,7 +206,8 @@ public class Monitor : MonoBehaviour
     /// conversion process fails.
     float[] ToFloatArray(object input)
     {
-        if (input.GetType() == typeof(List<float>)){
+        if (input.GetType() == typeof(List<float>))
+        {
             input = (input as List<float>).ToArray();
         }
         System.Type inputType = input.GetType();
@@ -341,7 +342,6 @@ public class Monitor : MonoBehaviour
                             GUIContent.none, s);
                     }
 
-
                 }
                 else if (displayValues[key].monitorDisplayType ==
                          MonitorType.bar)
@@ -353,7 +353,7 @@ public class Monitor : MonoBehaviour
                     {
                         valsSum += Mathf.Max(f, 0);
                     }
-                    if (valsSum == 0)
+                    if (valsSum < 1e-5f)
                     {
                         Debug.LogError(
                             string.Format("The Monitor value for key {0} " +
