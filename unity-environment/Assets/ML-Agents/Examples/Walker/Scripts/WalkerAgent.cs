@@ -31,7 +31,7 @@ public class WalkerAgent : Agent
         public Rigidbody rb;
         public Vector3 startingPos;
         public Quaternion startingRot;
-        public WalkerGroundContact groundContactScript;
+        public GroundContact groundContactScript;
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class WalkerAgent : Agent
             startingRot = t.rotation
         };
         bodyParts.Add(t, bp);
-        bp.groundContactScript = t.GetComponent<WalkerGroundContact>();
+        bp.groundContactScript = t.GetComponent<GroundContact>();
     }
 
     public override void InitializeAgent()

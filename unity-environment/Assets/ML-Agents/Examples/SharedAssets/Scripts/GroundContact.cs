@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WalkerGroundContact : MonoBehaviour
+/// <summary>
+/// This class contains logic for locomotion agents with joints which might make contact with the ground.
+/// By attaching this as a component to those joints, their contact with the ground can be used as either
+/// an observation for that agent, and/or a means of punishing the agent for making undesirable contact.
+/// </summary>
+public class GroundContact : MonoBehaviour
 {
     public int index;
-    public WalkerAgent agent;
+    public Agent agent;
     public bool touchingGround;
     public bool penalizeOnContact;
 
     void Start()
     {
-        agent = transform.root.GetComponent<WalkerAgent>();
+        agent = transform.root.GetComponent<Agent>();
     }
 
     void OnCollisionEnter(Collision other)
