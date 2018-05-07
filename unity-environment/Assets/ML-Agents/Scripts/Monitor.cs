@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
 using UnityEngine;
-
-using Newtonsoft.Json;
 
 /// <summary>
 /// The type of monitor the information must be displayed in.
@@ -36,7 +33,8 @@ public class Monitor : MonoBehaviour
 
     static bool isInstantiated;
     static GameObject canvas;
-    static Dictionary<Transform, Dictionary<string, DisplayValue>> displayTransformValues;
+    static Dictionary<Transform, Dictionary<string,
+    DisplayValue>> displayTransformValues;
     static Color[] barColors;
 
     struct DisplayValue
@@ -54,11 +52,13 @@ public class Monitor : MonoBehaviour
     static bool initialized;
 
     /// <summary>
-    /// Use the Monitor.Log static function to attach information to a transform.
+    /// Use the Monitor.Log static function to attach information
+    /// to a transform.
     /// If displayType is <text>, value can be any object. 
     /// If sidplayType is <slider>, value must be a float.
     /// If sidplayType is <hist>, value must be a List or Array of floats.
-    /// If sidplayType is <bar>, value must be a list or Array of positive floats.
+    /// If sidplayType is <bar>, value must be a list or Array of
+    /// positive floats.
     /// Note that <slider> and <hist> caps values between -1 and 1.
     /// </summary>
     /// <returns>The log.</returns>
@@ -88,10 +88,12 @@ public class Monitor : MonoBehaviour
 
         if (!displayTransformValues.Keys.Contains(target))
         {
-            displayTransformValues[target] = new Dictionary<string, DisplayValue>();
+            displayTransformValues[target] =
+                new Dictionary<string, DisplayValue>();
         }
 
-        Dictionary<string, DisplayValue> displayValues = displayTransformValues[target];
+        Dictionary<string, DisplayValue> displayValues =
+            displayTransformValues[target];
 
         if (value == null)
         {
@@ -107,7 +109,9 @@ public class Monitor : MonoBehaviour
             displayValues[key] = dv;
             while (displayValues.Count > 20)
             {
-                string max = displayValues.Aggregate((l, r) => l.Value.time < r.Value.time ? l : r).Key;
+                string max = (
+                    displayValues.Aggregate((l, r) =>
+                    l.Value.time < r.Value.time ? l : r).Key);
                 RemoveValue(target, max);
             }
         }
@@ -194,34 +198,24 @@ public class Monitor : MonoBehaviour
             canvas.name = "AgentMonitorCanvas";
             canvas.AddComponent<Monitor>();
         }
-        displayTransformValues = new Dictionary<Transform, Dictionary<string, DisplayValue>>();
+        displayTransformValues = new Dictionary<Transform,
+        Dictionary<string, DisplayValue>>();
     }
 
     /// Convert the input object to a float array. Returns a float[0] if the
     /// conversion process fails.
     float[] ToFloatArray(object input)
     {
-        try
-        {
-            return JsonConvert.DeserializeObject<float[]>(
-                JsonConvert.SerializeObject(input, Formatting.None));
+        if (input.GetType() == typeof(List<float>)){
+            input = (input as List<float>).ToArray();
         }
-        catch
+        System.Type inputType = input.GetType();
+        System.Type expectedType = typeof(float);
+        if (inputType.IsArray &&
+            expectedType.IsAssignableFrom(inputType.GetElementType()))
         {
-
+            return input as float[];
         }
-        try
-        {
-            return new float[1]
-            {JsonConvert.DeserializeObject<float>(
-                    JsonConvert.SerializeObject(input, Formatting.None))
-            };
-        }
-        catch
-        {
-
-        }
-
         return new float[0];
     }
 
@@ -249,13 +243,19 @@ public class Monitor : MonoBehaviour
             float paddingwidth = 10 * widthScaler;
 
             float scale = 1f;
-            var origin = new Vector3(Screen.width / 2 - keyPixelWidth, Screen.height);
+            var origin = new Vector3(Screen.width / 2 -
+                                     keyPixelWidth, Screen.height);
             if (!(target == canvas.transform))
             {
-                Vector3 cam2obj = target.position - Camera.main.transform.position;
-                scale = Mathf.Min(1, 20f / (Vector3.Dot(cam2obj, Camera.main.transform.forward)));
-                Vector3 worldPosition = Camera.main.WorldToScreenPoint(target.position + new Vector3(0, verticalOffset, 0));
-                origin = new Vector3(worldPosition.x - keyPixelWidth * scale, Screen.height - worldPosition.y);
+                Vector3 cam2obj = target.position -
+                                        Camera.main.transform.position;
+                scale = Mathf.Min(
+                    1, 20f / (Vector3.Dot(cam2obj,
+                                          Camera.main.transform.forward)));
+                Vector3 worldPosition = Camera.main.WorldToScreenPoint(
+                    target.position + new Vector3(0, verticalOffset, 0));
+                origin = new Vector3(worldPosition.x - keyPixelWidth * scale,
+                                     Screen.height - worldPosition.y);
             }
             keyPixelWidth *= scale;
             keyPixelHeight *= scale;
@@ -267,13 +267,17 @@ public class Monitor : MonoBehaviour
             }
 
 
-            Dictionary<string, DisplayValue> displayValues = displayTransformValues[target];
+            Dictionary<string, DisplayValue> displayValues =
+                displayTransformValues[target];
 
             int index = 0;
-            foreach (string key in displayValues.Keys.OrderBy(x => -displayValues[x].time))
+            foreach (string key in displayValues.Keys.OrderBy(
+                x => -displayValues[x].time))
             {
                 keyStyle.alignment = TextAnchor.MiddleRight;
-                GUI.Label(new Rect(origin.x, origin.y - (index + 1) * keyPixelHeight, keyPixelWidth, keyPixelHeight), key, keyStyle);
+                GUI.Label(new Rect(
+                    origin.x, origin.y - (index + 1) * keyPixelHeight,
+                    keyPixelWidth, keyPixelHeight), key, keyStyle);
                 if (displayValues[key].monitorDisplayType == MonitorType.text)
                 {
                     valueStyle.alignment = TextAnchor.MiddleLeft;
@@ -281,10 +285,11 @@ public class Monitor : MonoBehaviour
                             origin.x + paddingwidth + keyPixelWidth,
                             origin.y - (index + 1) * keyPixelHeight,
                             keyPixelWidth, keyPixelHeight),
-                        JsonConvert.SerializeObject(displayValues[key].value, Formatting.None), valueStyle);
+                              displayValues[key].value.ToString(), valueStyle);
 
                 }
-                else if (displayValues[key].monitorDisplayType == MonitorType.slider)
+                else if (displayValues[key].monitorDisplayType ==
+                         MonitorType.slider)
                 {
                     float sliderValue = 0f;
                     if (displayValues[key].value is float)
@@ -293,8 +298,10 @@ public class Monitor : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError(string.Format("The value for {0} could not be displayed as " +
-                                "a slider because it is not a number.", key));
+                        Debug.LogError(
+                            string.Format("The value for {0} could not be " +
+                                          "displayed as a slider because it " +
+                                          "is not a number.", key));
                     }
 
                     sliderValue = Mathf.Min(1f, sliderValue);
@@ -311,7 +318,8 @@ public class Monitor : MonoBehaviour
                         GUIContent.none, s);
 
                 }
-                else if (displayValues[key].monitorDisplayType == MonitorType.hist)
+                else if (displayValues[key].monitorDisplayType ==
+                         MonitorType.hist)
                 {
                     float histWidth = 0.15f;
                     float[] vals = ToFloatArray(displayValues[key].value);
@@ -325,15 +333,18 @@ public class Monitor : MonoBehaviour
                             s = redStyle;
                         }
                         GUI.Box(new Rect(
-                                origin.x + paddingwidth + keyPixelWidth + (keyPixelWidth * histWidth + paddingwidth / 2) * i,
-                                origin.y - (index + 0.1f) * keyPixelHeight,
-                                keyPixelWidth * histWidth, -keyPixelHeight * value),
+                            origin.x + paddingwidth + keyPixelWidth +
+                            (keyPixelWidth * histWidth + paddingwidth / 2) * i,
+                            origin.y - (index + 0.1f) * keyPixelHeight,
+                            keyPixelWidth * histWidth,
+                            -keyPixelHeight * value),
                             GUIContent.none, s);
                     }
 
 
                 }
-                else if (displayValues[key].monitorDisplayType == MonitorType.bar)
+                else if (displayValues[key].monitorDisplayType ==
+                         MonitorType.bar)
                 {
                     float[] vals = ToFloatArray(displayValues[key].value);
                     float valsSum = 0f;
@@ -344,8 +355,11 @@ public class Monitor : MonoBehaviour
                     }
                     if (valsSum == 0)
                     {
-                        Debug.LogError(string.Format("The Monitor value for key {0} must be "
-                                + "a list or array of positive values and cannot be empty.", key));
+                        Debug.LogError(
+                            string.Format("The Monitor value for key {0} " +
+                                          "must be a list or array of " +
+                                          "positive values and cannot " +
+                                          "be empty.", key));
                     }
                     else
                     {
@@ -353,10 +367,12 @@ public class Monitor : MonoBehaviour
                         {
                             float value = Mathf.Max(vals[i], 0) / valsSum;
                             GUI.Box(new Rect(
-                                    origin.x + paddingwidth + keyPixelWidth + keyPixelWidth * valsCum,
-                                    origin.y - (index + 0.9f) * keyPixelHeight,
-                                    keyPixelWidth * value, keyPixelHeight * 0.8f),
-                                GUIContent.none, colorStyle[i % colorStyle.Length]);
+                                origin.x + paddingwidth +
+                                keyPixelWidth + keyPixelWidth * valsCum,
+                                origin.y - (index + 0.9f) * keyPixelHeight,
+                                keyPixelWidth * value, keyPixelHeight * 0.8f),
+                                GUIContent.none,
+                                colorStyle[i % colorStyle.Length]);
                             valsCum += value;
 
                         }
@@ -377,7 +393,13 @@ public class Monitor : MonoBehaviour
         valueStyle = GUI.skin.label;
         valueStyle.clipping = TextClipping.Overflow;
         valueStyle.wordWrap = false;
-        barColors = new Color[6] { Color.magenta, Color.blue, Color.cyan, Color.green, Color.yellow, Color.red };
+        barColors = new Color[6] {
+            Color.magenta,
+            Color.blue,
+            Color.cyan,
+            Color.green,
+            Color.yellow,
+            Color.red};
         colorStyle = new GUIStyle[barColors.Length];
         for (int i = 0; i < barColors.Length; i++)
         {
