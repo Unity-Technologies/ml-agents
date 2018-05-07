@@ -103,6 +103,7 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations()
     {
+        AddVectorObs(goalDirection);
         foreach (var item in bodyParts)
         {
             BodyPartObservation(item.Value);
@@ -162,10 +163,11 @@ public class WalkerAgent : Agent
         // d. Discourage head movement.
         AddReward(
             + 0.03f * Vector3.Dot(goalDirection, bodyParts[hips].rb.velocity)
-            + 0.01f * Vector3.Dot(goalDirection, bodyParts[hips].rb.transform.forward)
-            + 0.01f * bodyParts[head].rb.position.y - bodyParts[hips].rb.position.y
-            - 0.01f * Mathf.Abs(bodyParts[head].rb.velocity.sqrMagnitude - bodyParts[hips].rb.velocity.sqrMagnitude)
+            + 0.01f * Vector3.Dot(goalDirection, hips.forward)
+            + 0.01f * (head.position.y - hips.position.y)
+            - 0.01f * Vector3.Distance(bodyParts[head].rb.velocity, bodyParts[hips].rb.velocity)
         );
+
     }
 
     /// <summary>
