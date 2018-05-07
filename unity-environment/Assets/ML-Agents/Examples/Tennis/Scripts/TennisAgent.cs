@@ -41,8 +41,8 @@ public class TennisAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        var moveX = vectorAction[0] * invertMult;
-        var moveY = vectorAction[1];
+        var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
+        var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         
         if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {

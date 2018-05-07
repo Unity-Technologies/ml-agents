@@ -1,13 +1,16 @@
 # Unity ML-Agents Documentation
 
+## Installation & Set-up
+ * [Installation](Installation.md)
+    * [Background: Jupyter Notebooks](Background-Jupyter.md)
+    * [Docker Set-up](Using-Docker.md)
+ * [Basic Guide](Basic-Guide.md)
+
 ## Getting Started
  * [ML-Agents Overview](ML-Agents-Overview.md)
     * [Background: Unity](Background-Unity.md)
     * [Background: Machine Learning](Background-Machine-Learning.md)
     * [Background: TensorFlow](Background-TensorFlow.md)
- * [Installation & Set-up](Installation.md)
-    * [Background: Jupyter Notebooks](Background-Jupyter.md)
-    * [Docker Set-up](Using-Docker.md)
  * [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
  * [Example Environments](Learning-Environment-Examples.md)
 
@@ -32,8 +35,9 @@
 
 ## Help
  * [Migrating to ML-Agents v0.3](Migrating-v0.3.md)
+ * [Frequently Asked Questions](FAQ.md)
  * [ML-Agents Glossary](Glossary.md)
- * [Limitations & Common Issues](Limitations-and-Common-Issues.md)
+ * [Limitations](Limitations.md)
  
 ## API Docs
  * [API Reference](API-Reference.md)

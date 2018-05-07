@@ -254,6 +254,7 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
 
+                if not next_info.local_done[next_idx]:
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
@@ -270,18 +271,20 @@ class PPOTrainer(Trainer):
         """
 
         info = new_info[self.brain_name]
-        last_info = current_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
                 and len(agent_actions) > 0):
+                agent_id = info.agents[l]
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
                     if info.max_reached[l]:
-                        bootstrapping_info = last_info
+                        bootstrapping_info = self.training_buffer[agent_id].last_brain_info
+                        idx = bootstrapping_info.agents.index(agent_id)
                     else:
                         bootstrapping_info = info
+                        idx = l
                     feed_dict = {self.model.batch_size: len(bootstrapping_info.vector_observations), self.model.sequence_length: 1}
                     if self.use_observations:
                         for i in range(len(bootstrapping_info.visual_observations)):
@@ -294,8 +297,7 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.memory_in] = bootstrapping_info.memories
                     if not self.is_continuous_action and self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.reshape(bootstrapping_info.previous_vector_actions, [-1])
-                    value_next = self.sess.run(self.model.value, feed_dict)[l]
-                agent_id = info.agents[l]
+                    value_next = self.sess.run(self.model.value, feed_dict)[idx]
 
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(
@@ -344,7 +346,7 @@ class PPOTrainer(Trainer):
         """
         num_epoch = self.trainer_parameters['num_epoch']
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
-        total_v, total_p = 0, 0
+        total_v, total_p = [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
@@ -391,10 +393,10 @@ class PPOTrainer(Trainer):
                 v_loss, p_loss, _ = self.sess.run(
                     [self.model.value_loss, self.model.policy_loss,
                      self.model.update_batch], feed_dict=feed_dict)
-                total_v += v_loss
-                total_p += p_loss
-        self.stats['value_loss'].append(total_v)
-        self.stats['policy_loss'].append(total_p)
+                total_v.append(v_loss)
+                total_p.append(np.abs(p_loss))
+        self.stats['value_loss'].append(np.mean(total_v))
+        self.stats['policy_loss'].append(np.mean(total_p))
         self.training_buffer.reset_update_buffer()
 
     def write_summary(self, lesson_number):
