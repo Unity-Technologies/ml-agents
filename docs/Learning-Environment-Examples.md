@@ -229,7 +229,7 @@ If you would like to contribute environments, please see our
 
 ![Walker](images/walker.png)
 
-* Set-up: A humanoid agent with multiple degrees of freedom.
+* Set-up: A humanoid agent with 26 degrees of freedom. These correspond to articulation of the following body-parts: hips, chest, spine, head, thighs, shins, feets, arms, forearms and hands. 
 * Goal: The agents must move its body toward the goal direction as quickly as possible without falling.
 * Agents: The environment contains 11 agent linked to a single brain.
 * Agent Reward Function (independent): 
