@@ -24,6 +24,9 @@ public class WalkerAgent : Agent
     public Transform handR;
     public Dictionary<Transform, BodyPart> bodyParts = new Dictionary<Transform, BodyPart>();
 
+    /// <summary>
+    /// Used to store relevant information for acting and learning for each body part in agent.
+    /// </summary>
     [System.Serializable]
     public class BodyPart
     {
@@ -37,7 +40,6 @@ public class WalkerAgent : Agent
     /// <summary>
     /// Create BodyPart object and add it to dictionary.
     /// </summary>
-    /// <param name="t"></param>
     public void SetupBodyPart(Transform t)
     {
         BodyPart bp = new BodyPart
@@ -71,7 +73,10 @@ public class WalkerAgent : Agent
         SetupBodyPart(handR);
     }
 
-    public Quaternion GetJointRotation(ConfigurableJoint joint)
+    /// <summary>
+    /// Obtains joint rotation (in Quaternion) from joint. 
+    /// </summary>
+    public static Quaternion GetJointRotation(ConfigurableJoint joint)
     {
         return (Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
     }
@@ -79,7 +84,7 @@ public class WalkerAgent : Agent
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
-    public void BodyPartObservation(BodyPart bp)
+    public void CollectObservationBodyPart(BodyPart bp)
     {
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
@@ -103,17 +108,18 @@ public class WalkerAgent : Agent
     public override void CollectObservations()
     {
         AddVectorObs(goalDirection);
-        foreach (var item in bodyParts)
+        foreach (var bodyPart in bodyParts.Values)
         {
-            BodyPartObservation(item.Value);
+            CollectObservationBodyPart(bodyPart);
         }
     }
 
     /// <summary>
-    /// Apply torque according to defined goal angle and force.
+    /// Apply torque to bodyPart `bp` according to defined goal `x, y, z` angle and force `strength`.
     /// </summary>
     public void SetNormalizedTargetRotation(BodyPart bp, float x, float y, float z, float strength)
     {
+        // Transform values from [-1, 1] to [0, 1]
         x = (x + 1f) * 0.5f;
         y = (y + 1f) * 0.5f;
         z = (z + 1f) * 0.5f;
@@ -133,7 +139,6 @@ public class WalkerAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-
         // Apply action to all relevant body parts. 
         SetNormalizedTargetRotation(bodyParts[chest], vectorAction[0], vectorAction[1], vectorAction[2],
             vectorAction[26]);
@@ -166,7 +171,6 @@ public class WalkerAgent : Agent
             + 0.01f * (head.position.y - hips.position.y)
             - 0.01f * Vector3.Distance(bodyParts[head].rb.velocity, bodyParts[hips].rb.velocity)
         );
-
     }
 
     /// <summary>
