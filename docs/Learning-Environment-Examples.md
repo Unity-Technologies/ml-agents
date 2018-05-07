@@ -237,7 +237,7 @@ If you would like to contribute environments, please see our
     * +0.01 times head y position.
     * +0.01 times body direction alignment with goal direction.
     * -0.01 times head velocity difference from body velocity.
-    * Brains: One brain with the following observation/action space.
+* Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 215 variables corresponding to position, rotation, velocity, and angular velocities of each limb, along with goal direction.
     * Vector Action space: (Continuous) Size of 39, corresponding to target rotations applicable to the joints. 
     * Visual Observations: None
