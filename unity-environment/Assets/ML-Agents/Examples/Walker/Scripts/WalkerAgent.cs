@@ -31,7 +31,7 @@ public class WalkerAgent : Agent
         public Rigidbody rb;
         public Vector3 startingPos;
         public Quaternion startingRot;
-        public GroundContact groundContactScript;
+        public GroundContact groundContact;
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class WalkerAgent : Agent
             startingRot = t.rotation
         };
         bodyParts.Add(t, bp);
-        bp.groundContactScript = t.GetComponent<GroundContact>();
+        bp.groundContact = t.GetComponent<GroundContact>();
     }
 
     public override void InitializeAgent()
@@ -69,7 +69,6 @@ public class WalkerAgent : Agent
         SetupBodyPart(armR);
         SetupBodyPart(forearmR);
         SetupBodyPart(handR);
-
     }
 
     public Quaternion GetJointRotation(ConfigurableJoint joint)
@@ -83,8 +82,8 @@ public class WalkerAgent : Agent
     public void BodyPartObservation(BodyPart bp)
     {
         var rb = bp.rb;
-        AddVectorObs(bp.groundContactScript.touchingGround ? 1 : 0); // Is this bp touching the ground
-        bp.groundContactScript.touchingGround = false;
+        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
+        bp.groundContact.touchingGround = false;
 
         AddVectorObs(rb.velocity);
         AddVectorObs(rb.angularVelocity);
@@ -185,5 +184,4 @@ public class WalkerAgent : Agent
             item.Value.rb.angularVelocity = Vector3.zero;
         }
     }
-
 }

@@ -9,19 +9,25 @@ using UnityEngine;
 /// </summary>
 public class GroundContact : MonoBehaviour
 {
-    public int index;
     public Agent agent;
     public bool touchingGround;
     public bool penalizeOnContact;
+    private const string Ground = "ground"; 
 
+    /// <summary>
+    /// Obtain reference to agent.
+    /// </summary>
     void Start()
     {
         agent = transform.root.GetComponent<Agent>();
     }
 
+    /// <summary>
+    /// Check for collision with ground, and optionally penalize agent.
+    /// </summary>
     void OnCollisionEnter(Collision other)
     {
-        if (other.transform.CompareTag("ground"))
+        if (other.transform.CompareTag(Ground))
         {
             touchingGround = true;
             if (penalizeOnContact)
@@ -32,9 +38,12 @@ public class GroundContact : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Check for end of ground collision and reset flag appropriately.
+    /// </summary>
     void OnCollisionExit(Collision other)
     {
-        if (other.transform.CompareTag("ground"))
+        if (other.transform.CompareTag(Ground))
         {
             touchingGround = false;
         }
