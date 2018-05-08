@@ -229,9 +229,9 @@ If you would like to contribute environments, please see our
 
 ![Walker](images/walker.png)
 
-* Set-up: A humanoid agent with 26 degrees of freedom. These correspond to articulation of the following body-parts: hips, chest, spine, head, thighs, shins, feets, arms, forearms and hands. 
+* Set-up: Physics-based Humanoids agents with 26 degrees of freedom. These DOFs correspond to articulation of the following body-parts: hips, chest, spine, head, thighs, shins, feets, arms, forearms and hands. 
 * Goal: The agents must move its body toward the goal direction as quickly as possible without falling.
-* Agents: The environment contains 11 agent linked to a single brain.
+* Agents: The environment contains 11 independent agent linked to a single brain.
 * Agent Reward Function (independent): 
     * +0.03 times body velocity in the goal direction.
     * +0.01 times head y position.
