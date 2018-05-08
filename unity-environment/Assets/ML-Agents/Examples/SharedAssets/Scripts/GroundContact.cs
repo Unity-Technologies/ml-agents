@@ -10,6 +10,7 @@ using UnityEngine;
 public class GroundContact : MonoBehaviour
 {
     public Agent agent;
+    public float contactPenalty;
     public bool touchingGround;
     public bool penalizeOnContact;
     private const string Ground = "ground"; 
@@ -33,7 +34,7 @@ public class GroundContact : MonoBehaviour
             if (penalizeOnContact)
             {
                 agent.Done();
-                agent.SetReward(-1f);
+                agent.SetReward(contactPenalty);
             }
         }
     }
