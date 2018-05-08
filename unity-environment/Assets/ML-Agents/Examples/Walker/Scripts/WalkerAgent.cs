@@ -35,6 +35,41 @@ public class WalkerAgent : Agent
         public Vector3 startingPos;
         public Quaternion startingRot;
         public GroundContact groundContact;
+
+        /// <summary>
+        /// Reset body part to initial configuration.
+        /// </summary>
+        public void Reset()
+        {
+            rb.transform.position = startingPos;
+            rb.transform.rotation = startingRot;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+        
+        /// <summary>
+        /// Apply torque according to defined goal `x, y, z` angle and force `strength`.
+        /// </summary>
+        public void SetNormalizedTargetRotation(float x, float y, float z, float strength)
+        {
+            // Transform values from [-1, 1] to [0, 1]
+            x = (x + 1f) * 0.5f;
+            y = (y + 1f) * 0.5f;
+            z = (z + 1f) * 0.5f;
+
+            var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
+            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
+            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
+
+            joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
+            var jd = new JointDrive
+            {
+                positionSpring = ((strength + 1f) * 0.5f) * 10000f,
+                maximumForce = 250000f
+            };
+            joint.slerpDrive = jd;
+        }
+
     }
 
     /// <summary>
@@ -114,51 +149,32 @@ public class WalkerAgent : Agent
         }
     }
 
-    /// <summary>
-    /// Apply torque to bodyPart `bp` according to defined goal `x, y, z` angle and force `strength`.
-    /// </summary>
-    public void SetNormalizedTargetRotation(BodyPart bp, float x, float y, float z, float strength)
-    {
-        // Transform values from [-1, 1] to [0, 1]
-        x = (x + 1f) * 0.5f;
-        y = (y + 1f) * 0.5f;
-        z = (z + 1f) * 0.5f;
-
-        var xRot = Mathf.Lerp(bp.joint.lowAngularXLimit.limit, bp.joint.highAngularXLimit.limit, x);
-        var yRot = Mathf.Lerp(-bp.joint.angularYLimit.limit, bp.joint.angularYLimit.limit, y);
-        var zRot = Mathf.Lerp(-bp.joint.angularZLimit.limit, bp.joint.angularZLimit.limit, z);
-
-        bp.joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
-        var jd = new JointDrive
-        {
-            positionSpring = ((strength + 1f) * 0.5f) * 10000f,
-            maximumForce = 250000f
-        };
-        bp.joint.slerpDrive = jd;
-    }
-
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         // Apply action to all relevant body parts. 
-        SetNormalizedTargetRotation(bodyParts[chest], vectorAction[0], vectorAction[1], vectorAction[2],
+        
+        bodyParts[chest].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], vectorAction[2],
             vectorAction[26]);
-        SetNormalizedTargetRotation(bodyParts[spine], vectorAction[3], vectorAction[4], vectorAction[5],
+        bodyParts[spine].SetNormalizedTargetRotation(vectorAction[3], vectorAction[4], vectorAction[5],
             vectorAction[27]);
 
-        SetNormalizedTargetRotation(bodyParts[thighL], vectorAction[6], vectorAction[7], 0, vectorAction[28]);
-        SetNormalizedTargetRotation(bodyParts[shinL], vectorAction[8], 0, 0, vectorAction[29]);
-        SetNormalizedTargetRotation(bodyParts[footL], vectorAction[9], vectorAction[10], vectorAction[11],
+        bodyParts[thighL].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0, vectorAction[28]);
+        bodyParts[shinL].SetNormalizedTargetRotation(vectorAction[8], 0, 0, vectorAction[29]);
+        bodyParts[footL].SetNormalizedTargetRotation(vectorAction[9], vectorAction[10], vectorAction[11],
             vectorAction[30]);
-        SetNormalizedTargetRotation(bodyParts[thighR], vectorAction[12], vectorAction[13], 0, vectorAction[31]);
-        SetNormalizedTargetRotation(bodyParts[shinR], vectorAction[14], 0, 0, vectorAction[32]);
-        SetNormalizedTargetRotation(bodyParts[footR], vectorAction[15], vectorAction[16], vectorAction[17],
+        
+        bodyParts[thighR].SetNormalizedTargetRotation(vectorAction[12], vectorAction[13], 0, vectorAction[31]);
+        bodyParts[shinR].SetNormalizedTargetRotation(vectorAction[14], 0, 0, vectorAction[32]);
+        bodyParts[footR].SetNormalizedTargetRotation(vectorAction[15], vectorAction[16], vectorAction[17],
             vectorAction[33]);
 
-        SetNormalizedTargetRotation(bodyParts[armL], vectorAction[18], vectorAction[19], 0, vectorAction[34]);
-        SetNormalizedTargetRotation(bodyParts[forearmL], vectorAction[20], 0, 0, vectorAction[34]);
-        SetNormalizedTargetRotation(bodyParts[armR], vectorAction[21], vectorAction[22], 0, vectorAction[36]);
-        SetNormalizedTargetRotation(bodyParts[forearmR], vectorAction[23], 0, 0, vectorAction[37]);
-        SetNormalizedTargetRotation(bodyParts[head], vectorAction[24], vectorAction[25], 0, vectorAction[38]);
+        bodyParts[armL].SetNormalizedTargetRotation(vectorAction[18], vectorAction[19], 0, vectorAction[34]);
+        bodyParts[forearmL].SetNormalizedTargetRotation(vectorAction[20], 0, 0, vectorAction[34]);
+        
+        bodyParts[armR].SetNormalizedTargetRotation(vectorAction[21], vectorAction[22], 0, vectorAction[36]);
+        bodyParts[forearmR].SetNormalizedTargetRotation(vectorAction[23], 0, 0, vectorAction[37]);
+        
+        bodyParts[head].SetNormalizedTargetRotation(vectorAction[24], vectorAction[25], 0, vectorAction[38]);
 
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
@@ -180,12 +196,9 @@ public class WalkerAgent : Agent
     {
         transform.rotation = Quaternion.LookRotation(goalDirection);
         
-        foreach (var item in bodyParts)
+        foreach (var bodyPart in bodyParts.Values)
         {
-            item.Key.position = item.Value.startingPos;
-            item.Key.rotation = item.Value.startingRot;
-            item.Value.rb.velocity = Vector3.zero;
-            item.Value.rb.angularVelocity = Vector3.zero;
+            bodyPart.Reset();
         }
     }
 }
