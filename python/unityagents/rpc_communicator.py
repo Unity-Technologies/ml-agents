@@ -61,18 +61,10 @@ class RpcCommunicator(Communicator):
         """
         Sends a shutdown signal to the unity environment, and closes the grpc connection.
         """
-        # inputs = UnityInput()
-        # inputs.command = 2
-        # How to shut gRPC down ?
         try:
             message_input = UnityInput()
             message_input.header.status = 400
             self._stub.Send(message_input)
         except :
             pass
-        # if self._conn is not None:
-        #     self._conn.send(b"EXIT")
-        #     self._conn.close()
-        #     self._socket.close()
-        #     self._conn = None
 
