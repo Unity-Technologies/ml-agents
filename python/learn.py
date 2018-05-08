@@ -2,13 +2,22 @@
 # ## ML-Agent Learning
 
 import logging
+import random
 
 import os
 from docopt import docopt
 
 from unitytrainers.trainer_controller import TrainerController
 
+
 if __name__ == '__main__':
+    print('\x1b[1;3'+str(random.randint(1, 6))+'m' + '''
+     __  __ _        _   ___ ___ _  _ _____ ___ 
+    |  \/  | |      /_\ / __| __| \| |_   _/ __|
+    | |\/| | |__   / _ \ (_ | _|| .` | | | \__ \\
+    |_|  |_|____| /_/ \_\___|___|_|\_| |_| |___/
+                                                 ''' + '\x1b[0m')
+
     logger = logging.getLogger("unityagents")
     _USAGE = '''
     Usage:
