@@ -322,7 +322,7 @@ in this mode, the Brain type during training is set to Player and all the
 actions performed with the controller (in addition to the agent observations)
 will be recorded and sent to the Python API. The imitation learning algorithm
 will then use these pairs of observations and actions from the human player
-to learn a policy.[Video Link](https://youtu.be/kpb8ZkMBFYs).
+to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
 
 The [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers this 
 training mode with the **Banana Collector** sample environment.
