@@ -3,28 +3,25 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// The type of monitor the information must be displayed in.
-/// <slider> corresponds to a single rectangle whose width is given
-///     by a float between -1 and 1. (green is positive, red is negative)
-/// <hist> corresponds to n vertical sliders.
-/// <text> is a text field.
-/// <bar> is a rectangle of fixed length to represent the proportions
-///     of a list of floats.
-/// </summary>
-public enum MonitorType
-{
-    slider,
-    hist,
-    text,
-    bar
-}
-
-/// <summary>
 /// Monitor is used to display information about the Agent within the Unity
 /// scene. Use the log function to add information to your monitor.
 /// </summary>
 public class Monitor : MonoBehaviour
 {
+    /// <summary>
+    /// The type of monitor the information must be displayed in.
+    /// <slider> corresponds to a single rectangle whose width is given
+    ///     by a float between -1 and 1. (green is positive, red is negative)
+    /// <hist> corresponds to n vertical sliders.
+    /// <text> is a text field.
+    /// <bar> is a rectangle of fixed length to represent the proportions
+    ///     of a list of floats.
+    /// </summary>
+    public enum DisplayType
+    {
+        INDEPENDENT,
+        PROPORTION
+    }
     /// <summary>
     /// Represents how high above the target the monitors will be.
     /// </summary>
@@ -40,8 +37,18 @@ public class Monitor : MonoBehaviour
     struct DisplayValue
     {
         public float time;
-        public object value;
-        public MonitorType monitorDisplayType;
+        public string stringValue;
+        public float floatValue;
+        public float[] floatArrayValues;
+        public enum ValueType
+        {
+            FLOAT,
+            FLOATARRAY_INDEPENDENT,
+            FLOATARRAY_PROPORTION,
+            STRING
+
+        }
+        public ValueType valueType;
     }
 
     static GUIStyle keyStyle;
@@ -52,33 +59,23 @@ public class Monitor : MonoBehaviour
     static bool initialized;
 
     /// <summary>
-    /// Use the Monitor.Log static function to attach information
-    /// to a transform.
-    /// If displayType is <text>, value can be any object. 
-    /// If sidplayType is <slider>, value must be a float.
-    /// If sidplayType is <hist>, value must be a List or Array of floats.
-    /// If sidplayType is <bar>, value must be a list or Array of
-    /// positive floats.
-    /// Note that <slider> and <hist> caps values between -1 and 1.
+    /// Use the Monitor.Log static function to attach information to a transform.
     /// </summary>
     /// <returns>The log.</returns>
     /// <param name="key">The name of the information you wish to Log.</param>
-    /// <param name="value">The value you want to display.</param>
-    /// <param name="displayType">The type of display.</param>
+    /// <param name="value">The string value you want to display.</param>
     /// <param name="target">
     /// The transform you want to attach the information to.
     /// </param>
     public static void Log(
         string key,
-        object value,
-        MonitorType displayType = MonitorType.text,
+        string value,
         Transform target = null)
     {
         if (!isInstantiated)
         {
             InstantiateCanvas();
             isInstantiated = true;
-
         }
 
         if (target == null)
@@ -104,8 +101,8 @@ public class Monitor : MonoBehaviour
         {
             var dv = new DisplayValue();
             dv.time = Time.timeSinceLevelLoad;
-            dv.value = value;
-            dv.monitorDisplayType = displayType;
+            dv.stringValue = value;
+            dv.valueType = DisplayValue.ValueType.STRING;
             displayValues[key] = dv;
             while (displayValues.Count > 20)
             {
@@ -118,10 +115,139 @@ public class Monitor : MonoBehaviour
         else
         {
             DisplayValue dv = displayValues[key];
-            dv.value = value;
+            dv.stringValue = value;
+            dv.valueType = DisplayValue.ValueType.STRING;
             displayValues[key] = dv;
         }
     }
+
+    /// <summary>
+    /// Use the Monitor.Log static function to attach information to a transform.
+    /// </summary>
+    /// <returns>The log.</returns>
+    /// <param name="key">The name of the information you wish to Log.</param>
+    /// <param name="value">The float value you want to display.</param>
+    /// <param name="target">
+    /// The transform you want to attach the information to.
+    /// </param>
+    public static void Log(
+        string key,
+        float value,
+        Transform target = null)
+    {
+        if (!isInstantiated)
+        {
+            InstantiateCanvas();
+            isInstantiated = true;
+        }
+
+        if (target == null)
+        {
+            target = canvas.transform;
+        }
+
+        if (!displayTransformValues.Keys.Contains(target))
+        {
+            displayTransformValues[target] = new Dictionary<string, DisplayValue>();
+        }
+
+        Dictionary<string, DisplayValue> displayValues = displayTransformValues[target];
+
+        if (!displayValues.ContainsKey(key))
+        {
+            var dv = new DisplayValue();
+            dv.time = Time.timeSinceLevelLoad;
+            dv.floatValue = value;
+            dv.valueType = DisplayValue.ValueType.FLOAT;
+            displayValues[key] = dv;
+            while (displayValues.Count > 20)
+            {
+                string max = (
+                    displayValues.Aggregate((l, r) => l.Value.time < r.Value.time ? l : r).Key);
+                RemoveValue(target, max);
+            }
+        }
+        else
+        {
+            DisplayValue dv = displayValues[key];
+            dv.floatValue = value;
+            dv.valueType = DisplayValue.ValueType.FLOAT;
+            displayValues[key] = dv;
+        }
+    }
+
+    /// <summary>
+    /// Use the Monitor.Log static function to attach information to a transform.
+    /// </summary>
+    /// <returns>The log.</returns>
+    /// <param name="key">The name of the information you wish to Log.</param>
+    /// <param name="value">The array of float you want to display.</param>
+    /// <param name="displayType">The type of display.</param>
+    /// <param name="target">
+    /// The transform you want to attach the information to.
+    /// </param>
+    public static void Log(
+        string key,
+        float[] value,
+        Transform target = null,
+        DisplayType displayType = DisplayType.INDEPENDENT
+    )
+    {
+        if (!isInstantiated)
+        {
+            InstantiateCanvas();
+            isInstantiated = true;
+        }
+
+        if (target == null)
+        {
+            target = canvas.transform;
+        }
+
+        if (!displayTransformValues.Keys.Contains(target))
+        {
+            displayTransformValues[target] = new Dictionary<string, DisplayValue>();
+        }
+
+        Dictionary<string, DisplayValue> displayValues = displayTransformValues[target];
+
+        if (!displayValues.ContainsKey(key))
+        {
+            var dv = new DisplayValue();
+            dv.time = Time.timeSinceLevelLoad;
+            dv.floatArrayValues = value;
+            if (displayType == DisplayType.INDEPENDENT)
+            {
+                dv.valueType = DisplayValue.ValueType.FLOATARRAY_INDEPENDENT;
+            }
+            else
+            {
+                dv.valueType = DisplayValue.ValueType.FLOATARRAY_PROPORTION;
+            }
+            displayValues[key] = dv;
+            while (displayValues.Count > 20)
+            {
+                string max = (
+                    displayValues.Aggregate((l, r) => l.Value.time < r.Value.time ? l : r).Key);
+                RemoveValue(target, max);
+            }
+        }
+        else
+        {
+            DisplayValue dv = displayValues[key];
+            dv.floatArrayValues = value;
+            if (displayType == DisplayType.INDEPENDENT)
+            {
+                dv.valueType = DisplayValue.ValueType.FLOATARRAY_INDEPENDENT;
+            }
+            else
+            {
+                dv.valueType = DisplayValue.ValueType.FLOATARRAY_PROPORTION;
+            }
+            displayValues[key] = dv;
+        }
+    }
+
 
     /// <summary>
     /// Remove a value from a monitor.
@@ -199,25 +325,7 @@ public class Monitor : MonoBehaviour
             canvas.AddComponent<Monitor>();
         }
         displayTransformValues = new Dictionary<Transform,
-        Dictionary<string, DisplayValue>>();
-    }
-
-    /// Convert the input object to a float array. Returns a float[0] if the
-    /// conversion process fails.
-    float[] ToFloatArray(object input)
-    {
-        if (input.GetType() == typeof(List<float>))
-        {
-            input = (input as List<float>).ToArray();
-        }
-        System.Type inputType = input.GetType();
-        System.Type expectedType = typeof(float);
-        if (inputType.IsArray &&
-            expectedType.IsAssignableFrom(inputType.GetElementType()))
-        {
-            return input as float[];
-        }
-        return new float[0];
+            Dictionary<string, DisplayValue>>();
     }
 
     /// <summary> <inheritdoc/> </summary>
@@ -279,32 +387,21 @@ public class Monitor : MonoBehaviour
                 GUI.Label(new Rect(
                     origin.x, origin.y - (index + 1) * keyPixelHeight,
                     keyPixelWidth, keyPixelHeight), key, keyStyle);
-                if (displayValues[key].monitorDisplayType == MonitorType.text)
+                if (displayValues[key].valueType ==
+                    DisplayValue.ValueType.STRING)
                 {
                     valueStyle.alignment = TextAnchor.MiddleLeft;
                     GUI.Label(new Rect(
                             origin.x + paddingwidth + keyPixelWidth,
                             origin.y - (index + 1) * keyPixelHeight,
                             keyPixelWidth, keyPixelHeight),
-                              displayValues[key].value.ToString(), valueStyle);
+                              displayValues[key].stringValue, valueStyle);
 
                 }
-                else if (displayValues[key].monitorDisplayType ==
-                         MonitorType.slider)
+                else if (displayValues[key].valueType ==
+                         DisplayValue.ValueType.FLOAT)
                 {
-                    float sliderValue = 0f;
-                    if (displayValues[key].value is float)
-                    {
-                        sliderValue = (float)displayValues[key].value;
-                    }
-                    else
-                    {
-                        Debug.LogError(
-                            string.Format("The value for {0} could not be " +
-                                          "displayed as a slider because it " +
-                                          "is not a number.", key));
-                    }
-
+                    float sliderValue = displayValues[key].floatValue;
                     sliderValue = Mathf.Min(1f, sliderValue);
                     GUIStyle s = greenStyle;
                     if (sliderValue < 0)
@@ -319,11 +416,11 @@ public class Monitor : MonoBehaviour
                         GUIContent.none, s);
 
                 }
-                else if (displayValues[key].monitorDisplayType ==
-                         MonitorType.hist)
+                else if (displayValues[key].valueType ==
+                         DisplayValue.ValueType.FLOATARRAY_INDEPENDENT)
                 {
                     float histWidth = 0.15f;
-                    float[] vals = ToFloatArray(displayValues[key].value);
+                    float[] vals = displayValues[key].floatArrayValues;
                     for (int i = 0; i < vals.Length; i++)
                     {
                         float value = Mathf.Min(vals[i], 1);
@@ -343,10 +440,10 @@ public class Monitor : MonoBehaviour
                     }
 
                 }
-                else if (displayValues[key].monitorDisplayType ==
-                         MonitorType.bar)
+                else if (displayValues[key].valueType ==
+                         DisplayValue.ValueType.FLOATARRAY_PROPORTION)
                 {
-                    float[] vals = ToFloatArray(displayValues[key].value);
+                    float[] vals = displayValues[key].floatArrayValues;
                     float valsSum = 0f;
                     float valsCum = 0f;
                     foreach (float f in vals)
