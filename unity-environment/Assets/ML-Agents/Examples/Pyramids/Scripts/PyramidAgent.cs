@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PyramidAgent : Agent
 {
-    public GameObject myAcademyObj;
     public GameObject area;
-    PyramidArea myArea;
-    Rigidbody agentRb;
+    private PyramidArea myArea;
+    private Rigidbody agentRb;
     private RayPerception rayPer;
+    private PyramidSwitch switchLogic;
     public GameObject areaSwitch;
     public bool useCamera;
 
@@ -16,32 +16,32 @@ public class PyramidAgent : Agent
     {
         base.InitializeAgent();
         agentRb = GetComponent<Rigidbody>();
-        Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<PyramidArea>();
         rayPer = GetComponent<RayPerception>();
+        switchLogic = areaSwitch.GetComponent<PyramidSwitch>();
     }
 
     public override void CollectObservations()
     {
         if (!useCamera)
         {
-            float rayDistance = 35f;
-            float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
-            float[] rayAngles1 = { 25f, 95f, 165f, 50f, 140f, 75f, 115f };
-            float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
+            const float rayDistance = 35f;
+            float[] rayAngles = {20f, 90f, 160f, 45f, 135f, 70f, 110f};
+            float[] rayAngles1 = {25f, 95f, 165f, 50f, 140f, 75f, 115f};
+            float[] rayAngles2 = {15f, 85f, 155f, 40f, 130f, 65f, 105f};
 
-            string[] detectableObjects = { "block", "wall", "goal", "switchOff", "switchOn"};
+            string[] detectableObjects = {"block", "wall", "goal", "switchOff", "switchOn"};
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
-            AddVectorObs(areaSwitch.GetComponent<PyramidSwitch>().GetState());
+            AddVectorObs(switchLogic.GetState());
         }
     }
 
     public void MoveAgent(float[] act)
     {
-        Vector3 dirToGo = Vector3.zero;
-        Vector3 rotateDir = Vector3.zero;
+        var dirToGo = Vector3.zero;
+        var rotateDir = Vector3.zero;
 
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
@@ -50,7 +50,7 @@ public class PyramidAgent : Agent
         }
         else
         {
-            int action = Mathf.FloorToInt(act[0]);
+            var action = Mathf.FloorToInt(act[0]);
             switch (action)
             {
                 case 0:
@@ -84,8 +84,8 @@ public class PyramidAgent : Agent
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
         
-        areaSwitch.GetComponent<PyramidSwitch>().Reset();
-        area.GetComponent<PyramidArea>().ResetPyramidArea(new[] {gameObject});
+        switchLogic.Reset();
+        myArea.CleanPyramidArea();
     }
 
     private void OnCollisionEnter(Collision collision)

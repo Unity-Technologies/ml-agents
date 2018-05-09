@@ -40,7 +40,7 @@ public class PyramidSwitch : MonoBehaviour
         {
             myButton.GetComponent<Renderer>().material = onMaterial;
             state = true;
-            areaComponent.CreateObject(1);
+            areaComponent.CreatePyramid(1);
             tag = "switchOn";
         }
     }
