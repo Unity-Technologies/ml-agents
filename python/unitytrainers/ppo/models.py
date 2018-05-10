@@ -36,7 +36,8 @@ class PPOModel(LearningModel):
         else:
             self.create_dc_actor_critic(h_size, num_layers)
         if self.use_curiosity:
-            encoded_state, encoded_next_state = self.create_inverse_model()
+            encoded_state, encoded_next_state = self.create_curiosity_encoders()
+            self.create_inverse_model(encoded_state, encoded_next_state)
             self.create_forward_model(encoded_state, encoded_next_state)
         self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
@@ -48,17 +49,17 @@ class PPOModel(LearningModel):
         update_reward = tf.assign(last_reward, new_reward)
         return last_reward, new_reward, update_reward
 
-    def create_inverse_model(self):
+    def create_curiosity_encoders(self):
         """
-        Creates inverse model TensorFlow ops for Curiosity module.
+        Creates state encoders for current and future observations.
+        :return: current and future state encoder tensors.
         """
         o_size = self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations
-        a_size = self.brain.vector_action_space_size
         v_size = self.brain.number_visual_observations
 
         inverse_input_list = []
-        encoded_state = []
-        encoded_next_state = []
+        encoded_state_list = []
+        encoded_next_state_list = []
 
         if v_size > 0:
             self.next_visual_in = []
@@ -85,8 +86,8 @@ class PPOModel(LearningModel):
             hidden_next_visual = tf.concat(next_visual_encoders, axis=1)
             inverse_input_list.append(hidden_visual)
             inverse_input_list.append(hidden_next_visual)
-            encoded_state.append(hidden_visual)
-            encoded_next_state.append(hidden_next_visual)
+            encoded_state_list.append(hidden_visual)
+            encoded_next_state_list.append(hidden_next_visual)
 
         if o_size > 0:
             # Create input op for next (t+1) vector observation.
@@ -101,14 +102,21 @@ class PPOModel(LearningModel):
 
             inverse_input_list.append(encoded_vector_obs)
             inverse_input_list.append(encoded_next_vector_obs)
-            encoded_state.append(encoded_vector_obs)
-            encoded_next_state.append(encoded_next_vector_obs)
+            encoded_state_list.append(encoded_vector_obs)
+            encoded_next_state_list.append(encoded_next_vector_obs)
 
+        encoded_state = tf.concat(encoded_state_list, axis=1)
+        encoded_next_state = tf.concat(encoded_next_state_list, axis=1)
+        return encoded_state, encoded_next_state
+
+    def create_inverse_model(self, encoded_state, encoded_next_state):
+        """
+        Creates inverse model TensorFlow ops for Curiosity module.
+        """
+        a_size = self.brain.vector_action_space_size
+        combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         if self.use_recurrent:
-            inverse_input_list.append(self.memory_in)
-
-        combined_input = tf.concat(inverse_input_list, axis=1)
-
+            combined_input = tf.concat([combined_input, self.memory_in], axis=1, name="special")
         if self.brain.vector_action_space_type == "continuous":
             pred_action = tf.layers.dense(combined_input, a_size, activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
@@ -117,8 +125,6 @@ class PPOModel(LearningModel):
             pred_action = tf.layers.dense(combined_input, a_size, activation=tf.nn.softmax)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(cross_entropy)
-
-        return tf.concat(encoded_state, axis=1), tf.concat(encoded_next_state, axis=1)
 
     def create_forward_model(self, encoded_state, encoded_next_state):
         """
