@@ -21,18 +21,33 @@ class LearningModel(object):
         self.normalize = normalize
         self.use_recurrent = use_recurrent
         self.a_size = brain.vector_action_space_size
+        self.o_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
+        self.v_size = brain.number_visual_observations
 
-    def create_global_steps(self):
+    @staticmethod
+    def create_global_steps():
         """Creates TF ops to track and increment global training step."""
         global_step = tf.Variable(0, name="global_step", trainable=False, dtype=tf.int32)
         increment_step = tf.assign(global_step, tf.add(global_step, 1))
         return global_step, increment_step
 
-    def swish(self, input_activation):
+    @staticmethod
+    def swish(input_activation):
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
 
-    def create_visual_input(self, o_size_h, o_size_w, bw, name):
+    @staticmethod
+    def create_visual_input(camera_parameters, name):
+        """
+        Creates image input op.
+        :param camera_parameters: Parameters for visual observation from BrainInfo.
+        :param name: Desired name of input op.
+        :return: input op.
+        """
+        o_size_h = camera_parameters['height']
+        o_size_w = camera_parameters['width']
+        bw = camera_parameters['blackAndWhite']
+
         if bw:
             c_channels = 1
         else:
@@ -41,33 +56,39 @@ class LearningModel(object):
         visual_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name)
         return visual_in
 
-    def create_vector_input(self, s_size):
+    def create_vector_input(self):
+        """
+        Creates ops for vector observation input.
+        :param o_size: Size of stacked vector observation.
+        :return:
+        """
         if self.brain.vector_observation_space_type == "continuous":
-            self.vector_in = tf.placeholder(shape=[None, s_size], dtype=tf.float32, name='vector_observation')
+            self.vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32, name='vector_observation')
             if self.normalize:
-                self.running_mean = tf.get_variable("running_mean", [s_size], trainable=False, dtype=tf.float32,
+                self.running_mean = tf.get_variable("running_mean", [self.o_size], trainable=False, dtype=tf.float32,
                                                     initializer=tf.zeros_initializer())
-                self.running_variance = tf.get_variable("running_variance", [s_size], trainable=False, dtype=tf.float32,
-                                                        initializer=tf.ones_initializer())
-                self.new_mean = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_mean')
-                self.new_variance = tf.placeholder(shape=[s_size], dtype=tf.float32, name='new_variance')
+                self.running_variance = tf.get_variable("running_variance", [self.o_size], trainable=False,
+                                                        dtype=tf.float32, initializer=tf.ones_initializer())
+                self.new_mean = tf.placeholder(shape=[self.o_size], dtype=tf.float32, name='new_mean')
+                self.new_variance = tf.placeholder(shape=[self.o_size], dtype=tf.float32, name='new_variance')
                 self.update_mean = tf.assign(self.running_mean, self.new_mean)
                 self.update_variance = tf.assign(self.running_variance, self.new_variance)
 
                 self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / tf.sqrt(
                     self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)), -5, 5,
                                                          name="normalized_state")
+                return self.normalized_state
             else:
-                self.normalized_state = self.vector_in
-            return self.normalized_state
-
+                return self.vector_in
         else:
             self.vector_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='vector_observation')
             return self.vector_in
 
-    def create_continuous_observation_encoder(self, observation_input, h_size, activation, num_layers, scope, reuse):
+    @staticmethod
+    def create_continuous_observation_encoder(observation_input, h_size, activation, num_layers, scope, reuse):
         """
         Builds a set of hidden state encoders.
+        :param reuse: Whether to re-use the weights within the same scope.
         :param scope: Graph scope for the encoder ops.
         :param observation_input: Input vector.
         :param h_size: Hidden layer size.
@@ -85,6 +106,8 @@ class LearningModel(object):
     def create_visual_observation_encoder(self, image_input, h_size, activation, num_layers, scope, reuse):
         """
         Builds a set of visual (CNN) encoders.
+        :param reuse: Whether to re-use the weights within the same scope.
+        :param scope: The scope of the graph within which to create the ops.
         :param image_input: The placeholder for the image input to use.
         :param h_size: Hidden layer size.
         :param activation: What type of activation function to use for layers.
@@ -101,10 +124,13 @@ class LearningModel(object):
         hidden_flat = self.create_continuous_observation_encoder(hidden, h_size, activation, num_layers, scope, reuse)
         return hidden_flat
 
-    def create_discrete_observation_encoder(self, observation_input, s_size, h_size, activation,
+    @staticmethod
+    def create_discrete_observation_encoder(observation_input, s_size, h_size, activation,
                                             num_layers, scope, reuse):
         """
         Builds a set of hidden state encoders from discrete state input.
+        :param reuse: Whether to re-use the weights within the same scope.
+        :param scope: The scope of the graph within which to create the ops.
         :param observation_input: Discrete observation.
         :param s_size: state input size (discrete).
         :param h_size: Hidden layer size.
@@ -122,8 +148,14 @@ class LearningModel(object):
         return hidden
 
     def create_observation_streams(self, num_streams, h_size, num_layers):
+        """
+        Creates encoding stream for observations.
+        :param num_streams: Number of streams to create.
+        :param h_size: Size of hidden linear layers in stream.
+        :param num_layers: Number of hidden linear layers in stream.
+        :return: List of encoded streams.
+        """
         brain = self.brain
-        s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
         if brain.vector_action_space_type == "continuous":
             activation_fn = tf.nn.tanh
         else:
@@ -131,17 +163,15 @@ class LearningModel(object):
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):
-            height_size, width_size = brain.camera_resolutions[i]['height'], brain.camera_resolutions[i]['width']
-            bw = brain.camera_resolutions[i]['blackAndWhite']
-            visual_input = self.create_visual_input(height_size, width_size, bw, name="visual_observation_" + str(i))
+            visual_input = self.create_visual_input(brain.camera_resolutions[i], name="visual_observation_" + str(i))
             self.visual_in.append(visual_input)
-        vector_observation_input = self.create_vector_input(s_size)
+        vector_observation_input = self.create_vector_input()
 
         final_hiddens = []
         for i in range(num_streams):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
-            if brain.number_visual_observations > 0:
+            if self.v_size > 0:
                 for j in range(brain.number_visual_observations):
                     encoded_visual = self.create_visual_observation_encoder(self.visual_in[j], h_size,
                                                                             activation_fn, num_layers,
@@ -149,13 +179,12 @@ class LearningModel(object):
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
-                s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
                 if brain.vector_observation_space_type == "continuous":
                     hidden_state = self.create_continuous_observation_encoder(vector_observation_input,
                                                                               h_size, activation_fn, num_layers,
                                                                               "main_graph", False)
                 else:
-                    hidden_state = self.create_discrete_observation_encoder(vector_observation_input, s_size,
+                    hidden_state = self.create_discrete_observation_encoder(vector_observation_input, self.o_size,
                                                                             h_size, activation_fn, num_layers,
                                                                             "main_graph", False)
             if hidden_state is not None and hidden_visual is not None:
@@ -170,7 +199,8 @@ class LearningModel(object):
             final_hiddens.append(final_hidden)
         return final_hiddens
 
-    def create_recurrent_encoder(self, input_state, memory_in, name='lstm'):
+    @staticmethod
+    def create_recurrent_encoder(input_state, memory_in, sequence_length, name='lstm'):
         """
         Builds a recurrent encoder for either state or observations (LSTM).
         :param input_state: The input tensor to the LSTM cell.
@@ -179,7 +209,7 @@ class LearningModel(object):
         """
         s_size = input_state.get_shape().as_list()[1]
         m_size = memory_in.get_shape().as_list()[1]
-        lstm_input_state = tf.reshape(input_state, shape=[-1, self.sequence_length, s_size])
+        lstm_input_state = tf.reshape(input_state, shape=[-1, sequence_length, s_size])
         memory_in = tf.reshape(memory_in[0, :], [-1, m_size])
         _half_point = int(m_size / 2)
         with tf.variable_scope(name):
@@ -194,29 +224,33 @@ class LearningModel(object):
         return recurrent_state, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     def create_dc_actor_critic(self, h_size, num_layers):
-        num_streams = 1
-        hidden_streams = self.create_observation_streams(num_streams, h_size, num_layers)
+        """
+        Creates Discrete control actor-critic model.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        """
+        hidden_streams = self.create_observation_streams(1, h_size, num_layers)
         hidden = hidden_streams[0]
 
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
-            self.prev_action_oh = tf.one_hot(self.prev_action, self.a_size)
-            hidden = tf.concat([hidden, self.prev_action_oh], axis=1)
+            prev_action_oh = tf.one_hot(self.prev_action, self.a_size)
+            hidden = tf.concat([hidden, prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
-            hidden, self.memory_out = self.create_recurrent_encoder(hidden, self.memory_in)
-            self.memory_out = tf.identity(self.memory_out, name='recurrent_out')
+            hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in, self.sequence_length)
+            self.memory_out = tf.identity(memory_out, name='recurrent_out')
 
         self.policy = tf.layers.dense(hidden, self.a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
         self.all_probs = tf.nn.softmax(self.policy, name="action_probs")
-        self.output = tf.multinomial(self.policy, 1)
-        self.output = tf.identity(self.output, name="action")
+        output = tf.multinomial(self.policy, 1)
+        self.output = tf.identity(output, name="action")
 
-        self.value = tf.layers.dense(hidden, 1, activation=None)
-        self.value = tf.identity(self.value, name="value_estimate")
+        value = tf.layers.dense(hidden, 1, activation=None)
+        self.value = tf.identity(value, name="value_estimate")
         self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
         self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
         self.selected_actions = tf.one_hot(self.action_holder, self.a_size)
@@ -228,18 +262,22 @@ class LearningModel(object):
         self.old_probs = tf.expand_dims(tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1), 1)
 
     def create_cc_actor_critic(self, h_size, num_layers):
-        num_streams = 2
-        hidden_streams = self.create_observation_streams(num_streams, h_size, num_layers)
+        """
+        Creates Continuous control actor-critic model.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        """
+        hidden_streams = self.create_observation_streams(2, h_size, num_layers)
 
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = self.create_recurrent_encoder(
-                hidden_streams[0], self.memory_in[:, :_half_point], name='lstm_policy')
+                hidden_streams[0], self.memory_in[:, :_half_point], self.sequence_length, name='lstm_policy')
 
             hidden_value, memory_value_out = self.create_recurrent_encoder(
-                hidden_streams[1], self.memory_in[:, _half_point:], name='lstm_value')
+                hidden_streams[1], self.memory_in[:, _half_point:], self.sequence_length, name='lstm_value')
             self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1, name='recurrent_out')
         else:
             hidden_policy = hidden_streams[0]

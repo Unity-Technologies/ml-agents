@@ -25,7 +25,6 @@ class PPOModel(LearningModel):
         :param m_size: Size of brain memory.
         """
         LearningModel.__init__(self, m_size, normalize, use_recurrent, brain)
-        self.brain = brain
         self.use_curiosity = use_curiosity
         if num_layers < 1:
             num_layers = 1
@@ -42,7 +41,8 @@ class PPOModel(LearningModel):
         self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
 
-    def create_reward_encoder(self):
+    @staticmethod
+    def create_reward_encoder():
         """Creates TF ops to track and increment recent average cumulative reward."""
         last_reward = tf.Variable(0, name="last_reward", trainable=False, dtype=tf.float32)
         new_reward = tf.placeholder(shape=[], dtype=tf.float32, name='new_reward')
@@ -54,23 +54,17 @@ class PPOModel(LearningModel):
         Creates state encoders for current and future observations.
         :return: current and future state encoder tensors.
         """
-        o_size = self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations
-        v_size = self.brain.number_visual_observations
-
         inverse_input_list = []
         encoded_state_list = []
         encoded_next_state_list = []
 
-        if v_size > 0:
+        if self.v_size > 0:
             self.next_visual_in = []
             visual_encoders = []
             next_visual_encoders = []
-            for i in range(v_size):
+            for i in range(self.v_size):
                 # Create input ops for next (t+1) visual observations.
-                height_size = self.brain.camera_resolutions[i]['height']
-                width_size = self.brain.camera_resolutions[i]['width']
-                bw = self.brain.camera_resolutions[i]['blackAndWhite']
-                next_visual_input = self.create_visual_input(height_size, width_size, bw,
+                next_visual_input = self.create_visual_input(self.brain.camera_resolutions[i],
                                                              name="next_visual_observation_" + str(i))
                 self.next_visual_in.append(next_visual_input)
 
@@ -89,9 +83,9 @@ class PPOModel(LearningModel):
             encoded_state_list.append(hidden_visual)
             encoded_next_state_list.append(hidden_next_visual)
 
-        if o_size > 0:
+        if self.o_size > 0:
             # Create input op for next (t+1) vector observation.
-            self.next_vector_obs = tf.placeholder(shape=[None, o_size], dtype=tf.float32,
+            self.next_vector_obs = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
                                                   name='next_vector_observation')
 
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
@@ -112,6 +106,8 @@ class PPOModel(LearningModel):
     def create_inverse_model(self, encoded_state, encoded_next_state):
         """
         Creates inverse model TensorFlow ops for Curiosity module.
+        :param encoded_state: Tensor corresponding to encoded current state.
+        :param encoded_next_state: Tensor corresponding to encoded next state.
         """
         a_size = self.brain.vector_action_space_size
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
