@@ -22,6 +22,9 @@ TagManager:
   - orangeBlock
   - block
   - orangeGoal
+  - switchOff
+  - pyramid
+  - switchOn
   layers:
   - Default
   - TransparentFX
