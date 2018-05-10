@@ -13,7 +13,7 @@ Note that, if you choose to deploy the image to an [N-Series GPU optimized VM](h
 
 ## Configuring your own Instance
 
-Setting up your own instance requires a number of package installations.  Please view the documentation for doing so [here](docs/Training-on-Microsoft-Azure-Custom-Instance.md).
+Setting up your own instance requires a number of package installations.  Please view the documentation for doing so [here](Training-on-Microsoft-Azure-Custom-Instance.md).
 
 ## Installing ML-Agents
 
@@ -59,7 +59,7 @@ If you've selected to run on a N-Series VM with GPU support, you can verify that
 
 ## Monitoring your Training Run with Tensorboard
 
-Once you have started training, you can [use Tensorboard to observe the training](docs/Using-Tensorboard.md).  
+Once you have started training, you can [use Tensorboard to observe the training](Using-Tensorboard.md).  
 
 1.  Start by [opening the appropriate port for web traffic to connect to your VM](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal).  
 *  Note that you don't need to generate a new `Network Security Group` but instead, go to the **Networking** tab under **Settings** for your VM.   
@@ -78,4 +78,4 @@ Once you have started training, you can [use Tensorboard to observe the training
 
 ## Running on Azure Container Instances
 
-[Azure Container Instances](https://azure.microsoft.com/services/container-instances/) allow you to spin up a container, on demand, that will run your training and then be shut down.  This ensures you aren't leaving a billable VM running when it isn't needed.  You can read more about [ML-Agents support for Docker containers here](docs/Using-Docker.md).  Using ACI enables you to offload training of your models without needing to install Python and Tensorflow on your own computer.  You can find [instructions, including a pre-deployed image in DockerHub for you to use, available here](https://github.com/druttka/unity-ml-on-azure).
+[Azure Container Instances](https://azure.microsoft.com/services/container-instances/) allow you to spin up a container, on demand, that will run your training and then be shut down.  This ensures you aren't leaving a billable VM running when it isn't needed.  You can read more about [ML-Agents support for Docker containers here](Using-Docker.md).  Using ACI enables you to offload training of your models without needing to install Python and Tensorflow on your own computer.  You can find [instructions, including a pre-deployed image in DockerHub for you to use, available here](https://github.com/druttka/unity-ml-on-azure).

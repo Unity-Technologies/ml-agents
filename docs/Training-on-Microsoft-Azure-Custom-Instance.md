@@ -73,4 +73,4 @@ pip3 install numpy
 pip3 install docopt 
 ```
 
-13.  You can now return to the [main Azure instruction page](docs/Training-on-Microsoft-Azure.md).
+13.  You can now return to the [main Azure instruction page](Training-on-Microsoft-Azure.md).
