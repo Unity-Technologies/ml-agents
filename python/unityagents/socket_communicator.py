@@ -3,9 +3,7 @@ import socket
 import struct
 
 from .communicator import Communicator
-from communicator_objects import UnityRLOutput, UnityRLInput,\
-    UnityOutput, UnityInput, AcademyParameters,\
-    UnityInitializationInput, UnityInitializationOutput
+from communicator_objects import UnityMessage, UnityOutput, UnityInput
 from .exception import UnityTimeOutException
 
 
@@ -23,16 +21,18 @@ class SocketCommunicator(Communicator):
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
 
-        port = base_port + worker_id
+        self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._empty_message = UnityInput()
-        self._empty_message.header.status = 200
+        self.worker_id = worker_id
+        self._socket = None
+        self._conn = None
 
+    def initialize(self, inputs: UnityInput) -> UnityOutput:
         try:
             # Establish communication socket
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self._socket.bind(("localhost", port))
+            self._socket.bind(("localhost", self.port))
             self._socket.settimeout(30)
             self._socket.listen(1)
             self._conn, _ = self._socket.accept()
@@ -41,16 +41,14 @@ class SocketCommunicator(Communicator):
         except :
             raise UnityTimeOutException("Couldn't start socket communication because worker number {} is still in use. "
                                "You may need to manually close a previously opened environment "
-                               "or use a different worker number.".format(str(worker_id)))
-
-    def get_academy_parameters(self, python_parameters) -> AcademyParameters:
-        initialization_input = UnityInitializationInput()
-        initialization_input.header.status = 200
-        initialization_input.python_parameters.CopyFrom(python_parameters)
-        self._communicator_send(initialization_input.SerializeToString())
-        initialization_output = UnityInitializationOutput()
+                               "or use a different worker number.".format(str(self.worker_id)))
+        message = UnityMessage()
+        message.header.status = 200
+        message.unity_input.CopyFrom(inputs)
+        self._communicator_send(message.SerializeToString())
+        initialization_output = UnityMessage()
         initialization_output.ParseFromString(self._communicator_receive())
-        return initialization_output.academy_parameters
+        return initialization_output.unity_output
 
     def _communicator_receive(self):
         try:
@@ -66,22 +64,29 @@ class SocketCommunicator(Communicator):
     def _communicator_send(self, message):
         self._conn.send(struct.pack("I", len(message)) + message)
 
-    def send(self, inputs: UnityRLInput) -> UnityRLOutput:
-        message_input = self._empty_message
-        message_input.rl_input.CopyFrom(inputs)
-        self._communicator_send(message_input.SerializeToString())
-        result = UnityOutput()
-        result.ParseFromString(self._communicator_receive())
-        return result.rl_output
+    def exchange(self, inputs: UnityInput) -> UnityOutput:
+        message = UnityMessage()
+        message.header.status = 200
+        message.unity_input.CopyFrom(inputs)
+        self._communicator_send(message.SerializeToString())
+        outputs = UnityMessage()
+        outputs.ParseFromString(self._communicator_receive())
+        if outputs.header.status != 200:
+            return None
+        return outputs.unity_output
 
     def close(self):
         """
         Sends a shutdown signal to the unity environment, and closes the socket connection.
         """
-        try:
-            message_input = UnityInput()
+        if self._socket is not None and self._conn is not None:
+            message_input = UnityMessage()
             message_input.header.status = 400
             self._communicator_send(message_input.SerializeToString())
-        except :
-            pass
+        if self._socket is not None:
+            self._socket.close()
+            self._socket = None
+        if self._socket is not None:
+            self._conn.close()
+            self._conn = None
 

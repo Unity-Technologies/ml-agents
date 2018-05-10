@@ -1,8 +1,8 @@
 
 from unityagents.communicator import Communicator
-from communicator import UnityRLOutput, UnityRLInput,\
-    UnityInput, AcademyParameters, BrainParameters,\
-    Resolution, AgentInfo
+from communicator_objects import UnityMessage, UnityOutput, UnityInput,\
+    ResolutionProto, BrainParametersProto, UnityRLInitializationOutput,\
+    AgentInfoProto, UnityRLOutput
 
 
 class MockCommunicator(Communicator):
@@ -18,15 +18,15 @@ class MockCommunicator(Communicator):
         self.visual_input = visual_input
         self.has_been_closed = False
 
-    def get_academy_parameters(self, python_parameters) -> AcademyParameters:
+    def initialize(self, inputs: UnityInput) -> UnityOutput:
         if self.visual_input:
-            resolutions = [Resolution(
+            resolutions = [ResolutionProto(
                 width=30,
                 height=40,
                 gray_scale=False)]
         else:
             resolutions = []
-        bp = BrainParameters(
+        bp = BrainParametersProto(
             vector_observation_size=3,
             num_stacked_vector_observations=2,
             vector_action_size=2,
@@ -37,14 +37,17 @@ class MockCommunicator(Communicator):
             brain_name="RealFakeBrain",
             brain_type=2
         )
-        return AcademyParameters(
+        rl_init = UnityRLInitializationOutput(
             name="RealFakeAcademy",
             version="API-3",
             log_path="",
             brain_parameters=[bp]
         )
+        return UnityOutput(
+            rl_initialization_output=rl_init
+        )
 
-    def send(self, inputs: UnityRLInput) -> UnityRLOutput:
+    def exchange(self, inputs: UnityInput) -> UnityOutput:
         dict_agent_info = {}
         if self.is_discrete:
             vector_action = [1]
@@ -53,7 +56,7 @@ class MockCommunicator(Communicator):
         list_agent_info = []
         for i in range(3):
             list_agent_info.append(
-                AgentInfo(
+                AgentInfoProto(
                     stacked_vector_observation=[1, 2, 3, 1, 2, 3],
                     reward=1,
                     stored_vector_actions=vector_action,
@@ -65,17 +68,19 @@ class MockCommunicator(Communicator):
                     id=i
                 ))
         dict_agent_info["RealFakeBrain"] = \
-            UnityRLOutput.ListAgentInfo(value=list_agent_info)
+            UnityRLOutput.ListAgentInfoProto(value=list_agent_info)
         global_done = False
         try:
-            global_done = (inputs.agent_actions["RealFakeBrain"].value[0].vector_actions[0] == -1)
+            global_done = (inputs.rl_input.agent_actions["RealFakeBrain"].value[0].vector_actions[0] == -1)
         except:
             pass
         result = UnityRLOutput(
             global_done=global_done,
             agentInfos=dict_agent_info
         )
-        return result
+        return UnityOutput(
+            rl_output=result
+        )
 
     def close(self):
         """

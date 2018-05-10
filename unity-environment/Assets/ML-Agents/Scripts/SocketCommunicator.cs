@@ -3,13 +3,17 @@ using Grpc.Core;
 using System.Net.Sockets;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
+using System.Threading.Tasks;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace MLAgents
 {
 
     public class SocketCommunicator : Communicator
     {
-
+        private const float TIMEOUT = 10f;
         const int messageLength = 12000;
         byte[] messageHolder = new byte[messageLength];
         int comPort;
@@ -33,13 +37,16 @@ namespace MLAgents
                 ProtocolType.Tcp);
             sender.Connect("localhost", communicatorParameters.port);
 
-            UnityInput initializationInput =
-                UnityInput.Parser.ParseFrom(Receive());
+            UnityMessage initializationInput =
+                UnityMessage.Parser.ParseFrom(Receive());
 
             Send(WrapMessage(unityOutput, 200).ToByteArray());
 
-            unityInput = UnityInput.Parser.ParseFrom(Receive());
-            return initializationInput;
+            unityInput = UnityMessage.Parser.ParseFrom(Receive()).UnityInput;
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+#endif
+            return initializationInput.UnityInput;
 
         }
 
@@ -69,14 +76,27 @@ namespace MLAgents
 
         public void Close()
         {
-            // TODO: Implement
+            Send(WrapMessage(null, 400).ToByteArray());
         }
 
         public UnityInput Exchange(UnityOutput unityOutput)
         {
             Send(WrapMessage(unityOutput, 200).ToByteArray());
+            byte[] received = null;
+            var task = Task.Run(() => received = Receive());
+            if (!task.Wait(System.TimeSpan.FromSeconds(TIMEOUT)))
+            {
+                throw new UnityAgentsException(
+                    "The communicator took too long to respond.");
+            }
 
-            return UnityInput.Parser.ParseFrom(Receive());
+            var message = UnityMessage.Parser.ParseFrom(received);
+
+            if (message.Header.Status != 200)
+            {
+                return null;
+            }
+            return message.UnityInput;
         }
 
         UnityMessage WrapMessage(UnityOutput content, int status)
@@ -91,8 +111,19 @@ namespace MLAgents
         /// Ends connection and closes environment
         private void OnApplicationQuit()
         {
-            //TODO
+            Close();
         }
+
+#if UNITY_EDITOR
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
+        {
+            // This method is run whenever the playmode state is changed.
+            if (state == PlayModeStateChange.ExitingPlayMode)
+            {
+                Close();
+            }
+        }
+#endif
 
     }
 }

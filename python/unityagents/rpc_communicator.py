@@ -36,20 +36,23 @@ class RpcCommunicator(Communicator):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
-        port = base_port + worker_id
+        self.port = base_port + worker_id
+        self.worker_id = worker_id
+        self.server = None
+        self.unity_to_external = None
+
+    def initialize(self, inputs: UnityInput) -> UnityOutput:
         try:
             # Establish communication grpc
             self.server = grpc.server(ThreadPoolExecutor(max_workers=10))
             self.unity_to_external = UnityToExternalServicerImplementation()
             add_UnityToExternalServicer_to_server(self.unity_to_external, self.server)
-            self.server.add_insecure_port('[::]:'+str(port))
+            self.server.add_insecure_port('[::]:'+str(self.port))
             self.server.start()
         except :
             raise UnityTimeOutException("Couldn't start socket communication because worker number {} is still in use. "
                                "You may need to manually close a previously opened environment "
-                               "or use a different worker number.".format(str(worker_id)))
-
-    def initialize(self, inputs: UnityInput) -> UnityOutput:
+                               "or use a different worker number.".format(str(self.worker_id)))
         aca_param = self.unity_to_external.parent_conn.recv().unity_output
         message = UnityMessage()
         message.header.status = 200
@@ -58,14 +61,14 @@ class RpcCommunicator(Communicator):
         self.unity_to_external.parent_conn.recv()
         return aca_param
 
-    def send(self, inputs: UnityInput) -> UnityOutput:
+    def exchange(self, inputs: UnityInput) -> UnityOutput:
         message = UnityMessage()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
         self.unity_to_external.parent_conn.send(message)
         output = self.unity_to_external.parent_conn.recv()
-        if output.header.status == 400:
-            raise KeyboardInterrupt
+        if output.header.status != 200:
+            return None
         return output.unity_output
 
     def close(self):

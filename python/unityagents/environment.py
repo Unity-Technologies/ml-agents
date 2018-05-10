@@ -15,7 +15,7 @@ from communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto,\
     UnityInput, UnityOutput
 
 from .rpc_communicator import RpcCommunicator
-# from .socket_communicator import SocketCommunicator
+from .socket_communicator import SocketCommunicator
 
 
 from sys import platform
@@ -252,10 +252,13 @@ class UnityEnvironment(object):
                 raise UnityEnvironmentException("The parameter '{0}' is not a valid parameter.".format(k))
 
         if self._loaded:
-            outputs = self.communicator.send(
+            outputs = self.communicator.exchange(
                 self._generate_reset_input(train_mode, config)
-            ).rl_output
-            s = self._get_state(outputs)
+            )
+            if outputs is None:
+                raise KeyboardInterrupt
+            rl_output = outputs.rl_output
+            s = self._get_state(rl_output)
             self._global_done = s[1]
             for _b in self._brain_names:
                 self._n_agents[_b] = len(s[0][_b].agents)
@@ -357,10 +360,13 @@ class UnityEnvironment(object):
                         self._brains[b].vector_action_space_type,
                         str(vector_action[b])))
 
-            outputs = self.communicator.send(
+            outputs = self.communicator.exchange(
                 self._generate_step_input(vector_action, memory, text_action)
-            ).rl_output
-            s = self._get_state(outputs)
+            )
+            if outputs is None:
+                raise KeyboardInterrupt
+            rl_output = outputs.rl_output
+            s = self._get_state(rl_output)
             self._global_done = s[1]
             for _b in self._brain_names:
                 self._n_agents[_b] = len(s[0][_b].agents)
