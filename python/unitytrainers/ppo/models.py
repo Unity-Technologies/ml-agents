@@ -52,6 +52,8 @@ class PPOModel(LearningModel):
     def create_curiosity_encoders(self):
         """
         Creates state encoders for current and future observations.
+        Used for implementation of ﻿Curiosity-driven Exploration by Self-supervised Prediction
+        See https://arxiv.org/abs/1705.05363 for more details.
         :return: current and future state encoder tensors.
         """
         inverse_input_list = []
@@ -109,16 +111,13 @@ class PPOModel(LearningModel):
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
-        a_size = self.brain.vector_action_space_size
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
-        if self.use_recurrent:
-            combined_input = tf.concat([combined_input, self.memory_in], axis=1, name="special")
         if self.brain.vector_action_space_type == "continuous":
-            pred_action = tf.layers.dense(combined_input, a_size, activation=None)
+            pred_action = tf.layers.dense(combined_input, self.a_size, activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
             self.inverse_loss = tf.reduce_mean(squared_difference)
         else:
-            pred_action = tf.layers.dense(combined_input, a_size, activation=tf.nn.softmax)
+            pred_action = tf.layers.dense(combined_input, self.a_size, activation=tf.nn.softmax)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(cross_entropy)
 
@@ -129,8 +128,6 @@ class PPOModel(LearningModel):
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
-        if self.use_recurrent:
-            combined_input = tf.concat([combined_input, self.memory_in], axis=1, name="special")
         hidden = tf.layers.dense(combined_input, 128, activation=self.swish)
         pred_next_state = tf.layers.dense(hidden, 128, activation=None)
 
@@ -161,25 +158,25 @@ class PPOModel(LearningModel):
         decay_beta = tf.train.polynomial_decay(beta, self.global_step, max_step, 1e-5, power=1.0)
         optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
 
-        self.mask = tf.equal(self.mask_input, 1.0)
+        mask = tf.equal(self.mask_input, 1.0)
 
         clipped_value_estimate = self.old_value + tf.clip_by_value(tf.reduce_sum(value, axis=1) - self.old_value,
                                                                    - decay_epsilon, decay_epsilon)
 
         v_opt_a = tf.squared_difference(self.returns_holder, tf.reduce_sum(value, axis=1))
         v_opt_b = tf.squared_difference(self.returns_holder, clipped_value_estimate)
-        self.value_loss = tf.reduce_mean(tf.boolean_mask(tf.maximum(v_opt_a, v_opt_b), self.mask))
+        self.value_loss = tf.reduce_mean(tf.boolean_mask(tf.maximum(v_opt_a, v_opt_b), mask))
 
         # Here we calculate PPO policy loss. In continuous control this is done independently for each action gaussian
         # and then averaged together. This provides significantly better performance than treating the probability
         # as an average of probabilities, or as a joint probability.
-        self.r_theta = probs / (old_probs + 1e-10)
-        self.p_opt_a = self.r_theta * self.advantage
-        self.p_opt_b = tf.clip_by_value(self.r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
-        self.policy_loss = -tf.reduce_mean(tf.boolean_mask(tf.minimum(self.p_opt_a, self.p_opt_b), self.mask))
+        r_theta = probs / (old_probs + 1e-10)
+        p_opt_a = r_theta * self.advantage
+        p_opt_b = tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
+        self.policy_loss = -tf.reduce_mean(tf.boolean_mask(tf.minimum(p_opt_a, p_opt_b), mask))
 
         self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(
-            tf.boolean_mask(entropy, self.mask))
+            tf.boolean_mask(entropy, mask))
         if self.use_curiosity:
             self.loss += 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
         self.update_batch = optimizer.minimize(self.loss)
