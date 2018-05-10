@@ -251,9 +251,9 @@ If you would like to contribute environments, please see our
 * Goal: Move to the golden brick on top of the spawned pyramid.
 * Agents: The environment contains one agent linked to a single brain.
 * Agent Reward Function (independent):
-* +2 For moving to golden brick (minus 0.001 per step).
+    * +2 For moving to golden brick (minus 0.001 per step).
 * Brains: One brain with the following observation/action space:
-* Vector Observation space: (Continuous) 148 corresponding to local ray-casts detecting switch, bricks, golden brick, and walls, plus variable indicating switch state.
-* Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
-* Visual Observations (Optional): First-person view for the agent.
+    * Vector Observation space: (Continuous) 148 corresponding to local ray-casts detecting switch, bricks, golden brick, and walls, plus variable indicating switch state.
+    * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
+    * Visual Observations (Optional): First-person view for the agent.
 * Reset Parameters: None
