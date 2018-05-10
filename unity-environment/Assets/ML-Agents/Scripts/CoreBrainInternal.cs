@@ -166,7 +166,7 @@ public class CoreBrainInternal : ScriptableObject, CoreBrain
 #if ENABLE_TENSORFLOW
         if (brainBatcher != null)
         {
-            brainBatcher.GiveBrainInfo(brain.gameObject.name, agentInfo);
+            brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
         }
         int currentBatchSize = agentInfo.Count();
         List<Agent> agentList = agentInfo.Keys.ToList();

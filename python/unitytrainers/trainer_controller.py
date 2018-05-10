@@ -35,11 +35,12 @@ class TrainerController(object):
         :param trainer_config_path: Fully qualified path to location of trainer configuration file
         """
         self.trainer_config_path = trainer_config_path
-        env_path = (env_path.strip()
-                    .replace('.app', '')
-                    .replace('.exe', '')
-                    .replace('.x86_64', '')
-                    .replace('.x86', ''))  # Strip out executable extensions if passed
+        if env_path is not None:
+            env_path = (env_path.strip()
+                        .replace('.app', '')
+                        .replace('.exe', '')
+                        .replace('.x86_64', '')
+                        .replace('.x86', ''))  # Strip out executable extensions if passed
         # Recognize and use docker volume if one is passed as an argument
         if docker_target_name == '':
             self.docker_training = False
@@ -78,7 +79,10 @@ class TrainerController(object):
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     curriculum=self.curriculum_file, seed=self.seed,
                                     docker_training=self.docker_training)
-        self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
+        if env_path is None:
+            self.env_name = 'editor_'+self.env.academy_name
+        else:
+            self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
 
     def _get_progress(self):
         if self.curriculum_file is not None:

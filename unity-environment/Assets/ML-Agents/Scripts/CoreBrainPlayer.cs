@@ -72,7 +72,7 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     {
         if (brainBatcher != null)
         {
-            brainBatcher.GiveBrainInfo(brain.gameObject.name, agentInfo);
+            brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
         }
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {

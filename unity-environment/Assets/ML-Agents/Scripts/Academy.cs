@@ -247,10 +247,10 @@ public abstract class Academy : MonoBehaviour
         // Try to launch the communicator by usig the arguments passed at launch
         try
         {
-            communicator = new MLAgents.RpcCommunicator2(
-                new MLAgents.CommunicatorObjects.CommunicatorParameters
+            communicator = new MLAgents.RPCCommunicator(
+                new MLAgents.CommunicatorParameters
                 {
-                Port = ReadArgs()
+                port = ReadArgs()
                 });
         }
         // If it fails, we check if there are any external brains in the scene
@@ -264,10 +264,10 @@ public abstract class Academy : MonoBehaviour
             {
                 if (b.brainType == BrainType.External)
                 {
-                    communicator = new MLAgents.RpcCommunicator2(
-                        new MLAgents.CommunicatorObjects.CommunicatorParameters
+                    communicator = new MLAgents.RPCCommunicator(
+                        new MLAgents.CommunicatorParameters
                         {
-                            Port = 5005
+                            port = 5005
                         });
                 }
             }
@@ -285,8 +285,7 @@ public abstract class Academy : MonoBehaviour
         {
             isCommunicatorOn = true;
 
-            MLAgents.CommunicatorObjects.AcademyParameters academyParameters=
-                new MLAgents.CommunicatorObjects.AcademyParameters();
+            var academyParameters = new MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
             academyParameters.Name = gameObject.name;
             academyParameters.Version = "API-3";
             foreach (Brain brain in brains)
@@ -296,20 +295,20 @@ public abstract class Academy : MonoBehaviour
                     MLAgents.Batcher.BrainParametersConvertor(
                         bp,
                         brain.gameObject.name,
-                        (MLAgents.CommunicatorObjects.BrainType)
+                        (MLAgents.CommunicatorObjects.BrainTypeProto)
                         brain.brainType));
 
             }
             academyParameters.EnvironmentParameters =
-                new MLAgents.CommunicatorObjects.EnvironmentParameters();
+                new MLAgents.CommunicatorObjects.EnvironmentParametersProto();
             foreach (string key in resetParameters.Keys)
             {
                 academyParameters.EnvironmentParameters.FloatParameters.Add(
                     key, resetParameters[key]
                 );
             }
-            MLAgents.CommunicatorObjects.PythonParameters pythonParameters =
-                        brainBatcher.GiveAcademyParameters(academyParameters);
+            MLAgents.CommunicatorObjects.UnityRLInitializationInput pythonParameters =
+                        brainBatcher.SendAcademyParameters(academyParameters);
             Random.InitState(pythonParameters.Seed);
             Application.logMessageReceived += HandleLog;
             logPath = Path.GetFullPath(".") + "/unity-environment.log";
@@ -517,10 +516,10 @@ public abstract class Academy : MonoBehaviour
         if (isCommunicatorOn)
         {
             if (brainBatcher.GetCommand() == 
-                MLAgents.CommunicatorObjects.Command.Reset)
+                MLAgents.CommunicatorObjects.CommandProto.Reset)
             {
                 // Update reset parameters.
-                MLAgents.CommunicatorObjects.EnvironmentParameters 
+                MLAgents.CommunicatorObjects.EnvironmentParametersProto 
                         NewResetParameters =
                             brainBatcher.GetEnvironmentParameters();
                 if (NewResetParameters != null)
@@ -536,7 +535,7 @@ public abstract class Academy : MonoBehaviour
                 ForcedFullReset();
             }
             if (brainBatcher.GetCommand() == 
-                MLAgents.CommunicatorObjects.Command.Quit)
+                MLAgents.CommunicatorObjects.CommandProto.Quit)
             {
 #if UNITY_EDITOR
                 EditorApplication.isPlaying = false;
@@ -558,7 +557,7 @@ public abstract class Academy : MonoBehaviour
 
         AgentSetStatus(maxStepReached, done, stepCount);
 
-        brainBatcher.GiveAcademyDone(done);
+        brainBatcher.RegisterAcademyDoneFlag(done);
 
         if (done)
         {

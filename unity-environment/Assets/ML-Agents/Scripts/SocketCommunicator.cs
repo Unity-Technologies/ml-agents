@@ -17,48 +17,29 @@ namespace MLAgents
         byte[] lengthHolder = new byte[4];
         CommunicatorParameters communicatorParameters;
 
-        UnityOutput defaultOutput = new UnityOutput();
-
 
         public SocketCommunicator(CommunicatorParameters communicatorParameters)
         {
             this.communicatorParameters = communicatorParameters;
-            defaultOutput.Header = new Header
-            {
-                Status = 200
-            };
         }
 
-        public PythonParameters Initialize(AcademyParameters academyParameters,
-                                           out UnityRLInput unityInput)
+        public UnityInput Initialize(UnityOutput unityOutput,
+                                     out UnityInput unityInput)
         {
 
             sender = new Socket(
                 AddressFamily.InterNetwork,
                 SocketType.Stream,
                 ProtocolType.Tcp);
-            sender.Connect("localhost", communicatorParameters.Port);
+            sender.Connect("localhost", communicatorParameters.port);
 
-            UnityInitializationInput initializationInput =
-                UnityInitializationInput.Parser.ParseFrom(Receive());
+            UnityInput initializationInput =
+                UnityInput.Parser.ParseFrom(Receive());
 
-            PythonParameters pp =
-                initializationInput.PythonParameters;
+            Send(WrapMessage(unityOutput, 200).ToByteArray());
 
-            UnityInitializationOutput unityInitializationOutput =
-                new UnityInitializationOutput
-                {
-                    Header = new Header
-                    {
-                        Status = 200
-                    },
-                    AcademyParameters = academyParameters
-                };
-
-            Send(unityInitializationOutput.ToByteArray());
-
-            unityInput = UnityInput.Parser.ParseFrom(Receive()).RlInput;
-            return pp;
+            unityInput = UnityInput.Parser.ParseFrom(Receive());
+            return initializationInput;
 
         }
 
@@ -91,12 +72,20 @@ namespace MLAgents
             // TODO: Implement
         }
 
-        public UnityRLInput SendOuput(UnityRLOutput unityOutput)
+        public UnityInput Exchange(UnityOutput unityOutput)
         {
-            defaultOutput.RlOutput = unityOutput;
-            Send(defaultOutput.ToByteArray());
+            Send(WrapMessage(unityOutput, 200).ToByteArray());
 
-            return UnityInput.Parser.ParseFrom(Receive()).RlInput;
+            return UnityInput.Parser.ParseFrom(Receive());
+        }
+
+        UnityMessage WrapMessage(UnityOutput content, int status)
+        {
+            return new UnityMessage
+            {
+                Header = new Header { Status = status },
+                UnityOutput = content
+            };
         }
 
         /// Ends connection and closes environment

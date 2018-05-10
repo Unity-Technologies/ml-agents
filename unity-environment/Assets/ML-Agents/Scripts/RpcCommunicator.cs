@@ -1,155 +1,106 @@
 using Grpc.Core;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using UnityEngine;
 using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
     /// Responsible for communication with Python API.
-    public class RpcCommunicator : Communicator
+    public class RPCCommunicator : Communicator
     {
 
-        public class PythonUnityImpl : PythonToUnity.PythonToUnityBase
-        {
-
-            const int TIMEOUT = 10;
-            public AcademyParameters academyParameters;
-            public PythonParameters pythonParameters;
-            public UnityRLOutput outputs = new UnityRLOutput();
-            public UnityRLInput inputs = new UnityRLInput();
-
-            public Command command;
-
-            private ManualResetEvent manualResetEvent_in
-                = new ManualResetEvent(false);
-            private ManualResetEvent manualResetEvent_out
-                = new ManualResetEvent(false);
-            UnityOutput messageOutput = new UnityOutput
-            {
-                Header = new Header
-                {
-                    Status = 200
-                }
-            };
-
-            public void WaitForInput()
-            {
-                var task = Task.Run(() => manualResetEvent_in.WaitOne());
-                if (!task.Wait(System.TimeSpan.FromSeconds(TIMEOUT)))
-                {
-                    throw new UnityAgentsException(
-                        "The communicator took too long to respond.");
-                }
-                manualResetEvent_in.Reset();
-
-            }
-            public void InputReceived()
-            {
-                manualResetEvent_in.Set();
-            }
-            public void WaitForOutput()
-            {
-                var task = Task.Run(() => manualResetEvent_out.WaitOne());
-                if (!task.Wait(System.TimeSpan.FromSeconds(TIMEOUT)))
-                {
-                    throw new UnityAgentsException(
-                        "The Unity took too long to respond.");
-                }
-                manualResetEvent_out.Reset();
-            }
-            public void OutputReceived()
-            {
-                manualResetEvent_out.Set();
-            }
-
-            public override Task<UnityInitializationOutput> Initialize(
-                UnityInitializationInput request, ServerCallContext context)
-            {
-                pythonParameters = request.PythonParameters;
-                InputReceived();
-                WaitForOutput();
-                return Task.FromResult(new UnityInitializationOutput
-                {
-                    Header = new Header
-                    {
-                        Status = 200
-                    },
-                    AcademyParameters = academyParameters
-                });
-            }
-
-            public override Task<UnityOutput> Send(
-                UnityInput request, ServerCallContext context)
-            {
-                if (request.Header.Status != 200)
-                {
-                    inputs = null;
-                    InputReceived();
-                    return Task.FromResult(messageOutput);
-                }
-
-                inputs = request.RlInput;
-                InputReceived();
-                WaitForOutput();
-
-                messageOutput.RlOutput = outputs;
-                return Task.FromResult(messageOutput);
-            }
-
-        }
+        UnityToExternal.UnityToExternalClient client;
 
         CommunicatorParameters communicatorParameters;
 
-        PythonUnityImpl comm = new PythonUnityImpl();
-
-        public RpcCommunicator(CommunicatorParameters communicatorParameters)
+        public RPCCommunicator(CommunicatorParameters communicatorParameters)
         {
             this.communicatorParameters = communicatorParameters;
 
         }
 
-        public PythonParameters Initialize(AcademyParameters academyParameters,
-                                           out UnityRLInput unityInput)
+        public UnityInput Initialize(UnityOutput unityOutput,
+                                     out UnityInput unityInput)
         {
-            Server server = new Server
-            {
-                Services = { PythonToUnity.BindService(comm) },
-                Ports = {
-                    new ServerPort("localhost",
-                    communicatorParameters.Port,
-                    ServerCredentials.Insecure)
-                }
-            };
-            server.Start();
+            
+            Channel channel = new Channel(
+                "localhost:"+communicatorParameters.port, 
+                ChannelCredentials.Insecure);
 
-            comm.academyParameters = academyParameters;
-
-            comm.WaitForInput();
-            comm.OutputReceived();
-
-            comm.WaitForInput();
-            unityInput = comm.inputs;
-            return comm.pythonParameters;
+            client = new UnityToExternal.UnityToExternalClient(channel);
+            //var initOutput = new UnityInitializationOutput();
+            //initOutput.Header = new Header { Status = 200 };
+            //initOutput.AcademyParameters = academyParameters;
+            var result = client.Exchange(WrapMessage(unityOutput, 200));
+            //UnityOutput output = new UnityOutput();
+            //output.Header = new Header { Status = 200 };
+            unityInput = client.Exchange(WrapMessage(null, 200)).UnityInput;
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+#endif
+            return result.UnityInput;
         }
 
         public void Close()
         {
-            // TODO: Implement
+            try
+            {
+                //var output = new UnityOutput();
+                //output.Header = new Header { Status = 400 };
+                //client.Send(output);
+                client.Exchange(WrapMessage(null, 400));
+            }
+            catch
+            {
+                return;
+            }
         }
 
-        public UnityRLInput SendOuput(UnityRLOutput unityOutput)
+        public UnityInput Exchange(UnityOutput unityOutput)
         {
-            comm.outputs = unityOutput;
-            comm.OutputReceived();
-            comm.WaitForInput();
-            return comm.inputs;
+            //var output = new UnityOutput();
+            //output.Header = new Header { Status = 200 };
+            //output.RlOutput = unityOutput;
+            try
+            {
+                return client.Exchange(WrapMessage(unityOutput, 200)).UnityInput;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        UnityMessage WrapMessage(UnityOutput content, int status)
+        {
+            return new UnityMessage
+            {
+                Header = new Header { Status = status },
+                UnityOutput = content
+            };
         }
 
         /// Ends connection and closes environment
         private void OnApplicationQuit()
         {
-            // TODO Implement
+            Close();
         }
+
+#if UNITY_EDITOR
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
+        {
+            // This method is run whenever the playmode state is changed.
+            if (state==PlayModeStateChange.ExitingPlayMode)
+            {
+                Close();
+            }
+        }
+#endif
 
     }
 }

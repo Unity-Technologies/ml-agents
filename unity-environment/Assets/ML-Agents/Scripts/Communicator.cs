@@ -5,6 +5,11 @@ using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
+    public struct CommunicatorParameters
+    {
+        public int port;
+    }
+
 
     /**
      * This is the interface used to generate coordinators. 
@@ -13,33 +18,16 @@ namespace MLAgents
      */
     public interface Communicator
     {
-        /// <summary>
-        ///  Implement this method to Send the academy communicators
-        /// </summary>
-        /// <returns>The python Parameters and the first input</returns>
-        PythonParameters Initialize(AcademyParameters academyParameters,
-                                    out UnityRLInput unityImput);
+        // TODO : Comments
+        UnityInput Initialize(UnityOutput academyParameters,
+                                    out UnityInput unityInput);
+
+        UnityInput Exchange(UnityOutput unityOutput);
 
         /// <summary>
-        ///  Sends the UnityOutput via communication
+        /// Close the communicator.
         /// </summary>
-        /// <returns>The new inputs.</returns>
-        /// <param name="unityOutput">The Unity output.</param>
-        UnityRLInput SendOuput(UnityRLOutput unityOutput);
-
         void Close();
-
-        ///// <summary>
-        ///// Gets the last command received by the communicator.
-        ///// </summary>
-        ///// <returns>The command.</returns>
-        //Command GetCommand();
-
-        ///// <summary>
-        ///// Gets the latest environment parameters.
-        ///// </summary>
-        ///// <returns>The environment parameters.</returns>
-        //EnvironmentParameters GetEnvironmentParameters();
 
     }
 }

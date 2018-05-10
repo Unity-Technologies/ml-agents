@@ -10,12 +10,12 @@ from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityEnvironmentException, UnityActionException
 from .curriculum import Curriculum
 
-from communicator_objects import UnityRLInput, UnityRLOutput, AgentAction,\
-    EnvironmentParameters, PythonParameters
+from communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto,\
+    EnvironmentParametersProto, UnityRLInitializationInput, UnityRLInitializationOutput,\
+    UnityInput, UnityOutput
 
 from .rpc_communicator import RpcCommunicator
-from .socket_communicator import SocketCommunicator
-from .rpc_communicator_2 import RpcCommunicator2
+# from .socket_communicator import SocketCommunicator
 
 
 from sys import platform
@@ -26,7 +26,7 @@ logger = logging.getLogger("unityagents")
 
 
 class UnityEnvironment(object):
-    def __init__(self, file_name, worker_id=0,
+    def __init__(self, file_name=None, worker_id=0,
                  base_port=5005, curriculum=None,
                  seed=0, docker_training=False):
         """
@@ -51,15 +51,15 @@ class UnityEnvironment(object):
 
         # If the environment name is 'editor', a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
-        if file_name != 'editor':
+        if file_name is not None:
             self.executable_launcher(file_name, docker_training)
         self._loaded = True
 
-        python_parameters = PythonParameters(
+        rl_init_parameters_in = UnityRLInitializationInput(
             seed=seed
         )
         try:
-            aca_params = self.communicator.get_academy_parameters(python_parameters)
+            aca_params = self.send_academy_parameters(rl_init_parameters_in)
         except UnityEnvironmentException:
             self._close()
             raise
@@ -213,10 +213,10 @@ class UnityEnvironment(object):
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               shell=True)
+
     def get_communicator(self, worker_id, base_port):
-        # return RpcCommunicator(worker_id, base_port)
+        return RpcCommunicator(worker_id, base_port)
         # return SocketCommunicator(worker_id, base_port)
-        return RpcCommunicator2(worker_id, base_port)
 
     def __str__(self):
         _new_reset_param = self._curriculum.get_config()
@@ -252,7 +252,9 @@ class UnityEnvironment(object):
                 raise UnityEnvironmentException("The parameter '{0}' is not a valid parameter.".format(k))
 
         if self._loaded:
-            outputs = self.communicator.send(self._generate_reset_input(train_mode, config))
+            outputs = self.communicator.send(
+                self._generate_reset_input(train_mode, config)
+            ).rl_output
             s = self._get_state(outputs)
             self._global_done = s[1]
             for _b in self._brain_names:
@@ -355,7 +357,9 @@ class UnityEnvironment(object):
                         self._brains[b].vector_action_space_type,
                         str(vector_action[b])))
 
-            outputs = self.communicator.send(self._generate_step_input(vector_action, memory, text_action))
+            outputs = self.communicator.send(
+                self._generate_step_input(vector_action, memory, text_action)
+            ).rl_output
             s = self._get_state(outputs)
             self._global_done = s[1]
             for _b in self._brain_names:
@@ -449,7 +453,7 @@ class UnityEnvironment(object):
         return _data, global_done
 
     def _generate_step_input(self, vector_action, memory, text_action) -> UnityRLInput:
-        _u_i = UnityRLInput()
+        rl_in = UnityRLInput()
         for b in vector_action:
             n_agents = self._n_agents[b]
             if n_agents == 0:
@@ -457,20 +461,30 @@ class UnityEnvironment(object):
             _a_s = len(vector_action[b]) // n_agents
             _m_s = len(memory[b]) // n_agents
             for i in range(n_agents):
-                action = AgentAction(
+                action = AgentActionProto(
                     vector_actions=vector_action[b][i*_a_s: (i+1)*_a_s],
                     memories=memory[b][i*_m_s: (i+1)*_m_s],
                     text_actions=text_action[b][i]
                 )
-                _u_i.agent_actions[b].value.extend([action])
-        _u_i.command = 0
-        return _u_i
+                rl_in.agent_actions[b].value.extend([action])
+                rl_in.command = 0
+        return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(self, training, config) -> UnityRLInput:
-        _u_i = UnityRLInput()
-        _u_i.is_training = training
-        _u_i.environment_parameters.CopyFrom(EnvironmentParameters())
+        rl_in = UnityRLInput()
+        rl_in.is_training = training
+        rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
         for key in config:
-            _u_i.environment_parameters.float_parameters[key] = config[key]
-        _u_i.command = 1
-        return _u_i
+            rl_in.environment_parameters.float_parameters[key] = config[key]
+            rl_in.command = 1
+        return self.wrap_unity_input(rl_in)
+
+    def send_academy_parameters(self, init_parameters: UnityRLInitializationInput) -> UnityRLInitializationOutput:
+        inputs = UnityInput()
+        inputs.rl_initialization_input.CopyFrom(init_parameters)
+        return self.communicator.initialize(inputs).rl_initialization_output
+
+    def wrap_unity_input(self, rl_input: UnityRLInput) -> UnityOutput:
+        result = UnityInput()
+        result.rl_input.CopyFrom(rl_input)
+        return result
