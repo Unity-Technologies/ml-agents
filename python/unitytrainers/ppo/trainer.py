@@ -287,6 +287,7 @@ class PPOTrainer(Trainer):
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
+
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
