@@ -37,9 +37,9 @@ TagManager:
   - goalie
   - strikerWall
   - striker
-  - 
-  - 
-  - 
+  - mujoco_a+b
+  - mujoco_a
+  - mujoco_b
   - 
   - 
   - 
