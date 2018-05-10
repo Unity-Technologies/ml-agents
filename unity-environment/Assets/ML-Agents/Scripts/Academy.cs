@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -91,6 +92,8 @@ public class EnvironmentConfiguration
          "docs/Learning-Environment-Design-Academy.md")]
 public abstract class Academy : MonoBehaviour
 {
+    private const string kApiVersion = "API-4";
+
     // Fields provided in the Inspector
 
     [SerializeField]
@@ -222,9 +225,9 @@ public abstract class Academy : MonoBehaviour
     // Used to read Python-provided environment parameters
     private int ReadArgs()
     {
-        string[] args = System.Environment.GetCommandLineArgs();
+        var args = System.Environment.GetCommandLineArgs();
         var inputPort = "";
-        for (int i = 0; i < args.Length; i++)
+        for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--port")
             {
@@ -260,16 +263,14 @@ public abstract class Academy : MonoBehaviour
         catch
         {
             communicator = null;
-            foreach (Brain b in brains)
+            var externalBrain = brains.FirstOrDefault(b => b.brainType == BrainType.External);
+            if (externalBrain != null)
             {
-                if (b.brainType == BrainType.External)
-                {
-                    communicator = new MLAgents.RPCCommunicator(
+                communicator = new MLAgents.RPCCommunicator(
                         new MLAgents.CommunicatorParameters
                         {
                             port = 5005
                         });
-                }
             }
 
         }
@@ -287,7 +288,7 @@ public abstract class Academy : MonoBehaviour
 
             var academyParameters = new MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
             academyParameters.Name = gameObject.name;
-            academyParameters.Version = "API-3";
+            academyParameters.Version = kApiVersion;
             foreach (Brain brain in brains)
             {
                 BrainParameters bp = brain.brainParameters;
@@ -316,7 +317,6 @@ public abstract class Academy : MonoBehaviour
             logWriter.WriteLine(System.DateTime.Now.ToString());
             logWriter.WriteLine(" ");
             logWriter.Close();
-
         }
 
         // If a communicator is enabled/provided, then we assume we are in
@@ -519,9 +519,7 @@ public abstract class Academy : MonoBehaviour
                 MLAgents.CommunicatorObjects.CommandProto.Reset)
             {
                 // Update reset parameters.
-                MLAgents.CommunicatorObjects.EnvironmentParametersProto 
-                        NewResetParameters =
-                            brainBatcher.GetEnvironmentParameters();
+                var NewResetParameters = brainBatcher.GetEnvironmentParameters();
                 if (NewResetParameters != null)
                 {
                     foreach (KeyValuePair<string, float> kv in

@@ -43,7 +43,7 @@ class UnityEnvironment(object):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-3"
+        self._version_ = "API-4"
         self._loaded = False    # If true, this means the environment was successfully loaded
         self.proc1 = None       # The process that is started. If None, no process was started
 
