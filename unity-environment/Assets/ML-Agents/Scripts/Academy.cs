@@ -240,10 +240,10 @@ public abstract class Academy : MonoBehaviour
     /// <summary>
     /// Initializes the environment, configures it and initialized the Academy.
     /// </summary>
-    void InitializeEnvironment()
+    private void InitializeEnvironment()
     {
         // Retrieve Brain and initialize Academy
-        List<Brain> brains = GetBrains(gameObject);
+        var brains = GetBrains(gameObject);
         InitializeAcademy();
         MLAgents.Communicator communicator= null;
 
@@ -278,7 +278,7 @@ public abstract class Academy : MonoBehaviour
         brainBatcher = new MLAgents.Batcher(communicator);
 
         // Initialize Brains and communicator (if present)
-        foreach (Brain brain in brains)
+        foreach (var brain in brains)
         {
             brain.InitializeBrain(this, brainBatcher);
         }
@@ -289,9 +289,9 @@ public abstract class Academy : MonoBehaviour
             var academyParameters = new MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
             academyParameters.Name = gameObject.name;
             academyParameters.Version = kApiVersion;
-            foreach (Brain brain in brains)
+            foreach (var brain in brains)
             {
-                BrainParameters bp = brain.brainParameters;
+                var bp = brain.brainParameters;
                 academyParameters.BrainParameters.Add(
                     MLAgents.Batcher.BrainParametersConvertor(
                         bp,
@@ -302,14 +302,13 @@ public abstract class Academy : MonoBehaviour
             }
             academyParameters.EnvironmentParameters =
                 new MLAgents.CommunicatorObjects.EnvironmentParametersProto();
-            foreach (string key in resetParameters.Keys)
+            foreach (var key in resetParameters.Keys)
             {
                 academyParameters.EnvironmentParameters.FloatParameters.Add(
                     key, resetParameters[key]
                 );
             }
-            MLAgents.CommunicatorObjects.UnityRLInitializationInput pythonParameters =
-                        brainBatcher.SendAcademyParameters(academyParameters);
+            var pythonParameters = brainBatcher.SendAcademyParameters(academyParameters);
             Random.InitState(pythonParameters.Seed);
             Application.logMessageReceived += HandleLog;
             logPath = Path.GetFullPath(".") + "/unity-environment.log";
@@ -519,11 +518,10 @@ public abstract class Academy : MonoBehaviour
                 MLAgents.CommunicatorObjects.CommandProto.Reset)
             {
                 // Update reset parameters.
-                var NewResetParameters = brainBatcher.GetEnvironmentParameters();
-                if (NewResetParameters != null)
+                var newResetParameters = brainBatcher.GetEnvironmentParameters();
+                if (newResetParameters != null)
                 {
-                    foreach (KeyValuePair<string, float> kv in
-                             NewResetParameters.FloatParameters)
+                    foreach (var kv in newResetParameters.FloatParameters)
                     {
                         resetParameters[kv.Key] = kv.Value;
                     }

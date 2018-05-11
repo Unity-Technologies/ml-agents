@@ -130,7 +130,7 @@ namespace MLAgents
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
         /// <param name="status">The status of the message.</param>
-        static UnityMessage WrapMessage(UnityOutput content, int status)
+        private static UnityMessage WrapMessage(UnityOutput content, int status)
         {
             return new UnityMessage
             {

@@ -65,17 +65,17 @@ namespace MLAgents
             CommunicatorObjects.UnityRLInitializationOutput academyParameters)
         {
             CommunicatorObjects.UnityInput input;
-            CommunicatorObjects.UnityInput initializationInput =
+            var initializationInput =
                 m_communicator.Initialize(
                     new CommunicatorObjects.UnityOutput
                     {
                         RlInitializationOutput = academyParameters
                     },
                     out input);
-            var firstRLInput = input.RlInput;
-            m_command = firstRLInput.Command;
-            m_environmentParameters = firstRLInput.EnvironmentParameters;
-            m_isTraining = firstRLInput.IsTraining;
+            var firstRlInput = input.RlInput;
+            m_command = firstRlInput.Command;
+            m_environmentParameters = firstRlInput.EnvironmentParameters;
+            m_isTraining = firstRlInput.IsTraining;
             return initializationInput.RlInitializationInput;
         }
 
@@ -292,19 +292,22 @@ namespace MLAgents
             m_environmentParameters = rlInput.EnvironmentParameters;
             m_isTraining = rlInput.IsTraining;
 
-            if (rlInput.AgentActions != null)
+            if (rlInput.AgentActions == null)
             {
-                foreach (string brainName in rlInput.AgentActions.Keys)
+                return;
+            }
+
+            foreach (var brainName in rlInput.AgentActions.Keys)
                 {
-                    if (m_currentAgents[brainName].Count() == 0)
+                    if (!m_currentAgents[brainName].Any())
                     {
                         continue;
                     }
-                    if (rlInput.AgentActions[brainName].Value.Count == 0)
+                    if (!rlInput.AgentActions[brainName].Value.Any())
                     {
                         continue;
                     }
-                    for (int i = 0; i < m_currentAgents[brainName].Count(); i++)
+                    for (var i = 0; i < m_currentAgents[brainName].Count(); i++)
                     {
                         var agent = m_currentAgents[brainName][i];
                         var action = rlInput.AgentActions[brainName].Value[i];
@@ -316,7 +319,7 @@ namespace MLAgents
                             action.TextActions);
                     }
                 }
-            }
+            
         }
 
     }

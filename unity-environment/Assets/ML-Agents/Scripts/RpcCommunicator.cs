@@ -42,7 +42,7 @@ namespace MLAgents
                                      out UnityInput unityInput)
         {
             m_isOpen = true;
-            Channel channel = new Channel(
+            var channel = new Channel(
                 "localhost:"+m_communicatorParameters.port, 
                 ChannelCredentials.Insecure);
 
@@ -60,16 +60,18 @@ namespace MLAgents
         /// </summary>
         public void Close()
         {
-            if (m_isOpen)
+            if (!m_isOpen)
             {
-                try
-                {
-                    m_client.Exchange(WrapMessage(null, 400));
-                }
-                catch
-                {
-                    return;
-                }
+                return;
+            }
+
+            try
+            {
+                m_client.Exchange(WrapMessage(null, 400));
+            }
+            catch
+            {
+                return;
             }
         }
 
@@ -106,7 +108,7 @@ namespace MLAgents
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
         /// <param name="status">The status of the message.</param>
-        static UnityMessage WrapMessage(UnityOutput content, int status)
+        private static UnityMessage WrapMessage(UnityOutput content, int status)
         {
             return new UnityMessage
             {
@@ -128,7 +130,7 @@ namespace MLAgents
         /// When the editor exits, the communicator must be closed
         /// </summary>
         /// <param name="state">State.</param>
-        void HandleOnPlayModeChanged(PlayModeStateChange state)
+        private void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
             if (state==PlayModeStateChange.ExitingPlayMode)
