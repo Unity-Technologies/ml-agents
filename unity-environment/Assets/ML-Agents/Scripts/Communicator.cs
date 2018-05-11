@@ -17,7 +17,7 @@ namespace MLAgents
     When the Unity Communicator is initialized, it will wait for the External Communicator
     to be initialized as well. The two communicators will then exchange their first messages
     that will usually contain information for initialization (information that does not need
-    to be resent at each new exchange.
+    to be resent at each new exchange).
 
     By convention a Unity input is from External to Unity and a Unity output is from Unity to
     External. Inputs and outputs are relative to Unity.
