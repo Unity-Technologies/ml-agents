@@ -40,6 +40,7 @@ class RpcCommunicator(Communicator):
         self.worker_id = worker_id
         self.server = None
         self.unity_to_external = None
+        self.is_open = False
 
     def initialize(self, inputs: UnityInput) -> UnityOutput:
         try:
@@ -50,10 +51,18 @@ class RpcCommunicator(Communicator):
             self.server.add_insecure_port('[::]:'+str(self.port))
             self.server.start()
         except :
-            raise UnityTimeOutException("Couldn't start socket communication because worker number {} is still in use. "
-                               "You may need to manually close a previously opened environment "
-                               "or use a different worker number.".format(str(self.worker_id)))
+            raise UnityTimeOutException(
+                "Couldn't start socket communication because worker number {} is still in use. "
+                "You may need to manually close a previously opened environment "
+                "or use a different worker number.".format(str(self.worker_id)))
+        if not self.unity_to_external.parent_conn.poll(30):
+            raise UnityTimeOutException(
+                "The Unity environment took too long to respond. Make sure that :\n"
+                "\t The environment does not need user interaction to launch\n"
+                "\t The Academy and the External Brain(s) are attached to objects in the Scene\n"
+                "\t The environment and the Python interface have compatible versions.")
         aca_param = self.unity_to_external.parent_conn.recv().unity_output
+        self.is_open = True
         message = UnityMessage()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
@@ -75,11 +84,11 @@ class RpcCommunicator(Communicator):
         """
         Sends a shutdown signal to the unity environment, and closes the grpc connection.
         """
-        try:
+        if self.is_open:
             message_input = UnityMessage()
             message_input.header.status = 400
             self.unity_to_external.parent_conn.send(message_input)
-        except :
-            raise
+
+
 
 

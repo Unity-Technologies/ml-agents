@@ -33,15 +33,21 @@ class SocketCommunicator(Communicator):
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self._socket.bind(("localhost", self.port))
+        except:
+            raise UnityTimeOutException("Couldn't start socket communication because worker number {} is still in use. "
+                                        "You may need to manually close a previously opened environment "
+                                        "or use a different worker number.".format(str(self.worker_id)))
+        try:
             self._socket.settimeout(30)
             self._socket.listen(1)
             self._conn, _ = self._socket.accept()
             self._conn.settimeout(30)
-            # self._stub = PythonToUnityStub(channel)
         except :
-            raise UnityTimeOutException("Couldn't start socket communication because worker number {} is still in use. "
-                               "You may need to manually close a previously opened environment "
-                               "or use a different worker number.".format(str(self.worker_id)))
+            raise UnityTimeOutException(
+                "The Unity environment took too long to respond. Make sure that :\n"
+                "\t The environment does not need user interaction to launch\n"
+                "\t The Academy and the External Brain(s) are attached to objects in the Scene\n"
+                "\t The environment and the Python interface have compatible versions.")
         message = UnityMessage()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)

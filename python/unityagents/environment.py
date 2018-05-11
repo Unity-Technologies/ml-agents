@@ -7,7 +7,7 @@ import os
 import subprocess
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
-from .exception import UnityEnvironmentException, UnityActionException
+from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 from .curriculum import Curriculum
 
 from communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto,\
@@ -60,7 +60,7 @@ class UnityEnvironment(object):
         )
         try:
             aca_params = self.send_academy_parameters(rl_init_parameters_in)
-        except UnityEnvironmentException:
+        except UnityTimeOutException:
             self._close()
             raise
         # TODO : think of a better way to expose the academyParameters
