@@ -3,13 +3,13 @@
 This page contains instructions for setting up training on Microsoft Azure through either [Azure Container Instances](https://azure.microsoft.com/services/container-instances/) or Virtual Machines. Non "headless" training has not yet been tested to verify support. 
 
 ## Pre-Configured Azure Virtual Machine
-A pre-configured virtual machine image is available in the Azure Marketplace and is nearly compltely set up.  You can start by deploying the [Data Science Virtual Machine for Linux (Ubuntu)](https://azuremarketplace.microsoft.com/marketplace/apps/microsoft-ads.linux-data-science-vm-ubuntu) into your Azure subscription.  Once your VM is deployed, SSH into it and run the following command to complete setup:
+A pre-configured virtual machine image is available in the Azure Marketplace and is nearly compltely ready for training.  You can start by deploying the [Data Science Virtual Machine for Linux (Ubuntu)](https://azuremarketplace.microsoft.com/marketplace/apps/microsoft-ads.linux-data-science-vm-ubuntu) into your Azure subscription.  Once your VM is deployed, SSH into it and run the following command to complete dependency installation:
 
 ```
 pip install docopt
 ```
 
-Note that, if you choose to deploy the image to an [N-Series GPU optimized VM](https://docs.microsoft.com/azure/virtual-machines/linux/sizes-gpu) training will, by default, run on the GPU.  If you choose any other type of VM, training will run on the CPU.
+Note that, if you choose to deploy the image to an [N-Series GPU optimized VM](https://docs.microsoft.com/azure/virtual-machines/linux/sizes-gpu), training will, by default, run on the GPU.  If you choose any other type of VM, training will run on the CPU.
 
 ## Configuring your own Instance
 
@@ -17,7 +17,7 @@ Setting up your own instance requires a number of package installations.  Please
 
 ## Installing ML-Agents
 
-2. Move the `python` sub-folder of this ml-agents repo to the remote Azure instance, and set it as the working directory.
+2. [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp) the `python` sub-folder of this ml-agents repo to the remote Azure instance, and set it as the working directory.
 2. Install the required packages with `pip3 install .`.
 
 ## Testing
@@ -45,7 +45,7 @@ You should receive a message confirming that the environment was loaded successf
 
 To run your training on the VM:
 
-1.  Move your built Unity application to your Virtual Machine.
+1.  [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp) your built Unity application to your Virtual Machine.
 2.  Set the `python` sub-folder of the ml-agents repo to your working directory.
 3.  Run the following command:
 
@@ -55,22 +55,22 @@ python3 learn.py <your_app> --run-id=<run_id> --train
 
 Where `<your_app>` is the path to your app (i.e. `~/unity-volume/3DBallHeadless`) and `<run_id>` is an identifer you would like to identify your training run with.
 
-If you've selected to run on a N-Series VM with GPU support, you can verify that the GPU is being used by running ```nvidia-smi```.
+If you've selected to run on a N-Series VM with GPU support, you can verify that the GPU is being used by running `nvidia-smi` from the command line.
 
 ## Monitoring your Training Run with Tensorboard
 
 Once you have started training, you can [use Tensorboard to observe the training](Using-Tensorboard.md).  
 
 1.  Start by [opening the appropriate port for web traffic to connect to your VM](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal).  
-*  Note that you don't need to generate a new `Network Security Group` but instead, go to the **Networking** tab under **Settings** for your VM.   
-*  As an example, you could use the following settings to open the Port with the following Inbound Rule settings:
-    * Source: Any
-    * Source Port Ranges: *
-    * Destination: Any
-    * Destination Port Ranges: 6006
-    * Protocol: Any
-    * Action: Allow
-    * Priority: <Leave as default>
+    *  Note that you don't need to generate a new `Network Security Group` but instead, go to the **Networking** tab under **Settings** for your VM.   
+    *  As an example, you could use the following settings to open the Port with the following Inbound Rule settings:
+        * Source: Any
+        * Source Port Ranges: *
+        * Destination: Any
+        * Destination Port Ranges: 6006
+        * Protocol: Any
+        * Action: Allow
+        * Priority: <Leave as default>
 2.  Unless you started the training as a background process, connect to your VM from another terminal instance.
 3.  Set the `python` folder in ml-agents to your current working directory.
 4.  Run the following command from your `tensorboard --logdir=summaries --host 0.0.0.0`
