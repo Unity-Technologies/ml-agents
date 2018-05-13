@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.496413, b: 0.5748175, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -113,6 +113,80 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &216532337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 0}
+--- !u!1001 &227717048
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &460058750
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,20 +270,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68231b96042614ce992397230a3bb5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &636277040
-MonoBehaviour:
+--- !u!1001 &497263645
+Prefab:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 0}
---- !u!114 &655627261
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!114 &596452847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -218,7 +340,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
   graphModel: {fileID: 4900000, guid: c218e036250005543be24c47743a457e, type: 3}
@@ -232,18 +354,67 @@ MonoBehaviour:
   ActionPlaceholderName: action
   PreviousActionPlaceholderName: prev_action
   brain: {fileID: 846768605}
---- !u!114 &721058869
-MonoBehaviour:
+--- !u!1001 &718692588
+Prefab:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 0}
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &762086410
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,6 +480,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &795973559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  continuousPlayerActions: []
+  discretePlayerActions: []
+  defaultAction: 0
+  brain: {fileID: 846768605}
 --- !u!1 &846768603
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,7 +506,7 @@ GameObject:
   - component: {fileID: 846768604}
   - component: {fileID: 846768605}
   m_Layer: 0
-  m_Name: Brain
+  m_Name: OpenAIHumanoidBrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -350,7 +537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 59
+    vectorObservationSize: 90
     numStackedVectorObservations: 1
     vectorActionSize: 17
     cameraResolutions: []
@@ -374,13 +561,257 @@ MonoBehaviour:
     - 
     vectorActionSpaceType: 1
     vectorObservationSpaceType: 1
-  brainType: 0
+  brainType: 2
   CoreBrains:
-  - {fileID: 1402575609}
-  - {fileID: 636277040}
-  - {fileID: 721058869}
-  - {fileID: 655627261}
-  instanceID: 3884
+  - {fileID: 795973559}
+  - {fileID: 216532337}
+  - {fileID: 1953831108}
+  - {fileID: 596452847}
+  instanceID: 20152
+--- !u!1001 &948377370
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1061126796
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1133959962
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1186791082
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1223085755
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,6 +859,189 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1232083135
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1275600845
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1284229389
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1001 &1396786091
 Prefab:
   m_ObjectHideFlags: 0
@@ -467,68 +1081,23 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 846768605}
     - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
         type: 2}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 1715640920}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
     - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
       propertyPath: m_Name
       value: OpenAIHumanoid
       objectReference: {fileID: 0}
-    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 114269483692438478, guid: 1b863616edc004a7ebadbb8262f11af4,
-        type: 2}
-      propertyPath: AplusB_CollisionLayer.m_Bits
-      value: 16384
-      objectReference: {fileID: 0}
-    - target: {fileID: 114269483692438478, guid: 1b863616edc004a7ebadbb8262f11af4,
-        type: 2}
-      propertyPath: A_CollisionLayer.m_Bits
-      value: 32768
-      objectReference: {fileID: 0}
-    - target: {fileID: 114269483692438478, guid: 1b863616edc004a7ebadbb8262f11af4,
-        type: 2}
-      propertyPath: B_CollisionLayer.m_Bits
-      value: 65536
-      objectReference: {fileID: 0}
-    - target: {fileID: 114269483692438478, guid: 1b863616edc004a7ebadbb8262f11af4,
-        type: 2}
-      propertyPath: GravityOff
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
-        type: 2}
-      propertyPath: ShowMonitor
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1402575609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  continuousPlayerActions: []
-  discretePlayerActions: []
-  defaultAction: 0
-  brain: {fileID: 846768605}
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -585,6 +1154,128 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1590388394
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1663707606
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1715640920
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,3 +1383,198 @@ MonoBehaviour:
   clampToFloor: 0
   heightDamping: 5
   rotationDamping: 0
+--- !u!1001 &1746461368
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1774027328
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
+--- !u!114 &1953831108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 846768605}
+--- !u!1001 &2050384915
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4132043790615226, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 114063291264432040, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 846768605}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_Name
+      value: OpenAIHumanoid (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114381374717760356, guid: 1b863616edc004a7ebadbb8262f11af4,
+        type: 2}
+      propertyPath: ShowMonitor
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+  m_IsPrefabParent: 0
