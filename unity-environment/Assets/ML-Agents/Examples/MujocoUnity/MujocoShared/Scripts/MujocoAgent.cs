@@ -266,7 +266,7 @@ namespace MujocoUnity
         {
             var angleFromUp = Vector3.Angle(MujocoController._focalPoint.transform.forward, Vector3.up);
             if (ShowMonitor) {
-                Monitor.Log("AngleFromUp", angleFromUp);
+                // Monitor.Log("AngleFromUp", angleFromUp);
             }
             return angleFromUp; 
         }

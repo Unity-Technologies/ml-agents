@@ -18,6 +18,20 @@ default:
     summary_freq: 1000
     use_recurrent: false
 
+# MujocoBrain:
+OpenAIHumanoidBrain:
+# newMujocoBrain: # new walker
+    normalize: true
+    num_epoch: 3
+    beta: 0.001
+    # learning_rate: 1e-3
+    time_horizon: 1000
+    batch_size: 2024
+    buffer_size: 20240
+    gamma: 0.995
+    max_steps: 1e6 # 0.50e6
+    summary_freq: 1000
+
 BananaBrain:
     normalize: false
     batch_size: 1024
