@@ -31,10 +31,41 @@ namespace MujocoUnity
         protected Func<float> StepRewardFunction;
         protected Action ObservationsFunction;
         protected Dictionary<string,Rigidbody> BodyParts = new Dictionary<string,Rigidbody>();
-        protected Dictionary<string,Quaternion> BodyPartsToFocalRoation = new Dictionary<string,Quaternion>();        
+        protected Dictionary<string,Quaternion> BodyPartsToFocalRoation = new Dictionary<string,Quaternion>();    
+
+    Dictionary<GameObject, Vector3> transformsPosition;
+    Dictionary<GameObject, Quaternion> transformsRotation;
+    
+    MujocoSpawner mujocoSpawner;    
 
         public override void AgentReset()
         {
+            if (mujocoSpawner == null)
+                mujocoSpawner = this.GetComponent<MujocoUnity.MujocoSpawner>();
+
+            Transform[] allChildren = GetComponentsInChildren<Transform>();
+            if (MujocoController != null) {
+                // restore
+                foreach (Transform child in allChildren)
+                {
+                    if (child.gameObject.name.Contains("Crawler")
+                        || child.gameObject.name.Contains("parent"))
+                    {
+                        continue;
+                    }
+                    child.position = transformsPosition[child.gameObject];
+                    child.rotation = transformsRotation[child.gameObject];
+                    var childRb = child.gameObject.GetComponent<Rigidbody>();
+                    if (childRb != null) {
+                        childRb.velocity = default(Vector3);
+                        childRb.angularVelocity = default(Vector3);
+                    }
+                }
+                mujocoSpawner.ApplyRandom();
+                SetupMujoco();
+                MujocoController.UpdateFromExternalComponent();
+                return;
+            }
             MujocoController = GetComponent<MujocoController>();
             MujocoController.MujocoJoints = null;
             MujocoController.MujocoSensors = null;
@@ -48,10 +79,16 @@ namespace MujocoUnity
             }
             Resources.UnloadUnusedAssets();
 
-            var mujocoSpawner = this.GetComponent<MujocoUnity.MujocoSpawner>();
-            // if (mujocoSpawner != null)
-                // mujocoSpawner.MujocoXml = MujocoXml;
             mujocoSpawner.SpawnFromXml();
+            allChildren = GetComponentsInChildren<Transform>();
+            transformsPosition = new Dictionary<GameObject, Vector3>();
+            transformsRotation = new Dictionary<GameObject, Quaternion>();
+            foreach (Transform child in allChildren)
+            {
+                transformsPosition[child.gameObject] = child.position;
+                transformsRotation[child.gameObject] = child.rotation;
+            }
+            mujocoSpawner.ApplyRandom();
             SetupMujoco();
             MujocoController.UpdateFromExternalComponent();
         }

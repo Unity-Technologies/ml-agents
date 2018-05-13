@@ -172,13 +172,15 @@ namespace MujocoUnity
             GetComponent<MujocoController>().SetMujocoJoints(mujocoJoints);
             GetComponent<MujocoController>().SetMujocoSensors(mujocoSensors);
 
+        }
+        public void ApplyRandom()
+        {
             if (OnGenerateApplyRandom != 0f){
-                foreach (var item in mujocoJoints) {
+                foreach (var item in GetComponent<MujocoController>().MujocoJoints) {
                     var r = (UnityEngine.Random.value * OnGenerateApplyRandom*2)-OnGenerateApplyRandom;
                     MujocoController.ApplyAction(item, r);
                 }
             }
-
         }
 
         void ParseCompilerOptions(XElement xdoc)

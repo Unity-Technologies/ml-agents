@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.496413, b: 0.5748175, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -113,19 +113,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &216532337
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 0}
 --- !u!1001 &227717048
 Prefab:
   m_ObjectHideFlags: 0
@@ -183,6 +170,10 @@ Prefab:
         type: 2}
       propertyPath: ShowMonitor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
@@ -328,10 +319,14 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &596452847
+--- !u!114 &565900147
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -339,21 +334,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
-  graphModel: {fileID: 4900000, guid: c218e036250005543be24c47743a457e, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 846768605}
+  brain: {fileID: 0}
 --- !u!1001 &718692588
 Prefab:
   m_ObjectHideFlags: 0
@@ -411,6 +396,10 @@ Prefab:
         type: 2}
       propertyPath: ShowMonitor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
@@ -480,7 +469,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &795973559
+--- !u!114 &817166462
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -488,13 +477,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  broadcast: 1
-  continuousPlayerActions: []
-  discretePlayerActions: []
-  defaultAction: 0
   brain: {fileID: 846768605}
 --- !u!1 &846768603
 GameObject:
@@ -537,7 +522,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 90
+    vectorObservationSize: 59
     numStackedVectorObservations: 1
     vectorActionSize: 17
     cameraResolutions: []
@@ -563,11 +548,34 @@ MonoBehaviour:
     vectorObservationSpaceType: 1
   brainType: 2
   CoreBrains:
-  - {fileID: 795973559}
-  - {fileID: 216532337}
-  - {fileID: 1953831108}
-  - {fileID: 596452847}
-  instanceID: 20152
+  - {fileID: 1838047976}
+  - {fileID: 565900147}
+  - {fileID: 817166462}
+  - {fileID: 938738324}
+  instanceID: 12418
+--- !u!114 &938738324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  graphModel: {fileID: 4900000, guid: c218e036250005543be24c47743a457e, type: 3}
+  graphScope: 
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
+  brain: {fileID: 846768605}
 --- !u!1001 &948377370
 Prefab:
   m_ObjectHideFlags: 0
@@ -625,6 +633,10 @@ Prefab:
         type: 2}
       propertyPath: ShowMonitor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
@@ -687,6 +699,10 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
@@ -748,6 +764,10 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
@@ -808,6 +828,10 @@ Prefab:
         type: 2}
       propertyPath: ShowMonitor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
@@ -917,6 +941,10 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
@@ -978,6 +1006,10 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
@@ -1038,6 +1070,10 @@ Prefab:
         type: 2}
       propertyPath: ShowMonitor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
@@ -1212,6 +1248,10 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
@@ -1272,6 +1312,10 @@ Prefab:
         type: 2}
       propertyPath: ShowMonitor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
@@ -1441,6 +1485,10 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
@@ -1502,10 +1550,14 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1953831108
+--- !u!114 &1838047976
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1513,9 +1565,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
+  broadcast: 1
+  continuousPlayerActions: []
+  discretePlayerActions: []
+  defaultAction: 0
   brain: {fileID: 846768605}
 --- !u!1001 &2050384915
 Prefab:
@@ -1574,6 +1630,10 @@ Prefab:
         type: 2}
       propertyPath: ShowMonitor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197355327420184, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1b863616edc004a7ebadbb8262f11af4, type: 2}
