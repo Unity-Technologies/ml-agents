@@ -1,0 +1,85 @@
+<mujoco model="fish">
+  <include file="./common/visual.xml"/>
+  <include file="./common/materials.xml"/>
+  <asset>
+      <texture name="skybox" type="skybox" builtin="gradient" rgb1=".4 .6 .8" rgb2="0 0 0" width="800" height="800" mark="random" markrgb="1 1 1"/>
+  </asset>
+
+
+  <option timestep="0.004" density="5000">
+    <flag gravity="disable" constraint="disable"/>
+  </option>
+
+  <default>
+    <general ctrllimited="true"/>
+    <default class="fish">
+      <joint type="hinge" limited="false" range="-60 60" damping="2e-5" solreflimit=".1 1" solimplimit="0 .8 .1"/>
+      <geom material="self"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <camera name="tracking_top" pos="0 0 1" xyaxes="1 0 0 0 1 0" mode="trackcom"/>
+    <camera name="tracking_x" pos="-.3 0 .2" xyaxes="0 -1 0 0.342 0 0.940" fovy="60" mode="trackcom"/>
+    <camera name="tracking_y" pos="0 -.3 .2" xyaxes="1 0 0 0 0.342 0.940" fovy="60" mode="trackcom"/>
+    <camera name="fixed_top" pos="0 0 5.5" fovy="10"/>
+    <geom name="ground" type="plane" size=".5 .5 .1" material="grid"/>
+    <geom name="target" type="sphere" pos="0 .4 .1" size=".04" material="target"/>
+    <body name="torso" pos="0 0 .1" childclass="fish">
+      <light name="light" diffuse=".6 .6 .6" pos="0 0 0.5" dir="0 0 -1" specular=".3 .3 .3" mode="track"/>
+      <joint name="root" type="free" damping="0" limited="false"/>
+      <site name="torso" size=".01" rgba="0 0 0 0"/>
+      <geom name="eye" type="ellipsoid" pos="0 .055 .015" size=".008 .012 .008" euler="-10 0 0" material="eye" mass="0"/>
+      <camera name="eye" pos="0 .06 .02" xyaxes="1 0 0 0 0 1"/>
+      <geom name="mouth" type="capsule" fromto="0 .079 0 0 .07 0" size=".005" material="effector" mass="0"/>
+      <geom name="lower_mouth" type="capsule" fromto="0 .079 -.004 0 .07 -.003" size=".0045" material="effector" mass="0"/>
+      <geom name="torso" type="ellipsoid" size=".01 .08 .04" mass="0"/>
+      <geom name="back_fin" type="ellipsoid" size=".001 .03 .015" pos="0 -.03 .03" material="effector" mass="0"/>
+      <geom name="torso_massive" type="box" size=".002 .06 .03" group="4"/>
+      <body name="tail1" pos="0 -.09 0">
+        <joint name="tail1" axis="0 0 1" pos="0 .01 0"/>
+        <joint name="tail_twist" axis="0 1 0" pos="0 .01 0" range="-30 30"/>
+        <geom name="tail1" type="ellipsoid" size=".001 .008 .016"/>
+        <body name="tail2" pos="0 -.028 0">
+          <joint name="tail2" axis="0 0 1" pos="0 .02 0" stiffness="8e-5"/>
+          <geom name="tail2" type="ellipsoid" size=".001 .018 .035"/>
+        </body>
+      </body>
+      <body name="finright" pos=".01 0 0">
+        <joint name="finright_roll" axis="0 1 0"/>
+        <joint name="finright_pitch" axis="1 0 0" pos="0 .005 0"/>
+        <geom name="finright" type="ellipsoid" pos=".015 0 0" size=".02 .015 .001"  />
+      </body>
+      <body name="finleft" pos="-.01 0 0">
+        <joint name="finleft_roll" axis="0 1 0"/>
+        <joint name="finleft_pitch" axis="1 0 0" pos="0 .005 0"/>
+        <geom name="finleft" type="ellipsoid"  pos="-.015 0 0" size=".02 .015 .001"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <tendon>
+    <fixed name="fins_flap">
+      <joint joint="finleft_roll"  coef="-.5"/>
+      <joint joint="finright_roll" coef=".5"/>
+    </fixed>
+    <fixed name="fins_sym" stiffness="1e-4">
+      <joint joint="finleft_roll"  coef=".5"/>
+      <joint joint="finright_roll" coef=".5"/>
+    </fixed>
+  </tendon>
+
+  <actuator>
+    <position name="tail"           joint="tail1"           ctrlrange="-1 1"    kp="5e-4"/>
+    <position name="tail_twist"     joint="tail_twist"      ctrlrange="-1 1"    kp="1e-4"/>
+    <position name="fins_flap"      tendon="fins_flap"      ctrlrange="-1 1"    kp="3e-4"/>
+    <position name="finleft_pitch"  joint="finleft_pitch"   ctrlrange="-1 1"    kp="1e-4"/>
+    <position name="finright_pitch" joint="finright_pitch"  ctrlrange="-1 1"    kp="1e-4"/>
+  </actuator>
+
+  <sensor>
+    <velocimeter name="velocimeter" site="torso"/>
+    <gyro name="gyro" site="torso"/>
+  </sensor>
+</mujoco>
+

@@ -75,3 +75,4 @@ python/summaries
 
 
 .DS_Store
+!unity-environment/Assets/ML-Agents/Examples/MujocoUnity/**/*.xml

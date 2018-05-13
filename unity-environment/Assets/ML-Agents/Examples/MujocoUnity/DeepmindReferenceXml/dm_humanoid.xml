@@ -1,0 +1,159 @@
+<mujoco model="humanoid">
+  <include file="./common/skybox.xml"/>
+  <include file="./common/visual.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <statistic extent="2" center="0 0 1"/>
+
+  <option timestep=".005"/>
+
+  <default>
+    <motor ctrlrange="-1 1"  ctrllimited="true"/>
+    <default class="torque-sensor">
+      <site type="box" size="0.01 0.01 0.1" rgba="1 0 0 0"/>
+    </default>
+    <default class="body">
+      <geom  type="capsule" condim="1" friction=".7" solimp=".99 .99 .003" solref=".015 1" material="self"/>
+      <joint type="hinge" damping=".2" stiffness="1" armature=".01" limited="true" solimplimit="0 .99 .01"/>
+      <default class="big_joint">
+        <joint damping="5" stiffness="10"/>
+        <default class="big_stiff_joint">
+          <joint stiffness="20"/>
+        </default>
+      </default>
+    </default>
+  </default>
+
+  <worldbody>
+    <geom name="floor" type="plane" conaffinity="1" size="100 100 .2" material="grid"/>
+    <body name="torso" pos="0 0 1.5" childclass="body">
+      <light name="top" pos="0 0 2" mode="trackcom"/>
+      <camera name="back" pos="-3 0 1" xyaxes="0 -1 0 1 0 2" mode="trackcom"/>
+      <camera name="side" pos="0 -3 1" xyaxes="1 0 0 0 1 2" mode="trackcom"/>
+      <freejoint name="root"/>
+      <geom name="torso" fromto="0 -.07 0 0 .07 0" size="0.07"/>
+      <body name="head" pos="0 0 .19">
+        <geom name="head" type="sphere" size=".09"/>
+      </body>
+      <site name="torso_site" size="0.05" rgba="1 0 0 1"/>
+      <geom name="upper_waist" fromto="-.01 -.06 -.12 -.01 .06 -.12" size="0.06"/>
+      <body name="lower_waist" pos="-.01 0 -0.260" quat="1.000 0 -0.002 0">
+        <geom name="lower_waist" fromto="0 -.06 0 0 .06 0" size="0.06"/>
+        <joint name="abdomen_z" pos="0 0 0.065" axis="0 0 1" range="-45 45" class="big_stiff_joint"/>
+        <joint name="abdomen_y" pos="0 0 0.065" axis="0 1 0" range="-75 30" class="big_joint"/>
+        <body name="pelvis" pos="0 0 -0.165" quat="1.000 0 -0.002 0">
+          <joint name="abdomen_x" pos="0 0 0.1" axis="1 0 0" range="-35 35" class="big_joint"/>
+          <geom name="butt" fromto="-.02 -.07 0 -.02 .07 0" size="0.09"/>
+          <body name="right_thigh" pos="0 -0.1 -0.04">
+            <site name="right_hip" class="torque-sensor"/>
+            <joint name="right_hip_x" axis="1 0 0" range="-25 5"   class="big_joint"/>
+            <joint name="right_hip_z" axis="0 0 1" range="-60 35"  class="big_joint"/>
+            <joint name="right_hip_y" axis="0 1 0" range="-110 20" class="big_stiff_joint"/>
+            <geom name="right_thigh" fromto="0 0 0 0 0.01 -.34" size="0.06"/>
+            <body name="right_shin" pos="0 0.01 -0.403">
+              <site name="right_knee" class="torque-sensor"/>
+              <joint name="right_knee" pos="0 0 .02" axis="0 -1 0" range="-160 2"/>
+              <geom name="right_shin" fromto="0 0 0 0 0 -.3"  size="0.049"/>
+              <site name="right_shin_touch" type="box" pos="0 0 -0.16" size="0.06 0.06 0.17" rgba="0 0 1 0"/>
+              <body name="right_foot" pos="0 0 -.39">
+                <site name="right_ankle" class="torque-sensor"/>
+                <joint name="right_ankle_y" pos="0 0 0.08" axis="0 1 0"   range="-50 50" stiffness="6"/>
+                <joint name="right_ankle_x" pos="0 0 0.04" axis="1 0 0.5" range="-50 50" stiffness="3"/>
+                <geom name="right_right_foot" fromto="-.07 -0.02 0 0.14 -0.04 0" size="0.027"/>
+                <geom name="left_right_foot" fromto="-.07 0 0 0.14  0.02 0" size="0.027"/>
+                <site name="right_foot_touch" type="box" pos="0.02 -0.01 0" size="0.15 0.06 0.04" rgba="0 0 1 0"/>
+              </body>
+            </body>
+          </body>
+          <body name="left_thigh" pos="0 0.1 -0.04">
+            <site name="left_hip" class="torque-sensor"/>
+            <joint name="left_hip_x" axis="-1 0 0" range="-25 5"  class="big_joint"/>
+            <joint name="left_hip_z" axis="0 0 -1" range="-60 35" class="big_joint"/>
+            <joint name="left_hip_y" axis="0 1 0" range="-120 20" class="big_stiff_joint"/>
+            <geom name="left_thigh" fromto="0 0 0 0 -0.01 -.34" size="0.06"/>
+            <body name="left_shin" pos="0 -0.01 -0.403">
+              <site name="left_knee" class="torque-sensor"/>
+              <joint name="left_knee" pos="0 0 .02" axis="0 -1 0" range="-160 2"/>
+              <geom name="left_shin" fromto="0 0 0 0 0 -.3"  size="0.049"/>
+              <site name="left_shin_touch" type="box" pos="0 0 -0.16" size="0.06 0.06 0.17" rgba="0 0 1 0"/>
+              <body name="left_foot" pos="0 0 -.39">
+                <site name="left_ankle" class="torque-sensor"/>
+                <joint name="left_ankle_y" pos="0 0 0.08" axis="0 1 0"   range="-50 50" stiffness="6"/>
+                <joint name="left_ankle_x" pos="0 0 0.04" axis="1 0 0.5" range="-50 50" stiffness="3"/>
+                <geom name="left_left_foot" fromto="-.07 0.02 0 0.14 0.04 0" size="0.027"/>
+                <geom name="right_left_foot" fromto="-.07 0 0 0.14  -0.02 0" size="0.027"/>
+                <site name="left_foot_touch" type="box" pos="0.02 0.01 0" size="0.15 0.06 0.04" rgba="0 0 1 0"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="right_upper_arm" pos="0 -0.17 0.06">
+        <joint name="right_shoulder1" axis="2 1 1"  range="-85 60"/>
+        <joint name="right_shoulder2" axis="0 -1 1" range="-85 60"/>
+        <geom name="right_upper_arm" fromto="0 0 0 .16 -.16 -.16" size="0.04 0.16"/>
+        <body name="right_lower_arm" pos=".18 -.18 -.18">
+          <joint name="right_elbow" axis="0 -1 1" range="-90 50" stiffness="0"/>
+          <geom name="right_larm" fromto="0.01 0.01 0.01 .17 .17 .17" size="0.031"/>
+          <body name="right_hand" pos=".18 .18 .18">
+            <geom name="right_hand" type="sphere" size="0.04"/>
+          </body>
+        </body>
+      </body>
+      <body name="left_upper_arm" pos="0 0.17 0.06">
+        <joint name="left_shoulder1" axis="2 -1 1" range="-60 85"/>
+        <joint name="left_shoulder2" axis="0 1 1" range="-60 85"/>
+        <geom name="left_upper_arm" fromto="0 0 0 .16 .16 -.16" size="0.04 0.16"/>
+        <body name="left_lower_arm" pos=".18 .18 -.18">
+          <joint name="left_elbow" axis="0 -1 -1" range="-90 50" stiffness="0"/>
+          <geom name="left_larm" fromto="0.01 -0.01 0.01 .17 -.17 .17" size="0.031"/>
+          <body name="left_hand" pos=".18 -.18 .18">
+            <geom name="left_hand" type="sphere" size="0.04"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="abdomen_y"       gear="40"  joint="abdomen_y"/>
+    <motor name="abdomen_z"       gear="40"  joint="abdomen_z"/>
+    <motor name="abdomen_x"       gear="40"  joint="abdomen_x"/>
+    <motor name="right_hip_x"     gear="40"  joint="right_hip_x"/>
+    <motor name="right_hip_z"     gear="40"  joint="right_hip_z"/>
+    <motor name="right_hip_y"     gear="120" joint="right_hip_y"/>
+    <motor name="right_knee"      gear="80"  joint="right_knee"/>
+    <motor name="right_ankle_x"   gear="20"  joint="right_ankle_x"/>
+    <motor name="right_ankle_y"   gear="20"  joint="right_ankle_y"/>
+    <motor name="left_hip_x"      gear="40"  joint="left_hip_x"/>
+    <motor name="left_hip_z"      gear="40"  joint="left_hip_z"/>
+    <motor name="left_hip_y"      gear="120" joint="left_hip_y"/>
+    <motor name="left_knee"       gear="80"  joint="left_knee"/>
+    <motor name="left_ankle_x"    gear="20"  joint="left_ankle_x"/>
+    <motor name="left_ankle_y"    gear="20"  joint="left_ankle_y"/>
+    <motor name="right_shoulder1" gear="20"  joint="right_shoulder1"/>
+    <motor name="right_shoulder2" gear="20"  joint="right_shoulder2"/>
+    <motor name="right_elbow"     gear="40"  joint="right_elbow"/>
+    <motor name="left_shoulder1"  gear="20"  joint="left_shoulder1"/>
+    <motor name="left_shoulder2"  gear="20"  joint="left_shoulder2"/>
+    <motor name="left_elbow"      gear="40"  joint="left_elbow"/>
+  </actuator>
+
+  <sensor>
+    <accelerometer name="torso_accel" site="torso_site"/>
+    <velocimeter name="torso_vel"     site="torso_site"/>
+    <gyro name="torso_gyro"           site="torso_site"/>
+    <torque name="left_ankle_torque"  site="left_ankle"/>
+    <torque name="right_ankle_torque" site="right_ankle"/>
+    <torque name="left_knee_torque"   site="left_knee"/>
+    <torque name="right_knee_torque"  site="right_knee"/>
+    <torque name="left_hip_torque"    site="left_hip"/>
+    <torque name="right_hip_torque"   site="right_hip"/>
+    <touch name="left_foot_touch"     site="left_foot_touch"/>
+    <touch name="right_foot_touch"    site="right_foot_touch"/>
+    <touch name="left_shin_touch"     site="left_shin_touch"/>
+    <touch name="right_shin_touch"    site="right_shin_touch"/>
+  </sensor>
+
+</mujoco>
+
