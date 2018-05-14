@@ -85,7 +85,7 @@ namespace MLAgents
         {
             if (!m_isOpen)
             {
-                throw new UnityAgentsException("The communicator is closed.");
+                return null;
             }
             try
             {
