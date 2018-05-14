@@ -88,6 +88,9 @@ class RpcCommunicator(Communicator):
             message_input = UnityMessage()
             message_input.header.status = 400
             self.unity_to_external.parent_conn.send(message_input)
+            self.unity_to_external.parent_conn.close()
+            self.server.stop(False)
+            self.is_open = False
 
 
 

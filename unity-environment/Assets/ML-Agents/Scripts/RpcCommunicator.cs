@@ -68,6 +68,7 @@ namespace MLAgents
             try
             {
                 m_client.Exchange(WrapMessage(null, 400));
+                m_isOpen = false;
             }
             catch
             {
@@ -82,6 +83,10 @@ namespace MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         public UnityInput Exchange(UnityOutput unityOutput)
         {
+            if (!m_isOpen)
+            {
+                throw new UnityAgentsException("The communicator is closed.");
+            }
             try
             {
                 var message = m_client.Exchange(WrapMessage(unityOutput, 200));
