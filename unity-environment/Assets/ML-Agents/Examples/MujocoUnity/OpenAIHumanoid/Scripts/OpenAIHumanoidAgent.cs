@@ -50,7 +50,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         base.AgentReset();
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_OaiHumanoidRun142;
+        StepRewardFunction = StepReward_OaiHumanoidRun145;
         TerminateFunction = Terminate_OnNonFootHitTerrain;
         ObservationsFunction = Observations_Humanoid;
 
@@ -83,31 +83,31 @@ public class OpenAIHumanoidAgent : MujocoAgent {
             //Monitor.Log("onSensor", _mujocoController.OnSensor, MonitorType.hist);
             //Monitor.Log("sensor", _mujocoController.SensorIsInTouch, MonitorType.hist);
         }
-        // var pelvis = BodyParts["pelvis"];
-        // var shoulders = BodyParts["shoulders"];
-        // AddVectorObs(MujocoController.FocalPointPosition);
-        // AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
-        // AddVectorObs(MujocoController.FocalPointRotation);
-        // AddVectorObs(MujocoController.FocalPointRotationVelocity);
+        var pelvis = BodyParts["pelvis"];
+        var shoulders = BodyParts["shoulders"];
+        AddVectorObs(MujocoController.FocalPointPosition);
+        AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
+        AddVectorObs(MujocoController.FocalPointRotation);
+        AddVectorObs(MujocoController.FocalPointRotationVelocity);
 
-        // // var focalTransform = _focalPoint.transform;
-        // // var focalRidgedBody = _focalPoint.GetComponent<Rigidbody>();
-        // // FocalPointPosition = focalTransform.position;
-        // // FocalPointPositionVelocity = focalRidgedBody.velocity;
-        // // var lastFocalPointRotationVelocity = FocalPointRotation;
-        // // FocalPointEulerAngles = focalTransform.eulerAngles;
-        // // FocalPointRotation = new Vector3(
-        // //     ((FocalPointEulerAngles.x - 180f) % 180 ) / 180,
-        // //     ((FocalPointEulerAngles.y - 180f) % 180 ) / 180,
-        // //     ((FocalPointEulerAngles.z - 180f) % 180 ) / 180);
-        // // FocalPointRotationVelocity = FocalPointRotation-lastFocalPointRotationVelocity;
-        // AddVectorObs(pelvis.velocity);
-        // AddVectorObs(pelvis.transform.forward); // gyroscope 
-        // AddVectorObs(pelvis.transform.up);
-        // AddVectorObs(pelvis.angularVelocity); 
-        // AddVectorObs(pelvis.rotation);
+        // var focalTransform = _focalPoint.transform;
+        // var focalRidgedBody = _focalPoint.GetComponent<Rigidbody>();
+        // FocalPointPosition = focalTransform.position;
+        // FocalPointPositionVelocity = focalRidgedBody.velocity;
+        // var lastFocalPointRotationVelocity = FocalPointRotation;
+        // FocalPointEulerAngles = focalTransform.eulerAngles;
+        // FocalPointRotation = new Vector3(
+        //     ((FocalPointEulerAngles.x - 180f) % 180 ) / 180,
+        //     ((FocalPointEulerAngles.y - 180f) % 180 ) / 180,
+        //     ((FocalPointEulerAngles.z - 180f) % 180 ) / 180);
+        // FocalPointRotationVelocity = FocalPointRotation-lastFocalPointRotationVelocity;
+        AddVectorObs(pelvis.velocity);
+        AddVectorObs(pelvis.transform.forward); // gyroscope 
+        AddVectorObs(pelvis.transform.up);
+        AddVectorObs(pelvis.angularVelocity); 
+        AddVectorObs(pelvis.rotation);
         
-        // AddVectorObs(shoulders.transform.forward); // gyroscope 
+        AddVectorObs(shoulders.transform.forward); // gyroscope 
 
         AddVectorObs(MujocoController.SensorIsInTouch);
         //AddVectorObs(_mujocoController.JointAngles);
@@ -130,7 +130,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         return effort;            
     }
     
-    float StepReward_OaiHumanoidRun142()
+    float StepReward_OaiHumanoidRun145()
     {
         float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);
@@ -152,7 +152,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         float phaseBonus = GetPhaseBonus();
         var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
         float effort = GetEffort(new string []{"right_hip_y", "right_knee", "left_hip_y", "left_knee"});
-        var effortPenality = 0.1f * (float)effort;
+        var effortPenality = 0.015f * (float)effort;
         var reward = velocity 
             + uprightBonus
             + forwardBonus
