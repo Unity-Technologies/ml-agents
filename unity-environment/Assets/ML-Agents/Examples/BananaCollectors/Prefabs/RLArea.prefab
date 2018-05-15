@@ -5821,6 +5821,7 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: 260483cdfc6b14e26823a02f23bd8baa, type: 2}
   badMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
   goodMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
+  frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1458338921368736}
   contribute: 0
 --- !u!114 &114319858423652580
@@ -5898,6 +5899,7 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: 260483cdfc6b14e26823a02f23bd8baa, type: 2}
   badMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
   goodMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
+  frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1282191557182746}
   contribute: 0
 --- !u!114 &114816434626527468
@@ -5925,6 +5927,7 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: 260483cdfc6b14e26823a02f23bd8baa, type: 2}
   badMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
   goodMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
+  frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1362328255224980}
   contribute: 0
 --- !u!114 &114846764322938622
@@ -5952,6 +5955,7 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: 260483cdfc6b14e26823a02f23bd8baa, type: 2}
   badMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
   goodMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
+  frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1734645906742312}
   contribute: 0
 --- !u!114 &114875485509234200
@@ -5979,5 +5983,6 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: 260483cdfc6b14e26823a02f23bd8baa, type: 2}
   badMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
   goodMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
+  frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1573257363500854}
   contribute: 0

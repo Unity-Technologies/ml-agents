@@ -8,19 +8,19 @@ Use the Python program, `learn.py` to train your agents. This program can be fou
 
 For a broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Overview](ML-Agents-Overview.md).
 
-## Training with Learn.py
+## Training with learn.py
 
-Use the Python `Learn.py` program to train agents. `Learn.py` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioral cloning imitation learning](Training-Imitation-Learning.md).
+Use the Python `learn.py` program to train agents. `learn.py` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioral cloning imitation learning](Training-Imitation-Learning.md).
 
-Run `Learn.py` from the command line to launch the training process. Use the command line patterns and the `trainer_config.yaml` file to control training options.
+Run `learn.py` from the command line to launch the training process. Use the command line patterns and the `trainer_config.yaml` file to control training options.
 
 The basic command for training is:
 
-    python3 learn.py <env_file_path> --run-id=<run-identifier> --train
+    python3 learn.py <env_name> --run-id=<run-identifier> --train
 
-where `<env_file_path>` is the path to your Unity executable containing the agents to be trained and `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
+where `<env_name>` is the name(including path) of your Unity executable containing the agents to be trained and `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
-For example, suppose you have a project in Unity named "CatsOnBicyclesCatsOnBicycles" which contains agents ready to train. To perform the training:
+For example, suppose you have a project in Unity named "CatsOnBicycles" which contains agents ready to train. To perform the training:
 
 1. Build the project, making sure that you only include the training scene.
 2. Open a terminal or console window.

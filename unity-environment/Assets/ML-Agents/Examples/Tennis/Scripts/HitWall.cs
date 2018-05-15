@@ -2,23 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class hitWall : MonoBehaviour
+public class HitWall : MonoBehaviour
 {
     public GameObject areaObject;
     public int lastAgentHit;
 
+    private TennisArea area;
+    private TennisAgent agentA;
+    private TennisAgent agentB;
+
     // Use this for initialization
     void Start()
     {
-        lastAgentHit = -1;
+        area = areaObject.GetComponent<TennisArea>();
+        agentA = area.agentA.GetComponent<TennisAgent>();
+        agentB = area.agentB.GetComponent<TennisAgent>();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        TennisArea area = areaObject.GetComponent<TennisArea>();
-        TennisAgent agentA = area.agentA.GetComponent<TennisAgent>();
-        TennisAgent agentB = area.agentB.GetComponent<TennisAgent>();
-
         if (other.name == "over")
         {
             if (lastAgentHit == 0)
@@ -36,11 +38,7 @@ public class hitWall : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        TennisArea area = areaObject.GetComponent<TennisArea>();
-        TennisAgent agentA = area.agentA.GetComponent<TennisAgent>();
-        TennisAgent agentB = area.agentB.GetComponent<TennisAgent>();
-
-        if (collision.gameObject.tag == "iWall")
+        if (collision.gameObject.CompareTag("iWall"))
         {
             if (collision.gameObject.name == "wallA")
             {
@@ -123,16 +121,9 @@ public class hitWall : MonoBehaviour
             area.MatchReset();
         }
 
-        if (collision.gameObject.tag == "agent")
+        if (collision.gameObject.CompareTag("agent"))
         {
-            if (collision.gameObject.name == "AgentA")
-            {
-                lastAgentHit = 0;
-            }
-            else
-            {
-                lastAgentHit = 1;
-            }
+            lastAgentHit = collision.gameObject.name == "AgentA" ? 0 : 1;
         }
     }
 }

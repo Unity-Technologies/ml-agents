@@ -73,13 +73,13 @@ If you followed these instructions well, the agents in your environment that use
 # iOS additional instructions for building
 
 * Once you build for iOS in the editor, Xcode will launch.
-* In `General` -> `Linked Frameworks and Libraries`:
+* In **General** > **Linked Frameworks and Libraries**:
   * Add a framework called `Accelerate.framework`
   * Remove the library `libtensorflow-core.a`
-* In `Build Settings`->`Linking`->`Other Linker Flags`:
+* In **Build Settings** > **Linking** > **Other Linker Flags**:
   * Double click on the flag list to expand the list
   * Add `-force_load`
-  * Drag the library `libtensorflow-core.a` from the `Project Navigator` on the left under `Libraries/ML-Agents/Plugins/iOS` into the flag list, after `-force_load`.
+  * Drag the library `libtensorflow-core.a` from the **Project Navigator** on the left under `Libraries/ML-Agents/Plugins/iOS` into the flag list, after `-force_load`.
 
 # Using TensorFlowSharp without ML-Agents
 

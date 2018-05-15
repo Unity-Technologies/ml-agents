@@ -185,8 +185,9 @@ class BehavioralCloningTrainer(Trainer):
             else:
                 idx = stored_info_teacher.agents.index(agent_id)
                 next_idx = next_info_teacher.agents.index(agent_id)
-                if info_teacher.text_observations[idx] != "":
-                    info_teacher_record, info_teacher_reset = info_teacher.text_observations[idx].lower().split(",")
+                if stored_info_teacher.text_observations[idx] != "":
+                    info_teacher_record, info_teacher_reset = \
+                        stored_info_teacher.text_observations[idx].lower().split(",")
                     next_info_teacher_record, next_info_teacher_reset = next_info_teacher.text_observations[idx].\
                         lower().split(",")
                     if next_info_teacher_reset == "true":
@@ -219,12 +220,11 @@ class BehavioralCloningTrainer(Trainer):
             if stored_info_student is None:
                 continue
             else:
-                idx = stored_info_student.agents.index(agent_id)
                 next_idx = next_info_student.agents.index(agent_id)
-                if not stored_info_student.local_done[idx]:
-                    if agent_id not in self.cumulative_rewards:
-                        self.cumulative_rewards[agent_id] = 0
-                    self.cumulative_rewards[agent_id] += next_info_student.rewards[next_idx]
+                if agent_id not in self.cumulative_rewards:
+                    self.cumulative_rewards[agent_id] = 0
+                self.cumulative_rewards[agent_id] += next_info_student.rewards[next_idx]
+                if not next_info_student.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
