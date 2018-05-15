@@ -58,7 +58,6 @@ public class MemoryDCDOAgent : Agent
                 Done();
             }
         }
-        //Debug.Log(position +"  "+ goLeft+ "  "+GetReward());
     }
 
     public override void AgentReset()

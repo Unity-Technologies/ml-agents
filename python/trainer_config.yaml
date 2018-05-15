@@ -217,10 +217,33 @@ TesterMemoryBrain:
     memory_size: 32
     sequence_length: 8
 
-TesterBasicDCDOBrain: BasicBrain
-TesterBasicDCCOBrain: BasicBrain
-TesterBasicDCVOBrain: BasicBrain
+TesterDCBrain:
+    batch_size: 32
+    normalize: false
+    num_layers: 1
+    hidden_units: 20
+    beta: 5.0e-3
+    gamma: 0.9
+    buffer_size: 256
+    max_steps: 5.0e5
+    summary_freq: 2000
+    time_horizon: 3
+
+TesterCCBrain:
+    normalize: true
+    batch_size: 500
+    buffer_size: 1000
+    summary_freq: 2000
+    time_horizon: 128
+    gamma: 0.995
+    beta: 0.001
+
+TesterBasicDCDOBrain: TesterDCBrain
+TesterBasicDCCOBrain: TesterDCBrain
+TesterBasicDCVOBrain: TesterDCBrain
 TesterMemoryDCDOBrain: TesterMemoryBrain
-TesterOddDCDOBrain: BasicBrain
-TesterOddDCCOBrain: BasicBrain
+TesterOddDCDOBrain: TesterDCBrain
+TesterOddDCCOBrain: TesterDCBrain
+TesterBasicCCCOBrain: TesterCCBrain
+
 
