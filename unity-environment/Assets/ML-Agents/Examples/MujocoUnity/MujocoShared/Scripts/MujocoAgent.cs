@@ -48,18 +48,12 @@ namespace MujocoUnity
                 // restore
                 foreach (Transform child in allChildren)
                 {
-                    if (child.gameObject.name.Contains("Crawler")
-                        || child.gameObject.name.Contains("parent"))
+                    if (child.gameObject.name.Contains("OpenAIHumanoid"))
                     {
                         continue;
                     }
                     child.position = transformsPosition[child.gameObject];
                     child.rotation = transformsRotation[child.gameObject];
-                    var childRb = child.gameObject.GetComponent<Rigidbody>();
-                    if (childRb != null) {
-                        childRb.velocity = default(Vector3);
-                        childRb.angularVelocity = default(Vector3);
-                    }
                 }
                 mujocoSpawner.ApplyRandom();
                 SetupMujoco();

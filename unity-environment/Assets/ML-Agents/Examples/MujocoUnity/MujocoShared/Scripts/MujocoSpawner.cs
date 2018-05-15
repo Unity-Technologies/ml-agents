@@ -176,10 +176,30 @@ namespace MujocoUnity
         public void ApplyRandom()
         {
             if (OnGenerateApplyRandom != 0f){
+                float velocityScaler = 5000f;
                 foreach (var item in GetComponent<MujocoController>().MujocoJoints) {
-                    var r = (UnityEngine.Random.value * OnGenerateApplyRandom*2)-OnGenerateApplyRandom;
-                    MujocoController.ApplyAction(item, r);
-                }
+                    var r = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom);
+                    var childRb = item.Joint.GetComponent<Rigidbody>();
+                    if (childRb != null) {
+                        ConfigurableJoint configurableJoint = item.Joint as ConfigurableJoint;
+                        var t = Vector3.zero;
+                        t.x = r * velocityScaler;
+                        configurableJoint.targetAngularVelocity = t;
+                        childRb.angularVelocity =t;
+                        t = Vector3.zero;
+                        t.x = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 500;
+                        t.y = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 500 + 1;
+                        t.z = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 500;
+                        childRb.velocity =t;
+                        var angX = configurableJoint.angularXDrive;
+                        angX.positionSpring = 1f;
+                        var scale = item.MaximumForce * Mathf.Pow(Mathf.Abs(r),3);
+                        angX.positionDamper = Mathf.Max(1f, scale);
+                        angX.maximumForce = Mathf.Max(1f, scale);
+                        configurableJoint.angularXDrive = angX;
+                    }
+                    //MujocoController.ApplyAction(item, r);
+                } 
             }
         }
 
@@ -329,65 +349,6 @@ namespace MujocoUnity
             return joints;            
         }
 
-        List<KeyValuePair<string, Joint>> ToDeleteOldParseBody(XElement xdoc, GameObject parentBody, GeomItem geom = null, GeomItem parentGeom = null, List<JointDocQueueItem> jointDocsQueue = null)
-        {
-            var joints = new List<KeyValuePair<string, Joint>>();
-            jointDocsQueue = jointDocsQueue ?? new List<JointDocQueueItem>(); 
-            var bodies = new List<GameObject>();
-
-            foreach (var element in xdoc.Elements())
-            {
-                switch (element.Name.LocalName)
-                {
-                    case "geom":
-                        geom = ParseGeom(element, parentBody);
-                        if(parentGeom != null && jointDocsQueue?.Count > 0){
-                            foreach (var jointDocQueueItem in jointDocsQueue)
-                            {
-                                var js = ParseJoint(
-                                    jointDocQueueItem.JointXDoc, 
-                                    jointDocQueueItem.ParentGeom, 
-                                    geom, 
-                                    jointDocQueueItem.ParentBody);
-                                if(js != null) joints.AddRange(js);
-                            }
-                        }
-                        else if (parentGeom != null){
-                            var fixedJoint = parentGeom.Geom.AddComponent<FixedJoint>();
-                            fixedJoint.connectedBody = geom.Geom.GetComponent<Rigidbody>();                            
-                        }
-                        jointDocsQueue.Clear();
-                        parentGeom = geom;
-                        break;
-                    case "joint":
-                        jointDocsQueue.Add(new JointDocQueueItem {
-                                JointXDoc = element,
-                                ParentGeom = geom,
-                                ParentBody = parentBody,
-                            });
-                        break;
-                    case "body":
-                        var body = new GameObject();
-                        bodies.Add(body);
-                        body.transform.parent = this.transform;
-                        ApplyClassToBody(element, body, parentBody);
-                        // var newJoints = ParseBody(element, element.Attribute("name")?.Value, body, geom, parentGeom, xdoc, jointDocsQueue);
-                        var newJoints = ParseBody(element, body, geom, parentGeom, jointDocsQueue);
-                        if (newJoints != null) joints.AddRange(newJoints);
-                        break;
-                    case "light":
-                    case "camera":
-                        break;
-                    default:
-                        throw new NotImplementedException(element.Name.LocalName);
-                }
-            }
-
-            foreach (var item in bodies)
-                GameObject.Destroy(item);
-            
-            return joints;            
-        }
         void ApplyClassToBody(XElement classElement, GameObject body, GameObject parentBody)
         {
             foreach (var attribute in classElement.Attributes())
