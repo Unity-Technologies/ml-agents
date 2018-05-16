@@ -178,8 +178,8 @@ namespace MujocoUnity
             if (OnGenerateApplyRandom != 0f){
                 float velocityScaler = 5000f;
                 foreach (var item in GetComponent<MujocoController>().MujocoJoints) {
-                    //var r = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom);
-                    float r = 0f;
+                    var r = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom);
+                    // float r = 0f;
                     var childRb = item.Joint.GetComponent<Rigidbody>();
                     if (childRb != null) {
                         ConfigurableJoint configurableJoint = item.Joint as ConfigurableJoint;
@@ -188,9 +188,9 @@ namespace MujocoUnity
                         configurableJoint.targetAngularVelocity = t;
                         childRb.angularVelocity =t;
                         t = Vector3.zero;
-                        // t.x = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 5;
-                        // t.y = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 5 + 1;
-                        // t.z = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 5;
+                        t.x = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 5;
+                        t.y = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 5 + 1;
+                        t.z = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom) * 5;
                         childRb.velocity =t;
                         var angX = configurableJoint.angularXDrive;
                         angX.positionSpring = 1f;

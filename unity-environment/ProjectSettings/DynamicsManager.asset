@@ -10,7 +10,7 @@ PhysicsManager:
   m_SleepThreshold: 0.005
   m_DefaultContactOffset: 0.01
   m_DefaultSolverIterations: 32
-  m_DefaultSolverVelocityIterations: 1
+  m_DefaultSolverVelocityIterations: 10
   m_QueriesHitBackfaces: 0
   m_QueriesHitTriggers: 1
   m_EnableAdaptiveForce: 0

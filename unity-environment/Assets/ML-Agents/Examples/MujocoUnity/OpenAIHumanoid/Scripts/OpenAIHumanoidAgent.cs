@@ -50,7 +50,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         base.AgentReset();
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_OaiHumanoidRun150;
+        StepRewardFunction = StepReward_OaiHumanoidRun153;
         TerminateFunction = Terminate_OnNonFootHitTerrain;
         ObservationsFunction = Observations_Humanoid;
 
@@ -130,7 +130,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         return effort;            
     }
     
-    float StepReward_OaiHumanoidRun150()
+    float StepReward_OaiHumanoidRun153()
     {
         float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);
