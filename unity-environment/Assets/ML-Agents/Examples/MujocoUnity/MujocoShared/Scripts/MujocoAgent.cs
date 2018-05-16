@@ -54,6 +54,11 @@ namespace MujocoUnity
                     }
                     child.position = transformsPosition[child.gameObject];
                     child.rotation = transformsRotation[child.gameObject];
+                    var childRb = child.GetComponent<Rigidbody>();
+                    if (childRb != null) {
+                        childRb.angularVelocity = Vector3.zero;
+                        childRb.velocity = Vector3.zero;
+                    }
                 }
                 mujocoSpawner.ApplyRandom();
                 SetupMujoco();
