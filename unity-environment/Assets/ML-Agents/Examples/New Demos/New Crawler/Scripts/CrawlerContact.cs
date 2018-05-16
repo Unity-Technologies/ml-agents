@@ -27,6 +27,12 @@ public class CrawlerContact : MonoBehaviour
         Physics.defaultSolverVelocityIterations = 6; //increasing this to increase solver accuracy
     }
 
+    // void UseGroundedMaterial()
+    // {
+    //     if
+    // }
+
+
     /// <summary>
     /// Check for collision with ground, and optionally penalize agent.
     /// </summary>

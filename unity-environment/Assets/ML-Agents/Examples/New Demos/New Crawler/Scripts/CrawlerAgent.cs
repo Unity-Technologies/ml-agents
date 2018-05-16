@@ -39,10 +39,17 @@ public class CrawlerAgent : Agent {
 
 
 
-    [Header("Reward Functions To Use")] 
+    [Header("Foot Grounded Visualization")] 
     [Space(10)] 
-    public LayerMask groundLayer;
-    RaycastHit[] raycastHitResults = new RaycastHit[1];
+    public bool useFootGroundedVisualization;
+    public MeshRenderer foot0;
+    public MeshRenderer foot1;
+    public MeshRenderer foot2;
+    public MeshRenderer foot3;
+    public Material groundedMaterial;
+    public Material unGroundedMaterial;
+    // public LayerMask groundLayer;
+    // RaycastHit[] raycastHitResults = new RaycastHit[1];
 
 
     /// <summary>
@@ -166,6 +173,14 @@ public class CrawlerAgent : Agent {
     void Update()
     {
 		dirToTarget = academy.target.position - bodyParts[body].rb.position;
+
+        if(useFootGroundedVisualization)
+        {
+            foot0.material = bodyParts[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot1.material = bodyParts[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot2.material = bodyParts[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot3.material = bodyParts[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+        }
     }
 
 	/// <summary>
@@ -192,26 +207,26 @@ public class CrawlerAgent : Agent {
 
 
 
-	/// <summary>
-    /// Add hit dist to the ground and relative hit position. NonAlloc so it doesn't generate garbage
-    /// </summary>
-    void RaycastObservationNonAlloc(Vector3 dir, float maxDist)
-    {
-        float dist = 0;
-        Vector3 relativeHitPos = Vector3.zero;
-        Ray ray = new Ray(body.position, dir);
+	// /// <summary>
+    // /// Add hit dist to the ground and relative hit position. NonAlloc so it doesn't generate garbage
+    // /// </summary>
+    // void RaycastObservationNonAlloc(Vector3 dir, float maxDist)
+    // {
+    //     float dist = 0;
+    //     Vector3 relativeHitPos = Vector3.zero;
+    //     Ray ray = new Ray(body.position, dir);
 
-        if(Physics.RaycastNonAlloc(ray, raycastHitResults, maxDist, groundLayer, QueryTriggerInteraction.Ignore) > 0)
-        {
-            // print(raycastHitResults[0].collider.tag);
-            dist = raycastHitResults[0].distance/maxDist;
-            relativeHitPos = body.InverseTransformPoint(raycastHitResults[0].point);
-            // print("dist: " + dist);
-            // print("relHitPos: " + relativeHitPos);
-        }
-        AddVectorObs(dist);
-        AddVectorObs(relativeHitPos);
-    }
+    //     if(Physics.RaycastNonAlloc(ray, raycastHitResults, maxDist, groundLayer, QueryTriggerInteraction.Ignore) > 0)
+    //     {
+    //         // print(raycastHitResults[0].collider.tag);
+    //         dist = raycastHitResults[0].distance/maxDist;
+    //         relativeHitPos = body.InverseTransformPoint(raycastHitResults[0].point);
+    //         // print("dist: " + dist);
+    //         // print("relHitPos: " + relativeHitPos);
+    //     }
+    //     AddVectorObs(dist);
+    //     AddVectorObs(relativeHitPos);
+    // }
 
 
     public override void CollectObservations()
@@ -225,7 +240,7 @@ public class CrawlerAgent : Agent {
         // Debug.DrawRay(leg1_lower.position, leg1_lower.transform.up, Color.green, 2);
         // Debug.DrawRay(leg2_lower.position, leg2_lower.transform.up, Color.blue, 2);
         // Debug.DrawRay(leg3_lower.position, leg3_lower.transform.up, Color.yellow, 2);
-        
+
         // RaycastObservation(body.position, -body.up, 5);
         // RaycastObservation(body.position, body.forward, 5);
 
