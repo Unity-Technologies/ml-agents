@@ -207,8 +207,7 @@ class UnityEnvironment(object):
                 """
                 docker_ls = ("exec xvfb-run --auto-servernum"
                              " --server-args='-screen 0 640x480x24'"
-                             " {0} --port {1} --seed {2}").format(launch_string,
-                                                                  str(self.port))
+                             " {0} --port {1}").format(launch_string, str(self.port))
                 self.proc1 = subprocess.Popen(docker_ls,
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
@@ -260,7 +259,7 @@ class UnityEnvironment(object):
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
             self._global_done = s[1]
-            for _b in self._brain_names:
+            for _b in self._external_brain_names:
                 self._n_agents[_b] = len(s[0][_b].agents)
             return s[0]
         else:
@@ -368,7 +367,7 @@ class UnityEnvironment(object):
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
             self._global_done = s[1]
-            for _b in self._brain_names:
+            for _b in self._external_brain_names:
                 self._n_agents[_b] = len(s[0][_b].agents)
             return s[0]
         elif not self._loaded:
