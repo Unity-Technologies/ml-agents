@@ -171,12 +171,12 @@ public class CrawlerAgent : Agent {
 	/// <summary>
     /// Adds the raycast hit dist and relative pos to observations
     /// </summary>
-    void RaycastObservation(Vector3 dir, float maxDist)
+    void RaycastObservation(Vector3 pos, Vector3 dir, float maxDist)
     {
         RaycastHit hit;
         float dist = 0;
         Vector3 relativeHitPos = Vector3.zero;
-        if(Physics.Raycast(body.position, dir, out hit, maxDist))
+        if(Physics.Raycast(pos, dir, out hit, maxDist))
         {
             // print(hit.collider.tag);
             //if it's the ground
@@ -218,18 +218,31 @@ public class CrawlerAgent : Agent {
     {
         AddVectorObs(dirToTarget);
         // AddVectorObs(bodyParts[body].rb.rotation);
-        AddVectorObs(Vector3.Dot(dirToTarget.normalized, body.forward)); //are we facing the target?
-        AddVectorObs(Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized)); //are we moving towards or away from target?
+        // AddVectorObs(Vector3.Dot(dirToTarget.normalized, body.forward)); //are we facing the target?
+        // AddVectorObs(Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized)); //are we moving towards or away from target?
         
+        // Debug.DrawRay(leg0_lower.position, leg0_lower.transform.up, Color.red, 2);
+        // Debug.DrawRay(leg1_lower.position, leg1_lower.transform.up, Color.green, 2);
+        // Debug.DrawRay(leg2_lower.position, leg2_lower.transform.up, Color.blue, 2);
+        // Debug.DrawRay(leg3_lower.position, leg3_lower.transform.up, Color.yellow, 2);
         
-        // RaycastObservation(-body.up, 5);
-        // RaycastObservation(body.forward, 5);
-        RaycastObservationNonAlloc(body.up, 5);
-        RaycastObservationNonAlloc(-body.up, 5);
-        RaycastObservationNonAlloc(-body.right, 5);
-        RaycastObservationNonAlloc(body.right, 5);
-        RaycastObservationNonAlloc(body.forward, 5);
-        RaycastObservationNonAlloc(-body.forward, 5);
+        // RaycastObservation(body.position, -body.up, 5);
+        // RaycastObservation(body.position, body.forward, 5);
+
+        RaycastObservation(leg0_lower.position, leg0_lower.up, 5);
+        RaycastObservation(leg1_lower.position, leg1_lower.up, 5);
+        RaycastObservation(leg2_lower.position, leg2_lower.up, 5);
+        RaycastObservation(leg3_lower.position, leg3_lower.up, 5);
+
+
+
+
+        // RaycastObservationNonAlloc(body.up, 5);
+        // RaycastObservationNonAlloc(-body.up, 5);
+        // RaycastObservationNonAlloc(-body.right, 5);
+        // RaycastObservationNonAlloc(body.right, 5);
+        // RaycastObservationNonAlloc(body.forward, 5);
+        // RaycastObservationNonAlloc(-body.forward, 5);
         AddVectorObs(body.forward);
         AddVectorObs(body.up);
         foreach (var bodyPart in bodyParts.Values)
