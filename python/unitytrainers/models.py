@@ -56,14 +56,15 @@ class LearningModel(object):
         visual_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name)
         return visual_in
 
-    def create_vector_input(self):
+    def create_vector_input(self, name='vector_observation'):
         """
         Creates ops for vector observation input.
+        :param name: Name of the placeholder op.
         :param o_size: Size of stacked vector observation.
         :return:
         """
         if self.brain.vector_observation_space_type == "continuous":
-            self.vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32, name='vector_observation')
+            self.vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32, name=name)
             if self.normalize:
                 self.running_mean = tf.get_variable("running_mean", [self.o_size], trainable=False, dtype=tf.float32,
                                                     initializer=tf.zeros_initializer())
@@ -203,6 +204,7 @@ class LearningModel(object):
     def create_recurrent_encoder(input_state, memory_in, sequence_length, name='lstm'):
         """
         Builds a recurrent encoder for either state or observations (LSTM).
+        :param sequence_length: Length of sequence to unroll.
         :param input_state: The input tensor to the LSTM cell.
         :param memory_in: The input memory to the LSTM cell.
         :param name: The scope of the LSTM cell.
@@ -210,18 +212,16 @@ class LearningModel(object):
         s_size = input_state.get_shape().as_list()[1]
         m_size = memory_in.get_shape().as_list()[1]
         lstm_input_state = tf.reshape(input_state, shape=[-1, sequence_length, s_size])
-        memory_in = tf.reshape(memory_in[0, :], [-1, m_size])
+        memory_in = tf.reshape(memory_in[:, :], [-1, m_size])
         _half_point = int(m_size / 2)
         with tf.variable_scope(name):
             rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
             lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :_half_point], memory_in[:, _half_point:])
-            recurrent_state, lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, lstm_input_state,
-                                                                initial_state=lstm_vector_in,
-                                                                time_major=False,
-                                                                dtype=tf.float32)
+            recurrent_output, lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, lstm_input_state,
+                                                                 initial_state=lstm_vector_in)
 
-        recurrent_state = tf.reshape(recurrent_state, shape=[-1, _half_point])
-        return recurrent_state, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
+        recurrent_output = tf.reshape(recurrent_output, shape=[-1, _half_point])
+        return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     def create_dc_actor_critic(self, h_size, num_layers):
         """
@@ -297,6 +297,7 @@ class LearningModel(object):
         self.output_pre = mu + tf.sqrt(sigma_sq) * epsilon
         output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
         self.output = tf.identity(output_post, name='action')
+        self.selected_actions = tf.stop_gradient(output_post)
 
         # Compute probability of model output.
         a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output_pre) - mu, 2) / (2 * sigma_sq))

@@ -10,6 +10,7 @@ public class PyramidSwitch : MonoBehaviour
     private bool state;
     private GameObject area;
     private PyramidArea areaComponent;
+    private int pyramidIndex;
 
     public bool GetState()
     {
@@ -20,15 +21,13 @@ public class PyramidSwitch : MonoBehaviour
     {
         area = gameObject.transform.parent.gameObject;
         areaComponent = area.GetComponent<PyramidArea>();
-        Reset();
     }
 
-    public void Reset()
+    public void ResetSwitch(int spawnAreaIndex, int pyramidSpawnIndex)
     {
-        transform.position = new Vector3(Random.Range(-areaComponent.range, areaComponent.range), 
-                                 2f, Random.Range(-areaComponent.range, areaComponent.range)) 
-                             + area.transform.position;
+        areaComponent.PlaceObject(gameObject, spawnAreaIndex);
         state = false;
+        pyramidIndex = pyramidSpawnIndex;
         tag = "switchOff";
         transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         myButton.GetComponent<Renderer>().material = offMaterial;
@@ -40,7 +39,7 @@ public class PyramidSwitch : MonoBehaviour
         {
             myButton.GetComponent<Renderer>().material = onMaterial;
             state = true;
-            areaComponent.CreatePyramid(1);
+            areaComponent.CreatePyramid(1, pyramidIndex);
             tag = "switchOn";
         }
     }

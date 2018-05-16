@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PyramidAgent : Agent
 {
@@ -35,6 +38,7 @@ public class PyramidAgent : Agent
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
             AddVectorObs(switchLogic.GetState());
+            AddVectorObs(transform.InverseTransformDirection(agentRb.velocity));
         }
     }
 
@@ -78,14 +82,16 @@ public class PyramidAgent : Agent
 
     public override void AgentReset()
     {
-        agentRb.velocity = Vector3.zero;
-        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 
-                                         2f, Random.Range(-myArea.range, myArea.range)) 
-            + area.transform.position;
-        transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+        var enumerable = Enumerable.Range(0, 4).OrderBy(x => Guid.NewGuid()).Take(4);
+        var items = enumerable.ToArray();
         
-        switchLogic.Reset();
         myArea.CleanPyramidArea();
+        
+        agentRb.velocity = Vector3.zero;
+        myArea.PlaceObject(gameObject, items[0]);
+        transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+
+        switchLogic.ResetSwitch(items[1], items[2]);
     }
 
     private void OnCollisionEnter(Collision collision)

@@ -18,6 +18,8 @@ default:
     summary_freq: 1000
     use_recurrent: false
     use_curiosity: false
+    curiosity_strength: 0.01
+    encoding_size: 128
 
 BananaBrain:
     normalize: false
@@ -87,13 +89,14 @@ GoalieBrain:
 
 PyramidBrain:
     use_curiosity: true
+    encoding_size: 64
     time_horizon: 128
     batch_size: 128
-    buffer_size: 1024
+    buffer_size: 2048
     hidden_units: 256
     num_layers: 2
     beta: 1.0e-2
-    max_steps: 5.0e5
+    max_steps: 2.0e5
     num_epoch: 3
 
 VisualPyramidBrain:

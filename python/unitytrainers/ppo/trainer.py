@@ -30,7 +30,8 @@ class PPOTrainer(Trainer):
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
-                           'graph_scope', 'summary_path', 'memory_size', 'use_curiosity']
+                           'graph_scope', 'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
+                           'encoding_size']
 
         for k in self.param_keys:
             if k not in trainer_parameters:
@@ -67,7 +68,9 @@ class PPOTrainer(Trainer):
                                   use_recurrent=trainer_parameters['use_recurrent'],
                                   num_layers=int(trainer_parameters['num_layers']),
                                   m_size=self.m_size,
-                                  use_curiosity=bool(trainer_parameters['use_curiosity']))
+                                  use_curiosity=bool(trainer_parameters['use_curiosity']),
+                                  curiosity_strenght=float(trainer_parameters['curiosity_strength']),
+                                  encoding_size=float(trainer_parameters['encoding_size']))
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
@@ -180,16 +183,15 @@ class PPOTrainer(Trainer):
             run_list.append(self.model.output_pre)
         if self.use_recurrent:
             feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
+            if curr_brain_info.memories.shape[1] == 0:
+                curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
+            feed_dict[self.model.memory_in] = curr_brain_info.memories
+            run_list += [self.model.memory_out]
         if self.use_visual_obs:
             for i, _ in enumerate(curr_brain_info.visual_observations):
                 feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
         if self.use_vector_obs:
             feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
-        if self.use_recurrent:
-            if curr_brain_info.memories.shape[1] == 0:
-                curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
-            feed_dict[self.model.memory_in] = curr_brain_info.memories
-            run_list += [self.model.memory_out]
         if (self.is_training and self.is_continuous_observation and
                 self.use_vector_obs and self.trainer_parameters['normalize']):
             new_mean, new_variance = self.running_average(
@@ -390,7 +392,7 @@ class PPOTrainer(Trainer):
         """
         num_epoch = self.trainer_parameters['num_epoch']
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
-        total_v, total_p, total_f, total_i = [], [], [], []
+        value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
@@ -442,7 +444,7 @@ class PPOTrainer(Trainer):
                             (_batch, _seq, _w, _h, _c) = _obs.shape
                             feed_dict[self.model.next_visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
                 if self.use_recurrent:
-                    mem_in = np.array(_buffer['memory'][start:end])[0, :, :]
+                    mem_in = np.array(_buffer['memory'][start:end])[:, 0, :]
                     feed_dict[self.model.memory_in] = mem_in
 
                 run_list = [self.model.value_loss, self.model.policy_loss, self.model.update_batch]
@@ -450,16 +452,16 @@ class PPOTrainer(Trainer):
                     run_list.extend([self.model.forward_loss, self.model.inverse_loss])
                 values = self.sess.run(run_list, feed_dict=feed_dict)
                 run_out = dict(zip(run_list, values))
-                total_v.append(run_out[self.model.value_loss])
-                total_p.append(np.abs(run_out[self.model.policy_loss]))
+                value_total.append(run_out[self.model.value_loss])
+                policy_total.append(np.abs(run_out[self.model.policy_loss]))
                 if self.use_curiosity:
-                    total_i.append(run_out[self.model.inverse_loss])
-                    total_f.append(run_out[self.model.forward_loss])
-        self.stats['value_loss'].append(np.mean(total_v))
-        self.stats['policy_loss'].append(np.mean(total_p))
+                    inverse_total.append(run_out[self.model.inverse_loss])
+                    forward_total.append(run_out[self.model.forward_loss])
+        self.stats['value_loss'].append(np.mean(value_total))
+        self.stats['policy_loss'].append(np.mean(policy_total))
         if self.use_curiosity:
-            self.stats['forward_loss'].append(np.mean(total_f))
-            self.stats['inverse_loss'].append(np.mean(total_i))
+            self.stats['forward_loss'].append(np.mean(forward_total))
+            self.stats['inverse_loss'].append(np.mean(inverse_total))
         self.training_buffer.reset_update_buffer()
 
     def write_summary(self, lesson_number):

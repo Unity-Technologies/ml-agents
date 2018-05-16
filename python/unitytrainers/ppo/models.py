@@ -8,7 +8,8 @@ logger = logging.getLogger("unityagents")
 
 class PPOModel(LearningModel):
     def __init__(self, brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6,
-                 normalize=False, use_recurrent=False, num_layers=2, m_size=None, use_curiosity=False):
+                 normalize=False, use_recurrent=False, num_layers=2, m_size=None, use_curiosity=False,
+                 curiosity_strenght=0.01, encoding_size=128):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -35,6 +36,8 @@ class PPOModel(LearningModel):
         else:
             self.create_dc_actor_critic(h_size, num_layers)
         if self.use_curiosity:
+            self.encoding_size = encoding_size
+            self.curiosity_strength = curiosity_strenght
             encoded_state, encoded_next_state = self.create_curiosity_encoders()
             self.create_inverse_model(encoded_state, encoded_next_state)
             self.create_forward_model(encoded_state, encoded_next_state)
@@ -56,7 +59,6 @@ class PPOModel(LearningModel):
         See https://arxiv.org/abs/1705.05363 for more details.
         :return: current and future state encoder tensors.
         """
-        inverse_input_list = []
         encoded_state_list = []
         encoded_next_state_list = []
 
@@ -71,17 +73,15 @@ class PPOModel(LearningModel):
                 self.next_visual_in.append(next_visual_input)
 
                 # Create the encoder ops for current and next visual input. Not that these encoders are siamese.
-                encoded_visual = self.create_visual_observation_encoder(self.visual_in[i], 128,
+                encoded_visual = self.create_visual_observation_encoder(self.visual_in[i], self.encoding_size,
                                                                         self.swish, 1, "visual_obs_encoder", False)
-                encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i], 128,
+                encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i], self.encoding_size,
                                                                              self.swish, 1, "visual_obs_encoder", True)
                 visual_encoders.append(encoded_visual)
                 next_visual_encoders.append(encoded_next_visual)
 
             hidden_visual = tf.concat(visual_encoders, axis=1)
             hidden_next_visual = tf.concat(next_visual_encoders, axis=1)
-            inverse_input_list.append(hidden_visual)
-            inverse_input_list.append(hidden_next_visual)
             encoded_state_list.append(hidden_visual)
             encoded_next_state_list.append(hidden_next_visual)
 
@@ -91,13 +91,12 @@ class PPOModel(LearningModel):
                                                   name='next_vector_observation')
 
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
-            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in, 128, self.swish, 2,
-                                                                            "vector_obs_encoder", False)
-            encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_obs, 128, self.swish,
+            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in, self.encoding_size,
+                                                                            self.swish, 2, "vector_obs_encoder", False)
+            encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_obs,
+                                                                                 self.encoding_size, self.swish,
                                                                                  2, "vector_obs_encoder", True)
 
-            inverse_input_list.append(encoded_vector_obs)
-            inverse_input_list.append(encoded_next_vector_obs)
             encoded_state_list.append(encoded_vector_obs)
             encoded_next_state_list.append(encoded_next_vector_obs)
 
@@ -108,31 +107,34 @@ class PPOModel(LearningModel):
     def create_inverse_model(self, encoded_state, encoded_next_state):
         """
         Creates inverse model TensorFlow ops for Curiosity module.
+        Predicts action taken given current and future encoded states.
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
+        hidden = tf.layers.dense(combined_input, 128, activation=self.swish)
         if self.brain.vector_action_space_type == "continuous":
-            pred_action = tf.layers.dense(combined_input, self.a_size, activation=None)
+            pred_action = tf.layers.dense(hidden, self.a_size, activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
             self.inverse_loss = tf.reduce_mean(squared_difference)
         else:
-            pred_action = tf.layers.dense(combined_input, self.a_size, activation=tf.nn.softmax)
+            pred_action = tf.layers.dense(hidden, self.a_size, activation=tf.nn.softmax)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(cross_entropy)
 
     def create_forward_model(self, encoded_state, encoded_next_state):
         """
         Creates forward model TensorFlow ops for Curiosity module.
+        Predicts encoded future state based on encoded current state and given action.
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
         hidden = tf.layers.dense(combined_input, 128, activation=self.swish)
-        pred_next_state = tf.layers.dense(hidden, 128, activation=None)
+        pred_next_state = tf.layers.dense(hidden, self.encoding_size, activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
-        self.intrinsic_reward = 0.01 * squared_difference
+        self.intrinsic_reward = self.curiosity_strength * squared_difference
         self.forward_loss = tf.reduce_mean(squared_difference)
 
     def create_ppo_optimizer(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
