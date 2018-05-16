@@ -18,7 +18,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
     public override void AgentAction(float[] vectorAction, string textAction)
 	{
         Actions = vectorAction
-            .Select(x=>Mathf.Clamp(x, -3, 3f)/3)
+            .Select(x=>x)
             .ToList();
         //KillJointPower(new []{"shoulder", "elbow"}); // HACK
         // if (ShowMonitor)
@@ -50,7 +50,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         base.AgentReset();
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_OaiHumanoidRun145;
+        StepRewardFunction = StepReward_OaiHumanoidRun150;
         TerminateFunction = Terminate_OnNonFootHitTerrain;
         ObservationsFunction = Observations_Humanoid;
 
@@ -130,7 +130,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         return effort;            
     }
     
-    float StepReward_OaiHumanoidRun145()
+    float StepReward_OaiHumanoidRun150()
     {
         float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);
@@ -152,7 +152,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         float phaseBonus = GetPhaseBonus();
         var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
         float effort = GetEffort(new string []{"right_hip_y", "right_knee", "left_hip_y", "left_knee"});
-        var effortPenality = 0.015f * (float)effort;
+        var effortPenality = 0.05f * (float)effort;
         var reward = velocity 
             + uprightBonus
             + forwardBonus
