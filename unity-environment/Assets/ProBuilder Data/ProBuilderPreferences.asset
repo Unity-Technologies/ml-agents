@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Name: ProBuilderPreferences
   m_EditorClassIdentifier: 
   m_Bool_keys: []
-  m_Int_keys: []
-  m_Float_keys: []
+  m_Int_keys:
+  - pbHandleAlignment
+  m_Float_keys:
+  - pbEditorScroll.x
+  - pbEditorScroll.y
   m_String_keys: []
   m_Color_keys: []
   m_Material_keys: []
   m_Bool_values: 
-  m_Int_values: 
-  m_Float_values: []
+  m_Int_values: 00000000
+  m_Float_values:
+  - 0
+  - 0
   m_String_values: []
   m_Color_values: []
   m_Material_values: []

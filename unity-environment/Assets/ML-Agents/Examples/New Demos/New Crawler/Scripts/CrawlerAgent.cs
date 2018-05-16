@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CrawlerAgent : Agent {
-    [Header("Specific to Walker")] 
-    public Vector3 goalDirection;
+    [Header("Body Parts")] 
+    [Space(10)] 
+
     public Transform body;
     public Transform leg0_upper;
     public Transform leg0_lower;
@@ -15,21 +16,34 @@ public class CrawlerAgent : Agent {
     public Transform leg3_upper;
     public Transform leg3_lower;
     public Dictionary<Transform, BodyPart> bodyParts = new Dictionary<Transform, BodyPart>();
-	public Vector3 dirToTarget;
-	CrawlerAcademy academy;
-	public float movingTowardsDot;
-	public float facingDot;
-	// public float prevDistSqrMag;
+
+
+    [Header("Joint Settings")] 
+    [Space(10)] 
 	public float maxJointSpring;
 	public float jointDampen;
 	public float maxJointForceLimit;
-	public Vector3 footCenterOfMassShift;
-	// public bool useMoveTowardTargetRewardFunction;
+	public Vector3 footCenterOfMassShift; //used to shift the centerOfMass on the feet so the agent isn't so top heavy
+	Vector3 dirToTarget;
+	CrawlerAcademy academy;
+	float movingTowardsDot;
+	float facingDot;
 
-	// enum RewardFunctions
-	// {
-	// 	walkTowardsDir
-	// }
+
+    [Header("Reward Functions To Use")] 
+    [Space(10)] 
+
+    public bool rewardMovingTowardsTarget; //agent should move towards target
+    public bool rewardFacingTarget; //agent should face the target
+    public bool rewardUseTimePenalty; //hurry up
+
+
+
+    [Header("Reward Functions To Use")] 
+    [Space(10)] 
+    public LayerMask groundLayer;
+    RaycastHit[] raycastHitResults = new RaycastHit[1];
+
 
     /// <summary>
     /// Used to store relevant information for acting and learning for each body part in agent.
@@ -41,7 +55,7 @@ public class CrawlerAgent : Agent {
         public Rigidbody rb;
         public Vector3 startingPos;
         public Quaternion startingRot;
-        public GroundContact groundContact;
+        public CrawlerContact groundContact;
 		public CrawlerAgent agent;
 
         /// <summary>
@@ -73,12 +87,9 @@ public class CrawlerAgent : Agent {
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
             var jd = new JointDrive
             {
-                // positionSpring = ((strength + 1f) * 0.5f) * 10000f,
                 positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-				// positionDamper = agent.maxJointSpring * .075f, //chosen via experimentation
 				positionDamper = agent.jointDampen,
                 maximumForce = agent.maxJointForceLimit
-                // maximumForce = 250000f
             };
             joint.slerpDrive = jd;
         }
@@ -99,7 +110,7 @@ public class CrawlerAgent : Agent {
         };
 		bp.rb.maxAngularVelocity = 100;
         bodyParts.Add(t, bp);
-        bp.groundContact = t.GetComponent<GroundContact>();
+        bp.groundContact = t.GetComponent<CrawlerContact>();
 		bp.agent = this;
     }
     public override void InitializeAgent()
@@ -136,62 +147,111 @@ public class CrawlerAgent : Agent {
     {
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
-        // bp.groundContact.touchingGround = false;
 
         AddVectorObs(rb.velocity);
         AddVectorObs(rb.angularVelocity);
         Vector3 localPosRelToBody = body.InverseTransformPoint(rb.position);
         AddVectorObs(localPosRelToBody);
 
-        // if (bp.joint && (bp.rb.transform != handL && bp.rb.transform != handR))
-        if (bp.joint)
+        // if (bp.joint)
+        // {
+        //     AddVectorObs(GetJointRotation(bp.joint)); // Get the joint rotation
+        // }
+        if(bp.rb.transform != body)
         {
-            var jointRotation = GetJointRotation(bp.joint);
-            AddVectorObs(jointRotation); // Get the joint rotation
+            AddVectorObs(Quaternion.FromToRotation(body.forward, bp.rb.transform.forward));
         }
     }
 
-	/// <summary>
-    /// Loop over body parts to add them to observation.
-    /// </summary>
-    public override void CollectObservations()
+    void Update()
     {
 		dirToTarget = academy.target.position - bodyParts[body].rb.position;
-		// dirToTarget.Normalize();
+    }
+
+	/// <summary>
+    /// Adds the raycast hit dist and relative pos to observations
+    /// </summary>
+    void RaycastObservation(Vector3 dir, float maxDist)
+    {
+        RaycastHit hit;
+        float dist = 0;
+        Vector3 relativeHitPos = Vector3.zero;
+        if(Physics.Raycast(body.position, dir, out hit, maxDist))
+        {
+            // print(hit.collider.tag);
+            //if it's the ground
+            if(hit.collider.CompareTag("ground"))
+            {
+                dist = hit.distance/maxDist;
+                relativeHitPos = body.InverseTransformPoint(hit.point);
+            }
+        }
+        AddVectorObs(dist);
+        AddVectorObs(relativeHitPos);
+    }
+
+
+
+	/// <summary>
+    /// Add hit dist to the ground and relative hit position. NonAlloc so it doesn't generate garbage
+    /// </summary>
+    void RaycastObservationNonAlloc(Vector3 dir, float maxDist)
+    {
+        float dist = 0;
+        Vector3 relativeHitPos = Vector3.zero;
+        Ray ray = new Ray(body.position, dir);
+
+        if(Physics.RaycastNonAlloc(ray, raycastHitResults, maxDist, groundLayer, QueryTriggerInteraction.Ignore) > 0)
+        {
+            // print(raycastHitResults[0].collider.tag);
+            dist = raycastHitResults[0].distance/maxDist;
+            relativeHitPos = body.InverseTransformPoint(raycastHitResults[0].point);
+            // print("dist: " + dist);
+            // print("relHitPos: " + relativeHitPos);
+        }
+        AddVectorObs(dist);
+        AddVectorObs(relativeHitPos);
+    }
+
+
+    public override void CollectObservations()
+    {
         AddVectorObs(dirToTarget);
-        AddVectorObs(bodyParts[body].rb.rotation);
-		// print(bodyParts[body].rb.rotation);
+        // AddVectorObs(bodyParts[body].rb.rotation);
         AddVectorObs(Vector3.Dot(dirToTarget.normalized, body.forward)); //are we facing the target?
         AddVectorObs(Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized)); //are we moving towards or away from target?
-        // AddVectorObs(body.position.y);
-        // AddVectorObs(body.forward);
-        // AddVectorObs(body.up);
-
-        // AddVectorObs(goalDirection);
-        // AddVectorObs(body.forward);
-        // AddVectorObs(body.up);
-		
+        
+        
+        // RaycastObservation(-body.up, 5);
+        // RaycastObservation(body.forward, 5);
+        RaycastObservationNonAlloc(body.up, 5);
+        RaycastObservationNonAlloc(-body.up, 5);
+        RaycastObservationNonAlloc(-body.right, 5);
+        RaycastObservationNonAlloc(body.right, 5);
+        RaycastObservationNonAlloc(body.forward, 5);
+        RaycastObservationNonAlloc(-body.forward, 5);
+        AddVectorObs(body.forward);
+        AddVectorObs(body.up);
         foreach (var bodyPart in bodyParts.Values)
         {
             CollectObservationBodyPart(bodyPart);
         }
     }
 
+	/// <summary>
+    /// Agent touched the target
+    /// </summary>
 	public void TouchedTarget(float impactForce)
 	{
-		AddReward(.01f * impactForce);
-		// AddReward(1);
+		AddReward(.01f * impactForce); //higher impact should be rewarded
 		academy.GetRandomTargetPos();
-
 		Done();
 	}
 
 	 public override void AgentAction(float[] vectorAction, string textAction)
     {
 
-		// Debug.DrawRay(bodyParts[leg0_lower].rb.worldCenterOfMass, Vector3.up, Color.red);
         // Apply action to all relevant body parts. 
-        
         bodyParts[leg0_upper].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], 0, vectorAction[2]);
         bodyParts[leg1_upper].SetNormalizedTargetRotation(vectorAction[3], vectorAction[4], 0, vectorAction[5]);
         bodyParts[leg2_upper].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0, vectorAction[8]);
@@ -202,52 +262,40 @@ public class CrawlerAgent : Agent {
         bodyParts[leg3_lower].SetNormalizedTargetRotation(vectorAction[18], 0, 0, vectorAction[19]);
 
         // Set reward for this step according to mixture of the following elements.
-        // a. Velocity alignment with goal direction.
-        // b. Rotation alignment with goal direction.
-        // c. Encourage head height.
-        // d. Discourage head movement.
-		// movingTowardsDot = Vector3.Dot(dirToTarget, bodyParts[body].rb.velocity);
-		// movingTowardsDot = Vector3.Dot(dirToTarget, bodyParts[body].rb.velocity);
-		// movingTowardsDot = Vector3.Dot(dirToTarget.normalized, bodyParts[body].rb.velocity.normalized);
-
-
-		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
-		// facingDot = Vector3.Dot(dirToTarget.normalized, body.forward);
-		// float currentSqrMag = dirToTarget.sqrMagnitude;
-		// float closerReward = 0;
-		// if(currentSqrMag < prevDistSqrMag) //getting closer
-		// {
-		// 	closerReward = .03f;
-		// 	// AddReward(.03f);
-		// 	// print("closer");
-		// }
-		// else
-		// {
-		// 	closerReward = -.03f;
-		// 	// AddReward(-.03f);
-		// }
-
-        AddReward(
-            + 0.03f * movingTowardsDot
-			- 0.001f //hurry up
-            // + 0.01f * facingDot
-			// + closerReward
-            // + 0.03f * Vector3.Dot(goalDirection, bodyParts[body].rb.velocity)
-            // + 0.01f * Vector3.Dot(goalDirection, body.forward)
-            // + 0.01f * (head.position.y - hips.position.y)
-            // - 0.01f * Vector3.Distance(bodyParts[head].rb.velocity, bodyParts[hips].rb.velocity)
-        );
-		// prevDistSqrMag = currentSqrMag;
-		// print(this.gameObject.name + " reward: " + GetReward());
+        if(rewardMovingTowardsTarget){RewardFunctionMovingTowards();}
+        if(rewardFacingTarget){RewardFunctionFacingTarget();}
+        if(rewardUseTimePenalty){RewardFunctionTimePenalty();}
     }
 	
+    //Reward moving towards target
+    void RewardFunctionMovingTowards()
+    {
+		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
+        AddReward(0.03f * movingTowardsDot);
+    }
+
+    //Reward facing target
+    void RewardFunctionFacingTarget()
+    {
+		facingDot = Vector3.Dot(dirToTarget.normalized, body.forward);
+        AddReward(0.01f * facingDot);
+    }
+
+    //Time penalty
+    void RewardFunctionTimePenalty()
+    {
+        AddReward(- 0.001f);
+    }
 
 	/// <summary>
     /// Loop over body parts and reset them to initial conditions.
     /// </summary>
     public override void AgentReset()
     {
-        transform.rotation = Quaternion.LookRotation(goalDirection);
+        if(dirToTarget != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(dirToTarget);
+        }
         
         foreach (var bodyPart in bodyParts.Values)
         {
