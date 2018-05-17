@@ -36,7 +36,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1197355327420184}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MujocoXml: {fileID: 4900000, guid: fc5e043384abb4ab5b65c64d90d905ae, type: 3}
-  Material: {fileID: 2100000, guid: 9013613e105254620b29c7301046af30, type: 2}
+  Material: {fileID: 2100000, guid: 67cc1886f81484ab4ae518045966365e, type: 2}
   PhysicMaterial: {fileID: 13400000, guid: 38b7ea504254a4fa986e42a7bb16c8df, type: 2}
   DefaultCollisionLayer:
     serializedVersion: 2
@@ -137,7 +137,7 @@ MonoBehaviour:
   NonFootHitTerrain: 0
   Low: []
   High: []
-  ShowMonitor: 1
+  ShowMonitor: 0
   Actions: []
   LeftMin: 0
   LeftMax: 0
