@@ -15,6 +15,8 @@ public class CrawlerAcademy : Academy
         {
             GetRandomTargetPos();
         }
+        Physics.defaultSolverIterations = 6;
+        Physics.defaultSolverVelocityIterations = 6;
     }
 
     /// <summary>

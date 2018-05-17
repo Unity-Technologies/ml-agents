@@ -172,6 +172,9 @@ public class CrawlerAgent : Agent {
 
     void Update()
     {
+		// dirToTarget = body.InverseTransformPoint(academy.target.position) - bodyParts[body].rb.position;
+		// Vector3 worldDir = academy.target.position - bodyParts[body].rb.position;
+		// dirToTarget = body.InverseTransformDirection(worldDir);
 		dirToTarget = academy.target.position - bodyParts[body].rb.position;
 
         if(useFootGroundedVisualization)
@@ -298,7 +301,11 @@ public class CrawlerAgent : Agent {
     //Reward moving towards target
     void RewardFunctionMovingTowards()
     {
-		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
+        // print(dirToTarget);
+        // print( Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget));
+		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
+		// movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
+		// movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget); //don't normalize vel. the faster it goes the more reward it should get
         AddReward(0.03f * movingTowardsDot);
     }
 
