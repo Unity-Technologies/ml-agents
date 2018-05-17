@@ -56,11 +56,8 @@ Unity Assets。`python` 目录包含训练代码。
 
 ## Unity 包
 
+<<<<<<< develop
 您可以通过 Unity 包的形式下载TensorflowSharp 插件（[AWS S3链接](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)，[百度盘链接](https://pan.baidu.com/s/1s0mJN8lvuxTcYbs2kL2FqA)）
-
-## 帮助
-
-如果您在安装 ML-Agents 时遇到任何问题，请
-[提交问题](https://github.com/Unity-Technologies/ml-agents/issues)，并在提交时
-提供有关操作系统、Python 版本和相关错误消息（如可能）的
-信息。
+=======
+您可以通过 Unity 包的形式下载TensorFlowSharp 插件（[AWS S3链接](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)，[百度盘链接](https://pan.baidu.com/s/1s0mJN8lvuxTcYbs2kL2FqA)）
+>>>>>>> develop
