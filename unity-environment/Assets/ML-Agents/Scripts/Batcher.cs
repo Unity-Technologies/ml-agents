@@ -65,13 +65,23 @@ namespace MLAgents
             CommunicatorObjects.UnityRLInitializationOutput academyParameters)
         {
             CommunicatorObjects.UnityInput input;
-            var initializationInput =
-                m_communicator.Initialize(
-                    new CommunicatorObjects.UnityOutput
-                    {
-                        RlInitializationOutput = academyParameters
-                    },
-                    out input);
+            var initializationInput = new CommunicatorObjects.UnityInput();
+            try
+            {
+                initializationInput = m_communicator.Initialize(
+                        new CommunicatorObjects.UnityOutput
+                        {
+                            RlInitializationOutput = academyParameters
+                        },
+                        out input);
+            }
+            catch
+            {
+                throw new UnityAgentsException(
+                    "The Communicator was unable to connect. Please make sure the External " +
+                    "process is ready to accept communication with Unity.");
+            }
+
             var firstRlInput = input.RlInput;
             m_command = firstRlInput.Command;
             m_environmentParameters = firstRlInput.EnvironmentParameters;
