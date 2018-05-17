@@ -176,18 +176,18 @@ class LearningModel(object):
                 for j in range(brain.number_visual_observations):
                     encoded_visual = self.create_visual_observation_encoder(self.visual_in[j], h_size,
                                                                             activation_fn, num_layers,
-                                                                            "main_graph", False)
+                                                                            "main_graph_{}".format(i), False)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
                 if brain.vector_observation_space_type == "continuous":
                     hidden_state = self.create_continuous_observation_encoder(vector_observation_input,
                                                                               h_size, activation_fn, num_layers,
-                                                                              "main_graph", False)
+                                                                              "main_graph_{}".format(i), False)
                 else:
                     hidden_state = self.create_discrete_observation_encoder(vector_observation_input, self.o_size,
                                                                             h_size, activation_fn, num_layers,
-                                                                            "main_graph", False)
+                                                                            "main_graph_{}".format(i), False)
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
             elif hidden_state is None and hidden_visual is not None:
