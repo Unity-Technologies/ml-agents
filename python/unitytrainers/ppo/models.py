@@ -9,7 +9,7 @@ logger = logging.getLogger("unityagents")
 class PPOModel(LearningModel):
     def __init__(self, brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6,
                  normalize=False, use_recurrent=False, num_layers=2, m_size=None, use_curiosity=False,
-                 curiosity_strenght=0.01, encoding_size=128):
+                 curiosity_strength=0.01, encoding_size=128):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -37,7 +37,7 @@ class PPOModel(LearningModel):
             self.create_dc_actor_critic(h_size, num_layers)
         if self.use_curiosity:
             self.encoding_size = encoding_size
-            self.curiosity_strength = curiosity_strenght
+            self.curiosity_strength = curiosity_strength
             encoded_state, encoded_next_state = self.create_curiosity_encoders()
             self.create_inverse_model(encoded_state, encoded_next_state)
             self.create_forward_model(encoded_state, encoded_next_state)
@@ -112,7 +112,7 @@ class PPOModel(LearningModel):
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
-        hidden = tf.layers.dense(combined_input, 128, activation=self.swish)
+        hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
         if self.brain.vector_action_space_type == "continuous":
             pred_action = tf.layers.dense(hidden, self.a_size, activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
@@ -130,7 +130,7 @@ class PPOModel(LearningModel):
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
-        hidden = tf.layers.dense(combined_input, 128, activation=self.swish)
+        hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
         pred_next_state = tf.layers.dense(hidden, self.encoding_size, activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)

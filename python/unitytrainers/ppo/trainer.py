@@ -69,7 +69,7 @@ class PPOTrainer(Trainer):
                                   num_layers=int(trainer_parameters['num_layers']),
                                   m_size=self.m_size,
                                   use_curiosity=bool(trainer_parameters['use_curiosity']),
-                                  curiosity_strenght=float(trainer_parameters['curiosity_strength']),
+                                  curiosity_strength=float(trainer_parameters['curiosity_strength']),
                                   encoding_size=float(trainer_parameters['encoding_size']))
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
