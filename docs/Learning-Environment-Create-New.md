@@ -310,8 +310,8 @@ Finally, to punish the agent for falling off the platform, assign a large negati
 // Fell off platform
 if (this.transform.position.y < -1.0)
 {
-    Done();
     AddReward(-1.0f);
+    Done();
 }
 ```
 
