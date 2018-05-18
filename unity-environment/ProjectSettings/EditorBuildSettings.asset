@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/ML-Agents/Examples/New Demos/New Crawler/Crawler 1 - Static Target.unity
     guid: d9a4e7d08037d49c895555d4fe344764
-  - enabled: 1
+  - enabled: 0
     path: Assets/ML-Agents/Examples/New Demos/New Crawler/Crawler 2 - Dynamic Target.unity
     guid: c5041147e34b94e0298a22ccf115f509
   m_configObjects: {}

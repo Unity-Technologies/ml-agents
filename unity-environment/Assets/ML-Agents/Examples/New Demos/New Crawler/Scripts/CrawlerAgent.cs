@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CrawlerAgent : Agent {
+    [Header("Target To Walk Towards")] 
+    [Space(10)] 
+    public Transform target;
+    public bool respawnTargetWhenTouched;
+    public bool randomTargetSpawnPos;
+    public float targetSpawnRadius;
+
+
+
     [Header("Body Parts")] 
     [Space(10)] 
 
@@ -138,6 +147,9 @@ public class CrawlerAgent : Agent {
 		bodyParts[leg3_lower].rb.centerOfMass = footCenterOfMassShift;
     }
 
+
+
+
     /// <summary>
     /// Obtains joint rotation (in Quaternion) from joint. 
     /// </summary>
@@ -175,7 +187,7 @@ public class CrawlerAgent : Agent {
 		// dirToTarget = body.InverseTransformPoint(academy.target.position) - bodyParts[body].rb.position;
 		// Vector3 worldDir = academy.target.position - bodyParts[body].rb.position;
 		// dirToTarget = body.InverseTransformDirection(worldDir);
-		dirToTarget = academy.target.position - bodyParts[body].rb.position;
+		dirToTarget = target.position - bodyParts[body].rb.position;
 
         if(useFootGroundedVisualization)
         {
@@ -234,7 +246,8 @@ public class CrawlerAgent : Agent {
 
     public override void CollectObservations()
     {
-        AddVectorObs(dirToTarget);
+        // AddVectorObs(dirToTarget);
+        AddVectorObs(dirToTarget.normalized);
         // AddVectorObs(bodyParts[body].rb.rotation);
         // AddVectorObs(Vector3.Dot(dirToTarget.normalized, body.forward)); //are we facing the target?
         // AddVectorObs(Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized)); //are we moving towards or away from target?
@@ -275,9 +288,26 @@ public class CrawlerAgent : Agent {
 	public void TouchedTarget(float impactForce)
 	{
 		AddReward(.01f * impactForce); //higher impact should be rewarded
-		academy.GetRandomTargetPos();
+        if(respawnTargetWhenTouched)
+        {
+		    GetRandomTargetPos();
+        }
 		Done();
 	}
+
+    /// <summary>
+    /// Moves target to a random position within specified radius.
+    /// </summary>
+    /// <returns>
+    /// Move target to random position.
+    /// </returns>
+    public void GetRandomTargetPos()
+    {
+        Vector3 newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
+		newTargetPos.y = 5;
+		target.position = newTargetPos;
+    }
+
 
 	 public override void AgentAction(float[] vectorAction, string textAction)
     {
@@ -303,8 +333,8 @@ public class CrawlerAgent : Agent {
     {
         // print(dirToTarget);
         // print( Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget));
-		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
-		// movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
+		// movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
+		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); //don't normalize vel. the faster it goes the more reward it should get
 		// movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget); //don't normalize vel. the faster it goes the more reward it should get
         AddReward(0.03f * movingTowardsDot);
     }
