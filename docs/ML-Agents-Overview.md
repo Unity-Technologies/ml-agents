@@ -322,7 +322,7 @@ in this mode, the Brain type during training is set to Player and all the
 actions performed with the controller (in addition to the agent observations)
 will be recorded and sent to the Python API. The imitation learning algorithm
 will then use these pairs of observations and actions from the human player
-to learn a policy.
+to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
 
 The [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers this 
 training mode with the **Banana Collector** sample environment.
@@ -435,6 +435,11 @@ Amazon Web Services (AWS) machines, we provide a
 [guide](Training-on-Amazon-Web-Service.md)
 on how to set-up EC2 instances in addition to a public pre-configured Amazon 
 Machine Image (AMI).
+
+* **Cloud Training on Microsoft Azure** - To facilitate using ML-Agents on
+Azure machines, we provide a 
+[guide](Training-on-Microsoft-Azure.md)
+on how to set-up virtual machine instances in addition to a pre-configured data science image.
 
 ## Summary and Next Steps
 

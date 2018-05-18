@@ -419,6 +419,16 @@ Python 或 TensorFlow 的情况下设置 ML-Agents，
 让您了解如何设置 EC2 实例以及公共的预配置 Amazon 
 Machine Image (AMI)。
 
+* **Microsoft Azure 上的云训练** - 为了便于在 Microsoft Azure 
+机器上使用 ML-Agents，我们提供了一份
+[指南](/docs/Training-on-Microsoft-Azure.md)
+让您了解如何设置 virtual machine instance 实例以及公共的预配置 Data Science VM。
+
+* **Cloud Training on Microsoft Azure** - To facilitate using ML-Agents on
+Azure machines, we provide a 
+[guide](Training-on-Microsoft-Azure.md)
+on how to set-up virtual machine instances in addition to a pre-configured data science image.
+
 ## 总结和后续步骤
 
 简要总结一下：ML-Agents 使 Unity 中构建的游戏和模拟环境

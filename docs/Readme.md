@@ -31,6 +31,7 @@
  * [Training with Imitation Learning](Training-Imitation-Learning.md)
  * [Training with LSTM](Feature-Memory.md)
  * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
+ * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
  * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Help
