@@ -15,7 +15,6 @@ namespace MujocoUnity
             Collider myCollider = GetComponent<Collider>();
             if (myCollider != null)
                 Physics.IgnoreCollision(myCollider, other.collider);
-            print ($"this={this.gameObject.name} other={other.gameObject.name} Parent={Parent.name}");
         }        
     }
 }
