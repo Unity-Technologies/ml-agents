@@ -1,8 +1,8 @@
-# Unsing an Environment Executable
+# Using an Environment Executable
 
-This section will help you create and use built environments rather than the editor to interact with an environment. Using an executable has some advantages over using the editor : 
+This section will help you create and use built environments rather than the Editor to interact with an environment. Using an executable has some advantages over using the Editor : 
 
- * You can exchange executable with other peoples without having to share your entire repository.
+ * You can exchange executable with other people without having to share your entire repository.
  * You can put your executable on a remote machine for faster training.
  * You can use `Headles` mode for faster training.
  * You can keep using the Unity Editor for other tasks while the agents are training.

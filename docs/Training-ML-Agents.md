@@ -19,7 +19,7 @@ The basic command for training is:
     python3 learn.py (<env_name>) --run-id=<run-identifier> --train
 
 where 
- * `<env_name>` is the name (including path) of your Unity executable containing the agents to be trained. If `<env_name>` is not passed, the training will happen in the editor. Press the :arrow_forward: button in Unity when the message _"Ready to connect with the Editor"_ is displayed on the screen.
+ * `<env_name>` is the name (including path) of your Unity executable containing the agents to be trained. If `<env_name>` is not passed, the training will happen in the Editor. Press the :arrow_forward: button in Unity when the message _"Ready to connect with the Editor"_ is displayed on the screen.
  * `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
 For example, suppose you have a project in Unity named "CatsOnBicycles" which contains agents ready to train. To perform the training:

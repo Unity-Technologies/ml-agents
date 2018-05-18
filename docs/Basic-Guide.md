@@ -73,9 +73,9 @@ More information and documentation is provided in the
 Where:
 - `<run-identifier>` is a string used to separate the results of different training runs
 - And the `--train` tells learn.py to run a training session (rather than inference)
-5. When the message _"Ready to connect with the Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the editor.
+5. When the message _"Ready to connect with the Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
 
-**Note**: Alternatively, you can use an executable rather than the editor to perform training. Please refer to [this page](Learning-Environment-Executable.md) for instructions on how to build and use an executable.
+**Note**: Alternatively, you can use an executable rather than the Editor to perform training. Please refer to [this page](Learning-Environment-Executable.md) for instructions on how to build and use an executable.
 
 ![Training command example](images/training-command-example.png)
 
@@ -86,7 +86,7 @@ If the learn.py runs correctly and starts training, you should see something lik
 ![Training running](images/training-running.png)
 
 You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below, which is similar to the steps described [above](#play-an-example-environment-using-pretrained-model). 
-**Note**: When using in editor training, <env_name> is replaced with `editor_<academy_name>`. When using an executable to train, <env_name> is the name of the executable.
+**Note**: When using in Editor training, <env_name> is replaced with `editor_<academy_name>`. When using an executable to train, <env_name> is the name of the executable.
 
 1. Move your model file into 
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
@@ -95,7 +95,7 @@ You can press Ctrl+C to stop the training, and your trained model will be at `ml
 4. Change the **Type of Brain** to **Internal**.
 5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of the Editor
 to the **Graph Model** placeholder in the **Ball3DBrain** inspector window.
-6. Press the :arrow_forward: button at the top of the editor.
+6. Press the :arrow_forward: button at the top of the Editor.
 
 ## Next Steps
 
