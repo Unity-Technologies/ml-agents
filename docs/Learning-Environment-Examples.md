@@ -83,7 +83,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
-* Benchmark Mean Reward: 0
+* Benchmark Mean Reward: 2.5
 
 ## Push Block
 
@@ -189,7 +189,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
     * Visual Observations (Optional): First-person view for the agent.
 * Reset Parameters: None
-* Benchmark Mean Reward: 0.4
+* Benchmark Mean Reward: 0.7
 
 ## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
 
