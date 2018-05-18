@@ -63,10 +63,6 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         BodyParts["left_uarm"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="left_uarm1");
         BodyParts["right_uarm"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="right_uarm1");
         
-        // handle overlapping objects
-        Physics.IgnoreCollision(BodyParts["pelvis"].GetComponent<Collider>(), BodyParts["left_thigh"].GetComponent<Collider>());
-        Physics.IgnoreCollision(BodyParts["pelvis"].GetComponent<Collider>(), BodyParts["right_thigh"].GetComponent<Collider>());
-
         base.SetupBodyParts();
 
         // set up phase 

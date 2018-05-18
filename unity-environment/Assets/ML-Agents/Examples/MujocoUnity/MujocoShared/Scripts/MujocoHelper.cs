@@ -133,6 +133,8 @@ namespace MujocoUnity
 			end = RightToLeft(end);
 			var instance = new GameObject();
 			var procCap = instance.AddComponent<ProceduralCapsule>();
+			var handleOverlap = instance.AddComponent<HandleOverlap>();
+			handleOverlap.Parent = parent;
 			var collider = instance.AddComponent<CapsuleCollider>();
 			var offset = start - end;
 			var position = start - (offset / 2.0f);
@@ -158,6 +160,7 @@ namespace MujocoUnity
 				instance.transform.position = position + parent.transform.position;
 				instance.transform.rotation = instance.transform.rotation*parent.transform.rotation;
 			}
+			UnityEngine.GameObject.Destroy(handleOverlap);
 			return instance;
 		}
 		static public GameObject CreateAtPoint(this GameObject parent, Vector3 position, float width, bool useWorldSpace)

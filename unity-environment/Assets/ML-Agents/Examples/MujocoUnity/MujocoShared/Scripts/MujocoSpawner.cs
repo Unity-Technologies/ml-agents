@@ -13,10 +13,6 @@ namespace MujocoUnity
 		public TextAsset MujocoXml;
         public Material Material;
         public PhysicMaterial PhysicMaterial;
-        public LayerMask DefaultCollisionLayer; // used to disable colliding with self
-        public LayerMask AplusB_CollisionLayer; // does not collide with A or B
-        public LayerMask A_CollisionLayer; 
-        public LayerMask B_CollisionLayer; 
         public bool UseMujocoTimestep = true; // use option timestep=xxx to set physics timestep
         public bool DebugOutput;
         public bool GravityOff;
@@ -132,19 +128,6 @@ namespace MujocoUnity
                 {
                     item.material = PhysicMaterial;
                 }
-            foreach (var item in GetComponentsInChildren<Collider>())
-            {
-                // HACK - names should be in the xml
-                if (item.name == "butt" || item.name == "torso1")
-                    item.gameObject.layer = (int) Mathf.Log(AplusB_CollisionLayer.value, 2);
-                else if (item.name.Contains("right_thigh") || item.name == "uwaist")
-                    item.gameObject.layer = (int) Mathf.Log(A_CollisionLayer.value, 2);
-                else if (item.name.Contains("left_thigh"))
-                    item.gameObject.layer = (int) Mathf.Log(B_CollisionLayer.value, 2);
-                else
-                    item.gameObject.layer = (int) Mathf.Log(DefaultCollisionLayer.value, 2);
-
-            }
 
             // // debug helpers
             // foreach (var item in mujocoJoints)
