@@ -31,7 +31,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: 0
 * Reset Parameters: None
 
-## 3DBall: 3D Balance Ball
+## [3DBall: 3D Balance Ball](https://youtu.be/dheeCO29-EI)
 
 ![3D Balance Ball](images/balance.png)
 
@@ -48,7 +48,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: 0
 * Reset Parameters: None
 
-## GridWorld
+## [GridWorld](https://youtu.be/gu8HE9WKEVI)
 
 ![GridWorld](images/gridworld.png)
 
@@ -66,7 +66,7 @@ If you would like to contribute environments, please see our
 * Reset Parameters: Three, corresponding to grid size, number of obstacles, and number of goals.
 
 
-## Tennis
+## [Tennis](https://youtu.be/RDaIh7JX6RI)
 
 ![Tennis](images/tennis.png)
 
@@ -82,7 +82,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 
-## Push Block
+## [Push Block](https://youtu.be/jKdw216ZgoE)
 
 ![Push](images/push.png)
 
@@ -98,7 +98,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None.
 * Reset Parameters: None.
 
-## Wall Jump
+## [Wall Jump](https://youtu.be/NITLug2DIWQ)
 
 ![Wall](images/wall.png)
 
@@ -115,9 +115,9 @@ If you would like to contribute environments, please see our
     * Visual Observations: None.
 * Reset Parameters: 4, corresponding to the height of the possible walls.
 
-## Reacher
+## [Reacher](https://youtu.be/2N9EoF6pQyE)
 
-![Tennis](images/reacher.png)
+![Reacher](images/reacher.png)
 
 * Set-up: Double-jointed arm which can move to target locations.
 * Goal: The agents must move it's hand to the goal location, and keep it there.
@@ -130,7 +130,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
 
-## Crawler
+## [Crawler](https://youtu.be/ftLliaeooYI)
 
 ![Crawler](images/crawler.png)
 
