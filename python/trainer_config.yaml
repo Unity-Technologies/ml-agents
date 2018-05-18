@@ -115,8 +115,8 @@ CrawlerBrain:
     gamma: 0.995
     max_steps: 2e6
     summary_freq: 3000
-    num_layers: 3
-    hidden_units: 512
+    num_layers: 2
+    hidden_units: 256
 
 WalkerBrain:
     normalize: true
