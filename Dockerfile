@@ -129,4 +129,6 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 WORKDIR /execute
 COPY python /execute/python
 
+EXPOSE 5005
+
 ENTRYPOINT ["python", "python/learn.py"]

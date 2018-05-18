@@ -53,6 +53,8 @@ class UnityEnvironment(object):
         # and the communicator will directly try to connect to an existing unity environment.
         if file_name is not None:
             self.executable_launcher(file_name, docker_training)
+        else:
+            logger.info("Ready to connect with the Editor.")
         self._loaded = True
 
         rl_init_parameters_in = UnityRLInitializationInput(

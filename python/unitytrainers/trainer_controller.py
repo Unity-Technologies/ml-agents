@@ -52,8 +52,9 @@ class TrainerController(object):
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
-            env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
-                                                                 env_name=env_path)
+            if env_path is not None :
+                env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
+                                                                     env_name=env_path)
             if curriculum_file is None:
                 self.curriculum_file = None
             else:
