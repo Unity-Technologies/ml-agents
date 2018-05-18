@@ -663,29 +663,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &63685983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: 9e40ee5207dc44432af3b9c056c7d5ec, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 393360180}
 --- !u!1001 &84677063
 Prefab:
   m_ObjectHideFlags: 0
@@ -818,6 +795,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: -0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -943,6 +940,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: -0.2828432
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -1016,51 +1033,11 @@ MonoBehaviour:
     vectorObservationSpaceType: 1
   brainType: 3
   CoreBrains:
-  - {fileID: 524743306}
-  - {fileID: 1293573972}
-  - {fileID: 1574677455}
-  - {fileID: 63685983}
-  instanceID: 829222
---- !u!114 &524743306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  continuousPlayerActions:
-  - key: 101
-    index: 0
-    value: -1
-  - key: 101
-    index: 1
-    value: -1
-  - key: 101
-    index: 2
-    value: -1
-  - key: 101
-    index: 3
-    value: -1
-  - key: 114
-    index: 3
-    value: 1
-  - key: 116
-    index: 11
-    value: -1
-  - key: 100
-    index: 1
-    value: 1
-  - key: 119
-    index: 7
-    value: -1
-  discretePlayerActions: []
-  defaultAction: 0
-  brain: {fileID: 393360180}
+  - {fileID: 1262887288}
+  - {fileID: 1155697514}
+  - {fileID: 1643365282}
+  - {fileID: 1333217177}
+  instanceID: 897772
 --- !u!1 &629733546
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,7 +1118,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 629733546}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1000, y: 4, z: 0}
+  m_LocalPosition: {x: 4, y: 4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 680981943}
@@ -1452,6 +1429,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: -0.2828432
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -1587,6 +1584,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -1711,6 +1728,26 @@ Prefab:
         type: 2}
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
@@ -1922,6 +1959,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -1930,6 +1987,19 @@ Transform:
   m_PrefabParentObject: {fileID: 4515435464747040, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
     type: 2}
   m_PrefabInternal: {fileID: 2052223454}
+--- !u!114 &1155697514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 393360180}
 --- !u!1001 &1205012394
 Prefab:
   m_ObjectHideFlags: 0
@@ -2062,10 +2132,30 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1293573972
+--- !u!114 &1262887288
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -2073,10 +2163,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
+  continuousPlayerActions:
+  - key: 101
+    index: 0
+    value: -1
+  - key: 101
+    index: 1
+    value: -1
+  - key: 101
+    index: 2
+    value: -1
+  - key: 101
+    index: 3
+    value: -1
+  - key: 114
+    index: 3
+    value: 1
+  - key: 116
+    index: 11
+    value: -1
+  - key: 100
+    index: 1
+    value: 1
+  - key: 119
+    index: 7
+    value: -1
+  discretePlayerActions: []
+  defaultAction: 0
   brain: {fileID: 393360180}
 --- !u!1001 &1325507476
 Prefab:
@@ -2210,9 +2327,52 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: -0.28284323
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &1333217177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  graphModel: {fileID: 4900000, guid: 9e40ee5207dc44432af3b9c056c7d5ec, type: 3}
+  graphScope: 
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
+  brain: {fileID: 393360180}
 --- !u!1 &1392866527
 GameObject:
   m_ObjectHideFlags: 0
@@ -2447,10 +2607,30 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1574677455
+--- !u!114 &1643365282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -2459,7 +2639,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   brain: {fileID: 393360180}
 --- !u!1001 &1713811846
@@ -2594,6 +2774,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -2719,6 +2919,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.y
       value: 0.62499905
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -2843,6 +3063,26 @@ Prefab:
         type: 2}
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
@@ -3044,6 +3284,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -3178,6 +3438,26 @@ Prefab:
         type: 2}
       propertyPath: m_ConnectedAnchor.z
       value: -0.28284323
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
@@ -3314,6 +3594,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -3449,6 +3749,26 @@ Prefab:
       propertyPath: m_ConnectedAnchor.z
       value: 0.2828415
       objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -3496,6 +3816,26 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 393360180}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
   m_IsPrefabParent: 0
@@ -3556,9 +3896,6 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     resetParameters: []
-  randomTargetSpawnPos: 1
-  targetSpawnRadius: 50
-  target: {fileID: 629733550}
 --- !u!114 &2095421681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3701,6 +4038,26 @@ Prefab:
         type: 2}
       propertyPath: m_ConnectedAnchor.z
       value: -0.28284323
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 629733550}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: respawnTargetWhenTouched
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: randomTargetSpawnPos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114557228289944898, guid: 0e8a62cb7c8f0483ebd12046bae9ca05,
+        type: 2}
+      propertyPath: targetSpawnRadius
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0e8a62cb7c8f0483ebd12046bae9ca05, type: 2}
