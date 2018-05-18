@@ -1,4 +1,4 @@
-# Installation & Set-up
+# Installation
 
 To install and use ML-Agents, you need install Unity, clone this repository
 and install Python with additional dependencies. Each of the subsections
@@ -20,7 +20,7 @@ _Linux Build Support_ component when installing Unity.
 
 Once installed, you will want to clone the ML-Agents GitHub repository. 
 
-    git clone git@github.com:Unity-Technologies/ml-agents.git
+    git clone https://github.com/Unity-Technologies/ml-agents.git
 
 The `unity-environment` directory in this repository contains the Unity Assets
 to add to your projects. The `python` directory contains the training code.
@@ -46,7 +46,7 @@ If your Python environment doesn't include `pip`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install dependencies, go into the `python` subdirectory of the repository,
+To install dependencies, **go into the `python` subdirectory** of the repository,
 and run from the command line:
 
     pip3 install .
@@ -56,13 +56,15 @@ and run from the command line:
 If you'd like to use Docker for ML-Agents, please follow 
 [this guide](Using-Docker.md). 
 
-## Unity Packages
+## Next Steps
 
-You can download the [TensorFlowSharp](Background-TensorFlow.md#tensorflowsharp) plugin as a Unity package [here](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage).
+The [Basic Guide](Basic-Guide.md) page contains several short 
+tutorials on setting up ML-Agents within Unity, running a pre-trained model, in
+addition to building and training environments.
 
 ## Help
 
-If you run into any problems installing ML-Agents, 
+If you run into any problems regarding ML-Agents, refer to our [FAQ](FAQ.md) and our [Limitations](Limitations.md) pages. If you can't find anything please
 [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
 make sure to cite relevant information on OS, Python version, and exact error 
 message (whenever possible). 

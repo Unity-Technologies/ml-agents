@@ -109,7 +109,7 @@ class LearningModel(object):
         :return: List of hidden layer tensors.
         """
         vector_in = tf.reshape(self.vector_in, [-1])
-        state_onehot = c_layers.one_hot_encoding(vector_in, s_size)
+        state_onehot = tf.one_hot(vector_in, s_size)
         hidden = state_onehot
         for j in range(num_layers):
             hidden = tf.layers.dense(hidden, h_size, use_bias=False, activation=activation)
@@ -189,7 +189,7 @@ class LearningModel(object):
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
-            self.prev_action_oh = c_layers.one_hot_encoding(self.prev_action, self.a_size)
+            self.prev_action_oh = tf.one_hot(self.prev_action, self.a_size)
             hidden = tf.concat([hidden, self.prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
@@ -207,7 +207,7 @@ class LearningModel(object):
         self.value = tf.identity(self.value, name="value_estimate")
         self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
         self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
-        self.selected_actions = c_layers.one_hot_encoding(self.action_holder, self.a_size)
+        self.selected_actions = tf.one_hot(self.action_holder, self.a_size)
 
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
 
@@ -233,24 +233,35 @@ class LearningModel(object):
             hidden_policy = hidden_streams[0]
             hidden_value = hidden_streams[1]
 
-        self.mu = tf.layers.dense(hidden_policy, self.a_size, activation=None, use_bias=False,
-                                  kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
+        mu = tf.layers.dense(hidden_policy, self.a_size, activation=None,
+                             kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
-        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size], dtype=tf.float32,
-                                            initializer=tf.zeros_initializer())
+        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size], dtype=tf.float32,
+                                       initializer=tf.zeros_initializer())
 
-        self.sigma_sq = tf.exp(self.log_sigma_sq)
-        self.epsilon = tf.random_normal(tf.shape(self.mu), dtype=tf.float32)
-        self.output = self.mu + tf.sqrt(self.sigma_sq) * self.epsilon
-        self.output = tf.identity(self.output, name='action')
-        a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output) - self.mu, 2) / (2 * self.sigma_sq))
-        b = 1 / tf.sqrt(2 * self.sigma_sq * np.pi)
-        self.all_probs = tf.multiply(a, b, name="action_probs")
-        self.entropy = tf.reduce_mean(0.5 * tf.log(2 * np.pi * np.e * self.sigma_sq))
-        self.value = tf.layers.dense(hidden_value, 1, activation=None)
-        self.value = tf.identity(self.value, name="value_estimate")
+        sigma_sq = tf.exp(log_sigma_sq)
+
+        epsilon = tf.random_normal(tf.shape(mu), dtype=tf.float32)
+
+        # Clip and scale output to ensure actions are always within [-1, 1] range.
+        self.output_pre = mu + tf.sqrt(sigma_sq) * epsilon
+        output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
+        self.output = tf.identity(output_post, name='action')
+
+        # Compute probability of model output.
+        a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output_pre) - mu, 2) / (2 * sigma_sq))
+        b = 1 / tf.sqrt(2 * sigma_sq * np.pi)
+        all_probs = tf.multiply(a, b)
+        self.all_probs = tf.identity(all_probs, name='action_probs')
+
+        self.entropy = tf.reduce_mean(0.5 * tf.log(2 * np.pi * np.e * sigma_sq))
+
+        value = tf.layers.dense(hidden_value, 1, activation=None)
+        self.value = tf.identity(value, name="value_estimate")
+
         self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32,
                                             name='old_probabilities')
+
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.probs = tf.identity(self.all_probs)
         self.old_probs = tf.identity(self.all_old_probs)

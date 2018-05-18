@@ -156,7 +156,7 @@ If you would like to contribute environments, please see our
 * Reset Parameters: None
 * Benchmark Mean Reward: 2000
 
-## Banana Collector
+## [Banana Collector](https://youtu.be/heVMs3t9qSk)
 
 ![Banana](images/banana.png)
 
@@ -173,7 +173,7 @@ If you would like to contribute environments, please see our
 * Reset Parameters: None
 * Benchmark Mean Reward: 10
 
-## Hallway
+## [Hallway](https://youtu.be/53GyfpPQRUQ)
 
 ![Hallway](images/hallway.png)
 
@@ -191,7 +191,7 @@ If you would like to contribute environments, please see our
 * Reset Parameters: None
 * Benchmark Mean Reward: 0.4
 
-## Bouncer
+## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
 
 ![Bouncer](images/bouncer.png)
 
@@ -209,7 +209,7 @@ If you would like to contribute environments, please see our
 * Reset Parameters: None
 * Benchmark Mean Reward: 2.5
 
-## Soccer Twos
+## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
 
 ![SoccerTwos](images/soccer.png)
 
@@ -235,3 +235,21 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: None
 * Benchmark Mean Reward (Striker & Goalie Brain): 0 (the means will be inverse of each other and criss crosses during training)
+
+## Walker
+
+![Walker](images/walker.png)
+
+* Set-up: Physics-based Humanoids agents with 26 degrees of freedom. These DOFs correspond to articulation of the following body-parts: hips, chest, spine, head, thighs, shins, feets, arms, forearms and hands. 
+* Goal: The agents must move its body toward the goal direction as quickly as possible without falling.
+* Agents: The environment contains 11 independent agent linked to a single brain.
+* Agent Reward Function (independent): 
+    * +0.03 times body velocity in the goal direction.
+    * +0.01 times head y position.
+    * +0.01 times body direction alignment with goal direction.
+    * -0.01 times head velocity difference from body velocity.
+* Brains: One brain with the following observation/action space.
+    * Vector Observation space: (Continuous) 215 variables corresponding to position, rotation, velocity, and angular velocities of each limb, along with goal direction.
+    * Vector Action space: (Continuous) Size of 39, corresponding to target rotations applicable to the joints. 
+    * Visual Observations: None
+* Reset Parameters: None

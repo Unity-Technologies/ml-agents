@@ -756,6 +756,20 @@ public abstract class Agent : MonoBehaviour
     {
         action.textActions = textActions;
     }
+    
+    /// <summary>
+    /// Scales continous action from [-1, 1] to arbitrary range.
+    /// </summary>
+    /// <param name="rawAction"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    protected float ScaleAction(float rawAction, float min, float max)
+    {
+        var middle = (min + max) / 2;
+        var range = (max - min) / 2;
+        return rawAction * range + middle;
+    }
 
     /// <summary>
     /// Sets the status of the agent.

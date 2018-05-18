@@ -87,11 +87,23 @@ Ball3DBrain:
     gamma: 0.995
     beta: 0.001
 
+Ball3DHardBrain:
+    normalize: true
+    batch_size: 1200
+    buffer_size: 12000
+    summary_freq: 1000
+    time_horizon: 1000
+    gamma: 0.995
+    beta: 0.001
+
 BouncerBrain:
     normalize: true
     max_steps: 5.0e5
     num_layers: 2
     hidden_units: 56
+
+TennisBrain:
+    normalize: true
 
 CrawlerBrain:
     normalize: true
@@ -102,6 +114,19 @@ CrawlerBrain:
     gamma: 0.995
     max_steps: 1e6
     summary_freq: 3000
+
+WalkerBrain:
+    normalize: true
+    num_epoch: 3
+    time_horizon: 1000
+    batch_size: 2048
+    buffer_size: 20480
+    beta: 0.001
+    gamma: 0.995
+    max_steps: 2e6
+    summary_freq: 3000
+    num_layers: 2
+    hidden_units: 256
 
 ReacherBrain:
     normalize: true

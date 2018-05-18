@@ -43,7 +43,7 @@ agents.
 * Learning Rate - How large a step the training algorithm takes as it searches 
 for the optimal policy. Should decrease over time.
 
-* Policy Loss - The mean loss of the policy function update. Correlates to how
+* Policy Loss - The mean magnitude of policy loss function. Correlates to how
 much the policy (process for deciding actions) is changing. The magnitude of 
 this should decrease during a successful training session.
 
@@ -51,6 +51,6 @@ this should decrease during a successful training session.
 Should increase during a successful training session.
 
 * Value Loss - The mean loss of the value function update. Correlates to how
-well the model is able to predict the value of each state. This should decrease
-during a successful training session.
+well the model is able to predict the value of each state. This should increase
+while the agent is learning, and then decrease once the reward stabilizes.
 
