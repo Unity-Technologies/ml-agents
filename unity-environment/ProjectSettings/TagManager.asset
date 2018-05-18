@@ -25,6 +25,7 @@ TagManager:
   - switchOff
   - pyramid
   - switchOn
+  - stone
   layers:
   - Default
   - TransparentFX
