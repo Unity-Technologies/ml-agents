@@ -134,7 +134,7 @@ class PPOModel(LearningModel):
         pred_next_state = tf.layers.dense(hidden, self.encoding_size, activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
-        self.intrinsic_reward = self.curiosity_strength * squared_difference
+        self.intrinsic_reward = tf.clip_by_value(self.curiosity_strength * squared_difference, 0, 1)
         self.forward_loss = tf.reduce_mean(squared_difference)
 
     def create_ppo_optimizer(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):

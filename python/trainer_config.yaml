@@ -89,11 +89,13 @@ GoalieBrain:
 
 PyramidBrain:
     use_curiosity: true
-    encoding_size: 64
+    summary_freq: 2000
+    curiosity_strength: 0.01
+    encoding_size: 256
     time_horizon: 128
     batch_size: 128
     buffer_size: 2048
-    hidden_units: 256
+    hidden_units: 512
     num_layers: 2
     beta: 1.0e-2
     max_steps: 2.0e5

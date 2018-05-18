@@ -33,7 +33,7 @@ public class PyramidAgent : Agent
             float[] rayAngles1 = {25f, 95f, 165f, 50f, 140f, 75f, 115f};
             float[] rayAngles2 = {15f, 85f, 155f, 40f, 130f, 65f, 105f};
 
-            string[] detectableObjects = {"block", "wall", "goal", "switchOff", "switchOn"};
+            string[] detectableObjects = {"block", "wall", "goal", "switchOff", "switchOn", "stone"};
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
@@ -77,12 +77,13 @@ public class PyramidAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        AddReward(-1f / agentParameters.maxStep);
         MoveAgent(vectorAction);
     }
 
     public override void AgentReset()
     {
-        var enumerable = Enumerable.Range(0, 4).OrderBy(x => Guid.NewGuid()).Take(4);
+        var enumerable = Enumerable.Range(0, 9).OrderBy(x => Guid.NewGuid()).Take(9);
         var items = enumerable.ToArray();
         
         myArea.CleanPyramidArea();
@@ -92,13 +93,19 @@ public class PyramidAgent : Agent
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
 
         switchLogic.ResetSwitch(items[1], items[2]);
+        myArea.CreateStonePyramid(1, items[3]);
+        myArea.CreateStonePyramid(1, items[4]);
+        myArea.CreateStonePyramid(1, items[5]);
+        myArea.CreateStonePyramid(1, items[6]);
+        myArea.CreateStonePyramid(1, items[7]);
+        myArea.CreateStonePyramid(1, items[8]);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("goal"))
         {
-            SetReward(2f - (float)GetStepCount() / agentParameters.maxStep);
+            SetReward(2f);
             Done();
         }
     }

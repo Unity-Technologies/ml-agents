@@ -43,6 +43,7 @@ class PPOTrainer(Trainer):
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
         self.sequence_length = 1
+        self.has_updated = False
         self.m_size = None
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
@@ -226,6 +227,7 @@ class PPOTrainer(Trainer):
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
 
+        intrinsic_rewards = np.array([])
         if self.use_curiosity:
             feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1}
             run_list = [self.model.intrinsic_reward]
@@ -247,7 +249,8 @@ class PPOTrainer(Trainer):
                 feed_dict[self.model.memory_in] = curr_info.memories
                 run_list += [self.model.memory_out]
 
-            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward, feed_dict=feed_dict)
+            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward, feed_dict=feed_dict) * \
+                                float(self.has_updated)
 
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info
@@ -264,11 +267,14 @@ class PPOTrainer(Trainer):
                 if not stored_info.local_done[idx]:
                     if self.use_visual_obs:
                         for i, _ in enumerate(stored_info.visual_observations):
-                            self.training_buffer[agent_id]['visual_obs%d' % i].append(stored_info.visual_observations[i][idx])
-                            self.training_buffer[agent_id]['next_visual_obs%d' % i].append(next_info.visual_observations[i][idx])
+                            self.training_buffer[agent_id]['visual_obs%d' % i].append(
+                                stored_info.visual_observations[i][idx])
+                            self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
+                                next_info.visual_observations[i][idx])
                     if self.use_vector_obs:
                         self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
-                        self.training_buffer[agent_id]['next_vector_obs'].append(next_info.vector_observations[next_idx])
+                        self.training_buffer[agent_id]['next_vector_obs'].append(
+                            next_info.vector_observations[next_idx])
                     if self.use_recurrent:
                         if stored_info.memories.shape[1] == 0:
                             stored_info.memories = np.zeros((len(stored_info.agents), self.m_size))
@@ -314,7 +320,7 @@ class PPOTrainer(Trainer):
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
-                and len(agent_actions) > 0):
+                    and len(agent_actions) > 0):
                 agent_id = info.agents[l]
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
@@ -325,7 +331,8 @@ class PPOTrainer(Trainer):
                     else:
                         bootstrapping_info = info
                         idx = l
-                    feed_dict = {self.model.batch_size: len(bootstrapping_info.vector_observations), self.model.sequence_length: 1}
+                    feed_dict = {self.model.batch_size: len(bootstrapping_info.vector_observations),
+                                 self.model.sequence_length: 1}
                     if self.use_visual_obs:
                         for i in range(len(bootstrapping_info.visual_observations)):
                             feed_dict[self.model.visual_in[i]] = bootstrapping_info.visual_observations[i]
@@ -333,7 +340,8 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.vector_in] = bootstrapping_info.vector_observations
                     if self.use_recurrent:
                         if bootstrapping_info.memories.shape[1] == 0:
-                            bootstrapping_info.memories = np.zeros((len(bootstrapping_info.vector_observations), self.m_size))
+                            bootstrapping_info.memories = np.zeros(
+                                (len(bootstrapping_info.vector_observations), self.m_size))
                         feed_dict[self.model.memory_in] = bootstrapping_info.memories
                     if not self.is_continuous_action and self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.reshape(bootstrapping_info.previous_vector_actions, [-1])
@@ -429,7 +437,8 @@ class PPOTrainer(Trainer):
                         if self.use_curiosity:
                             feed_dict[self.model.next_vector_obs] = np.array(
                                 _buffer['next_vector_obs'][start:end]).reshape(
-                                [-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
+                                [-1,
+                                 self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
                     else:
                         feed_dict[self.model.vector_in] = np.array(
                             _buffer['vector_obs'][start:end]).reshape([-1, self.brain.num_stacked_vector_observations])
@@ -451,6 +460,7 @@ class PPOTrainer(Trainer):
                 if self.use_curiosity:
                     run_list.extend([self.model.forward_loss, self.model.inverse_loss])
                 values = self.sess.run(run_list, feed_dict=feed_dict)
+                self.has_updated = True
                 run_out = dict(zip(run_list, values))
                 value_total.append(run_out[self.model.value_loss])
                 policy_total.append(np.abs(run_out[self.model.policy_loss]))
