@@ -16,13 +16,15 @@ Run `learn.py` from the command line to launch the training process. Use the com
 
 The basic command for training is:
 
-    python3 learn.py <env_name> --run-id=<run-identifier> --train
+    python3 learn.py (<env_name>) --run-id=<run-identifier> --train
 
-where `<env_name>` is the name(including path) of your Unity executable containing the agents to be trained and `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
+where 
+ * `<env_name>` is the name (including path) of your Unity executable containing the agents to be trained. If `<env_name>` is not passed, the training will happen in the editor. Press the :arrow_forward: button in Unity when the message _"Ready to connect with the Editor"_ is displayed on the screen.
+ * `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
 For example, suppose you have a project in Unity named "CatsOnBicycles" which contains agents ready to train. To perform the training:
 
-1. Build the project, making sure that you only include the training scene.
+1. [Build the project](Learning-Environment-Executable.md), making sure that you only include the training scene.
 2. Open a terminal or console window.
 3. Navigate to the ml-agents `python` folder.
 4. Run the following to launch the training process using the path to the Unity environment you built in step 1:
