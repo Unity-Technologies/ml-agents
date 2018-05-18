@@ -120,6 +120,7 @@ class LearningModel(object):
         s_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
         if brain.vector_action_space_type == "continuous":
             activation_fn = tf.nn.tanh
+
         else:
             activation_fn = self.swish
 

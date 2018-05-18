@@ -4,35 +4,13 @@ using UnityEngine;
 
 public class CrawlerAcademy : Academy
 {
-    // public bool randomTargetSpawnPos;
-    // public float targetSpawnRadius;
-    // // public Transform targetCube;
-    // public Transform targetCrawler;
 
     public override void InitializeAcademy()
     {
         Monitor.verticalOffset = 1f;
-        // if(randomTargetSpawnPos)
-        // {
-        //     GetRandomTargetPos();
-        // }
         Physics.defaultSolverIterations = 6;
         Physics.defaultSolverVelocityIterations = 6;
     }
-
-    // /// <summary>
-    // /// Moves target to a random position within specified radius.
-    // /// </summary>
-    // /// <returns>
-    // /// Move target to random position.
-    // /// </returns>
-    // public void GetRandomTargetPos()
-    // {
-    //     Vector3 newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-	// 	newTargetPos.y = 5;
-	// 	targetCube.position = newTargetPos;
-    // }
-
     public override void AcademyReset()
     {
 
