@@ -45,7 +45,6 @@ public class Monitor : MonoBehaviour
             FLOATARRAY_INDEPENDENT,
             FLOATARRAY_PROPORTION,
             STRING
-
         }
         public ValueType valueType;
     }
