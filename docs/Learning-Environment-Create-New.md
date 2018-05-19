@@ -278,8 +278,8 @@ float distanceToTarget = Vector3.Distance(this.transform.position,
 // Reached target
 if (distanceToTarget < 1.42f)
 {
-    Done();
     AddReward(1.0f);
+    Done();
 }
 ```
 
@@ -308,8 +308,8 @@ Finally, to punish the agent for falling off the platform, assign a large negati
 // Fell off platform
 if (this.transform.position.y < -1.0)
 {
-    Done();
     AddReward(-1.0f);
+    Done();
 }
 ```
 
@@ -330,8 +330,8 @@ public override void AgentAction(float[] vectorAction, string textAction)
     // Reached target
     if (distanceToTarget < 1.42f)
     {
-        Done();
         AddReward(1.0f);
+        Done();
     }
     
     // Getting closer
@@ -346,8 +346,8 @@ public override void AgentAction(float[] vectorAction, string textAction)
     // Fell off platform
     if (this.transform.position.y < -1.0)
     {
-        Done();
         AddReward(-1.0f);
+        Done();
     }
     previousDistance = distanceToTarget;
 
