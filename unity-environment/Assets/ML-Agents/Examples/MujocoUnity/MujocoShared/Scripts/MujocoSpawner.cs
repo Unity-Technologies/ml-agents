@@ -17,7 +17,7 @@ namespace MujocoUnity
         public bool DebugOutput;
         public bool GravityOff;
         public bool SpawnOnStart;
-        public string[] ListOf2dScripts = new string[] {"half_cheetah", "hopper", "walker2d"};
+        public bool Force2D;
 
         public bool UseMotorNotSpring;
         public float GlobalDamping = 30;
@@ -128,6 +128,12 @@ namespace MujocoUnity
                 {
                     item.material = PhysicMaterial;
                 }
+
+
+            if (Force2D) {
+                foreach (var item in GetComponentsInChildren<Rigidbody>())
+                    item.constraints = RigidbodyConstraints.FreezePositionZ;
+            }
 
             // // debug helpers
             // foreach (var item in mujocoJoints)

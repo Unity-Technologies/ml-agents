@@ -31,6 +31,32 @@ OpenAIHumanoidBrain:
     num_layers: 2
     hidden_units: 256
 
+OpenAIWalker2dBrain:
+    normalize: true
+    num_epoch: 3
+    beta: 0.001
+    time_horizon: 128 # 1000
+    batch_size: 2048
+    buffer_size: 20480
+    gamma: 0.995
+    max_steps: 2e6
+    summary_freq: 1000
+    num_layers: 2
+    hidden_units: 96
+
+DeepMindWalkerBrain:
+    normalize: true
+    num_epoch: 3
+    beta: 0.001
+    time_horizon: 128 # 1000
+    batch_size: 2048
+    buffer_size: 20480
+    gamma: 0.995
+    max_steps: 2e6
+    summary_freq: 1000
+    num_layers: 2
+    hidden_units: 96
+
 BananaBrain:
     normalize: false
     batch_size: 1024
