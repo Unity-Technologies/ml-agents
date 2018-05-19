@@ -436,6 +436,11 @@ Amazon Web Services (AWS) machines, we provide a
 on how to set-up EC2 instances in addition to a public pre-configured Amazon 
 Machine Image (AMI).
 
+* **Cloud Training on Microsoft Azure** - To facilitate using ML-Agents on
+Azure machines, we provide a 
+[guide](Training-on-Microsoft-Azure.md)
+on how to set-up virtual machine instances in addition to a pre-configured data science image.
+
 ## Summary and Next Steps
 
 To briefly summarize: ML-Agents enables games and simulations built in Unity

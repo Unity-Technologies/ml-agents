@@ -56,12 +56,20 @@ Sends a step signal to the environment using the actions. For each brain :
     - `memory` is an optional input that can be used to send a list of floats per agents to be retrieved at the next step.
     - `text_action` is an optional input that be used to send a single string per agent.
 
-Note that if you have more than one external brain in the environment, you must provide dictionaries from brain names to arrays for `action`, `memory` and `value`. For example: If you have two external brains named `brain1` and `brain2` each with one agent taking two continuous actions, then you can have:
-```python
-action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
-```
+    Returns a dictionary mapping brain names to BrainInfo objects.
+    
+    For example, to access the BrainInfo belonging to a brain called 'brain_name', and the BrainInfo field 'vector_observations':
+    ```python
+    info = env.step()
+    brainInfo = info['brain_name']
+    observations = brainInfo.vector_observations
+    ``` 
+
+    Note that if you have more than one external brain in the environment, you must provide dictionaries from brain names to arrays for     `action`, `memory` and `value`. For example: If you have two external brains named `brain1` and `brain2` each with one agent taking     two continuous actions, then you can have:
+    ```python
+    action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
+    ```
 
 Returns a dictionary mapping brain names to BrainInfo objects.  
 - **Close : `env.close()`**  
 Sends a shutdown signal to the environment and closes the communication socket.
-

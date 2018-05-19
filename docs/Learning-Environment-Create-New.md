@@ -278,12 +278,12 @@ float distanceToTarget = Vector3.Distance(this.transform.position,
 // Reached target
 if (distanceToTarget < 1.42f)
 {
-    Done();
     AddReward(1.0f);
+    Done();
 }
 ```
 
-**Note:** When you mark an agent as done, it stops its activity until it is reset. You can have the agent reset immediately, by setting the Agent.ResetOnDone property in the inspector or you can wait for the Academy to reset the environment. This RollerBall environment relies on the `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so it never resets the environment).
+**Note:** When you mark an agent as done, it stops its activity until it is reset. You can have the agent reset immediately, by setting the Agent.ResetOnDone property to true in the inspector or you can wait for the Academy to reset the environment. This RollerBall environment relies on the `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so it never resets the environment).
 
 To encourage the agent along, we also reward it for getting closer to the target (saving the previous distance measurement between steps):
 
@@ -308,8 +308,8 @@ Finally, to punish the agent for falling off the platform, assign a large negati
 // Fell off platform
 if (this.transform.position.y < -1.0)
 {
-    Done();
     AddReward(-1.0f);
+    Done();
 }
 ```
 
@@ -330,8 +330,8 @@ public override void AgentAction(float[] vectorAction, string textAction)
     // Reached target
     if (distanceToTarget < 1.42f)
     {
-        Done();
         AddReward(1.0f);
+        Done();
     }
     
     // Getting closer
@@ -346,8 +346,8 @@ public override void AgentAction(float[] vectorAction, string textAction)
     // Fell off platform
     if (this.transform.position.y < -1.0)
     {
-        Done();
         AddReward(-1.0f);
+        Done();
     }
     previousDistance = distanceToTarget;
 

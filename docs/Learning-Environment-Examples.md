@@ -30,8 +30,9 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Discrete) Two possible actions (Move left, move right).
     * Visual Observations: 0
 * Reset Parameters: None
+* Benchmark Mean Reward: 0.94
 
-## 3DBall: 3D Balance Ball
+## [3DBall: 3D Balance Ball](https://youtu.be/dheeCO29-EI)
 
 ![3D Balance Ball](images/balance.png)
 
@@ -47,8 +48,9 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, with one value corresponding to X-rotation, and the other to Z-rotation.
     * Visual Observations: 0
 * Reset Parameters: None
+* Benchmark Mean Reward: 100
 
-## GridWorld
+## [GridWorld](https://youtu.be/gu8HE9WKEVI)
 
 ![GridWorld](images/gridworld.png)
 
@@ -64,9 +66,9 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Discrete) Size of 4, corresponding to movement in cardinal directions.
     * Visual Observations: One corresponding to top-down view of GridWorld.
 * Reset Parameters: Three, corresponding to grid size, number of obstacles, and number of goals.
+* Benchmark Mean Reward: 0.8
 
-
-## Tennis
+## [Tennis](https://youtu.be/RDaIh7JX6RI)
 
 ![Tennis](images/tennis.png)
 
@@ -81,8 +83,9 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
+* Benchmark Mean Reward: 2.5
 
-## Push Block
+## [Push Block](https://youtu.be/jKdw216ZgoE)
 
 ![Push](images/push.png)
 
@@ -97,8 +100,9 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
     * Visual Observations: None.
 * Reset Parameters: None.
+* Benchmark Mean Reward: 4.5
 
-## Wall Jump
+## [Wall Jump](https://youtu.be/NITLug2DIWQ)
 
 ![Wall](images/wall.png)
 
@@ -114,14 +118,15 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Discrete) Size of 74, corresponding to 14 raycasts each detecting 4 possible objects. plus the global position of the agent and whether or not the agent is grounded.
     * Visual Observations: None.
 * Reset Parameters: 4, corresponding to the height of the possible walls.
+* Benchmark Mean Reward (Big & Small Wall Brain): 0.8
 
-## Reacher
+## [Reacher](https://youtu.be/2N9EoF6pQyE)
 
-![Tennis](images/reacher.png)
+![Reacher](images/reacher.png)
 
 * Set-up: Double-jointed arm which can move to target locations.
 * Goal: The agents must move it's hand to the goal location, and keep it there.
-* Agents: The environment contains 32 agent linked to a single brain.
+* Agents: The environment contains 10 agent linked to a single brain.
 * Agent Reward Function (independent): 
     * +0.1 Each step agent's hand is in goal location.
 * Brains: One brain with the following observation/action space.
@@ -129,8 +134,9 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
     * Visual Observations: None
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
+* Benchmark Mean Reward: 30
 
-## Crawler
+## [Crawler](https://youtu.be/ftLliaeooYI)
 
 ![Crawler](images/crawler.png)
 
@@ -148,6 +154,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
     * Visual Observations: None
 * Reset Parameters: None
+* Benchmark Mean Reward: 2000
 
 ## [Banana Collector](https://youtu.be/heVMs3t9qSk)
 
@@ -164,6 +171,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
     * Visual Observations (Optional; None by default): First-person view for each agent. 
 * Reset Parameters: None
+* Benchmark Mean Reward: 10
 
 ## [Hallway](https://youtu.be/53GyfpPQRUQ)
 
@@ -181,6 +189,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
     * Visual Observations (Optional): First-person view for the agent.
 * Reset Parameters: None
+* Benchmark Mean Reward: 0.7
 
 ## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
 
@@ -198,6 +207,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) 3 corresponding to agent force applied for the jump.
     * Visual Observations: None
 * Reset Parameters: None
+* Benchmark Mean Reward: 2.5
 
 ## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
 
@@ -224,6 +234,7 @@ If you would like to contribute environments, please see our
         * Goalie: 4 corresponding to forward, backward, sideways movement.
     * Visual Observations: None
 * Reset Parameters: None
+* Benchmark Mean Reward (Striker & Goalie Brain): 0 (the means will be inverse of each other and criss crosses during training)
 
 ## Walker
 

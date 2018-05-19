@@ -28,6 +28,7 @@
  * [Imitation Learning（模仿学习）训练要点](/docs/Training-Imitation-Learning.md)
  * [LSTM 训练要点](/docs/Feature-Memory.md)
  * [如何使用 Amazon Web Services 进行云端训练](/docs/Training-on-Amazon-Web-Service.md)
+ * [如何使用 Microsoft Azure 进行云端训练](/docs/Training-on-Microsoft-Azure.md)
  * [如何使用 TensorBoard 观察训练过程](/docs/Using-Tensorboard.md)
 
 ## 帮助
