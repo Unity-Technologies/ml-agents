@@ -12,14 +12,14 @@ namespace MujocoUnity
         
         public GameObject CameraTarget;
 
-        public bool applyRandomToAll;
-        public bool applyTargets;
-        public float[] targets;
+        // TODO move to some debug controller
+        // public bool applyRandomToAll;
+        // public bool applyTargets;
+        // public float[] targets;
 
         public List<float> qpos;
         public List<float> qglobpos;
         public List<float> qvel;
-        static float _velocityScaler = 50f; //50f;//16f;//300;//1500f; 
         public List<float> OnSensor;
         public List<float> SensorIsInTouch;
         public float MujocoTimeStep;
@@ -38,9 +38,6 @@ namespace MujocoUnity
         public List<Quaternion> JointRotations;
         public List<Vector3> JointAngularVelocities;
         
-
-        bool _externalMode;
-
         public void SetMujocoSensors(List<MujocoSensor> mujocoSensors)
         {
             MujocoSensors = mujocoSensors;
@@ -55,7 +52,7 @@ namespace MujocoUnity
         public void SetMujocoJoints(List<MujocoJoint> mujocoJoints)
         {
             MujocoJoints = mujocoJoints;
-            targets = Enumerable.Repeat(0f, MujocoJoints.Count).ToArray();
+            // targets = Enumerable.Repeat(0f, MujocoJoints.Count).ToArray();
             var target = FindTopMesh(MujocoJoints.FirstOrDefault()?.Joint.gameObject, null);
             if (CameraTarget != null && MujocoJoints != null) {
                 var smoothFollow = CameraTarget.GetComponent<SmoothFollow>();
@@ -104,41 +101,25 @@ namespace MujocoUnity
         // Update is called once per frame
         void Update () 
         {
-            if(_externalMode)
-                return;
-            if (MujocoJoints == null || MujocoJoints.Count ==0)
-                return;
-            for (int i = 0; i < MujocoJoints.Count; i++)
-            {
-                if (applyRandomToAll)
-                    ApplyAction(MujocoJoints[i]);
-                else if (applyTargets)
-                    ApplyAction(MujocoJoints[i], targets[i]);
-            }
-            UpdateQ(true);
+            // for (int i = 0; i < MujocoJoints.Count; i++)
+            // {
+            //     if (applyRandomToAll)
+            //         ApplyAction(MujocoJoints[i]);
+            //     else if (applyTargets)
+            //         ApplyAction(MujocoJoints[i], targets[i]);
+            // }
         }
 
         void LateUpdate()
         {
-            if (_externalMode)
-                return;
-            for (int i = 0; i < OnSensor.Count; i++)
-                OnSensor[i] = 0f;
+
         }
         public void UpdateFromExternalComponent(bool useDeltaTime = false)
         {
             for (int i = 0; i < OnSensor.Count; i++)
                 OnSensor[i] = 0f;
-            _externalMode = true;
             if (MujocoJoints == null || MujocoJoints.Count ==0)
                 return;
-            for (int i = 0; i < MujocoJoints.Count; i++)
-            {
-                if (applyRandomToAll)
-                    ApplyAction(MujocoJoints[i]);
-                else if (applyTargets)
-                    ApplyAction(MujocoJoints[i], targets[i]);
-            }
             UpdateQ(useDeltaTime);
         }
         public void UpdateQFromExternalComponent(bool useDeltaTime = false)
@@ -200,29 +181,20 @@ namespace MujocoUnity
                     pos = targ.localEulerAngles.z;
                     globPos = targ.eulerAngles.z;
                 }
-                HingeJoint hingeJoint = joint as HingeJoint;
                 ConfigurableJoint configurableJoint = joint as ConfigurableJoint;
                 pos = ((pos - 180f) % 180 ) / 180;
                 // pos /= 180f;
                 globPos = ((globPos - 180f) % 180 ) / 180;
-                if (hingeJoint != null){
-                    qpos[3+i] = pos;
-                    qglobpos[3+i] = globPos;
-                    qvel[3+i] = hingeJoint.velocity / _velocityScaler;
-                }
-                else if (configurableJoint != null){
-                    var lastPos = qpos[3+i];
-                    qpos[3+i] = pos;
-                    JointAngles[i] = pos;
-                    var lastgPos = qglobpos[3+i];
-                    qglobpos[3+i] = globPos;
-                    // var vel = joint.gameObject.GetComponent<Rigidbody>().velocity.x;
-                    // var vel = configurableJoint.
-                    var vel = (qpos[3+i] - lastPos) / (dt);
-                    qvel[3+i] = vel;
-                    JointVelocity[i] = vel;
-                }
-
+                var lastPos = qpos[3+i];
+                qpos[3+i] = pos;
+                JointAngles[i] = pos;
+                var lastgPos = qglobpos[3+i];
+                qglobpos[3+i] = globPos;
+                // var vel = joint.gameObject.GetComponent<Rigidbody>().velocity.x;
+                // var vel = configurableJoint.
+                var vel = (qpos[3+i] - lastPos) / (dt);
+                qvel[3+i] = vel;
+                JointVelocity[i] = vel;
             }
 
             for (int i = 0; i < _baseTargetPairs.Count; i++)
@@ -242,65 +214,7 @@ namespace MujocoUnity
             }
         }
 
-		static public void ApplyAction(MujocoJoint mJoint, float? target = null)
-        {
-            HingeJoint hingeJoint = mJoint.Joint as HingeJoint;
-            ConfigurableJoint configurableJoint = mJoint.Joint as ConfigurableJoint;
-            if (configurableJoint != null){
-                if (!target.HasValue) // handle random
-                    target = Random.value * 2 - 1;
-                var t = configurableJoint.targetAngularVelocity;
-                t.x = target.Value * _velocityScaler;
-                configurableJoint.targetAngularVelocity = t;
-                var angX = configurableJoint.angularXDrive;
-                angX.positionSpring = 1f;
-                var scale = mJoint.MaximumForce * Mathf.Pow(Mathf.Abs(target.Value),3);
-                angX.positionDamper = Mathf.Max(1f, scale);
-                angX.maximumForce = Mathf.Max(1f, scale);
-                configurableJoint.angularXDrive = angX;
-                return;
-            } else if (hingeJoint == null)
-                return;
-            if (hingeJoint.useSpring)
-            {
-                var ctrlRangeMin = -1f;
-                var ctrlRangeMax = 1f;
-                // var ctrlRangeMin = 0f;
-                // var ctrlRangeMax = 1f;
-                var inputScale = ctrlRangeMax - ctrlRangeMin;
-                if (!target.HasValue) // handle random
-                    target = ctrlRangeMin + (Random.value * inputScale);
-                var inputTarget = Mathf.Clamp(target.Value, ctrlRangeMin, ctrlRangeMax);
-                if (ctrlRangeMin < 0)
-                    inputTarget = Mathf.Abs(ctrlRangeMin) + inputTarget;
-                else
-                    inputTarget = inputTarget - Mathf.Abs(ctrlRangeMin);
-                inputTarget /= inputScale;
-                JointSpring js;
-                js = hingeJoint.spring;
-                var min = hingeJoint.limits.min;
-                var max = hingeJoint.limits.max;
-                var outputScale = max-min;
-                var outputTarget = min+(inputTarget * outputScale);
-                js.targetPosition = outputTarget;
-                hingeJoint.spring = js;
-            }
-            else if (hingeJoint.useMotor)
-            {
-                if (!target.HasValue) // handle random
-                    target = Random.value * 2 - 1;
 
-                target = Mathf.Clamp(target.Value, -1f, 1f);
-                // target = Mathf.Clamp(target.Value, 0f, 1f);
-                // target *= 2;
-                // target -= 1f;
-
-                JointMotor jm;
-                jm = hingeJoint.motor;
-                jm.targetVelocity = target.Value * _velocityScaler;
-                hingeJoint.motor = jm;
-            }
-        }
 
         public void SensorCollisionEnter(Collider sensorCollider, Collision other) {
 			if (string.Compare(other.gameObject.name, "Terrain", true) !=0)

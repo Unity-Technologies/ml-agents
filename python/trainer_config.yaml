@@ -32,17 +32,33 @@ OpenAIHumanoidBrain:
     hidden_units: 256
 
 OpenAIWalker2dBrain:
-    normalize: true
+    beta: 5.0e-3
+    epsilon: 0.20
+    gamma: 0.99
+    lambd: 0.95
+    learning_rate: 1.0e-3
     num_epoch: 3
-    beta: 0.001
-    time_horizon: 128 # 1000
-    batch_size: 2048
-    buffer_size: 20480
-    gamma: 0.995
-    max_steps: 2e6
+    time_horizon: 128
     summary_freq: 1000
+    use_recurrent: false
+    normalize: true
     num_layers: 2
+    # hidden_units: 64
     hidden_units: 96
+    batch_size: 2048
+    buffer_size: 10240
+    max_steps: 3e5
+    # normalize: true
+    # num_epoch: 3
+    # beta: 0.001
+    # time_horizon: 128 # 1000
+    # batch_size: 2048
+    # buffer_size: 20480
+    # gamma: 0.995
+    # max_steps: 2e6
+    # summary_freq: 1000
+    # num_layers: 2
+    # hidden_units: 96
 
 DeepMindWalkerBrain:
     normalize: true

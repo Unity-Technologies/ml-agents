@@ -12,6 +12,8 @@
     <geom contype="1" conaffinity="0" friction=".7 .1 .1"/>
     <motor ctrlrange="-1 1" ctrllimited="true"/>
     <site size="0.01"/>
+    <!-- HACK - We need to manually implement classes. 
+    So the settings below must be copied to each type -->
     <default class="walker">
       <geom material="self" type="capsule"/>
       <joint axis="0 -1 0"/>
@@ -27,28 +29,28 @@
       <joint name="rootz" axis="0 0 1" type="slide" limited="false" armature="0" damping="0"/>
       <joint name="rootx" axis="1 0 0" type="slide" limited="false" armature="0" damping="0"/>
       <joint name="rooty" axis="0 1 0" type="hinge" limited="false" armature="0" damping="0"/>
-      <geom name="torso" size="0.07 0.3"/>
+      <geom name="torso" size="0.07 0.3" material="self" type="capsule" />
       <body name="right_thigh" pos="0 -.05 -0.3">
-        <joint name="right_hip" range="-20 100"/>
-        <geom name="right_thigh" pos="0 0 -0.225" size="0.05 0.225"/>
+        <joint name="right_hip" range="-20 100" axis="0 -1 0"/>
+        <geom name="right_thigh" pos="0 0 -0.225" size="0.05 0.225" material="self" type="capsule"/>
         <body name="right_leg" pos="0 0 -0.7">
-          <joint name="right_knee" pos="0 0 0.25" range="-150 0"/>
-          <geom name="right_leg" size="0.04 0.25"/>
+          <joint name="right_knee" pos="0 0 0.25" range="-150 0" axis="0 -1 0"/>
+          <geom name="right_leg" size="0.04 0.25" material="self" type="capsule"/>
           <body name="right_foot" pos="0.06 0 -0.25">
-            <joint name="right_ankle" pos="-0.06 0 0" range="-45 45"/>
-            <geom name="right_foot" zaxis="1 0 0" size="0.05 0.1"/>
+            <joint name="right_ankle" pos="-0.06 0 0" range="-45 45" axis="0 -1 0"/>
+            <geom name="right_foot" zaxis="1 0 0" size="0.05 0.1" material="self" type="capsule"/>
           </body>
         </body>
       </body>
       <body name="left_thigh" pos="0 .05 -0.3" >
-        <joint name="left_hip" range="-20 100"/>
-        <geom name="left_thigh" pos="0 0 -0.225" size="0.05 0.225"/>
+        <joint name="left_hip" range="-20 100" axis="0 -1 0"/>
+        <geom name="left_thigh" pos="0 0 -0.225" size="0.05 0.225" material="self" type="capsule"/>
         <body name="left_leg" pos="0 0 -0.7">
-          <joint name="left_knee" pos="0 0 0.25" range="-150 0"/>
-          <geom name="left_leg" size="0.04 0.25"/>
+          <joint name="left_knee" pos="0 0 0.25" range="-150 0" axis="0 -1 0"/>
+          <geom name="left_leg" size="0.04 0.25" material="self" type="capsule"/>
           <body name="left_foot" pos="0.06 0 -0.25">
-            <joint name="left_ankle" pos="-0.06 0 0" range="-45 45"/>
-            <geom name="left_foot" zaxis="1 0 0" size="0.05 0.1"/>
+            <joint name="left_ankle" pos="-0.06 0 0" range="-45 45" axis="0 -1 0"/>
+            <geom name="left_foot" zaxis="1 0 0" size="0.05 0.1" material="self" type="capsule"/>
           </body>
         </body>
       </body>

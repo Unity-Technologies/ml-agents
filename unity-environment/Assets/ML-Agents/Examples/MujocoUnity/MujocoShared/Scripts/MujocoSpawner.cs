@@ -16,13 +16,12 @@ namespace MujocoUnity
         public bool UseMujocoTimestep = true; // use option timestep=xxx to set physics timestep
         public bool DebugOutput;
         public bool GravityOff;
-        public bool SpawnOnStart;
+        // public bool SpawnOnStart;
         public bool Force2D;
 
-        public bool UseMotorNotSpring;
-        public float GlobalDamping = 30;
-        public float BaseForce = 300f;
-        public float ForceMultiple = 1;
+        public float GlobalDamping = 10f;
+        public float BaseForce = 0f;
+        public float ForceMultiple = 1f;
         public float Mass = 1f;
         public float OnGenerateApplyRandom = 0.005f;
 		
@@ -49,8 +48,8 @@ namespace MujocoUnity
 
 		// Use this for initialization
 		void Start () {
-            if (SpawnOnStart)
-                SpawnFromXml();
+            // if (SpawnOnStart)
+            //     SpawnFromXml();
 		}
 
 		// Update is called once per frame
@@ -990,8 +989,8 @@ namespace MujocoUnity
                 JointMotor motor = new JointMotor(); 
                 if (hingeJoint != null) {
                     spring = hingeJoint.spring;
-                    hingeJoint.useSpring = !UseMotorNotSpring;                    
-                    hingeJoint.useMotor = UseMotorNotSpring;
+                    hingeJoint.useSpring = false;                    
+                    hingeJoint.useMotor = true;
                     motor = hingeJoint.motor;
                     motor.freeSpin = true;
                 }

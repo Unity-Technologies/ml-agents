@@ -56,9 +56,6 @@ MonoBehaviour:
   MujocoJoints: []
   MujocoSensors: []
   CameraTarget: {fileID: 0}
-  applyRandomToAll: 0
-  applyTargets: 0
-  targets: []
   qpos: []
   qglobpos: []
   qvel: []
@@ -89,27 +86,10 @@ MonoBehaviour:
   MujocoXml: {fileID: 4900000, guid: fc5e043384abb4ab5b65c64d90d905ae, type: 3}
   Material: {fileID: 2100000, guid: 67cc1886f81484ab4ae518045966365e, type: 2}
   PhysicMaterial: {fileID: 13400000, guid: 38b7ea504254a4fa986e42a7bb16c8df, type: 2}
-  DefaultCollisionLayer:
-    serializedVersion: 2
-    m_Bits: 1
-  AplusB_CollisionLayer:
-    serializedVersion: 2
-    m_Bits: 16384
-  A_CollisionLayer:
-    serializedVersion: 2
-    m_Bits: 32768
-  B_CollisionLayer:
-    serializedVersion: 2
-    m_Bits: 65536
   UseMujocoTimestep: 1
   DebugOutput: 0
   GravityOff: 0
-  SpawnOnStart: 0
-  ListOf2dScripts:
-  - half_cheetah
-  - hopper
-  - walker2d
-  UseMotorNotSpring: 1
+  Force2D: 0
   GlobalDamping: 10
   BaseForce: 0
   ForceMultiple: 1
@@ -135,6 +115,7 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 5
   FootHitTerrain: 0
   NonFootHitTerrain: 0
+  VelocityScaler: 50
   Low: []
   High: []
   ShowMonitor: 0

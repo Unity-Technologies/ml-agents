@@ -25,7 +25,7 @@ public class OpenAIWalker2dAgent : MujocoAgent {
         //     Monitor.Log("actions", _actions, MonitorType.hist);
         for (int i = 0; i < MujocoController.MujocoJoints.Count; i++) {
             var inp = (float)Actions[i];
-            MujocoController.ApplyAction(MujocoController.MujocoJoints[i], inp);
+            ApplyAction(MujocoController.MujocoJoints[i], inp);
         }
         MujocoController.UpdateFromExternalComponent();
         
@@ -57,9 +57,9 @@ public class OpenAIWalker2dAgent : MujocoAgent {
         // BodyParts["head"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="head");
         // BodyParts["shoulders"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso1");
         // BodyParts["waist"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="lwaist");
-        // BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="butt");
-        // BodyParts["left_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="left_thigh1");
-        // BodyParts["right_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="right_thigh1");
+        BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso_geom");
+        BodyParts["left_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="thigh_left_geom");
+        BodyParts["right_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="thigh_geom");
         // BodyParts["left_uarm"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="left_uarm1");
         // BodyParts["right_uarm"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="right_uarm1");
         
@@ -82,12 +82,12 @@ public class OpenAIWalker2dAgent : MujocoAgent {
             //Monitor.Log("onSensor", _mujocoController.OnSensor, MonitorType.hist);
             //Monitor.Log("sensor", _mujocoController.SensorIsInTouch, MonitorType.hist);
         }
-        // var pelvis = BodyParts["pelvis"];
+        var pelvis = BodyParts["pelvis"];
         // var shoulders = BodyParts["shoulders"];
-        // AddVectorObs(MujocoController.FocalPointPosition);
-        // AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
-        // AddVectorObs(MujocoController.FocalPointRotation);
-        // AddVectorObs(MujocoController.FocalPointRotationVelocity);
+        AddVectorObs(MujocoController.FocalPointPosition);
+        AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
+        AddVectorObs(MujocoController.FocalPointRotation);
+        AddVectorObs(MujocoController.FocalPointRotationVelocity);
 
         // // var focalTransform = _focalPoint.transform;
         // // var focalRidgedBody = _focalPoint.GetComponent<Rigidbody>();
@@ -100,11 +100,11 @@ public class OpenAIWalker2dAgent : MujocoAgent {
         // //     ((FocalPointEulerAngles.y - 180f) % 180 ) / 180,
         // //     ((FocalPointEulerAngles.z - 180f) % 180 ) / 180);
         // // FocalPointRotationVelocity = FocalPointRotation-lastFocalPointRotationVelocity;
-        // AddVectorObs(pelvis.velocity);
-        // AddVectorObs(pelvis.transform.forward); // gyroscope 
-        // AddVectorObs(pelvis.transform.up);
-        // AddVectorObs(pelvis.angularVelocity); 
-        // AddVectorObs(pelvis.rotation);
+        AddVectorObs(pelvis.velocity);
+        AddVectorObs(pelvis.transform.forward); // gyroscope 
+        AddVectorObs(pelvis.transform.up);
+        AddVectorObs(pelvis.angularVelocity); 
+        AddVectorObs(pelvis.rotation);
         
         // AddVectorObs(shoulders.transform.forward); // gyroscope 
 

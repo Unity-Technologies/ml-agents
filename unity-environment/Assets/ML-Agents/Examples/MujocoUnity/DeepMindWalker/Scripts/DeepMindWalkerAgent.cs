@@ -25,7 +25,7 @@ public class DeepMindWalkerAgent : MujocoAgent {
         //     Monitor.Log("actions", _actions, MonitorType.hist);
         for (int i = 0; i < MujocoController.MujocoJoints.Count; i++) {
             var inp = (float)Actions[i];
-            MujocoController.ApplyAction(MujocoController.MujocoJoints[i], inp);
+            ApplyAction(MujocoController.MujocoJoints[i], inp);
         }
         MujocoController.UpdateFromExternalComponent();
         

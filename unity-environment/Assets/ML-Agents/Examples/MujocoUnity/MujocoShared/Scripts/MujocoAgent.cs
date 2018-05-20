@@ -9,6 +9,8 @@ namespace MujocoUnity
     {
         public bool FootHitTerrain;
         public bool NonFootHitTerrain;
+        public float VelocityScaler = 16f; //50f;//16f;//300;//1500f; 
+        
 
         public float[] Low;
 		public float[] High;
@@ -336,6 +338,22 @@ namespace MujocoUnity
         internal bool Terminate_OnNonFootHitTerrain()
         {
             return NonFootHitTerrain;
-        }    
+        }  
+
+		internal void ApplyAction(MujocoJoint mJoint, float? target = null)
+        {
+            ConfigurableJoint configurableJoint = mJoint.Joint as ConfigurableJoint;
+            if (!target.HasValue) // handle random
+                target = UnityEngine.Random.value * 2 - 1;
+            var t = configurableJoint.targetAngularVelocity;
+            t.x = target.Value * VelocityScaler;
+            configurableJoint.targetAngularVelocity = t;
+            var angX = configurableJoint.angularXDrive;
+            angX.positionSpring = 1f;
+            var scale = mJoint.MaximumForce * Mathf.Pow(Mathf.Abs(target.Value),3);
+            angX.positionDamper = Mathf.Max(1f, scale);
+            angX.maximumForce = Mathf.Max(1f, scale);
+            configurableJoint.angularXDrive = angX;
+        }          
     }
 }

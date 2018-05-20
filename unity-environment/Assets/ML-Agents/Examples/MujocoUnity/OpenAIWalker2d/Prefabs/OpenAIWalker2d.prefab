@@ -56,9 +56,6 @@ MonoBehaviour:
   MujocoJoints: []
   MujocoSensors: []
   CameraTarget: {fileID: 0}
-  applyRandomToAll: 0
-  applyTargets: 0
-  targets: []
   qpos: []
   qglobpos: []
   qvel: []
@@ -86,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a532e373957504411bd01901bf361ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MujocoXml: {fileID: 4900000, guid: a4f3604fd505c4488b4ce872f4dc656e, type: 3}
+  MujocoXml: {fileID: 4900000, guid: 1ce06df3d841b43c9a667a4fbf38a27b, type: 3}
   Material: {fileID: 2100000, guid: 67cc1886f81484ab4ae518045966365e, type: 2}
   PhysicMaterial: {fileID: 13400000, guid: 38b7ea504254a4fa986e42a7bb16c8df, type: 2}
   UseMujocoTimestep: 1
@@ -120,6 +117,7 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 4
   FootHitTerrain: 0
   NonFootHitTerrain: 0
+  VelocityScaler: 16
   Low: []
   High: []
   ShowMonitor: 1
