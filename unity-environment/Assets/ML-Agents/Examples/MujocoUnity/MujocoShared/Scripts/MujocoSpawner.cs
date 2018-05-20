@@ -33,7 +33,7 @@ namespace MujocoUnity
         Dictionary<string, XElement> _jointXDocs;
 
         bool _hasParsed;
-        bool _useWorldSpace;
+        bool _useWorldSpace = false;
         Quaternion _orginalTransformRotation;
         Vector3 _orginalTransformPosition;
         public void SpawnFromXml()
@@ -391,35 +391,57 @@ namespace MujocoUnity
 				return geom;
 			}
 			float size;
+            float? size2 = null;
             DebugPrint($"ParseGeom: Creating type:{type} name:{element.Attribute("name")?.Value}");
-            if(element.Attribute("name")?.Value == "left_shin1"){
-                DebugPrint("***---***");
-                DebugPrint(element.ToString());
-            }
-            if(element.Attribute("name")?.Value == "right_foot_cap1"){
-                DebugPrint("***---***");
-                DebugPrint(element.ToString());
-            }
             geom = new GeomItem();
+            Vector3 start;
+            Vector3 end;
+            Vector3 offset;
 			switch (type)
 			{
 				case "capsule":
-                    if (element.Attribute("size")?.Value?.Split()?.Length > 1)
+                    if (element.Attribute("size")?.Value?.Split()?.Length > 1) {
                         size = float.Parse(element.Attribute("size")?.Value.Split()[0]);
+                        size2 = float.Parse(element.Attribute("size")?.Value.Split()[1]);
+                    }
                     else
     					size = float.Parse(element.Attribute("size")?.Value);
-					var fromto = element.Attribute("fromto").Value;
-					DebugPrint($"ParseGeom: Creating type:{type} fromto:{fromto} size:{size}");
-					geom.Geom = parent.CreateBetweenPoints(MujocoHelper.ParseFrom(fromto), MujocoHelper.ParseTo(fromto), size, _useWorldSpace);
-                    var start = MujocoHelper.ParseFrom(fromto);
-                    var end = MujocoHelper.ParseTo(fromto);
-                    var offset = end - start;
+					var fromto = element.Attribute("fromto")?.Value;
+                    if (fromto == null) {
+                        var posAttribute = element.Attribute("pos")?.Value;
+                        Vector3 centerPos = Vector3.zero;
+                        if (posAttribute != null) {
+                            var rawPos = MujocoHelper.ParsePosition(posAttribute);
+                            centerPos = centerPos - rawPos;
+                        }
+                        start = centerPos;
+                        end = centerPos;
+                        var zaxisAttribute = element.Attribute("zaxis")?.Value;
+                        Vector3 zaxis = Vector3.up;
+                        if (zaxisAttribute != null)
+                            zaxis = MujocoHelper.ParseAxis(zaxisAttribute);
+                        var zaxisScaled = zaxis * size2.Value;
+                        start -= zaxisScaled;
+                        end += zaxisScaled;
+                        // end += zaxisScaled * 2;
+                        start = MujocoHelper.RightToLeft(start);
+                        end = MujocoHelper.RightToLeft(end);
+                        DebugPrint($"ParseGeom: Creating type:{type} size:{size}");
+                    }
+                    else {
+                        DebugPrint($"ParseGeom: Creating type:{type} fromto:{fromto} size:{size}");
+                        start = MujocoHelper.ParseFrom(fromto);
+                        end = MujocoHelper.ParseTo(fromto);
+                    }
+                    geom.Geom = parent.CreateBetweenPoints(start, end, size, _useWorldSpace);
+                    offset = end - start;
                     geom.Lenght = offset.magnitude;//
                     geom.Size = size;
                     geom.Lenght3D = offset;//new Vector3(offset.x, offset.z, offset.y);
                     geom.Start = start;
                     geom.End = end;
-					break;
+                    
+                    break;
 				case "sphere":
 					size = float.Parse(element.Attribute("size")?.Value);
 					var pos = element.Attribute("pos").Value;
@@ -702,8 +724,10 @@ namespace MujocoUnity
 
 			var type = element.Attribute("type")?.Value;
 			if (type == null) {
-				DebugPrint($"--- WARNING: ParseJoint: no type found. Ignoring ({element.ToString()}");
-				return joints;
+				// DebugPrint($"--- WARNING: ParseJoint: no type found. Ignoring ({element.ToString()}");
+				// return joints;
+				DebugPrint($"--- WARNING: ParseJoint: no type found. Assuming Hinge: ({element.ToString()}");
+                type = "hinge";
 			}
             Joint joint = null;
             Type jointType;

@@ -140,8 +140,36 @@ namespace MujocoUnity
             }
         }
 
+        public override void CollectObservations()
+        {
+            MujocoController.UpdateQFromExternalComponent();
+            ObservationsFunction();
+        }
         public override void AgentAction(float[] vectorAction, string textAction)
         {
+            Actions = vectorAction
+                .Select(x=>x)
+                .ToList();
+            for (int i = 0; i < MujocoController.MujocoJoints.Count; i++) {
+                var inp = (float)Actions[i];
+                ApplyAction(MujocoController.MujocoJoints[i], inp);
+            }
+            MujocoController.UpdateFromExternalComponent();
+            
+            var done = TerminateFunction();
+
+            if (done)
+            {
+                Done();
+                var reward = -1f;
+                SetReward(reward);
+            }
+            if (!IsDone())
+            {
+                var reward = StepRewardFunction();
+                SetReward(reward);
+            }
+
             FootHitTerrain = false;
             NonFootHitTerrain = false;
         }
@@ -324,6 +352,8 @@ namespace MujocoUnity
                 case "foot_left_geom": //oai_walker2d
                 case "foot_left_joint": //oai_walker2d
                 case "foot_joint": //oai_walker2d
+                case "right_leg": // dm_walker
+                case "left_leg": // dm_walker
                     FootHitTerrain = true;
                     break;
                 default:

@@ -7,47 +7,11 @@ using UnityEngine;
 
 public class OpenAIHumanoidAgent : MujocoAgent {
 
-
-
-    public override void CollectObservations()
-    {
-        MujocoController.UpdateQFromExternalComponent();
-        ObservationsFunction();
-    }
-
-    public override void AgentAction(float[] vectorAction, string textAction)
-	{
-        Actions = vectorAction
-            .Select(x=>x)
-            .ToList();
-        //KillJointPower(new []{"shoulder", "elbow"}); // HACK
-        // if (ShowMonitor)
-        //     Monitor.Log("actions", _actions, MonitorType.hist);
-        for (int i = 0; i < MujocoController.MujocoJoints.Count; i++) {
-            var inp = (float)Actions[i];
-            ApplyAction(MujocoController.MujocoJoints[i], inp);
-        }
-        MujocoController.UpdateFromExternalComponent();
-        
-        var done = TerminateFunction();
-
-        if (done)
-        {
-            Done();
-            var reward = -1f;
-            SetReward(reward);
-        }
-        if (!IsDone())
-        {
-            var reward = StepRewardFunction();
-            SetReward(reward);
-        }
-        base.AgentAction(vectorAction, textAction);
-    }
-
     public override void AgentReset()
     {
         base.AgentReset();
+
+        // set to true this to show monitor while training
         Monitor.SetActive(true);
 
         StepRewardFunction = StepReward_OaiHumanoidRun153;

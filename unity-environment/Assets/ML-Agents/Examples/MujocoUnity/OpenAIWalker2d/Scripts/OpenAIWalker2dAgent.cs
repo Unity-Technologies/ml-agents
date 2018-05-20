@@ -7,66 +7,21 @@ using UnityEngine;
 
 public class OpenAIWalker2dAgent : MujocoAgent {
 
-
-
-    public override void CollectObservations()
-    {
-        MujocoController.UpdateQFromExternalComponent();
-        ObservationsFunction();
-    }
-
-    public override void AgentAction(float[] vectorAction, string textAction)
-	{
-        Actions = vectorAction
-            .Select(x=>x)
-            .ToList();
-        //KillJointPower(new []{"shoulder", "elbow"}); // HACK
-        // if (ShowMonitor)
-        //     Monitor.Log("actions", _actions, MonitorType.hist);
-        for (int i = 0; i < MujocoController.MujocoJoints.Count; i++) {
-            var inp = (float)Actions[i];
-            ApplyAction(MujocoController.MujocoJoints[i], inp);
-        }
-        MujocoController.UpdateFromExternalComponent();
-        
-        var done = TerminateFunction();
-
-        if (done)
-        {
-            Done();
-            var reward = -1f;
-            SetReward(reward);
-        }
-        if (!IsDone())
-        {
-            var reward = StepRewardFunction();
-            SetReward(reward);
-        }
-        base.AgentAction(vectorAction, textAction);
-    }
-
     public override void AgentReset()
     {
         base.AgentReset();
+
+        // set to true this to show monitor while training
         Monitor.SetActive(true);
 
         StepRewardFunction = StepReward_Walker101;
         TerminateFunction = Terminate_OnNonFootHitTerrain;
         ObservationsFunction = Observations_Default;
 
-        // BodyParts["head"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="head");
-        // BodyParts["shoulders"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso1");
-        // BodyParts["waist"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="lwaist");
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso_geom");
         BodyParts["left_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="thigh_left_geom");
         BodyParts["right_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="thigh_geom");
-        // BodyParts["left_uarm"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="left_uarm1");
-        // BodyParts["right_uarm"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="right_uarm1");
-        
         base.SetupBodyParts();
-
-        // set up phase 
-        PhaseBonusInitalize();
     }
 
 
@@ -77,29 +32,15 @@ public class OpenAIWalker2dAgent : MujocoAgent {
     void Observations_Default()
     {
         if (ShowMonitor) {
-            //Monitor.Log("pos", _mujocoController.qpos, MonitorType.hist);
-            //Monitor.Log("vel", _mujocoController.qvel, MonitorType.hist);
             //Monitor.Log("onSensor", _mujocoController.OnSensor, MonitorType.hist);
             //Monitor.Log("sensor", _mujocoController.SensorIsInTouch, MonitorType.hist);
         }
         var pelvis = BodyParts["pelvis"];
-        // var shoulders = BodyParts["shoulders"];
         AddVectorObs(MujocoController.FocalPointPosition);
         AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
         AddVectorObs(MujocoController.FocalPointRotation);
         AddVectorObs(MujocoController.FocalPointRotationVelocity);
 
-        // // var focalTransform = _focalPoint.transform;
-        // // var focalRidgedBody = _focalPoint.GetComponent<Rigidbody>();
-        // // FocalPointPosition = focalTransform.position;
-        // // FocalPointPositionVelocity = focalRidgedBody.velocity;
-        // // var lastFocalPointRotationVelocity = FocalPointRotation;
-        // // FocalPointEulerAngles = focalTransform.eulerAngles;
-        // // FocalPointRotation = new Vector3(
-        // //     ((FocalPointEulerAngles.x - 180f) % 180 ) / 180,
-        // //     ((FocalPointEulerAngles.y - 180f) % 180 ) / 180,
-        // //     ((FocalPointEulerAngles.z - 180f) % 180 ) / 180);
-        // // FocalPointRotationVelocity = FocalPointRotation-lastFocalPointRotationVelocity;
         AddVectorObs(pelvis.velocity);
         AddVectorObs(pelvis.transform.forward); // gyroscope 
         AddVectorObs(pelvis.transform.up);
@@ -115,199 +56,27 @@ public class OpenAIWalker2dAgent : MujocoAgent {
         AddVectorObs(MujocoController.JointVelocity);
     }
 
-
-
-    float GetHumanoidArmEffort()
-    {
-        var mJoints = MujocoController.MujocoJoints
-            .Where(x=>x.JointName.ToLowerInvariant().Contains("shoulder") || x.JointName.ToLowerInvariant().Contains("elbow"))
-            .ToList();
-        var effort = mJoints
-            .Select(x=>Actions[MujocoController.MujocoJoints.IndexOf(x)])
-            .Select(x=>Mathf.Pow(Mathf.Abs(x),2))
-            .Sum();
-        return effort;            
-    }
-
     float StepReward_Walker101()
-		{
-            // float heightPenality = GetHeightPenality(1f);
-            float heightPenality = GetHeightPenality(.65f);
-            float uprightBonus = GetUprightBonus();
-            float velocity = GetVelocity();
-            float effort = GetEffort();
-            // var effortPenality = 1e-3f * (float)effort;
-            var effortPenality = 1e-1f * (float)effort;
-
-			var reward = velocity
-                +uprightBonus
-                -heightPenality
-                -effortPenality;
-            if (ShowMonitor) {
-                var hist = new []{reward,velocity,uprightBonus,-heightPenality,-effortPenality}.ToList();
-                Monitor.Log("rewardHist", hist, MonitorType.hist);
-                // Monitor.Log("effortPenality", effortPenality, MonitorType.text);
-                // Monitor.Log("reward", reward, MonitorType.text);
-            }
-
-			return reward;
-		}
-    
-    float StepReward_OaiHumanoidRun153()
     {
+        // float heightPenality = GetHeightPenality(1f);
+        float heightPenality = GetHeightPenality(.65f);
+        float uprightBonus = GetUprightBonus();
         float velocity = GetVelocity();
-        float heightPenality = GetHeightPenality(1.2f);
-        float uprightBonus = 
-            (GetUprightBonus("shoulders") / 6)
-            + (GetUprightBonus("waist") / 6)
-            + (GetUprightBonus("pelvis") / 6);
-        float forwardBonus = 
-            (GetForwardBonus("shoulders") / 6)
-            + (GetForwardBonus("waist") / 6)
-            + (GetForwardBonus("pelvis") / 6);
-        
-        // float leftThighPenality = Mathf.Abs(GetLeftBonus("left_thigh"));
-        // float rightThighPenality = Mathf.Abs(GetRightBonus("right_thigh"));
-        // float leftUarmPenality = Mathf.Abs(GetLeftBonus("left_uarm"));
-        // float rightUarmPenality = Mathf.Abs(GetRightBonus("right_uarm"));
-        // float limbPenalty = leftThighPenality + rightThighPenality + leftUarmPenality + rightUarmPenality;
-        // limbPenalty = Mathf.Min(0.5f, limbPenalty);
-        float phaseBonus = GetPhaseBonus();
-        var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
-        float effort = GetEffort(new string []{"right_hip_y", "right_knee", "left_hip_y", "left_knee"});
-        var effortPenality = 0.05f * (float)effort;
-        var reward = velocity 
-            + uprightBonus
-            + forwardBonus
-            + phaseBonus
-            - heightPenality
-            // - limbPenalty
-            - jointsAtLimitPenality
-            - effortPenality;
-            // - armPenalty;
+        float effort = GetEffort();
+        // var effortPenality = 1e-3f * (float)effort;
+        var effortPenality = 1e-1f * (float)effort;
+
+        var reward = velocity
+            +uprightBonus
+            -heightPenality
+            -effortPenality;
         if (ShowMonitor) {
-            // var hist = new []{reward,velocity, shouldersUprightBonus, pelvisUprightBonus, headForwardBonus,- heightPenality,-effortPenality}.ToList();
-            var hist = new []{
-                reward, velocity, 
-                uprightBonus, 
-                forwardBonus, 
-                phaseBonus, 
-                -heightPenality, 
-                // -limbPenalty, 
-                -jointsAtLimitPenality, 
-                -effortPenality}.ToList();
+            var hist = new []{reward,velocity,uprightBonus,-heightPenality,-effortPenality}.ToList();
             Monitor.Log("rewardHist", hist, MonitorType.hist);
-        }
-        return reward;            
-    }
-
-    // implement phase bonus (reward for left then right)
-    List<float> _lastSenorState;
-    float _phaseBonus;
-    int _phase;
-
-    public float LeftMin;
-    public float LeftMax;
-
-    public float RightMin;
-    public float RightMax;
-
-    void PhaseBonusInitalize()
-    {
-        _lastSenorState = Enumerable.Repeat<float>(0f, NumSensors).ToList();
-        _phase = 0;
-        _phaseBonus = 0f;
-    }
-
-    void PhaseResetLeft()
-    {
-        LeftMin = float.MaxValue;
-        LeftMax = float.MinValue;
-        PhaseSetLeft();
-    }
-    void PhaseResetRight()
-    {
-        RightMin = float.MaxValue;
-        RightMax = float.MinValue;
-        PhaseSetRight();
-    }
-    void PhaseSetLeft()
-    {
-        var inPhaseToFocalAngle = BodyPartsToFocalRoation["left_thigh"] * BodyParts["left_thigh"].transform.right;
-        var inPhaseAngleFromUp = Vector3.Angle(inPhaseToFocalAngle, Vector3.up);
-
-        var angle = 180 - inPhaseAngleFromUp;
-        var qpos2 = (angle % 180 ) / 180;
-        var bonus = 2 - (Mathf.Abs(qpos2)*2)-1;
-        LeftMin = Mathf.Min(LeftMin, bonus);
-        LeftMax = Mathf.Max(LeftMax, bonus);
-    }
-    void PhaseSetRight()
-    {
-        var inPhaseToFocalAngle = BodyPartsToFocalRoation["right_thigh"] * BodyParts["right_thigh"].transform.right;
-        var inPhaseAngleFromUp = Vector3.Angle(inPhaseToFocalAngle, Vector3.up);
-
-        var angle = 180 - inPhaseAngleFromUp;
-        var qpos2 = (angle % 180 ) / 180;
-        var bonus = 2 - (Mathf.Abs(qpos2)*2)-1;
-        RightMin = Mathf.Min(RightMin, bonus);
-        RightMax = Mathf.Max(RightMax, bonus);
-    }
-    float CalcPhaseBonus(float min, float max)
-    {
-        float bonus = 0f;
-        if (min < 0f && max < 0f) {
-            min = Mathf.Abs(min);
-            max = Mathf.Abs(max);
-        } else if (min < 0f) {
-            bonus = Mathf.Abs(min);
-            min = 0f;
-        }
-        bonus += max-min;
-        return bonus;
-    }
-
-    float GetPhaseBonus()
-    {
-        bool noPhaseChange = true;
-        for (int i = 0; i < MujocoController.SensorIsInTouch.Count; i++)
-        {
-            noPhaseChange = noPhaseChange && MujocoController.SensorIsInTouch[i] == _lastSenorState[i];
-            _lastSenorState[i] = MujocoController.SensorIsInTouch[i];
-        }
-        // special case: both feet in air
-        if (MujocoController.SensorIsInTouch.Sum() == 0f)
-            noPhaseChange = true;
-        // special case: both feed down
-        if (MujocoController.SensorIsInTouch.Sum() == 2f) {
-            _phaseBonus = 0f;
-            PhaseResetLeft();
-            PhaseResetRight();
-            return _phaseBonus;
-        }
-        
-        if (noPhaseChange){
-            // check if this is next best angle
-            PhaseSetLeft();
-            PhaseSetRight();
-            var bonus = _phaseBonus;
-            _phaseBonus *= 0.9f;
-            return bonus;
+            // Monitor.Log("effortPenality", effortPenality, MonitorType.text);
+            // Monitor.Log("reward", reward, MonitorType.text);
         }
 
-        // new phase
-        _phaseBonus = 0;
-        bool isLeftPhase = MujocoController.SensorIsInTouch[0] != 0f;
-        if (_phase == 1 && !isLeftPhase) {
-            _phaseBonus = CalcPhaseBonus(LeftMin, LeftMax);
-            _phaseBonus += 0.1f;
-            PhaseResetLeft();
-        } else if (_phase == 2 && isLeftPhase) {
-            _phaseBonus = CalcPhaseBonus(RightMin, RightMax);
-            _phaseBonus += 0.1f;
-            PhaseResetRight();
-        }
-        _phase = isLeftPhase ? 1 : 2;
-        return _phaseBonus;
-    }    
+        return reward;
+    }
 }

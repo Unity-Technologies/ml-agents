@@ -14,7 +14,7 @@ namespace MujocoUnity
             rb.useGravity = true;
         }
 
-		static Vector3 RightToLeft(Vector3 rightHanded, bool hackFlipZ = false)
+		public static Vector3 RightToLeft(Vector3 rightHanded, bool hackFlipZ = false)
 		{
 			if (FlipMujocoX)
 	    		return new Vector3(rightHanded.x, rightHanded.z, rightHanded.y); // use if fliping mujoco's X direction
