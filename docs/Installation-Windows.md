@@ -83,7 +83,7 @@ cd C:\Downloads\ml-agents\python
 Make sure you are connected to the internet and then type in the Anaconda Prompt:
 
 ```
-pip install .
+pip install -r requirements.txt.
 
 ```
 
