@@ -74,9 +74,6 @@ If you followed these instructions well, the agents in your environment that use
 
 * Once you build the project for iOS in the editor, open the .xcodeproj file within the project folder using Xcode.
 * Set up your ios account following the [iOS Account setup page](https://docs.unity3d.com/Manual/iphone-accountsetup.html). 
-* In `General` -> `Linked Frameworks and Libraries`:
-  * Add a framework called `Accelerate.framework`
-  * Remove the library `libtensorflow-core.a`
 * In **Build Settings** > **Linking** > **Other Linker Flags**:
   * Double click on the flag list to expand the list
   * Add `-force_load`
