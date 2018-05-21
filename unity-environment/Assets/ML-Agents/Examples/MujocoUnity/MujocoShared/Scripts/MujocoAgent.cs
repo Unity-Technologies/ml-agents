@@ -96,7 +96,7 @@ namespace MujocoUnity
         void SetupMujoco()
         {
             MujocoController = GetComponent<MujocoController>();
-            _numJoints = MujocoController.qpos.Count;
+            _numJoints = MujocoController.MujocoJoints.Count;
             NumSensors = MujocoController.MujocoSensors.Count;            
             _jointSize = 2;
             _sensorSize = 1;

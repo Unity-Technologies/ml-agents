@@ -17,12 +17,15 @@ namespace MujocoUnity
         // public bool applyTargets;
         // public float[] targets;
 
-        public List<float> qpos;
-        public List<float> qglobpos;
-        public List<float> qvel;
-        public List<float> OnSensor;
+        [System.Obsolete]
+        List<float> qpos;
+        [System.Obsolete]
+        List<float> qglobpos;
+        [System.Obsolete]
+        List<float> qvel;
+        [System.Obsolete]
+        List<float> OnSensor;
         public List<float> SensorIsInTouch;
-        public float MujocoTimeStep;
 
         public GameObject _focalPoint;
 
@@ -31,7 +34,8 @@ namespace MujocoUnity
         public Vector3 FocalPointRotation;
         public Vector3 FocalPointEulerAngles;
         public Vector3 FocalPointRotationVelocity;
-        public List<float> JointAngles;
+        [System.Obsolete]
+        List<float> JointAngles;
         public List<float> JointVelocity;
 
         List<System.Tuple<ConfigurableJoint, Transform>> _baseTargetPairs;
@@ -74,10 +78,6 @@ namespace MujocoUnity
             JointAngularVelocities = Enumerable.Range(0,_baseTargetPairs.Count).Select(x=>Vector3.zero).ToList();
         }
 
-        public void SetMujocoTimestep(float timestep)
-        {
-            MujocoTimeStep = timestep;
-        }
         GameObject FindTopMesh(GameObject curNode, GameObject topmostNode = null)
         {
             var meshRenderer = curNode.GetComponent<MeshRenderer>();

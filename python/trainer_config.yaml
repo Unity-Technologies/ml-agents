@@ -66,6 +66,21 @@ DeepMindWalkerBrain:
     buffer_size: 10240
     max_steps: 3e5
 
+OpenAIHopperBrain:
+    beta: 5.0e-3
+    epsilon: 0.20
+    gamma: 0.99
+    lambd: 0.95
+    learning_rate: 1.0e-3
+    num_epoch: 3
+    time_horizon: 128
+    summary_freq: 1000
+    use_recurrent: false
+    normalize: true
+    batch_size: 2048
+    buffer_size: 10240
+    max_steps: 1e5
+
 BananaBrain:
     normalize: false
     batch_size: 1024

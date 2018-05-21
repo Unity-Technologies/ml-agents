@@ -212,7 +212,6 @@ namespace MujocoUnity
                             if (UseMujocoTimestep){
                                 var timestep = float.Parse(attribute.Value);
                                 Time.fixedDeltaTime = timestep;
-                                GetComponent<MujocoController>().SetMujocoTimestep(timestep);
                             }
                             else
                                 DebugPrint($"--*** IGNORING timestep=\"{attribute.Value}\" as UseMujocoTimestep == false");
