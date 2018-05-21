@@ -489,7 +489,7 @@ class UnityEnvironment(object):
         rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
         for key in config:
             rl_in.environment_parameters.float_parameters[key] = config[key]
-            rl_in.command = 1
+        rl_in.command = 1
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(self, init_parameters: UnityRLInitializationInput) -> UnityRLInitializationOutput:
