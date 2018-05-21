@@ -25,10 +25,10 @@ We recommend the default _advanced installation options_. However, select the op
 After installation, you must open __Anaconda Navigator__ to finish the setup. From the Windows search bar, type _anaconda navigator_. You can close Anaconda Navigator after it opens.
 If environment variables were not created, or if you see the error "conda is not recognized as internal or external command", in System Variables, "Path" add the following new paths:
 ```
-    C:\ProgramData\Anaconda3\Scripts
-    C:\ProgramData\Anaconda3\Scripts\conda.exe
-    C:\ProgramData\Anaconda3
-    C:\ProgramData\Anaconda3\python.exe
+    %UserProfile%\Anaconda3\Scripts
+    %UserProfile%\Anaconda3\Scripts\conda.exe
+    %UserProfile%\Anaconda3
+    %UserProfile%\Anaconda3\python.exe
 ```
 ## Step 2: Setup and Activate a New Conda Environment
 
