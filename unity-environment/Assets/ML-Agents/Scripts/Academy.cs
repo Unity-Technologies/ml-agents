@@ -137,6 +137,11 @@ public abstract class Academy : MonoBehaviour
     /// Training or Inference mode.
     bool isCommunicatorOn;
 
+    /// Keeps track of the id of the last communicator message received.
+    /// Remains 0 if there are no communicators. Is used to ensure that
+    /// the same message is not used multiple times.
+    private ulong lastCommunicatorMessageNumber;
+
     /// If true, the Academy will use inference settings. This field is 
     /// initialized in <see cref="Awake"/> depending on the presence
     /// or absence of a communicator. Furthermore, it can be modified by an
@@ -512,8 +517,10 @@ public abstract class Academy : MonoBehaviour
             ConfigureEnvironment();
             modeSwitched = false;
         }
-        if (isCommunicatorOn)
+        if ((isCommunicatorOn) &&
+            (lastCommunicatorMessageNumber != brainBatcher.GetNumberMessageReceived()))
         {
+            lastCommunicatorMessageNumber = brainBatcher.GetNumberMessageReceived();
             if (brainBatcher.GetCommand() == 
                 MLAgents.CommunicatorObjects.CommandProto.Reset)
             {

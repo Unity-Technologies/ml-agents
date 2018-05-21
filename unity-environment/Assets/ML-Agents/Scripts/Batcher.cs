@@ -46,6 +46,9 @@ namespace MLAgents
         /// Keeps track of last training mode sent by External
         bool m_isTraining;
 
+        /// Keeps track of the number of messages received
+        private ulong m_messagesReceived;
+
         /// <summary>
         /// Initializes a new instance of the Batcher class.
         /// </summary>
@@ -107,6 +110,15 @@ namespace MLAgents
         public CommunicatorObjects.CommandProto GetCommand()
         {
             return m_command;
+        }
+
+        /// <summary>
+        /// Gets the number of messages received so far. Can be used to check for new messages.
+        /// </summary>
+        /// <returns>The number of messages received since start of the simulation</returns>
+        public ulong GetNumberMessageReceived()
+        {
+            return m_messagesReceived;
         }
 
         /// <summary>
@@ -279,6 +291,7 @@ namespace MLAgents
                 new CommunicatorObjects.UnityOutput{
                 RlOutput = m_currentUnityRLOutput
             });
+            m_messagesReceived += 1;
 
             foreach (string k in m_currentUnityRLOutput.AgentInfos.Keys)
             {
