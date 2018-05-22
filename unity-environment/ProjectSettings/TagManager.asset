@@ -22,7 +22,7 @@ TagManager:
   - orangeBlock
   - block
   - orangeGoal
-  - crawlerTarget
+  - target
   layers:
   - Default
   - TransparentFX

@@ -6,7 +6,7 @@ using UnityEngine;
 /// This class contains logic for locomotion agents with joints which might make contact with the ground.
 /// By attaching this as a component to those joints, their contact with the ground can be used as either
 /// an observation for that agent, and/or a means of punishing the agent for making undesirable contact.
-/// !!! You MUST tag the ground "ground", and the target "crawlerTarget" for this script to work
+/// !!! You MUST tag the ground "ground", and the target "target" for this script to work
 /// </summary>
 public class CrawlerContact : MonoBehaviour
 {
@@ -44,11 +44,10 @@ public class CrawlerContact : MonoBehaviour
         }
 
         // Touched the target 
-        if (other.transform.CompareTag("crawlerTarget"))
+        if (other.transform.CompareTag("target"))
         {
             agent.TouchedTarget(other.relativeVelocity.sqrMagnitude);
         }
-
     }
 
     /// <summary>

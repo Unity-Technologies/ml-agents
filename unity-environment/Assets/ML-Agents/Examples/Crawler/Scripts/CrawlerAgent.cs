@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CrawlerAgent : Agent {
+
     [Header("Target To Walk Towards")] 
     [Space(10)] 
     public Transform target;
@@ -10,10 +11,8 @@ public class CrawlerAgent : Agent {
     public float targetSpawnRadius;
 
 
-
     [Header("Body Parts")] 
     [Space(10)] 
-
     public Transform body;
     public Transform leg0_upper;
     public Transform leg0_lower;
@@ -33,18 +32,15 @@ public class CrawlerAgent : Agent {
 	public float maxJointForceLimit;
 	public Vector3 footCenterOfMassShift; //used to shift the centerOfMass on the feet so the agent isn't so top heavy
 	Vector3 dirToTarget;
-	CrawlerAcademy academy;
 	float movingTowardsDot;
 	float facingDot;
 
 
     [Header("Reward Functions To Use")] 
     [Space(10)] 
-
     public bool rewardMovingTowardsTarget; //agent should move towards target
     public bool rewardFacingTarget; //agent should face the target
     public bool rewardUseTimePenalty; //hurry up
-
 
 
     [Header("Foot Grounded Visualization")] 
@@ -106,7 +102,6 @@ public class CrawlerAgent : Agent {
             };
             joint.slerpDrive = jd;
         }
-
     }
 
     /// <summary>
@@ -126,9 +121,11 @@ public class CrawlerAgent : Agent {
         bp.groundContact = t.GetComponent<CrawlerContact>();
 		bp.agent = this;
     }
+
+    //Initialize
     public override void InitializeAgent()
     {
-		academy = FindObjectOfType<CrawlerAcademy>();
+        //Setup each body part
         SetupBodyPart(body);
         SetupBodyPart(leg0_upper);
         SetupBodyPart(leg0_lower);
@@ -138,6 +135,9 @@ public class CrawlerAgent : Agent {
         SetupBodyPart(leg2_lower);
         SetupBodyPart(leg3_upper);
         SetupBodyPart(leg3_lower);
+
+        //we want a lower center of mass or the crawler will roll over easily. 
+        //these settings shift the COM on the lower legs
 		bodyParts[leg0_lower].rb.centerOfMass = footCenterOfMassShift;
 		bodyParts[leg1_lower].rb.centerOfMass = footCenterOfMassShift;
 		bodyParts[leg2_lower].rb.centerOfMass = footCenterOfMassShift;
@@ -164,21 +164,21 @@ public class CrawlerAgent : Agent {
         }
     }
 
-    void Update()
-    {
-        //update pos to target every tick
-		dirToTarget = target.position - bodyParts[body].rb.position;
+    // void FixedUpdate()
+    // {
+    //     //update pos to target
+	// 	dirToTarget = target.position - bodyParts[body].rb.position;
 
-        //if enabled the feet will light up green when the foot is grounded.
-        //this is just a visualization and isn't necessary for function
-        if(useFootGroundedVisualization)
-        {
-            foot0.material = bodyParts[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot1.material = bodyParts[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot2.material = bodyParts[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot3.material = bodyParts[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-        }
-    }
+    //     //if enabled the feet will light up green when the foot is grounded.
+    //     //this is just a visualization and isn't necessary for function
+    //     if(useFootGroundedVisualization)
+    //     {
+    //         foot0.material = bodyParts[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+    //         foot1.material = bodyParts[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+    //         foot2.material = bodyParts[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+    //         foot3.material = bodyParts[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+    //     }
+    // }
 
 	/// <summary>
     /// Adds the raycast hit dist and relative pos to observations
@@ -199,11 +199,11 @@ public class CrawlerAgent : Agent {
                 relativeHitPos = body.InverseTransformPoint(hit.point); 
             }
         }
+
+        //add our raycast observation 
         AddVectorObs(dist);
         AddVectorObs(relativeHitPos);
     }
-
-
 
     public override void CollectObservations()
     {
@@ -252,9 +252,20 @@ public class CrawlerAgent : Agent {
 		target.position = newTargetPos;
     }
 
-
 	 public override void AgentAction(float[] vectorAction, string textAction)
     {
+        //update pos to target
+		dirToTarget = target.position - bodyParts[body].rb.position;
+
+        //if enabled the feet will light up green when the foot is grounded.
+        //this is just a visualization and isn't necessary for function
+        if(useFootGroundedVisualization)
+        {
+            foot0.material = bodyParts[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot1.material = bodyParts[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot2.material = bodyParts[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot3.material = bodyParts[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+        }
 
         // Apply action to all relevant body parts. 
         bodyParts[leg0_upper].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], 0, vectorAction[2]);
@@ -276,6 +287,7 @@ public class CrawlerAgent : Agent {
     void RewardFunctionMovingTowards()
     {
         //don't normalize vel. the faster it goes the more reward it should get
+        //0.03f chosen via experimentation
 		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); 
         AddReward(0.03f * movingTowardsDot);
     }
@@ -283,6 +295,7 @@ public class CrawlerAgent : Agent {
     //Reward facing target & Penalize facing away from target
     void RewardFunctionFacingTarget()
     {
+        //0.01f chosen via experimentation.
 		facingDot = Vector3.Dot(dirToTarget.normalized, body.forward);
         AddReward(0.01f * facingDot);
     }
@@ -290,7 +303,8 @@ public class CrawlerAgent : Agent {
     //Time penalty - HURRY UP
     void RewardFunctionTimePenalty()
     {
-        AddReward(- 0.001f);
+        //0.001f chosen by experimentation. If this penalty is too high it will kill itself :(
+        AddReward(- 0.001f); 
     }
 
 	/// <summary>
