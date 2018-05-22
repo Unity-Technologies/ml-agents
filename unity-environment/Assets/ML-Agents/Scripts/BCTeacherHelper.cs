@@ -40,15 +40,15 @@ public class BCTeacherHelper : MonoBehaviour {
         {
             resetBuffer = false;
         }
-        Monitor.Log("Recording experiences " + recordKey.ToString(), recordExperiences.ToString());
+        Monitor.Log("Recording experiences " + recordKey, recordExperiences.ToString());
         float timeSinceBufferReset = Time.time - bufferResetTime;
-        Monitor.Log("Seconds since buffer reset " + resetKey.ToString(), Mathf.FloorToInt(timeSinceBufferReset));
+        Monitor.Log("Seconds since buffer reset " + resetKey, Mathf.FloorToInt(timeSinceBufferReset).ToString());
     }
 
     void FixedUpdate()
     {
         // Convert both bools into single comma separated string. Python makes
         // assumption that this structure is preserved. 
-        myAgent.SetTextObs(recordExperiences.ToString() + "," + resetBuffer.ToString());
+        myAgent.SetTextObs(recordExperiences + "," + resetBuffer);
     }
 }

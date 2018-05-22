@@ -31,6 +31,7 @@ public class WallJumpAgent : Agent
     WallJumpAcademy academy;
     RayPerception rayPer;
 
+    public bool useVisual;
     public float jumpingTime;
     public float jumpTime;
     // This is a downward force applied when falling to make jumps look
@@ -122,18 +123,19 @@ public class WallJumpAgent : Agent
 
     public override void CollectObservations()
     {
-        float rayDistance = 20f;
-        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-        AddVectorObs(rayPer.Perceive(
-            rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(rayPer.Perceive(
-            rayDistance, rayAngles, detectableObjects, 2.5f, 2.5f));
-        Vector3 agentPos = agentRB.position - ground.transform.position;
+        if (!useVisual)
+        {
+            float rayDistance = 20f;
+            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+            AddVectorObs(rayPer.Perceive(
+                rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(rayPer.Perceive(
+                rayDistance, rayAngles, detectableObjects, 2.5f, 2.5f));
+            Vector3 agentPos = agentRB.position - ground.transform.position;
 
-        AddVectorObs(agentPos / 20f);
-        AddVectorObs(DoGroundCheck(0.4f) ? 1 : 0);
-
-
+            AddVectorObs(agentPos / 20f);
+            AddVectorObs(DoGroundCheck(0.4f) ? 1 : 0);
+        }
     }
 
     /// <summary>
@@ -255,7 +257,6 @@ public class WallJumpAgent : Agent
                 GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 2));
         }
     }
-
 
     //Reset the orange block position
     void ResetBlock(Rigidbody blockRB)
