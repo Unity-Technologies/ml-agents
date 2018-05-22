@@ -86,7 +86,7 @@ If the learn.py runs correctly and starts training, you should see something lik
 ![Training running](images/training-running.png)
 
 You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below, which is similar to the steps described [above](#play-an-example-environment-using-pretrained-model). 
-**Note**: When using in Editor training, <env_name> is replaced with `editor_<academy_name>`. When using an executable to train, <env_name> is the name of the executable.
+**Note**: When using in Editor training, <env_name> is replaced with `editor_<academy_name>_<run-identifier>` where `<academy_name>` is the name of the Academy GameObject in the current scene. When using an executable to train, <env_name> is the name of the executable.
 
 1. Move your model file into 
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
