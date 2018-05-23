@@ -87,17 +87,17 @@ pip install .
 
 ```
 
-This will complete the installation of all the required Python packages to run ML-Agents. Sometimes the installation will get stuck, in which case you can use Ctrl+C to stop the installation and try again. 
+This will complete the installation of all the required Python packages to run ML-Agents.
 
 ## (Optional) Step 4: GPU Training using ML-Agents 
 
-GPU is not required to use v0.3 for ML-Agents, and using it won't speed up the training a lot with the current implementation of ML-Agents. This is a guide for advanced users who want to train using GPUs. Additionally, you will need to check if your GPU is CUDA compatible. Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
+GPU is not required for ML-Agents and won't speed up the PPO algorithm a lot during training(but something in the future will benefit from GPU). This is a guide for advanced users who want to train using GPUs. Additionally, you will need to check if your GPU is CUDA compatible. Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
 As of ML-Agents v0.3, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
 ### Install Nvidia CUDA toolkit
 
-[Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the CUDA toolkit 9.0 from Nvidia's archive. The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ (Step Visual Studio 2017) compiler and a runtime library and is needed to run ML-Agents. In this guide, we are using version 9.0.176 (https://developer.nvidia.com/compute/cuda/9.0/Prod/network_installers/cuda_9.0.176_win10_network-exe)). 
+[Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the CUDA toolkit 9.0 from Nvidia's archive. The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ (Step Visual Studio 2017) compiler and a runtime library and is needed to run ML-Agents. In this guide, we are using version 9.0.176 (https://developer.nvidia.com/compute/cuda/9.0/Prod/network_installers/cuda_9.0.176_win10_network-exe)).
 
 Before installing, please make sure you __close any running instances of Unity or Visual Studio__.
 
