@@ -84,6 +84,7 @@ If you would like to contribute environments, please see our
     * Visual Observations: None
 * Reset Parameters: One, corresponding to size of ball.
 * Benchmark Mean Reward: 2.5
+* Optional Imitation Learning scene: `TennisIL`.
 
 ## [Push Block](https://youtu.be/jKdw216ZgoE)
 
@@ -98,9 +99,10 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
     * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
-    * Visual Observations: None.
+    * Visual Observations (optional): One first-person camera. Use `VisualPushBlock` scene.
 * Reset Parameters: None.
 * Benchmark Mean Reward: 4.5
+* Optional Imitation Learning scene: `PushBlockIL`.
 
 ## [Wall Jump](https://youtu.be/NITLug2DIWQ)
 
@@ -169,9 +171,10 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 53 corresponding to velocity of agent (2), whether agent is frozen and/or shot its laser (2), plus ray-based perception of objects around agent's forward direction (49; 7 raycast angles with 7 measurements for each).
     * Vector Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
-    * Visual Observations (Optional; None by default): First-person view for each agent. 
+    * Visual Observations (Optional): First-person camera per-agent. Use `VisualBanana` scene. 
 * Reset Parameters: None
 * Benchmark Mean Reward: 10
+* Optional Imitation Learning scene: `BananaIL`. 
 
 ## [Hallway](https://youtu.be/53GyfpPQRUQ)
 
@@ -187,9 +190,10 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space:
     * Vector Observation space: (Continuous) 30 corresponding to local ray-casts detecting objects, goals, and walls.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
-    * Visual Observations (Optional): First-person view for the agent.
+    * Visual Observations (Optional): First-person view for the agent. Use `VisualHallway` scene.
 * Reset Parameters: None
 * Benchmark Mean Reward: 0.7
+* Optional Imitation Learning scene: `HallwayIL`.
 
 ## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
 
