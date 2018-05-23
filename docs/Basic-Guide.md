@@ -24,7 +24,7 @@ In order to use ML-Agents within Unity, you need to change some Unity settings f
 
 ![Project Settings](images/project-settings.png)
 
-[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) the TensorFlowSharp plugin. Then import it into Unity by double clicking the downloaded file.  You can check if it was successfully imported by checking the TensorFlow files in the Project window under **Assets** > **ML-Agents** > **Plugins** > **Computer**. 
+[Download](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage) the TensorFlowSharp plugin. Then import it into Unity by double clicking the downloaded file.  You can check if it was successfully imported by checking the TensorFlow files in the Project window under **Assets** > **ML-Agents** > **Plugins** > **Computer**. 
 
 **Note**: If you don't see anything under **Assets**, drag the `ml-agents/unity-environment/Assets/ML-Agents` folder under **Assets** within Project window.
 
@@ -86,9 +86,10 @@ launches our environment executable. This means:
 the 3DBall Scene is the only one checked. (If the list is empty, than only the 
 current scene is included in the build).
 6. Click **Build**:
-    a. In the File dialog, navigate to the `python` folder in your ML-Agents 
+    - In the File dialog, navigate to the `python` folder in your ML-Agents 
     directory.
-    b. Assign a file name and click **Save**.
+    - Assign a file name and click **Save**.
+    - (For Windows）With Unity 2018.1, it will ask you to select a folder instead of a file name. Create a subfolder within `python` folder and select that folder to build. In the following steps you will refer to this subfolder's name as `env_name`. 
 
 ![Build Window](images/mlagents-BuildWindow.png)
 
