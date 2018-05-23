@@ -29,7 +29,7 @@ public class BananaAgent : Agent
     public GameObject myLaser;
     public bool contribute;
     private RayPerception rayPer;
-    public bool useVisual;
+    public bool useVectorObs;
 
     public override void InitializeAgent()
     {
@@ -43,7 +43,7 @@ public class BananaAgent : Agent
 
     public override void CollectObservations()
     {
-        if (!useVisual)
+        if (useVectorObs)
         {
             float rayDistance = 50f;
             float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };

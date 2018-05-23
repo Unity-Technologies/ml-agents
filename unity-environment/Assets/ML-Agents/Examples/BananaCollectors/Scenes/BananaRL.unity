@@ -285,32 +285,12 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
+    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: myAcademyObj
-      value: 
-      objectReference: {fileID: 1574236047}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: myAcademyObj
-      value: 
-      objectReference: {fileID: 1574236047}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
+    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
         type: 2}
       propertyPath: myAcademyObj
       value: 
@@ -325,12 +305,32 @@ Prefab:
       propertyPath: myAcademyObj
       value: 
       objectReference: {fileID: 1574236047}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
+    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
         type: 2}
       propertyPath: brain
       value: 
       objectReference: {fileID: 7561199}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
+    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
         type: 2}
       propertyPath: myAcademyObj
       value: 

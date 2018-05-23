@@ -31,7 +31,6 @@ public class WallJumpAgent : Agent
     WallJumpAcademy academy;
     RayPerception rayPer;
 
-    public bool useVisual;
     public float jumpingTime;
     public float jumpTime;
     // This is a downward force applied when falling to make jumps look
@@ -123,8 +122,6 @@ public class WallJumpAgent : Agent
 
     public override void CollectObservations()
     {
-        if (!useVisual)
-        {
             float rayDistance = 20f;
             float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
             AddVectorObs(rayPer.Perceive(
@@ -135,7 +132,6 @@ public class WallJumpAgent : Agent
 
             AddVectorObs(agentPos / 20f);
             AddVectorObs(DoGroundCheck(0.4f) ? 1 : 0);
-        }
     }
 
     /// <summary>

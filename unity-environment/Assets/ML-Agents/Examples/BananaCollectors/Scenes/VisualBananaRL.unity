@@ -656,6 +656,92 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   broadcast: 1
   brain: {fileID: 7561199}
+--- !u!1001 &1429151548
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124995608184224, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114395305755641442, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114395305755641442, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114863868205103286, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114863868205103286, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114661537450162482, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114661537450162482, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114813974235827884, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 7561199}
+    - target: {fileID: 114813974235827884, guid: 79d09bf6cbfa64f55a572755f594652f,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 1575621625717122, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+      propertyPath: m_Name
+      value: VisualRLArea (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 79d09bf6cbfa64f55a572755f594652f, type: 2}
+  m_IsPrefabParent: 0
 --- !u!114 &1471502507
 MonoBehaviour:
   m_ObjectHideFlags: 0

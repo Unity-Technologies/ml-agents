@@ -37,7 +37,7 @@ public class PushAgentBasic : Agent
 	[HideInInspector]
     public GoalDetect goalDetect;
 
-    public bool useVisual;
+    public bool useVectorObs;
 
     Rigidbody blockRB;  //cached on initialization
     Rigidbody agentRB;  //cached on initialization
@@ -77,7 +77,7 @@ public class PushAgentBasic : Agent
 
     public override void CollectObservations()
     {
-        if (!useVisual)
+        if (useVectorObs)
         {
             var rayDistance = 12f;
             float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };

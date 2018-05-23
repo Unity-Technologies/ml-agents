@@ -614,6 +614,31 @@ Prefab:
       propertyPath: myAcademyObj
       value: 
       objectReference: {fileID: 1574236047}
+    - target: {fileID: 114033573546398302, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: useVectorObs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114085328779651546, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: useVectorObs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114879445014876350, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: useVectorObs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114990713253136410, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: useVectorObs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114142328162608466, guid: 40ff8390cb10a47b69a26f13051c0077,
+        type: 2}
+      propertyPath: useVectorObs
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40ff8390cb10a47b69a26f13051c0077, type: 2}
   m_IsPrefabParent: 0

@@ -10,7 +10,7 @@ public class HallwayAgent : Agent
     public GameObject redGoal;
     public GameObject orangeBlock;
     public GameObject redBlock;
-    public bool useVisual;
+    public bool useVectorObs;
     RayPerception rayPer;
     Rigidbody shortBlockRB;
     Rigidbody agentRB;
@@ -32,7 +32,7 @@ public class HallwayAgent : Agent
 
     public override void CollectObservations()
     {
-        if (!useVisual)
+        if (useVectorObs)
         {
             float rayDistance = 12f;
             float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };

@@ -1053,6 +1053,7 @@ MonoBehaviour:
   redGoal: {fileID: 420752336}
   orangeBlock: {fileID: 1516112232}
   redBlock: {fileID: 778561130}
+  useVectorObs: 1
 --- !u!54 &622756926
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1728,6 +1729,7 @@ MonoBehaviour:
   redGoal: {fileID: 416291007}
   orangeBlock: {fileID: 577585781}
   redBlock: {fileID: 1747738424}
+  useVectorObs: 1
 --- !u!54 &1007891789
 Rigidbody:
   m_ObjectHideFlags: 0
