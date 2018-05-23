@@ -1,16 +1,17 @@
 # Training on Amazon Web Service
 
-This page contains instructions for setting up an EC2 instance on Amazon Web Service for training ML-Agents environments.
+This page contains instructions for setting up an EC2 instance on Amazon Web Service for training ML-Agents environments. Visual observations is not supported currently and you need to enable headless mode.
 
-## Recommended starting AMI
+## Recommended AMI
 You can get started with an EC2 instance with the Deep Learning AMI (Ubuntu) listed under AWS Marketplace [AMI](https://aws.amazon.com/marketplace/pp/B077GCH38C). Choose the python3 environment within that ami which gives you the python3 and CUDA 9.0 environment.
 
 ## Configuring your own Instance
 
-1. To begin with, you will need an EC2 instance which contains the latest Nvidia drivers, CUDA9, and cuDNN.  There are a number of external tutorials which describe this although they are targeted for CUDA8, such as:
-    * [Getting CUDA 8 to Work With openAI Gym on AWS and Compiling TensorFlow for CUDA 8 Compatibility](https://davidsanwald.github.io/2016/11/13/building-tensorflow-with-gpu-support.html)
-    * [Installing TensorFlow on an AWS EC2 P2 GPU Instance](http://expressionflow.com/2016/10/09/installing-tensorflow-on-an-aws-ec2-p2-gpu-instance/)
-    * [Updating Nvidia CUDA to 8.0.x in Ubuntu 16.04 – EC2 Gx instance](https://aichamp.wordpress.com/2016/11/09/updating-nvidia-cuda-to-8-0-x-in-ubuntu-16-04-ec2-gx-instance/)
+To begin with, you will need an EC2 instance which contains the latest Nvidia drivers, CUDA9, and cuDNN.  There are a number of external tutorials which describe this (Note: You will need to tweak some steps in these tutorials for CUDA 9):
+
+* [Getting CUDA 8 to Work With openAI Gym on AWS and Compiling TensorFlow for CUDA 8 Compatibility](https://davidsanwald.github.io/2016/11/13/building-tensorflow-with-gpu-support.html)    
+* [Installing TensorFlow on an AWS EC2 P2 GPU Instance](http://expressionflow.com/2016/10/09/installing-tensorflow-on-an-aws-ec2-p2-gpu-instance/)   
+* [Updating Nvidia CUDA to 8.0.x in Ubuntu 16.04 – EC2 Gx instance](https://aichamp.wordpress.com/2016/11/09/updating-nvidia-cuda-to-8-0-x-in-ubuntu-16-04-ec2-gx-instance/)
 
 ## Installing ML-Agents
 
