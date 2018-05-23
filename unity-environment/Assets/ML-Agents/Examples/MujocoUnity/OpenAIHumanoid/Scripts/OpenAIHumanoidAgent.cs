@@ -157,6 +157,8 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         _lastSenorState = Enumerable.Repeat<float>(0f, NumSensors).ToList();
         _phase = 0;
         _phaseBonus = 0f;
+        PhaseResetLeft();
+        PhaseResetRight();
     }
 
     void PhaseResetLeft()
@@ -237,17 +239,17 @@ public class OpenAIHumanoidAgent : MujocoAgent {
 
         // new phase
         _phaseBonus = 0;
-        bool isLeftPhase = MujocoController.SensorIsInTouch[0] != 0f;
-        if (_phase == 1 && !isLeftPhase) {
+        bool isLeftFootDown = MujocoController.SensorIsInTouch[0] != 0f;
+        if (_phase == 2 && isLeftFootDown) {
             _phaseBonus = CalcPhaseBonus(LeftMin, LeftMax);
             _phaseBonus += 0.1f;
             PhaseResetLeft();
-        } else if (_phase == 2 && isLeftPhase) {
+        } else if (_phase == 1 && !isLeftFootDown) {
             _phaseBonus = CalcPhaseBonus(RightMin, RightMax);
             _phaseBonus += 0.1f;
             PhaseResetRight();
         }
-        _phase = isLeftPhase ? 1 : 2;
+        _phase = isLeftFootDown ? 1 : 2;
         return _phaseBonus;
     }    
 }
