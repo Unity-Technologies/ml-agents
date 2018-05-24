@@ -4,10 +4,10 @@ This section will help you create and use built environments rather than the Edi
 
  * You can exchange executable with other people without having to share your entire repository.
  * You can put your executable on a remote machine for faster training.
- * You can use `Headles` mode for faster training.
+ * You can use `Headless` mode for faster training.
  * You can keep using the Unity Editor for other tasks while the agents are training.
 
-## Building the environment
+## Building the 3DBall environment
 
 The first step is to open the Unity scene containing the 3D Balance Ball
 environment:
@@ -32,8 +32,8 @@ object.
 
 ![Set Brain to External](images/mlagents-SetExternalBrain.png)
 
-Next, we want the set up scene to play correctly when we 
-launch our environment executable. This means:
+Next, we want the set up scene to play correctly when the training process 
+launches our environment executable. This means:
 * The environment application runs in the background
 * No dialogs require interaction
 * The correct scene loads automatically
@@ -50,9 +50,10 @@ launch our environment executable. This means:
 the 3DBall Scene is the only one checked. (If the list is empty, than only the 
 current scene is included in the build).
 6. Click **Build**:
-    a. In the File dialog, navigate to the `python` folder in your ML-Agents 
+    - In the File dialog, navigate to the `python` folder in your ML-Agents 
     directory.
-    b. Assign a file name and click **Save**.
+    - Assign a file name and click **Save**.
+    - (For Windows）With Unity 2018.1, it will ask you to select a folder instead of a file name. Create a subfolder within `python` folder and select that folder to build. In the following steps you will refer to this subfolder's name as `env_name`. 
 
 ![Build Window](images/mlagents-BuildWindow.png)
 
@@ -67,9 +68,37 @@ from unityagents import UnityEnvironment
 env = UnityEnvironment(file_name=<env_name>)
 ```
 
-If you are using `learn.py` you can pass the name of the executable in the command line. For instance : 
+## Training the Environment
+1. Open a command or terminal window. 
+2. Nagivate to the folder where you installed ML-Agents. 
+3. Change to the python directory. 
+4. Run `python3 learn.py <env_name> --run-id=<run-identifier> --train`
+Where:
+- `<env_name>` is the name and path to the executable you exported from Unity (without extension)
+- `<run-identifier>` is a string used to separate the results of different training runs
+- And the `--train` tells learn.py to run a training session (rather than inference)
+
+For example, if you are training with a 3DBall executable you exported to the ml-agents/python directory, run:
 
 ```
-python3 learn.py <env_name> --run-id=<run-identifier> --train
+python3 learn.py 3DBall --run-id=firstRun --train
 ```
 
+![Training command example](images/training-command-example.png)
+
+**Note**: If you're using Anaconda, don't forget to activate the ml-agents environment first.
+
+If the learn.py runs correctly and starts training, you should see something like this:
+
+![Training running](images/training-running.png)
+
+You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below:
+
+1. Move your model file into 
+`unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+2. Open the Unity Editor, and select the **3DBall** scene as described above.
+3. Select the **Ball3DBrain** object from the Scene hierarchy.
+4. Change the **Type of Brain** to **Internal**.
+5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of the Editor
+to the **Graph Model** placeholder in the **Ball3DBrain** inspector window.
+6. Press the Play button at the top of the editor.

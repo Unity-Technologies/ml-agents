@@ -41,18 +41,6 @@ In order to use ML-Agents within Unity, you need to change some Unity settings f
 
 ![Running a pretrained model](images/running-a-pretrained-model.gif)
 
-## Setting the Brain to External
-Since we are going to build this environment to conduct training, we need to 
-set the brain used by the agents to **External**. This allows the agents to 
-communicate with the external training process when making their decisions.
-
-1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy 
-object.
-2. Select its child object **Ball3DBrain**.
-3. In the Inspector window, set **Brain Type** to **External**.
-
-![Set Brain to External](images/mlagents-SetExternalBrain.png)
-
 ## Using the Basics Jupyter Notebook
 
 The `python/Basics` [Jupyter notebook](Background-Jupyter.md) contains a 
@@ -65,7 +53,19 @@ More information and documentation is provided in the
 [Python API](Python-API.md) page.
 
 ## Training the Brain with Reinforcement Learning
+### Setting the Brain to External
+Since we are going to build this environment to conduct training, we need to 
+set the brain used by the agents to **External**. This allows the agents to 
+communicate with the external training process when making their decisions.
 
+1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy 
+object.
+2. Select its child object **Ball3DBrain**.
+3. In the Inspector window, set **Brain Type** to **External**.
+
+![Set Brain to External](images/mlagents-SetExternalBrain.png)
+
+### Training the environment
 1. Open a command or terminal window. 
 2. Nagivate to the folder where you installed ML-Agents. 
 3. Change to the `python` directory. 
@@ -85,8 +85,8 @@ If the learn.py runs correctly and starts training, you should see something lik
 
 ![Training running](images/training-running.png)
 
-You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below, which is similar to the steps described [above](#play-an-example-environment-using-pretrained-model). 
-**Note**: When using in Editor training, <env_name> is replaced with `editor_<academy_name>_<run-identifier>` where `<academy_name>` is the name of the Academy GameObject in the current scene. When using an executable to train, <env_name> is the name of the executable.
+### After training
+You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/editor_<academy_name>_<run-identifier>.bytes` where `<academy_name>` is the name of the Academy GameObject in the current scene. This file corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below, which is similar to the steps described [above](#play-an-example-environment-using-pretrained-model).  
 
 1. Move your model file into 
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
