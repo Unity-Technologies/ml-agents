@@ -1,5 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System.Linq;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -87,6 +92,8 @@ public class EnvironmentConfiguration
          "docs/Learning-Environment-Design-Academy.md")]
 public abstract class Academy : MonoBehaviour
 {
+    private const string kApiVersion = "API-4";
+
     // Fields provided in the Inspector
 
     [SerializeField]
@@ -130,6 +137,11 @@ public abstract class Academy : MonoBehaviour
     /// Training or Inference mode.
     bool isCommunicatorOn;
 
+    /// Keeps track of the id of the last communicator message received.
+    /// Remains 0 if there are no communicators. Is used to ensure that
+    /// the same message is not used multiple times.
+    private ulong lastCommunicatorMessageNumber;
+
     /// If true, the Academy will use inference settings. This field is 
     /// initialized in <see cref="Awake"/> depending on the presence
     /// or absence of a communicator. Furthermore, it can be modified by an
@@ -159,8 +171,15 @@ public abstract class Academy : MonoBehaviour
     /// engine settings at the next environment step.
     bool modeSwitched;
 
-    /// Pointer to the communicator currently in use by the Academy.
-    Communicator communicator;
+    /// Pointer to the batcher currently in use by the Academy.
+    MLAgents.Batcher brainBatcher;
+
+    /// Used to write error messages.
+    StreamWriter logWriter;
+
+    /// The path to where the log should be written.
+    string logPath;
+
 
     // Flag used to keep track of the first time the Academy is reset.
     bool firstAcademyReset;
@@ -208,32 +227,100 @@ public abstract class Academy : MonoBehaviour
         InitializeEnvironment();
     }
 
+    // Used to read Python-provided environment parameters
+    private int ReadArgs()
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        var inputPort = "";
+        for (var i = 0; i < args.Length; i++)
+        {
+            if (args[i] == "--port")
+            {
+                inputPort = args[i + 1];
+            }
+        }
+        return int.Parse(inputPort);
+    }
+
     /// <summary>
     /// Initializes the environment, configures it and initialized the Academy.
     /// </summary>
-    void InitializeEnvironment()
+    private void InitializeEnvironment()
     {
         // Retrieve Brain and initialize Academy
-        List<Brain> brains = GetBrains(gameObject);
+        var brains = GetBrains(gameObject);
         InitializeAcademy();
+        MLAgents.Communicator communicator= null;
 
-        // Check for existence of communicator
-        communicator = new ExternalCommunicator(this);
-        if (!communicator.CommunicatorHandShake())
+        // Try to launch the communicator by usig the arguments passed at launch
+        try
+        {
+            communicator = new MLAgents.RPCCommunicator(
+                new MLAgents.CommunicatorParameters
+                {
+                port = ReadArgs()
+                });
+        }
+        // If it fails, we check if there are any external brains in the scene
+        // If there are : Launch the communicator on the default port
+        // If there arn't, there is no need for a communicator and it is set
+        // to null
+        catch
         {
             communicator = null;
+            var externalBrain = brains.FirstOrDefault(b => b.brainType == BrainType.External);
+            if (externalBrain != null)
+            {
+                communicator = new MLAgents.RPCCommunicator(
+                        new MLAgents.CommunicatorParameters
+                        {
+                            port = 5005
+                        });
+            }
+
         }
 
+        brainBatcher = new MLAgents.Batcher(communicator);
+
         // Initialize Brains and communicator (if present)
-        foreach (Brain brain in brains)
+        foreach (var brain in brains)
         {
-            brain.InitializeBrain(this, communicator);
+            brain.InitializeBrain(this, brainBatcher);
         }
         if (communicator != null)
         {
             isCommunicatorOn = true;
-            communicator.InitializeCommunicator();
-            communicator.UpdateCommand();
+
+            var academyParameters = new MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
+            academyParameters.Name = gameObject.name;
+            academyParameters.Version = kApiVersion;
+            foreach (var brain in brains)
+            {
+                var bp = brain.brainParameters;
+                academyParameters.BrainParameters.Add(
+                    MLAgents.Batcher.BrainParametersConvertor(
+                        bp,
+                        brain.gameObject.name,
+                        (MLAgents.CommunicatorObjects.BrainTypeProto)
+                        brain.brainType));
+
+            }
+            academyParameters.EnvironmentParameters =
+                new MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+            foreach (var key in resetParameters.Keys)
+            {
+                academyParameters.EnvironmentParameters.FloatParameters.Add(
+                    key, resetParameters[key]
+                );
+            }
+            var pythonParameters = brainBatcher.SendAcademyParameters(academyParameters);
+            Random.InitState(pythonParameters.Seed);
+            Application.logMessageReceived += HandleLog;
+            logPath = Path.GetFullPath(".") + "/unity-environment.log";
+            logWriter = new StreamWriter(logPath, false);
+            logWriter.WriteLine(System.DateTime.Now.ToString());
+            logWriter.WriteLine(" ");
+            logWriter.Close();
         }
 
         // If a communicator is enabled/provided, then we assume we are in
@@ -251,6 +338,15 @@ public abstract class Academy : MonoBehaviour
         // Configure the environment using the configurations provided by
         // the developer in the Editor.
         ConfigureEnvironment();
+    }
+
+    void HandleLog(string logString, string stackTrace, LogType type)
+    {
+        logWriter = new StreamWriter(logPath, true);
+        logWriter.WriteLine(type.ToString());
+        logWriter.WriteLine(logString);
+        logWriter.WriteLine(stackTrace);
+        logWriter.Close();
     }
 
     /// <summary>
@@ -399,15 +495,6 @@ public abstract class Academy : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the Communicator currently used by the Academy.
-    /// </summary>
-    /// <returns>The commincator currently in use (may be null).</returns>
-    public Communicator GetCommunicator()
-    {
-        return communicator;
-    }
-
-    /// <summary>
     /// Forces the full reset. The done flags are not affected. Is either 
     /// called the first reset at inference and every external reset
     /// at training.
@@ -430,24 +517,32 @@ public abstract class Academy : MonoBehaviour
             ConfigureEnvironment();
             modeSwitched = false;
         }
-
-        if (isCommunicatorOn)
+        if ((isCommunicatorOn) &&
+            (lastCommunicatorMessageNumber != brainBatcher.GetNumberMessageReceived()))
         {
-            if (communicator.GetCommand() == ExternalCommand.RESET)
+            lastCommunicatorMessageNumber = brainBatcher.GetNumberMessageReceived();
+            if (brainBatcher.GetCommand() == 
+                MLAgents.CommunicatorObjects.CommandProto.Reset)
             {
                 // Update reset parameters.
-                Dictionary<string, float> NewResetParameters =
-                    communicator.GetResetParameters();
-                foreach (KeyValuePair<string, float> kv in NewResetParameters)
+                var newResetParameters = brainBatcher.GetEnvironmentParameters();
+                if (newResetParameters != null)
                 {
-                    resetParameters[kv.Key] = kv.Value;
+                    foreach (var kv in newResetParameters.FloatParameters)
+                    {
+                        resetParameters[kv.Key] = kv.Value;
+                    }
                 }
+                SetIsInference(!brainBatcher.GetIsTraining());
 
                 ForcedFullReset();
-                communicator.SetCommand(ExternalCommand.STEP);
             }
-            if (communicator.GetCommand() == ExternalCommand.QUIT)
+            if (brainBatcher.GetCommand() == 
+                MLAgents.CommunicatorObjects.CommandProto.Quit)
             {
+#if UNITY_EDITOR
+                EditorApplication.isPlaying = false;
+#endif
                 Application.Quit();
                 return;
             }
@@ -465,6 +560,8 @@ public abstract class Academy : MonoBehaviour
 
         AgentSetStatus(maxStepReached, done, stepCount);
 
+        brainBatcher.RegisterAcademyDoneFlag(done);
+
         if (done)
         {
             EnvironmentReset();
@@ -480,12 +577,6 @@ public abstract class Academy : MonoBehaviour
 
         AgentAct();
 
-        if (done)
-        {
-            done = false;
-            maxStepReached = false;
-        }
-
         stepCount += 1;
     }
 
@@ -496,6 +587,8 @@ public abstract class Academy : MonoBehaviour
     {
         stepCount = 0;
         episodeCount++;
+        done = false;
+        maxStepReached = false;
         AcademyReset();
     }
 

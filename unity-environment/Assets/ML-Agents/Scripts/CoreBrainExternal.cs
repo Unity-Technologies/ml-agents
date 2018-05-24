@@ -8,7 +8,7 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
     /**< Reference to the brain that uses this CoreBrainExternal */
     public Brain brain;
 
-    ExternalCommunicator coord;
+    MLAgents.Batcher brainBatcher;
 
     /// Creates the reference to the brain
     public void SetBrain(Brain b)
@@ -18,20 +18,20 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
 
     /// Generates the communicator for the Academy if none was present and
     ///  subscribe to ExternalCommunicator if it was present.
-    public void InitializeCoreBrain(Communicator communicator)
+    public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
     {
-        if (communicator == null)
+        if (brainBatcher == null)
         {
-            coord = null;
+            brainBatcher = null;
             throw new UnityAgentsException(string.Format("The brain {0} was set to" +
                 " External mode" +
                 " but Unity was unable to read the" +
                 " arguments passed at launch.", brain.gameObject.name));
         }
-        else if (communicator is ExternalCommunicator)
+        else
         {
-            coord = (ExternalCommunicator)communicator;
-            coord.SubscribeBrain(brain);
+            this.brainBatcher = brainBatcher;
+            this.brainBatcher.SubscribeBrain(brain.gameObject.name);
         }
 
     }
@@ -40,11 +40,11 @@ public class CoreBrainExternal : ScriptableObject, CoreBrain
     ///  sends them to the agents
     public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
     {
-        if (coord != null)
+        if (brainBatcher != null)
         {
-            coord.GiveBrainInfo(brain, agentInfo);
+            brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
         }
-        return ;
+        return;
     }
 
     /// Nothing needs to appear in the inspector 

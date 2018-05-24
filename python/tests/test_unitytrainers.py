@@ -8,6 +8,7 @@ from unitytrainers.models import *
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
 from unityagents import UnityEnvironmentException
+from .mock_communicator import MockCommunicator
 
 dummy_start = '''{
   "AcademyName": "RealFakeAcademy",
@@ -100,74 +101,68 @@ default:
 ''')
 
 
-def test_initialization():
-    with mock.patch('subprocess.Popen'):
-        with mock.patch('socket.socket') as mock_socket:
-            with mock.patch('glob.glob') as mock_glob:
-                mock_glob.return_value = ['FakeLaunchPath']
-                mock_socket.return_value.accept.return_value = (mock_socket, 0)
-                mock_socket.recv.return_value.decode.return_value = dummy_start
-                tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                                       1, 1, 1, '', "tests/test_unitytrainers.py")
-                assert(tc.env.brain_names[0] == 'RealFakeBrain')
+@mock.patch('unityagents.UnityEnvironment.executable_launcher')
+@mock.patch('unityagents.UnityEnvironment.get_communicator')
+def test_initialization(mock_communicator, mock_launcher):
+    mock_communicator.return_value = MockCommunicator(
+        discrete=True, visual_input=True)
+    tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
+                           1, 1, 1, '', "tests/test_unitytrainers.py")
+    assert(tc.env.brain_names[0] == 'RealFakeBrain')
 
 
-def test_load_config():
+@mock.patch('unityagents.UnityEnvironment.executable_launcher')
+@mock.patch('unityagents.UnityEnvironment.get_communicator')
+def test_load_config(mock_communicator, mock_launcher):
     open_name = 'unitytrainers.trainer_controller' + '.open'
     with mock.patch('yaml.load') as mock_load:
         with mock.patch(open_name, create=True) as _:
-            with mock.patch('subprocess.Popen'):
-                with mock.patch('socket.socket') as mock_socket:
-                    with mock.patch('glob.glob') as mock_glob:
-                        mock_load.return_value = dummy_config
-                        mock_glob.return_value = ['FakeLaunchPath']
-                        mock_socket.return_value.accept.return_value = (mock_socket, 0)
-                        mock_socket.recv.return_value.decode.return_value = dummy_start
-                        mock_load.return_value = dummy_config
-                        tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                                                   1, 1, 1, '','')
-                        config = tc._load_config()
-                        assert(len(config) == 1)
-                        assert(config['default']['trainer'] == "ppo")
+            mock_load.return_value = dummy_config
+            mock_communicator.return_value = MockCommunicator(
+                discrete=True, visual_input=True)
+            mock_load.return_value = dummy_config
+            tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
+                                       1, 1, 1, '','')
+            config = tc._load_config()
+            assert(len(config) == 1)
+            assert(config['default']['trainer'] == "ppo")
 
 
-def test_initialize_trainers():
+@mock.patch('unityagents.UnityEnvironment.executable_launcher')
+@mock.patch('unityagents.UnityEnvironment.get_communicator')
+def test_initialize_trainers(mock_communicator, mock_launcher):
     open_name = 'unitytrainers.trainer_controller' + '.open'
     with mock.patch('yaml.load') as mock_load:
         with mock.patch(open_name, create=True) as _:
-            with mock.patch('subprocess.Popen'):
-                with mock.patch('socket.socket') as mock_socket:
-                    with mock.patch('glob.glob') as mock_glob:
-                        mock_glob.return_value = ['FakeLaunchPath']
-                        mock_socket.return_value.accept.return_value = (mock_socket, 0)
-                        mock_socket.recv.return_value.decode.return_value = dummy_start
-                        tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                                               1, 1, 1, '', "tests/test_unitytrainers.py")
+            mock_communicator.return_value = MockCommunicator(
+                discrete=True, visual_input=True)
+            tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
+                                   1, 1, 1, '', "tests/test_unitytrainers.py")
 
-                        # Test for PPO trainer
-                        mock_load.return_value = dummy_config
-                        config = tc._load_config()
-                        tf.reset_default_graph()
-                        with tf.Session() as sess:
-                            tc._initialize_trainers(config, sess)
-                            assert(len(tc.trainers) == 1)
-                            assert(isinstance(tc.trainers['RealFakeBrain'], PPOTrainer))
+            # Test for PPO trainer
+            mock_load.return_value = dummy_config
+            config = tc._load_config()
+            tf.reset_default_graph()
+            with tf.Session() as sess:
+                tc._initialize_trainers(config, sess)
+                assert(len(tc.trainers) == 1)
+                assert(isinstance(tc.trainers['RealFakeBrain'], PPOTrainer))
 
-                        # Test for Behavior Cloning Trainer
-                        mock_load.return_value = dummy_bc_config
-                        config = tc._load_config()
-                        tf.reset_default_graph()
-                        with tf.Session() as sess:
-                            tc._initialize_trainers(config, sess)
-                            assert(isinstance(tc.trainers['RealFakeBrain'], BehavioralCloningTrainer))
+            # Test for Behavior Cloning Trainer
+            mock_load.return_value = dummy_bc_config
+            config = tc._load_config()
+            tf.reset_default_graph()
+            with tf.Session() as sess:
+                tc._initialize_trainers(config, sess)
+                assert(isinstance(tc.trainers['RealFakeBrain'], BehavioralCloningTrainer))
 
-                        # Test for proper exception when trainer name is incorrect
-                        mock_load.return_value = dummy_bad_config
-                        config = tc._load_config()
-                        tf.reset_default_graph()
-                        with tf.Session() as sess:
-                            with pytest.raises(UnityEnvironmentException):
-                                tc._initialize_trainers(config, sess)
+            # Test for proper exception when trainer name is incorrect
+            mock_load.return_value = dummy_bad_config
+            config = tc._load_config()
+            tf.reset_default_graph()
+            with tf.Session() as sess:
+                with pytest.raises(UnityEnvironmentException):
+                    tc._initialize_trainers(config, sess)
 
 
 def assert_array(a, b):

@@ -31,6 +31,7 @@ if __name__ == '__main__':
     _USAGE = '''
     Usage:
       learn (<env>) [options]
+      learn [options]
       learn --help
 
     Options:
