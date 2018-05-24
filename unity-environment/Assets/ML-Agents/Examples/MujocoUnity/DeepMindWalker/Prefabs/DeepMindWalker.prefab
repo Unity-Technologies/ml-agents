@@ -56,19 +56,14 @@ MonoBehaviour:
   MujocoJoints: []
   MujocoSensors: []
   CameraTarget: {fileID: 0}
-  qpos: []
-  qglobpos: []
-  qvel: []
-  OnSensor: []
   SensorIsInTouch: []
-  MujocoTimeStep: 0
   _focalPoint: {fileID: 0}
   FocalPointPosition: {x: 0, y: 0, z: 0}
   FocalPointPositionVelocity: {x: 0, y: 0, z: 0}
   FocalPointRotation: {x: 0, y: 0, z: 0}
   FocalPointEulerAngles: {x: 0, y: 0, z: 0}
   FocalPointRotationVelocity: {x: 0, y: 0, z: 0}
-  JointAngles: []
+  FocalPointMaxDistanceTraveled: 0
   JointVelocity: []
   JointRotations: []
   JointAngularVelocities: []
@@ -109,10 +104,10 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 5000
+    maxStep: 4000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+    numberOfActionsBetweenDecisions: 4
   FootHitTerrain: 0
   NonFootHitTerrain: 0
   VelocityScaler: 16
@@ -120,7 +115,3 @@ MonoBehaviour:
   High: []
   ShowMonitor: 0
   Actions: []
-  LeftMin: 0
-  LeftMax: 0
-  RightMin: 0
-  RightMax: 0

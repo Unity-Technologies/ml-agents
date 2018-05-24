@@ -23,29 +23,22 @@ namespace MujocoUnity
         List<float> qglobpos;
         [System.Obsolete]
         List<float> qvel;
-        [System.Obsolete]
-        List<float> OnSensor;
         public List<float> SensorIsInTouch;
 
-        public GameObject _focalPoint;
-
-        public Vector3 FocalPointPosition;
-        public Vector3 FocalPointPositionVelocity;
-        public Vector3 FocalPointRotation;
-        public Vector3 FocalPointEulerAngles;
-        public Vector3 FocalPointRotationVelocity;
+        public GameObject FocalPoint;
+        public Rigidbody FocalRidgedBody;
+        public float FocalPointMaxDistanceTraveled;
         [System.Obsolete]
         List<float> JointAngles;
         public List<float> JointVelocity;
 
         List<System.Tuple<ConfigurableJoint, Transform>> _baseTargetPairs;
         public List<Quaternion> JointRotations;
-        public List<Vector3> JointAngularVelocities;
+        List<Vector3> JointAngularVelocities;
         
         public void SetMujocoSensors(List<MujocoSensor> mujocoSensors)
         {
             MujocoSensors = mujocoSensors;
-            OnSensor = Enumerable.Range(0,mujocoSensors.Count).Select(x=>0f).ToList();
             SensorIsInTouch = Enumerable.Range(0,mujocoSensors.Count).Select(x=>0f).ToList();
             foreach (var sensor in mujocoSensors)
             {
@@ -63,7 +56,8 @@ namespace MujocoUnity
                 if (smoothFollow != null) 
                     smoothFollow.target = target.transform;
             }
-            _focalPoint = target;
+            FocalPoint = target;
+            FocalRidgedBody = FocalPoint.GetComponent<Rigidbody>();            
             var qlen = MujocoJoints.Count + 3;
             qpos = Enumerable.Range(0,qlen).Select(x=>0f).ToList();
             qglobpos = Enumerable.Range(0,qlen).Select(x=>0f).ToList();
@@ -114,36 +108,21 @@ namespace MujocoUnity
         {
 
         }
-        public void UpdateFromExternalComponent(bool useDeltaTime = false)
+        public void UpdateFromExternalComponent()
         {
-            for (int i = 0; i < OnSensor.Count; i++)
-                OnSensor[i] = 0f;
             if (MujocoJoints == null || MujocoJoints.Count ==0)
                 return;
-            UpdateQ(useDeltaTime);
+            UpdateQ();
         }
-        public void UpdateQFromExternalComponent(bool useDeltaTime = false)
+        public void UpdateQFromExternalComponent()
         {
-            UpdateQ(useDeltaTime);
+            UpdateQ();
         }
-        void UpdateQ(bool useDeltaTime = false)
+        void UpdateQ()
         {
 			float dt = Time.fixedDeltaTime;
-            if(useDeltaTime)
-                dt = Time.deltaTime;
+            FocalPointMaxDistanceTraveled = Mathf.Max(FocalPointMaxDistanceTraveled, FocalPoint.transform.position.x);
 
-            var focalTransform = _focalPoint.transform;
-            var focalRidgedBody = _focalPoint.GetComponent<Rigidbody>();
-            FocalPointPosition = focalTransform.position;
-            FocalPointPositionVelocity = focalRidgedBody.velocity;
-            var lastFocalPointRotationVelocity = FocalPointRotation;
-            FocalPointEulerAngles = focalTransform.eulerAngles;
-            FocalPointRotation = new Vector3(
-                ((FocalPointEulerAngles.x - 180f) % 180 ) / 180,
-                ((FocalPointEulerAngles.y - 180f) % 180 ) / 180,
-                ((FocalPointEulerAngles.z - 180f) % 180 ) / 180);
-            FocalPointRotationVelocity = (FocalPointRotation-lastFocalPointRotationVelocity);
-                        
             var topJoint = MujocoJoints[0];
             //var topTransform = topJoint.Joint.transform.parent.transform;
             // var topRidgedBody = topJoint.Joint.transform.parent.GetComponent<Rigidbody>();
@@ -224,7 +203,6 @@ namespace MujocoUnity
                 .FirstOrDefault(x=>x.SiteObject == sensorCollider);
             if (sensor != null) {
                 var idx = MujocoSensors.IndexOf(sensor);
-                OnSensor[idx] = 1f;
                 SensorIsInTouch[idx] = 1f;
             }
 		}
@@ -237,7 +215,6 @@ namespace MujocoUnity
                 .FirstOrDefault(x=>x.SiteObject == sensorCollider);
             if (sensor != null) {
                 var idx = MujocoSensors.IndexOf(sensor);
-                OnSensor[idx] = 0f;
                 SensorIsInTouch[idx] = 0f;
             }
         }

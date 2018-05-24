@@ -32,20 +32,13 @@ public class OpenAIHopperAgent : MujocoAgent {
         if (ShowMonitor) {
         }
         var pelvis = BodyParts["pelvis"];
-        // AddVectorObs(MujocoController.FocalPointPosition);
-        // AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
-        // AddVectorObs(MujocoController.FocalPointRotation);
-        // AddVectorObs(MujocoController.FocalPointRotationVelocity);
-
         AddVectorObs(pelvis.velocity);
         AddVectorObs(pelvis.transform.forward); // gyroscope 
         AddVectorObs(pelvis.transform.up);
-        // AddVectorObs(pelvis.angularVelocity); 
-        // AddVectorObs(pelvis.rotation);
         
         AddVectorObs(MujocoController.SensorIsInTouch);
         MujocoController.JointRotations.ForEach(x=>AddVectorObs(x));
-        MujocoController.JointAngularVelocities.ForEach(x=>AddVectorObs(x));
+        AddVectorObs(MujocoController.JointVelocity);
     }
 
     bool Terminate_Hopper()

@@ -32,26 +32,13 @@ public class OpenAIWalker2dAgent : MujocoAgent {
     void Observations_Default()
     {
         if (ShowMonitor) {
-            //Monitor.Log("onSensor", _mujocoController.OnSensor, MonitorType.hist);
-            //Monitor.Log("sensor", _mujocoController.SensorIsInTouch, MonitorType.hist);
         }
         var pelvis = BodyParts["pelvis"];
-        AddVectorObs(MujocoController.FocalPointPosition);
-        AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
-        AddVectorObs(MujocoController.FocalPointRotation);
-        AddVectorObs(MujocoController.FocalPointRotationVelocity);
-
         AddVectorObs(pelvis.velocity);
         AddVectorObs(pelvis.transform.forward); // gyroscope 
         AddVectorObs(pelvis.transform.up);
-        AddVectorObs(pelvis.angularVelocity); 
-        AddVectorObs(pelvis.rotation);
         
-        // AddVectorObs(shoulders.transform.forward); // gyroscope 
-
         AddVectorObs(MujocoController.SensorIsInTouch);
-        //AddVectorObs(_mujocoController.JointAngles);
-        //AddVectorObs(_mujocoController.JointVelocity);
         MujocoController.JointRotations.ForEach(x=>AddVectorObs(x));
         AddVectorObs(MujocoController.JointVelocity);
     }

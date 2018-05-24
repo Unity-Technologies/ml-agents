@@ -14,7 +14,8 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         // set to true this to show monitor while training
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_OaiHumanoidRun153;
+        StepRewardFunction = StepReward_OaiHumanoidRun162;
+        // StepRewardFunction = StepReward_OaiHumanoidRunOnSpot161;
         TerminateFunction = Terminate_OnNonFootHitTerrain;
         ObservationsFunction = Observations_Humanoid;
 
@@ -41,40 +42,18 @@ public class OpenAIHumanoidAgent : MujocoAgent {
     void Observations_Humanoid()
     {
         if (ShowMonitor) {
-            //Monitor.Log("pos", _mujocoController.qpos, MonitorType.hist);
-            //Monitor.Log("vel", _mujocoController.qvel, MonitorType.hist);
-            //Monitor.Log("onSensor", _mujocoController.OnSensor, MonitorType.hist);
-            //Monitor.Log("sensor", _mujocoController.SensorIsInTouch, MonitorType.hist);
         }
         var pelvis = BodyParts["pelvis"];
         var shoulders = BodyParts["shoulders"];
-        AddVectorObs(MujocoController.FocalPointPosition);
-        AddVectorObs(MujocoController.FocalPointPositionVelocity); // acceleromoter (with out gravety)
-        AddVectorObs(MujocoController.FocalPointRotation);
-        AddVectorObs(MujocoController.FocalPointRotationVelocity);
 
-        // var focalTransform = _focalPoint.transform;
-        // var focalRidgedBody = _focalPoint.GetComponent<Rigidbody>();
-        // FocalPointPosition = focalTransform.position;
-        // FocalPointPositionVelocity = focalRidgedBody.velocity;
-        // var lastFocalPointRotationVelocity = FocalPointRotation;
-        // FocalPointEulerAngles = focalTransform.eulerAngles;
-        // FocalPointRotation = new Vector3(
-        //     ((FocalPointEulerAngles.x - 180f) % 180 ) / 180,
-        //     ((FocalPointEulerAngles.y - 180f) % 180 ) / 180,
-        //     ((FocalPointEulerAngles.z - 180f) % 180 ) / 180);
-        // FocalPointRotationVelocity = FocalPointRotation-lastFocalPointRotationVelocity;
         AddVectorObs(pelvis.velocity);
         AddVectorObs(pelvis.transform.forward); // gyroscope 
         AddVectorObs(pelvis.transform.up);
-        AddVectorObs(pelvis.angularVelocity); 
-        AddVectorObs(pelvis.rotation);
         
         AddVectorObs(shoulders.transform.forward); // gyroscope 
+        AddVectorObs(shoulders.transform.up);
 
         AddVectorObs(MujocoController.SensorIsInTouch);
-        //AddVectorObs(_mujocoController.JointAngles);
-        //AddVectorObs(_mujocoController.JointVelocity);
         MujocoController.JointRotations.ForEach(x=>AddVectorObs(x));
         AddVectorObs(MujocoController.JointVelocity);
     }
@@ -93,7 +72,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         return effort;            
     }
     
-    float StepReward_OaiHumanoidRun153()
+    float StepReward_OaiHumanoidRun162()
     {
         float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);
@@ -102,16 +81,17 @@ public class OpenAIHumanoidAgent : MujocoAgent {
             + (GetUprightBonus("waist") / 6)
             + (GetUprightBonus("pelvis") / 6);
         float forwardBonus = 
-            (GetForwardBonus("shoulders") / 6)
+            (GetForwardBonus("shoulders")/ 4)
             + (GetForwardBonus("waist") / 6)
             + (GetForwardBonus("pelvis") / 6);
         
-        // float leftThighPenality = Mathf.Abs(GetLeftBonus("left_thigh"));
-        // float rightThighPenality = Mathf.Abs(GetRightBonus("right_thigh"));
+        float leftThighPenality = Mathf.Abs(GetLeftBonus("left_thigh"));
+        float rightThighPenality = Mathf.Abs(GetRightBonus("right_thigh"));
         // float leftUarmPenality = Mathf.Abs(GetLeftBonus("left_uarm"));
         // float rightUarmPenality = Mathf.Abs(GetRightBonus("right_uarm"));
         // float limbPenalty = leftThighPenality + rightThighPenality + leftUarmPenality + rightUarmPenality;
-        // limbPenalty = Mathf.Min(0.5f, limbPenalty);
+        float limbPenalty = leftThighPenality + rightThighPenality;
+        limbPenalty = Mathf.Min(0.5f, limbPenalty);
         float phaseBonus = GetPhaseBonus();
         var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
         float effort = GetEffort(new string []{"right_hip_y", "right_knee", "left_hip_y", "left_knee"});
@@ -121,10 +101,9 @@ public class OpenAIHumanoidAgent : MujocoAgent {
             + forwardBonus
             + phaseBonus
             - heightPenality
-            // - limbPenalty
+            - limbPenalty
             - jointsAtLimitPenality
             - effortPenality;
-            // - armPenalty;
         if (ShowMonitor) {
             // var hist = new []{reward,velocity, shouldersUprightBonus, pelvisUprightBonus, headForwardBonus,- heightPenality,-effortPenality}.ToList();
             var hist = new []{
@@ -133,7 +112,56 @@ public class OpenAIHumanoidAgent : MujocoAgent {
                 forwardBonus, 
                 phaseBonus, 
                 -heightPenality, 
-                // -limbPenalty, 
+                -limbPenalty, 
+                -jointsAtLimitPenality, 
+                -effortPenality}.ToList();
+            Monitor.Log("rewardHist", hist, MonitorType.hist);
+        }
+        return reward;            
+    }
+    float StepReward_OaiHumanoidRunOnSpot161()
+    {
+        float velocity = GetVelocity();
+        float heightPenality = GetHeightPenality(1.2f);
+        float uprightBonus = 
+            (GetUprightBonus("shoulders") / 6)
+            + (GetUprightBonus("waist") / 6)
+            + (GetUprightBonus("pelvis") / 6);
+        float forwardBonus = 
+            (GetForwardBonus("shoulders")/ 2)
+            + (GetForwardBonus("waist") / 6)
+            + (GetForwardBonus("pelvis") / 6);
+        
+        float leftThighPenality = Mathf.Abs(GetLeftBonus("left_thigh"));
+        float rightThighPenality = Mathf.Abs(GetRightBonus("right_thigh"));
+        // float leftUarmPenality = Mathf.Abs(GetLeftBonus("left_uarm"));
+        // float rightUarmPenality = Mathf.Abs(GetRightBonus("right_uarm"));
+        // float limbPenalty = leftThighPenality + rightThighPenality + leftUarmPenality + rightUarmPenality;
+        float limbPenalty = leftThighPenality + rightThighPenality;
+        limbPenalty = Mathf.Min(0.5f, limbPenalty);
+        float phaseBonus = GetPhaseBonus() * 5;
+        var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
+        float effort = GetEffort(new string []{"right_hip_y", "right_knee", "left_hip_y", "left_knee"});
+        var effortPenality = 0.5f * (float)effort;
+        var reward = 0
+            // + velocity 
+            + uprightBonus
+            + forwardBonus
+            + phaseBonus
+            - heightPenality
+            - limbPenalty
+            - jointsAtLimitPenality
+            - effortPenality;
+        if (ShowMonitor) {
+            // var hist = new []{reward,velocity, shouldersUprightBonus, pelvisUprightBonus, headForwardBonus,- heightPenality,-effortPenality}.ToList();
+            var hist = new []{
+                reward, 
+                // velocity, 
+                uprightBonus, 
+                forwardBonus, 
+                phaseBonus, 
+                -heightPenality, 
+                -limbPenalty, 
                 -jointsAtLimitPenality, 
                 -effortPenality}.ToList();
             Monitor.Log("rewardHist", hist, MonitorType.hist);

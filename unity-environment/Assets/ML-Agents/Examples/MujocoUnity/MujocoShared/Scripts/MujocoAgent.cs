@@ -195,17 +195,18 @@ namespace MujocoUnity
             float lowestFoot = 0f;
             if(feetYpos!=null && feetYpos.Count != 0)
                 lowestFoot = feetYpos[0];
-			var height = MujocoController.FocalPointPosition.y - lowestFoot;
+			var height = MujocoController.FocalPoint.transform.position.y - lowestFoot;
             return height;
         }
         internal float GetVelocity()
         {
 			var dt = Time.fixedDeltaTime;
-			var rawVelocity = MujocoController.FocalPointPositionVelocity.x;
+			var rawVelocity = MujocoController.FocalRidgedBody.velocity.x;
             var maxSpeed = 4f; // meters per second
             //rawVelocity = Mathf.Clamp(rawVelocity,-maxSpeed,maxSpeed);
 			var velocity = rawVelocity / maxSpeed;
             if (ShowMonitor) {
+                Monitor.Log("MaxDistance", MujocoController.FocalPointMaxDistanceTraveled);
                 Monitor.Log("MPH: ", rawVelocity * 2.236936f, MonitorType.text);
                 // Monitor.Log("rawVelocity", rawVelocity, MonitorType.text);
                 // Monitor.Log("velocity", velocity, MonitorType.text);
@@ -330,7 +331,7 @@ namespace MujocoUnity
 
         internal float GetAngleFromUp()
         {
-            var angleFromUp = Vector3.Angle(MujocoController._focalPoint.transform.forward, Vector3.up);
+            var angleFromUp = Vector3.Angle(MujocoController.FocalPoint.transform.forward, Vector3.up);
             if (ShowMonitor) {
                 // Monitor.Log("AngleFromUp", angleFromUp);
             }
