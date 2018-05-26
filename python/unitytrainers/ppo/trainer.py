@@ -398,29 +398,6 @@ class PPOTrainer(Trainer):
         self.stats['policy_loss'].append(np.mean(total_p))
         self.training_buffer.reset_update_buffer()
 
-    def write_summary(self, lesson_number):
-        """
-        Saves training statistics to Tensorboard.
-        :param lesson_number: The lesson the trainer is at.
-        """
-        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-                self.is_training and self.get_step <= self.get_max_steps):
-            steps = self.get_step
-            if len(self.stats['cumulative_reward']) > 0:
-                mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info(" {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
-                            .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
-            summary = tf.Summary()
-            for key in self.stats:
-                if len(self.stats[key]) > 0:
-                    stat_mean = float(np.mean(self.stats[key]))
-                    summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
-                    self.stats[key] = []
-            summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
-            self.summary_writer.add_summary(summary, steps)
-            self.summary_writer.flush()
-
-
 def discount_rewards(r, gamma=0.99, value_next=0.0):
     """
     Computes discounted sum of future rewards for use in updating value estimate.
