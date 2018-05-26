@@ -1,80 +1,74 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAgents.CommunicatorObjects;
 
-/** \brief AcademyParameters is a structure containing basic information about the 
- * training environment. */
-/** The AcademyParameters will be sent via socket at the start of the Environment.
- * This structure does not need to be modified.
- */
-public struct AcademyParameters
+namespace MLAgents
 {
-    /**< \brief The name of the Academy. If the communicator is External, 
-     * it will be the name of the Academy GameObject */
-    public string AcademyName;
+    public struct CommunicatorParameters
+    {
+        public int port;
+    }
 
-    /**< \brief The API number for the communicator. */
-    public string apiNumber;
+    /**
+    This is the interface of the Communicators. 
+    This does not need to be modified nor implemented to create a Unity environment.
 
-    /**< \brief The location of the logfile*/
-    public string logPath;
+    When the Unity Communicator is initialized, it will wait for the External Communicator
+    to be initialized as well. The two communicators will then exchange their first messages
+    that will usually contain information for initialization (information that does not need
+    to be resent at each new exchange).
 
-    /**< \brief The default reset parameters are sent via socket*/
-    public Dictionary<string, float> resetParameters;
+    By convention a Unity input is from External to Unity and a Unity output is from Unity to
+    External. Inputs and outputs are relative to Unity.
 
-    /**< \brief A list of the all the brains names sent via socket*/
-    public List<string> brainNames;
+    By convention, when the Unity Communicator and External Communicator call exchange, the
+    exchange is NOT simultaneous but sequential. This means that when a side of the 
+    communication calls exchange, the other will receive the result of its previous 
+    exchange call.
+    This is what happens when A calls exchange a single time:
+    A sends data_1 to B -> B receives data_1 -> B generates and sends data_2 -> A receives data_2
+    When A calls exchange, it sends data_1 and receives data_2
 
-    /**< \brief  A list of the External brains parameters sent via socket*/
-    public List<BrainParameters> brainParameters;
+    Since the messages are sent back and forth with exchange and simultaneously when calling 
+    initialize, External sends two messages at initialization.
 
-    /**< \brief  A list of the External brains names sent via socket*/
-    public List<string> externalBrainNames;
-}
+    The structure of the messages is as follows:
+    UnityMessage
+    ...Header
+    ...UnityOutput
+    ......UnityRLOutput
+    ......UnityRLInitializationOutput
+    ...UnityInput
+    ......UnityRLIntput
+    ......UnityRLInitializationIntput
 
-public enum ExternalCommand
-{
-    STEP,
-    RESET,
-    QUIT
-}
+    UnityOutput and UnityInput can be extended to provide functionalities beyond RL
+    UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
+     */
+    public interface Communicator
+    {
+        /// <summary>
+        /// Initialize the communicator by sending the first UnityOutput and receiving the 
+        /// first UnityInput. The second UnityInput is stored in the unityInput argument.
+        /// </summary>
+        /// <returns>The first Unity Input.</returns>
+        /// <param name="unityOutput">The first Unity Output.</param>
+        /// <param name="unityInput">The second Unity input.</param>
+        UnityInput Initialize(UnityOutput unityOutput,
+                                    out UnityInput unityInput);
 
-/**
- * This is the interface used to generate coordinators. 
- * This does not need to be modified nor implemented to create a 
- * Unity environment.
- */
-public interface Communicator
-{
+        /// <summary>
+        /// Send a UnityOutput and receives a UnityInput.
+        /// </summary>
+        /// <returns>The next UnityInput.</returns>
+        /// <param name="unityOutput">The UnityOutput to be sent.</param>
+        UnityInput Exchange(UnityOutput unityOutput);
 
-    /// Implement this method to allow brains to subscribe to the 
-    /// decisions made outside of Unity
-    void SubscribeBrain(Brain brain);
+        /// <summary>
+        /// Close the communicator gracefully on both sides of the communication.
+        /// </summary>
+        void Close();
 
-    /// First contact between Communicator and external process
-    bool CommunicatorHandShake();
-
-    /// Implement this method to initialize the communicator
-    void InitializeCommunicator();
-
-    /// Implement this method to receive actions from outside of Unity and 
-    /// update the actions of the brains that subscribe
-    void UpdateActions();
-
-    /// Implement this method to return the ExternalCommand that 
-    /// was given outside of Unity
-    ExternalCommand GetCommand();
-
-    void UpdateCommand();
-    void SetCommand(ExternalCommand c);
-
-    /// Implement this method to return the new dictionary of resetParameters 
-    /// that was given outside of Unity
-    Dictionary<string, float> GetResetParameters();
-
-
-
-    Dictionary<string, bool> GetHasTried();
-    Dictionary<string, bool> GetSent();
-
+    }
 }

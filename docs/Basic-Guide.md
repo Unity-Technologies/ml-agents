@@ -24,7 +24,7 @@ In order to use ML-Agents within Unity, you need to change some Unity settings f
 
 ![Project Settings](images/project-settings.png)
 
-[Download](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage) the TensorFlowSharp plugin. Then import it into Unity by double clicking the downloaded file.  You can check if it was successfully imported by checking the TensorFlow files in the Project window under **Assets** > **ML-Agents** > **Plugins** > **Computer**. 
+[Download](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage) the TensorFlowSharp plugin. Then import it into Unity by double clicking the downloaded file.  You can check if it was successfully imported by checking the TensorFlow files in the Project window under **Assets** > **ML-Agents** > **Plugins** > **Computer**. 
 
 **Note**: If you don't see anything under **Assets**, drag the `ml-agents/unity-environment/Assets/ML-Agents` folder under **Assets** within Project window.
 
@@ -41,22 +41,19 @@ In order to use ML-Agents within Unity, you need to change some Unity settings f
 
 ![Running a pretrained model](images/running-a-pretrained-model.gif)
 
-## Building an Example Environment
+## Using the Basics Jupyter Notebook
 
-The first step is to open the Unity scene containing the 3D Balance Ball
-environment:
+The `python/Basics` [Jupyter notebook](Background-Jupyter.md) contains a 
+simple walkthrough of the functionality of the Python 
+API. It can also serve as a simple test that your environment is configured
+correctly. Within `Basics`, be sure to set `env_name` to the name of the 
+Unity executable if you want to [use an executable](Learning-Environment-Executable.md) or to `None` if you want to interact with the current scene in the Unity Editor.
 
-1. Launch Unity.
-2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `unity-environment` folder 
-within the ML-Agents project and click **Open**.
-4. In the **Project** window, navigate to the folder 
-`Assets/ML-Agents/Examples/3DBall/`.
-5. Double-click the `3DBall` file to load the scene containing the Balance 
-Ball environment.
+More information and documentation is provided in the 
+[Python API](Python-API.md) page.
 
-![3DBall Scene](images/mlagents-Open3DBall.png)
-
+## Training the Brain with Reinforcement Learning
+### Setting the Brain to External
 Since we are going to build this environment to conduct training, we need to 
 set the brain used by the agents to **External**. This allows the agents to 
 communicate with the external training process when making their decisions.
@@ -68,62 +65,17 @@ object.
 
 ![Set Brain to External](images/mlagents-SetExternalBrain.png)
 
-Next, we want the set up scene to play correctly when the training process 
-launches our environment executable. This means:
-* The environment application runs in the background
-* No dialogs require interaction
-* The correct scene loads automatically
- 
-1. Open Player Settings (menu: **Edit** > **Project Settings** > **Player**).
-2. Under **Resolution and Presentation**:
-    - Ensure that **Run in Background** is Checked.
-    - Ensure that **Display Resolution Dialog** is set to Disabled.
-3. Open the Build Settings window (menu:**File** > **Build Settings**).
-4. Choose your target platform.
-    - (optional) Select “Development Build” to
-    [log debug messages](https://docs.unity3d.com/Manual/LogFiles.html).
-5. If any scenes are shown in the **Scenes in Build** list, make sure that 
-the 3DBall Scene is the only one checked. (If the list is empty, than only the 
-current scene is included in the build).
-6. Click **Build**:
-    a. In the File dialog, navigate to the `python` folder in your ML-Agents 
-    directory.
-    b. Assign a file name and click **Save**.
-
-![Build Window](images/mlagents-BuildWindow.png)
-
-Now that we have a Unity executable containing the simulation environment, we 
-can perform the training. You can ensure that your environment and the Python 
-API work as expected, by using the `python/Basics` 
-[Jupyter notebook](Background-Jupyter.md) introduced in the next section.
-
-## Using the Basics Jupyter Notebook
-
-The `python/Basics` [Jupyter notebook](Background-Jupyter.md) contains a 
-simple walkthrough of the functionality of the Python 
-API. It can also serve as a simple test that your environment is configured
-correctly. Within `Basics`, be sure to set `env_name` to the name of the 
-Unity executable you built earlier.
-
-More information and documentation is provided in the 
-[Python API](Python-API.md) page.
-
-## Training the Brain with Reinforcement Learning
-
+### Training the environment
 1. Open a command or terminal window. 
 2. Nagivate to the folder where you installed ML-Agents. 
-3. Change to the python directory. 
-4. Run `python3 learn.py <env_name> --run-id=<run-identifier> --train`
+3. Change to the `python` directory. 
+4. Run `python3 learn.py --run-id=<run-identifier> --train`
 Where:
-- `<env_name>` is the name and path to the executable you exported from Unity (without extension)
 - `<run-identifier>` is a string used to separate the results of different training runs
 - And the `--train` tells learn.py to run a training session (rather than inference)
+5. When the message _"Ready to connect with the Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
 
-For example, if you are training with a 3DBall executable you exported to the ml-agents/python directory, run:
-
-```
-python3 learn.py 3DBall --run-id=firstRun --train
-```
+**Note**: Alternatively, you can use an executable rather than the Editor to perform training. Please refer to [this page](Learning-Environment-Executable.md) for instructions on how to build and use an executable.
 
 ![Training command example](images/training-command-example.png)
 
@@ -133,7 +85,8 @@ If the learn.py runs correctly and starts training, you should see something lik
 
 ![Training running](images/training-running.png)
 
-You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below, which is similar to the steps described [above](#play-an-example-environment-using-pretrained-model). 
+### After training
+You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/editor_<academy_name>_<run-identifier>.bytes` where `<academy_name>` is the name of the Academy GameObject in the current scene. This file corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below, which is similar to the steps described [above](#play-an-example-environment-using-pretrained-model).  
 
 1. Move your model file into 
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
@@ -142,7 +95,7 @@ You can press Ctrl+C to stop the training, and your trained model will be at `ml
 4. Change the **Type of Brain** to **Internal**.
 5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of the Editor
 to the **Graph Model** placeholder in the **Ball3DBrain** inspector window.
-6. Press the Play button at the top of the editor.
+6. Press the :arrow_forward: button at the top of the Editor.
 
 ## Next Steps
 
