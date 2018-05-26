@@ -99,7 +99,7 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
     * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
-    * Visual Observations (optional): One first-person camera. Use `VisualPushBlock` scene.
+    * Visual Observations (Optional): One first-person camera. Use `VisualPushBlock` scene.
 * Reset Parameters: None.
 * Benchmark Mean Reward: 4.5
 * Optional Imitation Learning scene: `PushBlockIL`.

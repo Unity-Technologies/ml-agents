@@ -23,7 +23,6 @@ public class HallwayAgent : Agent
     {
         base.InitializeAgent();
         academy = FindObjectOfType<HallwayAcademy>();
-        brain = FindObjectOfType<Brain>();
         rayPer = GetComponent<RayPerception>();
         agentRB = GetComponent<Rigidbody>();
         groundRenderer = ground.GetComponent<Renderer>();
