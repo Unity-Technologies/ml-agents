@@ -46,12 +46,14 @@ public class OpenAIAntAgent : MujocoAgent {
     {
         float velocity = GetVelocity();
         float effort = GetEffort();
-        var effortPenality = 1e-1f * (float)effort;
+        var effortPenality = 1e-3f * (float)effort;
+        var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
 
         var reward = velocity
+            - jointsAtLimitPenality
             -effortPenality;
         if (ShowMonitor) {
-            var hist = new []{reward,velocity,-effortPenality}.ToList();
+            var hist = new []{reward,velocity, -jointsAtLimitPenality, -effortPenality}.ToList();
             Monitor.Log("rewardHist", hist, MonitorType.hist);
         }
 
