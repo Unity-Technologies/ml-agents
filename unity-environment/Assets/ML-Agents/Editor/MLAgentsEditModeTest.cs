@@ -2,7 +2,7 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 
-namespace MLAgentsTests
+namespace MLAgents.MLAgentsTests
 {
     public class TestAcademy : Academy
     {

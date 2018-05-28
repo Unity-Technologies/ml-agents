@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using MLAgents;
 
 public class GridAgent : Agent
 {
