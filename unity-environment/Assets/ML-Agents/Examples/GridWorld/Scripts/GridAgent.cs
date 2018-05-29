@@ -1,13 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-using UnityEngine.UI;
+﻿using UnityEngine;
 using System.Linq;
-using Newtonsoft.Json;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using MLAgents;
 
 public class GridAgent : Agent
