@@ -22,6 +22,7 @@ TagManager:
   - orangeBlock
   - block
   - orangeGoal
+  - target
   layers:
   - Default
   - TransparentFX
@@ -37,7 +38,7 @@ TagManager:
   - goalie
   - strikerWall
   - striker
-  - 
+  - ground
   - 
   - 
   - 
