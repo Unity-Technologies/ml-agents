@@ -23,6 +23,8 @@ public class CrawlerAgent : Agent {
     public Transform leg3_upper;
     public Transform leg3_lower;
     public Dictionary<Transform, BodyPart> bodyParts = new Dictionary<Transform, BodyPart>();
+    public List<BodyPart> bodyPartsList = new List<BodyPart>();
+
 
 
     [Header("Joint Settings")] 
@@ -66,6 +68,14 @@ public class CrawlerAgent : Agent {
         public Quaternion startingRot;
         public CrawlerContact groundContact;
 		public CrawlerAgent agent;
+        [HideInInspector]
+        public Vector3 previousJointRotation;
+        [HideInInspector]
+        public float previousSpringValue;
+        public Vector3 currentJointForce;
+        public float currentJointForceSqrMag;
+        public Vector3 currentJointTorque;
+        public float currentJointTorqueSqrMag;
 
         /// <summary>
         /// Reset body part to initial configuration.
@@ -120,6 +130,8 @@ public class CrawlerAgent : Agent {
         bodyParts.Add(t, bp);
         bp.groundContact = t.GetComponent<CrawlerContact>();
 		bp.agent = this;
+        bodyPartsList.Add(bp);
+
     }
 
     //Initialize
@@ -219,10 +231,24 @@ public class CrawlerAgent : Agent {
         //forward & up to help with orientation
         AddVectorObs(body.forward);
         AddVectorObs(body.up);
-
+        GetCurrentJointForces();
         foreach (var bodyPart in bodyParts.Values)
         {
             CollectObservationBodyPart(bodyPart);
+        }
+    }
+
+    void GetCurrentJointForces()
+    {
+        foreach (var bodyPart in bodyParts.Values)
+        {
+            if(bodyPart.joint)
+            {
+                bodyPart.currentJointForce = bodyPart.joint.currentForce;
+                bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.sqrMagnitude;
+                bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
+                bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.sqrMagnitude;
+            }
         }
     }
 
