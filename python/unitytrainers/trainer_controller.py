@@ -254,7 +254,6 @@ class TrainerController(object):
                          take_action_outputs[brain_name]) = trainer.take_action(curr_info)
                     new_info = self.env.step(vector_action=take_action_vector, memory=take_action_memories,
                                              text_action=take_action_text)
-
                     for brain_name, trainer in self.trainers.items():
                         trainer.add_experiences(curr_info, new_info, take_action_outputs[brain_name])
                         trainer.process_experiences(curr_info, new_info)
@@ -274,7 +273,7 @@ class TrainerController(object):
                     curr_info = new_info
                 # Final save Tensorflow model
                 if global_step != 0 and self.train_model:
-                    self._save_model(sess,  steps=global_step, saver=saver)
+                    self._save_model(sess, steps=global_step, saver=saver)
             except KeyboardInterrupt:
                 if self.train_model:
                     self.logger.info("Learning was interrupted. Please wait while the graph is generated.")

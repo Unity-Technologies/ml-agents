@@ -253,3 +253,18 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 39, corresponding to target rotations applicable to the joints. 
     * Visual Observations: None
 * Reset Parameters: None
+
+## Pyramids
+
+![Pyramids](images/pyramids.png)
+
+* Set-up: Environment where the agent needs to press a button to spawn a pyramid, then navigate to the pyramid, knock it over, and move to the gold brick at the top.
+* Goal: Move to the golden brick on top of the spawned pyramid.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function (independent):
+    * +2 For moving to golden brick (minus 0.001 per step).
+* Brains: One brain with the following observation/action space:
+    * Vector Observation space: (Continuous) 148 corresponding to local ray-casts detecting switch, bricks, golden brick, and walls, plus variable indicating switch state.
+    * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
+    * Visual Observations (Optional): First-person view for the agent.
+* Reset Parameters: None

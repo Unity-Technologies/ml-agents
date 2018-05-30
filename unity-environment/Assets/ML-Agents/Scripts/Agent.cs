@@ -677,6 +677,16 @@ public abstract class Agent : MonoBehaviour
         info.vectorObservation.Add(observation.z);
         info.vectorObservation.Add(observation.w);
     }
+    
+    /// <summary>
+    /// Adds a boolean observation to the vector observation of the agent.
+    /// Increases the size of the agent's vector observation by 1.
+    /// </summary>
+    /// <param name="observation"></param>
+    protected void AddVectorObs(bool observation)
+    {
+        info.vectorObservation.Add(observation ? 1f : 0f);
+    }
 
     /// <summary>
     /// Sets the text observation.
