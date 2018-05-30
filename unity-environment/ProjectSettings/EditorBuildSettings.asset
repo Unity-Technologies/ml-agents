@@ -5,10 +5,14 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/ML-Agents/Examples/New Demos/New Crawler/Crawler 1 - Static Target.unity
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Crawler/Scenes/Crawler 1 - Static Target.unity
     guid: d9a4e7d08037d49c895555d4fe344764
   - enabled: 0
-    path: Assets/ML-Agents/Examples/New Demos/New Crawler/Crawler 2 - Dynamic Target.unity
+    path: Assets/ML-Agents/Examples/Crawler/Scenes/Crawler 3 - Moving Target.unity
     guid: c5041147e34b94e0298a22ccf115f509
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/Crawler/Scenes/Crawler 1 - Random Target Spawn
+      NEW.unity
+    guid: cb09636e2bfd74254939fe22b12c28e1
   m_configObjects: {}

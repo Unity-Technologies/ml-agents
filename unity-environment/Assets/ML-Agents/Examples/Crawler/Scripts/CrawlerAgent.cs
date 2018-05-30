@@ -7,6 +7,7 @@ public class CrawlerAgent : Agent {
     [Header("Target To Walk Towards")] 
     [Space(10)] 
     public Transform target;
+    public Transform ground;
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
@@ -32,6 +33,10 @@ public class CrawlerAgent : Agent {
 	public float maxJointSpring;
 	public float jointDampen;
 	public float maxJointForceLimit;
+    // [Tooltip("Reward Functions To Use")] 
+
+    public float maxJointAngleChangePerDecision; //the change in joint angle will not be able to exceed this value.
+    public float maxJointStrengthChangePerDecision; //the change in joint strenth will not be able to exceed this value.
 	public Vector3 footCenterOfMassShift; //used to shift the centerOfMass on the feet so the agent isn't so top heavy
 	Vector3 dirToTarget;
 	float movingTowardsDot;
@@ -54,6 +59,8 @@ public class CrawlerAgent : Agent {
     public MeshRenderer foot3;
     public Material groundedMaterial;
     public Material unGroundedMaterial;
+    bool isNewDecisionStep;
+    int currentDecisionStep;
 
 
     /// <summary>
@@ -92,25 +99,54 @@ public class CrawlerAgent : Agent {
         /// <summary>
         /// Apply torque according to defined goal `x, y, z` angle and force `strength`.
         /// </summary>
-        public void SetNormalizedTargetRotation(float x, float y, float z, float strength)
+        public void SetNormalizedTargetRotation(float x, float y, float z)
         {
             // Transform values from [-1, 1] to [0, 1]
             x = (x + 1f) * 0.5f;
             y = (y + 1f) * 0.5f;
             z = (z + 1f) * 0.5f;
 
-            var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
-            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
-            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
+            var xRot = Mathf.MoveTowards(previousJointRotation.x, Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x), agent.maxJointAngleChangePerDecision);
+            var yRot = Mathf.MoveTowards(previousJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), agent.maxJointAngleChangePerDecision);
+            var zRot = Mathf.MoveTowards(previousJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), agent.maxJointAngleChangePerDecision);
+
+            // var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
+            // var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
+            // var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
 
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
+            previousJointRotation = new Vector3(xRot, yRot, zRot);
+
+            // var jd = new JointDrive
+            // {
+            //     positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
+			// 	positionDamper = agent.jointDampen,
+            //     maximumForce = agent.maxJointForceLimit
+            // };
+            // joint.slerpDrive = jd;
+        }
+
+
+        public void UpdateJointDrive(float strength)
+        {
+
+            // var spring = Mathf.MoveTowards(previousSpringValue, (strength + 1f) * 0.5f, agent.maxJointStrengthChangePerDecision);
+            var rawSpringVal = ((strength + 1f) * 0.5f) * agent.maxJointSpring;
+            var clampedSpring = Mathf.MoveTowards(previousSpringValue, rawSpringVal, agent.maxJointStrengthChangePerDecision);
+            // agent.energyPenalty += clampedSpring/agent.maxJointStrengthChangePerDecision;
             var jd = new JointDrive
             {
-                positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-				positionDamper = agent.jointDampen,
+                // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
+                // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
+                // positionSpring = spring * agent.maxJointSpring,
+                positionSpring = clampedSpring,
+                positionDamper = agent.jointDampen,
                 maximumForce = agent.maxJointForceLimit
             };
             joint.slerpDrive = jd;
+
+            // previousJointRotation = new Vector3(xRot, yRot, zRot);
+            previousSpringValue = jd.positionSpring;
         }
     }
 
@@ -137,6 +173,8 @@ public class CrawlerAgent : Agent {
     //Initialize
     public override void InitializeAgent()
     {
+        currentDecisionStep = 1;
+
         //Setup each body part
         SetupBodyPart(body);
         SetupBodyPart(leg0_upper);
@@ -156,6 +194,20 @@ public class CrawlerAgent : Agent {
 		bodyParts[leg3_lower].rb.centerOfMass = footCenterOfMassShift;
     }
 
+    //We only need to change the joint settings based on decision freq.
+    public void IncrementDecisionTimer()
+    {
+        if(currentDecisionStep == this.agentParameters.numberOfActionsBetweenDecisions || this.agentParameters.numberOfActionsBetweenDecisions == 1)
+        {
+            currentDecisionStep = 1;
+            isNewDecisionStep = true;
+        }
+        else
+        {
+            currentDecisionStep ++;
+            isNewDecisionStep = false;
+        }
+    }
 
     /// <summary>
     /// Add relevant information on each body part to observations.
@@ -167,12 +219,13 @@ public class CrawlerAgent : Agent {
 
         AddVectorObs(rb.velocity);
         AddVectorObs(rb.angularVelocity);
-        Vector3 localPosRelToBody = body.InverseTransformPoint(rb.position);
-        AddVectorObs(localPosRelToBody);
 
         if(bp.rb.transform != body)
         {
+            Vector3 localPosRelToBody = body.InverseTransformPoint(rb.position);
+            AddVectorObs(localPosRelToBody);
             AddVectorObs(Quaternion.FromToRotation(body.forward, bp.rb.transform.forward));
+            // AddVectorObs(Quaternion.FromToRotation(bodyParts[bp.rb.transform].joint.connectedBody.transform.forward, rb.transform.forward));
         }
     }
 
@@ -257,7 +310,8 @@ public class CrawlerAgent : Agent {
     /// </summary>
 	public void TouchedTarget(float impactForce)
 	{
-		AddReward(.01f * impactForce); //higher impact should be rewarded
+		// AddReward(.01f * impactForce); //higher impact should be rewarded
+        AddReward(1);
         if(respawnTargetWhenTouched)
         {
 		    GetRandomTargetPos();
@@ -275,8 +329,12 @@ public class CrawlerAgent : Agent {
     {
         Vector3 newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
 		newTargetPos.y = 5;
-		target.position = newTargetPos;
+		target.position = newTargetPos + ground.position;
+		// target.position = newTargetPos;
     }
+
+
+
 
 	 public override void AgentAction(float[] vectorAction, string textAction)
     {
@@ -294,28 +352,87 @@ public class CrawlerAgent : Agent {
         }
 
         // Apply action to all relevant body parts. 
-        bodyParts[leg0_upper].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], 0, vectorAction[2]);
-        bodyParts[leg1_upper].SetNormalizedTargetRotation(vectorAction[3], vectorAction[4], 0, vectorAction[5]);
-        bodyParts[leg2_upper].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0, vectorAction[8]);
-        bodyParts[leg3_upper].SetNormalizedTargetRotation(vectorAction[9], vectorAction[10], 0, vectorAction[11]);
-        bodyParts[leg0_lower].SetNormalizedTargetRotation(vectorAction[12], 0, 0, vectorAction[13]);
-        bodyParts[leg1_lower].SetNormalizedTargetRotation(vectorAction[14], 0, 0, vectorAction[15]);
-        bodyParts[leg2_lower].SetNormalizedTargetRotation(vectorAction[16], 0, 0, vectorAction[17]);
-        bodyParts[leg3_lower].SetNormalizedTargetRotation(vectorAction[18], 0, 0, vectorAction[19]);
+        if(isNewDecisionStep)
+        {
+            bodyParts[leg0_upper].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], 0);
+            bodyParts[leg1_upper].SetNormalizedTargetRotation(vectorAction[2], vectorAction[3], 0);
+            bodyParts[leg2_upper].SetNormalizedTargetRotation(vectorAction[4], vectorAction[5], 0);
+            bodyParts[leg3_upper].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0);
+            bodyParts[leg0_lower].SetNormalizedTargetRotation(vectorAction[8], 0, 0);
+            bodyParts[leg1_lower].SetNormalizedTargetRotation(vectorAction[9], 0, 0);
+            bodyParts[leg2_lower].SetNormalizedTargetRotation(vectorAction[10], 0, 0);
+            bodyParts[leg3_lower].SetNormalizedTargetRotation(vectorAction[11], 0, 0);
+        }
+
+            //update joint drive settings
+            bodyParts[leg0_upper].UpdateJointDrive(vectorAction[12]);
+            bodyParts[leg1_upper].UpdateJointDrive(vectorAction[13]);
+            bodyParts[leg2_upper].UpdateJointDrive(vectorAction[14]);
+            bodyParts[leg3_upper].UpdateJointDrive(vectorAction[15]);
+            bodyParts[leg0_lower].UpdateJointDrive(vectorAction[16]);
+            bodyParts[leg1_lower].UpdateJointDrive(vectorAction[17]);
+            bodyParts[leg2_lower].UpdateJointDrive(vectorAction[18]);
+            bodyParts[leg3_lower].UpdateJointDrive(vectorAction[19]);
+
+
+        // bodyParts[leg0_upper].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], 0, vectorAction[2]);
+        // bodyParts[leg1_upper].SetNormalizedTargetRotation(vectorAction[3], vectorAction[4], 0, vectorAction[5]);
+        // bodyParts[leg2_upper].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0, vectorAction[8]);
+        // bodyParts[leg3_upper].SetNormalizedTargetRotation(vectorAction[9], vectorAction[10], 0, vectorAction[11]);
+        // bodyParts[leg0_lower].SetNormalizedTargetRotation(vectorAction[12], 0, 0, vectorAction[13]);
+        // bodyParts[leg1_lower].SetNormalizedTargetRotation(vectorAction[14], 0, 0, vectorAction[15]);
+        // bodyParts[leg2_lower].SetNormalizedTargetRotation(vectorAction[16], 0, 0, vectorAction[17]);
+        // bodyParts[leg3_lower].SetNormalizedTargetRotation(vectorAction[18], 0, 0, vectorAction[19]);
 
         // Set reward for this step according to mixture of the following elements.
         if(rewardMovingTowardsTarget){RewardFunctionMovingTowards();}
-        if(rewardFacingTarget){RewardFunctionFacingTarget();}
+        // if(rewardFacingTarget){RewardFunctionFacingTarget();}
         if(rewardUseTimePenalty){RewardFunctionTimePenalty();}
+        IncrementDecisionTimer();
+
     }
 	
+    // //Reward moving towards target & Penalize moving away from target.
+    // void RewardFunctionMovingTowards()
+    // {
+    //     //don't normalize vel. the faster it goes the more reward it should get
+    //     //0.03f chosen via experimentation
+	// 	movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); 
+    //     AddReward(0.03f * movingTowardsDot);
+    // }
     //Reward moving towards target & Penalize moving away from target.
     void RewardFunctionMovingTowards()
     {
         //don't normalize vel. the faster it goes the more reward it should get
         //0.03f chosen via experimentation
+		// movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity.normalized, dirToTarget.normalized); 
 		movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); 
-        AddReward(0.03f * movingTowardsDot);
+        // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -5, 50f);
+        // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -5, 50f);
+
+        // AddReward(0.0003f * movingTowardsDot);
+        // moveTowardsReward += 0.01f * movingTowardsDot;
+        // moveTowardsReward += 0.003f * movingTowardsDot;
+        // totalReward += moveTowardsReward;
+        // AddReward(0.01f * movingTowardsDot);
+        AddReward(0.1f * movingTowardsDot);
+        // AddReward(0.005f * movingTowardsDot);
+        // AddReward(0.003f * movingTowardsDot);
+        // AddReward(0.03f * movingTowardsDot);
+
+        if(rewardFacingTarget)
+        {
+            // movingTowardsDot = Vector3.Dot(bodyParts[body].rb.velocity, dirToTarget.normalized); 
+            facingDot = Vector3.Dot(dirToTarget.normalized, body.forward); //up is local forward because capsule is rotated
+            if(movingTowardsDot > .8f)
+            {
+                facingDot = Mathf.Clamp(facingDot, 0, 1f);
+                // facingReward += 0.001f * facingDot;
+                // totalReward += facingReward;
+                AddReward(0.001f * facingDot);
+            }
+
+        }
     }
 
     //Reward facing target & Penalize facing away from target
@@ -347,5 +464,7 @@ public class CrawlerAgent : Agent {
         {
             bodyPart.Reset();
         }
+        isNewDecisionStep = true;
+        currentDecisionStep = 1;
     }
 }

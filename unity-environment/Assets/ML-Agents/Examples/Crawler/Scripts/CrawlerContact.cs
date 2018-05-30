@@ -23,6 +23,7 @@ public class CrawlerContact : MonoBehaviour
     void Start()
     {
         agent = transform.root.GetComponent<CrawlerAgent>();
+        agent = transform.parent.GetComponent<CrawlerAgent>();
         Physics.defaultSolverIterations = 6; //increasing this to increase solver accuracy
         Physics.defaultSolverVelocityIterations = 6; //increasing this to increase solver accuracy
     }

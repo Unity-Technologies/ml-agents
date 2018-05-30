@@ -2126,9 +2126,12 @@ MonoBehaviour:
   leg2_lower: {fileID: 4472949395872384}
   leg3_upper: {fileID: 4933677527982718}
   leg3_lower: {fileID: 4030980707411776}
+  bodyPartsList: []
   maxJointSpring: 40000
   jointDampen: 3000
   maxJointForceLimit: 500000
+  maxJointAngleChangePerDecision: 0
+  maxJointStrengthChangePerDecision: 0
   footCenterOfMassShift: {x: 0, y: 1, z: 0}
   rewardMovingTowardsTarget: 1
   rewardFacingTarget: 0
@@ -2154,7 +2157,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   contactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
+  penalizeOnContact: 0
 --- !u!114 &114620016063581854
 MonoBehaviour:
   m_ObjectHideFlags: 1
