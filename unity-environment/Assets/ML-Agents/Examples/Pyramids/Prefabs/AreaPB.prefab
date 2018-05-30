@@ -3818,4 +3818,4 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 5
   area: {fileID: 1464170487903594}
   areaSwitch: {fileID: 1562139828900848}
-  useCamera: 0
+  useVectorObs: 1

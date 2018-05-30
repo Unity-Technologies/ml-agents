@@ -31,7 +31,7 @@ class PPOTrainer(Trainer):
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
                            'graph_scope', 'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
-                           'encoding_size']
+                           'curiosity_enc_size']
 
         for k in self.param_keys:
             if k not in trainer_parameters:
@@ -71,7 +71,7 @@ class PPOTrainer(Trainer):
                                   m_size=self.m_size,
                                   use_curiosity=bool(trainer_parameters['use_curiosity']),
                                   curiosity_strength=float(trainer_parameters['curiosity_strength']),
-                                  encoding_size=float(trainer_parameters['encoding_size']))
+                                  curiosity_enc_size=float(trainer_parameters['encoding_size']))
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}

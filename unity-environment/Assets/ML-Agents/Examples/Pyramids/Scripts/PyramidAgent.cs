@@ -13,7 +13,7 @@ public class PyramidAgent : Agent
     private RayPerception rayPer;
     private PyramidSwitch switchLogic;
     public GameObject areaSwitch;
-    public bool useCamera;
+    public bool useVectorObs;
 
     public override void InitializeAgent()
     {
@@ -26,7 +26,7 @@ public class PyramidAgent : Agent
 
     public override void CollectObservations()
     {
-        if (!useCamera)
+        if (useVectorObs)
         {
             const float rayDistance = 35f;
             float[] rayAngles = {20f, 90f, 160f, 45f, 135f, 70f, 110f};

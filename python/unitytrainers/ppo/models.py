@@ -9,7 +9,7 @@ logger = logging.getLogger("unityagents")
 class PPOModel(LearningModel):
     def __init__(self, brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6,
                  normalize=False, use_recurrent=False, num_layers=2, m_size=None, use_curiosity=False,
-                 curiosity_strength=0.01, encoding_size=128):
+                 curiosity_strength=0.01, curiosity_enc_size=128):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -36,7 +36,7 @@ class PPOModel(LearningModel):
         else:
             self.create_dc_actor_critic(h_size, num_layers)
         if self.use_curiosity:
-            self.encoding_size = encoding_size
+            self.curiosity_enc_size = curiosity_enc_size
             self.curiosity_strength = curiosity_strength
             encoded_state, encoded_next_state = self.create_curiosity_encoders()
             self.create_inverse_model(encoded_state, encoded_next_state)
@@ -73,9 +73,9 @@ class PPOModel(LearningModel):
                 self.next_visual_in.append(next_visual_input)
 
                 # Create the encoder ops for current and next visual input. Not that these encoders are siamese.
-                encoded_visual = self.create_visual_observation_encoder(self.visual_in[i], self.encoding_size,
+                encoded_visual = self.create_visual_observation_encoder(self.visual_in[i], self.curiosity_enc_size,
                                                                         self.swish, 1, "visual_obs_encoder", False)
-                encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i], self.encoding_size,
+                encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i], self.curiosity_enc_size,
                                                                              self.swish, 1, "visual_obs_encoder", True)
                 visual_encoders.append(encoded_visual)
                 next_visual_encoders.append(encoded_next_visual)
@@ -91,10 +91,10 @@ class PPOModel(LearningModel):
                                                   name='next_vector_observation')
 
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
-            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in, self.encoding_size,
+            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in, self.curiosity_enc_size,
                                                                             self.swish, 2, "vector_obs_encoder", False)
             encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_obs,
-                                                                                 self.encoding_size, self.swish,
+                                                                                 self.curiosity_enc_size, self.swish,
                                                                                  2, "vector_obs_encoder", True)
 
             encoded_state_list.append(encoded_vector_obs)
@@ -131,7 +131,7 @@ class PPOModel(LearningModel):
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
-        pred_next_state = tf.layers.dense(hidden, self.encoding_size, activation=None)
+        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size, activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
         self.intrinsic_reward = tf.clip_by_value(self.curiosity_strength * squared_difference, 0, 1)
