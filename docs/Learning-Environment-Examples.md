@@ -257,6 +257,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Continuous) Size of 39, corresponding to target rotations applicable to the joints. 
     * Visual Observations: None
 * Reset Parameters: None
+* Benchmark Mean Reward: 1000
 
 ## Pyramids
 
@@ -270,5 +271,7 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space:
     * Vector Observation space: (Continuous) 148 corresponding to local ray-casts detecting switch, bricks, golden brick, and walls, plus variable indicating switch state.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
-    * Visual Observations (Optional): First-person view for the agent.
+    * Visual Observations (Optional): First-person camera per-agent. Use `VisualPyramids` scene. 
 * Reset Parameters: None
+* Optional Imitation Learning scene: `PyramidsIL`.
+* Benchmark Mean Reward: 1.75
