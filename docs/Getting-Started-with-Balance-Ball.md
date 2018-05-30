@@ -183,16 +183,9 @@ negative reward for dropping the ball. An agent is also marked as done when it
 drops the ball so that it will reset with a new ball for the next simulation
 step.
 
-## Building the Environment
-
-To build the 3D Balance Ball environment, follow the steps in the
-[Building an Environment](Basic-Guide.md#building-an-example-environment) section 
-of the Basic Guide page.
-
 ## Training the Brain with Reinforcement Learning
 
-Now that we have a Unity executable containing the simulation environment, we 
-can perform the training. 
+Now that we have an environment, we can perform the training. 
 
 ### Training with PPO
 
@@ -208,10 +201,7 @@ explaining it.
 To train the agents within the Ball Balance environment, we will be using the python 
 package. We have provided a convenient Python wrapper script called `learn.py` which accepts arguments used to configure both training and inference phases.
 
-
-We will pass to this script the path of the environment executable that we just built. (Optionally) We can
-use `run_id` to identify the experiment and create a folder where the model and summary statistics are stored. When 
-using TensorBoard to observe the training statistics, it helps to set this to a sequential value 
+We can use `run_id` to identify the experiment and create a folder where the model and summary statistics are stored. When using TensorBoard to observe the training statistics, it helps to set this to a sequential value 
 for each training run. In other words, "BalanceBall1" for the first run, 
 "BalanceBall2" or the second, and so on. If you don't, the summaries for 
 every training run are saved to the same directory and will all be included 
@@ -220,11 +210,17 @@ on the same graph.
 To summarize, go to your command line, enter the `ml-agents/python` directory and type: 
 
 ```
-python3 learn.py <env_name> --run-id=<run-identifier> --train 
+python3 learn.py --run-id=<run-identifier> --train 
 ```
+
+When the message _"Ready to connect with the Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
+
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
-The `--train` flag tells ML-Agents to run in training mode. `env_name` should be the name of the Unity executable that was just created. 
+The `--train` flag tells ML-Agents to run in training mode. 
+
+**Note**: You can train using an executable rather than the Editor. To do so, follow the intructions in 
+[Using an Execuatble](Learning-Environment-Executable.md).
 
 
 ### Observing Training Progress
