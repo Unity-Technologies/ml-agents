@@ -24,8 +24,6 @@ public class CrawlerContact : MonoBehaviour
     {
         agent = transform.root.GetComponent<CrawlerAgent>();
         agent = transform.parent.GetComponent<CrawlerAgent>();
-        Physics.defaultSolverIterations = 6; //increasing this to increase solver accuracy
-        Physics.defaultSolverVelocityIterations = 6; //increasing this to increase solver accuracy
     }
 
     /// <summary>
@@ -44,11 +42,11 @@ public class CrawlerContact : MonoBehaviour
             }
         }
 
-        // Touched the target 
-        if (other.transform.CompareTag("target"))
-        {
-            agent.TouchedTarget(other.relativeVelocity.sqrMagnitude);
-        }
+        // // Touched the target 
+        // if (other.transform.CompareTag("target"))
+        // {
+        //     agent.TouchedTarget(other.relativeVelocity.sqrMagnitude);
+        // }
     }
 
     /// <summary>

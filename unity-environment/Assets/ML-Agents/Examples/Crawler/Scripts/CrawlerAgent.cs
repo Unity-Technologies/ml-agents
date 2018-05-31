@@ -30,13 +30,14 @@ public class CrawlerAgent : Agent {
 
     [Header("Joint Settings")] 
     [Space(10)] 
-	public float maxJointSpring;
-	public float jointDampen;
-	public float maxJointForceLimit;
-    // [Tooltip("Reward Functions To Use")] 
+    JointDriveController jdController;
+	// public float maxJointSpring;
+	// public float jointDampen;
+	// public float maxJointForceLimit;
+    // // [Tooltip("Reward Functions To Use")] 
 
-    public float maxJointAngleChangePerDecision; //the change in joint angle will not be able to exceed this value.
-    public float maxJointStrengthChangePerDecision; //the change in joint strenth will not be able to exceed this value.
+    // public float maxJointAngleChangePerDecision; //the change in joint angle will not be able to exceed this value.
+    // public float maxJointStrengthChangePerDecision; //the change in joint strenth will not be able to exceed this value.
 	public Vector3 footCenterOfMassShift; //used to shift the centerOfMass on the feet so the agent isn't so top heavy
 	Vector3 dirToTarget;
 	float movingTowardsDot;
@@ -63,92 +64,6 @@ public class CrawlerAgent : Agent {
     int currentDecisionStep;
 
 
-    /// <summary>
-    /// Used to store relevant information for acting and learning for each body part in agent.
-    /// </summary>
-    [System.Serializable]
-    public class BodyPart
-    {
-        public ConfigurableJoint joint;
-        public Rigidbody rb;
-        public Vector3 startingPos;
-        public Quaternion startingRot;
-        public CrawlerContact groundContact;
-		public CrawlerAgent agent;
-        [HideInInspector]
-        public Vector3 previousJointRotation;
-        [HideInInspector]
-        public float previousSpringValue;
-        public Vector3 currentJointForce;
-        public float currentJointForceSqrMag;
-        public Vector3 currentJointTorque;
-        public float currentJointTorqueSqrMag;
-
-        /// <summary>
-        /// Reset body part to initial configuration.
-        /// </summary>
-        public void Reset()
-        {
-            rb.transform.position = startingPos;
-            rb.transform.rotation = startingRot;
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-			groundContact.touchingGround = false;;
-        }
-        
-        /// <summary>
-        /// Apply torque according to defined goal `x, y, z` angle and force `strength`.
-        /// </summary>
-        public void SetNormalizedTargetRotation(float x, float y, float z)
-        {
-            // Transform values from [-1, 1] to [0, 1]
-            x = (x + 1f) * 0.5f;
-            y = (y + 1f) * 0.5f;
-            z = (z + 1f) * 0.5f;
-
-            var xRot = Mathf.MoveTowards(previousJointRotation.x, Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x), agent.maxJointAngleChangePerDecision);
-            var yRot = Mathf.MoveTowards(previousJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), agent.maxJointAngleChangePerDecision);
-            var zRot = Mathf.MoveTowards(previousJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), agent.maxJointAngleChangePerDecision);
-
-            // var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
-            // var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
-            // var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
-
-            joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
-            previousJointRotation = new Vector3(xRot, yRot, zRot);
-
-            // var jd = new JointDrive
-            // {
-            //     positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-			// 	positionDamper = agent.jointDampen,
-            //     maximumForce = agent.maxJointForceLimit
-            // };
-            // joint.slerpDrive = jd;
-        }
-
-
-        public void UpdateJointDrive(float strength)
-        {
-
-            // var spring = Mathf.MoveTowards(previousSpringValue, (strength + 1f) * 0.5f, agent.maxJointStrengthChangePerDecision);
-            var rawSpringVal = ((strength + 1f) * 0.5f) * agent.maxJointSpring;
-            var clampedSpring = Mathf.MoveTowards(previousSpringValue, rawSpringVal, agent.maxJointStrengthChangePerDecision);
-            // agent.energyPenalty += clampedSpring/agent.maxJointStrengthChangePerDecision;
-            var jd = new JointDrive
-            {
-                // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-                // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-                // positionSpring = spring * agent.maxJointSpring,
-                positionSpring = clampedSpring,
-                positionDamper = agent.jointDampen,
-                maximumForce = agent.maxJointForceLimit
-            };
-            joint.slerpDrive = jd;
-
-            // previousJointRotation = new Vector3(xRot, yRot, zRot);
-            previousSpringValue = jd.positionSpring;
-        }
-    }
 
     /// <summary>
     /// Create BodyPart object and add it to dictionary.
@@ -164,15 +79,16 @@ public class CrawlerAgent : Agent {
         };
 		bp.rb.maxAngularVelocity = 100;
         bodyParts.Add(t, bp);
-        bp.groundContact = t.GetComponent<CrawlerContact>();
-		bp.agent = this;
+        bp.groundContact = t.GetComponent<GroundContact>();
+        bp.targetContact = t.GetComponent<TargetContact>();
+		// bp.agent = this;
         bodyPartsList.Add(bp);
-
     }
 
     //Initialize
     public override void InitializeAgent()
     {
+        jdController = GetComponent<JointDriveController>();
         currentDecisionStep = 1;
 
         //Setup each body part
@@ -229,22 +145,6 @@ public class CrawlerAgent : Agent {
         }
     }
 
-    // void FixedUpdate()
-    // {
-    //     //update pos to target
-	// 	dirToTarget = target.position - bodyParts[body].rb.position;
-
-    //     //if enabled the feet will light up green when the foot is grounded.
-    //     //this is just a visualization and isn't necessary for function
-    //     if(useFootGroundedVisualization)
-    //     {
-    //         foot0.material = bodyParts[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-    //         foot1.material = bodyParts[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-    //         foot2.material = bodyParts[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-    //         foot3.material = bodyParts[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-    //     }
-    // }
-
 	/// <summary>
     /// Adds the raycast hit dist and relative pos to observations
     /// </summary>
@@ -288,8 +188,13 @@ public class CrawlerAgent : Agent {
         foreach (var bodyPart in bodyParts.Values)
         {
             CollectObservationBodyPart(bodyPart);
+            if(bodyPart.targetContact.touchingTarget)
+            {
+                TouchedTarget();
+            }
         }
     }
+
 
     void GetCurrentJointForces()
     {
@@ -308,7 +213,7 @@ public class CrawlerAgent : Agent {
 	/// <summary>
     /// Agent touched the target
     /// </summary>
-	public void TouchedTarget(float impactForce)
+	public void TouchedTarget()
 	{
 		// AddReward(.01f * impactForce); //higher impact should be rewarded
         AddReward(1);
@@ -354,35 +259,26 @@ public class CrawlerAgent : Agent {
         // Apply action to all relevant body parts. 
         if(isNewDecisionStep)
         {
-            bodyParts[leg0_upper].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], 0);
-            bodyParts[leg1_upper].SetNormalizedTargetRotation(vectorAction[2], vectorAction[3], 0);
-            bodyParts[leg2_upper].SetNormalizedTargetRotation(vectorAction[4], vectorAction[5], 0);
-            bodyParts[leg3_upper].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0);
-            bodyParts[leg0_lower].SetNormalizedTargetRotation(vectorAction[8], 0, 0);
-            bodyParts[leg1_lower].SetNormalizedTargetRotation(vectorAction[9], 0, 0);
-            bodyParts[leg2_lower].SetNormalizedTargetRotation(vectorAction[10], 0, 0);
-            bodyParts[leg3_lower].SetNormalizedTargetRotation(vectorAction[11], 0, 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg0_upper], vectorAction[0], vectorAction[1], 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg1_upper], vectorAction[2], vectorAction[3], 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg2_upper], vectorAction[4], vectorAction[5], 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg3_upper], vectorAction[6], vectorAction[7], 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg0_lower], vectorAction[8], 0, 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg1_lower], vectorAction[9], 0, 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg2_lower], vectorAction[10], 0, 0);
+            jdController.SetNormalizedTargetRotation(bodyParts[leg3_lower], vectorAction[11], 0, 0);
         }
 
             //update joint drive settings
-            bodyParts[leg0_upper].UpdateJointDrive(vectorAction[12]);
-            bodyParts[leg1_upper].UpdateJointDrive(vectorAction[13]);
-            bodyParts[leg2_upper].UpdateJointDrive(vectorAction[14]);
-            bodyParts[leg3_upper].UpdateJointDrive(vectorAction[15]);
-            bodyParts[leg0_lower].UpdateJointDrive(vectorAction[16]);
-            bodyParts[leg1_lower].UpdateJointDrive(vectorAction[17]);
-            bodyParts[leg2_lower].UpdateJointDrive(vectorAction[18]);
-            bodyParts[leg3_lower].UpdateJointDrive(vectorAction[19]);
+            jdController.UpdateJointDrive(bodyParts[leg0_upper], vectorAction[12]);
+            jdController.UpdateJointDrive(bodyParts[leg1_upper], vectorAction[13]);
+            jdController.UpdateJointDrive(bodyParts[leg2_upper], vectorAction[14]);
+            jdController.UpdateJointDrive(bodyParts[leg3_upper], vectorAction[15]);
+            jdController.UpdateJointDrive(bodyParts[leg0_lower], vectorAction[16]);
+            jdController.UpdateJointDrive(bodyParts[leg1_lower], vectorAction[17]);
+            jdController.UpdateJointDrive(bodyParts[leg2_lower], vectorAction[18]);
+            jdController.UpdateJointDrive(bodyParts[leg3_lower], vectorAction[19]);
 
-
-        // bodyParts[leg0_upper].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], 0, vectorAction[2]);
-        // bodyParts[leg1_upper].SetNormalizedTargetRotation(vectorAction[3], vectorAction[4], 0, vectorAction[5]);
-        // bodyParts[leg2_upper].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0, vectorAction[8]);
-        // bodyParts[leg3_upper].SetNormalizedTargetRotation(vectorAction[9], vectorAction[10], 0, vectorAction[11]);
-        // bodyParts[leg0_lower].SetNormalizedTargetRotation(vectorAction[12], 0, 0, vectorAction[13]);
-        // bodyParts[leg1_lower].SetNormalizedTargetRotation(vectorAction[14], 0, 0, vectorAction[15]);
-        // bodyParts[leg2_lower].SetNormalizedTargetRotation(vectorAction[16], 0, 0, vectorAction[17]);
-        // bodyParts[leg3_lower].SetNormalizedTargetRotation(vectorAction[18], 0, 0, vectorAction[19]);
 
         // Set reward for this step according to mixture of the following elements.
         if(rewardMovingTowardsTarget){RewardFunctionMovingTowards();}
@@ -462,9 +358,14 @@ public class CrawlerAgent : Agent {
         
         foreach (var bodyPart in bodyParts.Values)
         {
-            bodyPart.Reset();
+            // bodyPart.Reset();
+            jdController.Reset(bodyPart);
         }
         isNewDecisionStep = true;
         currentDecisionStep = 1;
+        // if(respawnTargetWhenTouched)
+        // {
+		//     GetRandomTargetPos();
+        // }
     }
 }

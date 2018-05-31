@@ -76,7 +76,8 @@ GameObject:
   - component: {fileID: 23597406284826942}
   - component: {fileID: 54399615437906270}
   - component: {fileID: 153278496757632314}
-  - component: {fileID: 114939551200970228}
+  - component: {fileID: 114378035660499610}
+  - component: {fileID: 114630981553121076}
   m_Layer: 0
   m_Name: leg3
   m_TagString: Untagged
@@ -97,7 +98,8 @@ GameObject:
   - component: {fileID: 23798039257733436}
   - component: {fileID: 54265263482699850}
   - component: {fileID: 153439804734322938}
-  - component: {fileID: 114625217541474238}
+  - component: {fileID: 114963975753936656}
+  - component: {fileID: 114286297917091484}
   m_Layer: 0
   m_Name: foreleg0
   m_TagString: Untagged
@@ -164,6 +166,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4728148048724442}
   - component: {fileID: 114179284626726140}
+  - component: {fileID: 114191425613399942}
   m_Layer: 0
   m_Name: Crawler
   m_TagString: Untagged
@@ -221,7 +224,8 @@ GameObject:
   - component: {fileID: 23272823173055836}
   - component: {fileID: 54556277991919706}
   - component: {fileID: 153984968368970626}
-  - component: {fileID: 114678748235675324}
+  - component: {fileID: 114911024922901386}
+  - component: {fileID: 114894599817412248}
   m_Layer: 0
   m_Name: foreleg1
   m_TagString: Untagged
@@ -278,7 +282,8 @@ GameObject:
   - component: {fileID: 23937490023531708}
   - component: {fileID: 54215498965474618}
   - component: {fileID: 153262639472331258}
-  - component: {fileID: 114830166566170734}
+  - component: {fileID: 114117580980306204}
+  - component: {fileID: 114019424473154628}
   m_Layer: 0
   m_Name: leg2
   m_TagString: Untagged
@@ -388,7 +393,8 @@ GameObject:
   - component: {fileID: 23962467393068228}
   - component: {fileID: 54245403314163988}
   - component: {fileID: 153268968279330214}
-  - component: {fileID: 114921410414246554}
+  - component: {fileID: 114561479064419494}
+  - component: {fileID: 114243139159964646}
   m_Layer: 0
   m_Name: foreleg3
   m_TagString: Untagged
@@ -409,7 +415,8 @@ GameObject:
   - component: {fileID: 23264293529964958}
   - component: {fileID: 54340674441626632}
   - component: {fileID: 153747860264252712}
-  - component: {fileID: 114256696034442492}
+  - component: {fileID: 114437134104325108}
+  - component: {fileID: 114464908356195602}
   m_Layer: 0
   m_Name: leg1
   m_TagString: Untagged
@@ -430,7 +437,8 @@ GameObject:
   - component: {fileID: 23906594959389256}
   - component: {fileID: 54629492474706908}
   - component: {fileID: 153297649615252278}
-  - component: {fileID: 114920893464906602}
+  - component: {fileID: 114208487872929706}
+  - component: {fileID: 114413027205790416}
   m_Layer: 0
   m_Name: foreleg2
   m_TagString: Untagged
@@ -506,7 +514,8 @@ GameObject:
   - component: {fileID: 23917974201811378}
   - component: {fileID: 54433679729310922}
   - component: {fileID: 153111807918966850}
-  - component: {fileID: 114480058658443154}
+  - component: {fileID: 114422171263939412}
+  - component: {fileID: 114704467857396172}
   m_Layer: 0
   m_Name: leg0
   m_TagString: Untagged
@@ -526,7 +535,8 @@ GameObject:
   - component: {fileID: 135409821982380996}
   - component: {fileID: 23355483023702272}
   - component: {fileID: 54857256681716736}
-  - component: {fileID: 114140396833841548}
+  - component: {fileID: 114177099931430768}
+  - component: {fileID: 114047205461872962}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -2259,6 +2269,19 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114019424473154628
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1586826614103692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForTargetContact: 1
+  touchingTarget: 0
 --- !u!114 &114026170339487676
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2270,11 +2293,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 1
---- !u!114 &114140396833841548
+--- !u!114 &114047205461872962
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2282,13 +2305,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 1974335483835858}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: -1
+  checkForTargetContact: 1
+  touchingTarget: 0
+--- !u!114 &114117580980306204
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1586826614103692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 0
+--- !u!114 &114177099931430768
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1974335483835858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
+  touchingGround: 0
 --- !u!114 &114179284626726140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2321,11 +2372,6 @@ MonoBehaviour:
   leg3_upper: {fileID: 4675468864841878}
   leg3_lower: {fileID: 4355733609099814}
   bodyPartsList: []
-  maxJointSpring: 40000
-  jointDampen: 3000
-  maxJointForceLimit: 500000
-  maxJointAngleChangePerDecision: 90
-  maxJointStrengthChangePerDecision: 20000
   footCenterOfMassShift: {x: 0, y: 0, z: 0}
   rewardMovingTowardsTarget: 1
   rewardFacingTarget: 0
@@ -2337,21 +2383,50 @@ MonoBehaviour:
   foot3: {fileID: 23029923263382672}
   groundedMaterial: {fileID: 2100000, guid: 624b24bbec31f44babfb57ef2dfbc537, type: 2}
   unGroundedMaterial: {fileID: 2100000, guid: ea4e6e61f90ae46daaf643b945c080ed, type: 2}
---- !u!114 &114256696034442492
+--- !u!114 &114191425613399942
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1749091446398798}
+  m_GameObject: {fileID: 1275094196875162}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a41c45a6185145d7a3f16b8cce901fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
+  maxJointSpring: 40000
+  jointDampen: 3000
+  maxJointForceLimit: 50000
+  maxJointAngleChangePerDecision: 90
+  maxJointStrengthChangePerDecision: 20000
+--- !u!114 &114208487872929706
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1784117672346330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 0
+--- !u!114 &114243139159964646
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1747081825438060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForTargetContact: 1
+  touchingTarget: 0
 --- !u!114 &114274436827376058
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2363,10 +2438,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 1
+--- !u!114 &114286297917091484
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1175108908238784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForTargetContact: 1
+  touchingTarget: 0
+--- !u!114 &114378035660499610
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1143106541292420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
+  touchingGround: 0
 --- !u!114 &114410704796229724
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2378,11 +2481,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 1
---- !u!114 &114480058658443154
+--- !u!114 &114413027205790416
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1784117672346330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForTargetContact: 1
+  touchingTarget: 0
+--- !u!114 &114422171263939412
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2390,13 +2506,56 @@ MonoBehaviour:
   m_GameObject: {fileID: 1948264418398364}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 0
+--- !u!114 &114437134104325108
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1749091446398798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
+  touchingGround: 0
+--- !u!114 &114464908356195602
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1749091446398798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForTargetContact: 1
+  touchingTarget: 0
+--- !u!114 &114561479064419494
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1747081825438060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
+  touchingGround: 0
 --- !u!114 &114619419837665528
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2408,86 +2567,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 1
---- !u!114 &114625217541474238
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1175108908238784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
-  touchingGround: 0
-  penalizeOnContact: 0
---- !u!114 &114678748235675324
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1436411736343112}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
-  touchingGround: 0
-  penalizeOnContact: 0
---- !u!114 &114830166566170734
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1586826614103692}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
-  touchingGround: 0
-  penalizeOnContact: 0
---- !u!114 &114920893464906602
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1784117672346330}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
-  touchingGround: 0
-  penalizeOnContact: 0
---- !u!114 &114921410414246554
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1747081825438060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
-  touchingGround: 0
-  penalizeOnContact: 0
---- !u!114 &114939551200970228
+--- !u!114 &114630981553121076
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2495,13 +2579,67 @@ MonoBehaviour:
   m_GameObject: {fileID: 1143106541292420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e73e75b461ed470c97a8f775ff99fed, type: 3}
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  contactPenalty: 0
+  checkForTargetContact: 1
+  touchingTarget: 0
+--- !u!114 &114704467857396172
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1948264418398364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForTargetContact: 1
+  touchingTarget: 0
+--- !u!114 &114894599817412248
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1436411736343112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForTargetContact: 1
+  touchingTarget: 0
+--- !u!114 &114911024922901386
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1436411736343112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 0
+--- !u!114 &114963975753936656
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1175108908238784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
+  touchingGround: 0
 --- !u!135 &135075611314727556
 SphereCollider:
   m_ObjectHideFlags: 1
