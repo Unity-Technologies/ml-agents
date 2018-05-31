@@ -10,6 +10,7 @@ public class HallwayAgent : Agent
     public GameObject redGoal;
     public GameObject orangeBlock;
     public GameObject redBlock;
+    public bool useVectorObs;
     RayPerception rayPer;
     Rigidbody shortBlockRB;
     Rigidbody agentRB;
@@ -22,7 +23,6 @@ public class HallwayAgent : Agent
     {
         base.InitializeAgent();
         academy = FindObjectOfType<HallwayAcademy>();
-        brain = FindObjectOfType<Brain>();
         rayPer = GetComponent<RayPerception>();
         agentRB = GetComponent<Rigidbody>();
         groundRenderer = ground.GetComponent<Renderer>();
@@ -31,11 +31,14 @@ public class HallwayAgent : Agent
 
     public override void CollectObservations()
     {
-        float rayDistance = 12f;
-        float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
-        string[] detectableObjects = { "orangeGoal", "redGoal", "orangeBlock", "redBlock", "wall" };
-        AddVectorObs((float)GetStepCount() / (float)agentParameters.maxStep);
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        if (useVectorObs)
+        {
+            float rayDistance = 12f;
+            float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
+            string[] detectableObjects = { "orangeGoal", "redGoal", "orangeBlock", "redBlock", "wall" };
+            AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        }
     }
 
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
