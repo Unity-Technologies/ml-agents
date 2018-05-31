@@ -2,7 +2,7 @@
 using UnityEngine;
 using MLAgents;
 
-namespace MLAGents
+namespace MLAgents
 {
 
     public class RandomDecision : MonoBehaviour, Decision
