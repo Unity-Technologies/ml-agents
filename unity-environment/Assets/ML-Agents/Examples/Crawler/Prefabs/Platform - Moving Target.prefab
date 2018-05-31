@@ -2280,7 +2280,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114026170339487676
 MonoBehaviour:
@@ -2293,6 +2292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
   agentDoneOnGroundContact: 1
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2308,7 +2308,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114117580980306204
 MonoBehaviour:
@@ -2321,6 +2320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2336,7 +2336,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentDoneOnGroundContact: 0
+  agent: {fileID: 114179284626726140}
+  agentDoneOnGroundContact: 1
   penalizeGroundContact: 0
   groundContactPenalty: 0
   touchingGround: 0
@@ -2371,7 +2372,6 @@ MonoBehaviour:
   leg2_lower: {fileID: 4891288999733288}
   leg3_upper: {fileID: 4675468864841878}
   leg3_lower: {fileID: 4355733609099814}
-  bodyPartsList: []
   footCenterOfMassShift: {x: 0, y: 0, z: 0}
   rewardMovingTowardsTarget: 1
   rewardFacingTarget: 0
@@ -2397,8 +2397,9 @@ MonoBehaviour:
   maxJointSpring: 40000
   jointDampen: 3000
   maxJointForceLimit: 50000
-  maxJointAngleChangePerDecision: 90
+  maxJointAngleChangePerDecision: 1000
   maxJointStrengthChangePerDecision: 20000
+  bodyPartsList: []
 --- !u!114 &114208487872929706
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2410,6 +2411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2425,7 +2427,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114274436827376058
 MonoBehaviour:
@@ -2438,6 +2439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
   agentDoneOnGroundContact: 1
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2453,7 +2455,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114378035660499610
 MonoBehaviour:
@@ -2466,6 +2467,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2481,6 +2483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
   agentDoneOnGroundContact: 1
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2496,7 +2499,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114422171263939412
 MonoBehaviour:
@@ -2509,6 +2511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2524,6 +2527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2539,7 +2543,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114561479064419494
 MonoBehaviour:
@@ -2552,6 +2555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2567,6 +2571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
   agentDoneOnGroundContact: 1
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2582,7 +2587,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114704467857396172
 MonoBehaviour:
@@ -2595,7 +2599,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114894599817412248
 MonoBehaviour:
@@ -2608,7 +2611,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196743e42fbad48a9bfe63abfadb90ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkForTargetContact: 1
   touchingTarget: 0
 --- !u!114 &114911024922901386
 MonoBehaviour:
@@ -2621,6 +2623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0
@@ -2636,6 +2639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 114179284626726140}
   agentDoneOnGroundContact: 0
   penalizeGroundContact: 0
   groundContactPenalty: 0

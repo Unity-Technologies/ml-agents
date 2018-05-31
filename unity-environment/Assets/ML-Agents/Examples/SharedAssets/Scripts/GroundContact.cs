@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public class GroundContact : MonoBehaviour
 {
-    Agent agent;
+    public Agent agent;
 
     [Header("Ground Check")]
     // public bool checkForGroundContact = true; //check for ground contact?
@@ -40,7 +40,7 @@ public class GroundContact : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        agent = transform.root.GetComponent<Agent>();
+        // agent = transform.root.GetComponent<Agent>();
 
     }
 
