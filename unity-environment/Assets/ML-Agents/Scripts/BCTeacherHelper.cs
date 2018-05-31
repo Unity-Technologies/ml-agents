@@ -49,7 +49,8 @@ namespace MLAgents
 
             Monitor.Log("Recording experiences " + recordKey, recordExperiences.ToString());
             float timeSinceBufferReset = Time.time - bufferResetTime;
-            Monitor.Log("Seconds since buffer reset " + resetKey, Mathf.FloorToInt(timeSinceBufferReset).ToString());
+            Monitor.Log("Seconds since buffer reset " + resetKey, 
+                Mathf.FloorToInt(timeSinceBufferReset).ToString());
         }
 
         void FixedUpdate()
