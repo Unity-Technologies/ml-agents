@@ -12,6 +12,8 @@ on how to design and build your own environments see our
 [Making a New Learning Environment](Learning-Environment-Create-New.md)
 page.
 
+Note: Environment scenes marked as _optional_ do not have accompanying pre-trained model files, and are designed to serve as challenges for researchers. 
+
 If you would like to contribute environments, please see our 
 [contribution guidelines](../CONTRIBUTING.md) page. 
 
@@ -28,7 +30,7 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Discrete) One variable corresponding to current state.
     * Vector Action space: (Discrete) Two possible actions (Move left, move right).
-    * Visual Observations: 0
+    * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward: 0.94
 
@@ -46,7 +48,7 @@ If you would like to contribute environments, please see our
     * Vector Observation space: (Continuous) 8 variables corresponding to rotation of platform, and position, rotation, and velocity of ball.
     * Vector Observation space (Hard Version): (Continuous) 5 variables corresponding to rotation of platform and position and rotation of ball.
     * Vector Action space: (Continuous) Size of 2, with one value corresponding to X-rotation, and the other to Z-rotation.
-    * Visual Observations: 0
+    * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward: 100
 
@@ -81,9 +83,10 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 8 variables corresponding to position and velocity of ball and racket.
     * Vector Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
-    * Visual Observations: None
+    * Visual Observations: None.
 * Reset Parameters: One, corresponding to size of ball.
 * Benchmark Mean Reward: 2.5
+* Optional Imitation Learning scene: `TennisIL`.
 
 ## [Push Block](https://youtu.be/jKdw216ZgoE)
 
@@ -98,9 +101,10 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
     * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
-    * Visual Observations: None.
+    * Visual Observations (Optional): One first-person camera. Use `VisualPushBlock` scene.
 * Reset Parameters: None.
 * Benchmark Mean Reward: 4.5
+* Optional Imitation Learning scene: `PushBlockIL`.
 
 ## [Wall Jump](https://youtu.be/NITLug2DIWQ)
 
@@ -132,7 +136,7 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm Rigidbodies.
     * Vector Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
-    * Visual Observations: None
+    * Visual Observations: None.
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
 * Benchmark Mean Reward: 30
 
@@ -152,7 +156,7 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 117 variables corresponding to position, rotation, velocity, and angular velocities of each limb plus the acceleration and angular acceleration of the body.
     * Vector Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
-    * Visual Observations: None
+    * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward: 2000
 
@@ -169,9 +173,10 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 53 corresponding to velocity of agent (2), whether agent is frozen and/or shot its laser (2), plus ray-based perception of objects around agent's forward direction (49; 7 raycast angles with 7 measurements for each).
     * Vector Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
-    * Visual Observations (Optional; None by default): First-person view for each agent. 
-* Reset Parameters: None
+    * Visual Observations (Optional): First-person camera per-agent. Use `VisualBanana` scene. 
+* Reset Parameters: None.
 * Benchmark Mean Reward: 10
+* Optional Imitation Learning scene: `BananaIL`. 
 
 ## [Hallway](https://youtu.be/53GyfpPQRUQ)
 
@@ -187,9 +192,10 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space:
     * Vector Observation space: (Continuous) 30 corresponding to local ray-casts detecting objects, goals, and walls.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
-    * Visual Observations (Optional): First-person view for the agent.
-* Reset Parameters: None
+    * Visual Observations (Optional): First-person view for the agent. Use `VisualHallway` scene.
+* Reset Parameters: None.
 * Benchmark Mean Reward: 0.7
+* Optional Imitation Learning scene: `HallwayIL`.
 
 ## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
 
@@ -205,8 +211,8 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space:
     * Vector Observation space: (Continuous) 6 corresponding to local position of agent and banana.
     * Vector Action space: (Continuous) 3 corresponding to agent force applied for the jump.
-    * Visual Observations: None
-* Reset Parameters: None
+    * Visual Observations: None.
+* Reset Parameters: None.
 * Benchmark Mean Reward: 2.5
 
 ## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
@@ -232,7 +238,7 @@ If you would like to contribute environments, please see our
     * Vector Action space: (Discrete) 
         * Striker: 6 corresponding to forward, backward, sideways movement, as well as rotation.
         * Goalie: 4 corresponding to forward, backward, sideways movement.
-    * Visual Observations: None
+    * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward (Striker & Goalie Brain): 0 (the means will be inverse of each other and criss crosses during training)
 
@@ -251,8 +257,9 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 215 variables corresponding to position, rotation, velocity, and angular velocities of each limb, along with goal direction.
     * Vector Action space: (Continuous) Size of 39, corresponding to target rotations applicable to the joints. 
-    * Visual Observations: None
-* Reset Parameters: None
+    * Visual Observations: None.
+* Reset Parameters: None.
+* Benchmark Mean Reward: 1000
 
 ## Pyramids
 
@@ -266,5 +273,7 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space:
     * Vector Observation space: (Continuous) 148 corresponding to local ray-casts detecting switch, bricks, golden brick, and walls, plus variable indicating switch state.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
-    * Visual Observations (Optional): First-person view for the agent.
-* Reset Parameters: None
+    * Visual Observations (Optional): First-person camera per-agent. Use `VisualPyramids` scene. 
+* Reset Parameters: None.
+* Optional Imitation Learning scene: `PyramidsIL`.
+* Benchmark Mean Reward: 1.75

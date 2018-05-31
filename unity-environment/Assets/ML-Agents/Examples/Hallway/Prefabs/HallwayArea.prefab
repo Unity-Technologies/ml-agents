@@ -1297,6 +1297,7 @@ MonoBehaviour:
   redGoal: {fileID: 1185286572034058}
   orangeBlock: {fileID: 1972707284972814}
   redBlock: {fileID: 1627706890143466}
+  useVectorObs: 1
 --- !u!114 &114569343444552314
 MonoBehaviour:
   m_ObjectHideFlags: 1
