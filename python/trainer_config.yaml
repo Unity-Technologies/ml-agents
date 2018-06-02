@@ -19,6 +19,7 @@ default:
     use_recurrent: false
     use_curiosity: false
     curiosity_strength: 0.01
+    curiosity_enc_size: 128
     encoding_size: 128
 
 BananaBrain:
