@@ -17,18 +17,15 @@ namespace MujocoUnity
         // public bool applyTargets;
         // public float[] targets;
 
-        [System.Obsolete]
         List<float> qpos;
-        [System.Obsolete]
         List<float> qglobpos;
-        [System.Obsolete]
         List<float> qvel;
+
         public List<float> SensorIsInTouch;
 
         public GameObject FocalPoint;
         public Rigidbody FocalRidgedBody;
         public float FocalPointMaxDistanceTraveled;
-        [System.Obsolete]
         List<float> JointAngles;
         public List<float> JointVelocity;
 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace MujocoUnity
 {
-	public class MujocoSpawner : MonoBehaviour {
+	public class MujocoSpawner : MonoBehaviour { 
 
 		public TextAsset MujocoXml;
         public Material Material;
@@ -222,6 +222,7 @@ namespace MujocoUnity
                         default:
                             DebugPrint($"*** MISSING --> {name}.{attribute.Name.LocalName}");
                             throw new NotImplementedException(attribute.Name.LocalName);
+							#pragma warning disable
                             break;
                     }
                 }
@@ -250,6 +251,7 @@ namespace MujocoUnity
                         default:
                             DebugPrint($"*** MISSING --> {name}.{attribute.Name.LocalName}");
                             throw new NotImplementedException(attribute.Name.LocalName);
+							#pragma warning disable
                             break;
                     }
                 }
@@ -371,6 +373,7 @@ namespace MujocoUnity
                     default:
                         DebugPrint($"*** MISSING --> {name}.{attribute.Name.LocalName}");
                         throw new NotImplementedException(attribute.Name.LocalName);
+						#pragma warning disable
                         break;
                 }
             }
@@ -378,7 +381,6 @@ namespace MujocoUnity
 
 		GeomItem ParseGeom(XElement element, GameObject parent)
         {
-            var name = "geom";
 			GeomItem geom = null;
             
             if (element == null)
@@ -696,6 +698,7 @@ namespace MujocoUnity
                     default: {
                         DebugPrint($"*** MISSING --> {name}.{attribute.Name.LocalName}");
                         throw new NotImplementedException(attribute.Name.LocalName);
+						#pragma warning disable
                         break;
                     }
                 }
@@ -899,6 +902,7 @@ namespace MujocoUnity
                     default: 
                         DebugPrint($"*** MISSING --> {name}.{attribute.Name.LocalName}");                    
                         throw new NotImplementedException(attribute.Name.LocalName);
+						#pragma warning disable
                         break;
                 }
             }
@@ -1074,6 +1078,7 @@ namespace MujocoUnity
                     default: 
                         DebugPrint($"*** MISSING --> {name}.{attribute.Name.LocalName}");                    
                         throw new NotImplementedException(attribute.Name.LocalName);
+						#pragma warning disable
                         break;
                 }
             }

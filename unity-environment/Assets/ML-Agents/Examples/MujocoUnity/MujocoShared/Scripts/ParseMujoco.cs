@@ -89,7 +89,8 @@ namespace MujocoUnity
                         default:
                             Console.WriteLine($"*** MISSING --> {name}.{attribute.Name.LocalName}");
                             throw new NotImplementedException(attribute.Name.LocalName);
-                            break;
+							#pragma warning disable
+							break;
                     }
                     result = result.Append(ParseBody(element, element.Attribute("name")?.Value));
                 }
@@ -152,7 +153,8 @@ namespace MujocoUnity
                     default: 
                         Console.WriteLine($"*** MISSING --> {name}.{attribute.Name.LocalName}");                    
                         throw new NotImplementedException(attribute.Name.LocalName);
-                        break;
+						#pragma warning disable
+						break;
                 }
             }
             return result.ToString();
@@ -229,6 +231,7 @@ namespace MujocoUnity
                     default: {
                         Console.WriteLine($"*** MISSING --> {name}.{attribute.Name.LocalName}");
                         throw new NotImplementedException(attribute.Name.LocalName);
+						#pragma warning disable
                         break;
                     }
                 }
@@ -290,6 +293,7 @@ namespace MujocoUnity
                     default:
                         Console.WriteLine($"*** MISSING --> {name}.{attribute.Name.LocalName}");
                         throw new NotImplementedException(attribute.Name.LocalName);
+						#pragma warning disable
                         break;
                 }
             }
