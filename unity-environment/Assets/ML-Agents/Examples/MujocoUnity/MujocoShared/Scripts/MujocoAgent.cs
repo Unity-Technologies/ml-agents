@@ -362,11 +362,11 @@ namespace MujocoUnity
                     break;
             }
         }         
-        internal bool Terminate_Never()
+        internal bool TerminateNever()
         {
             return false;
         }
-        internal bool Terminate_OnNonFootHitTerrain()
+        internal bool TerminateOnNonFootHitTerrain()
         {
             return NonFootHitTerrain;
         }  

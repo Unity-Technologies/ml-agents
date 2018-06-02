@@ -14,9 +14,9 @@ public class OpenAIAntAgent : MujocoAgent {
         // set to true this to show monitor while training
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_Ant101;
-        TerminateFunction = Terminate_Never;
-        ObservationsFunction = Observations_Default;
+        StepRewardFunction = StepRewardAnt101;
+        TerminateFunction = TerminateNever;
+        ObservationsFunction = ObservationsDefault;
 
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso_geom");
         base.SetupBodyParts();
@@ -27,7 +27,7 @@ public class OpenAIAntAgent : MujocoAgent {
     {
 
     }
-    void Observations_Default()
+    void ObservationsDefault()
     {
         if (ShowMonitor) {
         }
@@ -42,7 +42,7 @@ public class OpenAIAntAgent : MujocoAgent {
     }
 
 
-    float StepReward_Ant101()
+    float StepRewardAnt101()
     {
         float velocity = GetVelocity();
         float effort = GetEffort();

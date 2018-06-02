@@ -14,9 +14,9 @@ public class OpenAIWalker2dAgent : MujocoAgent {
         // set to true this to show monitor while training
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_Walker101;
-        TerminateFunction = Terminate_OnNonFootHitTerrain;
-        ObservationsFunction = Observations_Default;
+        StepRewardFunction = StepRewardWalker101;
+        TerminateFunction = TerminateOnNonFootHitTerrain;
+        ObservationsFunction = ObservationsDefault;
 
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso_geom");
         BodyParts["left_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="thigh_left_geom");
@@ -29,7 +29,7 @@ public class OpenAIWalker2dAgent : MujocoAgent {
     {
 
     }
-    void Observations_Default()
+    void ObservationsDefault()
     {
         if (ShowMonitor) {
         }
@@ -43,7 +43,7 @@ public class OpenAIWalker2dAgent : MujocoAgent {
         AddVectorObs(MujocoController.JointVelocity);
     }
 
-    float StepReward_Walker101()
+    float StepRewardWalker101()
     {
         // float heightPenality = GetHeightPenality(1f);
         float heightPenality = GetHeightPenality(.65f);

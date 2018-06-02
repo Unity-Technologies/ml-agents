@@ -14,10 +14,10 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         // set to true this to show monitor while training
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_OaiHumanoidRun162;
-        // StepRewardFunction = StepReward_OaiHumanoidRunOnSpot161;
-        TerminateFunction = Terminate_OnNonFootHitTerrain;
-        ObservationsFunction = Observations_Humanoid;
+        StepRewardFunction = StepRewardOaiHumanoidRun162;
+        // StepRewardFunction = StepRewardOaiHumanoidRunOnSpot161;
+        TerminateFunction = TerminateOnNonFootHitTerrain;
+        ObservationsFunction = ObservationsHumanoid;
 
         BodyParts["head"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="head");
         BodyParts["shoulders"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso1");
@@ -39,7 +39,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
     {
 
     }
-    void Observations_Humanoid()
+    void ObservationsHumanoid()
     {
         if (ShowMonitor) {
         }
@@ -72,7 +72,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         return effort;            
     }
     
-    float StepReward_OaiHumanoidRun162()
+    float StepRewardOaiHumanoidRun162()
     {
         float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);
@@ -119,7 +119,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         }
         return reward;            
     }
-    float StepReward_OaiHumanoidRunOnSpot161()
+    float StepRewardOaiHumanoidRunOnSpot161()
     {
         float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);

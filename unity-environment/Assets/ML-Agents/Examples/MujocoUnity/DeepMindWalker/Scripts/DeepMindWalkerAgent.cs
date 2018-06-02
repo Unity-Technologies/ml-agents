@@ -14,9 +14,9 @@ public class DeepMindWalkerAgent : MujocoAgent {
         // set to true this to show monitor while training
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_Walker106;
-        TerminateFunction = Terminate_OnNonFootHitTerrain;
-        ObservationsFunction = Observations_Default;
+        StepRewardFunction = StepRewardWalker106;
+        TerminateFunction = TerminateOnNonFootHitTerrain;
+        ObservationsFunction = ObservationsDefault;
 
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso");
         BodyParts["left_thigh"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="left_thigh");
@@ -29,7 +29,7 @@ public class DeepMindWalkerAgent : MujocoAgent {
     {
 
     }
-    void Observations_Default()
+    void ObservationsDefault()
     {
         if (ShowMonitor) {
         }
@@ -43,7 +43,7 @@ public class DeepMindWalkerAgent : MujocoAgent {
         AddVectorObs(MujocoController.JointVelocity);
     }
 
-    float StepReward_Walker106()
+    float StepRewardWalker106()
     {
         float heightPenality = GetHeightPenality(1.1f);
         float uprightBonus = GetForwardBonus("pelvis");

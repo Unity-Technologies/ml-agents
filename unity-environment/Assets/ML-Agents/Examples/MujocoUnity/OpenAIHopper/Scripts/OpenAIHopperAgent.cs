@@ -14,9 +14,9 @@ public class OpenAIHopperAgent : MujocoAgent {
         // set to true this to show monitor while training
         Monitor.SetActive(true);
 
-        StepRewardFunction = StepReward_Walker106;
-        TerminateFunction = Terminate_Hopper;
-        ObservationsFunction = Observations_Default;
+        StepRewardFunction = StepRewardWalker106;
+        TerminateFunction = TerminateHopper;
+        ObservationsFunction = ObservationsDefault;
 
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso_geom");
         base.SetupBodyParts();
@@ -27,7 +27,7 @@ public class OpenAIHopperAgent : MujocoAgent {
     {
 
     }
-    void Observations_Default()
+    void ObservationsDefault()
     {
         if (ShowMonitor) {
         }
@@ -41,9 +41,9 @@ public class OpenAIHopperAgent : MujocoAgent {
         AddVectorObs(MujocoController.JointVelocity);
     }
 
-    bool Terminate_Hopper()
+    bool TerminateHopper()
     {
-        if (Terminate_OnNonFootHitTerrain())
+        if (TerminateOnNonFootHitTerrain())
             return true;
         var height = GetHeightPenality(.3f);
         var angle = GetForwardBonus("pelvis");
@@ -52,7 +52,7 @@ public class OpenAIHopperAgent : MujocoAgent {
         return endOnHeight || endOnAngle;        
     }
 
-    float StepReward_Walker106()
+    float StepRewardWalker106()
     {
         float heightPenality = GetHeightPenality(.7f);
         float uprightBonus = GetForwardBonus("pelvis");
