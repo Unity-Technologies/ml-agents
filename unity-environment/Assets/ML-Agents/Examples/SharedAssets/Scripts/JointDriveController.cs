@@ -23,11 +23,13 @@ using UnityEngine;
         [HideInInspector]
         public Vector3 previousJointRotation;
         [HideInInspector]
-        public float previousSpringValue;
+        public float previousStrengthValue;
         public Vector3 currentJointForce;
         public float currentJointForceSqrMag;
         public Vector3 currentJointTorque;
         public float currentJointTorqueSqrMag;
+        public AnimationCurve jointForceCurve = new AnimationCurve();
+        public AnimationCurve jointTorqueCurve = new AnimationCurve();
 
         /// <summary>
         /// Reset body part to initial configuration.
@@ -38,8 +40,14 @@ using UnityEngine;
             bp.rb.transform.rotation = bp.startingRot;
             bp.rb.velocity = Vector3.zero;
             bp.rb.angularVelocity = Vector3.zero;
-			bp.groundContact.touchingGround = false;
-			bp.targetContact.touchingTarget = false;
+            if(bp.groundContact)
+            {
+			    bp.groundContact.touchingGround = false;
+            }
+            if(bp.targetContact)
+            {
+			    bp.targetContact.touchingTarget = false;
+            }
         }
 
          /// <summary>
@@ -79,22 +87,28 @@ using UnityEngine;
         {
             // var bp = bodyParts[t];
             // var spring = Mathf.MoveTowards(previousSpringValue, (strength + 1f) * 0.5f, agent.maxJointStrengthChangePerDecision);
-            var rawSpringVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointSpring;
-            var clampedSpring = Mathf.MoveTowards(previousSpringValue, rawSpringVal, thisJDController.maxJointStrengthChangePerDecision);
+            var rawVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointForceLimit;
+            var clampedStrength = Mathf.MoveTowards(previousStrengthValue, rawVal, thisJDController.maxJointStrengthChangePerDecision);
+            // var rawSpringVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointSpring;
+            // var clampedSpring = Mathf.MoveTowards(previousSpringValue, rawSpringVal, thisJDController.maxJointStrengthChangePerDecision);
             // agent.energyPenalty += clampedSpring/agent.maxJointStrengthChangePerDecision;
             var jd = new JointDrive
             {
                 // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
                 // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
                 // positionSpring = spring * agent.maxJointSpring,
-                positionSpring = clampedSpring,
+                // positionSpring = clampedSpring,
+                positionSpring = thisJDController.maxJointSpring,
                 positionDamper = thisJDController.jointDampen,
-                maximumForce = thisJDController.maxJointForceLimit
+                maximumForce = clampedStrength
+                // maximumForce = thisJDController.maxJointForceLimit
             };
+            // jd.mode = JointDriveMode.Position;
             joint.slerpDrive = jd;
 
             // previousJointRotation = new Vector3(xRot, yRot, zRot);
-            previousSpringValue = jd.positionSpring;
+            previousStrengthValue = jd.maximumForce;
+            // previousStrengthValue = jd.positionSpring;
         }
 
     }
@@ -125,10 +139,11 @@ public class JointDriveController : MonoBehaviour {
 
 
 
-	// // Use this for initialization
-	// void Start () {
-		
-	// }
+	// Use this for initialization
+	void Awake () {
+		bodyParts.Clear();
+		bodyPartsList.Clear();
+	}
 
 
     /// <summary>
@@ -144,16 +159,44 @@ public class JointDriveController : MonoBehaviour {
             startingRot = t.rotation
         };
 		bp.rb.maxAngularVelocity = 100;
-        bodyParts.Add(t, bp);
         bp.groundContact = t.GetComponent<GroundContact>();
         bp.targetContact = t.GetComponent<TargetContact>();
         bp.thisJDController = this;
 		// bp.agent = this;
+        bodyParts.Add(t, bp);
         bodyPartsList.Add(bp);
     }
 
 	
 
+    public void GetCurrentJointForces()
+    {
+        foreach (var bodyPart in bodyParts.Values)
+        {
+            if(bodyPart.joint)
+            {
+                bodyPart.currentJointForce = bodyPart.joint.currentForce;
+                // bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.sqrMagnitude;
+                bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.magnitude;
+                bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
+                // bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.sqrMagnitude;
+                bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.magnitude;
+                if (Application.isEditor)
+                {
+                    if(bodyPart.jointForceCurve.length > 1000)
+                    {
+                        bodyPart.jointForceCurve = new AnimationCurve();
+                    }
+                    if(bodyPart.jointTorqueCurve.length > 1000)
+                    {
+                        bodyPart.jointTorqueCurve = new AnimationCurve();
+                    }
+                    bodyPart.jointForceCurve.AddKey(Time.time, bodyPart.currentJointForceSqrMag);
+                    bodyPart.jointTorqueCurve.AddKey(Time.time, bodyPart.currentJointTorqueSqrMag);
+                }
+            }
+        }
+    }
 
 	// Update is called once per frame
 	void Update () {

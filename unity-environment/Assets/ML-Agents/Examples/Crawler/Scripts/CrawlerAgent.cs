@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[RequireComponent(typeof(JointDriveController))] //required to set joing forces
+[RequireComponent(typeof(JointDriveController))] //required to set joint forces
 public class CrawlerAgent : Agent {
 
     [Header("Target To Walk Towards")] 
@@ -186,7 +186,7 @@ public class CrawlerAgent : Agent {
         //forward & up to help with orientation
         AddVectorObs(body.forward);
         AddVectorObs(body.up);
-        GetCurrentJointForces();
+        jdController.GetCurrentJointForces();
         foreach (var bodyPart in jdController.bodyParts.Values)
         {
             CollectObservationBodyPart(bodyPart);
@@ -198,19 +198,19 @@ public class CrawlerAgent : Agent {
     }
 
 
-    void GetCurrentJointForces()
-    {
-        foreach (var bodyPart in jdController.bodyParts.Values)
-        {
-            if(bodyPart.joint)
-            {
-                bodyPart.currentJointForce = bodyPart.joint.currentForce;
-                bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.sqrMagnitude;
-                bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
-                bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.sqrMagnitude;
-            }
-        }
-    }
+    // void GetCurrentJointForces()
+    // {
+    //     foreach (var bodyPart in jdController.bodyParts.Values)
+    //     {
+    //         if(bodyPart.joint)
+    //         {
+    //             bodyPart.currentJointForce = bodyPart.joint.currentForce;
+    //             bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.sqrMagnitude;
+    //             bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
+    //             bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.sqrMagnitude;
+    //         }
+    //     }
+    // }
 
 	/// <summary>
     /// Agent touched the target

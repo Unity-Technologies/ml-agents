@@ -54,6 +54,7 @@ public class GroundContact : MonoBehaviour
             if (col.transform.CompareTag(Ground))
             {
                 touchingGround = true;
+                // print("touching ground");
                 if (penalizeGroundContact)
                 {
                     agent.SetReward(groundContactPenalty);

@@ -122,15 +122,21 @@ CrawlerBrain:
 WalkerBrain:
     normalize: true
     num_epoch: 3
+    # time_horizon: 256
     time_horizon: 1000
+    # time_horizon: 3000
     batch_size: 2048
     buffer_size: 20480
-    beta: 0.001
+    beta: 0.01
+    # beta: 0.001
+    # learning_rate: 1.0e-3
+    learning_rate: 0.005
+    # learning_rate: 0.001
     gamma: 0.995
     max_steps: 2e6
     summary_freq: 3000
-    num_layers: 2
-    hidden_units: 256
+    num_layers: 3
+    hidden_units: 512
 
 ReacherBrain:
     normalize: true
