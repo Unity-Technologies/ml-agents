@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -21,19 +21,34 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
     }
 
     [System.Serializable]
-    private struct ContinuousPlayerAction
+    private struct KeyContinuousPlayerAction
     {
         public KeyCode key;
         public int index;
         public float value;
     }
+    
+    [System.Serializable]
+    private struct AxisContinuousPlayerAction
+    {
+        public string axis;
+        public int index;
+        public float scale;
+    }
 
     MLAgents.Batcher brainBatcher;
 
     [SerializeField]
+    [FormerlySerializedAs("continuousPlayerActions")]
     [Tooltip("The list of keys and the value they correspond to for continuous control.")]
     /// Contains the mapping from input to continuous actions
-    private ContinuousPlayerAction[] continuousPlayerActions;
+    private KeyContinuousPlayerAction[] keyContinuousPlayerActions;
+    
+    [SerializeField]
+    [Tooltip("The list of axis actions.")]
+    /// Contains the mapping from input to continuous actions
+    private AxisContinuousPlayerAction[] axisContinuousPlayerActions;
+    
     [SerializeField]
     [Tooltip("The list of keys and the value they correspond to for discrete control.")]
     /// Contains the mapping from input to discrete actions
@@ -79,11 +94,20 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
             foreach (Agent agent in agentInfo.Keys)
             {
                 var action = new float[brain.brainParameters.vectorActionSize];
-                foreach (ContinuousPlayerAction cha in continuousPlayerActions)
+                foreach (KeyContinuousPlayerAction cha in keyContinuousPlayerActions)
                 {
                     if (Input.GetKey(cha.key))
                     {
                         action[cha.index] = cha.value;
+                    }
+                }
+                foreach (AxisContinuousPlayerAction axisAction in axisContinuousPlayerActions)
+                {
+                    var axisValue = Input.GetAxis(axisAction.axis);
+                    axisValue *= axisAction.scale;
+                    if (Mathf.Abs(axisValue) > 0.0001)
+                    {
+                        action[axisAction.index] = axisValue;
                     }
                 }
 
@@ -124,23 +148,37 @@ public class CoreBrainPlayer : ScriptableObject, CoreBrain
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
-            var chas = serializedBrain.FindProperty("continuousPlayerActions");
+            var keyActionsProp = serializedBrain.FindProperty("keyContinuousPlayerActions");
+            var axisActionsProp = serializedBrain.FindProperty("axisContinuousPlayerActions");
             serializedBrain.Update();
-            EditorGUILayout.PropertyField(chas, true);
+            EditorGUILayout.PropertyField(keyActionsProp , true);
+            EditorGUILayout.PropertyField(axisActionsProp, true);
             serializedBrain.ApplyModifiedProperties();
-            if (continuousPlayerActions == null)
+            if (keyContinuousPlayerActions == null)
             {
-                continuousPlayerActions = new ContinuousPlayerAction[0];
+                keyContinuousPlayerActions = new KeyContinuousPlayerAction[0];
             }
-            foreach (ContinuousPlayerAction cha in continuousPlayerActions)
+            if (axisContinuousPlayerActions == null)
             {
-                if (cha.index >= brain.brainParameters.vectorActionSize)
+                axisContinuousPlayerActions = new AxisContinuousPlayerAction[0];
+            }
+            foreach (KeyContinuousPlayerAction action in keyContinuousPlayerActions)
+            {
+                if (action.index >= brain.brainParameters.vectorActionSize)
                 {
                     EditorGUILayout.HelpBox(string.Format("Key {0} is assigned to index {1} but the action size is only of size {2}"
-                        , cha.key.ToString(), cha.index.ToString(), brain.brainParameters.vectorActionSize.ToString()), MessageType.Error);
+                        , action.key.ToString(), action.index.ToString(), brain.brainParameters.vectorActionSize.ToString()), MessageType.Error);
                 }
             }
-
+            foreach (AxisContinuousPlayerAction action in axisContinuousPlayerActions)
+            {
+                if (action .index >= brain.brainParameters.vectorActionSize)
+                {
+                    EditorGUILayout.HelpBox(string.Format("Axis {0} is assigned to index {1} but the action size is only of size {2}"
+                        , action .axis, action .index.ToString(), brain.brainParameters.vectorActionSize.ToString()), MessageType.Error);
+                }
+            }
+            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input", EditorStyles.helpBox );
         }
         else
         {
