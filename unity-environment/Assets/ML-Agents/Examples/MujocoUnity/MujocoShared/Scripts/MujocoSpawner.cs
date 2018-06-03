@@ -26,10 +26,7 @@ namespace MujocoUnity
         public float OnGenerateApplyRandom = 0.005f;
 		
 		XElement _root;
-		XElement _defaultJoint;
-		XElement _defaultGeom;
-		XElement _defaultMotor;
-        XElement _defaultSensor;
+        Stack<XElement> _childClassStack;
         Dictionary<string, XElement> _jointXDocs;
 
         bool _hasParsed;
@@ -50,6 +47,22 @@ namespace MujocoUnity
 		void Start () {
             // if (SpawnOnStart)
             //     SpawnFromXml();
+
+            // TODO remove test code:-
+            // var subClassStr = @"<joint axis=""99 -1 0"" />";
+            // var globalStr = @"<joint damping="".1"" armature=""0.01"" limited=""true"" solimplimit=""0 .99 .01"" />";
+            // var xdocStr = @"<joint name=""right_hip"" range=""-20 100"" axis=""0 -1 0"" />";
+            // var subClass = XElement.Parse(subClassStr);
+            // var global = XElement.Parse(globalStr);
+            // var xdoc = XElement.Parse(xdocStr);
+            // var attributes = 
+            //     global.Attributes()
+            //     .Concat(subClass.Attributes())
+            //     .Concat(xdoc.Attributes())
+            //     .GroupBy(x=>x.Name)
+            //     .Select(x=>x.Last());
+            // var working = new XElement("joint", attributes);
+            // var e = "e";
 		}
 
 		// Update is called once per frame
@@ -78,10 +91,7 @@ namespace MujocoUnity
             _jointXDocs = new Dictionary<string, XElement>();
             ParseCompilerOptions(_root);
 
-            _defaultJoint = _root.Element("default")?.Element("joint");
-            _defaultGeom = _root.Element("default")?.Element("geom");
-            _defaultMotor = _root.Element("default")?.Element("motor");
-            _defaultSensor = _root.Element("default")?.Element("sensor");
+            _childClassStack = new Stack<XElement>();
 
             foreach (var attribute in element.Attributes())
             {
@@ -285,6 +295,14 @@ namespace MujocoUnity
             jointDocsQueue = jointDocsQueue ?? new List<JointDocQueueItem>(); 
             var bodies = new List<GameObject>();
 
+            var childClass = xdoc.Attribute("childclass");
+            if (childClass != null) {
+                var childDoc = _root.Element("default")
+                    ?.Elements("default")
+                    .FirstOrDefault(x=> x.Attribute("class")?.Value == childClass.Value);
+                _childClassStack.Push(childDoc);
+            }
+
             foreach (var element in xdoc.Elements("light"))
             {
             }
@@ -335,6 +353,9 @@ namespace MujocoUnity
 
             foreach (var item in bodies)
                 GameObject.Destroy(item);
+
+            if (childClass != null)
+                _childClassStack.Pop();
             
             return joints;            
         }
@@ -379,12 +400,13 @@ namespace MujocoUnity
             }
         }
 
-		GeomItem ParseGeom(XElement element, GameObject parent)
+		GeomItem ParseGeom(XElement xdoc, GameObject parent)
         {
 			GeomItem geom = null;
             
-            if (element == null)
+            if (xdoc == null)
                 return null;
+            XElement element = BuildFromClasses("geom", xdoc);
 
 			var type = element.Attribute("type")?.Value;
 			if (type == null) {
@@ -457,8 +479,6 @@ namespace MujocoUnity
 			geom.Geom.AddRigidBody();
             geom.Geom.GetComponent<Rigidbody>().mass = this.Mass;
 
-            if (_defaultGeom != null)
-                ApplyClassToGeom(_defaultGeom, geom.Geom, parent);
             ApplyClassToGeom(element, geom.Geom, parent);
             
 			return geom;
@@ -710,6 +730,24 @@ namespace MujocoUnity
 			var joint = parent.GetComponent<Joint>();
 			return joint;
 		}
+
+        XElement BuildFromClasses(string type, XElement xdoc)
+        {
+            XElement subClass = new XElement(type);
+            if (_childClassStack.Count >0 && _childClassStack.Peek()?.Element(type) != null)
+                subClass = _childClassStack.Peek()?.Element(type);
+            var defaultClass = _root.Element("default")?.Element(type) ?? new XElement(type);
+            xdoc = xdoc ?? new XElement(type);
+            var attributes = 
+                defaultClass.Attributes()
+                .Concat(subClass.Attributes())
+                .Concat(xdoc.Attributes())
+                .GroupBy(x=>x.Name)
+                .Select(x=>x.Last());
+            XElement element = new XElement(type, attributes);
+            return element;          
+        }
+
         //GameObject parentGeom, GameObject parentBody)
 		List<KeyValuePair<string, Joint>> ParseJoint(XElement xdoc, GeomItem parentGeom, GeomItem childGeom, GameObject body)
 		{
@@ -720,9 +758,9 @@ namespace MujocoUnity
             var childRidgedBody = childGeom.Geom.GetComponent<Rigidbody>();
             var parentRidgedBody = parentGeom.Geom.GetComponent<Rigidbody>();
             
-            var element = xdoc;
-            if (element == null)
+            if (xdoc == null)
                 return joints;
+            XElement element = BuildFromClasses("joint", xdoc);
 
 			var type = element.Attribute("type")?.Value;
 			if (type == null) {
@@ -778,8 +816,6 @@ namespace MujocoUnity
                 boneCollider = CopyCollider(bone, childGeom.Geom);
             joint.connectedBody = parentRidgedBody;
 
-            if(_defaultJoint != null)
-                ApplyClassToJoint(_defaultJoint, joint, childGeom, body, bone ?? childGeom.Geom);
             ApplyClassToJoint(element, joint, childGeom, body, bone ?? childGeom.Geom);
 
             if (boneCollider != null)
@@ -993,9 +1029,10 @@ namespace MujocoUnity
             return FindTrueTarget(target, mJoints);
         }
 
-		List<MujocoJoint> ParseGear(XElement element, List<KeyValuePair<string, Joint>>  joints)
+		List<MujocoJoint> ParseGear(XElement xdoc, List<KeyValuePair<string, Joint>>  joints)
         {
             var mujocoJoints = new List<MujocoJoint>();
+            XElement element = BuildFromClasses("gear", xdoc);
 
 			string jointName = element.Attribute("joint")?.Value;
 			if (jointName == null) {
@@ -1028,8 +1065,6 @@ namespace MujocoUnity
                     Joint = joint,
                     JointName = jointName,
                 };
-                if(_defaultMotor != null)
-                    ApplyClassToGear(_defaultMotor, joint, mujocoJoint);
                 ApplyClassToGear(element, joint, mujocoJoint);
 
                 mujocoJoints.Add(mujocoJoint);
