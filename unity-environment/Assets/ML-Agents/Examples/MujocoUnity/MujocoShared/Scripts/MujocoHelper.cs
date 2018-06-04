@@ -22,6 +22,14 @@ namespace MujocoUnity
 		}
     
     	static char[] _delimiterChars = { ' ', ',', ':', '\t' };
+		static string RemoveDuplicateWhitespace(string input)
+		{
+			while (input.Contains("  "))
+				input = input.Replace("  ", " ");
+			while (input.Contains("\t\t"))
+				input = input.Replace("\t\t", "\t");
+			return input;
+		}
 
 		static float Evaluate(string expression)  
 		{
@@ -38,6 +46,7 @@ namespace MujocoUnity
 
         static public Vector3 ParseVector3NoFlipYZ(string str)
 		{
+			str = RemoveDuplicateWhitespace(str);
 			string[] words = str.Split(_delimiterChars);
 			float x = Evaluate(words[0]);
 			float y = Evaluate(words[1]);
@@ -48,6 +57,7 @@ namespace MujocoUnity
 
 		static public Quaternion ParseQuaternion(string str)
 		{
+			str = RemoveDuplicateWhitespace(str);
 			string[] words = str.Split(_delimiterChars);
 			float w = Evaluate(words[0]);
 			float x = Evaluate(words[1]);
@@ -71,6 +81,7 @@ namespace MujocoUnity
 
 		static public Vector3 JointParsePosition(string str, bool hackFlipZ)
 		{
+			str = RemoveDuplicateWhitespace(str);
 			string[] words = str.Split(_delimiterChars);
 			float x = Evaluate(words[0]);
 			float y = Evaluate(words[1]);
@@ -81,6 +92,7 @@ namespace MujocoUnity
 		
 		static public Vector3 ParsePosition(string str)
 		{
+			str = RemoveDuplicateWhitespace(str);
 			string[] words = str.Split(_delimiterChars);
 			float x = Evaluate(words[0]);
 			float y = Evaluate(words[1]);
@@ -95,6 +107,7 @@ namespace MujocoUnity
 		}
 		static public Vector3 ParseTo(string fromTo)
 		{
+			fromTo = RemoveDuplicateWhitespace(fromTo);
 			string[] words = fromTo.Split(_delimiterChars);
 			float x = Evaluate(words[3]);
 			float y = Evaluate(words[4]);
@@ -106,6 +119,7 @@ namespace MujocoUnity
 
 		static public Vector2 ParseVector2(string str)
 		{
+			str = RemoveDuplicateWhitespace(str);
 			string[] words = str.Split(_delimiterChars);
 			float x = Evaluate(words[0]);
 			float y = Evaluate(words[1]);
@@ -115,12 +129,14 @@ namespace MujocoUnity
 
 		static public float ParseGetMin(string rangeAsText)
 		{
+			rangeAsText = RemoveDuplicateWhitespace(rangeAsText);
 			string[] words = rangeAsText.Split(_delimiterChars);
             var range = words.Select(x=>Evaluate(x));
             return range.Min();
 		}
 		static public float ParseGetMax(string rangeAsText)
 		{
+			rangeAsText = RemoveDuplicateWhitespace(rangeAsText);
 			string[] words = rangeAsText.Split(_delimiterChars);
             var range = words.Select(x=>Evaluate(x));
             return range.Max();

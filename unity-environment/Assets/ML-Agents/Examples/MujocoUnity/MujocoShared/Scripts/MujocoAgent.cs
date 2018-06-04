@@ -355,6 +355,8 @@ namespace MujocoUnity
                 case "foot_joint": //oai_walker2d
                 case "right_leg": // dm_walker
                 case "left_leg": // dm_walker
+                case "foot": // dm_hopper
+                case "calf": // dm_hopper
                     FootHitTerrain = true;
                     break;
                 default:

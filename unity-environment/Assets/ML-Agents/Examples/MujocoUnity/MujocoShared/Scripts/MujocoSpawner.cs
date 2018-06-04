@@ -467,7 +467,7 @@ namespace MujocoUnity
                     break;
 				case "sphere":
 					size = float.Parse(element.Attribute("size")?.Value);
-					var pos = element.Attribute("pos").Value;
+					var pos = element.Attribute("pos")?.Value ?? "0 0 0";
 					DebugPrint($"ParseGeom: Creating type:{type} pos:{pos} size:{size}");
 					geom.Geom = parent.CreateAtPoint(MujocoHelper.ParsePosition(pos), size, _useWorldSpace);
                     geom.Size = size;
@@ -745,7 +745,35 @@ namespace MujocoUnity
                 .GroupBy(x=>x.Name)
                 .Select(x=>x.Last());
             XElement element = new XElement(type, attributes);
+            if (element.Attribute("class") != null)
+                element = AddClass(type, element.Attribute("class").Value, element);            
             return element;          
+        }
+
+        XElement AddClass(string type, string subClassName, XElement xdoc, XElement nestingRef = null)
+        {
+            if (nestingRef == null)
+                nestingRef = _root.Element("default");
+            foreach (var item in nestingRef.Attributes("class"))
+            {
+                if (item.Value == subClassName) {
+                    // found class
+                    var subClass = nestingRef.Element(type) ?? new XElement(type);
+                    var attributes = 
+                        xdoc.Attributes()
+                        .Concat(subClass.Attributes())
+                        .GroupBy(x=>x.Name)
+                        .Select(x=>x.Last());
+                    XElement element = new XElement(type, attributes);
+                    return element;
+                }
+            }
+            foreach (var item in nestingRef.Elements("default"))
+            {
+                if (nestingRef != null)
+                    xdoc = AddClass(type, subClassName, xdoc, item);
+            }
+            return xdoc;
         }
 
         //GameObject parentGeom, GameObject parentBody)
@@ -865,6 +893,7 @@ namespace MujocoUnity
             JointSpring spring = hingeJoint?.spring ?? new JointSpring();
             JointMotor motor = hingeJoint?.motor ?? new JointMotor();
             JointLimits limits = hingeJoint?.limits ?? new JointLimits();
+            Vector3 jointOffset = Vector3.zero;
             foreach (var attribute in classElement.Attributes())
             {
                 switch (attribute.Name.LocalName)
@@ -890,19 +919,7 @@ namespace MujocoUnity
                             bone.name = attribute.Value;
                         break;
                     case "pos":
-                        Vector3 jointOffset = MujocoHelper.ParsePosition(attribute.Value);
-                        if (_useWorldSpace){
-                            var jointPos = MujocoHelper.ParsePosition(attribute.Value);
-                            var localAxis = joint.transform.InverseTransformPoint(jointPos);
-                            joint.anchor = localAxis;                            
-                        } else {
-                            var jointPos = body.transform.position;
-                            jointPos -= bone.transform.position;
-                            var offset = MujocoHelper.ParsePosition(attribute.Value);
-                            jointPos += offset;
-                            var localAxis = bone.transform.InverseTransformDirection(jointPos);
-                            joint.anchor = localAxis;
-                        }
+                        jointOffset = MujocoHelper.ParsePosition(attribute.Value);
                         break;       
 
                     case "range":
@@ -919,6 +936,8 @@ namespace MujocoUnity
                             high.limit = MujocoHelper.ParseGetMax(attribute.Value);
                             configurableJoint.highAngularXLimit = high;
                         }
+                        break;
+                    case "class":
                         break;
                     case "type":
                         // NOTE: handle in setup
@@ -941,6 +960,17 @@ namespace MujocoUnity
 						#pragma warning disable
                         break;
                 }
+            }
+            if (_useWorldSpace){
+                var jointPos = jointOffset;
+                var localAxis = joint.transform.InverseTransformPoint(jointPos);
+                joint.anchor = localAxis;                            
+            } else {
+                var jointPos = body.transform.position;
+                jointPos -= bone.transform.position;
+                jointPos += jointOffset;
+                var localAxis = bone.transform.InverseTransformDirection(jointPos);
+                joint.anchor = localAxis;
             }
             if(hingeJoint != null) {
                 hingeJoint.spring = spring;                
