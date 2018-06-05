@@ -90,7 +90,10 @@ public class CrawlerAgent : Agent {
     //Initialize
     public override void InitializeAgent()
     {
+        print("InitializeAgent()");
         jdController = GetComponent<JointDriveController>();
+        // jdController.bodyParts.Clear();
+		// jdController.bodyPartsList.Clear();
         currentDecisionStep = 1;
 
         //Setup each body part
@@ -103,6 +106,7 @@ public class CrawlerAgent : Agent {
         jdController.SetupBodyPart(leg2_lower);
         jdController.SetupBodyPart(leg3_upper);
         jdController.SetupBodyPart(leg3_lower);
+        // jdController.setupComplete = true;
 
         //we want a lower center of mass or the crawler will roll over easily. 
         //these settings shift the COM on the lower legs
@@ -126,27 +130,6 @@ public class CrawlerAgent : Agent {
             isNewDecisionStep = false;
         }
     }
-
-    /// <summary>
-    /// Add relevant information on each body part to observations.
-    /// </summary>
-    public void CollectObservationBodyPart(BodyPart bp)
-    {
-        var rb = bp.rb;
-        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
-
-        AddVectorObs(rb.velocity);
-        AddVectorObs(rb.angularVelocity);
-
-        if(bp.rb.transform != body)
-        {
-            Vector3 localPosRelToBody = body.InverseTransformPoint(rb.position);
-            AddVectorObs(localPosRelToBody);
-            AddVectorObs(Quaternion.FromToRotation(body.forward, bp.rb.transform.forward));
-            // AddVectorObs(Quaternion.FromToRotation(jdController.bodyParts[bp.rb.transform].joint.connectedBody.transform.forward, rb.transform.forward));
-        }
-    }
-
 	/// <summary>
     /// Adds the raycast hit dist and relative pos to observations
     /// </summary>
@@ -171,6 +154,32 @@ public class CrawlerAgent : Agent {
         AddVectorObs(dist);
         AddVectorObs(relativeHitPos);
     }
+
+    /// <summary>
+    /// Add relevant information on each body part to observations.
+    /// </summary>
+    public void CollectObservationBodyPart(BodyPart bp)
+    {
+        var rb = bp.rb;
+        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
+
+        AddVectorObs(rb.velocity);
+        AddVectorObs(rb.angularVelocity);
+
+        if(bp.rb.transform != body)
+        {
+            Vector3 localPosRelToBody = body.InverseTransformPoint(rb.position);
+            AddVectorObs(localPosRelToBody);
+            AddVectorObs(bp.currentXNormalizedRot); //current x rot
+            AddVectorObs(bp.currentYNormalizedRot); //current y rot
+            AddVectorObs(bp.currentZNormalizedRot); //current z rot
+            // AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.forward));
+            AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit); //curre
+            // AddVectorObs(Quaternion.FromToRotation(body.forward, bp.rb.transform.forward));
+            // AddVectorObs(Quaternion.FromToRotation(jdController.bodyParts[bp.rb.transform].joint.connectedBody.transform.forward, rb.transform.forward));
+        }
+    }
+
 
     public override void CollectObservations()
     {
@@ -247,9 +256,13 @@ public class CrawlerAgent : Agent {
 
 	 public override void AgentAction(float[] vectorAction, string textAction)
     {
+        // if(!jdController.setupComplete)
+        // {
+        //     return;
+        // }
         foreach (var bodyPart in jdController.bodyParts.Values)
         {
-            if(!IsDone() && bodyPart.targetContact.touchingTarget)
+            if(bodyPart.targetContact && !IsDone() && bodyPart.targetContact.touchingTarget)
             {
                 TouchedTarget();
             }
@@ -270,6 +283,7 @@ public class CrawlerAgent : Agent {
         // Joint update logic only needs to happen when a new decision is made
         if(isNewDecisionStep)
         {
+            //The dictionary with all the body parts in it are in the jdController
             var bpDict = jdController.bodyParts;
 
             //pick a new target joint rotation
@@ -320,6 +334,8 @@ public class CrawlerAgent : Agent {
         // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -5, 50f);
         // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -5, 50f);
 
+        var stayUprightDot = Vector3.Dot(body.up, Vector2.up);
+        AddReward(0.01f * stayUprightDot);
         // AddReward(0.0003f * movingTowardsDot);
         // moveTowardsReward += 0.01f * movingTowardsDot;
         // moveTowardsReward += 0.003f * movingTowardsDot;
@@ -366,7 +382,7 @@ public class CrawlerAgent : Agent {
     /// </summary>
     public override void AgentReset()
     {
-        print("AgentReset()");
+        // print("AgentReset()");
         if(dirToTarget != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);

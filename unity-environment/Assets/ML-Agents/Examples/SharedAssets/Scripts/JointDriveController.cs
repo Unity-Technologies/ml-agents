@@ -11,29 +11,46 @@ using UnityEngine;
     [System.Serializable]
     public class BodyPart
     {
+        [Header("Body Part Info")] 
+        [Space(10)] 
         public ConfigurableJoint joint;
         public Rigidbody rb;
+        [HideInInspector]
         public Vector3 startingPos;
+        [HideInInspector]
         public Quaternion startingRot;
+
+
+        [Header("Ground & Target Contact")] 
+        [Space(10)] 
+        // [HideInInspector]
         public GroundContact groundContact;
+        // [HideInInspector]
         public TargetContact targetContact;
+
+
         [HideInInspector]
         public JointDriveController thisJDController;
 		// public CrawlerAgent agent;
+        // [HideInInspector]
+        [Header("Current Joint Settings")] 
+        [Space(10)] 
+        public Vector3 currentEularJointRotation;
         [HideInInspector]
-        public Vector3 previousJointRotation;
-        [HideInInspector]
-        public float previousStrengthValue;
+        public float currentStrength;
+        public float currentXNormalizedRot;
+        public float currentYNormalizedRot;
+        public float currentZNormalizedRot;
+
+        [Header("Other Debug Info")] 
+        [Space(10)] 
+        //debug info
         public Vector3 currentJointForce;
         public float currentJointForceSqrMag;
         public Vector3 currentJointTorque;
         public float currentJointTorqueSqrMag;
-        public float currentXNormalizedRot;
-        public float currentYNormalizedRot;
-        public float currentZNormalizedRot;
         public AnimationCurve jointForceCurve = new AnimationCurve();
         public AnimationCurve jointTorqueCurve = new AnimationCurve();
-
         /// <summary>
         /// Reset body part to initial configuration.
         /// </summary>
@@ -64,9 +81,9 @@ using UnityEngine;
             y = (y + 1f) * 0.5f;
             z = (z + 1f) * 0.5f;
 
-            var xRot = Mathf.MoveTowards(previousJointRotation.x, Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x), thisJDController.maxJointAngleChangePerDecision);
-            var yRot = Mathf.MoveTowards(previousJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), thisJDController.maxJointAngleChangePerDecision);
-            var zRot = Mathf.MoveTowards(previousJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), thisJDController.maxJointAngleChangePerDecision);
+            var xRot = Mathf.MoveTowards(currentEularJointRotation.x, Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x), thisJDController.maxJointAngleChangePerDecision);
+            var yRot = Mathf.MoveTowards(currentEularJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), thisJDController.maxJointAngleChangePerDecision);
+            var zRot = Mathf.MoveTowards(currentEularJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), thisJDController.maxJointAngleChangePerDecision);
 
             currentXNormalizedRot = Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
             currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
@@ -76,7 +93,7 @@ using UnityEngine;
             // var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
 
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
-            previousJointRotation = new Vector3(xRot, yRot, zRot);
+            currentEularJointRotation = new Vector3(xRot, yRot, zRot);
 
             // var jd = new JointDrive
             // {
@@ -94,7 +111,7 @@ using UnityEngine;
             // var bp = bodyParts[t];
             // var spring = Mathf.MoveTowards(previousSpringValue, (strength + 1f) * 0.5f, agent.maxJointStrengthChangePerDecision);
             var rawVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointForceLimit;
-            var clampedStrength = Mathf.MoveTowards(previousStrengthValue, rawVal, thisJDController.maxJointStrengthChangePerDecision);
+            var clampedStrength = Mathf.MoveTowards(currentStrength, rawVal, thisJDController.maxJointStrengthChangePerDecision);
             // var rawSpringVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointSpring;
             // var clampedSpring = Mathf.MoveTowards(previousSpringValue, rawSpringVal, thisJDController.maxJointStrengthChangePerDecision);
             // agent.energyPenalty += clampedSpring/agent.maxJointStrengthChangePerDecision;
@@ -113,7 +130,7 @@ using UnityEngine;
             joint.slerpDrive = jd;
 
             // previousJointRotation = new Vector3(xRot, yRot, zRot);
-            previousStrengthValue = jd.maximumForce;
+            currentStrength = jd.maximumForce;
             // previousStrengthValue = jd.positionSpring;
         }
 
@@ -141,15 +158,16 @@ public class JointDriveController : MonoBehaviour {
 	float facingDot;
     public Dictionary<Transform, BodyPart> bodyParts = new Dictionary<Transform, BodyPart>();
     public List<BodyPart> bodyPartsList = new List<BodyPart>(); //to look at values in inspector, just for debugging
+    // [HideInInspector]
+    // public bool setupComplete;
 
 
 
-
-	// Use this for initialization
-	void Awake () {
-		bodyParts.Clear();
-		bodyPartsList.Clear();
-	}
+	// // Use this for initialization
+	// void Awake () {
+	// 	// bodyParts.Clear();
+	// 	// bodyPartsList.Clear();
+	// }
 
 
     /// <summary>
@@ -165,8 +183,26 @@ public class JointDriveController : MonoBehaviour {
             startingRot = t.rotation
         };
 		bp.rb.maxAngularVelocity = 100;
+
+        //add & setup the ground contact script
         bp.groundContact = t.GetComponent<GroundContact>();
+        if(!bp.groundContact)
+        {
+            bp.groundContact = t.gameObject.AddComponent<GroundContact>();
+            bp.groundContact.agent = gameObject.GetComponent<Agent>();
+        }
+        else
+        {
+            bp.groundContact.agent = gameObject.GetComponent<Agent>();
+        }
+
+        //add & setup the target contact script
         bp.targetContact = t.GetComponent<TargetContact>();
+        if(!bp.targetContact)
+        {
+            bp.targetContact = t.gameObject.AddComponent<TargetContact>();
+        }
+
         bp.thisJDController = this;
 		// bp.agent = this;
         bodyParts.Add(t, bp);

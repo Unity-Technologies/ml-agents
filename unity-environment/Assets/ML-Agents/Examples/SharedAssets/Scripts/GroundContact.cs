@@ -7,13 +7,15 @@ using UnityEngine;
 /// By attaching this as a component to those joints, their contact with the ground can be used as either
 /// an observation for that agent, and/or a means of punishing the agent for making undesirable contact.
 /// </summary>
+[DisallowMultipleComponent]
 public class GroundContact : MonoBehaviour
 {
+    // [HideInInspector]
     public Agent agent;
 
     [Header("Ground Check")]
     // public bool checkForGroundContact = true; //check for ground contact?
-    public bool agentDoneOnGroundContact = true; //reset agent on ground contact?
+    public bool agentDoneOnGroundContact; //reset agent on ground contact?
     public bool penalizeGroundContact; //if this body part touches the ground should the agent be penalized?
     public float groundContactPenalty; //penalty amount (ex: -1)
     public bool touchingGround;

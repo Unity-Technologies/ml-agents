@@ -191,7 +191,7 @@ public class WalkerAgent : Agent
             AddVectorObs(bp.currentYNormalizedRot);
             AddVectorObs(bp.currentZNormalizedRot);
             // AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.forward));
-            AddVectorObs(bp.previousStrengthValue/jdController.maxJointForceLimit);
+            AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit);
             // AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.rotation.eulerAngles));
         }
     }

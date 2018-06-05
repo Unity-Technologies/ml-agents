@@ -7,6 +7,7 @@ using UnityEngine;
 /// By attaching this as a component to those joints, their contact with the ground can be used as either
 /// an observation for that agent, and/or a means of punishing the agent for making undesirable contact.
 /// </summary>
+[DisallowMultipleComponent]
 public class TargetContact : MonoBehaviour
 {
     // Agent agent;
