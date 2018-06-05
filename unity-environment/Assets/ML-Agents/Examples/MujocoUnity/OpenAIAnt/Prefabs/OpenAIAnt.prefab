@@ -79,7 +79,7 @@ MonoBehaviour:
   UseMujocoTimestep: 1
   DebugOutput: 0
   GravityOff: 0
-  Force2D: 1
+  Force2D: 0
   GlobalDamping: 10
   BaseForce: 0
   ForceMultiple: 1
@@ -105,7 +105,7 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 5
   FootHitTerrain: 0
   NonFootHitTerrain: 0
-  VelocityScaler: 8
+  VelocityScaler: 16
   Low: []
   High: []
   ShowMonitor: 0
