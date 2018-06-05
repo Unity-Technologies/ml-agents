@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114063291264432040}
   - component: {fileID: 114027728797193598}
   m_Layer: 10
-  m_Name: MujocoSpawner
+  m_Name: DeepMindHumanoid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
