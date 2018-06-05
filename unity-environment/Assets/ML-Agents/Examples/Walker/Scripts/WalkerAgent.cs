@@ -37,9 +37,15 @@ public class WalkerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
-    float movingTowardsDot;
-    float facingDot;
+    public float movingTowardsDot;
+    public float facingDot;
     public LayerMask groundLayer;
+
+    public bool visualizeCOM;
+    public GameObject centerOfMassPrefab;
+    public Transform COMGizmo; //to visualize COM
+    public Vector3 COMPos; //world pos of COM
+
     // /// <summary>
     // /// Used to store relevant information for acting and learning for each body part in agent.
     // /// </summary>
@@ -123,6 +129,11 @@ public class WalkerAgent : Agent
         jdController.SetupBodyPart(armR);
         jdController.SetupBodyPart(forearmR);
         jdController.SetupBodyPart(handR);
+        if(visualizeCOM)
+        {
+            GetAvgCenterOfMassForAllRBs();
+            // COMGizmo = Instantiate(centerOfMassPrefab, COMPos, Quaternion.identity).transform;
+        }
     }
 
     /// <summary>
@@ -168,9 +179,18 @@ public class WalkerAgent : Agent
         //     AddVectorObs(Quaternion.Inverse(bp.startingRot) * bp.rb.rotation);
 
         // }
+        // if(bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR && bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
+        // {
+        //     AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.forward));
+        //     // AddVectorObs(bp.previousStrengthValue/jdController.maxJointForceLimit);
+        //     // AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.rotation.eulerAngles));
+        // }
         if(bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR && bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
         {
-            AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.forward));
+            AddVectorObs(bp.currentXNormalizedRot);
+            AddVectorObs(bp.currentYNormalizedRot);
+            AddVectorObs(bp.currentZNormalizedRot);
+            // AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.forward));
             AddVectorObs(bp.previousStrengthValue/jdController.maxJointForceLimit);
             // AddVectorObs(Quaternion.FromToRotation(hips.forward, bp.rb.transform.rotation.eulerAngles));
         }
@@ -201,6 +221,51 @@ public class WalkerAgent : Agent
         AddVectorObs(relativeHitPos);
     }
 
+    void GetAvgCenterOfMassForAllRBs()
+    {
+        // Vector3 CoM = Vector3.zero;
+        COMPos = Vector3.zero;
+        float c = 0f;
+        
+        foreach(BodyPart bp in jdController.bodyPartsList)
+        {
+            COMPos += bp.rb.worldCenterOfMass * bp.rb.mass;
+            c += bp.rb.mass;
+        }
+ 
+        COMPos /= c;
+        if(!COMGizmo)
+        {
+            COMGizmo = Instantiate(centerOfMassPrefab, COMPos, Quaternion.identity).transform;
+        }
+        COMGizmo.position = COMPos;
+        // return hips.InverseTransformPoint(COMPos);
+        // Debug.DrawRay(body.position, body.InverseTransformPoint(CoM), Color.red, .05f);
+        // Debug.DrawRay(CoM, Vector3.up, Color.green, .05f);
+        // // print(CoM);
+        // print(body.InverseTransformPoint(CoM));
+    }
+    // Vector3 GetAvgCenterOfMassForAllRBs()
+    // {
+    //     // Vector3 CoM = Vector3.zero;
+    //     COMPos = Vector3.zero;
+    //     float c = 0f;
+        
+    //     foreach(BodyPart bp in jdController.bodyPartsList)
+    //     {
+    //         COMPos += bp.rb.worldCenterOfMass * bp.rb.mass;
+    //         c += bp.rb.mass;
+    //     }
+ 
+    //     COMPos /= c;
+    //     COMGizmo.position = COMPos;
+    //     return hips.InverseTransformPoint(COMPos);
+    //     // Debug.DrawRay(body.position, body.InverseTransformPoint(CoM), Color.red, .05f);
+    //     // Debug.DrawRay(CoM, Vector3.up, Color.green, .05f);
+    //     // // print(CoM);
+    //     // print(body.InverseTransformPoint(CoM));
+    // }
+
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
@@ -220,7 +285,9 @@ public class WalkerAgent : Agent
        
         //forward & up to help with orientation
         // AddVectorObs(hips.rotation);
-        AddVectorObs(jdController.bodyParts[hips].rb.position.y);
+        // AddVectorObs(jdController.bodyParts[hips].rb.position.y);
+        // AddVectorObs(jdController.bodyParts[head].rb.position.y);
+        AddVectorObs(jdController.bodyParts[hips].rb.position);
         // AddVectorObs(jdController.bodyParts[chest].rb.position.y);
         // AddVectorObs(Vector3.Dot(dirToTarget.normalized, hips.forward));
         // AddVectorObs(Quaternion.Inverse(jdController.bodyParts[hips].startingRot) * jdController.bodyParts[hips].rb.rotation);
@@ -263,7 +330,10 @@ public class WalkerAgent : Agent
 
         //update pos to target
 		dirToTarget = target.position - jdController.bodyParts[hips].rb.position;
-        
+        if(visualizeCOM)
+        {
+            GetAvgCenterOfMassForAllRBs();
+        }
         
         // Apply action to all relevant body parts. 
         // Joint update logic only needs to happen when a new decision is made
@@ -367,13 +437,25 @@ public class WalkerAgent : Agent
         // b. Rotation alignment with goal direction.
         // c. Encourage head height.
         // d. Discourage head movement.
-        AddReward(
-            // + 0.03f * Vector3.Dot(dirToTarget.normalized, jdController.bodyParts[hips].rb.velocity)
-            // + 0.01f * Vector3.Dot(dirToTarget.normalized, hips.forward)
-            + 0.01f * Vector3.Dot(Vector3.up, head.up)
-            + 0.01f * (head.position.y - hips.position.y)
-            // - 0.01f * Vector3.Distance(jdController.bodyParts[head].rb.velocity, jdController.bodyParts[hips].rb.velocity)
-        );
+        // AddReward(
+        //     // + 0.03f * Vector3.Dot(dirToTarget.normalized, jdController.bodyParts[hips].rb.velocity)
+        //     // + 0.01f * Vector3.Dot(dirToTarget.normalized, hips.forward)
+        //     // + 0.001f * Vector3.Dot(Vector3.up, head.up)
+        //     // + 0.01f * 1 - Mathf.Clamp(Mathf.Abs(5.2f - jdController.bodyParts[head].rb.position.y), 0, 1)
+        //     // + 0.01f * jdController.bodyParts[head].rb.position.y
+        //     // + 0.01f * (head.position.y - hips.position.y)
+        //     - 0.01f * Vector3.Distance(jdController.bodyParts[head].rb.velocity, jdController.bodyParts[hips].rb.velocity)
+        //     // - 0.001f * Vector3.Distance(jdController.bodyParts[head].rb.velocity, jdController.bodyParts[hips].rb.velocity)
+        // );
+        AddReward(-.01f * jdController.bodyParts[armL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.01f * jdController.bodyParts[armR].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.01f * jdController.bodyParts[forearmL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.01f * jdController.bodyParts[forearmR].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        if(jdController.bodyParts[hips].groundContact.touchingGround)
+        {
+            AddReward(-.01f);
+        }
+            // print(-.1f * jdController.bodyParts[armL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
         RewardFunctionMovingTowards();
         IncrementDecisionTimer();
 
@@ -399,17 +481,31 @@ public class WalkerAgent : Agent
     void RewardFunctionMovingTowards()
     {
 
-        // if(rewardFacingTarget)
-        // {
-            facingDot = Vector3.Dot(dirToTarget.normalized, hips.forward); //up is local forward because capsule is rotated
-            facingDot = Mathf.Clamp(facingDot, 0, 1f);
-            AddReward(0.01f * facingDot);
-            if(facingDot > 0.5)
+        var headRBPos = jdController.bodyParts[head].rb.position.y;
+        // print(headRBPos);
+        if(headRBPos < 5.3f)
+        {
+            var headPosReward = 0.01f * headRBPos / 5.3f;
+            // print ("headPosReward: " + headPosReward);
+            AddReward(headPosReward);
+
+            if(jdController.bodyParts[head].rb.position.y > 5.1f)
             {
-                movingTowardsDot = Vector3.Dot(jdController.bodyParts[hips].rb.velocity, dirToTarget.normalized); 
-                movingTowardsDot = Mathf.Clamp(movingTowardsDot, 0, 50f);
-                AddReward(0.03f * movingTowardsDot);
+                    // if(rewardFacingTarget)
+            // {
+                facingDot = Vector3.Dot(dirToTarget.normalized, hips.forward); //up is local forward because capsule is rotated
+                facingDot = Mathf.Clamp(facingDot, -0.25f, 1f);
+                // facingDot = Mathf.Clamp(facingDot, -0.25f, 1f);
+                AddReward(0.01f * facingDot);
+                // if(facingDot > 0.9)
+                // {
+                    movingTowardsDot = Vector3.Dot(jdController.bodyParts[hips].rb.velocity, dirToTarget.normalized); 
+                    // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -0.25f, 50f);
+                    AddReward(0.01f * movingTowardsDot);
+                // }
+
             }
+        }
 
         // }
     }
@@ -418,7 +514,7 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        print("AgentReset()");
+        // print("AgentReset()");
         if(dirToTarget != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);

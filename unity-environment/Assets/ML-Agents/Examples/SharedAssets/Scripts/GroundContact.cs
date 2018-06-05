@@ -57,7 +57,7 @@ public class GroundContact : MonoBehaviour
                 // print("touching ground");
                 if (penalizeGroundContact)
                 {
-                    agent.SetReward(groundContactPenalty);
+                    agent.AddReward(groundContactPenalty);
                 }
                 if (agentDoneOnGroundContact)
                 {

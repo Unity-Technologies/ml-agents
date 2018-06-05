@@ -130,7 +130,7 @@ WalkerBrain:
     beta: 0.01
     # beta: 0.001
     # learning_rate: 1.0e-3
-    learning_rate: 0.005
+    # learning_rate: 0.005
     # learning_rate: 0.001
     gamma: 0.995
     max_steps: 2e6

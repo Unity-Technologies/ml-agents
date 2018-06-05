@@ -28,6 +28,9 @@ using UnityEngine;
         public float currentJointForceSqrMag;
         public Vector3 currentJointTorque;
         public float currentJointTorqueSqrMag;
+        public float currentXNormalizedRot;
+        public float currentYNormalizedRot;
+        public float currentZNormalizedRot;
         public AnimationCurve jointForceCurve = new AnimationCurve();
         public AnimationCurve jointTorqueCurve = new AnimationCurve();
 
@@ -65,6 +68,9 @@ using UnityEngine;
             var yRot = Mathf.MoveTowards(previousJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), thisJDController.maxJointAngleChangePerDecision);
             var zRot = Mathf.MoveTowards(previousJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), thisJDController.maxJointAngleChangePerDecision);
 
+            currentXNormalizedRot = Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
+            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
+            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
             // var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
             // var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
             // var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
