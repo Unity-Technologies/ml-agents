@@ -140,6 +140,10 @@
   </actuator>
 
   <sensor>
+    <touch name="left_left_foot" site="left_left_foot"/>
+    <touch name="right_left_foot" site="right_left_foot"/>
+    <touch name="right_right_foot" site="right_right_foot"/>
+    <touch name="left_right_foot" site="left_right_foot"/>
     <!-- <accelerometer name="torso_accel" site="torso_site"/>
     <velocimeter name="torso_vel"     site="torso_site"/>
     <gyro name="torso_gyro"           site="torso_site"/>

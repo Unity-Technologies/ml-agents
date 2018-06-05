@@ -357,6 +357,12 @@ namespace MujocoUnity
                 case "left_leg": // dm_walker
                 case "foot": // dm_hopper
                 case "calf": // dm_hopper
+                case "left_left_foot": // dm_humanoid
+                case "left_right_foot": // dm_humanoid
+                case "right_left_foot": // dm_humanoid
+                case "right_right_foot": // dm_humanoid
+                case "left_shin": // dm_humanoid
+                case "right_shin": // dm_humanoid
                     FootHitTerrain = true;
                     break;
                 default:
