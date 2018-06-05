@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114063291264432040}
   - component: {fileID: 114027728797193598}
   m_Layer: 10
-  m_Name: DeepMindHumanoid
+  m_Name: MujocoSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60,12 +60,10 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
+  VelocityScaler: 50
+  ShowMonitor: 0
   FootHitTerrain: 0
   NonFootHitTerrain: 0
-  VelocityScaler: 50
-  Low: []
-  High: []
-  ShowMonitor: 0
   Actions: []
   LeftMin: 0
   LeftMax: 0
@@ -107,10 +105,5 @@ MonoBehaviour:
   PhysicMaterial: {fileID: 13400000, guid: 38b7ea504254a4fa986e42a7bb16c8df, type: 2}
   UseMujocoTimestep: 1
   DebugOutput: 0
-  GravityOff: 0
   Force2D: 0
-  GlobalDamping: 10
-  BaseForce: 0
-  ForceMultiple: 1
-  Mass: 1
   OnGenerateApplyRandom: 0.005

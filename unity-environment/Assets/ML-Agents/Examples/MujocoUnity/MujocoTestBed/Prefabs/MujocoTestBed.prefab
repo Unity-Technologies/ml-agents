@@ -73,17 +73,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a532e373957504411bd01901bf361ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MujocoXml: {fileID: 4900000, guid: 4647c7c690d894f1f981bd366a57d77a, type: 3}
+  MujocoXml: {fileID: 4900000, guid: b29737e78ad3d4c17810c68a5216d329, type: 3}
   Material: {fileID: 2100000, guid: 9013613e105254620b29c7301046af30, type: 2}
   PhysicMaterial: {fileID: 13400000, guid: 38b7ea504254a4fa986e42a7bb16c8df, type: 2}
   UseMujocoTimestep: 1
   DebugOutput: 0
-  GravityOff: 0
-  Force2D: 1
-  GlobalDamping: 10
-  BaseForce: 0
-  ForceMultiple: 1
-  Mass: 1
+  Force2D: 0
   OnGenerateApplyRandom: 0.005
 --- !u!114 &114275282857352166
 MonoBehaviour:
@@ -99,14 +94,12 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 4000
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
+  VelocityScaler: 16
+  ShowMonitor: 0
   FootHitTerrain: 0
   NonFootHitTerrain: 0
-  VelocityScaler: 16
-  Low: []
-  High: []
-  ShowMonitor: 0
   Actions: []

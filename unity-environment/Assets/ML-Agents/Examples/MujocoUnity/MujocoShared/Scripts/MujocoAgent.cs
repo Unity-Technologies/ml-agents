@@ -7,24 +7,13 @@ namespace MujocoUnity
 {
     public class MujocoAgent : Agent
     {
+        public float VelocityScaler = 16f; //50f;//16f;//300;//1500f; 
+        public bool ShowMonitor;
+
         public bool FootHitTerrain;
         public bool NonFootHitTerrain;
-        public float VelocityScaler = 16f; //50f;//16f;//300;//1500f; 
         
-
-        public float[] Low;
-		public float[] High;
-        public bool ShowMonitor;
-		float[] _observation1D;
-        float[] _internalLow;
-        float[] _internalHigh;
-        int _jointSize = 13; // 9+4
-        int _numJoints = 3; // for debug object
-        int _sensorOffset; // offset in observations to where senors begin
         internal int NumSensors;
-        int _sensorSize; // number of floats per senor
-        int _observationSize; // total number of floats
-        
 
         protected MujocoController MujocoController;
 
@@ -35,10 +24,10 @@ namespace MujocoUnity
         protected Dictionary<string,Rigidbody> BodyParts = new Dictionary<string,Rigidbody>();
         protected Dictionary<string,Quaternion> BodyPartsToFocalRoation = new Dictionary<string,Quaternion>();    
 
-    Dictionary<GameObject, Vector3> transformsPosition;
-    Dictionary<GameObject, Quaternion> transformsRotation;
-    
-    MujocoSpawner mujocoSpawner;    
+        Dictionary<GameObject, Vector3> transformsPosition;
+        Dictionary<GameObject, Quaternion> transformsRotation;
+        
+        MujocoSpawner mujocoSpawner;    
 
         public override void AgentReset()
         {
@@ -96,32 +85,7 @@ namespace MujocoUnity
         void SetupMujoco()
         {
             MujocoController = GetComponent<MujocoController>();
-            _numJoints = MujocoController.MujocoJoints.Count;
             NumSensors = MujocoController.MujocoSensors.Count;            
-            _jointSize = 2;
-            _sensorSize = 1;
-            _sensorOffset = _jointSize * _numJoints;
-            _observationSize = _sensorOffset + (_sensorSize * NumSensors);
-            _observation1D = Enumerable.Repeat<float>(0f, _observationSize).ToArray();
-            Low = _internalLow = Enumerable.Repeat<float>(float.MinValue, _observationSize).ToArray();
-            High = _internalHigh = Enumerable.Repeat<float>(float.MaxValue, _observationSize).ToArray();
-            for (int j = 0; j < _numJoints; j++)
-            {
-                var offset = j * _jointSize;
-                _internalLow[offset+0] = -5;//-10;
-                _internalHigh[offset+0] = 5;//10;
-                _internalLow[offset+1] = -5;//-500;
-                _internalHigh[offset+1] = 5;//500;
-                // _internalLow[offset+2] = -5;//-500;
-                // _internalHigh[offset+3] = 5;//500;
-            }
-            for (int j = 0; j < NumSensors; j++)
-            {
-                var offset = _sensorOffset + (j * _sensorSize);
-                _internalLow[offset+0] = -1;//-10;
-                _internalHigh[offset+0] = 1;//10;
-            }    
-            //this.brain = GetComponent<Brain>();
         }        
         internal void SetupBodyParts()
         {

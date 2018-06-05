@@ -10,19 +10,27 @@ namespace MujocoUnity
 {
 	public class MujocoSpawner : MonoBehaviour { 
 
+        [Tooltip("The MuJoCo xml file to parse")]
+        /**< \brief The MuJoCo xml file to parse*/
 		public TextAsset MujocoXml;
+
         public Material Material;
         public PhysicMaterial PhysicMaterial;
-        public bool UseMujocoTimestep = true; // use option timestep=xxx to set physics timestep
+
+        [Tooltip("When True, UnityEngine.Time.fixedDeltaTime is set by <option timestep=xxx>")]
+        /**< \brief When True, UnityEngine.Time.fixedDeltaTime is set by <option timestep=xxx>*/
+        public bool UseMujocoTimestep = true;
+
+        [Tooltip("During XML parsing, debug messages are sent to the console")]
+        /**< \brief During XML parsing, debug messages are sent to the console*/
         public bool DebugOutput;
-        public bool GravityOff;
-        // public bool SpawnOnStart;
+
+        [Tooltip("Used for 2D MuJoCo objects (hopper, walker, etc)")]
+        /**< \brief Used for 2D MuJoCo objects (hopper, walker, etc)*/
         public bool Force2D;
 
-        public float GlobalDamping = 10f;
-        public float BaseForce = 0f;
-        public float ForceMultiple = 1f;
-        public float Mass = 1f;
+        [Tooltip("The random noise applied at the start of each episode to improve training variance")]
+        /**< \brief The random noise applied at the start of each episode to improve training variance"*/
         public float OnGenerateApplyRandom = 0.005f;
 		
 		XElement _root;
@@ -35,19 +43,12 @@ namespace MujocoUnity
         Vector3 _orginalTransformPosition;
         public void SpawnFromXml()
         {
-            // if (_hasParsed)
-            //     return;
 			LoadXml(MujocoXml.text);
 			Parse();
-            // _hasParsed = true;
         }
 
 
-		// Use this for initialization
 		void Start () {
-            // if (SpawnOnStart)
-            //     SpawnFromXml();
-
             // TODO remove test code:-
             // var subClassStr = @"<joint axis=""99 -1 0"" />";
             // var globalStr = @"<joint damping="".1"" armature=""0.01"" limited=""true"" solimplimit=""0 .99 .01"" />";
@@ -65,7 +66,6 @@ namespace MujocoUnity
             // var e = "e";
 		}
 
-		// Update is called once per frame
 		void Update () {
 			
 		}
@@ -104,25 +104,15 @@ namespace MujocoUnity
                     default:
                         throw new NotImplementedException();
                 }
-                // result = result.Append(ParseBody(element, element.Attribute("name")?.Value));
             }
-
-
-            //ParseBody(element.Element("default"), "default", this.gameObject);
-        	// <compiler inertiafromgeom="true"/>
-        	// <option gravity="0 0 -9.81" integrator="RK4" timestep="0.02"/>
-            // <size nstack="3000"/>
-            // // worldbody
 
             // when using world space, geoms will be created in global space
             // so setting the parent object to 0,0,0 allows us to fix that 
-            // _orginalTransform = Transform.Instantiate(transform);
             _orginalTransformRotation = this.gameObject.transform.rotation;
             _orginalTransformPosition = this.gameObject.transform.position;
             this.gameObject.transform.rotation = new Quaternion();
             this.gameObject.transform.position = new Vector3();
 
-            // var joints = ParseBody(element.Element("worldbody"), "worldbody", this.gameObject, null);
             var joints = ParseBody(element.Element("worldbody"), this.gameObject);
             var mujocoJoints = ParseGears(element.Element("actuator"), joints);
             var mujocoSensors = ParseSensors(element.Element("sensor"), GetComponentsInChildren<Collider>());
@@ -138,30 +128,10 @@ namespace MujocoUnity
                     item.material = PhysicMaterial;
                 }
 
-
             if (Force2D) {
                 foreach (var item in GetComponentsInChildren<Rigidbody>())
                     item.constraints = RigidbodyConstraints.FreezePositionZ;
             }
-
-            // // debug helpers
-            // foreach (var item in mujocoJoints)
-            //     print(item.JointName);
-            foreach (var item in GetComponentsInChildren<Rigidbody>()) {
-                if (GravityOff)
-                    item.useGravity = false;
-            //     //item.mass = item.mass * 0f;
-                // item.mass = 1f;
-                // item.drag = 0.5f;
-                // item.angularDrag = 3f;
-            }
-            // foreach (var item in GetComponentsInChildren<HingeJoint>()) {
-            //     item.connectedMassScale = 1;  
-            //     item.massScale = 1;           
-            //     var lim = item.limits;
-            //     lim.bounceMinVelocity = 0;
-            //     item.limits = lim;
-            // }
 
             // restore positions and orientation
             this.gameObject.transform.rotation = _orginalTransformRotation;
@@ -197,7 +167,6 @@ namespace MujocoUnity
                         angX.maximumForce = Mathf.Max(1f, scale);
                         configurableJoint.angularXDrive = angX;
                     }
-                    //MujocoController.ApplyAction(item, r);
                 } 
             }
         }
@@ -477,7 +446,7 @@ namespace MujocoUnity
 					return null;
 			}
 			geom.Geom.AddRigidBody();
-            geom.Geom.GetComponent<Rigidbody>().mass = this.Mass;
+            geom.Geom.GetComponent<Rigidbody>().mass = 1f;
 
             ApplyClassToGeom(element, geom.Geom, parent);
             
@@ -902,7 +871,6 @@ namespace MujocoUnity
                         DebugPrint($"{name} {attribute.Name.LocalName}={attribute.Value}");
                         break;
                     case "damping":
-                        //spring.damper = GlobalDamping;// + float.Parse(attribute.Value);
                         spring.damper = float.Parse(attribute.Value);
                         break;
                     case "limited":
@@ -1129,10 +1097,9 @@ namespace MujocoUnity
                         var gear = float.Parse(attribute.Value);
                         //var gear = 200;
                         mujocoJoint.Gear = gear;
-                        gear *= ForceMultiple;
-                        spring.spring = gear + BaseForce;
-                        motor.force = gear + BaseForce;
-                        angularXDrive.maximumForce = gear + BaseForce;
+                        spring.spring = gear;
+                        motor.force = gear;
+                        angularXDrive.maximumForce = gear;
                         angularXDrive.positionDamper = 1;
                         angularXDrive.positionSpring = 1;
                         break;
