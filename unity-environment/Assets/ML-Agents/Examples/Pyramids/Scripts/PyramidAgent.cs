@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using MLAgents;
 
 public class PyramidAgent : Agent
 {

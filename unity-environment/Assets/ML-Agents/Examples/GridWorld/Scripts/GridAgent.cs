@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
+using MLAgents;
 
 public class GridAgent : Agent
 {
