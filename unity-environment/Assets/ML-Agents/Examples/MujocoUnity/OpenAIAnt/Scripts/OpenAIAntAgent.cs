@@ -46,7 +46,7 @@ public class OpenAIAntAgent : MujocoAgent {
     {
         float velocity = GetVelocity();
         float effort = GetEffort();
-        var effortPenality = 1e-3f * (float)effort;
+        var effortPenality = 1e-1f * (float)effort;
         var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
 
         var reward = velocity
