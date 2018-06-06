@@ -569,7 +569,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1857740238369858}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -450, y: 2.45, z: -50}
+  m_LocalPosition: {x: -450, y: 2.45, z: 50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4178980744778630}
@@ -2175,8 +2175,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114095122263002928
@@ -2220,7 +2220,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 16384
-  visualizeCOM: 1
+  visualizeCOM: 0
   centerOfMassPrefab: {fileID: 1871586899177232, guid: 093c89477a1584a91bc2c2ce2ba0dcf3,
     type: 2}
   COMGizmo: {fileID: 0}
@@ -2237,8 +2237,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114159285102483792
@@ -2289,8 +2289,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114274132433101900
@@ -2305,8 +2305,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114298444411495568
@@ -2321,8 +2321,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114392579161320284
@@ -2373,8 +2373,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114488824460763796
@@ -2401,8 +2401,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114542353308541564
@@ -2417,8 +2417,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114569326534675530
@@ -2462,8 +2462,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114610324046851770
@@ -2490,8 +2490,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114663598640477218
@@ -2558,8 +2558,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114787271536612966
@@ -2574,8 +2574,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114796908361314962
@@ -2614,8 +2614,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114885831642189312
@@ -2654,8 +2654,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 114095122263002928}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!135 &135315403538457256

@@ -453,21 +453,33 @@ public class WalkerAgent : Agent
             // + 0.01f * 1 - Mathf.Clamp(Mathf.Abs(5.2f - jdController.bodyParts[head].rb.position.y), 0, 1)
             // + 0.01f * jdController.bodyParts[head].rb.position.y
             // + 0.01f * (head.position.y - hips.position.y)
-            - 0.005f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity, jdController.bodyPartsDict[hips].rb.velocity)
+            - 0.001f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity, jdController.bodyPartsDict[hips].rb.velocity)
             // - 0.001f * Vector3.Distance(jdController.bodyParts[head].rb.velocity, jdController.bodyParts[hips].rb.velocity)
         );
-        foreach(BodyPart bp in jdController.bodyPartsDict.Values)
-        {
-            if(bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR && bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
-            {
-                AddReward(-.005f * jdController.bodyPartsDict[bp.rb.transform].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
-            }
-        }
+        // AddReward(0.001f * Vector3.Dot(Vector3.up, head.up));
+        // AddReward(0.001f * Vector3.Dot(Vector3.up, chest.up));
+        // foreach(BodyPart bp in jdController.bodyPartsDict.Values)
+        // {
+        //     if(bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR && bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
+        //     {
+        //         AddReward(-.001f * jdController.bodyPartsDict[bp.rb.transform].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        //     }
+        // }
+        AddReward(-.0001f * jdController.bodyPartsDict[spine].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.0001f * jdController.bodyPartsDict[chest].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.0001f * jdController.bodyPartsDict[thighL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.0001f * jdController.bodyPartsDict[thighR].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.0001f * jdController.bodyPartsDict[shinL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.0001f * jdController.bodyPartsDict[shinR].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.001f * jdController.bodyPartsDict[armL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.001f * jdController.bodyPartsDict[armR].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.001f * jdController.bodyPartsDict[forearmL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
+        AddReward(-.001f * jdController.bodyPartsDict[forearmR].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
 
-        if(jdController.bodyPartsDict[hips].groundContact.touchingGround)
-        {
-            AddReward(-.01f);
-        }
+        // if(jdController.bodyPartsDict[hips].groundContact.touchingGround)
+        // {
+        //     AddReward(-.01f);
+        // }
             // print(-.1f * jdController.bodyParts[armL].joint.slerpDrive.maximumForce/jdController.maxJointForceLimit);
         RewardFunctionMovingTowards();
         IncrementDecisionTimer();
@@ -496,16 +508,22 @@ public class WalkerAgent : Agent
 
         var headRBPos = jdController.bodyPartsDict[head].rb.position.y;
         // print(headRBPos);
-        if(headRBPos < 5.3f)
-        {
-            var headPosReward = 0.01f * headRBPos / 5.3f;
-            // print ("headPosReward: " + headPosReward);
-            AddReward(headPosReward);
+        // if(headRBPos < 5.3f)
+        // {
 
-            if(jdController.bodyPartsDict[head].rb.position.y > 5.1f)
+            if(jdController.bodyPartsDict[head].rb.position.y < 5f)
             {
+                var headPosReward = -0.01f * (5 - jdController.bodyPartsDict[head].rb.position.y);
+                // print ("headPosReward: " + headPosReward);
+                AddReward(headPosReward);
                     // if(rewardFacingTarget)
             // {
+
+            }
+            else
+            {
+                AddReward(.01f); //standing up reward 
+
                 facingDot = Vector3.Dot(dirToTarget.normalized, hips.forward); //up is local forward because capsule is rotated
                 facingDot = Mathf.Clamp(facingDot, -0.25f, 1f);
                 // facingDot = Mathf.Clamp(facingDot, -0.25f, 1f);
@@ -518,10 +536,41 @@ public class WalkerAgent : Agent
                 // }
 
             }
-        }
+        // }
 
         // }
     }
+    // void RewardFunctionMovingTowards()
+    // {
+
+    //     var headRBPos = jdController.bodyPartsDict[head].rb.position.y;
+    //     // print(headRBPos);
+    //     if(headRBPos < 5.3f)
+    //     {
+    //         var headPosReward = 0.01f * headRBPos / 5.3f;
+    //         // print ("headPosReward: " + headPosReward);
+    //         AddReward(headPosReward);
+
+    //         if(jdController.bodyPartsDict[head].rb.position.y > 5.1f)
+    //         {
+    //                 // if(rewardFacingTarget)
+    //         // {
+    //             facingDot = Vector3.Dot(dirToTarget.normalized, hips.forward); //up is local forward because capsule is rotated
+    //             facingDot = Mathf.Clamp(facingDot, -0.25f, 1f);
+    //             // facingDot = Mathf.Clamp(facingDot, -0.25f, 1f);
+    //             AddReward(0.01f * facingDot);
+    //             // if(facingDot > 0.9)
+    //             // {
+    //                 movingTowardsDot = Vector3.Dot(jdController.bodyPartsDict[hips].rb.velocity, dirToTarget.normalized); 
+    //                 // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -0.25f, 50f);
+    //                 AddReward(0.01f * movingTowardsDot);
+    //             // }
+
+    //         }
+    //     }
+
+    //     // }
+    // }
 	/// <summary>
     /// Loop over body parts and reset them to initial conditions.
     /// </summary>
