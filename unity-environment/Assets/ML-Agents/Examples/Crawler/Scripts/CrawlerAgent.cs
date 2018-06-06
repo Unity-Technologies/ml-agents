@@ -110,10 +110,10 @@ public class CrawlerAgent : Agent {
 
         //we want a lower center of mass or the crawler will roll over easily. 
         //these settings shift the COM on the lower legs
-		jdController.bodyParts[leg0_lower].rb.centerOfMass = footCenterOfMassShift;
-		jdController.bodyParts[leg1_lower].rb.centerOfMass = footCenterOfMassShift;
-		jdController.bodyParts[leg2_lower].rb.centerOfMass = footCenterOfMassShift;
-		jdController.bodyParts[leg3_lower].rb.centerOfMass = footCenterOfMassShift;
+		jdController.bodyPartsDict[leg0_lower].rb.centerOfMass = footCenterOfMassShift;
+		jdController.bodyPartsDict[leg1_lower].rb.centerOfMass = footCenterOfMassShift;
+		jdController.bodyPartsDict[leg2_lower].rb.centerOfMass = footCenterOfMassShift;
+		jdController.bodyPartsDict[leg3_lower].rb.centerOfMass = footCenterOfMassShift;
     }
 
     //We only need to change the joint settings based on decision freq.
@@ -183,20 +183,20 @@ public class CrawlerAgent : Agent {
 
     public override void CollectObservations()
     {
+        jdController.GetCurrentJointForces();
         //normalize dir vector to help generalize
         AddVectorObs(dirToTarget.normalized);
 
-        //raycast out of the bottom of the legs to get information about where the ground is
-        RaycastObservation(leg0_lower.position, leg0_lower.up, 5);
-        RaycastObservation(leg1_lower.position, leg1_lower.up, 5);
-        RaycastObservation(leg2_lower.position, leg2_lower.up, 5);
-        RaycastObservation(leg3_lower.position, leg3_lower.up, 5);
+        // //raycast out of the bottom of the legs to get information about where the ground is
+        // RaycastObservation(leg0_lower.position, leg0_lower.up, 5);
+        // RaycastObservation(leg1_lower.position, leg1_lower.up, 5);
+        // RaycastObservation(leg2_lower.position, leg2_lower.up, 5);
+        // RaycastObservation(leg3_lower.position, leg3_lower.up, 5);
 
         //forward & up to help with orientation
         AddVectorObs(body.forward);
         AddVectorObs(body.up);
-        jdController.GetCurrentJointForces();
-        foreach (var bodyPart in jdController.bodyParts.Values)
+        foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart);
             // if(!IsDone() && bodyPart.targetContact.touchingTarget)
@@ -260,7 +260,7 @@ public class CrawlerAgent : Agent {
         // {
         //     return;
         // }
-        foreach (var bodyPart in jdController.bodyParts.Values)
+        foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             if(bodyPart.targetContact && !IsDone() && bodyPart.targetContact.touchingTarget)
             {
@@ -268,23 +268,23 @@ public class CrawlerAgent : Agent {
             }
         }
         //update pos to target
-		dirToTarget = target.position - jdController.bodyParts[body].rb.position;
+		dirToTarget = target.position - jdController.bodyPartsDict[body].rb.position;
 
         //if enabled the feet will light up green when the foot is grounded.
         //this is just a visualization and isn't necessary for function
         if(useFootGroundedVisualization)
         {
-            foot0.material = jdController.bodyParts[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot1.material = jdController.bodyParts[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot2.material = jdController.bodyParts[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot3.material = jdController.bodyParts[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot0.material = jdController.bodyPartsDict[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot1.material = jdController.bodyPartsDict[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot2.material = jdController.bodyPartsDict[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot3.material = jdController.bodyPartsDict[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
         }
 
         // Joint update logic only needs to happen when a new decision is made
         if(isNewDecisionStep)
         {
             //The dictionary with all the body parts in it are in the jdController
-            var bpDict = jdController.bodyParts;
+            var bpDict = jdController.bodyPartsDict;
 
             //pick a new target joint rotation
             bpDict[leg0_upper].SetJointTargetRotation(vectorAction[0], vectorAction[1], 0);
@@ -330,7 +330,7 @@ public class CrawlerAgent : Agent {
         //don't normalize vel. the faster it goes the more reward it should get
         //0.03f chosen via experimentation
 		// movingTowardsDot = Vector3.Dot(jdController.bodyParts[body].rb.velocity.normalized, dirToTarget.normalized); 
-		movingTowardsDot = Vector3.Dot(jdController.bodyParts[body].rb.velocity, dirToTarget.normalized); 
+		movingTowardsDot = Vector3.Dot(jdController.bodyPartsDict[body].rb.velocity, dirToTarget.normalized); 
         // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -5, 50f);
         // movingTowardsDot = Mathf.Clamp(movingTowardsDot, -5, 50f);
 
@@ -388,7 +388,7 @@ public class CrawlerAgent : Agent {
             transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
         
-        foreach (var bodyPart in jdController.bodyParts.Values)
+        foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             // bodyPart.Reset();
             bodyPart.Reset(bodyPart);

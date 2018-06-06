@@ -156,7 +156,7 @@ public class JointDriveController : MonoBehaviour {
 	// Vector3 dirToTarget;
 	// float movingTowardsDot;
 	float facingDot;
-    public Dictionary<Transform, BodyPart> bodyParts = new Dictionary<Transform, BodyPart>();
+    public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
     public List<BodyPart> bodyPartsList = new List<BodyPart>(); //to look at values in inspector, just for debugging
     // [HideInInspector]
     // public bool setupComplete;
@@ -205,7 +205,7 @@ public class JointDriveController : MonoBehaviour {
 
         bp.thisJDController = this;
 		// bp.agent = this;
-        bodyParts.Add(t, bp);
+        bodyPartsDict.Add(t, bp);
         bodyPartsList.Add(bp);
     }
 
@@ -213,7 +213,7 @@ public class JointDriveController : MonoBehaviour {
 
     public void GetCurrentJointForces()
     {
-        foreach (var bodyPart in bodyParts.Values)
+        foreach (var bodyPart in bodyPartsDict.Values)
         {
             if(bodyPart.joint)
             {
