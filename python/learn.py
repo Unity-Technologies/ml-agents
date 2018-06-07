@@ -4,6 +4,7 @@
 import logging
 
 import os
+import ray
 from docopt import docopt
 
 from unitytrainers.trainer_controller import TrainerController
@@ -39,7 +40,8 @@ if __name__ == '__main__':
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
-      --run-id=<path>            The sub-directory name for model and summary statistics [default: ppo]. 
+      --run-id=<path>            The sub-directory name for model and summary statistics [default: ppo].
+      --num-runs=<n>             Number of runs of session [default: 1]. 
       --save-freq=<n>            Frequency at which to save model [default: 50000].
       --seed=<n>                 Random seed used for training [default: -1].
       --slow                     Whether to run the game at training speed [default: False].
@@ -58,6 +60,7 @@ if __name__ == '__main__':
 
     # General parameters
     run_id = options['--run-id']
+    num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
     load_model = options['--load']
     train_model = options['--train']
@@ -76,6 +79,12 @@ if __name__ == '__main__':
     base_path = os.path.dirname(__file__)
     TRAINER_CONFIG_PATH = os.path.abspath(os.path.join(base_path, "trainer_config.yaml"))
 
-    tc = TrainerController(env_path, run_id, save_freq, curriculum_file, fast_simulation, load_model, train_model,
-                           worker_id, keep_checkpoints, lesson, seed, docker_target_name, TRAINER_CONFIG_PATH)
-    tc.start_learning()
+    @ray.remote
+    def run_training(sub_id):
+        tc = TrainerController(env_path, run_id+"-"+str(sub_id), save_freq, curriculum_file, fast_simulation,
+                               load_model, train_model, worker_id+sub_id, keep_checkpoints, lesson, seed,
+                               docker_target_name, TRAINER_CONFIG_PATH)
+        tc.start_learning()
+
+    ray.init()
+    ray.get([run_training.remote(i) for i in range(num_runs)])
