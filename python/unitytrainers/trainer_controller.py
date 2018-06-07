@@ -17,7 +17,8 @@ from unityagents import UnityEnvironment, UnityEnvironmentException
 
 class TrainerController(object):
     def __init__(self, env_path, run_id, save_freq, curriculum_file, fast_simulation, load, train,
-                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path):
+                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path,
+                 no_graphics):
         """
 
         :param env_path: Location to the environment executable to be loaded.
@@ -33,6 +34,7 @@ class TrainerController(object):
         :param seed: Random seed used for training.
         :param docker_target_name: Name of docker volume that will contain all data.
         :param trainer_config_path: Fully qualified path to location of trainer configuration file
+        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         """
         self.trainer_config_path = trainer_config_path
         if env_path is not None:
@@ -79,7 +81,8 @@ class TrainerController(object):
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     curriculum=self.curriculum_file, seed=self.seed,
-                                    docker_training=self.docker_training)
+                                    docker_training=self.docker_training,
+                                    no_graphics=no_graphics)
         if env_path is None:
             self.env_name = 'editor_'+self.env.academy_name
         else:
