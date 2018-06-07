@@ -190,7 +190,7 @@ class PPOTrainer(Trainer):
 
         feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations), self.model.sequence_length: 1}
         if self.use_recurrent:
-            feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
+            feed_dict[self.model.prev_action] = curr_brain_info.previous_vector_actions.flatten()
             if curr_brain_info.memories.shape[1] == 0:
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
@@ -227,7 +227,7 @@ class PPOTrainer(Trainer):
         intrinsic_rewards = np.array([])
         if self.use_curiosity:
             feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1,
-                         self.model.action_holder: np.reshape(take_action_outputs[self.model.output], [-1])}
+                         self.model.action_holder: take_action_outputs[self.model.output].flatten()}
             if self.use_visual_obs:
                 for i, _ in enumerate(curr_info.visual_observations):
                     feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
@@ -331,7 +331,7 @@ class PPOTrainer(Trainer):
                                 (len(bootstrapping_info.vector_observations), self.m_size))
                         feed_dict[self.model.memory_in] = bootstrapping_info.memories
                     if not self.is_continuous_action and self.use_recurrent:
-                        feed_dict[self.model.prev_action] = np.reshape(bootstrapping_info.previous_vector_actions, [-1])
+                        feed_dict[self.model.prev_action] = bootstrapping_info.previous_vector_actions.flatten()
                     value_next = self.sess.run(self.model.value, feed_dict)[idx]
 
                 self.training_buffer[agent_id]['advantages'].set(
@@ -377,8 +377,8 @@ class PPOTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return len(self.training_buffer.update_buffer['actions']) > \
-               max(int(self.trainer_parameters['buffer_size'] / self.sequence_length), 1)
+        size_of_buffer = len(self.training_buffer.update_buffer['actions'])
+        return size_of_buffer > max(int(self.trainer_parameters['buffer_size'] / self.sequence_length), 1)
 
     def update_model(self):
         """
@@ -398,9 +398,9 @@ class PPOTrainer(Trainer):
                 _buffer = self.training_buffer.update_buffer
                 feed_dict = {self.model.batch_size: n_sequences,
                              self.model.sequence_length: self.sequence_length,
-                             self.model.mask_input: np.array(_buffer['masks'][start:end]).reshape([-1]),
-                             self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape([-1]),
-                             self.model.old_value: np.array(_buffer['value_estimates'][start:end]).reshape([-1]),
+                             self.model.mask_input: np.array(_buffer['masks'][start:end]).flatten(),
+                             self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).flatten(),
+                             self.model.old_value: np.array(_buffer['value_estimates'][start:end]).flatten(),
                              self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1, 1]),
                              self.model.all_old_probs: np.array(
                                  _buffer['action_probs'][start:end]).reshape([-1, self.brain.vector_action_space_size])}
@@ -409,10 +409,10 @@ class PPOTrainer(Trainer):
                         _buffer['actions_pre'][start:end]).reshape([-1, self.brain.vector_action_space_size])
                 else:
                     feed_dict[self.model.action_holder] = np.array(
-                        _buffer['actions'][start:end]).reshape([-1])
+                        _buffer['actions'][start:end]).flatten()
                     if self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.array(
-                            _buffer['prev_action'][start:end]).reshape([-1])
+                            _buffer['prev_action'][start:end]).flatten()
                 if self.use_vector_obs:
                     if self.is_continuous_observation:
                         feed_dict[self.model.vector_in] = np.array(
