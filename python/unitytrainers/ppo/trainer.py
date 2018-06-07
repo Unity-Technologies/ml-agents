@@ -231,6 +231,24 @@ class PPOTrainer(Trainer):
                                               feed_dict=feed_dict) * float(self.has_updated)
         return intrinsic_rewards
 
+    def generate_value_estimate(self, bootstrapping_info, idx):
+        feed_dict = {self.model.batch_size: len(bootstrapping_info.vector_observations),
+                     self.model.sequence_length: 1}
+        if self.use_visual_obs:
+            for i in range(len(bootstrapping_info.visual_observations)):
+                feed_dict[self.model.visual_in[i]] = bootstrapping_info.visual_observations[i]
+        if self.use_vector_obs:
+            feed_dict[self.model.vector_in] = bootstrapping_info.vector_observations
+        if self.use_recurrent:
+            if bootstrapping_info.memories.shape[1] == 0:
+                bootstrapping_info.memories = np.zeros(
+                    (len(bootstrapping_info.vector_observations), self.m_size))
+            feed_dict[self.model.memory_in] = bootstrapping_info.memories
+        if not self.is_continuous_action and self.use_recurrent:
+            feed_dict[self.model.prev_action] = bootstrapping_info.previous_vector_actions.flatten()
+        value_next = self.sess.run(self.model.value, feed_dict)[idx]
+        return value_next
+
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
         """
         Adds experiences to each agent's experience history.
@@ -250,9 +268,7 @@ class PPOTrainer(Trainer):
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
             stored_take_action_outputs = self.training_buffer[agent_id].last_take_action_outputs
-            if stored_info is None:
-                continue
-            else:
+            if stored_info is not None:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
                 if not stored_info.local_done[idx]:
@@ -322,21 +338,7 @@ class PPOTrainer(Trainer):
                     else:
                         bootstrapping_info = info
                         idx = l
-                    feed_dict = {self.model.batch_size: len(bootstrapping_info.vector_observations),
-                                 self.model.sequence_length: 1}
-                    if self.use_visual_obs:
-                        for i in range(len(bootstrapping_info.visual_observations)):
-                            feed_dict[self.model.visual_in[i]] = bootstrapping_info.visual_observations[i]
-                    if self.use_vector_obs:
-                        feed_dict[self.model.vector_in] = bootstrapping_info.vector_observations
-                    if self.use_recurrent:
-                        if bootstrapping_info.memories.shape[1] == 0:
-                            bootstrapping_info.memories = np.zeros(
-                                (len(bootstrapping_info.vector_observations), self.m_size))
-                        feed_dict[self.model.memory_in] = bootstrapping_info.memories
-                    if not self.is_continuous_action and self.use_recurrent:
-                        feed_dict[self.model.prev_action] = bootstrapping_info.previous_vector_actions.flatten()
-                    value_next = self.sess.run(self.model.value, feed_dict)[idx]
+                    value_next = self.generate_value_estimate(bootstrapping_info, idx)
 
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(
