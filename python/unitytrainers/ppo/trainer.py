@@ -214,16 +214,7 @@ class PPOTrainer(Trainer):
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
         return run_out[self.model.output], None, None, run_out
 
-    def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
-        """
-        Adds experiences to each agent's experience history.
-        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param take_action_outputs: The outputs of the take action method.
-        """
-        curr_info = curr_all_info[self.brain_name]
-        next_info = next_all_info[self.brain_name]
-
+    def generate_intrinsic_rewards(self, curr_info, next_info, take_action_outputs):
         intrinsic_rewards = np.array([])
         if self.use_curiosity:
             feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1,
@@ -238,6 +229,19 @@ class PPOTrainer(Trainer):
 
             intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
                                               feed_dict=feed_dict) * float(self.has_updated)
+        return intrinsic_rewards
+
+    def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
+        """
+        Adds experiences to each agent's experience history.
+        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param take_action_outputs: The outputs of the take action method.
+        """
+        curr_info = curr_all_info[self.brain_name]
+        next_info = next_all_info[self.brain_name]
+
+        intrinsic_rewards = self.generate_intrinsic_rewards(curr_info, next_info, take_action_outputs)
 
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info

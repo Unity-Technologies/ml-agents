@@ -174,7 +174,7 @@ class Buffer(dict):
         super(Buffer, self).__init__()
 
     def __str__(self):
-        return "update buffer :\n\t{0}\nlocal_buffers :\n{1}".format(str(self.update_buffer),
+        return "Update Buffer :\n\t{0}\nLocal_Buffers :\n{1}".format(str(self.update_buffer),
                                                                      '\n'.join(
                                                                          ['\tagent {0} :{1}'.format(k, str(self[k])) for
                                                                           k in self.keys()]))
@@ -213,8 +213,7 @@ class Buffer(dict):
                                   .format(key_list, agent_id))
         for field_key in key_list:
             self.update_buffer[field_key].extend(
-                self[agent_id][field_key].get_batch(batch_size=batch_size, training_length=training_length)
-            )
+                self[agent_id][field_key].get_batch(batch_size=batch_size, training_length=training_length))
 
     def append_all_agent_batch_to_update_buffer(self, key_list=None, batch_size=None, training_length=None):
         """
