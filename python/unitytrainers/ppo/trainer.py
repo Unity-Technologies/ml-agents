@@ -43,12 +43,12 @@ class PPOTrainer(Trainer):
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
         self.sequence_length = 1
+        self.step = 0
         self.has_updated = False
         self.m_size = None
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
-        if self.use_recurrent:
             if self.m_size == 0:
                 raise UnityTrainerException("The memory size for brain {0} is 0 even though the trainer uses recurrent."
                                             .format(brain_name))
@@ -96,7 +96,7 @@ class PPOTrainer(Trainer):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
     def __str__(self):
-        return '''Hypermarameters for the PPO Trainer of brain {0}: \n{1}'''.format(
+        return '''Hyperparameters for the PPO Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
@@ -127,7 +127,7 @@ class PPOTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.sess.run(self.model.global_step)
+        return self.step
 
     @property
     def get_last_reward(self):
@@ -142,6 +142,7 @@ class PPOTrainer(Trainer):
         Increment the step count of the trainer
         """
         self.sess.run(self.model.increment_step)
+        self.step = self.sess.run(self.model.global_step)
 
     def update_last_reward(self):
         """
@@ -206,16 +207,10 @@ class PPOTrainer(Trainer):
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
         self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
-        if self.use_recurrent:
-            return (run_out[self.model.output],
-                    run_out[self.model.memory_out],
-                    None,
-                    run_out)
-        else:
-            return (run_out[self.model.output],
-                    None,
-                    None,
-                    run_out)
+        return (run_out[self.model.output],
+                None,
+                None,
+                run_out)
 
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
         """
