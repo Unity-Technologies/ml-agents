@@ -137,20 +137,18 @@ class PPOTrainer(Trainer):
         """
         return self.sess.run(self.model.last_reward)
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
-        """
-        self.sess.run(self.model.increment_step)
-        self.step = self.sess.run(self.model.global_step)
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
+        Increment the step count of the trainer and Updates the last reward
         """
         if len(self.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(self.stats['cumulative_reward'])
-            self.sess.run(self.model.update_reward, feed_dict={self.model.new_reward: mean_reward})
+            self.sess.run([self.model.update_reward,
+                           self.model.increment_step],
+                          feed_dict={self.model.new_reward: mean_reward})
+        else:
+            self.sess.run(self.model.increment_step)
+        self.step = self.sess.run(self.model.global_step)
 
     def running_average(self, data, steps, running_mean, running_variance):
         """

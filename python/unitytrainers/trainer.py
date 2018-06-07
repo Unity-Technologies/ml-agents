@@ -76,17 +76,11 @@ class Trainer(object):
         """
         raise UnityTrainerException("The get_last_reward property was not implemented.")
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
+        Increment the step count of the trainer and updates the last reward
         """
-        raise UnityTrainerException("The increment_step method was not implemented.")
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
-        """
-        raise UnityTrainerException("The update_last_reward method was not implemented.")
+        raise UnityTrainerException("The increment_step_and_update_last_reward method was not implemented.")
 
     def take_action(self, all_brain_info: AllBrainInfo):
         """

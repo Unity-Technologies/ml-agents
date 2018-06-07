@@ -122,16 +122,11 @@ class BehavioralCloningTrainer(Trainer):
         else:
             return 0
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
+        Increment the step count of the trainer and Updates the last reward
         """
         self.step += 1
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
-        """
         return
 
     def take_action(self, all_brain_info: AllBrainInfo):
