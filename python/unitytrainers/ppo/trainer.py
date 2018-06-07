@@ -95,6 +95,16 @@ class PPOTrainer(Trainer):
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
+        self.inference_run_list = [self.model.output, self.model.all_probs, self.model.value,
+                                   self.model.entropy, self.model.learning_rate]
+        if self.is_continuous_action:
+            self.inference_run_list.append(self.model.output_pre)
+        if self.use_recurrent:
+            self.inference_run_list.extend([self.model.memory_out])
+        if (self.is_training and self.is_continuous_observation and
+                self.use_vector_obs and self.trainer_parameters['normalize']):
+            self.inference_run_list.extend([self.model.update_mean, self.model.update_variance])
+
     def __str__(self):
         return '''Hyperparameters for the PPO Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
@@ -174,21 +184,16 @@ class PPOTrainer(Trainer):
         :return: a tuple containing action, memories, values and an object
         to be passed to add experiences
         """
-        steps = self.get_step
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
             return [], [], [], None
+
         feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations), self.model.sequence_length: 1}
-        run_list = [self.model.output, self.model.all_probs, self.model.value, self.model.entropy,
-                    self.model.learning_rate]
-        if self.is_continuous_action:
-            run_list.append(self.model.output_pre)
         if self.use_recurrent:
             feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
             if curr_brain_info.memories.shape[1] == 0:
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
-            run_list += [self.model.memory_out]
         if self.use_visual_obs:
             for i, _ in enumerate(curr_brain_info.visual_observations):
                 feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
@@ -196,21 +201,18 @@ class PPOTrainer(Trainer):
             feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
         if (self.is_training and self.is_continuous_observation and
                 self.use_vector_obs and self.trainer_parameters['normalize']):
-            new_mean, new_variance = self.running_average(
-                curr_brain_info.vector_observations, steps, self.model.running_mean, self.model.running_variance)
+            new_mean, new_variance = self.running_average(curr_brain_info.vector_observations, self.get_step,
+                                                          self.model.running_mean, self.model.running_variance)
             feed_dict[self.model.new_mean] = new_mean
             feed_dict[self.model.new_variance] = new_variance
-            run_list = run_list + [self.model.update_mean, self.model.update_variance]
 
-        values = self.sess.run(run_list, feed_dict=feed_dict)
-        run_out = dict(zip(run_list, values))
+        values = self.sess.run(self.inference_run_list, feed_dict=feed_dict)
+        run_out = dict(zip(self.inference_run_list, values))
+
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
         self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
-        return (run_out[self.model.output],
-                None,
-                None,
-                run_out)
+        return run_out[self.model.output], None, None, run_out
 
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
         """
@@ -224,12 +226,8 @@ class PPOTrainer(Trainer):
 
         intrinsic_rewards = np.array([])
         if self.use_curiosity:
-            feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1}
-            run_list = [self.model.intrinsic_reward]
-            if self.is_continuous_action:
-                run_list.append(self.model.output)
-            else:
-                feed_dict[self.model.action_holder] = np.reshape(take_action_outputs[self.model.output], [-1])
+            feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1,
+                         self.model.action_holder: np.reshape(take_action_outputs[self.model.output], [-1])}
             if self.use_visual_obs:
                 for i, _ in enumerate(curr_info.visual_observations):
                     feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
@@ -237,15 +235,8 @@ class PPOTrainer(Trainer):
             if self.use_vector_obs:
                 feed_dict[self.model.vector_in] = curr_info.vector_observations
                 feed_dict[self.model.next_vector_obs] = next_info.vector_observations
-            if self.use_recurrent:
-                feed_dict[self.model.prev_action] = np.reshape(curr_info.previous_vector_actions, [-1])
-                if curr_info.memories.shape[1] == 0:
-                    curr_info.memories = np.zeros((len(curr_info.agents), self.m_size))
-                feed_dict[self.model.memory_in] = curr_info.memories
-                run_list += [self.model.memory_out]
 
-            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward, feed_dict=feed_dict) * \
-                                float(self.has_updated)
+            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward, feed_dict=feed_dict) * float(self.has_updated)
 
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info
@@ -348,14 +339,13 @@ class PPOTrainer(Trainer):
                         value_estimates=self.training_buffer[agent_id]['value_estimates'].get_batch(),
                         value_next=value_next,
                         gamma=self.trainer_parameters['gamma'],
-                        lambd=self.trainer_parameters['lambd'])
-                )
+                        lambd=self.trainer_parameters['lambd']))
                 self.training_buffer[agent_id]['discounted_returns'].set(
                     self.training_buffer[agent_id]['advantages'].get_batch()
                     + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
-                self.training_buffer.append_update_buffer(agent_id,
-                                                          batch_size=None, training_length=self.sequence_length)
+                self.training_buffer.append_update_buffer(agent_id, batch_size=None,
+                                                          training_length=self.sequence_length)
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
@@ -407,10 +397,8 @@ class PPOTrainer(Trainer):
                 _buffer = self.training_buffer.update_buffer
                 feed_dict = {self.model.batch_size: n_sequences,
                              self.model.sequence_length: self.sequence_length,
-                             self.model.mask_input: np.array(_buffer['masks'][start:end]).reshape(
-                                 [-1]),
-                             self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape(
-                                 [-1]),
+                             self.model.mask_input: np.array(_buffer['masks'][start:end]).reshape([-1]),
+                             self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape([-1]),
                              self.model.old_value: np.array(_buffer['value_estimates'][start:end]).reshape([-1]),
                              self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1, 1]),
                              self.model.all_old_probs: np.array(
@@ -468,6 +456,7 @@ class PPOTrainer(Trainer):
             self.stats['forward_loss'].append(np.mean(forward_total))
             self.stats['inverse_loss'].append(np.mean(inverse_total))
         self.training_buffer.reset_update_buffer()
+
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
     """
