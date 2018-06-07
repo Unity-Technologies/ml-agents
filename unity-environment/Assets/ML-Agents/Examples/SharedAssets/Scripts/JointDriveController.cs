@@ -80,16 +80,17 @@ namespace  MLAgents
             y = (y + 1f) * 0.5f;
             z = (z + 1f) * 0.5f;
 
-            var xRot = Mathf.MoveTowards(currentEularJointRotation.x, Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x), thisJDController.maxJointAngleChangePerDecision);
-            var yRot = Mathf.MoveTowards(currentEularJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), thisJDController.maxJointAngleChangePerDecision);
-            var zRot = Mathf.MoveTowards(currentEularJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), thisJDController.maxJointAngleChangePerDecision);
+            // var xRot = Mathf.MoveTowards(currentEularJointRotation.x, Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x), thisJDController.maxJointAngleChangePerDecision);
+            // var yRot = Mathf.MoveTowards(currentEularJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), thisJDController.maxJointAngleChangePerDecision);
+            // var zRot = Mathf.MoveTowards(currentEularJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), thisJDController.maxJointAngleChangePerDecision);
+
+            var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
+            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
+            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
 
             currentXNormalizedRot = Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
             currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
             currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
-            // var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
-            // var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
-            // var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
 
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
             currentEularJointRotation = new Vector3(xRot, yRot, zRot);
@@ -107,12 +108,9 @@ namespace  MLAgents
 
         public void SetJointStrength(float strength)
         {
-            // var bp = bodyParts[t];
-            // var spring = Mathf.MoveTowards(previousSpringValue, (strength + 1f) * 0.5f, agent.maxJointStrengthChangePerDecision);
+
             var rawVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointForceLimit;
-            var clampedStrength = Mathf.MoveTowards(currentStrength, rawVal, thisJDController.maxJointStrengthChangePerDecision);
-            // var rawSpringVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointSpring;
-            // var clampedSpring = Mathf.MoveTowards(previousSpringValue, rawSpringVal, thisJDController.maxJointStrengthChangePerDecision);
+            // var clampedStrength = Mathf.MoveTowards(currentStrength, rawVal, thisJDController.maxJointStrengthChangePerDecision);
             // agent.energyPenalty += clampedSpring/agent.maxJointStrengthChangePerDecision;
             var jd = new JointDrive
             {
@@ -122,7 +120,8 @@ namespace  MLAgents
                 // positionSpring = clampedSpring,
                 positionSpring = thisJDController.maxJointSpring,
                 positionDamper = thisJDController.jointDampen,
-                maximumForce = clampedStrength
+                // maximumForce = clampedStrength
+                maximumForce = rawVal
                 // maximumForce = thisJDController.maxJointForceLimit
             };
             // jd.mode = JointDriveMode.Position;
@@ -146,11 +145,13 @@ namespace  MLAgents
         // [Tooltip("Reward Functions To Use")] 
 
 
-        //These settings are used to clamp the amount a joint can change every decision;
-        [Header("Max Joint Movement Per Decision")] 
-        [Space(10)] 
-        public float maxJointAngleChangePerDecision; //the change in joint angle will not be able to exceed this value.
-        public float maxJointStrengthChangePerDecision; //the change in joint strenth will not be able to exceed this value.
+        // //These settings are used to clamp the amount a joint can change every decision;
+        // [Header("Max Joint Movement Per Decision")] 
+        // [Space(10)] 
+        // public float maxJointAngleChangePerDecision; //the change in joint angle will not be able to exceed this value.
+        // public float maxJointStrengthChangePerDecision; //the change in joint strenth will not be able to exceed this value.
+
+
         // public Vector3 footCenterOfMassShift; //used to shift the centerOfMass on the feet so the agent isn't so top heavy
         // Vector3 dirToTarget;
         // float movingTowardsDot;
@@ -207,6 +208,8 @@ namespace  MLAgents
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
         }
+
+        
 
         
 

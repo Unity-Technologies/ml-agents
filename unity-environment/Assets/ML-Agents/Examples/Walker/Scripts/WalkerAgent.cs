@@ -6,7 +6,10 @@ using MLAgents;
 public class WalkerAgent : Agent
 {
     [Header("Specific to Walker")] 
-    public Vector3 goalDirection;
+    [Header("Target To Walk Towards")] 
+    [Space(10)] 
+    public Transform target;
+	Vector3 dirToTarget;    
     public Transform hips;
     public Transform chest;
     public Transform spine;
@@ -23,99 +26,33 @@ public class WalkerAgent : Agent
     public Transform armR;
     public Transform forearmR;
     public Transform handR;
-    public Dictionary<Transform, BodyPart> bodyParts = new Dictionary<Transform, BodyPart>();
+    JointDriveController jdController;
+    bool isNewDecisionStep;
+    int currentDecisionStep;
 
-    /// <summary>
-    /// Used to store relevant information for acting and learning for each body part in agent.
-    /// </summary>
-    [System.Serializable]
-    public class BodyPart
-    {
-        public ConfigurableJoint joint;
-        public Rigidbody rb;
-        public Vector3 startingPos;
-        public Quaternion startingRot;
-        public GroundContact groundContact;
 
-        /// <summary>
-        /// Reset body part to initial configuration.
-        /// </summary>
-        public void Reset()
-        {
-            rb.transform.position = startingPos;
-            rb.transform.rotation = startingRot;
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
-        
-        /// <summary>
-        /// Apply torque according to defined goal `x, y, z` angle and force `strength`.
-        /// </summary>
-        public void SetNormalizedTargetRotation(float x, float y, float z, float strength)
-        {
-            // Transform values from [-1, 1] to [0, 1]
-            x = (x + 1f) * 0.5f;
-            y = (y + 1f) * 0.5f;
-            z = (z + 1f) * 0.5f;
-
-            var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
-            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
-            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
-
-            joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
-            var jd = new JointDrive
-            {
-                positionSpring = ((strength + 1f) * 0.5f) * 10000f,
-                maximumForce = 250000f
-            };
-            joint.slerpDrive = jd;
-        }
-
-    }
-
-    /// <summary>
-    /// Create BodyPart object and add it to dictionary.
-    /// </summary>
-    public void SetupBodyPart(Transform t)
-    {
-        BodyPart bp = new BodyPart
-        {
-            rb = t.GetComponent<Rigidbody>(),
-            joint = t.GetComponent<ConfigurableJoint>(),
-            startingPos = t.position,
-            startingRot = t.rotation
-        };
-        bodyParts.Add(t, bp);
-        bp.groundContact = t.GetComponent<GroundContact>();
-    }
 
     public override void InitializeAgent()
     {
-        SetupBodyPart(hips);
-        SetupBodyPart(chest);
-        SetupBodyPart(spine);
-        SetupBodyPart(head);
-        SetupBodyPart(thighL);
-        SetupBodyPart(shinL);
-        SetupBodyPart(footL);
-        SetupBodyPart(thighR);
-        SetupBodyPart(shinR);
-        SetupBodyPart(footR);
-        SetupBodyPart(armL);
-        SetupBodyPart(forearmL);
-        SetupBodyPart(handL);
-        SetupBodyPart(armR);
-        SetupBodyPart(forearmR);
-        SetupBodyPart(handR);
+        jdController = GetComponent<JointDriveController>();
+        jdController.SetupBodyPart(hips);
+        jdController.SetupBodyPart(chest);
+        jdController.SetupBodyPart(spine);
+        jdController.SetupBodyPart(head);
+        jdController.SetupBodyPart(thighL);
+        jdController.SetupBodyPart(shinL);
+        jdController.SetupBodyPart(footL);
+        jdController.SetupBodyPart(thighR);
+        jdController.SetupBodyPart(shinR);
+        jdController.SetupBodyPart(footR);
+        jdController.SetupBodyPart(armL);
+        jdController.SetupBodyPart(forearmL);
+        jdController.SetupBodyPart(handL);
+        jdController.SetupBodyPart(armR);
+        jdController.SetupBodyPart(forearmR);
+        jdController.SetupBodyPart(handR);
     }
 
-    /// <summary>
-    /// Obtains joint rotation (in Quaternion) from joint. 
-    /// </summary>
-    public static Quaternion GetJointRotation(ConfigurableJoint joint)
-    {
-        return (Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
-    }
 
     /// <summary>
     /// Add relevant information on each body part to observations.
@@ -124,58 +61,89 @@ public class WalkerAgent : Agent
     {
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
-        bp.groundContact.touchingGround = false;
-
         AddVectorObs(rb.velocity);
         AddVectorObs(rb.angularVelocity);
         Vector3 localPosRelToHips = hips.InverseTransformPoint(rb.position);
         AddVectorObs(localPosRelToHips);
 
-        if (bp.joint && (bp.rb.transform != handL && bp.rb.transform != handR))
+        if(bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR && bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
         {
-            var jointRotation = GetJointRotation(bp.joint);
-            AddVectorObs(jointRotation); // Get the joint rotation
+            AddVectorObs(bp.currentXNormalizedRot);
+            AddVectorObs(bp.currentYNormalizedRot);
+            AddVectorObs(bp.currentZNormalizedRot);
+            AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit);
         }
     }
+    
 
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
     public override void CollectObservations()
     {
-        AddVectorObs(goalDirection);
-        foreach (var bodyPart in bodyParts.Values)
+        jdController.GetCurrentJointForces();
+
+        AddVectorObs(dirToTarget.normalized);
+        AddVectorObs(jdController.bodyPartsDict[hips].rb.position);
+        AddVectorObs(hips.forward);
+        AddVectorObs(hips.up);
+
+        foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart);
         }
     }
 
+
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+		dirToTarget = target.position - jdController.bodyPartsDict[hips].rb.position;
+
         // Apply action to all relevant body parts. 
-        
-        bodyParts[chest].SetNormalizedTargetRotation(vectorAction[0], vectorAction[1], vectorAction[2],
-            vectorAction[26]);
-        bodyParts[spine].SetNormalizedTargetRotation(vectorAction[3], vectorAction[4], vectorAction[5],
-            vectorAction[27]);
+        if(isNewDecisionStep)
+        {
+            var bpDict = jdController.bodyPartsDict;
+            int i = -1;
 
-        bodyParts[thighL].SetNormalizedTargetRotation(vectorAction[6], vectorAction[7], 0, vectorAction[28]);
-        bodyParts[shinL].SetNormalizedTargetRotation(vectorAction[8], 0, 0, vectorAction[29]);
-        bodyParts[footL].SetNormalizedTargetRotation(vectorAction[9], vectorAction[10], vectorAction[11],
-            vectorAction[30]);
-        
-        bodyParts[thighR].SetNormalizedTargetRotation(vectorAction[12], vectorAction[13], 0, vectorAction[31]);
-        bodyParts[shinR].SetNormalizedTargetRotation(vectorAction[14], 0, 0, vectorAction[32]);
-        bodyParts[footR].SetNormalizedTargetRotation(vectorAction[15], vectorAction[16], vectorAction[17],
-            vectorAction[33]);
 
-        bodyParts[armL].SetNormalizedTargetRotation(vectorAction[18], vectorAction[19], 0, vectorAction[34]);
-        bodyParts[forearmL].SetNormalizedTargetRotation(vectorAction[20], 0, 0, vectorAction[34]);
+            //++i syntax is so we don't have to renumber each index when we ant to change the action space
+            bpDict[chest].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+            bpDict[spine].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+
+            bpDict[thighL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[thighR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[shinL].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[shinR].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[footR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+            bpDict[footL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+
+
+            bpDict[armL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[armR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[forearmR].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[head].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
         
-        bodyParts[armR].SetNormalizedTargetRotation(vectorAction[21], vectorAction[22], 0, vectorAction[36]);
-        bodyParts[forearmR].SetNormalizedTargetRotation(vectorAction[23], 0, 0, vectorAction[37]);
         
-        bodyParts[head].SetNormalizedTargetRotation(vectorAction[24], vectorAction[25], 0, vectorAction[38]);
+            //update joint strength settings
+            bpDict[chest].SetJointStrength(vectorAction[++i]);
+            bpDict[spine].SetJointStrength(vectorAction[++i]);
+            bpDict[head].SetJointStrength(vectorAction[++i]);
+            bpDict[thighL].SetJointStrength(vectorAction[++i]);
+            bpDict[shinL].SetJointStrength(vectorAction[++i]);
+            bpDict[footL].SetJointStrength(vectorAction[++i]);
+            bpDict[thighR].SetJointStrength(vectorAction[++i]);
+            bpDict[shinR].SetJointStrength(vectorAction[++i]);
+            bpDict[footR].SetJointStrength(vectorAction[++i]);
+            bpDict[armL].SetJointStrength(vectorAction[++i]);
+            bpDict[forearmL].SetJointStrength(vectorAction[++i]);
+            bpDict[armR].SetJointStrength(vectorAction[++i]);
+            bpDict[forearmR].SetJointStrength(vectorAction[++i]);
+        }
+
+        IncrementDecisionTimer();
+
+        
 
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
@@ -183,11 +151,29 @@ public class WalkerAgent : Agent
         // c. Encourage head height.
         // d. Discourage head movement.
         AddReward(
-            + 0.03f * Vector3.Dot(goalDirection, bodyParts[hips].rb.velocity)
-            + 0.01f * Vector3.Dot(goalDirection, hips.forward)
-            + 0.01f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(bodyParts[head].rb.velocity, bodyParts[hips].rb.velocity)
+            + 0.03f * Vector3.Dot(dirToTarget.normalized, jdController.bodyPartsDict[hips].rb.velocity)
+            + 0.01f * Vector3.Dot(dirToTarget.normalized, hips.forward)
+            + 0.02f * (head.position.y - hips.position.y)
+            - 0.01f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity, jdController.bodyPartsDict[hips].rb.velocity)
         );
+    }
+
+
+
+
+    //We only need to change the joint settings based on decision freq.
+    public void IncrementDecisionTimer()
+    {
+        if(currentDecisionStep == this.agentParameters.numberOfActionsBetweenDecisions || this.agentParameters.numberOfActionsBetweenDecisions == 1)
+        {
+            currentDecisionStep = 1;
+            isNewDecisionStep = true;
+        }
+        else
+        {
+            currentDecisionStep ++;
+            isNewDecisionStep = false;
+        }
     }
 
     /// <summary>
@@ -195,11 +181,17 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        transform.rotation = Quaternion.LookRotation(goalDirection);
-        
-        foreach (var bodyPart in bodyParts.Values)
+        if(dirToTarget != Vector3.zero)
         {
-            bodyPart.Reset();
+            transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
+        
+        foreach (var bodyPart in jdController.bodyPartsDict.Values)
+        {
+            // bodyPart.Reset();
+            bodyPart.Reset(bodyPart);
+        }
+        isNewDecisionStep = true;
+        currentDecisionStep = 1;
     }
 }

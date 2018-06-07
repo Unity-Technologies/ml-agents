@@ -12,7 +12,7 @@ namespace MLAgents
     [DisallowMultipleComponent]
     public class TargetContact : MonoBehaviour
     {
-        [Header("Detect Targets")]
+        // [Header("Detect Targets")]
         public bool touchingTarget;
         private const string Target = "target"; //tag on target obj
 
