@@ -209,12 +209,12 @@ class PPOTrainer(Trainer):
         if self.use_recurrent:
             return (run_out[self.model.output],
                     run_out[self.model.memory_out],
-                    [str(v) for v in run_out[self.model.value]],
+                    None,
                     run_out)
         else:
             return (run_out[self.model.output],
                     None,
-                    [str(v) for v in run_out[self.model.value]],
+                    None,
                     run_out)
 
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):

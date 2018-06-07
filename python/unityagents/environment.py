@@ -187,7 +187,7 @@ class UnityEnvironment(object):
             # Launch Unity environment
             if not docker_training:
                 self.proc1 = subprocess.Popen(
-                    [launch_string,
+                    [launch_string,'-nographics', '-batchmode',
                      '--port', str(self.port)])
             else:
                 """
