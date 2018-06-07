@@ -236,7 +236,8 @@ class PPOTrainer(Trainer):
                 feed_dict[self.model.vector_in] = curr_info.vector_observations
                 feed_dict[self.model.next_vector_obs] = next_info.vector_observations
 
-            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward, feed_dict=feed_dict) * float(self.has_updated)
+            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
+                                              feed_dict=feed_dict) * float(self.has_updated)
 
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info

@@ -20,7 +20,6 @@ class TrainerController(object):
                  worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path,
                  no_graphics):
         """
-
         :param env_path: Location to the environment executable to be loaded.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
@@ -54,7 +53,7 @@ class TrainerController(object):
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
-            if env_path is not None :
+            if env_path is not None:
                 env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
                                                                      env_name=env_path)
             if curriculum_file is None:
@@ -268,7 +267,7 @@ class TrainerController(object):
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step()
                             trainer.update_last_reward()
-                    if self.train_model and trainer.get_step <= trainer.get_max_steps:
+                    if self.train_model:
                         global_step += 1
                     if global_step % self.save_freq == 0 and global_step != 0 and self.train_model:
                         # Save Tensorflow model
