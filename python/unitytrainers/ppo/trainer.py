@@ -220,7 +220,6 @@ class PPOTrainer(Trainer):
         :param take_action_outputs: Actions taken by agents.
         :return: Intrinsic rewards for all agents.
         """
-        intrinsic_rewards = np.array([])
         if self.use_curiosity:
             feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1,
                          self.model.action_holder: take_action_outputs[self.model.output].flatten()}
@@ -234,7 +233,9 @@ class PPOTrainer(Trainer):
 
             intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
                                               feed_dict=feed_dict) * float(self.has_updated)
-        return intrinsic_rewards
+            return intrinsic_rewards
+        else:
+            return None
 
     def generate_value_estimate(self, brain_info, idx):
         """
