@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MLAgents
 {
@@ -11,7 +14,29 @@ namespace MLAgents
 
         /**< Reference to the Decision component used to decide the actions */
 //        public Decision decision = new RandomDecision();
+#if UNITY_EDITOR
+        public MonoScript decision;
+#endif
+        [SerializeField]
+        public string c_decision;
+        public string asm_decision;
 
+        public void OnValidate()
+        {
+            #if UNITY_EDITOR
+            if (decision != null)
+            {
+                c_decision = decision.GetClass().Name;
+                asm_decision = decision.GetClass().Assembly.FullName;
+            }
+            else
+            {
+                c_decision = asm_decision = "";
+            }
+            #endif
+        }
+        
+        
         public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher)
         {
             aca.BrainDecideAction += DecideAction;
@@ -29,6 +54,23 @@ namespace MLAgents
 
         void DecideAction()
         {
+
+            //var d = Activator.CreateInstance() as TestDecision;
+            //Debug.Log(asm_decision + " " + c_decision);
+            if (asm_decision != "" && c_decision != "")
+            {
+                try
+                {
+                    var d =
+                        Activator.CreateInstance(asm_decision, c_decision).Unwrap() as TestDecision;
+                    d.DecisionMethod();
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
+            }
+            
             if (brainBatcher != null)
             {
                 brainBatcher.SendBrainInfo(this.name, agentInfo);
