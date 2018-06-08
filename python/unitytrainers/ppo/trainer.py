@@ -160,21 +160,6 @@ class PPOTrainer(Trainer):
             self.sess.run(self.model.increment_step)
         self.step = self.sess.run(self.model.global_step)
 
-    def running_average(self, data, steps, running_mean, running_variance):
-        """
-        Computes new running mean and variances.
-        :param data: New piece of data.
-        :param steps: Total number of data so far.
-        :param running_mean: TF op corresponding to stored running mean.
-        :param running_variance: TF op corresponding to stored running variance.
-        :return: New mean and variance values.
-        """
-        mean, var = self.sess.run([running_mean, running_variance])
-        current_x = np.mean(data, axis=0)
-        new_mean = mean + (current_x - mean) / (steps + 1)
-        new_variance = var + (current_x - new_mean) * (current_x - mean)
-        return new_mean, new_variance
-
     def take_action(self, all_brain_info: AllBrainInfo):
         """
         Decides actions given observations information, and takes them in environment.
@@ -193,16 +178,10 @@ class PPOTrainer(Trainer):
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
         if self.use_visual_obs:
-            for i, _ in enumerate(curr_brain_info.visual_observations):
+            for i in range(len(curr_brain_info.visual_observations)):
                 feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
         if self.use_vector_obs:
             feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
-        if (self.is_training and self.is_continuous_observation and
-                self.use_vector_obs and self.trainer_parameters['normalize']):
-            new_mean, new_variance = self.running_average(curr_brain_info.vector_observations, self.get_step,
-                                                          self.model.running_mean, self.model.running_variance)
-            feed_dict[self.model.new_mean] = new_mean
-            feed_dict[self.model.new_variance] = new_variance
 
         values = self.sess.run(self.inference_run_list, feed_dict=feed_dict)
         run_out = dict(zip(self.inference_run_list, values))
@@ -210,7 +189,10 @@ class PPOTrainer(Trainer):
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
         self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
-        return run_out[self.model.output], None, None, run_out
+        if self.use_recurrent:
+            return run_out[self.model.output], run_out[self.model.memory_out], None, run_out
+        else:
+            return run_out[self.model.output], None, None, run_out
 
     def generate_intrinsic_rewards(self, curr_info, next_info, take_action_outputs):
         """
