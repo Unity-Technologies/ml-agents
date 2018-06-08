@@ -445,7 +445,10 @@ class UnityEnvironment(object):
                     self._process_pixels(x.visual_observations[i], self.brains[b].camera_resolutions[i]['blackAndWhite'])
                     for x in agent_info_list]
                 vis_obs += [np.array(obs)]
-            memory_size = max([len(x.memories) for x in agent_info_list] + [0])
+            if len(agent_info_list) == 0:
+                memory_size = 0
+            else:
+                memory_size = max([len(x.memories) for x in agent_info_list])
             if memory_size == 0:
                 memory = np.zeros((0,0))
             else:
