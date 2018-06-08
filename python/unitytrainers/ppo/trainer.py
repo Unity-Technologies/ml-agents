@@ -178,7 +178,7 @@ class PPOTrainer(Trainer):
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
         if self.use_visual_obs:
-            for i in range(len(curr_brain_info.visual_observations)):
+            for i, _ in enumerate(curr_brain_info.visual_observations):
                 feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
         if self.use_vector_obs:
             feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
@@ -388,7 +388,8 @@ class PPOTrainer(Trainer):
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
-        for k in range(self.trainer_parameters['num_epoch']):
+        num_epoch = self.trainer_parameters['num_epoch']
+        for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
             buffer = self.training_buffer.update_buffer
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
