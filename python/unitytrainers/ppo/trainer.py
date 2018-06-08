@@ -409,10 +409,10 @@ class PPOTrainer(Trainer):
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
         for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
+            buffer = self.training_buffer.update_buffer
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
                 start = l * n_sequences
                 end = (l + 1) * n_sequences
-                buffer = self.training_buffer.update_buffer
                 feed_dict = {self.model.batch_size: n_sequences,
                              self.model.sequence_length: self.sequence_length,
                              self.model.mask_input: np.array(buffer['masks'][start:end]).flatten(),
@@ -430,12 +430,13 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).flatten()
                 if self.use_vector_obs:
                     if self.is_continuous_observation:
+                        total_observation_length = self.brain.vector_observation_space_size * \
+                                                   self.brain.num_stacked_vector_observations
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
-                            [-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
+                            [-1, total_observation_length])
                         if self.use_curiosity:
                             feed_dict[self.model.next_vector_obs] = np.array(buffer['next_vector_obs'][start:end]).reshape(
-                                [-1,
-                                 self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
+                                [-1, total_observation_length])
                     else:
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
                                 [-1, self.brain.num_stacked_vector_observations])
