@@ -60,7 +60,7 @@ class Buffer(dict):
                 [[a,b],[b,c],[c,d],[d,e]]
                 """
                 if training_length == 1:
-                    # When the training length is None, the method returns a list of elements,
+                    # When the training length is 1, the method returns a list of elements,
                     # not a list of sequences of elements.
                     if batch_size is None:
                         # If batch_size is None : All the elements of the AgentBufferField are returned.
