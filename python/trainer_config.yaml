@@ -140,6 +140,7 @@ TennisBrain:
     normalize: true
 
 CrawlerBrain:
+    beta: 0.01
     normalize: true
     num_epoch: 3
     time_horizon: 1000

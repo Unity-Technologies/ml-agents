@@ -19,19 +19,13 @@ namespace  MLAgents
         [HideInInspector]
         public Quaternion startingRot;
 
-
         [Header("Ground & Target Contact")] 
         [Space(10)] 
-        // [HideInInspector]
         public GroundContact groundContact;
-        // [HideInInspector]
         public TargetContact targetContact;
-
 
         [HideInInspector]
         public JointDriveController thisJDController;
-		// public CrawlerAgent agent;
-        // [HideInInspector]
         [Header("Current Joint Settings")] 
         [Space(10)] 
         public Vector3 currentEularJointRotation;
@@ -43,7 +37,6 @@ namespace  MLAgents
 
         [Header("Other Debug Info")] 
         [Space(10)] 
-        //debug info
         public Vector3 currentJointForce;
         public float currentJointForceSqrMag;
         public Vector3 currentJointTorque;
@@ -74,15 +67,9 @@ namespace  MLAgents
         /// </summary>
         public void SetJointTargetRotation(float x, float y, float z)
         {
-            // var bp = bodyParts[t];
-            // Transform values from [-1, 1] to [0, 1]
             x = (x + 1f) * 0.5f;
             y = (y + 1f) * 0.5f;
             z = (z + 1f) * 0.5f;
-
-            // var xRot = Mathf.MoveTowards(currentEularJointRotation.x, Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x), thisJDController.maxJointAngleChangePerDecision);
-            // var yRot = Mathf.MoveTowards(currentEularJointRotation.y, Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y), thisJDController.maxJointAngleChangePerDecision);
-            // var zRot = Mathf.MoveTowards(currentEularJointRotation.z, Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z), thisJDController.maxJointAngleChangePerDecision);
 
             var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
             var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
@@ -94,81 +81,31 @@ namespace  MLAgents
 
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
             currentEularJointRotation = new Vector3(xRot, yRot, zRot);
-
-            // var jd = new JointDrive
-            // {
-            //     positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-			// 	positionDamper = agent.jointDampen,
-            //     maximumForce = agent.maxJointForceLimit
-            // };
-            // joint.slerpDrive = jd;
         }
-
-
 
         public void SetJointStrength(float strength)
         {
-
-            var rawVal = ((strength + 1f) * 0.5f) * thisJDController.maxJointForceLimit;
-            // var clampedStrength = Mathf.MoveTowards(currentStrength, rawVal, thisJDController.maxJointStrengthChangePerDecision);
-            // agent.energyPenalty += clampedSpring/agent.maxJointStrengthChangePerDecision;
+            var rawVal = (strength + 1f) * 0.5f * thisJDController.maxJointForceLimit;
             var jd = new JointDrive
             {
-                // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-                // positionSpring = ((strength + 1f) * 0.5f) * agent.maxJointSpring,
-                // positionSpring = spring * agent.maxJointSpring,
-                // positionSpring = clampedSpring,
                 positionSpring = thisJDController.maxJointSpring,
                 positionDamper = thisJDController.jointDampen,
-                // maximumForce = clampedStrength
                 maximumForce = rawVal
-                // maximumForce = thisJDController.maxJointForceLimit
             };
-            // jd.mode = JointDriveMode.Position;
             joint.slerpDrive = jd;
-
-            // previousJointRotation = new Vector3(xRot, yRot, zRot);
             currentStrength = jd.maximumForce;
-            // previousStrengthValue = jd.positionSpring;
         }
-
     }
 
     public class JointDriveController : MonoBehaviour {
-
-        //These settings are used when updating the JointDrive settings (the joint's strength)
         [Header("Joint Drive Settings")] 
         [Space(10)] 
         public float maxJointSpring;
         public float jointDampen;
         public float maxJointForceLimit;
-        // [Tooltip("Reward Functions To Use")] 
-
-
-        // //These settings are used to clamp the amount a joint can change every decision;
-        // [Header("Max Joint Movement Per Decision")] 
-        // [Space(10)] 
-        // public float maxJointAngleChangePerDecision; //the change in joint angle will not be able to exceed this value.
-        // public float maxJointStrengthChangePerDecision; //the change in joint strenth will not be able to exceed this value.
-
-
-        // public Vector3 footCenterOfMassShift; //used to shift the centerOfMass on the feet so the agent isn't so top heavy
-        // Vector3 dirToTarget;
-        // float movingTowardsDot;
         float facingDot;
         public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
-        public List<BodyPart> bodyPartsList = new List<BodyPart>(); //to look at values in inspector, just for debugging
-        // [HideInInspector]
-        // public bool setupComplete;
-
-
-
-        // // Use this for initialization
-        // void Awake () {
-        // 	// bodyParts.Clear();
-        // 	// bodyPartsList.Clear();
-        // }
-
+        public List<BodyPart> bodyPartsList = new List<BodyPart>();
 
         /// <summary>
         /// Create BodyPart object and add it to dictionary.
@@ -184,7 +121,7 @@ namespace  MLAgents
             };
             bp.rb.maxAngularVelocity = 100;
 
-            //add & setup the ground contact script
+            // Add & setup the ground contact script
             bp.groundContact = t.GetComponent<GroundContact>();
             if(!bp.groundContact)
             {
@@ -196,7 +133,7 @@ namespace  MLAgents
                 bp.groundContact.agent = gameObject.GetComponent<Agent>();
             }
 
-            //add & setup the target contact script
+            // Add & setup the target contact script
             bp.targetContact = t.GetComponent<TargetContact>();
             if(!bp.targetContact)
             {
@@ -204,14 +141,9 @@ namespace  MLAgents
             }
 
             bp.thisJDController = this;
-            // bp.agent = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
         }
-
-        
-
-        
 
         public void GetCurrentJointForces()
         {
@@ -220,10 +152,8 @@ namespace  MLAgents
                 if(bodyPart.joint)
                 {
                     bodyPart.currentJointForce = bodyPart.joint.currentForce;
-                    // bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.sqrMagnitude;
                     bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.magnitude;
                     bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
-                    // bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.sqrMagnitude;
                     bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.magnitude;
                     if (Application.isEditor)
                     {

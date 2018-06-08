@@ -30,8 +30,6 @@ public class WalkerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
-
-
     public override void InitializeAgent()
     {
         jdController = GetComponent<JointDriveController>();
@@ -53,7 +51,6 @@ public class WalkerAgent : Agent
         jdController.SetupBodyPart(handR);
     }
 
-
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -66,7 +63,8 @@ public class WalkerAgent : Agent
         Vector3 localPosRelToHips = hips.InverseTransformPoint(rb.position);
         AddVectorObs(localPosRelToHips);
 
-        if(bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR && bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
+        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
+            bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
         {
             AddVectorObs(bp.currentXNormalizedRot);
             AddVectorObs(bp.currentYNormalizedRot);
@@ -74,7 +72,6 @@ public class WalkerAgent : Agent
             AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit);
         }
     }
-    
 
     /// <summary>
     /// Loop over body parts to add them to observation.
@@ -94,7 +91,6 @@ public class WalkerAgent : Agent
         }
     }
 
-
     public override void AgentAction(float[] vectorAction, string textAction)
     {
 		dirToTarget = target.position - jdController.bodyPartsDict[hips].rb.position;
@@ -105,8 +101,6 @@ public class WalkerAgent : Agent
             var bpDict = jdController.bodyPartsDict;
             int i = -1;
 
-
-            //++i syntax is so we don't have to renumber each index when we ant to change the action space
             bpDict[chest].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
             bpDict[spine].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
 
@@ -123,7 +117,6 @@ public class WalkerAgent : Agent
             bpDict[forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
             bpDict[forearmR].SetJointTargetRotation(vectorAction[++i], 0, 0);
             bpDict[head].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        
         
             //update joint strength settings
             bpDict[chest].SetJointStrength(vectorAction[++i]);
@@ -143,8 +136,6 @@ public class WalkerAgent : Agent
 
         IncrementDecisionTimer();
 
-        
-
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
         // b. Rotation alignment with goal direction.
@@ -154,17 +145,16 @@ public class WalkerAgent : Agent
             + 0.03f * Vector3.Dot(dirToTarget.normalized, jdController.bodyPartsDict[hips].rb.velocity)
             + 0.01f * Vector3.Dot(dirToTarget.normalized, hips.forward)
             + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity, jdController.bodyPartsDict[hips].rb.velocity)
+            - 0.01f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity, 
+                jdController.bodyPartsDict[hips].rb.velocity)
         );
     }
-
-
-
 
     //We only need to change the joint settings based on decision freq.
     public void IncrementDecisionTimer()
     {
-        if(currentDecisionStep == this.agentParameters.numberOfActionsBetweenDecisions || this.agentParameters.numberOfActionsBetweenDecisions == 1)
+        if (currentDecisionStep == agentParameters.numberOfActionsBetweenDecisions ||
+            agentParameters.numberOfActionsBetweenDecisions == 1)
         {
             currentDecisionStep = 1;
             isNewDecisionStep = true;
@@ -188,7 +178,6 @@ public class WalkerAgent : Agent
         
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
-            // bodyPart.Reset();
             bodyPart.Reset(bodyPart);
         }
         isNewDecisionStep = true;

@@ -17,14 +17,14 @@ public class CrawlerAgent : Agent {
     [Header("Body Parts")] 
     [Space(10)] 
     public Transform body;
-    public Transform leg0_upper;
-    public Transform leg0_lower;
-    public Transform leg1_upper;
-    public Transform leg1_lower;
-    public Transform leg2_upper;
-    public Transform leg2_lower;
-    public Transform leg3_upper;
-    public Transform leg3_lower;
+    public Transform leg0Upper;
+    public Transform leg0Lower;
+    public Transform leg1Upper;
+    public Transform leg1Lower;
+    public Transform leg2Upper;
+    public Transform leg2Lower;
+    public Transform leg3Upper;
+    public Transform leg3Lower;
 
     [Header("Joint Settings")] 
     [Space(10)] 
@@ -60,20 +60,21 @@ public class CrawlerAgent : Agent {
 
         //Setup each body part
         jdController.SetupBodyPart(body);
-        jdController.SetupBodyPart(leg0_upper);
-        jdController.SetupBodyPart(leg0_lower);
-        jdController.SetupBodyPart(leg1_upper);
-        jdController.SetupBodyPart(leg1_lower);
-        jdController.SetupBodyPart(leg2_upper);
-        jdController.SetupBodyPart(leg2_lower);
-        jdController.SetupBodyPart(leg3_upper);
-        jdController.SetupBodyPart(leg3_lower);
+        jdController.SetupBodyPart(leg0Upper);
+        jdController.SetupBodyPart(leg0Lower);
+        jdController.SetupBodyPart(leg1Upper);
+        jdController.SetupBodyPart(leg1Lower);
+        jdController.SetupBodyPart(leg2Upper);
+        jdController.SetupBodyPart(leg2Lower);
+        jdController.SetupBodyPart(leg3Upper);
+        jdController.SetupBodyPart(leg3Lower);
     }
 
     //We only need to change the joint settings based on decision freq.
     public void IncrementDecisionTimer()
     {
-        if(currentDecisionStep == this.agentParameters.numberOfActionsBetweenDecisions || this.agentParameters.numberOfActionsBetweenDecisions == 1)
+        if(currentDecisionStep == agentParameters.numberOfActionsBetweenDecisions 
+           || agentParameters.numberOfActionsBetweenDecisions == 1)
         {
             currentDecisionStep = 1;
             isNewDecisionStep = true;
@@ -117,7 +118,6 @@ public class CrawlerAgent : Agent {
     {
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
-
         AddVectorObs(rb.velocity);
         AddVectorObs(rb.angularVelocity);
 
@@ -131,7 +131,6 @@ public class CrawlerAgent : Agent {
             AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit); //curre
         }
     }
-
 
     public override void CollectObservations()
     {
@@ -148,7 +147,6 @@ public class CrawlerAgent : Agent {
             CollectObservationBodyPart(bodyPart);
         }
     }
-
 
 	/// <summary>
     /// Agent touched the target
@@ -193,10 +191,18 @@ public class CrawlerAgent : Agent {
         //this is just a visualization and isn't necessary for function
         if(useFootGroundedVisualization)
         {
-            foot0.material = jdController.bodyPartsDict[leg0_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot1.material = jdController.bodyPartsDict[leg1_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot2.material = jdController.bodyPartsDict[leg2_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
-            foot3.material = jdController.bodyPartsDict[leg3_lower].groundContact.touchingGround? groundedMaterial: unGroundedMaterial;
+            foot0.material = jdController.bodyPartsDict[leg0Lower].groundContact.touchingGround
+                ? groundedMaterial
+                : unGroundedMaterial;
+            foot1.material = jdController.bodyPartsDict[leg1Lower].groundContact.touchingGround
+                ? groundedMaterial
+                : unGroundedMaterial;
+            foot2.material = jdController.bodyPartsDict[leg2Lower].groundContact.touchingGround
+                ? groundedMaterial
+                : unGroundedMaterial;
+            foot3.material = jdController.bodyPartsDict[leg3Lower].groundContact.touchingGround
+                ? groundedMaterial
+                : unGroundedMaterial;
         }
 
         // Joint update logic only needs to happen when a new decision is made
@@ -207,24 +213,24 @@ public class CrawlerAgent : Agent {
 
             int i = -1; 
             //pick a new target joint rotation
-            bpDict[leg0_upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg1_upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg2_upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg3_upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg0_lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg1_lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg2_lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg3_lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[leg3Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
 
             //update joint strength
-            bpDict[leg0_upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg1_upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg2_upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg3_upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg0_lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg1_lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg2_lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg3_lower].SetJointStrength(vectorAction[++i]);
+            bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg3Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg0Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
         }
 
         // Set reward for this step according to mixture of the following elements.
@@ -255,7 +261,7 @@ public class CrawlerAgent : Agent {
     void RewardFunctionTimePenalty()
     {
         //0.001f chosen by experimentation. If this penalty is too high it will kill itself :(
-        AddReward(- 0.001f); 
+        AddReward(-0.001f); 
     }
 
 	/// <summary>
@@ -263,7 +269,6 @@ public class CrawlerAgent : Agent {
     /// </summary>
     public override void AgentReset()
     {
-        // print("AgentReset()");
         if(dirToTarget != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);
@@ -271,7 +276,6 @@ public class CrawlerAgent : Agent {
         
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
-            // bodyPart.Reset();
             bodyPart.Reset(bodyPart);
         }
         isNewDecisionStep = true;
