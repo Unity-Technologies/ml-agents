@@ -17,7 +17,7 @@ namespace MLAgents
             SerializedObject serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            SerializedProperty brain = serializedAgent.FindProperty("brain");
+//            SerializedProperty brain = serializedAgent.FindProperty("brain");
             SerializedProperty actionsPerDecision = serializedAgent.FindProperty(
                 "agentParameters.numberOfActionsBetweenDecisions");
             SerializedProperty maxSteps = serializedAgent.FindProperty(
@@ -29,7 +29,7 @@ namespace MLAgents
             SerializedProperty cameras = serializedAgent.FindProperty(
                 "agentParameters.agentCameras");
 
-            EditorGUILayout.PropertyField(brain);
+//            EditorGUILayout.PropertyField(brain);
 
             EditorGUILayout.LabelField("Agent Cameras");
             for (int i = 0; i < cameras.arraySize; i++)

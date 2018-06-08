@@ -14,7 +14,7 @@ namespace MLAgents
         public void Awake()
         {
             brainParameters =
-                gameObject.GetComponent<Brain>().brainParameters;
+                gameObject.GetComponent<Agent>().brain.brainParameters;
             actionSpaceType = brainParameters.vectorActionSpaceType;
             actionSpaceSize = brainParameters.vectorActionSize;
         }

@@ -92,6 +92,10 @@ namespace MLAgents
              "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
+        
+        [SerializeField]
+        public List<NewBrain> brainsToInitialize = new List<NewBrain>();
+        
         private const string kApiVersion = "API-4";
 
         // Fields provided in the Inspector
@@ -286,6 +290,11 @@ namespace MLAgents
             foreach (var brain in brains)
             {
                 brain.InitializeBrain(this, brainBatcher);
+            }
+
+            foreach (var b in brainsToInitialize)
+            {
+                b.InitializeBrain(this, brainBatcher);
             }
 
             if (communicator != null)

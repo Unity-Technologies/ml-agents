@@ -11,11 +11,11 @@ public class WallJumpAgent : Agent
     // Depending on this value, the wall will have different height
     int configuration;
     // Brain to use when no wall is present
-    public Brain noWallBrain;
+    public NewBrain noWallBrain;
     // Brain to use when a jumpable wall is present
-    public Brain smallWallBrain;
+    public NewBrain smallWallBrain;
     // Brain to use when a wall requiring a block to jump over is present
-    public Brain bigWallBrain;
+    public NewBrain bigWallBrain;
 
     public GameObject ground;
     public GameObject spawnArea;

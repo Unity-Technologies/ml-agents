@@ -192,7 +192,8 @@ namespace MLAgents
         /// programmatically through <see cref="GiveBrain"/>. It is OK for an agent
         /// to not have a brain, as long as no decision is requested.
         /// </summary>
-        [HideInInspector] public Brain brain;
+        public NewBrain brain;
+            
 
         /// <summary>
         /// Agent parameters specified within the Editor via AgentEditor.
@@ -320,7 +321,7 @@ namespace MLAgents
         /// to another (fighting) brain when it comes into contact with an enemy.
         /// </remarks>
         /// <param name="brain">New brain to subscribe this agent to</param>
-        public void GiveBrain(Brain brain)
+        public void GiveBrain(NewBrain brain)
         {
             this.brain = brain;
             ResetData();
@@ -524,7 +525,7 @@ namespace MLAgents
                         "Vector Observation size mismatch between continuous " +
                         "agent {0} and brain {1}. " +
                         "Was Expecting {2} but received {3}. ",
-                        gameObject.name, brain.gameObject.name,
+                        gameObject.name, brain.name,
                         brain.brainParameters.vectorObservationSize,
                         info.vectorObservation.Count));
                 }
@@ -540,7 +541,7 @@ namespace MLAgents
                     throw new UnityAgentsException(string.Format(
                         "Vector Observation size mismatch between discrete agent" +
                         " {0} and brain {1}. Was Expecting {2} but received {3}. ",
-                        gameObject.name, brain.gameObject.name,
+                        gameObject.name, brain.name,
                         1, info.vectorObservation.Count));
                 }
 
@@ -554,7 +555,7 @@ namespace MLAgents
                 throw new UnityAgentsException(string.Format(
                     "Not enough cameras for agent {0} : Bain {1} expecting at " +
                     "least {2} cameras but only {3} were present.",
-                    gameObject.name, brain.gameObject.name,
+                    gameObject.name, brain.name,
                     brain.brainParameters.cameraResolutions.Length,
                     agentParameters.agentCameras.Count));
             }

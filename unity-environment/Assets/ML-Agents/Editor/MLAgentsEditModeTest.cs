@@ -1,6 +1,7 @@
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
+using UnityEngine.TestTools;
 
 namespace MLAgents.Tests
 {
@@ -59,9 +60,19 @@ namespace MLAgents.Tests
 
     // This is an empty class for testing the behavior of agents and academy
     // It is left empty because we are not testing any brain behavior
-    public class TestBrain : Brain
+    public class TestBrain : NewBrain
     {
 
+
+        public override void InitializeBrain(Academy aca, MLAgents.Batcher brainBatcher)
+        {
+            
+        }
+
+        public override void SendState(Agent agent, AgentInfo info)
+        {
+            
+        }
     }
 
 
@@ -130,9 +141,9 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
-            brain.brainParameters = new BrainParameters();
+//            brain.brainParameters = new BrainParameters();
             brain.brainParameters.vectorObservationSize = 0;
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
@@ -218,7 +229,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -229,7 +240,7 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
+//            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
@@ -356,7 +367,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -370,7 +381,7 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
+//            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
@@ -538,7 +549,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -556,7 +567,7 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
+//            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 1;
@@ -673,7 +684,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -687,7 +698,7 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
+//            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             // agent1 will take an action at every step and request a decision every steps
@@ -761,7 +772,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -775,7 +786,7 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
+//            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 3;
