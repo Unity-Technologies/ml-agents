@@ -17,6 +17,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
         StepRewardFunction = StepRewardDeepMindHumanoid101;
         // StepRewardFunction = StepRewardOaiHumanoidRunOnSpot161;
         TerminateFunction = TerminateOnNonFootHitTerrain;
+        // TerminateFunction = TerminateHumanoid;
         ObservationsFunction = ObservationsHumanoid;
 
         BodyParts["head"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="head");
@@ -168,9 +169,19 @@ public class DeepMindHumanoidAgent : MujocoAgent {
         }
         return reward;            
     }
+    bool TerminateHumanoid()
+    {
+        if (TerminateOnNonFootHitTerrain())
+            return true;
+        var height = GetHeightPenality(.9f);
+        var angle = GetForwardBonus("pelvis");
+        bool endOnHeight = height > 0f;
+        bool endOnAngle = (angle < .25f);
+        return endOnHeight || endOnAngle;        
+    }
 
     // implement phase bonus (reward for left then right)
-    List<float> _lastSenorState;
+    List<bool> _lastSenorState;
     float _phaseBonus;
     int _phase;
 
@@ -182,7 +193,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
 
     void PhaseBonusInitalize()
     {
-        _lastSenorState = Enumerable.Repeat<float>(0f, NumSensors).ToList();
+        _lastSenorState = Enumerable.Repeat<bool>(false, NumSensors).ToList();
         _phase = 0;
         _phaseBonus = 0f;
         PhaseResetLeft();
@@ -240,16 +251,17 @@ public class DeepMindHumanoidAgent : MujocoAgent {
     float GetPhaseBonus()
     {
         bool noPhaseChange = true;
-        for (int i = 0; i < MujocoController.SensorIsInTouch.Count; i++)
-        {
-            noPhaseChange = noPhaseChange && MujocoController.SensorIsInTouch[i] == _lastSenorState[i];
-            _lastSenorState[i] = MujocoController.SensorIsInTouch[i];
-        }
+        bool isLeftFootDown = MujocoController.SensorIsInTouch[0] > 0f || MujocoController.SensorIsInTouch[1] > 0f;
+        bool isRightFootDown = MujocoController.SensorIsInTouch[2] > 0f || MujocoController.SensorIsInTouch[3] > 0f;
+        noPhaseChange = noPhaseChange && isLeftFootDown == _lastSenorState[0];
+        noPhaseChange = noPhaseChange && isRightFootDown == _lastSenorState[1];
+        _lastSenorState[0] = isLeftFootDown;
+        _lastSenorState[1] = isRightFootDown;
         // special case: both feet in air
-        if (MujocoController.SensorIsInTouch.Sum() == 0f)
+        if (isLeftFootDown || isRightFootDown == false)
             noPhaseChange = true;
         // special case: both feed down
-        if (MujocoController.SensorIsInTouch.Sum() == 2f) {
+        if (isLeftFootDown && isRightFootDown) {
             _phaseBonus = 0f;
             PhaseResetLeft();
             PhaseResetRight();
@@ -267,7 +279,6 @@ public class DeepMindHumanoidAgent : MujocoAgent {
 
         // new phase
         _phaseBonus = 0;
-        bool isLeftFootDown = MujocoController.SensorIsInTouch[0] != 0f;
         if (_phase == 2 && isLeftFootDown) {
             _phaseBonus = CalcPhaseBonus(LeftMin, LeftMax);
             _phaseBonus += 0.1f;
