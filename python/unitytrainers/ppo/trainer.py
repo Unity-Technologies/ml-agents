@@ -171,7 +171,8 @@ class PPOTrainer(Trainer):
         if len(curr_brain_info.agents) == 0:
             return [], [], [], None
 
-        feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations), self.model.sequence_length: 1}
+        feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations),
+                     self.model.sequence_length: 1}
         if self.use_recurrent:
             feed_dict[self.model.prev_action] = curr_brain_info.previous_vector_actions.flatten()
             if curr_brain_info.memories.shape[1] == 0:
@@ -194,19 +195,21 @@ class PPOTrainer(Trainer):
         else:
             return run_out[self.model.output], None, None, run_out
 
-    def generate_intrinsic_rewards(self, curr_info, next_info, take_action_outputs):
+    def generate_intrinsic_rewards(self, curr_info, next_info):
         """
         Generates intrinsic reward used for Curiosity-based training.
         :param curr_info: Current BrainInfo.
         :param next_info: Next BrainInfo.
-        :param take_action_outputs: Actions taken by agents.
         :return: Intrinsic rewards for all agents.
         """
         if self.use_curiosity:
-            feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1,
-                         self.model.action_holder: take_action_outputs[self.model.output].flatten()}
+            feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1}
+            if self.is_continuous_action:
+                feed_dict[self.model.output] = next_info.previous_vector_actions.flatten()
+            else:
+                feed_dict[self.model.action_holder] = next_info.previous_vector_actions.flatten()
             if self.use_visual_obs:
-                for i, _ in enumerate(curr_info.visual_observations):
+                for i in range(len(curr_info.visual_observations)):
                     feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
                     feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
             if self.use_vector_obs:
@@ -252,7 +255,7 @@ class PPOTrainer(Trainer):
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
 
-        intrinsic_rewards = self.generate_intrinsic_rewards(curr_info, next_info, take_action_outputs)
+        intrinsic_rewards = self.generate_intrinsic_rewards(curr_info, next_info)
 
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info
