@@ -401,13 +401,12 @@ class PPOTrainer(Trainer):
         """
         Uses training_buffer to update model.
         """
-        num_epoch = self.trainer_parameters['num_epoch']
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
-        for k in range(num_epoch):
+        for k in range(self.trainer_parameters['num_epoch']):
             self.training_buffer.update_buffer.shuffle()
             buffer = self.training_buffer.update_buffer
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
@@ -435,8 +434,8 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
                             [-1, total_observation_length])
                         if self.use_curiosity:
-                            feed_dict[self.model.next_vector_obs] = np.array(buffer['next_vector_obs'][start:end]).reshape(
-                                [-1, total_observation_length])
+                            feed_dict[self.model.next_vector_obs] = np.array(buffer['next_vector_obs'][start:end])\
+                                .reshape([-1, total_observation_length])
                     else:
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
                                 [-1, self.brain.num_stacked_vector_observations])

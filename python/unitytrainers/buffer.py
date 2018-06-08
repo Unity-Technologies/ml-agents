@@ -46,7 +46,7 @@ class Buffer(dict):
                 self[:] = []
                 self[:] = list(np.array(data))
 
-            def get_batch(self, batch_size=None, training_length=None, sequential=True):
+            def get_batch(self, batch_size=None, training_length=1, sequential=True):
                 """
                 Retrieve the last batch_size elements of length training_length
                 from the list of np.array
@@ -59,7 +59,7 @@ class Buffer(dict):
                 sequential=True gives [[0,a],[b,c],[d,e]]. If sequential=False gives
                 [[a,b],[b,c],[c,d],[d,e]]
                 """
-                if training_length is None:
+                if training_length == 1:
                     # When the training length is None, the method returns a list of elements,
                     # not a list of sequences of elements.
                     if batch_size is None:
