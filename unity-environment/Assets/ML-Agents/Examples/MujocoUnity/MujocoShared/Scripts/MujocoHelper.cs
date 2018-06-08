@@ -7,12 +7,6 @@ namespace MujocoUnity
     public static class MujocoHelper
     {
         static readonly bool FlipMujocoX = false;
-        static public void AddRigidBody(this GameObject onObj)
-        {
-            onObj.AddComponent<Rigidbody>();
-            var rb = onObj.GetComponent<Rigidbody>();
-            rb.useGravity = true;
-        }
 
 		public static Vector3 RightToLeft(Vector3 rightHanded, bool hackFlipZ = false)
 		{

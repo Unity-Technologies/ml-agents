@@ -107,3 +107,4 @@ MonoBehaviour:
   DebugOutput: 0
   Force2D: 0
   OnGenerateApplyRandom: 0.005
+  SupportLegacyMassOfOne: 0

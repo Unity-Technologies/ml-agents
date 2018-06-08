@@ -57,15 +57,11 @@ MonoBehaviour:
   MujocoSensors: []
   CameraTarget: {fileID: 0}
   SensorIsInTouch: []
-  _focalPoint: {fileID: 0}
-  FocalPointPosition: {x: 0, y: 0, z: 0}
-  FocalPointPositionVelocity: {x: 0, y: 0, z: 0}
-  FocalPointRotation: {x: 0, y: 0, z: 0}
-  FocalPointEulerAngles: {x: 0, y: 0, z: 0}
-  FocalPointRotationVelocity: {x: 0, y: 0, z: 0}
+  FocalPoint: {fileID: 0}
+  FocalRidgedBody: {fileID: 0}
+  FocalPointMaxDistanceTraveled: 0
   JointVelocity: []
   JointRotations: []
-  JointAngularVelocities: []
 --- !u!114 &114269483692438478
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -82,13 +78,9 @@ MonoBehaviour:
   PhysicMaterial: {fileID: 13400000, guid: 38b7ea504254a4fa986e42a7bb16c8df, type: 2}
   UseMujocoTimestep: 1
   DebugOutput: 0
-  GravityOff: 0
   Force2D: 1
-  GlobalDamping: 10
-  BaseForce: 0
-  ForceMultiple: 1
-  Mass: 1
   OnGenerateApplyRandom: 0.005
+  SupportLegacyMassOfOne: 1
 --- !u!114 &114273002288772650
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -107,10 +99,8 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 4
+  VelocityScaler: 16
+  ShowMonitor: 0
   FootHitTerrain: 0
   NonFootHitTerrain: 0
-  VelocityScaler: 16
-  Low: []
-  High: []
-  ShowMonitor: 0
   Actions: []

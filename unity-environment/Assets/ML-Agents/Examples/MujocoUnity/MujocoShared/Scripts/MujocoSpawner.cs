@@ -32,6 +32,14 @@ namespace MujocoUnity
         [Tooltip("The random noise applied at the start of each episode to improve training variance")]
         /**< \brief The random noise applied at the start of each episode to improve training variance"*/
         public float OnGenerateApplyRandom = 0.005f;
+
+        [Tooltip("Only use this to support trained model on pre-Density Fix. WILL BE REMOVED")]
+        /**< \brief WILL BE REMOVED. temp HACK to not break old trained Models with the Denisty fix."*/
+        public bool SupportLegacyMassOfOne = false;
+
+        /**< \brief The default density (Mujoco's default value is 1000)"*/
+        float _defaultDensity = 1000f;
+
 		
 		XElement _root;
         Stack<XElement> _childClassStack;
@@ -445,8 +453,15 @@ namespace MujocoUnity
 					DebugPrint($"--- WARNING: ParseGeom: {type} geom is not implemented. Ignoring ({element.ToString()}");
 					return null;
 			}
-			geom.Geom.AddRigidBody();
-            geom.Geom.GetComponent<Rigidbody>().mass = 1f;
+
+            var rb = geom.Geom.AddComponent<Rigidbody>();
+            rb.useGravity = true;
+            if (SupportLegacyMassOfOne)
+                rb.mass = 1f;
+            else {
+			    rb.SetDensity(_defaultDensity);
+			    rb.mass = rb.mass; // ref: https://forum.unity.com/threads/rigidbody-setdensity-doesnt-work.322911/
+            }
 
             ApplyClassToGeom(element, geom.Geom, parent);
             
@@ -574,9 +589,10 @@ namespace MujocoUnity
                         // Material density used to compute the geom mass and inertia. The computation is based on the
                         // geom shape and the assumption of uniform density. The internal default of 1000 is the density
                         // of water in SI units. This attribute is used only when the mass attribute above is unspecified.
-                        var density = float.Parse(attribute.Value) / 1000f;
-                        geom.GetComponent<Rigidbody>().mass = density;
-                        // DebugPrint($"{name} {attribute.Name.LocalName}={attribute.Value}");
+                        var density = float.Parse(attribute.Value);
+                        var rb = geom.GetComponent<Rigidbody>();
+                        rb.SetDensity(density);
+                        rb.mass = rb.mass; // ref: https://forum.unity.com/threads/rigidbody-setdensity-doesnt-work.322911/
                         break;
                     case "solmix": // "1"
                         // This attribute specifies the weight used for averaging of constraint solver parameters.
