@@ -13,8 +13,12 @@ namespace MujocoUnity
         void OnCollisionEnter(Collision other)
         {
             Collider myCollider = GetComponent<Collider>();
-            if (myCollider != null)
-                Physics.IgnoreCollision(myCollider, other.collider);
+            if (myCollider == null)
+                return;
+            // only ingore if part of the same object
+            if (myCollider.transform.root != other.transform.root)
+                return;
+            Physics.IgnoreCollision(myCollider, other.collider);
         }        
     }
 }

@@ -55,8 +55,8 @@ OpenAIWalker2dBrain:
     summary_freq: 1000
     use_recurrent: false
     normalize: true
-    num_layers: 2
-    hidden_units: 96
+    num_layers: 3
+    hidden_units: 41
     batch_size: 2048
     buffer_size: 10240
     max_steps: 3e5
