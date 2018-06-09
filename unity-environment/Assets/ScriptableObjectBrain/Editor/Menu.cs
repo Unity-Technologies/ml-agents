@@ -9,19 +9,25 @@ namespace Unity.MLAgents
 {
     public class Menu
     {
-        [MenuItem("ML-Agents/Create Scriptable Brain")]
+        [MenuItem("ML-Agents/Create Brain/Scriptable")]
         static public ScriptableBrain CreateScriptableBrain()
         {
-            return InstantiateArchetype<ScriptableBrain>();
+            return InstantiateArchetype<ScriptableBrain>("ScriptableBrain");
         }
 
-        [MenuItem("ML-Agents/Create Human Brain")]
+        [MenuItem("ML-Agents/Create Brain/Human")]
         static public HumanBrain CreateHumanBrain()
         {
-            return InstantiateArchetype<HumanBrain>();
+            return InstantiateArchetype<HumanBrain>("HumanBrain");
         }
         
-        static public T InstantiateArchetype<T>() where T : ScriptableObject 
+        [MenuItem("ML-Agents/Create Brain/Learned")]
+        static public LearnedBrain CreateLearnedBrain()
+        {
+            return InstantiateArchetype<LearnedBrain>("LearnedBrain");
+        }
+        
+        static public T InstantiateArchetype<T>(string name) where T : ScriptableObject 
         {
             T asset = ScriptableObject.CreateInstance<T>();
 
@@ -35,7 +41,7 @@ namespace Unity.MLAgents
                 path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
             }
 
-            string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(path + "/New " + typeof(T).ToString() + ".asset");
+            string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(path + "/New" + name + ".asset");
 
             AssetDatabase.CreateAsset(asset, assetPathAndName);
 
