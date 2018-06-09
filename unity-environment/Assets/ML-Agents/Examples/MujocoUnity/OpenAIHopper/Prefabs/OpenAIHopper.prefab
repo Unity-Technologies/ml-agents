@@ -80,7 +80,7 @@ MonoBehaviour:
   DebugOutput: 0
   Force2D: 1
   OnGenerateApplyRandom: 0.005
-  SupportLegacyMassOfOne: 1
+  SupportLegacyMassOfOne: 0
 --- !u!114 &114273002288772650
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -99,7 +99,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 4
-  VelocityScaler: 16
   ShowMonitor: 0
   FootHitTerrain: 0
   NonFootHitTerrain: 0

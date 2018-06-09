@@ -80,7 +80,7 @@ MonoBehaviour:
   DebugOutput: 0
   Force2D: 1
   OnGenerateApplyRandom: 0.005
-  SupportLegacyMassOfOne: 1
+  SupportLegacyMassOfOne: 0
 --- !u!114 &114968519458122122
 MonoBehaviour:
   m_ObjectHideFlags: 1

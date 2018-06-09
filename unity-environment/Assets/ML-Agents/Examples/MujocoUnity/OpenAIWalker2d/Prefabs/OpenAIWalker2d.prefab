@@ -99,7 +99,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 4
-  VelocityScaler: 16
   ShowMonitor: 1
   FootHitTerrain: 0
   NonFootHitTerrain: 0

@@ -66,21 +66,24 @@ OpenAIWalker2dBrain:
 
 DeepMindWalkerBrain:
     beta: 5.0e-3
+    # beta: 1.0e-2
     epsilon: 0.20
     gamma: 0.99
     lambd: 0.95
     learning_rate: 1.0e-3
     num_epoch: 3
-    time_horizon: 128
+    time_horizon: 1000
     summary_freq: 1000
     use_recurrent: false
     normalize: true
-    num_layers: 2
-    # hidden_units: 64
-    hidden_units: 96
+    num_layers: 3
+    hidden_units: 41
     batch_size: 2048
     buffer_size: 10240
     max_steps: 3e5
+    use_curiosity: true
+    curiosity_strength: 0.01
+    curiosity_enc_size: 256    
 
 OpenAIHopperBrain:
     beta: 5.0e-3

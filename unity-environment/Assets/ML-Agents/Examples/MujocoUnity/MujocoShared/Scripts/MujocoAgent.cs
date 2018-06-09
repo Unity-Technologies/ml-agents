@@ -8,7 +8,6 @@ namespace MujocoUnity
 {
     public class MujocoAgent : Agent
     {
-        public float VelocityScaler = 16f; //50f;//16f;//300;//1500f; 
         public bool ShowMonitor;
 
         public bool FootHitTerrain;
@@ -350,13 +349,13 @@ namespace MujocoUnity
             if (!target.HasValue) // handle random
                 target = UnityEngine.Random.value * 2 - 1;
             var t = configurableJoint.targetAngularVelocity;
-            t.x = target.Value * VelocityScaler;
+            t.x = target.Value * mJoint.MaximumForce;
             configurableJoint.targetAngularVelocity = t;
             var angX = configurableJoint.angularXDrive;
             angX.positionSpring = 1f;
-            var scale = mJoint.MaximumForce * Mathf.Pow(Mathf.Abs(target.Value),3);
+            var scale = mJoint.MaximumForce * Mathf.Pow(Mathf.Abs(target.Value), 5);
             angX.positionDamper = Mathf.Max(1f, scale);
-            angX.maximumForce = Mathf.Max(1f, scale);
+            angX.maximumForce = Mathf.Max(1f, mJoint.MaximumForce);
             configurableJoint.angularXDrive = angX;
         }          
     }
