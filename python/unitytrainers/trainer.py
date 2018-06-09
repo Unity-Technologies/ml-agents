@@ -2,6 +2,7 @@
 import logging
 
 import tensorflow as tf
+import numpy as np
 
 from unityagents import UnityException, AllBrainInfo
 
@@ -31,6 +32,8 @@ class Trainer(object):
         self.trainer_parameters = trainer_parameters
         self.is_training = training
         self.sess = sess
+        self.stats = {}
+        self.summary_writer = None
 
     def __str__(self):
         return '''Empty Trainer'''
@@ -137,7 +140,26 @@ class Trainer(object):
         Saves training statistics to Tensorboard.
         :param lesson_number: The lesson the trainer is at.
         """
-        raise UnityTrainerException("The write_summary method was not implemented.")
+        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
+                self.is_training and self.get_step <= self.get_max_steps):
+            steps = self.get_step
+            if len(self.stats['cumulative_reward']) > 0:
+                mean_reward = np.mean(self.stats['cumulative_reward'])
+                logger.info(" {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
+                            .format(self.brain_name, steps,
+                                    mean_reward, np.std(self.stats['cumulative_reward'])))
+            else:
+                logger.info(" {}: Step: {}. No episode was completed since last summary."
+                            .format(self.brain_name, steps))
+            summary = tf.Summary()
+            for key in self.stats:
+                if len(self.stats[key]) > 0:
+                    stat_mean = float(np.mean(self.stats[key]))
+                    summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
+                    self.stats[key] = []
+            summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
+            self.summary_writer.add_summary(summary, steps)
+            self.summary_writer.flush()
 
     def write_tensorboard_text(self, key, input_dict):
         """

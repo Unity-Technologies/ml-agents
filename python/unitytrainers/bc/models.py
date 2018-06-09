@@ -9,11 +9,12 @@ class BehavioralCloningModel(LearningModel):
         LearningModel.__init__(self, m_size, normalize, use_recurrent, brain)
 
         num_streams = 1
-        hidden_streams = self.create_new_obs(num_streams, h_size, n_layers)
+        hidden_streams = self.create_observation_streams(num_streams, h_size, n_layers)
         hidden = hidden_streams[0]
         self.dropout_rate = tf.placeholder(dtype=tf.float32, shape=[], name="dropout_rate")
         hidden_reg = tf.layers.dropout(hidden, self.dropout_rate)
         if self.use_recurrent:
+            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             hidden_reg, self.memory_out = self.create_recurrent_encoder(hidden_reg, self.memory_in)
             self.memory_out = tf.identity(self.memory_out, name='recurrent_out')

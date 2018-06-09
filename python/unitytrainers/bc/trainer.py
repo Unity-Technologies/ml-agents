@@ -42,7 +42,6 @@ class BehavioralCloningTrainer(Trainer):
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.use_recurrent = trainer_parameters['use_recurrent']
-        self.step = 0
         self.sequence_length = 1
         self.m_size = None
         if self.use_recurrent:
@@ -109,7 +108,7 @@ class BehavioralCloningTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.step
+        return self.sess.run(self.model.global_step)
 
     @property
     def get_last_reward(self):
@@ -126,7 +125,7 @@ class BehavioralCloningTrainer(Trainer):
         """
         Increment the step count of the trainer
         """
-        self.step += 1
+        self.sess.run(self.model.increment_step)
 
     def update_last_reward(self):
         """
@@ -316,24 +315,3 @@ class BehavioralCloningTrainer(Trainer):
         else:
             self.stats['losses'].append(0)
 
-    def write_summary(self, lesson_number):
-        """
-        Saves training statistics to Tensorboard.
-        :param lesson_number: The lesson the trainer is at.
-        """
-        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-                self.is_training and self.get_step <= self.get_max_steps):
-            steps = self.get_step
-            if len(self.stats['cumulative_reward']) > 0:
-                mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info("{0} : Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
-                            .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
-            summary = tf.Summary()
-            for key in self.stats:
-                if len(self.stats[key]) > 0:
-                    stat_mean = float(np.mean(self.stats[key]))
-                    summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
-                    self.stats[key] = []
-            summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
-            self.summary_writer.add_summary(summary, steps)
-            self.summary_writer.flush()

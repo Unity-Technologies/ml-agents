@@ -2,54 +2,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// CoreBrain which decides actions via communication with an external system such as Python.
-public class CoreBrainExternal : ScriptableObject, CoreBrain
+namespace MLAgents
 {
-    /**< Reference to the brain that uses this CoreBrainExternal */
-    public Brain brain;
-
-    ExternalCommunicator coord;
-
-    /// Creates the reference to the brain
-    public void SetBrain(Brain b)
+    /// CoreBrain which decides actions via communication with an external system such as Python.
+    public class CoreBrainExternal : ScriptableObject, CoreBrain
     {
-        brain = b;
-    }
+        /**< Reference to the brain that uses this CoreBrainExternal */
+        public Brain brain;
 
-    /// Generates the communicator for the Academy if none was present and
-    ///  subscribe to ExternalCommunicator if it was present.
-    public void InitializeCoreBrain(Communicator communicator)
-    {
-        if (communicator == null)
+        MLAgents.Batcher brainBatcher;
+
+        /// Creates the reference to the brain
+        public void SetBrain(Brain b)
         {
-            coord = null;
-            throw new UnityAgentsException(string.Format("The brain {0} was set to" +
-                " External mode" +
-                " but Unity was unable to read the" +
-                " arguments passed at launch.", brain.gameObject.name));
-        }
-        else if (communicator is ExternalCommunicator)
-        {
-            coord = (ExternalCommunicator)communicator;
-            coord.SubscribeBrain(brain);
+            brain = b;
         }
 
-    }
-
-    /// Uses the communicator to retrieve the actions, memories and values and
-    ///  sends them to the agents
-    public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
-    {
-        if (coord != null)
+        /// Generates the communicator for the Academy if none was present and
+        ///  subscribe to ExternalCommunicator if it was present.
+        public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
         {
-            coord.GiveBrainInfo(brain, agentInfo);
+            if (brainBatcher == null)
+            {
+                brainBatcher = null;
+                throw new UnityAgentsException(string.Format("The brain {0} was set to" +
+                                                             " External mode" +
+                                                             " but Unity was unable to read the" +
+                                                             " arguments passed at launch.",
+                    brain.gameObject.name));
+            }
+            else
+            {
+                this.brainBatcher = brainBatcher;
+                this.brainBatcher.SubscribeBrain(brain.gameObject.name);
+            }
+
         }
-        return ;
-    }
 
-    /// Nothing needs to appear in the inspector 
-    public void OnInspector()
-    {
+        /// Uses the communicator to retrieve the actions, memories and values and
+        ///  sends them to the agents
+        public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
+        {
+            if (brainBatcher != null)
+            {
+                brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
+            }
 
+            return;
+        }
+
+        /// Nothing needs to appear in the inspector 
+        public void OnInspector()
+        {
+
+        }
     }
 }
