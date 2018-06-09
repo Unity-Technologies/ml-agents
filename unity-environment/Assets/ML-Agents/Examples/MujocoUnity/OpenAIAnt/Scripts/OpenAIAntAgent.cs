@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MujocoUnity;
 using UnityEngine;
+using MLAgents;
 
 public class OpenAIAntAgent : MujocoAgent {
 
@@ -54,7 +55,7 @@ public class OpenAIAntAgent : MujocoAgent {
             -effortPenality;
         if (ShowMonitor) {
             var hist = new []{reward,velocity, -jointsAtLimitPenality, -effortPenality}.ToList();
-            Monitor.Log("rewardHist", hist, MonitorType.hist);
+            Monitor.Log("rewardHist", hist.ToArray());
         }
 
         return reward;

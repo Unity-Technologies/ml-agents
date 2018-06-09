@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using MLAgents;
 
 namespace MujocoUnity
 {
@@ -170,8 +171,8 @@ namespace MujocoUnity
             //rawVelocity = Mathf.Clamp(rawVelocity,-maxSpeed,maxSpeed);
 			var velocity = rawVelocity / maxSpeed;
             if (ShowMonitor) {
-                Monitor.Log("MaxDistance", MujocoController.FocalPointMaxDistanceTraveled);
-                Monitor.Log("MPH: ", rawVelocity * 2.236936f, MonitorType.text);
+                Monitor.Log("MaxDistance", MujocoController.FocalPointMaxDistanceTraveled.ToString());
+                Monitor.Log("MPH: ", (rawVelocity * 2.236936f).ToString());
                 // Monitor.Log("rawVelocity", rawVelocity, MonitorType.text);
                 // Monitor.Log("velocity", velocity, MonitorType.text);
             }

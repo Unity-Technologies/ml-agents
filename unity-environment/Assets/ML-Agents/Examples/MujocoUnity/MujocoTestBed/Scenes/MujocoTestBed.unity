@@ -428,7 +428,7 @@ MonoBehaviour:
     height: 720
     qualityLevel: 5
     timeScale: 1
-    targetFrameRate: -1
+    targetFrameRate: 60
   resetParameters:
     resetParameters: []
 --- !u!4 &1574236049

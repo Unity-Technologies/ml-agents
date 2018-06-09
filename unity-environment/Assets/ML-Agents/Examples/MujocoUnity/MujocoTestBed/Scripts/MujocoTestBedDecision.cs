@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using MLAgents;
 
 public class MujocoTestBedDecision : MonoBehaviour, Decision
 {

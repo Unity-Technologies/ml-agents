@@ -2,19 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Area : MonoBehaviour {
+namespace MLAgents
+{
 
-    // Use this for initialization
-    void Start () {
-        
-    }
-    
-    // Update is called once per frame
-    void Update () {
-        
-    }
+    public class Area : MonoBehaviour
+    {
 
-    public virtual void ResetArea() {
-        
+        // Use this for initialization
+        void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+
+        public virtual void ResetArea()
+        {
+
+        }
     }
 }

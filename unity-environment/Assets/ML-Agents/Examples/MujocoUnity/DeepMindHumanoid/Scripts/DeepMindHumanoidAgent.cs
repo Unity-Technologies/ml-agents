@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MujocoUnity;
 using UnityEngine;
+using MLAgents;
 
 public class DeepMindHumanoidAgent : MujocoAgent {
 
@@ -116,7 +117,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
                 -limbPenalty, 
                 -jointsAtLimitPenality, 
                 -effortPenality}.ToList();
-            Monitor.Log("rewardHist", hist, MonitorType.hist);
+            Monitor.Log("rewardHist", hist.ToArray());
         }
         return reward;            
     }
@@ -165,7 +166,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
                 -limbPenalty, 
                 -jointsAtLimitPenality, 
                 -effortPenality}.ToList();
-            Monitor.Log("rewardHist", hist, MonitorType.hist);
+            Monitor.Log("rewardHist", hist.ToArray());
         }
         return reward;            
     }

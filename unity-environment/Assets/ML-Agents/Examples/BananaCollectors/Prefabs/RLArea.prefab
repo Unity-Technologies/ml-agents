@@ -5824,6 +5824,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1458338921368736}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114319858423652580
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5902,6 +5903,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1282191557182746}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114816434626527468
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5930,6 +5932,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1362328255224980}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114846764322938622
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5958,6 +5961,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1734645906742312}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114875485509234200
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5986,3 +5990,4 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1573257363500854}
   contribute: 0
+  useVectorObs: 1

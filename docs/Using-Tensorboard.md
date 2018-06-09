@@ -54,3 +54,8 @@ Should increase during a successful training session.
 well the model is able to predict the value of each state. This should increase
 while the agent is learning, and then decrease once the reward stabilizes.
 
+* _(Curiosity-Specific)_ Intrinsic Reward - This corresponds to the mean cumulative intrinsic reward generated per-episode. 
+
+* _(Curiosity-Specific)_ Forward Loss - The mean magnitude of the inverse model loss function. Corresponds to how well the model is able to predict the new observation encoding.
+
+* _(Curiosity-Specific)_ Inverse Loss - The mean magnitude of the forward model loss function. Corresponds to how well the model is able to predict the action taken between two observations.

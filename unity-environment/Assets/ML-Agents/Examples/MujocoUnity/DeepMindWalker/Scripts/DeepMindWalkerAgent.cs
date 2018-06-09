@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MujocoUnity;
 using UnityEngine;
+using MLAgents;
 
 public class DeepMindWalkerAgent : MujocoAgent {
 
@@ -58,7 +59,7 @@ public class DeepMindWalkerAgent : MujocoAgent {
             -effortPenality;
         if (ShowMonitor) {
             var hist = new []{reward,velocity,uprightBonus,-heightPenality,-effortPenality}.ToList();
-            Monitor.Log("rewardHist", hist, MonitorType.hist);
+            Monitor.Log("rewardHist", hist.ToArray());
             // Monitor.Log("effortPenality", effortPenality, MonitorType.text);
             // Monitor.Log("reward", reward, MonitorType.text);
         }
