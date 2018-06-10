@@ -258,9 +258,6 @@ public class DeepMindHumanoidAgent : MujocoAgent {
         noPhaseChange = noPhaseChange && isRightFootDown == _lastSenorState[1];
         _lastSenorState[0] = isLeftFootDown;
         _lastSenorState[1] = isRightFootDown;
-        // special case: both feet in air
-        if (isLeftFootDown || isRightFootDown == false)
-            noPhaseChange = true;
         // special case: both feed down
         if (isLeftFootDown && isRightFootDown) {
             _phaseBonus = 0f;
@@ -269,10 +266,10 @@ public class DeepMindHumanoidAgent : MujocoAgent {
             return _phaseBonus;
         }
         
+        PhaseSetLeft();
+        PhaseSetRight();
+        
         if (noPhaseChange){
-            // check if this is next best angle
-            PhaseSetLeft();
-            PhaseSetRight();
             var bonus = _phaseBonus;
             _phaseBonus *= 0.9f;
             return bonus;
@@ -280,11 +277,11 @@ public class DeepMindHumanoidAgent : MujocoAgent {
 
         // new phase
         _phaseBonus = 0;
-        if (_phase == 2 && isLeftFootDown) {
+        if (isLeftFootDown) {
             _phaseBonus = CalcPhaseBonus(LeftMin, LeftMax);
             _phaseBonus += 0.1f;
             PhaseResetLeft();
-        } else if (_phase == 1 && !isLeftFootDown) {
+        } else if (isRightFootDown) {
             _phaseBonus = CalcPhaseBonus(RightMin, RightMax);
             _phaseBonus += 0.1f;
             PhaseResetRight();
