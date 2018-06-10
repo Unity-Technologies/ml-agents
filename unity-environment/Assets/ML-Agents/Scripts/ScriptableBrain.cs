@@ -9,7 +9,7 @@ namespace MLAgents
 {
 
 
-    public class ScriptableBrain : NewBrain
+    public class ScriptableBrain : Brain
     {
 
         /**< Reference to the Decision component used to decide the actions */

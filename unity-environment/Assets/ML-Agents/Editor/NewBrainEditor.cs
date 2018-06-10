@@ -11,7 +11,7 @@ namespace MLAgents
  This code is meant to modify the behavior of the inspector on Brain Components.
  Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
 */
-    [CustomEditor(typeof(NewBrain))]
+    [CustomEditor(typeof(Brain))]
     public class NewBrainEditor : Editor
     {
         
@@ -22,7 +22,7 @@ namespace MLAgents
         {
             
             
-            NewBrain myBrain = (NewBrain) target;
+            Brain myBrain = (Brain) target;
             SerializedObject serializedBrain = serializedObject;
 
             BrainParameters parameters = myBrain.brainParameters;

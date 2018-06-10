@@ -6,7 +6,7 @@ namespace MLAgents
 {
 
 
-    public class HumanBrain : NewBrain
+    public class HumanBrain : Brain
     {
 
         [System.Serializable]

@@ -94,7 +94,7 @@ namespace MLAgents
     {
         
         [SerializeField]
-        public List<NewBrain> brainsToInitialize = new List<NewBrain>();
+        public List<Brain> brainsToInitialize = new List<Brain>();
         
         private const string kApiVersion = "API-4";
 
@@ -252,8 +252,6 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
-            // Retrieve Brain and initialize Academy
-            var brains = GetBrains(gameObject);
             InitializeAcademy();
             MLAgents.Communicator communicator = null;
 
@@ -273,8 +271,8 @@ namespace MLAgents
             catch
             {
                 communicator = null;
-                var externalBrain = brains.FirstOrDefault(b => b.brainType == BrainType.External);
-                if (externalBrain != null)
+// TODO : Check if training is activated
+                if (false)
                 {
                     communicator = new MLAgents.RPCCommunicator(
                         new MLAgents.CommunicatorParameters
@@ -285,12 +283,6 @@ namespace MLAgents
             }
 
             brainBatcher = new MLAgents.Batcher(communicator);
-
-            // Initialize Brains and communicator (if present)
-            foreach (var brain in brains)
-            {
-                brain.InitializeBrain(this, brainBatcher);
-            }
 
             foreach (var b in brainsToInitialize)
             {
@@ -305,15 +297,20 @@ namespace MLAgents
                     new MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = kApiVersion;
-                foreach (var brain in brains)
+                foreach (var brain in brainsToInitialize)
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
                         MLAgents.Batcher.BrainParametersConvertor(
                             bp,
-                            brain.gameObject.name,
+                            brain.name,
+                            /*
+                            // TODO : Figure out how to expose external
                             (MLAgents.CommunicatorObjects.BrainTypeProto)
-                            brain.brainType));
+                            brain.brainType
+                            */
+                    MLAgents.CommunicatorObjects.BrainTypeProto.External
+                            ));
                 }
 
                 academyParameters.EnvironmentParameters =
@@ -612,31 +609,6 @@ namespace MLAgents
             EnvironmentStep();
         }
 
-        /// <summary>
-        /// Helper method that retrieves the Brain objects that are currently
-        /// specified as children of the Academy within the Editor.
-        /// </summary>
-        /// <param name="academy">Academy.</param>
-        /// <returns>
-        /// List of brains currently attached to academy.
-        /// </returns>
-        static List<Brain> GetBrains(GameObject academy)
-        {
-            List<Brain> brains = new List<Brain>();
-            var transform = academy.transform;
-
-            for (var i = 0; i < transform.childCount; i++)
-            {
-                var child = transform.GetChild(i);
-                var brain = child.GetComponent<Brain>();
-
-                if (brain != null && child.gameObject.activeSelf)
-                {
-                    brains.Add(brain);
-                }
-            }
-
-            return brains;
-        }
+        
     }
 }

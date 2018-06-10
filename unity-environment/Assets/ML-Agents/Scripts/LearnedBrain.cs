@@ -11,7 +11,7 @@ using TensorFlow;
 
 namespace MLAgents
 {
-    public class LearnedBrain : NewBrain
+    public class LearnedBrain : Brain
     {
         
 //        [System.Serializable]
@@ -29,8 +29,6 @@ namespace MLAgents
 //            public float maxValue;
 //
 //        }
-
-        MLAgents.Batcher brainBatcher;
 
         [Tooltip("This must be the bytes file corresponding to the pretrained TensorFlow graph.")]
         /// Modify only in inspector : Reference to the Graph asset

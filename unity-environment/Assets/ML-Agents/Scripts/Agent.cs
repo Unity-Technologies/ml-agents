@@ -192,7 +192,7 @@ namespace MLAgents
         /// programmatically through <see cref="GiveBrain"/>. It is OK for an agent
         /// to not have a brain, as long as no decision is requested.
         /// </summary>
-        public NewBrain brain;
+        public Brain brain;
             
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace MLAgents
         /// to another (fighting) brain when it comes into contact with an enemy.
         /// </remarks>
         /// <param name="brain">New brain to subscribe this agent to</param>
-        public void GiveBrain(NewBrain brain)
+        public void GiveBrain(Brain brain)
         {
             this.brain = brain;
             ResetData();

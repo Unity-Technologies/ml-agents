@@ -60,7 +60,7 @@ namespace MLAgents.Tests
 
     // This is an empty class for testing the behavior of agents and academy
     // It is left empty because we are not testing any brain behavior
-    public class TestBrain : NewBrain
+    public class TestBrain : Brain
     {
 
 
