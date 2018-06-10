@@ -24,7 +24,7 @@ default:
 DeepMindHumanoidBrain:
     normalize: true
     num_epoch: 3
-    beta: 0.001
+    beta: 0.01
     time_horizon: 1000
     batch_size: 2048
     buffer_size: 20480
@@ -32,7 +32,11 @@ DeepMindHumanoidBrain:
     max_steps: 2e6
     summary_freq: 1000
     num_layers: 2
-    hidden_units: 256
+    hidden_units: 512
+    use_curiosity: true
+    curiosity_strength: 0.01
+    curiosity_enc_size: 256    
+
 
 OpenAIHumanoidBrain:
     normalize: true
