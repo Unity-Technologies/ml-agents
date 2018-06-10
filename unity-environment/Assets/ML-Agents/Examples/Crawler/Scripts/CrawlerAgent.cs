@@ -86,31 +86,6 @@ public class CrawlerAgent : Agent {
         }
     }
 
-	/// <summary>
-    /// Adds the raycast hit dist and relative pos to observations
-    /// </summary>
-    void RaycastObservation(Vector3 pos, Vector3 dir, float maxDist)
-    {
-        RaycastHit hit;
-        float dist = 0;
-        Vector3 relativeHitPos = Vector3.zero;
-        if(Physics.Raycast(pos, dir, out hit, maxDist))
-        {
-            if(hit.collider.CompareTag("ground"))
-            {
-                //normalized hit distance
-                dist = hit.distance/maxDist; 
-
-                //hit point position relative to the body's local space
-                relativeHitPos = body.InverseTransformPoint(hit.point); 
-            }
-        }
-
-        //add our raycast observation 
-        AddVectorObs(dist);
-        AddVectorObs(relativeHitPos);
-    }
-
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -158,7 +133,6 @@ public class CrawlerAgent : Agent {
         {
 		    GetRandomTargetPos();
         }
-		// Done();
 	}
 
     /// <summary>
@@ -249,7 +223,6 @@ public class CrawlerAgent : Agent {
     //Reward moving towards target & Penalize moving away from target.
     void RewardFunctionMovingTowards()
     {
-        //don't normalize vel. the faster it goes the more reward it should get
 		movingTowardsDot = Vector3.Dot(jdController.bodyPartsDict[body].rb.velocity, dirToTarget.normalized); 
         AddReward(0.03f * movingTowardsDot);
     }
@@ -257,7 +230,6 @@ public class CrawlerAgent : Agent {
     //Reward facing target & Penalize facing away from target
     void RewardFunctionFacingTarget()
     {
-        //0.01f chosen via experimentation.
 		facingDot = Vector3.Dot(dirToTarget.normalized, body.forward);
         AddReward(0.01f * facingDot);
     }
@@ -265,8 +237,7 @@ public class CrawlerAgent : Agent {
     //Time penalty - HURRY UP
     void RewardFunctionTimePenalty()
     {
-        //0.001f chosen by experimentation. If this penalty is too high it will kill itself :(
-        //AddReward(-0.001f); 
+        AddReward(-0.001f); 
     }
 
 	/// <summary>
