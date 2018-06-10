@@ -2227,8 +2227,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
   agentDoneOnGroundContact: 0
-  penalizeGroundContact: 1
-  groundContactPenalty: -1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
 --- !u!114 &114262638310978568
 MonoBehaviour:
@@ -2247,7 +2247,7 @@ MonoBehaviour:
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 3
+    numberOfActionsBetweenDecisions: 5
   target: {fileID: 4490950947783742}
   ground: {fileID: 4684408634944056}
   detectTargets: 1
@@ -2263,8 +2263,8 @@ MonoBehaviour:
   leg3Upper: {fileID: 4656870080762324}
   leg3Lower: {fileID: 4026659269828704}
   rewardMovingTowardsTarget: 1
-  rewardFacingTarget: 0
-  rewardUseTimePenalty: 1
+  rewardFacingTarget: 1
+  rewardUseTimePenalty: 0
   useFootGroundedVisualization: 0
   foot0: {fileID: 23583574125262266}
   foot1: {fileID: 23481904747803174}
@@ -2285,8 +2285,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
   agentDoneOnGroundContact: 0
-  penalizeGroundContact: 1
-  groundContactPenalty: -1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
 --- !u!114 &114357017827622496
 MonoBehaviour:
@@ -2315,9 +2315,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
-  groundContactPenalty: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114529562166866480
 MonoBehaviour:
@@ -2347,9 +2347,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
-  groundContactPenalty: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114724088240008342
 MonoBehaviour:
@@ -2364,8 +2364,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
   agentDoneOnGroundContact: 0
-  penalizeGroundContact: 1
-  groundContactPenalty: -1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
 --- !u!114 &114780231644995302
 MonoBehaviour:
@@ -2380,8 +2380,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
   agentDoneOnGroundContact: 0
-  penalizeGroundContact: 1
-  groundContactPenalty: -1
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
 --- !u!114 &114797969624069370
 MonoBehaviour:
@@ -2395,9 +2395,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
-  groundContactPenalty: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
 --- !u!114 &114841274574482114
 MonoBehaviour:
@@ -2411,9 +2411,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
-  groundContactPenalty: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
 --- !u!135 &135443256149903194
 SphereCollider:

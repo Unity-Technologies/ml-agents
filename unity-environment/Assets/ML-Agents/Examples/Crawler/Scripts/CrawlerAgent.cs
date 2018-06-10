@@ -153,12 +153,12 @@ public class CrawlerAgent : Agent {
     /// </summary>
 	public void TouchedTarget()
 	{
-        AddReward(1);
+        AddReward(1f);
         if(respawnTargetWhenTouched)
         {
 		    GetRandomTargetPos();
         }
-		Done();
+		// Done();
 	}
 
     /// <summary>
@@ -173,6 +173,11 @@ public class CrawlerAgent : Agent {
 
 	 public override void AgentAction(float[] vectorAction, string textAction)
     {
+        if (GetReward() < 0f && !IsDone())
+        {
+            print(GetReward());
+        }
+        
         if(detectTargets)
         {
             foreach (var bodyPart in jdController.bodyPartsDict.Values)
@@ -261,7 +266,7 @@ public class CrawlerAgent : Agent {
     void RewardFunctionTimePenalty()
     {
         //0.001f chosen by experimentation. If this penalty is too high it will kill itself :(
-        AddReward(-0.001f); 
+        //AddReward(-0.001f); 
     }
 
 	/// <summary>
