@@ -321,7 +321,7 @@ GameObject:
   - component: {fileID: 23853157411251344}
   - component: {fileID: 54995313618971946}
   m_Layer: 0
-  m_Name: TARGET
+  m_Name: Target
   m_TagString: target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2252,7 +2252,7 @@ MonoBehaviour:
   ground: {fileID: 4684408634944056}
   detectTargets: 1
   respawnTargetWhenTouched: 1
-  targetSpawnRadius: 10
+  targetSpawnRadius: 50
   body: {fileID: 4222914027048448}
   leg0Upper: {fileID: 4293191581643572}
   leg0Lower: {fileID: 4650975627733420}

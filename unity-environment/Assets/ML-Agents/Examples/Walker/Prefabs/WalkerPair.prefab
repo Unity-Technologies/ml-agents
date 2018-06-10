@@ -2441,7 +2441,7 @@ MonoBehaviour:
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 3
+    numberOfActionsBetweenDecisions: 5
   target: {fileID: 4085853164035250}
   hips: {fileID: 4333477265252406}
   chest: {fileID: 4027052323869384}
