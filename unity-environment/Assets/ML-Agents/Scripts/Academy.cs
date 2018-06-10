@@ -92,9 +92,9 @@ namespace MLAgents
              "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        
-        [SerializeField]
-        public List<Brain> brainsToInitialize = new List<Brain>();
+
+        [SerializeField] 
+        public TrainingHub trainingHub = new TrainingHub();
         
         private const string kApiVersion = "API-4";
 
@@ -272,7 +272,7 @@ namespace MLAgents
             {
                 communicator = null;
 // TODO : Check if training is activated
-                if (false)
+                if (trainingHub.training)
                 {
                     communicator = new MLAgents.RPCCommunicator(
                         new MLAgents.CommunicatorParameters
@@ -284,9 +284,9 @@ namespace MLAgents
 
             brainBatcher = new MLAgents.Batcher(communicator);
 
-            foreach (var b in brainsToInitialize)
+            foreach (var trainingBrain in trainingHub.brainsToTrain.Where(x => x!= null))
             {
-                b.InitializeBrain(this, brainBatcher);
+                trainingBrain.InitializeBrain(this, brainBatcher, trainingHub.training);
             }
 
             if (communicator != null)
@@ -297,19 +297,21 @@ namespace MLAgents
                     new MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = kApiVersion;
-                foreach (var brain in brainsToInitialize)
+                foreach (var trainingBrain in trainingHub.brainsToTrain.Where(x => x!= null))
                 {
-                    var bp = brain.brainParameters;
+                    var bp = trainingBrain.brainParameters;
                     academyParameters.BrainParameters.Add(
                         MLAgents.Batcher.BrainParametersConvertor(
                             bp,
-                            brain.name,
+                            trainingBrain.name,
                             /*
                             // TODO : Figure out how to expose external
                             (MLAgents.CommunicatorObjects.BrainTypeProto)
                             brain.brainType
                             */
-                    MLAgents.CommunicatorObjects.BrainTypeProto.External
+                            trainingBrain.isExternal ? 
+                                MLAgents.CommunicatorObjects.BrainTypeProto.External : 
+                                MLAgents.CommunicatorObjects.BrainTypeProto.Player
                             ));
                 }
 

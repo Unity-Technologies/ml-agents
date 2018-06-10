@@ -39,28 +39,33 @@ namespace MLAgents
         /**< Reference to the Decision component used to decide the actions */
 //        public Decision decision = new RandomDecision();
 
-        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher)
-        {
-            aca.BrainDecideAction += DecideAction;
-            if ((brainBatcher == null)
-                || (!broadcast))
-            {
-                this.brainBatcher = null;
-            }
-            else
-            {
-                this.brainBatcher = batcher;
-                this.brainBatcher.SubscribeBrain(this.name);
-            }
-        }
+//        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher, bool external)
+           //        {
+           //            aca.BrainDecideAction += DecideAction;
+           //            if (batcher == null)
+           //            {
+           //                this.brainBatcher = null;
+           //            }
+           //            else
+           //            {
+           //                this.brainBatcher = batcher;
+           //                this.brainBatcher.SubscribeBrain(this.name);
+           //            }
+           //        }
 
         /// Uses the continuous inputs or dicrete inputs of the player to 
         /// decide action
-        public void DecideAction()
+        protected override void DecideAction()
         {
             if (brainBatcher != null)
             {
                 brainBatcher.SendBrainInfo(this.name, agentInfo);
+            }
+
+            if (isExternal)
+            {
+                agentInfo.Clear();
+                return;
             }
 
             if (this.brainParameters.vectorActionSpaceType == SpaceType.continuous)
@@ -100,12 +105,6 @@ namespace MLAgents
                 }
             }
             agentInfo.Clear();
-
-        }
-        
-        public override void SendState(Agent agent, AgentInfo info)
-        {
-            agentInfo.Add(agent, info);
 
         }
     }

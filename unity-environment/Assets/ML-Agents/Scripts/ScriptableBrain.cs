@@ -35,24 +35,8 @@ namespace MLAgents
             }
             #endif
         }
-        
-        
-        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher)
-        {
-            aca.BrainDecideAction += DecideAction;
-            if ((brainBatcher == null)
-                || (!broadcast))
-            {
-                this.brainBatcher = null;
-            }
-            else
-            {
-                this.brainBatcher = batcher;
-                this.brainBatcher.SubscribeBrain(this.name);
-            }
-        }
 
-        void DecideAction()
+        protected override void DecideAction()
         {
 
             //var d = Activator.CreateInstance() as TestDecision;
@@ -74,6 +58,12 @@ namespace MLAgents
             if (brainBatcher != null)
             {
                 brainBatcher.SendBrainInfo(this.name, agentInfo);
+            }
+            
+            if (isExternal)
+            {
+                agentInfo.Clear();
+                return;
             }
 
             foreach (Agent agent in agentInfo.Keys)
@@ -98,12 +88,6 @@ namespace MLAgents
                     agentInfo[agent].memories));
             }
             agentInfo.Clear();
-        }
-        
-        public override void SendState(Agent agent, AgentInfo info)
-        {
-            agentInfo.Add(agent, info);
-
         }
     }
 

@@ -12,7 +12,7 @@ namespace MLAgents
  Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
 */
     [CustomEditor(typeof(Brain))]
-    public class NewBrainEditor : Editor
+    public class BrainEditor : Editor
     {
         
         [SerializeField] bool _Foldout = true;

@@ -7,13 +7,13 @@ using UnityEngine.UI;
 using System.Linq;
 #if ENABLE_TENSORFLOW
 using TensorFlow;
+
 #endif
 
 namespace MLAgents
 {
     public class LearnedBrain : Brain
     {
-        
 //        [System.Serializable]
 //        private struct TensorFlowAgentPlaceholder
 //        {
@@ -42,7 +42,6 @@ namespace MLAgents
             "If your graph takes additional inputs that are fixed (example: noise level) you can specify them here.")]
         ///  Modify only in inspector : If your graph takes additional inputs that are fixed you can specify them here.
 //        private TensorFlowAgentPlaceholder[] graphPlaceholders;
-
         ///  Modify only in inspector : Name of the placholder of the batch size
         public string BatchSizePlaceholderName = "batch_size";
 
@@ -64,37 +63,25 @@ namespace MLAgents
         /// Modify only in inspector : Name of the previous action node
         public string PreviousActionPlaceholderName = "prev_action";
 #if ENABLE_TENSORFLOW
-    TFGraph graph;
-    TFSession session;
-    bool hasRecurrent;
-    bool hasState;
-    bool hasBatchSize;
-    bool hasPrevAction;
-    float[,] inputState;
-    int[] inputPrevAction;
-    List<float[,,,]> observationMatrixList;
-    float[,] inputOldMemories;
-    List<Texture2D> texturesHolder;
-    int memorySize;
+        TFGraph graph;
+        TFSession session;
+        bool hasRecurrent;
+        bool hasState;
+        bool hasBatchSize;
+        bool hasPrevAction;
+        float[,] inputState;
+        int[] inputPrevAction;
+        List<float[,,,]> observationMatrixList;
+        float[,] inputOldMemories;
+        List<Texture2D> texturesHolder;
+        int memorySize;
 #endif
-        
-        
-        
-        
-        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher)
+
+
+        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher, bool external)
         {
-            aca.BrainDecideAction += DecideAction;
-            if ((brainBatcher == null)
-                || (!broadcast))
-            {
-                this.brainBatcher = null;
-            }
-            else
-            {
-                this.brainBatcher = batcher;
-                this.brainBatcher.SubscribeBrain(this.name);
-            }
-            
+            base.InitializeBrain(aca, batcher, external);
+
             InitializeGraph();
         }
 
@@ -102,8 +89,8 @@ namespace MLAgents
         {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID
-            // This needs to ba called only once and will raise an exception if 
-            // there are multiple internal brains
+// This needs to ba called only once and will raise an exception if 
+// there are multiple internal brains
             try{
                  TensorFlowSharp.Android.NativeBinding.Init();
             }
@@ -158,104 +145,124 @@ namespace MLAgents
 #endif
         }
 
-        void DecideAction()
+        protected override void DecideAction()
         {
 #if ENABLE_TENSORFLOW
-        if (brainBatcher != null)
-        {
-            brainBatcher.SendBrainInfo(this.name, agentInfo);
-        }
-        int currentBatchSize = agentInfo.Count;
-        var agentList = agentInfo.Keys;
-        if (currentBatchSize == 0)
-        {
-            return;
-        }
-
-
-        // Create the state tensor
-        if (hasState)
-        {
-            int stateLength = 1;
-            if (brainParameters.vectorObservationSpaceType == SpaceType.continuous)
+            if (brainBatcher != null)
             {
-                stateLength = brainParameters.vectorObservationSize;
+                brainBatcher.SendBrainInfo(this.name, agentInfo);
             }
-            inputState =
- new float[currentBatchSize, stateLength * brainParameters.numStackedVectorObservations];
 
-            var i = 0;
-            foreach (Agent agent in agentList)
+            if (isExternal)
             {
-                List<float> state_list = agentInfo[agent].stackedVectorObservation;
-                for (int j =
- 0; j < stateLength * brainParameters.numStackedVectorObservations; j++)
+                agentInfo.Clear();
+                return;
+            }
+
+            int currentBatchSize = agentInfo.Count;
+            var agentList = agentInfo.Keys;
+            if (currentBatchSize == 0)
+            {
+                return;
+            }
+
+
+            // Create the state tensor
+            if (hasState)
+            {
+                int stateLength = 1;
+                if (brainParameters.vectorObservationSpaceType == SpaceType.continuous)
                 {
-                    inputState[i, j] = state_list[j];
+                    stateLength = brainParameters.vectorObservationSize;
                 }
-                i++;
-            }
-        }
 
-        // Create the state tensor
-        if (hasPrevAction)
-        {
-            inputPrevAction = new int[currentBatchSize];
-            var i = 0;
-            foreach (Agent agent in agentList)
-            {
-                float[] action_list = agentInfo[agent].storedVectorActions;
-                inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
-                i++;
-            }
-        }
+                inputState =
+                    new float[currentBatchSize,
+                        stateLength * brainParameters.numStackedVectorObservations];
 
-
-        observationMatrixList.Clear();
-        for (int observationIndex =
- 0; observationIndex < brainParameters.cameraResolutions.Count(); observationIndex++){
-            texturesHolder.Clear();
-            foreach (Agent agent in agentList){
-                texturesHolder.Add(agentInfo[agent].visualObservations[observationIndex]);
-            }
-            observationMatrixList.Add(
-                BatchVisualObservations(texturesHolder, brainParameters.cameraResolutions[observationIndex].blackAndWhite));
-
-        }
-
-        // Create the recurrent tensor
-        if (hasRecurrent)
-        {
-            // Need to have variable memory size
-            inputOldMemories = new float[currentBatchSize, memorySize];
-            var i = 0;
-            foreach (Agent agent in agentList)
-            {
-                float[] m = agentInfo[agent].memories.ToArray();
-                for (int j = 0; j < m.Count(); j++)
+                var i = 0;
+                foreach (Agent agent in agentList)
                 {
-                    inputOldMemories[i, j] = m[j];
+                    List<float> state_list = agentInfo[agent].stackedVectorObservation;
+                    for (int j =
+                            0;
+                        j < stateLength * brainParameters.numStackedVectorObservations;
+                        j++)
+                    {
+                        inputState[i, j] = state_list[j];
+                    }
+
+                    i++;
                 }
-                i++;
             }
-        }
+
+            // Create the state tensor
+            if (hasPrevAction)
+            {
+                inputPrevAction = new int[currentBatchSize];
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    float[] action_list = agentInfo[agent].storedVectorActions;
+                    inputPrevAction[i] = Mathf.FloorToInt(action_list[0]);
+                    i++;
+                }
+            }
 
 
-        var runner = session.GetRunner();
-        try
-        {
-            runner.Fetch(graph[graphScope + ActionPlaceholderName][0]);
-        }
-        catch
-        {
-            throw new UnityAgentsException(string.Format(@"The node {0} could not be found. Please make sure the graphScope {1} is correct",
-                     graphScope + ActionPlaceholderName, graphScope));
-        }
+            observationMatrixList.Clear();
+            for (int observationIndex =
+                    0;
+                observationIndex < brainParameters.cameraResolutions.Count();
+                observationIndex++)
+            {
+                texturesHolder.Clear();
+                foreach (Agent agent in agentList)
+                {
+                    texturesHolder.Add(agentInfo[agent].visualObservations[observationIndex]);
+                }
 
-        if (hasBatchSize)
-        {
-            runner.AddInput(graph[graphScope + BatchSizePlaceholderName][0], new int[] { currentBatchSize });
-        }
+                observationMatrixList.Add(
+                    BatchVisualObservations(texturesHolder,
+                        brainParameters.cameraResolutions[observationIndex].blackAndWhite));
+            }
+
+            // Create the recurrent tensor
+            if (hasRecurrent)
+            {
+                // Need to have variable memory size
+                inputOldMemories = new float[currentBatchSize, memorySize];
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    float[] m = agentInfo[agent].memories.ToArray();
+                    for (int j = 0; j < m.Count(); j++)
+                    {
+                        inputOldMemories[i, j] = m[j];
+                    }
+
+                    i++;
+                }
+            }
+
+
+            var runner = session.GetRunner();
+            try
+            {
+                runner.Fetch(graph[graphScope + ActionPlaceholderName][0]);
+            }
+            catch
+            {
+                throw new UnityAgentsException(string.Format(
+                    @"The node {0} could not be found. Please make sure the graphScope {1} is correct",
+                    graphScope + ActionPlaceholderName, graphScope));
+            }
+
+            if (hasBatchSize)
+            {
+                runner.AddInput(graph[graphScope + BatchSizePlaceholderName][0],
+                    new int[] {currentBatchSize});
+            }
 
 //        foreach (TensorFlowAgentPlaceholder placeholder in graphPlaceholders)
 //        {
@@ -278,113 +285,119 @@ namespace MLAgents
 //            }
 //        }
 
-        // Create the state tensor
-        if (hasState)
-        {
-            if (brainParameters.vectorObservationSpaceType == SpaceType.discrete)
+            // Create the state tensor
+            if (hasState)
             {
-                var discreteInputState = new int[currentBatchSize, 1];
-                for (int i = 0; i < currentBatchSize; i++)
+                if (brainParameters.vectorObservationSpaceType == SpaceType.discrete)
                 {
-                    discreteInputState[i, 0] = (int)inputState[i, 0];
+                    var discreteInputState = new int[currentBatchSize, 1];
+                    for (int i = 0; i < currentBatchSize; i++)
+                    {
+                        discreteInputState[i, 0] = (int) inputState[i, 0];
+                    }
+
+                    runner.AddInput(graph[graphScope + VectorObservationPlacholderName][0],
+                        discreteInputState);
                 }
-                runner.AddInput(graph[graphScope + VectorObservationPlacholderName][0], discreteInputState);
+                else
+                {
+                    runner.AddInput(graph[graphScope + VectorObservationPlacholderName][0],
+                        inputState);
+                }
             }
-            else
+
+            // Create the previous action tensor
+            if (hasPrevAction)
             {
-                runner.AddInput(graph[graphScope + VectorObservationPlacholderName][0], inputState);
+                runner.AddInput(graph[graphScope + PreviousActionPlaceholderName][0],
+                    inputPrevAction);
             }
-        }
 
-        // Create the previous action tensor
-        if (hasPrevAction)
-        {
-            runner.AddInput(graph[graphScope + PreviousActionPlaceholderName][0], inputPrevAction);
-        }
+            // Create the observation tensors
+            for (int obs_number =
+                    0;
+                obs_number < brainParameters.cameraResolutions.Length;
+                obs_number++)
+            {
+                runner.AddInput(graph[graphScope + VisualObservationPlaceholderName[obs_number]][0],
+                    observationMatrixList[obs_number]);
+            }
 
-        // Create the observation tensors
-        for (int obs_number =
- 0; obs_number < brainParameters.cameraResolutions.Length; obs_number++)
-        {
-            runner.AddInput(graph[graphScope + VisualObservationPlaceholderName[obs_number]][0], observationMatrixList[obs_number]);
-        }
+            if (hasRecurrent)
+            {
+                runner.AddInput(graph[graphScope + "sequence_length"][0], 1);
+                runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0],
+                    inputOldMemories);
+                runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
+            }
 
-        if (hasRecurrent)
-        {
-            runner.AddInput(graph[graphScope + "sequence_length"][0], 1);
-            runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
-            runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
-        }
-
-        TFTensor[] networkOutput;
-        try
-        {
-            networkOutput = runner.Run();
-        }
-        catch (TFException e)
-        {
-            string errorMessage = e.Message;
+            TFTensor[] networkOutput;
             try
             {
-                errorMessage =
- string.Format(@"The tensorflow graph needs an input for {0} of type {1}",
-                    e.Message.Split(new string[] { "Node: " }, 0)[1].Split('=')[0],
-                    e.Message.Split(new string[] { "dtype=" }, 0)[1].Split(',')[0]);
+                networkOutput = runner.Run();
             }
-            finally
+            catch (TFException e)
             {
-                throw new UnityAgentsException(errorMessage);
-            }
-
-        }
-
-        // Create the recurrent tensor
-        if (hasRecurrent)
-        {
-            float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
-
-            var i = 0;
-            foreach (Agent agent in agentList)
-            {
-                var m = new float[memorySize];
-                for (int j = 0; j < memorySize; j++)
+                string errorMessage = e.Message;
+                try
                 {
-                    m[j] = recurrent_tensor[i, j];
+                    errorMessage =
+                        string.Format(@"The tensorflow graph needs an input for {0} of type {1}",
+                            e.Message.Split(new string[] {"Node: "}, 0)[1].Split('=')[0],
+                            e.Message.Split(new string[] {"dtype="}, 0)[1].Split(',')[0]);
                 }
-                agent.UpdateMemoriesAction(m.ToList());
-                i++;
-            }
-
-        }
-
-        if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
-        {
-            var output = networkOutput[0].GetValue() as float[,];
-            var i = 0;
-            foreach (Agent agent in agentList)
-            {
-                var a = new float[brainParameters.vectorActionSize];
-                for (int j = 0; j < brainParameters.vectorActionSize; j++)
+                finally
                 {
-                    a[j] = output[i, j];
+                    throw new UnityAgentsException(errorMessage);
                 }
-                agent.UpdateVectorAction(a);
-                i++;
             }
-        }
-        else if (brainParameters.vectorActionSpaceType == SpaceType.discrete)
-        {
-            long[,] output = networkOutput[0].GetValue() as long[,];
-            var i = 0;
-            foreach (Agent agent in agentList)
+
+            // Create the recurrent tensor
+            if (hasRecurrent)
             {
-                var a = new float[1] { (float)(output[i, 0]) };
-                agent.UpdateVectorAction(a);
-                i++;
+                float[,] recurrent_tensor = networkOutput[1].GetValue() as float[,];
+
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    var m = new float[memorySize];
+                    for (int j = 0; j < memorySize; j++)
+                    {
+                        m[j] = recurrent_tensor[i, j];
+                    }
+
+                    agent.UpdateMemoriesAction(m.ToList());
+                    i++;
+                }
             }
-        }
 
+            if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            {
+                var output = networkOutput[0].GetValue() as float[,];
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    var a = new float[brainParameters.vectorActionSize];
+                    for (int j = 0; j < brainParameters.vectorActionSize; j++)
+                    {
+                        a[j] = output[i, j];
+                    }
 
+                    agent.UpdateVectorAction(a);
+                    i++;
+                }
+            }
+            else if (brainParameters.vectorActionSpaceType == SpaceType.discrete)
+            {
+                long[,] output = networkOutput[0].GetValue() as long[,];
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    var a = new float[1] {(float) (output[i, 0])};
+                    agent.UpdateVectorAction(a);
+                    i++;
+                }
+            }
 
 
 #else
@@ -398,8 +411,8 @@ namespace MLAgents
 #endif
             agentInfo.Clear();
         }
-        
-         /// <summary>
+
+        /// <summary>
         /// Converts a list of Texture2D into a Tensor.
         /// </summary>
         /// <returns>
@@ -463,11 +476,6 @@ namespace MLAgents
             }
 
             return result;
-        }
-
-        public override void SendState(Agent agent, AgentInfo info)
-        {
-            agentInfo.Add(agent, info);
         }
     }
 }

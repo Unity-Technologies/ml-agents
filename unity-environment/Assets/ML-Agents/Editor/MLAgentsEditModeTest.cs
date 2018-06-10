@@ -63,13 +63,7 @@ namespace MLAgents.Tests
     public class TestBrain : Brain
     {
 
-
-        public override void InitializeBrain(Academy aca, MLAgents.Batcher brainBatcher)
-        {
-            
-        }
-
-        public override void SendState(Agent agent, AgentInfo info)
+        protected override void DecideAction()
         {
             
         }

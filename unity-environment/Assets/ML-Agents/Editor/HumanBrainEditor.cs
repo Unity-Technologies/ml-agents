@@ -12,7 +12,7 @@ namespace MLAgents
  Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
 */
     [CustomEditor(typeof(HumanBrain))]
-    public class HumanBrainEditor : NewBrainEditor
+    public class HumanBrainEditor : BrainEditor
     {
         
 

@@ -77,16 +77,35 @@ namespace MLAgents
         
 //        public PolicyType m_Policy;
         public string m_ArchetypeName;
-        
-        protected bool broadcast = true;
 
         protected MLAgents.Batcher brainBatcher;
 
-        public abstract void InitializeBrain(Academy aca, MLAgents.Batcher batcher);
+        public bool isExternal;
+
+        public virtual void InitializeBrain(Academy aca, Batcher batcher, bool training)
+        {
+            isExternal = isExternal && training;
+            aca.BrainDecideAction += DecideAction;
+            if (batcher == null)
+            {
+                brainBatcher = null;
+            }
+            else
+            {
+                brainBatcher = batcher;
+                brainBatcher.SubscribeBrain(this.name);
+            }
+        }
         /*TODO : Rename, split and implement here. Initialization should be done at the first
          send state call and subscribe batcher should be called by the academy.*/
         
-        public abstract void SendState(Agent agent, AgentInfo info);
+        public void SendState(Agent agent, AgentInfo info)
+        {
+            agentInfo.Add(agent, info);
+
+        }
+        
+        protected abstract void DecideAction();
     }
     
     
