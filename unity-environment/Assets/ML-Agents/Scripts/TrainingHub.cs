@@ -8,7 +8,6 @@ namespace MLAgents
 	[System.Serializable]
 	public class TrainingHub
 	{
-		public bool training;
 		public List<Brain> brainsToTrain;
 
 	}

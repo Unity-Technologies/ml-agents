@@ -272,7 +272,8 @@ namespace MLAgents
             {
                 communicator = null;
 // TODO : Check if training is activated
-                if (trainingHub.training)
+                var externalBrain =  trainingHub.brainsToTrain.FirstOrDefault(b => b.isExternal);
+                if (externalBrain != null)
                 {
                     communicator = new MLAgents.RPCCommunicator(
                         new MLAgents.CommunicatorParameters
@@ -286,7 +287,7 @@ namespace MLAgents
 
             foreach (var trainingBrain in trainingHub.brainsToTrain.Where(x => x!= null))
             {
-                trainingBrain.InitializeBrain(this, brainBatcher, trainingHub.training);
+                trainingBrain.InitializeBrain(this, brainBatcher);
             }
 
             if (communicator != null)

@@ -78,9 +78,9 @@ namespace MLAgents
 #endif
 
 
-        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher, bool external)
+        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher)
         {
-            base.InitializeBrain(aca, batcher, external);
+            base.InitializeBrain(aca, batcher);
 
             InitializeGraph();
         }

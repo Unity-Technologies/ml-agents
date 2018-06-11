@@ -82,9 +82,8 @@ namespace MLAgents
 
         public bool isExternal;
 
-        public virtual void InitializeBrain(Academy aca, Batcher batcher, bool training)
+        public virtual void InitializeBrain(Academy aca, Batcher batcher)
         {
-            isExternal = isExternal && training;
             aca.BrainDecideAction += DecideAction;
             if (batcher == null)
             {

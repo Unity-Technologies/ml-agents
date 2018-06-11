@@ -16,14 +16,7 @@ namespace MLAgents
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             CheckInitialize(property, label);
-            if (hub.training)
-            {
-                return (hub.brainsToTrain.Count + 4) * lineHeight;
-            }
-            else
-            {
-                return 2*lineHeight;
-            }
+            return (hub.brainsToTrain.Count + 3) * lineHeight;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -36,16 +29,6 @@ namespace MLAgents
 
             EditorGUI.BeginProperty(position, label, property);
             
-            
-            position.y += lineHeight;
-            var trainingRect = position;
-
-            trainingRect.x += 20;
-            hub.training =  EditorGUI.Toggle(trainingRect, "Active Hub", hub.training);
-            if (!hub.training)
-            {
-                return;
-            }
             
             position.y += lineHeight;
             var labelRect = position;
