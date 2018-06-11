@@ -71,7 +71,7 @@ class PPOTrainer(Trainer):
                                   m_size=self.m_size,
                                   use_curiosity=bool(trainer_parameters['use_curiosity']),
                                   curiosity_strength=float(trainer_parameters['curiosity_strength']),
-                                  curiosity_enc_size=float(trainer_parameters['encoding_size']))
+                                  curiosity_enc_size=float(trainer_parameters['curiosity_enc_size']))
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
