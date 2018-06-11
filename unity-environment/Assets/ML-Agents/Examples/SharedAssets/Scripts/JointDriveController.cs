@@ -104,7 +104,11 @@ namespace  MLAgents
         public float jointDampen;
         public float maxJointForceLimit;
         float facingDot;
+        
+        [HideInInspector]
         public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
+        
+        [HideInInspector]
         public List<BodyPart> bodyPartsList = new List<BodyPart>();
 
         /// <summary>

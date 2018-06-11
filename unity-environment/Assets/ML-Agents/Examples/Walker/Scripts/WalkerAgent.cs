@@ -150,7 +150,9 @@ public class WalkerAgent : Agent
         );
     }
 
-    //We only need to change the joint settings based on decision freq.
+    /// <summary>
+    /// Only change the joint settings based on decision frequency.
+    /// </summary>
     public void IncrementDecisionTimer()
     {
         if (currentDecisionStep == agentParameters.numberOfActionsBetweenDecisions ||

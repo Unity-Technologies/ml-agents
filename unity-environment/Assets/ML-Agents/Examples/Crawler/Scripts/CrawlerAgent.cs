@@ -51,7 +51,6 @@ public class CrawlerAgent : Agent {
     bool isNewDecisionStep;
     int currentDecisionStep;
 
-    //Initialize
     public override void InitializeAgent()
     {
         print("InitializeAgent()");
@@ -70,7 +69,9 @@ public class CrawlerAgent : Agent {
         jdController.SetupBodyPart(leg3Lower);
     }
 
-    //We only need to change the joint settings based on decision freq.
+    /// <summary>
+    /// We only need to change the joint settings based on decision freq.
+    /// </summary>
     public void IncrementDecisionTimer()
     {
         if(currentDecisionStep == agentParameters.numberOfActionsBetweenDecisions 
@@ -158,11 +159,11 @@ public class CrawlerAgent : Agent {
             }
         }
 
-        //update pos to target
+        // Update pos to target
 		dirToTarget = target.position - jdController.bodyPartsDict[body].rb.position;
 
-        //if enabled the feet will light up green when the foot is grounded.
-        //this is just a visualization and isn't necessary for function
+        // If enabled the feet will light up green when the foot is grounded.
+        // This is just a visualization and isn't necessary for function
         if(useFootGroundedVisualization)
         {
             foot0.material = jdController.bodyPartsDict[leg0Lower].groundContact.touchingGround
@@ -182,11 +183,11 @@ public class CrawlerAgent : Agent {
         // Joint update logic only needs to happen when a new decision is made
         if(isNewDecisionStep)
         {
-            //The dictionary with all the body parts in it are in the jdController
+            // The dictionary with all the body parts in it are in the jdController
             var bpDict = jdController.bodyPartsDict;
 
             int i = -1; 
-            //pick a new target joint rotation
+            // Pick a new target joint rotation
             bpDict[leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
             bpDict[leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
             bpDict[leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
@@ -196,7 +197,7 @@ public class CrawlerAgent : Agent {
             bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
             bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
 
-            //update joint strength
+            // Update joint strength
             bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
             bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
             bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
@@ -215,21 +216,27 @@ public class CrawlerAgent : Agent {
 
     }
 	
-    //Reward moving towards target & Penalize moving away from target.
+    /// <summary>
+    /// Reward moving towards target & Penalize moving away from target.
+    /// </summary>
     void RewardFunctionMovingTowards()
     {
 		movingTowardsDot = Vector3.Dot(jdController.bodyPartsDict[body].rb.velocity, dirToTarget.normalized); 
         AddReward(0.03f * movingTowardsDot);
     }
 
-    //Reward facing target & Penalize facing away from target
+    /// <summary>
+    /// Reward facing target & Penalize facing away from target
+    /// </summary>
     void RewardFunctionFacingTarget()
     {
 		facingDot = Vector3.Dot(dirToTarget.normalized, body.forward);
         AddReward(0.01f * facingDot);
     }
 
-    //Time penalty - HURRY UP
+    /// <summary>
+    /// Existential penalty for time-contrained tasks.
+    /// </summary>
     void RewardFunctionTimePenalty()
     {
         AddReward(-0.001f); 

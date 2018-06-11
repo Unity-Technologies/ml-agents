@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace  MLAgents
+namespace MLAgents
 {
     /// <summary>
     /// This class contains logic for locomotion agents with joints which might make contact with the ground.
@@ -12,16 +12,15 @@ namespace  MLAgents
     [DisallowMultipleComponent]
     public class GroundContact : MonoBehaviour
     {
-        // [HideInInspector]
+        [HideInInspector]
         public Agent agent;
 
         [Header("Ground Check")]
-        public bool agentDoneOnGroundContact; //reset agent on ground contact?
-        public bool penalizeGroundContact; //if this body part touches the ground should the agent be penalized?
-        public float groundContactPenalty; //penalty amount (ex: -1)
+        public bool agentDoneOnGroundContact; // Reset agent on ground contact?
+        public bool penalizeGroundContact; // Whether to penalize on contact.
+        public float groundContactPenalty; // Penalty amount (ex: -1).
         public bool touchingGround;
-        private const string Ground = "ground"; //tag on ground obj
-
+        private const string Ground = "ground"; // Tag of ground object.
 
         /// <summary>
         /// Check for collision with ground, and optionally penalize agent.
