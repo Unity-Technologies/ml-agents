@@ -147,11 +147,6 @@ public class CrawlerAgent : Agent {
 
 	 public override void AgentAction(float[] vectorAction, string textAction)
     {
-        if (GetReward() < 0f && !IsDone())
-        {
-            print(GetReward());
-        }
-        
         if(detectTargets)
         {
             foreach (var bodyPart in jdController.bodyPartsDict.Values)
