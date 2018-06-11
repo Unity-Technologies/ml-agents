@@ -20,7 +20,7 @@ The basic command for training is:
 
 where `<env_file_path>` is the path to your Unity executable containing the agents to be trained and `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
-For example, suppose you have a project in Unity named "CatsOnBicyclesCatsOnBicycles" which contains agents ready to train. To perform the training:
+For example, suppose you have a project in Unity named "CatsOnBicycles" which contains agents ready to train. To perform the training:
 
 1. Build the project, making sure that you only include the training scene.
 2. Open a terminal or console window.
