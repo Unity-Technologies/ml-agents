@@ -145,17 +145,14 @@ If you would like to contribute environments, please see our
 ![Crawler](images/crawler.png)
 
 * Set-up: A creature with 4 arms and 4 forearms.
-* Goal: The agents must move its body along the x axis without falling.
+* Goal: The agents must move its body toward the goal direction without falling.
 * Agents: The environment contains 3 agent linked to a single brain.
 * Agent Reward Function (independent): 
-    * +1 times velocity in the x direction
-    * -1 for falling.
-    * -0.01 times the action squared
-    * -0.05 times y position change
-    * -0.05 times velocity in the z direction 
+    * +0.03 times body velocity in the goal direction.
+    * +0.01 times body direction alignment with goal direction.
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 117 variables corresponding to position, rotation, velocity, and angular velocities of each limb plus the acceleration and angular acceleration of the body.
-    * Vector Action space: (Continuous) Size of 12, corresponding to torque applicable to 12 joints. 
+    * Vector Action space: (Continuous) Size of 20, corresponding to target rotations for joints. 
     * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward: 2000
