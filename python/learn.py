@@ -45,8 +45,8 @@ if __name__ == '__main__':
       --slow                     Whether to run the game at training speed [default: False].
       --train                    Whether to train model, or only run inference [default: False].
       --worker-id=<n>            Number to add to communication port (5005). Used for multi-environment [default: 0].
-      --docker-target-name=<dt>       Docker Volume to store curriculum, executable and model files [default: Empty].
-      --no-graphics                     Whether to run the Unity simulator in no-graphics mode [default: False].
+      --docker-target-name=<dt>  Docker Volume to store curriculum, executable and model files [default: Empty].
+      --no-graphics              Whether to run the Unity simulator in no-graphics mode [default: False].
     '''
 
     options = docopt(_USAGE)

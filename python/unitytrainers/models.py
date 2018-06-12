@@ -70,7 +70,7 @@ class LearningModel(object):
                                                     initializer=tf.zeros_initializer())
                 self.running_variance = tf.get_variable("running_variance", [self.o_size], trainable=False,
                                                         dtype=tf.float32, initializer=tf.ones_initializer())
-                self.create_normalizer_update()
+                self.update_mean, self.update_variance = self.create_normalizer_update(self.vector_in)
 
                 self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / tf.sqrt(
                     self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)), -5, 5,
@@ -82,14 +82,15 @@ class LearningModel(object):
             self.vector_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='vector_observation')
             return self.vector_in
 
-    def create_normalizer_update(self):
-        mean_current_observation = tf.reduce_mean(self.vector_in, axis=0)
+    def create_normalizer_update(self, vector_input):
+        mean_current_observation = tf.reduce_mean(vector_input, axis=0)
         new_mean = self.running_mean + (mean_current_observation - self.running_mean) / \
                    tf.cast(self.global_step + 1, tf.float32)
         new_variance = self.running_variance + (mean_current_observation - new_mean) * \
                        (mean_current_observation - self.running_mean)
-        self.update_mean = tf.assign(self.running_mean, new_mean)
-        self.update_variance = tf.assign(self.running_variance, new_variance)
+        update_mean = tf.assign(self.running_mean, new_mean)
+        update_variance = tf.assign(self.running_variance, new_variance)
+        return update_mean, update_variance
 
     @staticmethod
     def create_continuous_observation_encoder(observation_input, h_size, activation, num_layers, scope, reuse):
