@@ -11,48 +11,48 @@ namespace MLAgents
 
     public class ScriptableBrain : Brain
     {
-
-        /**< Reference to the Decision component used to decide the actions */
-//        public Decision decision = new RandomDecision();
+        [SerializeField]
+        [HideInInspector]
+        public Decision decision;
 #if UNITY_EDITOR
-        public MonoScript decision;
+        [HideInInspector]
+        public MonoScript decisionScript;
 #endif
         [SerializeField]
+        [HideInInspector]
         public string c_decision;
-        public string asm_decision;
 
+        
         public void OnValidate()
         {
-            #if UNITY_EDITOR
-            if (decision != null)
+#if UNITY_EDITOR
+            if (decisionScript != null)
             {
-                c_decision = decision.GetClass().Name;
-                asm_decision = decision.GetClass().Assembly.FullName;
+                c_decision = decisionScript.GetClass().Name;
             }
             else
             {
-                c_decision = asm_decision = "";
+                c_decision = "";
             }
-            #endif
+
+//            if (c_decision != c_oldDecision)
+//            {
+//                Debug.Log(c_decision);
+//                decision = CreateInstance(c_decision) as Decision;
+//                decision.brainParameters = brainParameters;
+//                Debug.Log(decision);
+//                c_oldDecision = c_decision;
+//            }
+#endif
         }
 
         protected override void DecideAction()
         {
 
-            //var d = Activator.CreateInstance() as TestDecision;
-            //Debug.Log(asm_decision + " " + c_decision);
-            if (asm_decision != "" && c_decision != "")
+            if ((c_decision != null) && decision == null)
             {
-                try
-                {
-                    var d =
-                        Activator.CreateInstance(asm_decision, c_decision).Unwrap() as TestDecision;
-                    d.DecisionMethod();
-                }
-                catch (Exception e)
-                {
-                    Debug.Log(e);
-                }
+                decision = CreateInstance(c_decision) as Decision;
+                decision.brainParameters = brainParameters;
             }
             
             if (brainBatcher != null)
@@ -68,7 +68,6 @@ namespace MLAgents
 
             foreach (Agent agent in agentInfo.Keys)
             {
-                Decision decision = agent.gameObject.GetComponent<Decision>();
                 agent.UpdateVectorAction(decision.Decide(
                     agentInfo[agent].stackedVectorObservation,
                     agentInfo[agent].visualObservations,
@@ -79,7 +78,6 @@ namespace MLAgents
 
             foreach (Agent agent in agentInfo.Keys)
             {
-                Decision decision = agent.gameObject.GetComponent<Decision>();
                 agent.UpdateMemoriesAction(decision.MakeMemory(
                     agentInfo[agent].stackedVectorObservation,
                     agentInfo[agent].visualObservations,

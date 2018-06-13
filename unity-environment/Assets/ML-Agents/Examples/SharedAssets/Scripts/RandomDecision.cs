@@ -5,32 +5,21 @@ using MLAgents;
 namespace MLAgents
 {
 
-    public class RandomDecision : MonoBehaviour, Decision
+    public class RandomDecision :Decision
     {
-        BrainParameters brainParameters;
-        SpaceType actionSpaceType;
-        int actionSpaceSize;
 
-        public void Awake()
-        {
-            brainParameters =
-                gameObject.GetComponent<Agent>().brain.brainParameters;
-            actionSpaceType = brainParameters.vectorActionSpaceType;
-            actionSpaceSize = brainParameters.vectorActionSize;
-        }
-
-        public float[] Decide(
+        public override float[] Decide(
             List<float> vectorObs,
             List<Texture2D> visualObs,
             float reward,
             bool done,
             List<float> memory)
         {
-            if (actionSpaceType == SpaceType.continuous)
+            if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 List<float> act = new List<float>();
 
-                for (int i = 0; i < actionSpaceSize; i++)
+                for (int i = 0; i < brainParameters.vectorActionSize; i++)
                 {
                     act.Add(2 * Random.value - 1);
                 }
@@ -38,10 +27,10 @@ namespace MLAgents
                 return act.ToArray();
             }
 
-            return new float[1] {Random.Range(0, actionSpaceSize)};
+            return new float[1] {Random.Range(0, brainParameters.vectorActionSize)};
         }
 
-        public List<float> MakeMemory(
+        public override List<float> MakeMemory(
             List<float> vectorObs,
             List<Texture2D> visualObs,
             float reward,

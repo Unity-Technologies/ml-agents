@@ -2,18 +2,19 @@
 using UnityEngine;
 using MLAgents;
 
-public class Ball3DDecision : MonoBehaviour, Decision
+public class Ball3DDecision : Decision
 {
     public float rotationSpeed = 2f;
-
-    public float[] Decide(
+    
+    public override float[] Decide(
         List<float> vectorObs,
         List<Texture2D> visualObs,
         float reward,
         bool done,
         List<float> memory)
     {
-        if (gameObject.GetComponent<Brain>().brainParameters.vectorActionSpaceType
+        // This will need to change
+        if (brainParameters.vectorActionSpaceType
             == SpaceType.continuous)
         {
             List<float> act = new List<float>();
@@ -35,7 +36,7 @@ public class Ball3DDecision : MonoBehaviour, Decision
         return new float[1] { 1f };
     }
 
-    public List<float> MakeMemory(
+    public override List<float> MakeMemory(
         List<float> vectorObs,
         List<Texture2D> visualObs,
         float reward,

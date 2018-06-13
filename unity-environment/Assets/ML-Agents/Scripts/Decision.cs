@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -9,8 +10,11 @@ namespace MLAgents
     /// implementation of these methods and no training or inference takes place.
     /// Currently, the Heuristic Brain does not support text observations and actions.
     /// </summary>
-    public interface Decision
+    public abstract class Decision : ScriptableObject
     {
+
+        public BrainParameters brainParameters;
+
         /// <summary>
         /// Defines the decision-making logic of the agent. Given the information 
         /// about the agent, returns a vector of actions.
@@ -24,7 +28,7 @@ namespace MLAgents
         /// The memories stored from the previous step with 
         /// <see cref="MakeMemory(List{float}, List{Texture2D}, float, bool, List{float})"/>
         /// </param>
-        float[] Decide(
+        public abstract float[] Decide(
             List<float>
                 vectorObs,
             List<Texture2D> visualObs,
@@ -43,7 +47,7 @@ namespace MLAgents
         /// <param name="memory">
         /// The memories stored from the previous call to this method.
         /// </param>
-        List<float> MakeMemory(
+        public abstract List<float> MakeMemory(
             List<float> vectorObs,
             List<Texture2D> visualObs,
             float reward,

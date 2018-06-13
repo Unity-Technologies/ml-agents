@@ -23,8 +23,8 @@ namespace MLAgents
             base.OnInspectorGUI();
             
             SerializedObject serializedBrain = serializedObject;
-           if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
-           {
+            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            {
             GUILayout.Label(
                 "Edit the continuous inputs for your actions", 
                 EditorStyles.boldLabel);
