@@ -42,7 +42,6 @@ class BehavioralCloningTrainer(Trainer):
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.use_recurrent = trainer_parameters['use_recurrent']
-        self.step = 0
         self.sequence_length = 1
         self.m_size = None
         if self.use_recurrent:
@@ -112,7 +111,7 @@ class BehavioralCloningTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.step
+        return self.sess.run(self.model.global_step)
 
     @property
     def get_last_reward(self):
@@ -129,7 +128,7 @@ class BehavioralCloningTrainer(Trainer):
         """
         Increment the step count of the trainer and Updates the last reward
         """
-        self.step += 1
+        self.sess.run(self.model.increment_step)
         return
 
     def take_action(self, all_brain_info: AllBrainInfo):
