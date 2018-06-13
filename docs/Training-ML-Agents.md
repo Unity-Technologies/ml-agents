@@ -56,6 +56,7 @@ In addition to passing the path of the Unity executable containing your training
 * `--train` – Specifies whether to train model or only run in inference mode. When training, **always** use the `--train` option.
 * `--worker-id=<n>` – When you are running more than one training environment at the same time, assign each a unique worker-id number. The worker-id is added to the communication port opened between the current instance of learn.py and the ExternalCommunicator object in the Unity environment. Defaults to 0.
 * `--docker-target-name=<dt>` – The Docker Volume on which to store curriculum, executable and model files. See [Using Docker](Using-Docker.md).
+* `--no-graphics` - Specify this option to run the Unity executable in `-batchmode` and doesn't initialize the graphics driver. Use this only if your training doesn't involve visual observations (reading from Pixels). See [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more details.
 
 ### Training config file
 
