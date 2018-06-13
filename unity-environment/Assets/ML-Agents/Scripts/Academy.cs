@@ -340,6 +340,7 @@ namespace MLAgents
 
             // Configure the environment using the configurations provided by
             // the developer in the Editor.
+            SetIsInference(!brainBatcher.GetIsTraining());
             ConfigureEnvironment();
         }
 
