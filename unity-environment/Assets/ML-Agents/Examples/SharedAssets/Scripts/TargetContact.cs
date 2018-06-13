@@ -14,7 +14,7 @@ namespace MLAgents
     {
         [Header("Detect Targets")]
         public bool touchingTarget;
-        private const string Target = "target"; //tag on target obj
+        private const string Target = "target"; // Tag on target object.
 
         /// <summary>
         /// Check for collision with a target.

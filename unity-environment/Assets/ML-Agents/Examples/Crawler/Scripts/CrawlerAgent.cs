@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
-[RequireComponent(typeof(JointDriveController))] //required to set joint forces
+[RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent {
 
     [Header("Target To Walk Towards")] 
@@ -35,9 +35,9 @@ public class CrawlerAgent : Agent {
 
     [Header("Reward Functions To Use")] 
     [Space(10)] 
-    public bool rewardMovingTowardsTarget; //agent should move towards target
-    public bool rewardFacingTarget; //agent should face the target
-    public bool rewardUseTimePenalty; //hurry up
+    public bool rewardMovingTowardsTarget; // Agent should move towards target
+    public bool rewardFacingTarget; // Agent should face the target
+    public bool rewardUseTimePenalty; // Hurry up
 
     [Header("Foot Grounded Visualization")] 
     [Space(10)] 
@@ -93,7 +93,7 @@ public class CrawlerAgent : Agent {
     public void CollectObservationBodyPart(BodyPart bp)
     {
         var rb = bp.rb;
-        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
+        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
         AddVectorObs(rb.velocity);
         AddVectorObs(rb.angularVelocity);
 
@@ -101,20 +101,20 @@ public class CrawlerAgent : Agent {
         {
             Vector3 localPosRelToBody = body.InverseTransformPoint(rb.position);
             AddVectorObs(localPosRelToBody);
-            AddVectorObs(bp.currentXNormalizedRot); //current x rot
-            AddVectorObs(bp.currentYNormalizedRot); //current y rot
-            AddVectorObs(bp.currentZNormalizedRot); //current z rot
-            AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit); //curre
+            AddVectorObs(bp.currentXNormalizedRot); // Current x rot
+            AddVectorObs(bp.currentYNormalizedRot); // Current y rot
+            AddVectorObs(bp.currentZNormalizedRot); // Current z rot
+            AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit);
         }
     }
 
     public override void CollectObservations()
     {
         jdController.GetCurrentJointForces();
-        //normalize dir vector to help generalize
+        // Normalize dir vector to help generalize
         AddVectorObs(dirToTarget.normalized);
 
-        //forward & up to help with orientation
+        // Forward & up to help with orientation
         AddVectorObs(body.transform.position.y);
         AddVectorObs(body.forward);
         AddVectorObs(body.up);
