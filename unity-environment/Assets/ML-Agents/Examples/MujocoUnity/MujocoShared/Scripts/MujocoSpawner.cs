@@ -33,10 +33,6 @@ namespace MujocoUnity
         /**< \brief The random noise applied at the start of each episode to improve training variance"*/
         public float OnGenerateApplyRandom = 0.005f;
 
-        [Tooltip("Only use this to support trained model on pre-Density Fix. WILL BE REMOVED")]
-        /**< \brief WILL BE REMOVED. temp HACK to not break old trained Models with the Denisty fix."*/
-        public bool SupportLegacyMassOfOne = false;
-
         [Tooltip("The default density (Mujoco's default value is 1000)")]
         /**< \brief The default density (Mujoco's default value is 1000)"*/
         public float DefaultDensity = 1000f;
@@ -461,12 +457,8 @@ namespace MujocoUnity
 
             var rb = geom.Geom.AddComponent<Rigidbody>();
             rb.useGravity = true;
-            if (SupportLegacyMassOfOne)
-                rb.mass = 1f;
-            else {
-			    rb.SetDensity(DefaultDensity);
-			    rb.mass = rb.mass; // ref: https://forum.unity.com/threads/rigidbody-setdensity-doesnt-work.322911/
-            }
+            rb.SetDensity(DefaultDensity);
+            rb.mass = rb.mass; // ref: https://forum.unity.com/threads/rigidbody-setdensity-doesnt-work.322911/
 
             ApplyClassToGeom(element, geom.Geom, parent);
             
