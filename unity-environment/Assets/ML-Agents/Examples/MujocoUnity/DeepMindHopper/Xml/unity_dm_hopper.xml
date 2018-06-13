@@ -28,8 +28,8 @@
       <joint name="rootx" type="slide" axis="1 0 0" class="free"/>
       <joint name="rootz" type="slide" axis="0 0 1" class="free"/>
       <joint name="rooty" type="hinge" axis="0 1 0" class="free"/>
-      <geom name="torso" fromto="0 0 -.05 0 0 .2" size="0.0653"/>
       <geom name="nose" fromto=".08 0 .13 .15 0 .14" size="0.03"/>
+      <geom name="torso" fromto="0 0 -.025 0 0 .225" size="0.0653"/>
       <body name="pelvis" pos="0 0 -.05">
         <joint name="waist" range="-30 30"/>
         <geom name="pelvis" fromto="0 0 0 0 0 -.15" size="0.065"/>
@@ -54,6 +54,7 @@
   <sensor>
     <!-- <touch name="touch_toe" site="touch_toe"/>
     <touch name="touch_heel" site="touch_heel"/> -->
+    <touch name="touch_toe" site="foot"/>
   </sensor>
 
   <actuator>

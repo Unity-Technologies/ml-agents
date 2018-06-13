@@ -37,8 +37,13 @@ namespace MujocoUnity
         /**< \brief WILL BE REMOVED. temp HACK to not break old trained Models with the Denisty fix."*/
         public bool SupportLegacyMassOfOne = false;
 
+        [Tooltip("The default density (Mujoco's default value is 1000)")]
         /**< \brief The default density (Mujoco's default value is 1000)"*/
-        float _defaultDensity = 1000f;
+        public float DefaultDensity = 1000f;
+
+        [Tooltip("Use to scale the power of the motors (default is 1)")]
+        /**< \brief Use to scale the power of the motors (default is 1)"*/
+        public float MotorScale = 1f;
 
 		
 		XElement _root;
@@ -459,7 +464,7 @@ namespace MujocoUnity
             if (SupportLegacyMassOfOne)
                 rb.mass = 1f;
             else {
-			    rb.SetDensity(_defaultDensity);
+			    rb.SetDensity(DefaultDensity);
 			    rb.mass = rb.mass; // ref: https://forum.unity.com/threads/rigidbody-setdensity-doesnt-work.322911/
             }
 
@@ -1111,6 +1116,7 @@ namespace MujocoUnity
                         break;
                     case "gear":
                         var gear = float.Parse(attribute.Value);
+                        gear *= MotorScale;
                         //var gear = 200;
                         mujocoJoint.Gear = gear;
                         spring.spring = gear;

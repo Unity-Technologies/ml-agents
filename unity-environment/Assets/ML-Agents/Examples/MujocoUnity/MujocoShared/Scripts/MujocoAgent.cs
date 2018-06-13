@@ -12,6 +12,8 @@ namespace MujocoUnity
 
         public bool FootHitTerrain;
         public bool NonFootHitTerrain;
+
+        protected float OnTerminateRewardValue = -1;
         
         internal int NumSensors;
 
@@ -120,18 +122,19 @@ namespace MujocoUnity
             }
             MujocoController.UpdateFromExternalComponent();
             
-            var done = TerminateFunction();
-
-            if (done)
-            {
-                Done();
-                var reward = -1f;
-                SetReward(reward);
-            }
             if (!IsDone())
             {
-                var reward = StepRewardFunction();
-                SetReward(reward);
+                var done = TerminateFunction();
+
+                if (done)
+                {
+                    Done();
+                    SetReward(OnTerminateRewardValue);
+                }
+                else {
+                    var reward = StepRewardFunction();
+                    SetReward(reward);
+                }
             }
 
             FootHitTerrain = false;
@@ -162,10 +165,15 @@ namespace MujocoUnity
 			var height = MujocoController.FocalPoint.transform.position.y - lowestFoot;
             return height;
         }
-        internal float GetVelocity()
+        internal float GetVelocity(string bodyPart = null)
         {
 			var dt = Time.fixedDeltaTime;
-			var rawVelocity = MujocoController.FocalRidgedBody.velocity.x;
+			float rawVelocity = 0f;
+            if (!string.IsNullOrWhiteSpace(bodyPart))
+                rawVelocity = BodyParts[bodyPart].velocity.x;
+            else 
+                rawVelocity = MujocoController.FocalRidgedBody.velocity.x;
+
             var maxSpeed = 4f; // meters per second
             //rawVelocity = Mathf.Clamp(rawVelocity,-maxSpeed,maxSpeed);
 			var velocity = rawVelocity / maxSpeed;
@@ -353,7 +361,7 @@ namespace MujocoUnity
             configurableJoint.targetAngularVelocity = t;
             var angX = configurableJoint.angularXDrive;
             angX.positionSpring = 1f;
-            var scale = mJoint.MaximumForce * Mathf.Pow(Mathf.Abs(target.Value), 5);
+            var scale = mJoint.MaximumForce * Mathf.Pow(Mathf.Abs(target.Value), 3);
             angX.positionDamper = Mathf.Max(1f, scale);
             angX.maximumForce = Mathf.Max(1f, mJoint.MaximumForce);
             configurableJoint.angularXDrive = angX;
