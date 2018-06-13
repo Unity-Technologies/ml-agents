@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
-
-
+    
     public class HumanBrain : Brain
     {
 
@@ -15,43 +15,40 @@ namespace MLAgents
             public KeyCode key;
             public int value;
         }
-
+        
         [System.Serializable]
-        public struct ContinuousPlayerAction
+        public struct KeyContinuousPlayerAction
         {
             public KeyCode key;
             public int index;
             public float value;
         }
+        
+        [System.Serializable]
+        public struct AxisContinuousPlayerAction
+        {
+            public string axis;
+            public int index;
+            public float scale;
+        }
 
         [SerializeField]
+        [FormerlySerializedAs("continuousPlayerActions")]
         [Tooltip("The list of keys and the value they correspond to for continuous control.")]
         /// Contains the mapping from input to continuous actions
-        public ContinuousPlayerAction[] continuousPlayerActions = new ContinuousPlayerAction[0];
-
+        public KeyContinuousPlayerAction[] keyContinuousPlayerActions;
+        
+        [SerializeField]
+        [Tooltip("The list of axis actions.")]
+        /// Contains the mapping from input to continuous actions
+        public AxisContinuousPlayerAction[] axisContinuousPlayerActions;
+        
         [SerializeField]
         [Tooltip("The list of keys and the value they correspond to for discrete control.")]
         /// Contains the mapping from input to discrete actions
-        public DiscretePlayerAction[] discretePlayerActions = new DiscretePlayerAction[0];
-
-        [SerializeField] public int defaultAction = 0;
-        
-        /**< Reference to the Decision component used to decide the actions */
-//        public Decision decision = new RandomDecision();
-
-//        public override void InitializeBrain(Academy aca, MLAgents.Batcher batcher, bool external)
-           //        {
-           //            aca.BrainDecideAction += DecideAction;
-           //            if (batcher == null)
-           //            {
-           //                this.brainBatcher = null;
-           //            }
-           //            else
-           //            {
-           //                this.brainBatcher = batcher;
-           //                this.brainBatcher.SubscribeBrain(this.name);
-           //            }
-           //        }
+        public DiscretePlayerAction[] discretePlayerActions;
+        [SerializeField]
+        public int defaultAction = 0;
 
         /// Uses the continuous inputs or dicrete inputs of the player to 
         /// decide action
@@ -68,12 +65,12 @@ namespace MLAgents
                 return;
             }
 
-            if (this.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 foreach (Agent agent in agentInfo.Keys)
                 {
-                    var action = new float[this.brainParameters.vectorActionSize];
-                    foreach (ContinuousPlayerAction cha in continuousPlayerActions)
+                    var action = new float[brainParameters.vectorActionSize];
+                    foreach (KeyContinuousPlayerAction cha in keyContinuousPlayerActions)
                     {
                         if (Input.GetKey(cha.key))
                         {
@@ -81,9 +78,19 @@ namespace MLAgents
                         }
                     }
 
+
+                    foreach (AxisContinuousPlayerAction axisAction in axisContinuousPlayerActions)
+                    {
+                        var axisValue = Input.GetAxis(axisAction.axis);
+                        axisValue *= axisAction.scale;
+                        if (Mathf.Abs(axisValue) > 0.0001)
+                        {
+                            action[axisAction.index] = axisValue;
+                        }
+                    }
+
                     agent.UpdateVectorAction(action);
                 }
-
             }
             else
             {
@@ -104,8 +111,6 @@ namespace MLAgents
 
                 }
             }
-            agentInfo.Clear();
-
         }
     }
 
