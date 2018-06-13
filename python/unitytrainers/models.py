@@ -129,7 +129,9 @@ class LearningModel(object):
                                      activation=tf.nn.elu, reuse=reuse, name="conv_2")
             hidden = c_layers.flatten(conv2)
 
-        hidden_flat = self.create_continuous_observation_encoder(hidden, h_size, activation, num_layers, scope, reuse)
+        with tf.variable_scope(scope+'/'+'flat_encoding'):
+            hidden_flat = self.create_continuous_observation_encoder(hidden, h_size, activation,
+                                                                     num_layers, scope, reuse)
         return hidden_flat
 
     @staticmethod
