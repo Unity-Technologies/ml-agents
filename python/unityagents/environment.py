@@ -28,7 +28,7 @@ logger = logging.getLogger("unityagents")
 class UnityEnvironment(object):
     def __init__(self, file_name=None, worker_id=0,
                  base_port=5005, curriculum=None,
-                 seed=0, docker_training=False):
+                 seed=0, docker_training=False, no_graphics=False):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -38,6 +38,7 @@ class UnityEnvironment(object):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         :param docker_training: Informs this class whether the process is being run within a container.
+        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         """
 
         atexit.register(self._close)
@@ -46,13 +47,12 @@ class UnityEnvironment(object):
         self._version_ = "API-4"
         self._loaded = False    # If true, this means the environment was successfully loaded
         self.proc1 = None       # The process that is started. If None, no process was started
-
         self.communicator = self.get_communicator(worker_id, base_port)
 
         # If the environment name is 'editor', a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
         if file_name is not None:
-            self.executable_launcher(file_name, docker_training)
+            self.executable_launcher(file_name, docker_training, no_graphics)
         else:
             logger.info("Ready to connect with the Editor.")
         self._loaded = True
@@ -143,7 +143,7 @@ class UnityEnvironment(object):
     def external_brain_names(self):
         return self._external_brain_names
 
-    def executable_launcher(self, file_name, docker_training):
+    def executable_launcher(self, file_name, docker_training, no_graphics):
         cwd = os.getcwd()
         file_name = (file_name.strip()
                      .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
@@ -186,9 +186,13 @@ class UnityEnvironment(object):
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
             if not docker_training:
-                self.proc1 = subprocess.Popen(
-                    [launch_string,
-                     '--port', str(self.port)])
+                if no_graphics:
+                    self.proc1 = subprocess.Popen(
+                        [launch_string,'-nographics', '-batchmode',
+                         '--port', str(self.port)])
+                else:
+                    self.proc1 = subprocess.Popen(
+                        [launch_string, '--port', str(self.port)])
             else:
                 """
                 Comments for future maintenance:
@@ -441,8 +445,8 @@ class UnityEnvironment(object):
             agent_info_list = output.agentInfos[b].value
             vis_obs = []
             for i in range(self.brains[b].number_visual_observations):
-                obs = [
-                    self._process_pixels(x.visual_observations[i], self.brains[b].camera_resolutions[i]['blackAndWhite'])
+                obs = [self._process_pixels(x.visual_observations[i],
+                                            self.brains[b].camera_resolutions[i]['blackAndWhite'])
                     for x in agent_info_list]
                 vis_obs += [np.array(obs)]
             if len(agent_info_list) == 0:
@@ -450,7 +454,7 @@ class UnityEnvironment(object):
             else:
                 memory_size = max([len(x.memories) for x in agent_info_list])
             if memory_size == 0:
-                memory = np.zeros((0,0))
+                memory = np.zeros((0, 0))
             else:
                 [x.memories.extend([0] * (memory_size - len(x.memories))) for x in agent_info_list]
                 memory = np.array([x.memories for x in agent_info_list])
