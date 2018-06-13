@@ -4,13 +4,17 @@ This page contains instructions for setting up an EC2 instance on Amazon Web Ser
 
 ## Preconfigured AMI
 
-We've preconfigured an AMI for you based on the [Deep Learning AMI (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). If you want to do training without the headless mode, you need to enable X Server on it. After launching your EC2 instance using the ami and ssh into it, run the following commands to enable it:
+We've prepared an preconfigured AMI for you with the ID: `someID` in the `us-east-1` region. It was created as a modification of [Deep Learning AMI (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). If you want to do training without the headless mode, you need to enable X Server on it. After launching your EC2 instance using the ami and ssh into it, run the following commands to enable it:
 
 ```
-//Start the X Server
+//Start the X Server, press Enter to come to the command line
 sudo /usr/bin/X :0 &
+
+//Check if Xorg process is running
+//You will have a list of processes running on the GPU, Xorg should be in the list.
+nvidia-smi
     
-//Start another ssh session, as the & in the previous command sometimes doesn't work. 
+//Make the ubuntu use X Server for display
 export DISPLAY=:0
 ```
 
@@ -95,10 +99,14 @@ Current limitations of the Unity Engine require that a screen be available to re
 4. Start X Server and make the ubuntu use X Server for display:
 
     ```
-    //Start the X Server
+    //Start the X Server, press Enter to come to the command line
     sudo /usr/bin/X :0 &
+
+    //Check if Xorg process is running
+    //You will have a list of processes running on the GPU, Xorg should be in the list.
+    nvidia-smi
     
-    //Start another ssh session, as the & in the previous command sometimes doesn't work. 
+    //Make the ubuntu use X Server for display
     export DISPLAY=:0
     ```
  
@@ -108,8 +116,6 @@ Current limitations of the Unity Engine require that a screen be available to re
     //For more information on glxgears, see ftp://www.x.org/pub/X11R6.8.1/doc/glxgears.1.html. 
     glxgears
     ```
-    
-6. Follow the instruction in [Training with headless mode](#Training-with-headless-mode) without checking the "Headless Mode" option during building. You should now be able to train any environment that uses visual observation, like our sample environment GridWorld. 
 
 ## Training on EC2 instance
     
