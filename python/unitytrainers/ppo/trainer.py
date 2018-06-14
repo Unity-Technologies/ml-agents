@@ -214,7 +214,7 @@ class PPOTrainer(Trainer):
                     feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
             if self.use_vector_obs:
                 feed_dict[self.model.vector_in] = curr_info.vector_observations
-                feed_dict[self.model.next_vector_obs] = next_info.vector_observations
+                feed_dict[self.model.next_vector_in] = next_info.vector_observations
 
             intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
                                               feed_dict=feed_dict) * float(self.has_updated)
@@ -276,7 +276,7 @@ class PPOTrainer(Trainer):
                                 next_info.visual_observations[i][idx])
                     if self.use_vector_obs:
                         self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
-                        self.training_buffer[agent_id]['next_vector_obs'].append(
+                        self.training_buffer[agent_id]['next_vector_in'].append(
                             next_info.vector_observations[next_idx])
                     if self.use_recurrent:
                         if stored_info.memories.shape[1] == 0:
@@ -423,7 +423,7 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
                             [-1, total_observation_length])
                         if self.use_curiosity:
-                            feed_dict[self.model.next_vector_obs] = np.array(buffer['next_vector_obs'][start:end]) \
+                            feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
                                 .reshape([-1, total_observation_length])
                     else:
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(

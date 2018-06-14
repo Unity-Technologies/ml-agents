@@ -74,10 +74,14 @@ class PPOModel(LearningModel):
 
                 # Create the encoder ops for current and next visual input. Not that these encoders are siamese.
                 encoded_visual = self.create_visual_observation_encoder(self.visual_in[i], self.curiosity_enc_size,
-                                                                        self.swish, 1, "visual_obs_encoder", False)
+                                                                        self.swish, 1, "stream_{}_visual_obs_encoder"
+                                                                        .format(i), False)
+
                 encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i],
-                                                                             self.curiosity_enc_size, self.swish, 1,
-                                                                             "visual_obs_encoder", True)
+                                                                             self.curiosity_enc_size,
+                                                                             self.swish, 1,
+                                                                             "stream_{}_visual_obs_encoder".format(i),
+                                                                             True)
                 visual_encoders.append(encoded_visual)
                 next_visual_encoders.append(encoded_next_visual)
 
@@ -88,15 +92,17 @@ class PPOModel(LearningModel):
 
         if self.o_size > 0:
             # Create input op for next (t+1) vector observation.
-            self.next_vector_obs = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
-                                                  name='next_vector_observation')
+            self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
+                                                 name='next_vector_observation')
 
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
-            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in, self.curiosity_enc_size,
+            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in,
+                                                                            self.curiosity_enc_size,
                                                                             self.swish, 2, "vector_obs_encoder", False)
-            encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_obs,
-                                                                                 self.curiosity_enc_size, self.swish,
-                                                                                 2, "vector_obs_encoder", True)
+            encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_in,
+                                                                                 self.curiosity_enc_size,
+                                                                                 self.swish, 2, "vector_obs_encoder",
+                                                                                 True)
 
             encoded_state_list.append(encoded_vector_obs)
             encoded_next_state_list.append(encoded_next_vector_obs)
@@ -132,7 +138,7 @@ class PPOModel(LearningModel):
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
-        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size, activation=None)
+        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size * (self.v_size+1), activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
         self.intrinsic_reward = tf.clip_by_value(self.curiosity_strength * squared_difference, 0, 1)
