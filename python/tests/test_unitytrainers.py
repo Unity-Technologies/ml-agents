@@ -111,7 +111,7 @@ default:
 @mock.patch('unityagents.UnityEnvironment.get_communicator')
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
-        discrete=True, visual_input=True)
+        discrete=True, visual_inputs=1)
     tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
                            1, 1, 1, '', "tests/test_unitytrainers.py", False)
     assert(tc.env.brain_names[0] == 'RealFakeBrain')
@@ -125,7 +125,7 @@ def test_load_config(mock_communicator, mock_launcher):
         with mock.patch(open_name, create=True) as _:
             mock_load.return_value = dummy_config
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_input=True)
+                discrete=True, visual_inputs=1)
             mock_load.return_value = dummy_config
             tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
                                        1, 1, 1, '','', False)
@@ -141,7 +141,7 @@ def test_initialize_trainers(mock_communicator, mock_launcher):
     with mock.patch('yaml.load') as mock_load:
         with mock.patch(open_name, create=True) as _:
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_input=True)
+                discrete=True, visual_inputs=1)
             tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
                                    1, 1, 1, '', "tests/test_unitytrainers.py", False)
 
