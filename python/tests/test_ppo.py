@@ -17,7 +17,7 @@ def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=False, visual_inputs=0)
+                discrete_action=False, visual_inputs=0)
             env = UnityEnvironment(' ')
 
             model = PPOModel(env.brains["RealFakeBrain"])
@@ -41,7 +41,7 @@ def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=False, visual_inputs=2)
+                discrete_action=False, visual_inputs=2)
             env = UnityEnvironment(' ')
 
             model = PPOModel(env.brains["RealFakeBrain"])
@@ -67,7 +67,7 @@ def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_inputs=2)
+                discrete_action=True, visual_inputs=2)
             env = UnityEnvironment(' ')
             model = PPOModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
@@ -93,7 +93,7 @@ def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_inputs=0)
+                discrete_action=True, visual_inputs=0)
             env = UnityEnvironment(' ')
             model = PPOModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
@@ -116,7 +116,7 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_inputs=0)
+                discrete_action=True, visual_inputs=0)
             env = UnityEnvironment(' ')
             memory_size = 128
             model = PPOModel(env.brains["RealFakeBrain"], use_recurrent=True, m_size=memory_size)
@@ -142,7 +142,7 @@ def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=False, visual_inputs=0)
+                discrete_action=False, visual_inputs=0)
             env = UnityEnvironment(' ')
             memory_size = 128
             model = PPOModel(env.brains["RealFakeBrain"], use_recurrent=True, m_size=memory_size)
