@@ -146,6 +146,8 @@ If you would like to contribute environments, please see our
 
 * Set-up: A creature with 4 arms and 4 forearms.
 * Goal: The agents must move its body toward the goal direction without falling.
+    * `CrawlerStaticTarget` - Goal direction is always forward.
+    * `CrawlerDynamicTarget`- Goal direction is randomized.
 * Agents: The environment contains 3 agent linked to a single brain.
 * Agent Reward Function (independent): 
     * +0.03 times body velocity in the goal direction.
