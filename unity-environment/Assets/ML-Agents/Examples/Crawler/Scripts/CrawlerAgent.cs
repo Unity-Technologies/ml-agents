@@ -49,7 +49,6 @@ public class CrawlerAgent : Agent
 
     public override void InitializeAgent()
     {
-        print("InitializeAgent()");
         jdController = GetComponent<JointDriveController>();
         currentDecisionStep = 1;
 
