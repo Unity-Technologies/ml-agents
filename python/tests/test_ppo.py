@@ -125,10 +125,10 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
 
             run_list = [model.output, model.all_probs, model.value, model.entropy,
                         model.learning_rate, model.memory_out]
-            feed_dict = {model.batch_size: 2,
-                         model.sequence_length: 1,
+            feed_dict = {model.batch_size: 1,
+                         model.sequence_length: 2,
                          model.prev_action: [0, 0],
-                         model.memory_in: np.zeros((2, memory_size)),
+                         model.memory_in: np.zeros((1, memory_size)),
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                    [3, 4, 5, 3, 4, 5]])}
             sess.run(run_list, feed_dict=feed_dict)
@@ -151,10 +151,9 @@ def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
 
             run_list = [model.output, model.all_probs, model.value, model.entropy,
                         model.learning_rate, model.memory_out]
-            feed_dict = {model.batch_size: 2,
-                         model.sequence_length: 1,
-                         model.prev_action: [0, 0],
-                         model.memory_in: np.zeros((2, memory_size)),
+            feed_dict = {model.batch_size: 1,
+                         model.sequence_length: 2,
+                         model.memory_in: np.zeros((1, memory_size)),
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                    [3, 4, 5, 3, 4, 5]])}
             sess.run(run_list, feed_dict=feed_dict)
