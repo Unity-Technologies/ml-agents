@@ -5,11 +5,10 @@ using MLAgents;
 
 public class WalkerAgent : Agent
 {
-    [Header("Specific to Walker")] 
-    [Header("Target To Walk Towards")] 
-    [Space(10)] 
+    [Header("Specific to Walker")] [Header("Target To Walk Towards")] [Space(10)]
     public Transform target;
-	Vector3 dirToTarget;    
+
+    Vector3 dirToTarget;
     public Transform hips;
     public Transform chest;
     public Transform spine;
@@ -69,7 +68,7 @@ public class WalkerAgent : Agent
             AddVectorObs(bp.currentXNormalizedRot);
             AddVectorObs(bp.currentYNormalizedRot);
             AddVectorObs(bp.currentZNormalizedRot);
-            AddVectorObs(bp.currentStrength/jdController.maxJointForceLimit);
+            AddVectorObs(bp.currentStrength / jdController.maxJointForceLimit);
         }
     }
 
@@ -93,10 +92,10 @@ public class WalkerAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-		dirToTarget = target.position - jdController.bodyPartsDict[hips].rb.position;
+        dirToTarget = target.position - jdController.bodyPartsDict[hips].rb.position;
 
         // Apply action to all relevant body parts. 
-        if(isNewDecisionStep)
+        if (isNewDecisionStep)
         {
             var bpDict = jdController.bodyPartsDict;
             int i = -1;
@@ -117,7 +116,7 @@ public class WalkerAgent : Agent
             bpDict[forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
             bpDict[forearmR].SetJointTargetRotation(vectorAction[++i], 0, 0);
             bpDict[head].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        
+
             //update joint strength settings
             bpDict[chest].SetJointStrength(vectorAction[++i]);
             bpDict[spine].SetJointStrength(vectorAction[++i]);
@@ -142,10 +141,10 @@ public class WalkerAgent : Agent
         // c. Encourage head height.
         // d. Discourage head movement.
         AddReward(
-            + 0.03f * Vector3.Dot(dirToTarget.normalized, jdController.bodyPartsDict[hips].rb.velocity)
+            +0.03f * Vector3.Dot(dirToTarget.normalized, jdController.bodyPartsDict[hips].rb.velocity)
             + 0.01f * Vector3.Dot(dirToTarget.normalized, hips.forward)
             + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity, 
+            - 0.01f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity,
                 jdController.bodyPartsDict[hips].rb.velocity)
         );
     }
@@ -163,7 +162,7 @@ public class WalkerAgent : Agent
         }
         else
         {
-            currentDecisionStep ++;
+            currentDecisionStep++;
             isNewDecisionStep = false;
         }
     }
@@ -173,15 +172,16 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        if(dirToTarget != Vector3.zero)
+        if (dirToTarget != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
-        
+
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
+
         isNewDecisionStep = true;
         currentDecisionStep = 1;
     }
