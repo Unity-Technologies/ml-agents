@@ -247,8 +247,10 @@ class BehavioralCloningTrainer(Trainer):
         for l in range(len(info_student.agents)):
             if info_student.local_done[l]:
                 agent_id = info_student.agents[l]
-                self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
-                self.stats['episode_length'].append(self.episode_steps[agent_id])
+                self.stats['cumulative_reward'].append(
+                    self.cumulative_rewards.get(agent_id, 0))
+                self.stats['episode_length'].append(
+                    self.episode_steps.get(agent_id, 0))
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
 

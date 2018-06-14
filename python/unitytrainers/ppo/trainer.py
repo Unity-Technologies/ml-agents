@@ -352,12 +352,15 @@ class PPOTrainer(Trainer):
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
-                    self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
-                    self.stats['episode_length'].append(self.episode_steps[agent_id])
+                    self.stats['cumulative_reward'].append(
+                        self.cumulative_rewards.get(agent_id, 0))
+                    self.stats['episode_length'].append(
+                        self.episode_steps.get(agent_id, 0))
                     self.cumulative_rewards[agent_id] = 0
                     self.episode_steps[agent_id] = 0
                     if self.use_curiosity:
-                        self.stats['intrinsic_reward'].append(self.intrinsic_rewards[agent_id])
+                        self.stats['intrinsic_reward'].append(
+                            self.intrinsic_rewards.get(agent_id, 0))
                         self.intrinsic_rewards[agent_id] = 0
 
     def end_episode(self):
