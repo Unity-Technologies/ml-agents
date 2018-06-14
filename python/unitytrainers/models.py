@@ -185,7 +185,8 @@ class LearningModel(object):
                 for j in range(brain.number_visual_observations):
                     encoded_visual = self.create_visual_observation_encoder(self.visual_in[j], h_size,
                                                                             activation_fn, num_layers,
-                                                                            "main_graph_{}".format(i), False)
+                                                                            "main_graph_{}_encoder{}"
+                                                                            .format(i, j), False)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:

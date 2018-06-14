@@ -6,7 +6,7 @@ from communicator_objects import UnityMessage, UnityOutput, UnityInput,\
 
 
 class MockCommunicator(Communicator):
-    def __init__(self, discrete=False, visual_input=False):
+    def __init__(self, discrete=False, visual_inputs=0):
         """
         Python side of the grpc communication. Python is the client and Unity the server
 
@@ -15,17 +15,14 @@ class MockCommunicator(Communicator):
         """
         self.is_discrete = discrete
         self.steps = 0
-        self.visual_input = visual_input
+        self.visual_inputs = visual_inputs
         self.has_been_closed = False
 
     def initialize(self, inputs: UnityInput) -> UnityOutput:
-        if self.visual_input:
-            resolutions = [ResolutionProto(
-                width=30,
-                height=40,
-                gray_scale=False)]
-        else:
-            resolutions = []
+        resolutions = [ResolutionProto(
+            width=30,
+            height=40,
+            gray_scale=False) for i in range(self.visual_inputs)]
         bp = BrainParametersProto(
             vector_observation_size=3,
             num_stacked_vector_observations=2,
