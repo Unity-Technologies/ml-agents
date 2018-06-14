@@ -16,7 +16,7 @@ def test_cc_bc_model(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=False, visual_inputs=0)
+                discrete_action=False, visual_inputs=0)
             env = UnityEnvironment(' ')
             model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
@@ -38,7 +38,7 @@ def test_dc_bc_model(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_inputs=0)
+                discrete_action=True, visual_inputs=0)
             env = UnityEnvironment(' ')
             model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
@@ -61,7 +61,7 @@ def test_visual_dc_bc_model(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_inputs=2)
+                discrete_action=True, visual_inputs=2)
             env = UnityEnvironment(' ')
             model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
@@ -86,7 +86,7 @@ def test_visual_cc_bc_model(mock_communicator, mock_launcher):
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
             mock_communicator.return_value = MockCommunicator(
-                discrete=False, visual_inputs=2)
+                discrete_action=False, visual_inputs=2)
             env = UnityEnvironment(' ')
             model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()

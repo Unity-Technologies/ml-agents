@@ -1,6 +1,6 @@
 # # Unity ML Agents
 # ## ML-Agent Learning (PPO)
-# Contains an implementation of PPO as described [here](https://arxiv.org/abs/1707.06347).
+# Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
 
 import logging
 import os
@@ -214,7 +214,7 @@ class PPOTrainer(Trainer):
                     feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
             if self.use_vector_obs:
                 feed_dict[self.model.vector_in] = curr_info.vector_observations
-                feed_dict[self.model.next_vector_obs] = next_info.vector_observations
+                feed_dict[self.model.next_vector_in] = next_info.vector_observations
 
             intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
                                               feed_dict=feed_dict) * float(self.has_updated)
@@ -276,7 +276,7 @@ class PPOTrainer(Trainer):
                                 next_info.visual_observations[i][idx])
                     if self.use_vector_obs:
                         self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
-                        self.training_buffer[agent_id]['next_vector_obs'].append(
+                        self.training_buffer[agent_id]['next_vector_in'].append(
                             next_info.vector_observations[next_idx])
                     if self.use_recurrent:
                         if stored_info.memories.shape[1] == 0:
@@ -411,7 +411,7 @@ class PPOTrainer(Trainer):
                                  [-1, self.brain.vector_action_space_size])}
                 if self.is_continuous_action:
                     feed_dict[self.model.output_pre] = np.array(buffer['actions_pre'][start:end]).reshape(
-                            [-1, self.brain.vector_action_space_size])
+                        [-1, self.brain.vector_action_space_size])
                 else:
                     feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).flatten()
                     if self.use_recurrent:
@@ -423,11 +423,11 @@ class PPOTrainer(Trainer):
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
                             [-1, total_observation_length])
                         if self.use_curiosity:
-                            feed_dict[self.model.next_vector_obs] = np.array(buffer['next_vector_obs'][start:end])\
+                            feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
                                 .reshape([-1, total_observation_length])
                     else:
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
-                                [-1, self.brain.num_stacked_vector_observations])
+                            [-1, self.brain.num_stacked_vector_observations])
                 if self.use_visual_obs:
                     for i, _ in enumerate(self.model.visual_in):
                         _obs = np.array(buffer['visual_obs%d' % i][start:end])
