@@ -1,7 +1,7 @@
 # Migrating from ML-Agents v0.3 to ML-Agents v0.4
 
 ## Unity API
- * `using MLAgents;` needs to be added in all of the C# scripts that uses ML-Agents. 
+ * `using MLAgents;` needs to be added in all of the C# scripts that use ML-Agents. 
 
 # Migrating from ML-Agents v0.2 to ML-Agents v0.3
 
