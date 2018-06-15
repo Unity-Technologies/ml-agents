@@ -32,7 +32,7 @@
  * [如何使用 TensorBoard 观察训练过程](/docs/Using-Tensorboard.md)
 
 ## 帮助
- * [如何从老版本升级到 ML-Agents v0.3](/docs/Migrating-v0.3.md)
+ * [如何从老版本升级到 ML-Agents v0.3](/docs/Migrating.md)
  * [常见问题](/docs/FAQ.md)
  * [ML-Agents 术语表](/docs/Glossary.md)
  * [ML-Agents 尚未实现功能](/docs/Limitations.md)

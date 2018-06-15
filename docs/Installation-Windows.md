@@ -2,7 +2,7 @@
 
 ML-Agents supports Windows 10. While it might be possible to run ML-Agents using other versions of Windows, it has not been tested on other versions. Furthermore, ML-Agents has not been tested on a Windows VM such as Bootcamp or Parallels.
 
-To use ML-Agents, you install Python and the required Python packages as outlined below. This guide also covers how set up GPU-based training (for advanced users). GPU-based training is not required for the v0.3 release of ML-Agents. However, training on a GPU might be required by future versions and features.
+To use ML-Agents, you install Python and the required Python packages as outlined below. This guide also covers how set up GPU-based training (for advanced users). GPU-based training is not required for the v0.4 release of ML-Agents. However, training on a GPU might be required by future versions and features.
 
 ## Step 1: Install Python via Anaconda
 
@@ -93,7 +93,7 @@ This will complete the installation of all the required Python packages to run M
 
 GPU is not required for ML-Agents and won't speed up the PPO algorithm a lot during training(but something in the future will benefit from GPU). This is a guide for advanced users who want to train using GPUs. Additionally, you will need to check if your GPU is CUDA compatible. Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
-As of ML-Agents v0.3, only CUDA v9.0 and cuDNN v7.0.5 is supported.
+As of ML-Agents v0.4, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
 ### Install Nvidia CUDA toolkit
 
