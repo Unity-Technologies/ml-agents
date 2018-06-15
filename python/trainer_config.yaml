@@ -221,7 +221,6 @@ StudentBrain:
     batches_per_epoch: 5
     num_layers: 4
     hidden_units: 64
-    use_recurrent: false
     sequence_length: 16
     buffer_size: 128
 
