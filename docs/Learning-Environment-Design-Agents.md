@@ -121,7 +121,7 @@ For angles that can be outside the range [0,360], you can either reduce the angl
  
 ### Multiple Visual Observations
 
-Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures and feeds them into a neural network. You can use camera observations and either continuous feature vector or discrete state observations at the same time.
+Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures into a 3D Tensor which can be fed into a convolutional neural network (CNN). For more information on CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You can use camera observations and either continuous feature vector or discrete state observations at the same time.
  
 Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
 
