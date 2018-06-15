@@ -517,12 +517,13 @@ namespace MLAgents
 #endif
 #if !ENABLE_TENSORFLOW && UNITY_EDITOR
             EditorGUILayout.HelpBox(
-                "You need to install and enable the TensorflowSharp plugin in" +
+                "You need to install and enable the TensorflowSharp plugin in " +
                 "order to use the internal brain.", MessageType.Error);
             if (GUILayout.Button("Show me how"))
             {
                 Application.OpenURL(
-                    "https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-Balance-Ball.md#embedding-the-trained-brain-into-the-unity-environment-experimental");
+                    "https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-" +
+                    "Balance-Ball.md#embedding-the-trained-brain-into-the-unity-environment-experimental");
             }
 #endif
         }
