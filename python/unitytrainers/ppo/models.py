@@ -137,8 +137,9 @@ class PPOModel(LearningModel):
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
-        # We compare against the concatenation of all observation streams, hence `self.v_size+1`.
-        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size * (self.v_size+1), activation=None)
+        # We compare against the concatenation of all observation streams, hence `self.v_size + int(self.o_size > 0)`.
+        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size * (self.v_size + int(self.o_size > 0)),
+                                          activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
         self.intrinsic_reward = tf.clip_by_value(self.curiosity_strength * squared_difference, 0, 1)
