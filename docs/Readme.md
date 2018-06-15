@@ -36,7 +36,7 @@
  * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Help
- * [Migrating to ML-Agents v0.3](Migrating-v0.3.md)
+ * [Migrating from earlier versions of ML-Agents](Migrating.md)
  * [Frequently Asked Questions](FAQ.md)
  * [ML-Agents Glossary](Glossary.md)
  * [Limitations](Limitations.md)

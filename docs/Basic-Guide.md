@@ -7,7 +7,7 @@ we highly recommend the [Roll-a-ball tutorial](https://unity3d.com/learn/tutoria
 
 ## Setting up ML-Agents within Unity
 
-In order to use ML-Agents within Unity, you need to change some Unity settings first. Also [TensorFlowSharp plugin](https://github.com/migueldeicaza/TensorFlowSharp) is needed for you to use pretrained model within Unity. 
+In order to use ML-Agents within Unity, you need to change some Unity settings first. Also [TensorFlowSharp plugin](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage) is needed for you to use pretrained model within Unity, which is based on the [TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp). 
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
