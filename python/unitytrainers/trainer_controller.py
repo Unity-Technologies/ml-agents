@@ -276,6 +276,7 @@ class TrainerController(object):
                 if global_step != 0 and self.train_model:
                     self._save_model(sess, steps=global_step, saver=saver)
             except KeyboardInterrupt:
+                print('--------------------------Now saving model-------------------------')
                 if self.train_model:
                     self.logger.info("Learning was interrupted. Please wait while the graph is generated.")
                     self._save_model(sess, steps=global_step, saver=saver)
