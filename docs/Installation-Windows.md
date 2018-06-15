@@ -23,13 +23,28 @@ We recommend the default _advanced installation options_. However, select the op
 </p>
 
 After installation, you must open __Anaconda Navigator__ to finish the setup. From the Windows search bar, type _anaconda navigator_. You can close Anaconda Navigator after it opens.
-If environment variables were not created, or if you see the error "conda is not recognized as internal or external command", in System Variables, "Path" add the following new paths:
+
+If environment variables were not created, you will see error "conda is not recognized as internal or external command" when you type `conda` into the command line. To solve this you will need to set the environment variable correctly. 
+
+Type `environment variables` in the search bar (this can be reached by hitting the Windows key or the bottom left Windows button). You should see an option called __Edit the system environment variables__. 
+
+<p align="center">
+    <img src="images/edit_env_var.png" 
+        alt="edit env variables" 
+        width="250" border="10" />
+</p>
+
+From here, click the __Environment Variables__ button. 
+Double click "Path" under __System variable__ to edit the "Path" variable, click __New__ to add the following new paths. 
+
 ```
-    %UserProfile%\Anaconda3\Scripts
-    %UserProfile%\Anaconda3\Scripts\conda.exe
-    %UserProfile%\Anaconda3
-    %UserProfile%\Anaconda3\python.exe
+%UserProfile%\Anaconda3\Scripts
+%UserProfile%\Anaconda3\Scripts\conda.exe
+%UserProfile%\Anaconda3
+%UserProfile%\Anaconda3\python.exe
 ```
+
+
 ## Step 2: Setup and Activate a New Conda Environment
 
 You will create a new [Conda environment](https://conda.io/docs/) to be used with ML-Agents. This means that all the packages that you install are localized to just this environment. It will not affect any other installation of Python or other environments. Whenever you want to run ML-Agents, you will need activate this Conda environment.
