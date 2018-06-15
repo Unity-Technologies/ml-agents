@@ -150,7 +150,7 @@ class LearningModel(object):
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
-        with tf.name_scope(scope):
+        with tf.variable_scope(scope):
             vector_in = tf.reshape(observation_input, [-1])
             state_onehot = tf.one_hot(vector_in, s_size)
             hidden = state_onehot
