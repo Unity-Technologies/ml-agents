@@ -130,12 +130,6 @@ Ball3DHardBrain:
     gamma: 0.995
     beta: 0.001
 
-BouncerBrain:
-    normalize: true
-    max_steps: 5.0e5
-    num_layers: 2
-    hidden_units: 56
-
 TennisBrain:
     normalize: true
 
