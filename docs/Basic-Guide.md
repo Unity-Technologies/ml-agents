@@ -73,7 +73,7 @@ object.
 Where:
 - `<run-identifier>` is a string used to separate the results of different training runs
 - And the `--train` tells learn.py to run a training session (rather than inference)
-5. When the message _"Ready to connect with the Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
+5. When the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
 
 **Note**: Alternatively, you can use an executable rather than the Editor to perform training. Please refer to [this page](Learning-Environment-Executable.md) for instructions on how to build and use an executable.
 
