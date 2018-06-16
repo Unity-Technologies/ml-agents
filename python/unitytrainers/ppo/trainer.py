@@ -204,6 +204,9 @@ class PPOTrainer(Trainer):
         :return: Intrinsic rewards for all agents.
         """
         if self.use_curiosity:
+            if curr_info.agents != next_info.agents:
+                raise UnityTrainerException("Training with Curiosity-driven exploration"
+                                            " and On-Demand Decision making is currently not supported.")
             feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1}
             if self.is_continuous_action:
                 feed_dict[self.model.output] = next_info.previous_vector_actions
