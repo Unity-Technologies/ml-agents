@@ -81,6 +81,8 @@ MonoBehaviour:
   Force2D: 1
   OnGenerateApplyRandom: 0.005
   SupportLegacyMassOfOne: 0
+  DefaultDensity: 1000
+  MotorScale: 0.5
 --- !u!114 &114284981699927044
 MonoBehaviour:
   m_ObjectHideFlags: 1

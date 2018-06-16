@@ -108,4 +108,4 @@ MonoBehaviour:
   OnGenerateApplyRandom: 0.005
   SupportLegacyMassOfOne: 0
   DefaultDensity: 1000
-  MotorScale: 1.5
+  MotorScale: 1

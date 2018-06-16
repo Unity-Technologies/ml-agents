@@ -335,6 +335,10 @@ namespace MujocoUnity
                 case "right_right_foot": // dm_humanoid
                 case "left_shin": // dm_humanoid
                 case "right_shin": // dm_humanoid
+                case "left_ankle_geom": // oai_ant
+                case "right_ankle_geom": // oai_ant
+                case "third_ankle_geom": // oai_ant
+                case "fourth_ankle_geom": // oai_ant
                     FootHitTerrain = true;
                     break;
                 default:

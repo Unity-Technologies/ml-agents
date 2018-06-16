@@ -16,7 +16,7 @@ public class OpenAIAntAgent : MujocoAgent {
         Monitor.SetActive(true);
 
         StepRewardFunction = StepRewardAnt101;
-        TerminateFunction = TerminateNever;
+        TerminateFunction = TerminateAnt;
         ObservationsFunction = ObservationsDefault;
 
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso_geom");
@@ -42,12 +42,20 @@ public class OpenAIAntAgent : MujocoAgent {
         AddVectorObs(MujocoController.JointVelocity);
     }
 
+    bool TerminateAnt()
+    {
+        // if (TerminateOnNonFootHitTerrain())
+        //     return true;
+        var angle = GetForwardBonus("pelvis");
+        bool endOnAngle = (angle < .2f);
+        return endOnAngle;        
+    }
 
     float StepRewardAnt101()
     {
         float velocity = GetVelocity();
         float effort = GetEffort();
-        var effortPenality = 1e-1f * (float)effort;
+        var effortPenality =0.5f * (float)effort;
         var jointsAtLimitPenality = GetJointsAtLimitPenality() * 4;
 
         var reward = velocity

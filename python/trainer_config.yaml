@@ -33,15 +33,15 @@ DeepMindHumanoidBrain:
     summary_freq: 1000
     num_layers: 2
     hidden_units: 512
-    use_curiosity: true
-    curiosity_strength: 0.01
-    curiosity_enc_size: 256    
+    # use_curiosity: true
+    # curiosity_strength: 0.01
+    # curiosity_enc_size: 256    
 
 
 OpenAIHumanoidBrain:
     normalize: true
     num_epoch: 3
-    beta: 0.001
+    beta: 0.01
     time_horizon: 1000
     batch_size: 2048
     buffer_size: 20480
@@ -49,7 +49,10 @@ OpenAIHumanoidBrain:
     max_steps: 2e6
     summary_freq: 1000
     num_layers: 2
-    hidden_units: 256
+    hidden_units: 512
+    # use_curiosity: true
+    # curiosity_strength: 0.01
+    # curiosity_enc_size: 256   
 
 OpenAIWalker2dBrain:
     beta: 5.0e-3
@@ -68,9 +71,8 @@ OpenAIWalker2dBrain:
     buffer_size: 10240
     max_steps: 3e5
 
-DeepMindHopperBrain:    
+DeepMindHopperBrain:
     beta: 1.0e-2
-    # beta: 5.0e-3
     epsilon: 0.20
     gamma: 0.99
     lambd: 0.95
@@ -96,7 +98,7 @@ DeepMindWalkerBrain:
     lambd: 0.95
     learning_rate: 1.0e-3
     num_epoch: 3
-    time_horizon: 1000
+    time_horizon: 128
     summary_freq: 1000
     use_recurrent: false
     normalize: true
@@ -120,11 +122,14 @@ OpenAIHopperBrain:
     summary_freq: 1000
     use_recurrent: false
     normalize: true
+    num_layers: 3
+    hidden_units: 26
     batch_size: 2048
     buffer_size: 10240
-    max_steps: 1e5
+    max_steps: 3e5
 
 OpenAIAntBrain:
+    # beta: 1.0e-2
     beta: 5.0e-3
     epsilon: 0.20
     gamma: 0.99
@@ -137,7 +142,12 @@ OpenAIAntBrain:
     normalize: true
     batch_size: 2048
     buffer_size: 10240
-    max_steps: 1e5
+    num_layers: 3
+    hidden_units: 53
+    max_steps: 3e5
+    # use_curiosity: true
+    # curiosity_strength: 0.01
+    # curiosity_enc_size: 256    
 
 BananaBrain:
     normalize: false
