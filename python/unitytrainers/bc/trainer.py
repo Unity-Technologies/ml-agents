@@ -42,7 +42,6 @@ class BehavioralCloningTrainer(Trainer):
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.use_recurrent = trainer_parameters['use_recurrent']
-        self.step = 0
         self.sequence_length = 1
         self.m_size = None
         if self.use_recurrent:
@@ -75,6 +74,9 @@ class BehavioralCloningTrainer(Trainer):
                 normalize=False,
                 use_recurrent=trainer_parameters['use_recurrent'],
                 brain=self.brain)
+        self.inference_run_list = [self.model.sample_action]
+        if self.use_recurrent:
+            self.inference_run_list += [self.model.memory_out]
 
     def __str__(self):
 
@@ -109,7 +111,7 @@ class BehavioralCloningTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.step
+        return self.sess.run(self.model.global_step)
 
     @property
     def get_last_reward(self):
@@ -122,16 +124,11 @@ class BehavioralCloningTrainer(Trainer):
         else:
             return 0
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
+        Increment the step count of the trainer and Updates the last reward
         """
-        self.step += 1
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
-        """
+        self.sess.run(self.model.increment_step)
         return
 
     def take_action(self, all_brain_info: AllBrainInfo):
@@ -146,7 +143,7 @@ class BehavioralCloningTrainer(Trainer):
 
         agent_brain = all_brain_info[self.brain_name]
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
-        run_list = [self.model.sample_action]
+
         if self.use_observations:
             for i, _ in enumerate(agent_brain.visual_observations):
                 feed_dict[self.model.visual_in[i]] = agent_brain.visual_observations[i]
@@ -156,12 +153,11 @@ class BehavioralCloningTrainer(Trainer):
             if agent_brain.memories.shape[1] == 0:
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
             feed_dict[self.model.memory_in] = agent_brain.memories
-            run_list += [self.model.memory_out]
         if self.use_recurrent:
-            agent_action, memories = self.sess.run(run_list, feed_dict)
+            agent_action, memories = self.sess.run(self.inference_run_list, feed_dict)
             return agent_action, memories, None, None
         else:
-            agent_action = self.sess.run(run_list, feed_dict)
+            agent_action = self.sess.run(self.inference_run_list, feed_dict)
         return agent_action, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
@@ -220,12 +216,11 @@ class BehavioralCloningTrainer(Trainer):
             if stored_info_student is None:
                 continue
             else:
-                idx = stored_info_student.agents.index(agent_id)
                 next_idx = next_info_student.agents.index(agent_id)
-                if not stored_info_student.local_done[idx]:
-                    if agent_id not in self.cumulative_rewards:
-                        self.cumulative_rewards[agent_id] = 0
-                    self.cumulative_rewards[agent_id] += next_info_student.rewards[next_idx]
+                if agent_id not in self.cumulative_rewards:
+                    self.cumulative_rewards[agent_id] = 0
+                self.cumulative_rewards[agent_id] += next_info_student.rewards[next_idx]
+                if not next_info_student.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
@@ -252,8 +247,10 @@ class BehavioralCloningTrainer(Trainer):
         for l in range(len(info_student.agents)):
             if info_student.local_done[l]:
                 agent_id = info_student.agents[l]
-                self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
-                self.stats['episode_length'].append(self.episode_steps[agent_id])
+                self.stats['cumulative_reward'].append(
+                    self.cumulative_rewards.get(agent_id, 0))
+                self.stats['episode_length'].append(
+                    self.episode_steps.get(agent_id, 0))
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
 
@@ -317,24 +314,3 @@ class BehavioralCloningTrainer(Trainer):
         else:
             self.stats['losses'].append(0)
 
-    def write_summary(self, lesson_number):
-        """
-        Saves training statistics to Tensorboard.
-        :param lesson_number: The lesson the trainer is at.
-        """
-        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-                self.is_training and self.get_step <= self.get_max_steps):
-            steps = self.get_step
-            if len(self.stats['cumulative_reward']) > 0:
-                mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info("{0} : Step: {1}. Mean Reward: {2}. Std of Reward: {3}."
-                            .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
-            summary = tf.Summary()
-            for key in self.stats:
-                if len(self.stats[key]) > 0:
-                    stat_mean = float(np.mean(self.stats[key]))
-                    summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
-                    self.stats[key] = []
-            summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
-            self.summary_writer.add_summary(summary, steps)
-            self.summary_writer.flush()

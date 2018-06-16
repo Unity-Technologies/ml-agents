@@ -21,7 +21,8 @@ install Docker if you don't have it setup on your machine.
 
 Using Docker for ML-Agents involves three steps: building the Unity environment with specific flags, building a Docker container and, finally, running the container. If you are not familiar with building a Unity environment for ML-Agents, please read through our [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md) guide first.
 
-### Build the Environment
+### Build the Environment (Optional)
+_If you want to used the Editor to perform training, you can skip this step._
 
 Since Docker typically runs a container sharing a (linux) kernel with the host machine, the 
 Unity environment **has** to be built for the **linux platform**. When building a Unity environment, please select the following options from the the Build Settings window:
@@ -36,17 +37,22 @@ Then click `Build`, pick an environment name (e.g. `3DBall`) and set the output 
 ### Build the Docker Container
 
 First, make sure the Docker engine is running on your machine. Then build the Docker container by calling the following command at the top-level of the repository:
+
 ```
 docker build -t <image-name> .
 ``` 
 Replace `<image-name>` with a name for the Docker image, e.g. `balance.ball.v0.1`.
 
+**Note** if you modify hyperparameters in `trainer_config.yaml` you will have to build a new Docker Container before running.
+
 ### Run the Docker Container
 
 Run the Docker container by calling the following command at the top-level of the repository:
+
 ```
 docker run --name <container-name> \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
+           -p 5005:5005 \
            <image-name>:latest <environment-name> \
            --docker-target-name=unity-volume \
            --train \
@@ -55,17 +61,19 @@ docker run --name <container-name> \
 
 Notes on argument values:
 - `<container-name>` is used to identify the container (in case you want to interrupt and terminate it). This is optional and Docker will generate a random name if this is not set. _Note that this must be unique for every run of a Docker image._
-- `<image-name>` and `<environment-name>`: References the image and environment names, respectively.
+- `<image-name>` references the image name used when building the container.
+- `<environemnt-name>` __(Optional)__: If you are training with a linux executable, this is the name of the executable. If you are training in the Editor, do not pass a `<environemnt-name>` argument and press the :arrow_forward: button in Unity when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen.
 - `source`: Reference to the path in your host OS where you will store the Unity executable. 
 - `target`: Tells Docker to mount the `source` path as a disk with this name. 
 - `docker-target-name`: Tells the ML-Agents Python package what the name of the disk where it can read the Unity executable and store the graph. **This should therefore be identical to `target`.**
 - `train`, `run-id`: ML-Agents arguments passed to `learn.py`. `train` trains the algorithm, `run-id` is used to tag each experiment with a unique identifier. 
 
-For the `3DBall` environment, for example this would be:
+To train with a `3DBall` environment executable, the command would be:
 
 ```
 docker run --name 3DBallContainer.first.trial \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
+           -p 5005:5005 \
            balance.ball.v0.1:latest 3DBall \
            --docker-target-name=unity-volume \
            --train \

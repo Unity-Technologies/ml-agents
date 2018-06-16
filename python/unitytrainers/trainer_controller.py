@@ -17,9 +17,9 @@ from unityagents import UnityEnvironment, UnityEnvironmentException
 
 class TrainerController(object):
     def __init__(self, env_path, run_id, save_freq, curriculum_file, fast_simulation, load, train,
-                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path):
+                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path,
+                 no_graphics):
         """
-
         :param env_path: Location to the environment executable to be loaded.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
@@ -33,13 +33,15 @@ class TrainerController(object):
         :param seed: Random seed used for training.
         :param docker_target_name: Name of docker volume that will contain all data.
         :param trainer_config_path: Fully qualified path to location of trainer configuration file
+        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         """
         self.trainer_config_path = trainer_config_path
-        env_path = (env_path.strip()
-                    .replace('.app', '')
-                    .replace('.exe', '')
-                    .replace('.x86_64', '')
-                    .replace('.x86', ''))  # Strip out executable extensions if passed
+        if env_path is not None:
+            env_path = (env_path.strip()
+                        .replace('.app', '')
+                        .replace('.exe', '')
+                        .replace('.x86_64', '')
+                        .replace('.x86', ''))  # Strip out executable extensions if passed
         # Recognize and use docker volume if one is passed as an argument
         if docker_target_name == '':
             self.docker_training = False
@@ -51,8 +53,9 @@ class TrainerController(object):
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
-            env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
-                                                                 env_name=env_path)
+            if env_path is not None:
+                env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
+                                                                     env_name=env_path)
             if curriculum_file is None:
                 self.curriculum_file = None
             else:
@@ -77,8 +80,12 @@ class TrainerController(object):
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     curriculum=self.curriculum_file, seed=self.seed,
-                                    docker_training=self.docker_training)
-        self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
+                                    docker_training=self.docker_training,
+                                    no_graphics=no_graphics)
+        if env_path is None:
+            self.env_name = 'editor_'+self.env.academy_name
+        else:
+            self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
 
     def _get_progress(self):
         if self.curriculum_file is not None:
@@ -107,11 +114,10 @@ class TrainerController(object):
                 scopes += [scope]
                 if self.trainers[brain_name].parameters["trainer"] == "imitation":
                     nodes += [scope + x for x in ["action"]]
-                elif not self.trainers[brain_name].parameters["use_recurrent"]:
-                    nodes += [scope + x for x in ["action", "value_estimate", "action_probs"]]
                 else:
-                    node_list = ["action", "value_estimate", "action_probs", "recurrent_out", "memory_size"]
-                    nodes += [scope + x for x in node_list]
+                    nodes += [scope + x for x in ["action", "value_estimate", "action_probs"]]
+                if self.trainers[brain_name].parameters["use_recurrent"]:
+                    nodes += [scope + x for x in ["recurrent_out", "memory_size"]]
         if len(scopes) > 1:
             self.logger.info("List of available scopes :")
             for scope in scopes:
@@ -250,7 +256,6 @@ class TrainerController(object):
                          take_action_outputs[brain_name]) = trainer.take_action(curr_info)
                     new_info = self.env.step(vector_action=take_action_vector, memory=take_action_memories,
                                              text_action=take_action_text)
-
                     for brain_name, trainer in self.trainers.items():
                         trainer.add_experiences(curr_info, new_info, take_action_outputs[brain_name])
                         trainer.process_experiences(curr_info, new_info)
@@ -260,9 +265,8 @@ class TrainerController(object):
                         # Write training statistics to Tensorboard.
                         trainer.write_summary(self.env.curriculum.lesson_number)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                            trainer.increment_step()
-                            trainer.update_last_reward()
-                    if self.train_model and trainer.get_step <= trainer.get_max_steps:
+                            trainer.increment_step_and_update_last_reward()
+                    if self.train_model:
                         global_step += 1
                     if global_step % self.save_freq == 0 and global_step != 0 and self.train_model:
                         # Save Tensorflow model
@@ -270,8 +274,9 @@ class TrainerController(object):
                     curr_info = new_info
                 # Final save Tensorflow model
                 if global_step != 0 and self.train_model:
-                    self._save_model(sess,  steps=global_step, saver=saver)
+                    self._save_model(sess, steps=global_step, saver=saver)
             except KeyboardInterrupt:
+                print('--------------------------Now saving model-------------------------')
                 if self.train_model:
                     self.logger.info("Learning was interrupted. Please wait while the graph is generated.")
                     self._save_model(sess, steps=global_step, saver=saver)

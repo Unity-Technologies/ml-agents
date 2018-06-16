@@ -12,7 +12,7 @@ These classes are all defined in the `python/unityagents` folder of the ML-Agent
 
 To communicate with an agent in a Unity environment from a Python program, the agent must either use an **External** brain or use a brain that is broadcasting (has its **Broadcast** property set to true). Your code is expected to return actions for agents with external brains, but can only observe broadcasting brains (the information you receive for an agent is the same in both cases). See [Using the Broadcast Feature](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
 
-For a simple example of using the Python API to interact with a Unity environment, see the Basic [Jupyter](Background-Jupyter.md) notebook, which opens an environment, runs a few simulation steps taking random actions, and closes the environment. 
+For a simple example of using the Python API to interact with a Unity environment, see the Basic [Jupyter](Background-Jupyter.md) notebook (`python/Basics.ipynb`), which opens an environment, runs a few simulation steps taking random actions, and closes the environment. 
 
 _Notice: Currently communication between Unity and Python takes place over an open socket without authentication. As such, please make sure that the network where training takes place is secure. This will be addressed in a future release._
 
@@ -28,6 +28,8 @@ env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 * `file_name` is the name of the environment binary (located in the root directory of the python project).
 * `worker_id` indicates which port to use for communication with the environment. For use in parallel training regimes such as A3C.
 * `seed` indicates the seed to use when generating random numbers during the training process. In environments which do not involve physics calculations, setting the seed enables reproducible experimentation by ensuring that the environment and trainers utilize the same random seed.
+
+If you want to directly interact with the Editor, you need to use `file_name=None`, then press the :arrow_forward: button in the Editor when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen
 
 ## Interacting with a Unity Environment
 
@@ -56,12 +58,20 @@ Sends a step signal to the environment using the actions. For each brain :
     - `memory` is an optional input that can be used to send a list of floats per agents to be retrieved at the next step.
     - `text_action` is an optional input that be used to send a single string per agent.
 
-Note that if you have more than one external brain in the environment, you must provide dictionaries from brain names to arrays for `action`, `memory` and `value`. For example: If you have two external brains named `brain1` and `brain2` each with one agent taking two continuous actions, then you can have:
-```python
-action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
-```
+    Returns a dictionary mapping brain names to BrainInfo objects.
+    
+    For example, to access the BrainInfo belonging to a brain called 'brain_name', and the BrainInfo field 'vector_observations':
+    ```python
+    info = env.step()
+    brainInfo = info['brain_name']
+    observations = brainInfo.vector_observations
+    ``` 
+
+    Note that if you have more than one external brain in the environment, you must provide dictionaries from brain names to arrays for     `action`, `memory` and `value`. For example: If you have two external brains named `brain1` and `brain2` each with one agent taking     two continuous actions, then you can have:
+    ```python
+    action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
+    ```
 
 Returns a dictionary mapping brain names to BrainInfo objects.  
 - **Close : `env.close()`**  
 Sends a shutdown signal to the environment and closes the communication socket.
-

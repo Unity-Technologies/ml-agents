@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using MLAgents;
 
 public class WallJumpAgent : Agent
 {
@@ -122,18 +123,16 @@ public class WallJumpAgent : Agent
 
     public override void CollectObservations()
     {
-        float rayDistance = 20f;
-        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-        AddVectorObs(rayPer.Perceive(
-            rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(rayPer.Perceive(
-            rayDistance, rayAngles, detectableObjects, 2.5f, 2.5f));
-        Vector3 agentPos = agentRB.position - ground.transform.position;
+            float rayDistance = 20f;
+            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+            AddVectorObs(rayPer.Perceive(
+                rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(rayPer.Perceive(
+                rayDistance, rayAngles, detectableObjects, 2.5f, 2.5f));
+            Vector3 agentPos = agentRB.position - ground.transform.position;
 
-        AddVectorObs(agentPos / 20f);
-        AddVectorObs(DoGroundCheck(0.4f) ? 1 : 0);
-
-
+            AddVectorObs(agentPos / 20f);
+            AddVectorObs(DoGroundCheck(0.4f) ? 1 : 0);
     }
 
     /// <summary>
@@ -245,7 +244,7 @@ public class WallJumpAgent : Agent
     }
 
     // Detect when the agent hits the goal
-    void OnTriggerEnter(Collider col)
+    void OnTriggerStay(Collider col)
     {
         if (col.gameObject.CompareTag("goal") && DoGroundCheck(0.4f))
         {
@@ -255,7 +254,6 @@ public class WallJumpAgent : Agent
                 GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 2));
         }
     }
-
 
     //Reset the orange block position
     void ResetBlock(Rigidbody blockRB)

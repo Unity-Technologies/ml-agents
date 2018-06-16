@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using MLAgents;
 
 public class ReacherAgent : Agent {
 
@@ -6,10 +7,12 @@ public class ReacherAgent : Agent {
     public GameObject pendulumB;
     public GameObject hand;
     public GameObject goal;
+    private ReacherAcademy myAcademy;
     float goalDegree;
-    Rigidbody rbA;
-    Rigidbody rbB;
-    float goalSpeed;
+    private Rigidbody rbA;
+    private Rigidbody rbB;
+    private float goalSpeed;
+    private float goalSize;
 
     /// <summary>
     /// Collect the rigidbodies of the reacher in order to resue them for 
@@ -19,6 +22,7 @@ public class ReacherAgent : Agent {
     {
         rbA = pendulumA.GetComponent<Rigidbody>();
         rbB = pendulumB.GetComponent<Rigidbody>();
+        myAcademy = GameObject.Find("Academy").GetComponent<ReacherAcademy>();
     }
 
     /// <summary>
@@ -27,19 +31,20 @@ public class ReacherAgent : Agent {
     /// </summary>
     public override void CollectObservations()
     {
+        AddVectorObs(pendulumA.transform.localPosition);
         AddVectorObs(pendulumA.transform.rotation);
         AddVectorObs(rbA.angularVelocity);
         AddVectorObs(rbA.velocity);
 
+        AddVectorObs(pendulumB.transform.localPosition);
         AddVectorObs(pendulumB.transform.rotation);
         AddVectorObs(rbB.angularVelocity);
         AddVectorObs(rbB.velocity);
 
-        Vector3 localGoalPosition = goal.transform.position - transform.position;
-        AddVectorObs(localGoalPosition);
-
-        Vector3 localHandPosition = hand.transform.position - transform.position;
-        AddVectorObs(localHandPosition);
+        AddVectorObs(goal.transform.localPosition);
+        AddVectorObs(hand.transform.localPosition);
+        
+        AddVectorObs(goalSpeed);
 	}
 
     /// <summary>
@@ -50,23 +55,23 @@ public class ReacherAgent : Agent {
         goalDegree += goalSpeed;
         UpdateGoalPosition();
 
-        float torque_x = Mathf.Clamp(vectorAction[0], -1, 1) * 100f;
-        float torque_z = Mathf.Clamp(vectorAction[1], -1, 1) * 100f;
-        rbA.AddTorque(new Vector3(torque_x, 0f, torque_z));
+        var torqueX = Mathf.Clamp(vectorAction[0], -1f, 1f) * 150f;
+        var torqueZ = Mathf.Clamp(vectorAction[1], -1f, 1f) * 150f;
+        rbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 
-        torque_x = Mathf.Clamp(vectorAction[2], -1, 1) * 100f;
-        torque_z = Mathf.Clamp(vectorAction[3], -1, 1) * 100f;
-        rbB.AddTorque(new Vector3(torque_x, 0f, torque_z));
+        torqueX = Mathf.Clamp(vectorAction[2], -1f, 1f) * 150f;
+        torqueZ = Mathf.Clamp(vectorAction[3], -1f, 1f) * 150f;
+        rbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 	}
 
     /// <summary>
     /// Used to move the position of the target goal around the agent.
     /// </summary>
-    void UpdateGoalPosition() {
-        float radians = (goalDegree * Mathf.PI) / 180f;
-        float goalX = 8f * Mathf.Cos(radians);
-        float goalY = 8f * Mathf.Sin(radians);
-
+    void UpdateGoalPosition() 
+    {
+        var radians = goalDegree * Mathf.PI / 180f;
+        var goalX = 8f * Mathf.Cos(radians);
+        var goalY = 8f * Mathf.Sin(radians);
         goal.transform.position = new Vector3(goalY, -1f, goalX) + transform.position;
     }
 
@@ -77,21 +82,19 @@ public class ReacherAgent : Agent {
     {
         pendulumA.transform.position = new Vector3(0f, -4f, 0f) + transform.position;
         pendulumA.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
-        rbA.velocity = new Vector3(0f, 0f, 0f);
-        rbA.angularVelocity = new Vector3(0f, 0f, 0f);
+        rbA.velocity = Vector3.zero;
+        rbA.angularVelocity = Vector3.zero;
 
         pendulumB.transform.position = new Vector3(0f, -10f, 0f) + transform.position;
         pendulumB.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
-        rbB.velocity = new Vector3(0f, 0f, 0f);
-        rbB.angularVelocity = new Vector3(0f, 0f, 0f);
-
+        rbB.velocity = Vector3.zero;
+        rbB.angularVelocity = Vector3.zero;
 
         goalDegree = Random.Range(0, 360);
         UpdateGoalPosition();
 
-        ReacherAcademy academy = GameObject.Find("Academy").GetComponent<ReacherAcademy>();
-        float goalSize = academy.goalSize;
-        goalSpeed = academy.goalSpeed;
+        goalSize = myAcademy.goalSize;
+        goalSpeed = Random.Range(-1f, 1f) * myAcademy.goalSpeed;
 
         goal.transform.localScale = new Vector3(goalSize, goalSize, goalSize);
     }

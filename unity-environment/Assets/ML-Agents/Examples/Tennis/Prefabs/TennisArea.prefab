@@ -1049,13 +1049,12 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   ball: {fileID: 1766663729253338}
   invertX: 1
-  invertMult: -1
   score: 0
   scoreText: {fileID: 0}
   myArea: {fileID: 1541947554534326}
@@ -1074,13 +1073,12 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   ball: {fileID: 1766663729253338}
   invertX: 0
-  invertMult: 1
   score: 0
   scoreText: {fileID: 0}
   myArea: {fileID: 1541947554534326}

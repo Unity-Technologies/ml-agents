@@ -10,7 +10,7 @@ task, such as moving toward an unobstructed goal, then the agent can easily lear
 accomplish the task. From there, we can slowly add to the difficulty of the task by 
 increasing the size of the wall, until the agent can complete the initially 
 near-impossible task of scaling the wall. We are including just such an environment with 
-ML-Agents 0.2, called Wall Area.
+ML-Agents 0.2, called Wall Jump.
 
 ![Wall](images/curriculum.png)
 
@@ -44,14 +44,15 @@ then keep track of the current lesson and progress via TensorBoard.
 
 ```json
 {
-    "measure" : "reward",
-    "thresholds" : [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+    "measure" : "progress",
+    "thresholds" : [0.1, 0.3, 0.5],
     "min_lesson_length" : 2,
     "signal_smoothing" : true, 
     "parameters" : 
     {
-        "min_wall_height" : [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5],
-        "max_wall_height" : [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0]
+        "big_wall_min_height" : [0.0, 4.0, 6.0, 8.0],
+        "big_wall_max_height" : [4.0, 7.0, 8.0, 8.0],
+        "small_wall_height" : [1.5, 2.0, 2.5, 4.0]
     }
 }
 ```

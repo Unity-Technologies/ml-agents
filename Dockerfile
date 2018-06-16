@@ -129,4 +129,7 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 WORKDIR /execute
 COPY python /execute/python
 
+# port 5005 is the port used in in Editor training.
+EXPOSE 5005
+
 ENTRYPOINT ["python", "python/learn.py"]

@@ -6,6 +6,8 @@
 /unity-environment/[Pp]ackages/
 /unity-environment/[Uu]nity[Pp]ackage[Mm]anager/
 /unity-environment/Assets/AssetStoreTools*
+/unity-environment/Assets/Plugins*
+/unity-environment/Assets/Gizmos*
 
 # Tensorflow Model Info
 /models

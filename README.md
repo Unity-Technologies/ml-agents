@@ -29,14 +29,17 @@ to the wider research and game developer communities.
 * Visualizing network outputs within the environment
 * Simplified set-up with Docker
 
-## Documentation and References
+## Documentation
 
-**For more information, in addition to installation and usage
-instructions, see our [documentation home](docs/Readme.md).** If you have
-used a version of ML-Agents prior to v0.3, we strongly recommend 
-our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
+* For more information, in addition to installation and usage
+instructions, see our [documentation home](docs/Readme.md).
+* If you have
+used a version of ML-Agents prior to v0.4, we strongly recommend 
+our [guide on migrating from earlier versions](docs/Migrating.md).
 
-We have also published a series of blog posts that are relevant for ML-Agents:
+## References
+
+We have published a series of blog posts that are relevant for ML-Agents:
 - Overviewing reinforcement learning concepts
 ([multi-armed bandit](https://blogs.unity3d.com/2017/06/26/unity-ai-themed-blog-entries/)
 and [Q-learning](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))

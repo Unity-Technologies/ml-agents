@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAgents;
 
 public class PushAgentBasic : Agent
 {
@@ -37,6 +38,8 @@ public class PushAgentBasic : Agent
 	[HideInInspector]
     public GoalDetect goalDetect;
 
+    public bool useVectorObs;
+
     Rigidbody blockRB;  //cached on initialization
     Rigidbody agentRB;  //cached on initialization
     Material groundMaterial; //cached on Awake()
@@ -49,8 +52,6 @@ public class PushAgentBasic : Agent
 
     void Awake()
     {
-        // There is one brain in the scene so this should find our brain.
-        brain = FindObjectOfType<Brain>();
         academy = FindObjectOfType<PushBlockAcademy>(); //cache the academy
     }
 
@@ -75,12 +76,14 @@ public class PushAgentBasic : Agent
 
     public override void CollectObservations()
     {
-        float rayDistance = 12f;
-        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-        string[] detectableObjects;
-        detectableObjects = new string[] { "block", "goal", "wall" };
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
+        if (useVectorObs)
+        {
+            var rayDistance = 12f;
+            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+            var detectableObjects = new[] { "block", "goal", "wall" };
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
+        }
     }
 
     /// <summary>
