@@ -62,7 +62,7 @@ docker run --name <container-name> \
 Notes on argument values:
 - `<container-name>` is used to identify the container (in case you want to interrupt and terminate it). This is optional and Docker will generate a random name if this is not set. _Note that this must be unique for every run of a Docker image._
 - `<image-name>` references the image name used when building the container.
-- `<environemnt-name>` __(Optional)__: If you are training with a linux executable, this is the name of the executable. If you are training in the Editor, do not pass a `<environemnt-name>` argument and press the :arrow_forward: button in Unity when the message _"Ready to connect with the Editor"_ is displayed on the screen.
+- `<environemnt-name>` __(Optional)__: If you are training with a linux executable, this is the name of the executable. If you are training in the Editor, do not pass a `<environemnt-name>` argument and press the :arrow_forward: button in Unity when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen.
 - `source`: Reference to the path in your host OS where you will store the Unity executable. 
 - `target`: Tells Docker to mount the `source` path as a disk with this name. 
 - `docker-target-name`: Tells the ML-Agents Python package what the name of the disk where it can read the Unity executable and store the graph. **This should therefore be identical to `target`.**

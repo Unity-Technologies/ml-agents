@@ -54,7 +54,7 @@ class UnityEnvironment(object):
         if file_name is not None:
             self.executable_launcher(file_name, docker_training, no_graphics)
         else:
-            logger.info("Ready to connect with the Editor.")
+            logger.info("Start training by pressing the Play button in the Unity Editor.")
         self._loaded = True
 
         rl_init_parameters_in = UnityRLInitializationInput(
