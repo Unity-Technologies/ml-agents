@@ -8,24 +8,62 @@ namespace MujocoUnity
 {
     public class MujocoAgent : Agent
     {
+        //
+        // Params for prefabs
+
+
+        //
+        // Params for instances
+        [Tooltip("Set to true for this instance to show monitor")]
+        /**< \brief Set to true for this instance to show monitor*/
         public bool ShowMonitor;
 
-        public bool FootHitTerrain;
-        public bool NonFootHitTerrain;
-
+        //
+        // Parms to set in subclass.AgentReset() 
+        [Tooltip("Reward value to set on termination")]
+        /**< \brief Reward value to set on termination*/
         protected float OnTerminateRewardValue = -1;
-        
-        internal int NumSensors;
-
-        protected MujocoController MujocoController;
-
-        public List<float> Actions;
+        [Tooltip("Function which returns true to request termination of episode")]
+        /**< \brief Function which returns true to request termination of episode*/
         protected Func<bool> TerminateFunction;
+
+        [Tooltip("Function which sets reward based on actions")]
+        /**< \brief Function which sets reward based on actions*/
         protected Func<float> StepRewardFunction;
+        [Tooltip("Function which collections observations")]
+        /**< \brief Function which collections observations*/
         protected Action ObservationsFunction;
+        [Tooltip("Helper for tracking body parts")]
+        /**< \brief Helper for tracking body parts*/
         protected Dictionary<string,Rigidbody> BodyParts = new Dictionary<string,Rigidbody>();
+        [Tooltip("Helper for body parts rotation to focal point")]
+        /**< \brief Helper for body parts rotation to focal point*/
         protected Dictionary<string,Quaternion> BodyPartsToFocalRoation = new Dictionary<string,Quaternion>();    
 
+
+        //
+        // read only status
+        [Tooltip("True if foot hit terrain since last logic frame")]
+        /**< \brief True if foot hit terrain since last logic frame*/
+        public bool FootHitTerrain;
+
+        [Tooltip("True if body part other than foot hit terrain since last logic frame. Note: bodyparts which connect to foot maybe flagged as foot")]
+        /**< \brief True if body part other than foot hit terrain since last logic frame. Note: bodyparts which connect to foot maybe flagged as foot*/
+        public bool NonFootHitTerrain;
+        [Tooltip("Last set of Actions")]
+        /**< \brief Last set of Actions*/
+        public List<float> Actions;
+
+
+        [Tooltip("Helper reference")]
+        /**< \brief Helper reference MujocoController*/
+        protected MujocoController MujocoController;
+
+
+
+        //
+        // local variables
+        internal int NumSensors;
         Dictionary<GameObject, Vector3> transformsPosition;
         Dictionary<GameObject, Quaternion> transformsRotation;
         
