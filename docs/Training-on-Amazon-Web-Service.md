@@ -4,7 +4,7 @@ This page contains instructions for setting up an EC2 instance on Amazon Web Ser
 
 ## Preconfigured AMI
 
-We've prepared an preconfigured AMI for you with the ID: `ami-6880c317` in the `us-east-1` region. It was created as a modification of [Deep Learning AMI (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). If you want to do training without the headless mode, you need to enable X Server on it. After launching your EC2 instance using the ami and ssh into it, run the following commands to enable it:
+We've prepared an preconfigured AMI for you with the ID: `ami-18642967` in the `us-east-1` region. It was created as a modification of [Deep Learning AMI (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). If you want to do training without the headless mode, you need to enable X Server on it. After launching your EC2 instance using the ami and ssh into it, run the following commands to enable it:
 
 ```
 //Start the X Server, press Enter to come to the command line
