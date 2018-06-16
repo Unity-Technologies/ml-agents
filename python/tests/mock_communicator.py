@@ -6,14 +6,14 @@ from communicator_objects import UnityMessage, UnityOutput, UnityInput,\
 
 
 class MockCommunicator(Communicator):
-    def __init__(self, discrete=False, visual_inputs=0):
+    def __init__(self, discrete_action=False, visual_inputs=0):
         """
         Python side of the grpc communication. Python is the client and Unity the server
 
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
-        self.is_discrete = discrete
+        self.is_discrete = discrete_action
         self.steps = 0
         self.visual_inputs = visual_inputs
         self.has_been_closed = False

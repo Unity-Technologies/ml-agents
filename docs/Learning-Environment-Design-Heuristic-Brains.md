@@ -10,6 +10,7 @@ When creating your Decision class, extend MonoBehaviour (so you can use the clas
 
 ```csharp
 using UnityEngine;
+using MLAgents;
 
 public class HeuristicLogic : MonoBehaviour, Decision 
 {

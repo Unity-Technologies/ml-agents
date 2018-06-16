@@ -17,6 +17,8 @@ class LearningModel(object):
         self.visual_in = []
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
         self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
+        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
+        self.mask = tf.cast(self.mask_input, tf.int32)
         self.m_size = m_size
         self.normalize = normalize
         self.use_recurrent = use_recurrent
@@ -148,7 +150,7 @@ class LearningModel(object):
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
-        with tf.name_scope(scope):
+        with tf.variable_scope(scope):
             vector_in = tf.reshape(observation_input, [-1])
             state_onehot = tf.one_hot(vector_in, s_size)
             hidden = state_onehot
