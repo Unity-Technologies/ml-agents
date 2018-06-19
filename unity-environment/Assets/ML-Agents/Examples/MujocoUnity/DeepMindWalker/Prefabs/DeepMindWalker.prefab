@@ -81,6 +81,8 @@ MonoBehaviour:
   Force2D: 1
   OnGenerateApplyRandom: 0.005
   SupportLegacyMassOfOne: 0
+  DefaultDensity: 1000
+  MotorScale: 1.5
 --- !u!114 &114968519458122122
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -99,7 +101,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 4
-  VelocityScaler: 16
   ShowMonitor: 0
   FootHitTerrain: 0
   NonFootHitTerrain: 0

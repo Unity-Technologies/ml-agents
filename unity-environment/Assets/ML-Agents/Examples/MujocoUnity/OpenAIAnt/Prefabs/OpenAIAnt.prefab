@@ -78,13 +78,11 @@ MonoBehaviour:
   PhysicMaterial: {fileID: 13400000, guid: 38b7ea504254a4fa986e42a7bb16c8df, type: 2}
   UseMujocoTimestep: 1
   DebugOutput: 0
-  GravityOff: 0
   Force2D: 0
-  GlobalDamping: 10
-  BaseForce: 0
-  ForceMultiple: 1
-  Mass: 1
   OnGenerateApplyRandom: 0.005
+  SupportLegacyMassOfOne: 0
+  DefaultDensity: 1000
+  MotorScale: 0.1
 --- !u!114 &114612892920136778
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -103,10 +101,7 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
+  ShowMonitor: 0
   FootHitTerrain: 0
   NonFootHitTerrain: 0
-  VelocityScaler: 16
-  Low: []
-  High: []
-  ShowMonitor: 0
   Actions: []

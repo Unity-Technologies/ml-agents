@@ -20,6 +20,7 @@ public class OpenAIHopperAgent : MujocoAgent {
         ObservationsFunction = ObservationsDefault;
 
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso_geom");
+        BodyParts["foot"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="foot_geom");
         base.SetupBodyParts();
     }
 
@@ -40,6 +41,8 @@ public class OpenAIHopperAgent : MujocoAgent {
         AddVectorObs(MujocoController.SensorIsInTouch);
         MujocoController.JointRotations.ForEach(x=>AddVectorObs(x));
         AddVectorObs(MujocoController.JointVelocity);
+        var foot = BodyParts["foot"];
+        AddVectorObs(foot.transform.position.y);
     }
 
     bool TerminateHopper()

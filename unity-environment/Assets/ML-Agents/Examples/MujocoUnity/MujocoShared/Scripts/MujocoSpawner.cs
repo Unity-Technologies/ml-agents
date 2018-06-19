@@ -81,7 +81,6 @@ namespace MujocoUnity
 
 		void LoadXml(string str)
         {
-            var parser = new ParseMujoco();
             _root = XElement.Parse(str);
         }
 
