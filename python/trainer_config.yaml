@@ -114,7 +114,7 @@ VisualPyramidBrain:
 
 Ball3DBrain:
     normalize: true
-    batch_size: 1200
+    batch_size: 64
     buffer_size: 12000
     summary_freq: 1000
     time_horizon: 1000

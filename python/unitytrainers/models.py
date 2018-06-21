@@ -168,10 +168,7 @@ class LearningModel(object):
         :return: List of encoded streams.
         """
         brain = self.brain
-        if brain.vector_action_space_type == "continuous":
-            activation_fn = tf.nn.tanh
-        else:
-            activation_fn = self.swish
+        activation_fn = self.swish
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):
