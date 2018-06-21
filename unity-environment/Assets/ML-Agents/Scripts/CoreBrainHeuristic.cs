@@ -16,7 +16,7 @@ namespace MLAgents
         /**< Reference to the brain that uses this CoreBrainHeuristic */
         public Brain brain;
 
-        MLAgents.Batcher brainBatcher;
+        Batcher brainBatcher;
 
         /**< Reference to the Decision component used to decide the actions */
         public Decision decision;
@@ -28,7 +28,7 @@ namespace MLAgents
         }
 
         /// Create the reference to decision
-        public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
+        public void InitializeCoreBrain(Batcher brainBatcher)
         {
             decision = brain.gameObject.GetComponent<Decision>();
 
@@ -48,10 +48,7 @@ namespace MLAgents
         /// Uses the Decision Component to decide that action to take
         public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
         {
-            if (brainBatcher != null)
-            {
-                brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
-            }
+            brainBatcher?.SendBrainInfo(brain.gameObject.name, agentInfo);
 
             if (decision == null)
             {
