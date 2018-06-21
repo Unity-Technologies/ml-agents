@@ -10,7 +10,7 @@ namespace MLAgents
         /**< Reference to the brain that uses this CoreBrainExternal */
         public Brain brain;
 
-        MLAgents.Batcher brainBatcher;
+        Batcher brainBatcher;
 
         /// Creates the reference to the brain
         public void SetBrain(Brain b)
@@ -20,16 +20,13 @@ namespace MLAgents
 
         /// Generates the communicator for the Academy if none was present and
         ///  subscribe to ExternalCommunicator if it was present.
-        public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
+        public void InitializeCoreBrain(Batcher brainBatcher)
         {
             if (brainBatcher == null)
             {
                 brainBatcher = null;
-                throw new UnityAgentsException(string.Format("The brain {0} was set to" +
-                                                             " External mode" +
-                                                             " but Unity was unable to read the" +
-                                                             " arguments passed at launch.",
-                    brain.gameObject.name));
+                throw new UnityAgentsException($"The brain {brain.gameObject.name} was set to" + " External mode" +
+                                               " but Unity was unable to read the" + " arguments passed at launch.");
             }
             else
             {
@@ -47,8 +44,6 @@ namespace MLAgents
             {
                 brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
             }
-
-            return;
         }
 
         /// Nothing needs to appear in the inspector 
