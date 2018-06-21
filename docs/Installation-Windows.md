@@ -1,4 +1,4 @@
-# Installing ML-Agents for Windows (works with ML-Agents v0.3)
+# Installing ML-Agents for Windows
 
 ML-Agents supports Windows 10. While it might be possible to run ML-Agents using other versions of Windows, it has not been tested on other versions. Furthermore, ML-Agents has not been tested on a Windows VM such as Bootcamp or Parallels.
 
