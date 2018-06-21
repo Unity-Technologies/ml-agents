@@ -244,7 +244,7 @@ public class WallJumpAgent : Agent
     }
 
     // Detect when the agent hits the goal
-    void OnTriggerEnter(Collider col)
+    void OnTriggerStay(Collider col)
     {
         if (col.gameObject.CompareTag("goal") && DoGroundCheck(0.4f))
         {

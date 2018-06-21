@@ -16,9 +16,10 @@ class BehavioralCloningModel(LearningModel):
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
-            hidden_reg, self.memory_out = self.create_recurrent_encoder(hidden_reg, self.memory_in)
+            hidden_reg, self.memory_out = self.create_recurrent_encoder(hidden_reg, self.memory_in,
+                                                                        self.sequence_length)
             self.memory_out = tf.identity(self.memory_out, name='recurrent_out')
-        self.policy = tf.layers.dense(hidden_reg, self.a_size, activation=None, use_bias=False,
+        self.policy = tf.layers.dense(hidden_reg, self.a_size, activation=None, use_bias=False, name='pre_action',
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
         if brain.vector_action_space_type == "discrete":

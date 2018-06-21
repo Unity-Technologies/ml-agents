@@ -107,6 +107,8 @@ Next, edit the new `RollerAcademy` script:
 In such a basic scene, we don't need the Academy to initialize, reset, or otherwise control any objects in the environment so we have the simplest possible Academy implementation:
 
 ```csharp
+using MLAgents;
+
 public class RollerAcademy : Academy { }
 ```
 
@@ -159,6 +161,7 @@ So far, our RollerAgent script looks like:
 ```csharp
 using System.Collections.Generic;
 using UnityEngine;
+using MLAgents;
 
 public class RollerAgent : Agent 
 {

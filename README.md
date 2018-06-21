@@ -34,8 +34,8 @@ to the wider research and game developer communities.
 * For more information, in addition to installation and usage
 instructions, see our [documentation home](docs/Readme.md).
 * If you have
-used a version of ML-Agents prior to v0.3, we strongly recommend 
-our [guide on migrating to v0.3](docs/Migrating-v0.3.md).
+used a version of ML-Agents prior to v0.4, we strongly recommend 
+our [guide on migrating from earlier versions](docs/Migrating.md).
 
 ## References
 

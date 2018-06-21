@@ -2,7 +2,7 @@
 
 ML-Agents supports Windows 10. While it might be possible to run ML-Agents using other versions of Windows, it has not been tested on other versions. Furthermore, ML-Agents has not been tested on a Windows VM such as Bootcamp or Parallels.
 
-To use ML-Agents, you install Python and the required Python packages as outlined below. This guide also covers how set up GPU-based training (for advanced users). GPU-based training is not required for the v0.3 release of ML-Agents. However, training on a GPU might be required by future versions and features.
+To use ML-Agents, you install Python and the required Python packages as outlined below. This guide also covers how set up GPU-based training (for advanced users). GPU-based training is not required for the v0.4 release of ML-Agents. However, training on a GPU might be required by future versions and features.
 
 ## Step 1: Install Python via Anaconda
 
@@ -23,13 +23,28 @@ We recommend the default _advanced installation options_. However, select the op
 </p>
 
 After installation, you must open __Anaconda Navigator__ to finish the setup. From the Windows search bar, type _anaconda navigator_. You can close Anaconda Navigator after it opens.
-If environment variables were not created, or if you see the error "conda is not recognized as internal or external command", in System Variables, "Path" add the following new paths:
+
+If environment variables were not created, you will see error "conda is not recognized as internal or external command" when you type `conda` into the command line. To solve this you will need to set the environment variable correctly. 
+
+Type `environment variables` in the search bar (this can be reached by hitting the Windows key or the bottom left Windows button). You should see an option called __Edit the system environment variables__. 
+
+<p align="center">
+    <img src="images/edit_env_var.png" 
+        alt="edit env variables" 
+        width="250" border="10" />
+</p>
+
+From here, click the __Environment Variables__ button. 
+Double click "Path" under __System variable__ to edit the "Path" variable, click __New__ to add the following new paths. 
+
 ```
-    %UserProfile%\Anaconda3\Scripts
-    %UserProfile%\Anaconda3\Scripts\conda.exe
-    %UserProfile%\Anaconda3
-    %UserProfile%\Anaconda3\python.exe
+%UserProfile%\Anaconda3\Scripts
+%UserProfile%\Anaconda3\Scripts\conda.exe
+%UserProfile%\Anaconda3
+%UserProfile%\Anaconda3\python.exe
 ```
+
+
 ## Step 2: Setup and Activate a New Conda Environment
 
 You will create a new [Conda environment](https://conda.io/docs/) to be used with ML-Agents. This means that all the packages that you install are localized to just this environment. It will not affect any other installation of Python or other environments. Whenever you want to run ML-Agents, you will need activate this Conda environment.
@@ -93,7 +108,7 @@ This will complete the installation of all the required Python packages to run M
 
 GPU is not required for ML-Agents and won't speed up the PPO algorithm a lot during training(but something in the future will benefit from GPU). This is a guide for advanced users who want to train using GPUs. Additionally, you will need to check if your GPU is CUDA compatible. Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
-As of ML-Agents v0.3, only CUDA v9.0 and cuDNN v7.0.5 is supported.
+As of ML-Agents v0.4, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
 ### Install Nvidia CUDA toolkit
 

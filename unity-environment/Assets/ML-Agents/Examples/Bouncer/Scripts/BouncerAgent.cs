@@ -98,8 +98,15 @@ public class BouncerAgent : Agent {
             Done();
         }
 
-        bodyObject.transform.rotation = Quaternion.Lerp(bodyObject.transform.rotation, Quaternion.LookRotation(lookDir),
-                                                        Time.fixedDeltaTime * 10f);
+    }
 
+    private void Update()
+    {
+        if (lookDir.magnitude > float.Epsilon)
+        {
+            bodyObject.transform.rotation = Quaternion.Lerp(bodyObject.transform.rotation,
+                Quaternion.LookRotation(lookDir),
+                Time.deltaTime * 10f);
+        }
     }
 }

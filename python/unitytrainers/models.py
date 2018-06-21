@@ -17,6 +17,8 @@ class LearningModel(object):
         self.visual_in = []
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
         self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
+        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
+        self.mask = tf.cast(self.mask_input, tf.int32)
         self.m_size = m_size
         self.normalize = normalize
         self.use_recurrent = use_recurrent
@@ -70,10 +72,7 @@ class LearningModel(object):
                                                     initializer=tf.zeros_initializer())
                 self.running_variance = tf.get_variable("running_variance", [self.o_size], trainable=False,
                                                         dtype=tf.float32, initializer=tf.ones_initializer())
-                self.new_mean = tf.placeholder(shape=[self.o_size], dtype=tf.float32, name='new_mean')
-                self.new_variance = tf.placeholder(shape=[self.o_size], dtype=tf.float32, name='new_variance')
-                self.update_mean = tf.assign(self.running_mean, self.new_mean)
-                self.update_variance = tf.assign(self.running_variance, self.new_variance)
+                self.update_mean, self.update_variance = self.create_normalizer_update(self.vector_in)
 
                 self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / tf.sqrt(
                     self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)), -5, 5,
@@ -84,6 +83,16 @@ class LearningModel(object):
         else:
             self.vector_in = tf.placeholder(shape=[None, 1], dtype=tf.int32, name='vector_observation')
             return self.vector_in
+
+    def create_normalizer_update(self, vector_input):
+        mean_current_observation = tf.reduce_mean(vector_input, axis=0)
+        new_mean = self.running_mean + (mean_current_observation - self.running_mean) / \
+                   tf.cast(self.global_step + 1, tf.float32)
+        new_variance = self.running_variance + (mean_current_observation - new_mean) * \
+                       (mean_current_observation - self.running_mean)
+        update_mean = tf.assign(self.running_mean, new_mean)
+        update_variance = tf.assign(self.running_variance, new_variance)
+        return update_mean, update_variance
 
     @staticmethod
     def create_continuous_observation_encoder(observation_input, h_size, activation, num_layers, scope, reuse):
@@ -122,7 +131,9 @@ class LearningModel(object):
                                      activation=tf.nn.elu, reuse=reuse, name="conv_2")
             hidden = c_layers.flatten(conv2)
 
-        hidden_flat = self.create_continuous_observation_encoder(hidden, h_size, activation, num_layers, scope, reuse)
+        with tf.variable_scope(scope+'/'+'flat_encoding'):
+            hidden_flat = self.create_continuous_observation_encoder(hidden, h_size, activation,
+                                                                     num_layers, scope, reuse)
         return hidden_flat
 
     @staticmethod
@@ -139,7 +150,7 @@ class LearningModel(object):
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
-        with tf.name_scope(scope):
+        with tf.variable_scope(scope):
             vector_in = tf.reshape(observation_input, [-1])
             state_onehot = tf.one_hot(vector_in, s_size)
             hidden = state_onehot
@@ -176,7 +187,8 @@ class LearningModel(object):
                 for j in range(brain.number_visual_observations):
                     encoded_visual = self.create_visual_observation_encoder(self.visual_in[j], h_size,
                                                                             activation_fn, num_layers,
-                                                                            "main_graph_{}".format(i), False)
+                                                                            "main_graph_{}_encoder{}"
+                                                                            .format(i, j), False)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:

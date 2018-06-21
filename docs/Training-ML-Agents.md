@@ -19,7 +19,7 @@ The basic command for training is:
     python3 learn.py <env_name> --run-id=<run-identifier> --train
 
 where 
- * `<env_name>`__(Optional)__ is the name (including path) of your Unity executable containing the agents to be trained. If `<env_name>` is not passed, the training will happen in the Editor. Press the :arrow_forward: button in Unity when the message _"Ready to connect with the Editor"_ is displayed on the screen.
+ * `<env_name>`__(Optional)__ is the name (including path) of your Unity executable containing the agents to be trained. If `<env_name>` is not passed, the training will happen in the Editor. Press the :arrow_forward: button in Unity when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen.
  * `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
 For example, suppose you have a project in Unity named "CatsOnBicycles" which contains agents ready to train. To perform the training:
@@ -56,6 +56,7 @@ In addition to passing the path of the Unity executable containing your training
 * `--train` – Specifies whether to train model or only run in inference mode. When training, **always** use the `--train` option.
 * `--worker-id=<n>` – When you are running more than one training environment at the same time, assign each a unique worker-id number. The worker-id is added to the communication port opened between the current instance of learn.py and the ExternalCommunicator object in the Unity environment. Defaults to 0.
 * `--docker-target-name=<dt>` – The Docker Volume on which to store curriculum, executable and model files. See [Using Docker](Using-Docker.md).
+* `--no-graphics` - Specify this option to run the Unity executable in `-batchmode` and doesn't initialize the graphics driver. Use this only if your training doesn't involve visual observations (reading from Pixels). See [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more details.
 
 ### Training config file
 

@@ -17,9 +17,9 @@ from unityagents import UnityEnvironment, UnityEnvironmentException
 
 class TrainerController(object):
     def __init__(self, env_path, run_id, save_freq, curriculum_file, fast_simulation, load, train,
-                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path):
+                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path,
+                 no_graphics):
         """
-
         :param env_path: Location to the environment executable to be loaded.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
@@ -33,6 +33,7 @@ class TrainerController(object):
         :param seed: Random seed used for training.
         :param docker_target_name: Name of docker volume that will contain all data.
         :param trainer_config_path: Fully qualified path to location of trainer configuration file
+        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         """
         self.trainer_config_path = trainer_config_path
         if env_path is not None:
@@ -52,7 +53,7 @@ class TrainerController(object):
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
-            if env_path is not None :
+            if env_path is not None:
                 env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
                                                                      env_name=env_path)
             if curriculum_file is None:
@@ -79,7 +80,8 @@ class TrainerController(object):
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     curriculum=self.curriculum_file, seed=self.seed,
-                                    docker_training=self.docker_training)
+                                    docker_training=self.docker_training,
+                                    no_graphics=no_graphics)
         if env_path is None:
             self.env_name = 'editor_'+self.env.academy_name
         else:
@@ -263,9 +265,8 @@ class TrainerController(object):
                         # Write training statistics to Tensorboard.
                         trainer.write_summary(self.env.curriculum.lesson_number)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                            trainer.increment_step()
-                            trainer.update_last_reward()
-                    if self.train_model and trainer.get_step <= trainer.get_max_steps:
+                            trainer.increment_step_and_update_last_reward()
+                    if self.train_model:
                         global_step += 1
                     if global_step % self.save_freq == 0 and global_step != 0 and self.train_model:
                         # Save Tensorflow model
@@ -275,6 +276,7 @@ class TrainerController(object):
                 if global_step != 0 and self.train_model:
                     self._save_model(sess, steps=global_step, saver=saver)
             except KeyboardInterrupt:
+                print('--------------------------Now saving model-------------------------')
                 if self.train_model:
                     self.logger.info("Learning was interrupted. Please wait while the graph is generated.")
                     self._save_model(sess, steps=global_step, saver=saver)

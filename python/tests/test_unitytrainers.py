@@ -50,6 +50,9 @@ default:
     summary_freq: 1000
     use_recurrent: false
     memory_size: 8
+    use_curiosity: false
+    curiosity_strength: 0.0
+    curiosity_enc_size: 1
 ''')
 
 dummy_bc_config = yaml.load('''
@@ -74,6 +77,9 @@ default:
     summary_freq: 1000
     use_recurrent: false
     memory_size: 8
+    use_curiosity: false
+    curiosity_strength: 0.0
+    curiosity_enc_size: 1
 ''')
 
 dummy_bad_config = yaml.load('''
@@ -105,9 +111,9 @@ default:
 @mock.patch('unityagents.UnityEnvironment.get_communicator')
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
-        discrete=True, visual_input=True)
+        discrete_action=True, visual_inputs=1)
     tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                           1, 1, 1, '', "tests/test_unitytrainers.py")
+                           1, 1, 1, '', "tests/test_unitytrainers.py", False)
     assert(tc.env.brain_names[0] == 'RealFakeBrain')
 
 
@@ -119,10 +125,10 @@ def test_load_config(mock_communicator, mock_launcher):
         with mock.patch(open_name, create=True) as _:
             mock_load.return_value = dummy_config
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_input=True)
+                discrete_action=True, visual_inputs=1)
             mock_load.return_value = dummy_config
             tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                                       1, 1, 1, '','')
+                                       1, 1, 1, '','', False)
             config = tc._load_config()
             assert(len(config) == 1)
             assert(config['default']['trainer'] == "ppo")
@@ -135,9 +141,9 @@ def test_initialize_trainers(mock_communicator, mock_launcher):
     with mock.patch('yaml.load') as mock_load:
         with mock.patch(open_name, create=True) as _:
             mock_communicator.return_value = MockCommunicator(
-                discrete=True, visual_input=True)
+                discrete_action=True, visual_inputs=1)
             tc = TrainerController(' ', ' ', 1, None, True, True, False, 1,
-                                   1, 1, 1, '', "tests/test_unitytrainers.py")
+                                   1, 1, 1, '', "tests/test_unitytrainers.py", False)
 
             # Test for PPO trainer
             mock_load.return_value = dummy_config
@@ -184,7 +190,7 @@ def test_buffer():
             )
             b[fake_agent_id]['action'].append([100 * fake_agent_id + 10 * step + 4,
                                                100 * fake_agent_id + 10 * step + 5])
-    a = b[1]['vector_observation'].get_batch(batch_size=2, training_length=None, sequential=True)
+    a = b[1]['vector_observation'].get_batch(batch_size=2, training_length=1, sequential=True)
     assert_array(a, np.array([[171, 172, 173], [181, 182, 183]]))
     a = b[2]['vector_observation'].get_batch(batch_size=2, training_length=3, sequential=True)
     assert_array(a, np.array([
