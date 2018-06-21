@@ -55,20 +55,20 @@ public class DeepMindHumanoidAgent : MujocoAgent {
         AddVectorObs(shoulders.transform.forward); // gyroscope 
         AddVectorObs(shoulders.transform.up);
 
-        AddVectorObs(MujocoController.SensorIsInTouch);
-        MujocoController.JointRotations.ForEach(x=>AddVectorObs(x));
-        AddVectorObs(MujocoController.JointVelocity);
+        AddVectorObs(SensorIsInTouch);
+        JointRotations.ForEach(x=>AddVectorObs(x));
+        AddVectorObs(JointVelocity);
     }
 
 
 
     float GetHumanoidArmEffort()
     {
-        var mJoints = MujocoController.MujocoJoints
+        var mJoints = MujocoJoints
             .Where(x=>x.JointName.ToLowerInvariant().Contains("shoulder") || x.JointName.ToLowerInvariant().Contains("elbow"))
             .ToList();
         var effort = mJoints
-            .Select(x=>Actions[MujocoController.MujocoJoints.IndexOf(x)])
+            .Select(x=>Actions[MujocoJoints.IndexOf(x)])
             .Select(x=>Mathf.Pow(Mathf.Abs(x),2))
             .Sum();
         return effort;            
@@ -252,8 +252,8 @@ public class DeepMindHumanoidAgent : MujocoAgent {
     float GetPhaseBonus()
     {
         bool noPhaseChange = true;
-        bool isLeftFootDown = MujocoController.SensorIsInTouch[0] > 0f || MujocoController.SensorIsInTouch[1] > 0f;
-        bool isRightFootDown = MujocoController.SensorIsInTouch[2] > 0f || MujocoController.SensorIsInTouch[3] > 0f;
+        bool isLeftFootDown = SensorIsInTouch[0] > 0f || SensorIsInTouch[1] > 0f;
+        bool isRightFootDown = SensorIsInTouch[2] > 0f || SensorIsInTouch[3] > 0f;
         noPhaseChange = noPhaseChange && isLeftFootDown == _lastSenorState[0];
         noPhaseChange = noPhaseChange && isRightFootDown == _lastSenorState[1];
         _lastSenorState[0] = isLeftFootDown;

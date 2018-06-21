@@ -11,9 +11,11 @@ namespace MujocoUnity
         //
         // Params for prefabs
 
-
         //
         // Params for instances
+        [Tooltip("Set to camera to follow this instance")]
+        /**< \brief Set to camera to follow this instance*/
+        public GameObject CameraTarget;
         [Tooltip("Set to true for this instance to show monitor")]
         /**< \brief Set to true for this instance to show monitor*/
         public bool ShowMonitor;
@@ -40,7 +42,6 @@ namespace MujocoUnity
         /**< \brief Helper for body parts rotation to focal point*/
         protected Dictionary<string,Quaternion> BodyPartsToFocalRoation = new Dictionary<string,Quaternion>();    
 
-
         //
         // read only status
         [Tooltip("True if foot hit terrain since last logic frame")]
@@ -53,21 +54,49 @@ namespace MujocoUnity
         [Tooltip("Last set of Actions")]
         /**< \brief Last set of Actions*/
         public List<float> Actions;
-
-
-        [Tooltip("Helper reference")]
-        /**< \brief Helper reference MujocoController*/
-        protected MujocoController MujocoController;
-
-
+        [Tooltip("Current state of each sensor")]
+        /**< \brief Current state of each sensor*/
+        public List<float> SensorIsInTouch;
+        [Tooltip("Gameobject for FocalPoint")]
+        /**< \brief Gameobject for FocalPoint*/
+        public GameObject FocalPoint;
+        [Tooltip("Rigidbody for FocalPoint")]
+        /**< \brief Rigidbody for FocalPoint*/
+        public Rigidbody FocalRidgedBody;
+        [Tooltip("Max distance travelled across all episodes")]
+        /**< \brief Max distance travelled across all episodes*/
+        public float FocalPointMaxDistanceTraveled;
+        [Tooltip("Current angle of each Joint")]
+        /**< \brief Current angle of each Joint*/
+        List<float> JointAngles;
+        [Tooltip("Current velocity of each Joint")]
+        /**< \brief Current velocity of each Joint*/
+        public List<float> JointVelocity;
+        [Tooltip("Current rotation of each Joint")]
+        /**< \brief Current rotation of each Joint*/
+        public List<Quaternion> JointRotations;
+        [Tooltip("Current angular velocity of each Joint")]
+        /**< \brief Current angular velocity of each Joint*/
+        List<Vector3> JointAngularVelocities;
+        [Tooltip("Joints created by MujocoSpawner")]
+        /**< \brief Joints created by MujocoSpawner*/
+        public List<MujocoJoint> MujocoJoints;
+        [Tooltip("Sensors created by MujocoSpawner")]
+        /**< \brief Sensors created by MujocoSpawner*/
+        public List<MujocoSensor> MujocoSensors;
 
         //
         // local variables
         internal int NumSensors;
         Dictionary<GameObject, Vector3> transformsPosition;
         Dictionary<GameObject, Quaternion> transformsRotation;
-        
-        MujocoSpawner mujocoSpawner;    
+        MujocoSpawner mujocoSpawner;
+        bool _hasValidModel;
+        List<float> qpos;
+        List<float> qglobpos;
+        List<float> qvel;
+
+
 
         public override void AgentReset()
         {
@@ -75,7 +104,7 @@ namespace MujocoUnity
                 mujocoSpawner = this.GetComponent<MujocoUnity.MujocoSpawner>();
 
             Transform[] allChildren = GetComponentsInChildren<Transform>();
-            if (MujocoController != null) {
+            if (_hasValidModel) {
                 // restore
                 foreach (Transform child in allChildren)
                 {
@@ -93,12 +122,11 @@ namespace MujocoUnity
                 }
                 mujocoSpawner.ApplyRandom();
                 SetupMujoco();
-                MujocoController.UpdateFromExternalComponent();
+                UpdateQ();
                 return;
             }
-            MujocoController = GetComponent<MujocoController>();
-            MujocoController.MujocoJoints = null;
-            MujocoController.MujocoSensors = null;
+            MujocoJoints = null;
+            MujocoSensors = null;
             // var joints = this.GetComponentsInChildren<Joint>().ToList();
             // foreach (var item in joints)
             //     Destroy(item.gameObject);
@@ -120,12 +148,12 @@ namespace MujocoUnity
             }
             mujocoSpawner.ApplyRandom();
             SetupMujoco();
-            MujocoController.UpdateFromExternalComponent();
+            UpdateQ();
+            _hasValidModel = true;
         }
         void SetupMujoco()
         {
-            MujocoController = GetComponent<MujocoController>();
-            NumSensors = MujocoController.MujocoSensors.Count;            
+            NumSensors = MujocoSensors.Count;            
         }        
         internal void SetupBodyParts()
         {
@@ -146,7 +174,7 @@ namespace MujocoUnity
 
         public override void CollectObservations()
         {
-            MujocoController.UpdateQFromExternalComponent();
+            UpdateQ();
             ObservationsFunction();
         }
         public override void AgentAction(float[] vectorAction, string textAction)
@@ -154,11 +182,11 @@ namespace MujocoUnity
             Actions = vectorAction
                 .Select(x=>x)
                 .ToList();
-            for (int i = 0; i < MujocoController.MujocoJoints.Count; i++) {
+            for (int i = 0; i < MujocoJoints.Count; i++) {
                 var inp = (float)Actions[i];
-                ApplyAction(MujocoController.MujocoJoints[i], inp);
+                ApplyAction(MujocoJoints[i], inp);
             }
-            MujocoController.UpdateFromExternalComponent();
+            UpdateQ();
             
             if (!IsDone())
             {
@@ -183,16 +211,16 @@ namespace MujocoUnity
         {
             var mJoints = hints
                 .SelectMany(hint=>
-                    MujocoController.MujocoJoints
+                    MujocoJoints
                         .Where(x=>x.JointName.ToLowerInvariant().Contains(hint.ToLowerInvariant()))
                 ).ToList();
             foreach (var joint in mJoints)
-                Actions[MujocoController.MujocoJoints.IndexOf(joint)] = 0f;
+                Actions[MujocoJoints.IndexOf(joint)] = 0f;
         }
 
         internal float GetHeight()
         {
-			var feetYpos = MujocoController.MujocoJoints
+			var feetYpos = MujocoJoints
 				.Where(x=>x.JointName.ToLowerInvariant().Contains("foot"))
 				.Select(x=>x.Joint.transform.position.y)
 				.OrderBy(x=>x)
@@ -200,7 +228,7 @@ namespace MujocoUnity
             float lowestFoot = 0f;
             if(feetYpos!=null && feetYpos.Count != 0)
                 lowestFoot = feetYpos[0];
-			var height = MujocoController.FocalPoint.transform.position.y - lowestFoot;
+			var height = FocalPoint.transform.position.y - lowestFoot;
             return height;
         }
         internal float GetVelocity(string bodyPart = null)
@@ -210,13 +238,13 @@ namespace MujocoUnity
             if (!string.IsNullOrWhiteSpace(bodyPart))
                 rawVelocity = BodyParts[bodyPart].velocity.x;
             else 
-                rawVelocity = MujocoController.FocalRidgedBody.velocity.x;
+                rawVelocity = FocalRidgedBody.velocity.x;
 
             var maxSpeed = 4f; // meters per second
             //rawVelocity = Mathf.Clamp(rawVelocity,-maxSpeed,maxSpeed);
 			var velocity = rawVelocity / maxSpeed;
             if (ShowMonitor) {
-                Monitor.Log("MaxDistance", MujocoController.FocalPointMaxDistanceTraveled.ToString());
+                Monitor.Log("MaxDistance", FocalPointMaxDistanceTraveled.ToString());
                 Monitor.Log("MPH: ", (rawVelocity * 2.236936f).ToString());
                 // Monitor.Log("rawVelocity", rawVelocity, MonitorType.text);
                 // Monitor.Log("velocity", velocity, MonitorType.text);
@@ -302,7 +330,7 @@ namespace MujocoUnity
             double effort = 0;
             for (int i = 0; i < Actions.Count; i++)
             {
-                var name = MujocoController.MujocoJoints[i].JointName;
+                var name = MujocoJoints[i].JointName;
                 if (ignorJoints != null && ignorJoints.Contains(name))
                     continue;
                 var jointEffort = Mathf.Pow(Mathf.Abs(Actions[i]),2);
@@ -315,7 +343,7 @@ namespace MujocoUnity
             int atLimitCount = 0;
             for (int i = 0; i < Actions.Count; i++)
             {
-                var name = MujocoController.MujocoJoints[i].JointName;
+                var name = MujocoJoints[i].JointName;
                 if (ignorJoints != null && ignorJoints.Contains(name))
                     continue;
                 bool atLimit = Mathf.Abs(Actions[i]) >= 1f;
@@ -341,7 +369,7 @@ namespace MujocoUnity
 
         internal float GetAngleFromUp()
         {
-            var angleFromUp = Vector3.Angle(MujocoController.FocalPoint.transform.forward, Vector3.up);
+            var angleFromUp = Vector3.Angle(FocalPoint.transform.forward, Vector3.up);
             if (ShowMonitor) {
                 // Monitor.Log("AngleFromUp", angleFromUp);
             }
@@ -407,6 +435,165 @@ namespace MujocoUnity
             angX.positionDamper = Mathf.Max(1f, scale);
             angX.maximumForce = Mathf.Max(1f, mJoint.MaximumForce);
             configurableJoint.angularXDrive = angX;
-        }          
+        }    
+
+        
+
+        List<System.Tuple<ConfigurableJoint, Transform>> _baseTargetPairs;
+        
+        public void SetMujocoSensors(List<MujocoSensor> mujocoSensors)
+        {
+            MujocoSensors = mujocoSensors;
+            SensorIsInTouch = Enumerable.Range(0,mujocoSensors.Count).Select(x=>0f).ToList();
+            foreach (var sensor in mujocoSensors)
+            {
+                sensor.SiteObject.gameObject.AddComponent<SensorBehavior>();
+            }
+        }
+
+        public void SetMujocoJoints(List<MujocoJoint> mujocoJoints)
+        {
+            MujocoJoints = mujocoJoints;
+            // targets = Enumerable.Repeat(0f, MujocoJoints.Count).ToArray();
+            var target = FindTopMesh(MujocoJoints.FirstOrDefault()?.Joint.gameObject, null);
+            if (CameraTarget != null && MujocoJoints != null) {
+                var smoothFollow = CameraTarget.GetComponent<SmoothFollow>();
+                if (smoothFollow != null) 
+                    smoothFollow.target = target.transform;
+            }
+            FocalPoint = target;
+            FocalRidgedBody = FocalPoint.GetComponent<Rigidbody>();            
+            var qlen = MujocoJoints.Count + 3;
+            qpos = Enumerable.Range(0,qlen).Select(x=>0f).ToList();
+            qglobpos = Enumerable.Range(0,qlen).Select(x=>0f).ToList();
+            qvel = Enumerable.Range(0,qlen).Select(x=>0f).ToList();
+            JointAngles = Enumerable.Range(0,MujocoJoints.Count).Select(x=>0f).ToList();
+            JointVelocity = Enumerable.Range(0,MujocoJoints.Count).Select(x=>0f).ToList();
+            _baseTargetPairs = MujocoJoints
+                .Select(x=> new System.Tuple<ConfigurableJoint, Transform>(x.TrueBase, x.TrueTarget))
+                .Distinct()
+                .ToList();
+            JointRotations = Enumerable.Range(0,_baseTargetPairs.Count).Select(x=>Quaternion.identity).ToList();
+            JointAngularVelocities = Enumerable.Range(0,_baseTargetPairs.Count).Select(x=>Vector3.zero).ToList();
+        }
+
+        GameObject FindTopMesh(GameObject curNode, GameObject topmostNode = null)
+        {
+            var meshRenderer = curNode.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+                topmostNode = meshRenderer.gameObject;
+            var root = curNode.transform.root.gameObject;
+            var meshRenderers = root.GetComponentsInChildren<MeshRenderer>();
+            if (meshRenderers != null && meshRenderers.Length >0)
+                topmostNode = meshRenderers[0].gameObject;
+            
+            // var parent = curNode.transform.parent;//curNode.GetComponentInParent<Transform>()?.gameObject;
+            // if (parent != null)
+            //     return FindTopMesh(curNode, topmostNode);
+            return (topmostNode);
+            
+        }
+
+        void UpdateQ()
+        {
+            if (MujocoJoints == null || MujocoJoints.Count ==0)
+                return;
+
+			float dt = Time.fixedDeltaTime;
+            FocalPointMaxDistanceTraveled = Mathf.Max(FocalPointMaxDistanceTraveled, FocalPoint.transform.position.x);
+
+            var topJoint = MujocoJoints[0];
+            //var topTransform = topJoint.Joint.transform.parent.transform;
+            // var topRidgedBody = topJoint.Joint.transform.parent.GetComponent<Rigidbody>();
+            var topTransform = topJoint.Joint.transform;
+            var topRidgedBody = topJoint.Joint.transform.GetComponent<Rigidbody>();
+            qpos[0] = topTransform.position.x;
+            qglobpos[0] = topTransform.position.x;     
+            qvel[0] = topRidgedBody.velocity.x;
+            qpos[1] = topTransform.position.y;
+            qglobpos[1] = topTransform.position.y;
+            qvel[1] = topRidgedBody.velocity.y;
+            qpos[2] = ((topTransform.rotation.eulerAngles.z - 180f) % 180 ) / 180;
+            qglobpos[2] = ((topTransform.rotation.eulerAngles.z - 180f) % 180 ) / 180;
+            qvel[2] = topRidgedBody.velocity.z;
+            for (int i = 0; i < MujocoJoints.Count; i++)
+            {
+                // UpdateJointAngle(MujocoJoints[i], dt);
+                // qpos[3+i] = JointAngles[i] = MujocoJoints[i].AngleWithinRange;
+                // qvel[3+i] = JointVelocity[i] = MujocoJoints[i].AngularVelocityPerSecond / 1000;
+
+                var joint = MujocoJoints[i].Joint;
+                // var targ = joint.transform.parent.transform;
+                var targ = joint.transform;
+                float pos = 0f;
+                float globPos = 0f;
+                if (joint.axis.x != 0f) {
+                    pos = targ.localEulerAngles.x;
+                    globPos = targ.eulerAngles.x;
+                }
+                else if (joint.axis.y != 0f){
+                    pos = targ.localEulerAngles.y;
+                    globPos = targ.eulerAngles.y;
+                }
+                else if (joint.axis.z != 0f) {
+                    pos = targ.localEulerAngles.z;
+                    globPos = targ.eulerAngles.z;
+                }
+                ConfigurableJoint configurableJoint = joint as ConfigurableJoint;
+                pos = ((pos - 180f) % 180 ) / 180;
+                // pos /= 180f;
+                globPos = ((globPos - 180f) % 180 ) / 180;
+                var lastPos = qpos[3+i];
+                qpos[3+i] = pos;
+                JointAngles[i] = pos;
+                var lastgPos = qglobpos[3+i];
+                qglobpos[3+i] = globPos;
+                // var vel = joint.gameObject.GetComponent<Rigidbody>().velocity.x;
+                // var vel = configurableJoint.
+                var vel = (qpos[3+i] - lastPos) / (dt);
+                qvel[3+i] = vel;
+                JointVelocity[i] = vel;
+            }
+
+            for (int i = 0; i < _baseTargetPairs.Count; i++)
+            {
+                var x = _baseTargetPairs[i];
+                var baseRot = x.Item1.transform.rotation;
+                var targetRot = x.Item2.rotation;                    
+                var rotation = Quaternion.Inverse(baseRot) * targetRot;
+                JointRotations[i] = rotation;
+
+                var baseAngVel = x.Item1.GetComponent<Rigidbody>().angularVelocity;
+                var targetAngVel = x.Item2.GetComponent<Rigidbody>().angularVelocity;
+                var angVel = baseAngVel-targetAngVel;
+                angVel /= dt;
+                angVel /= 10000f;
+                JointAngularVelocities[i] = angVel;
+            }
+        }
+
+        public void SensorCollisionEnter(Collider sensorCollider, Collision other) {
+			if (string.Compare(other.gameObject.name, "Terrain", true) !=0)
+                return;
+			var otherGameobject = other.gameObject;
+            var sensor = MujocoSensors
+                .FirstOrDefault(x=>x.SiteObject == sensorCollider);
+            if (sensor != null) {
+                var idx = MujocoSensors.IndexOf(sensor);
+                SensorIsInTouch[idx] = 1f;
+            }
+		}
+        public void SensorCollisionExit(Collider sensorCollider, Collision other)
+        {
+            if (string.Compare(other.gameObject.name, "Terrain", true) !=0)
+                return;
+			var otherGameobject = other.gameObject;
+            var sensor = MujocoSensors
+                .FirstOrDefault(x=>x.SiteObject == sensorCollider);
+            if (sensor != null) {
+                var idx = MujocoSensors.IndexOf(sensor);
+                SensorIsInTouch[idx] = 0f;
+            }
+        }              
     }
 }

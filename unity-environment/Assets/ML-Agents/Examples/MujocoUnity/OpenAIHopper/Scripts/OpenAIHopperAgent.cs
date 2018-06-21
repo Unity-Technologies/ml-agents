@@ -38,9 +38,9 @@ public class OpenAIHopperAgent : MujocoAgent {
         AddVectorObs(pelvis.transform.forward); // gyroscope 
         AddVectorObs(pelvis.transform.up);
         
-        AddVectorObs(MujocoController.SensorIsInTouch);
-        MujocoController.JointRotations.ForEach(x=>AddVectorObs(x));
-        AddVectorObs(MujocoController.JointVelocity);
+        AddVectorObs(SensorIsInTouch);
+        JointRotations.ForEach(x=>AddVectorObs(x));
+        AddVectorObs(JointVelocity);
         var foot = BodyParts["foot"];
         AddVectorObs(foot.transform.position.y);
     }
