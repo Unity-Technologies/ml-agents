@@ -91,7 +91,7 @@ class LearningModel(object):
         return update_mean, update_variance
 
     @staticmethod
-    def create_continuous_observation_encoder(observation_input, h_size, activation, num_layers, scope, reuse):
+    def create_vector_observation_encoder(observation_input, h_size, activation, num_layers, scope, reuse):
         """
         Builds a set of hidden state encoders.
         :param reuse: Whether to re-use the weights within the same scope.
@@ -128,8 +128,8 @@ class LearningModel(object):
             hidden = c_layers.flatten(conv2)
 
         with tf.variable_scope(scope+'/'+'flat_encoding'):
-            hidden_flat = self.create_continuous_observation_encoder(hidden, h_size, activation,
-                                                                     num_layers, scope, reuse)
+            hidden_flat = self.create_vector_observation_encoder(hidden, h_size, activation,
+                                                                 num_layers, scope, reuse)
         return hidden_flat
 
     def create_observation_streams(self, num_streams, h_size, num_layers):
@@ -165,8 +165,8 @@ class LearningModel(object):
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
-                hidden_state = self.create_continuous_observation_encoder(vector_observation_input,
-                                                                          h_size, activation_fn, num_layers,
+                hidden_state = self.create_vector_observation_encoder(vector_observation_input,
+                                                                      h_size, activation_fn, num_layers,
                                                                           "main_graph_{}".format(i), False)
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
