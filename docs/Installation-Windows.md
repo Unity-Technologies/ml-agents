@@ -6,7 +6,7 @@ To use ML-Agents, you install Python and the required Python packages as outline
 
 ## Step 1: Install Python via Anaconda
 
-[Download](https://www.anaconda.com/download/#windows) and install Anaconda for Windows. By using Anaconda, you can manage separate environments for different distributions of Python. Python 3 is required as we no longer support Python 2. In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
+[Download](https://www.anaconda.com/download/#windows) and install Anaconda for Windows. By using Anaconda, you can manage separate environments for different distributions of Python. Python 3.5 or 3.6 is required as we no longer support Python 2. In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
 
 <p align="center">
     <img src="images/anaconda_install.PNG" 
@@ -71,7 +71,7 @@ activate ml-agents
 
 You should see `(ml-agents)` prepended on the last line.
 
-Next, install `tensorflow`. Install this package using `pip` - which is a package management system used to install Python packages. Latest versions of Tensorflow won't work, so you will need to make sure that you install version 1.4.0. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
+Next, install `tensorflow`. Install this package using `pip` - which is a package management system used to install Python packages. Latest versions of Tensorflow won't work, so you will need to make sure that you install version 1.7.1. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
 
 ```
 pip install tensorflow==1.7.1

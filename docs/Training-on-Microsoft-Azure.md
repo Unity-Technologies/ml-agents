@@ -1,4 +1,4 @@
-# Training on Microsoft Azure
+# Training on Microsoft Azure (works with ML-Agents v0.3)
 
 This page contains instructions for setting up training on Microsoft Azure through either [Azure Container Instances](https://azure.microsoft.com/services/container-instances/) or Virtual Machines. Non "headless" training has not yet been tested to verify support. 
 
