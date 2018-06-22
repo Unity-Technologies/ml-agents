@@ -4,7 +4,7 @@
  * `using MLAgents;` needs to be added in all of the C# scripts that use ML-Agents. 
 
 ## Python API
- * We've changed some of the python packages dependencies in requirement.txt file. Make sure to run `pip install .` within your ml-agents/python folder to update your python packages. 
+ * We've changed some of the python packages dependencies in requirement.txt file. Make sure to run `pip install .` within your `ml-agents/python` folder to update your python packages. 
 
 # Migrating from ML-Agents v0.2 to ML-Agents v0.3
 
