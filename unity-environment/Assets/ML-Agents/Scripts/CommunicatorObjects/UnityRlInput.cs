@@ -77,7 +77,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLInput(UnityRLInput other) : this() {
       agentActions_ = other.agentActions_.Clone();
-      EnvironmentParameters = other.environmentParameters_ != null ? other.EnvironmentParameters.Clone() : null;
+      environmentParameters_ = other.environmentParameters_ != null ? other.environmentParameters_.Clone() : null;
       isTraining_ = other.isTraining_;
       command_ = other.command_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
