@@ -8,7 +8,7 @@ namespace MLAgents
 	[System.Serializable]
 	public class TrainingHub
 	{
-		public List<Brain> brainsToTrain;
+		public List<Brain> brainsToTrain = new List<Brain>();
 
 	}
 }

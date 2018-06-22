@@ -111,6 +111,7 @@ namespace MLAgents
 
                 }
             }
+            agentInfo.Clear();
         }
     }
 
