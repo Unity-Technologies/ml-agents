@@ -23,7 +23,11 @@ Important:
 
 ## Humanoid
 
-| **DeepMindHumanoid** ![DeepMindHumanoid](images/DeepMindHumanoid102-2m.gif) | **OpenAIHumanoid** ![OpenAIHumanoid](images/OpenAIHumanoid164-2m.gif) |
+
+| **DeepMindHumanoid** | **OpenAIHumanoid** |
+| --- | --- |
+| ![DeepMindHumanoid](images/DeepMindHumanoid102-2m.gif) | ![OpenAIHumanoid](images/OpenAIHumanoid164-2m.gif) |
+
 
 * Set-up: Simple (OpenAI) and complex (DeepMind) Humanoid agents. 
 * Goal: The agents must move its body toward the goal as quickly as possible without falling.
