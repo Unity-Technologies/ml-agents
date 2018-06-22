@@ -96,15 +96,15 @@ class PPOModel(LearningModel):
             self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
                                                  name='next_vector_observation')
 
-            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in,
-                                                                            self.curiosity_enc_size,
-                                                                            self.swish, 2, "vector_obs_encoder",
-                                                                            False)
-            encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_in,
-                                                                                 self.curiosity_enc_size,
-                                                                                 self.swish, 2,
+            encoded_vector_obs = self.create_vector_observation_encoder(self.vector_in,
+                                                                        self.curiosity_enc_size,
+                                                                        self.swish, 2, "vector_obs_encoder",
+                                                                        False)
+            encoded_next_vector_obs = self.create_vector_observation_encoder(self.next_vector_in,
+                                                                             self.curiosity_enc_size,
+                                                                             self.swish, 2,
                                                                                  "vector_obs_encoder",
-                                                                                 True)
+                                                                             True)
             encoded_state_list.append(encoded_vector_obs)
             encoded_next_state_list.append(encoded_next_vector_obs)
 
