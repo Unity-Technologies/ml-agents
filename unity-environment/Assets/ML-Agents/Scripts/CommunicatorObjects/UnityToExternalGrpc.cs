@@ -5,9 +5,6 @@
 #pragma warning disable 1591
 #region Designer generated code
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using grpc = global::Grpc.Core;
 
 namespace MLAgents.CommunicatorObjects {
@@ -77,7 +74,7 @@ namespace MLAgents.CommunicatorObjects {
       /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
       /// <param name="cancellationToken">An optional token for canceling the call.</param>
       /// <returns>The response received from the server.</returns>
-      public virtual global::MLAgents.CommunicatorObjects.UnityMessage Exchange(global::MLAgents.CommunicatorObjects.UnityMessage request, grpc::Metadata headers = null, DateTime? deadline = null, CancellationToken cancellationToken = default(CancellationToken))
+      public virtual global::MLAgents.CommunicatorObjects.UnityMessage Exchange(global::MLAgents.CommunicatorObjects.UnityMessage request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return Exchange(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
@@ -99,7 +96,7 @@ namespace MLAgents.CommunicatorObjects {
       /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
       /// <param name="cancellationToken">An optional token for canceling the call.</param>
       /// <returns>The call object.</returns>
-      public virtual grpc::AsyncUnaryCall<global::MLAgents.CommunicatorObjects.UnityMessage> ExchangeAsync(global::MLAgents.CommunicatorObjects.UnityMessage request, grpc::Metadata headers = null, DateTime? deadline = null, CancellationToken cancellationToken = default(CancellationToken))
+      public virtual grpc::AsyncUnaryCall<global::MLAgents.CommunicatorObjects.UnityMessage> ExchangeAsync(global::MLAgents.CommunicatorObjects.UnityMessage request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return ExchangeAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }

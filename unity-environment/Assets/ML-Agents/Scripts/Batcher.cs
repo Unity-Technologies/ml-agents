@@ -202,8 +202,6 @@ namespace MLAgents
                     VectorActionSize = brainParameters.vectorActionSize,
                     VectorActionSpaceType =
                     (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorActionSpaceType,
-                    VectorObservationSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorObservationSpaceType,
                     BrainName = name,
                     BrainType = type
                 };
