@@ -1,4 +1,4 @@
-# # Unity ML Agents
+# # Unity ML-Agents
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
 

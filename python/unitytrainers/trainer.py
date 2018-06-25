@@ -1,4 +1,4 @@
-# # Unity ML Agents
+# # Unity ML-Agents
 import logging
 
 import tensorflow as tf
