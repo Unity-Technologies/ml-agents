@@ -1,4 +1,4 @@
-# Unity ML-Agents Documentation
+# Unity ML-Agents Toolkit Documentation
 
 ## Installation & Set-up
  * [Installation](Installation.md)

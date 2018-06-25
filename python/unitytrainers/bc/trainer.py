@@ -1,4 +1,4 @@
-# # Unity ML-Agents
+# # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (Imitation)
 # Contains an implementation of Behavioral Cloning Algorithm
 
