@@ -40,11 +40,9 @@ class GymWrapper(gym.Env):
                 "if it is wrapped in a gym.")
         if brain.vector_action_space_type == "discrete":
             self._action_space = spaces.Discrete(brain.vector_action_space_size)
-        elif brain.vector_action_space_type == "continuous":
+        else:
             high = np.array([1] * brain.vector_action_space_size)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
-        else:
-            raise UnityGymWrapperException("Could not recognize the vector observation space type")
         high = np.array([np.inf] * brain.vector_observation_space_size)
         self._observation_space = spaces.Box(-high, high, dtype=np.float32)
 
@@ -65,8 +63,10 @@ class GymWrapper(gym.Env):
         multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
-        return info.vector_observations[0, :], info.rewards[0], info.local_done[0], \
-               {"text_observation": info.text_observations[0]}
+            default_observation = self.visual_obs
+        else:
+            default_observation = info.vector_observations[0, :]
+        return default_observation, info.rewards[0], info.local_done[0], {"text_observation": info.text_observations[0]}
 
     def reset(self):
         """Resets the state of the environment and returns an initial observation.
@@ -77,7 +77,10 @@ class GymWrapper(gym.Env):
         multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
-        return info.vector_observations[0, :]
+            default_observation = self.visual_obs
+        else:
+            default_observation = info.vector_observations[0, :]
+        return default_observation
 
     def render(self, mode='rgb_array'):
         """Renders the environment.
