@@ -19,8 +19,8 @@ obstructs the path to the goal._
  
 To see this in action, observe the two learning curves below. Each displays the reward 
 over time for an agent trained using PPO with the same set of training hyperparameters. 
-The difference is that the agent on the left was trained using the full-height wall 
-version of the task, and the right agent was trained using the curriculum version of 
+The difference is that one agent was trained using the full-height wall
+version of the task, and the other agent was trained using the curriculum version of
 the task. As you can see, without using curriculum learning the agent has a lot of 
 difficulty. We think that by using well-crafted curricula, agents trained using 
 reinforcement learning will be able to accomplish tasks otherwise much more difficult. 
