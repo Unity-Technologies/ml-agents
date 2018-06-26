@@ -18,7 +18,7 @@ def multi_agent_check(info):
             "if it is wrapped in a gym.")
 
 
-class GymWrapper(gym.Env):
+class UnityEnv(gym.Env):
     def __init__(self, unity_environment: UnityEnvironment):
         """
         Environment initialization
@@ -66,7 +66,8 @@ class GymWrapper(gym.Env):
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
-        return default_observation, info.rewards[0], info.local_done[0], {"text_observation": info.text_observations[0]}
+        return default_observation, info.rewards[0], info.local_done[0], {"text_observation": info.text_observations[0],
+                                                                          "brain_info": info}
 
     def reset(self):
         """Resets the state of the environment and returns an initial observation.
