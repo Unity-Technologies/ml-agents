@@ -19,21 +19,21 @@ def multi_agent_check(info):
 
 
 class UnityEnv(gym.Env):
-    def __init__(self, unity_environment: UnityEnvironment):
+    def __init__(self, environment_filename: str, worker_id = 0, default_visual = True):
         """
         Environment initialization
         :param unity_environment: The UnityEnvironment to be wrapped for gym
         """
-        self.env = unity_environment
-        self.name = self.env.academy_name
+        self._env = UnityEnvironment(environment_filename, worker_id)
+        self.name = self._env.academy_name
         self.visual_obs = None
-        if len(self.env.brains) != 1:
+        if len(self._env.brains) != 1:
             raise UnityGymWrapperException(
                 "There can only be one brain in a UnityEnvironment "
                 "if it is wrapped in a gym.")
-        self.brain_name = self.env.external_brain_names[0]
-        brain = self.env.brains[self.brain_name]
-        self.use_visual = brain.number_visual_observations == 1
+        self.brain_name = self._env.external_brain_names[0]
+        brain = self._env.brains[self.brain_name]
+        self.use_visual = brain.number_visual_observations == 1 and default_visual
         if brain.num_stacked_vector_observations != 1:
             raise UnityGymWrapperException(
                 "There can only be one stacked vector observation in a UnityEnvironment "
@@ -44,7 +44,17 @@ class UnityEnv(gym.Env):
             high = np.array([1] * brain.vector_action_space_size)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
         high = np.array([np.inf] * brain.vector_observation_space_size)
-        self._observation_space = spaces.Box(-high, high, dtype=np.float32)
+        if self.use_visual:
+            if brain.camera_resolutions[0]["blackAndWhite"]:
+                depth = 1
+            else:
+                depth = 3
+            self._observation_space = spaces.Box(0, 1, dtype=np.float32,
+                                                 shape=(brain.camera_resolutions[0]["height"],
+                                                        brain.camera_resolutions[0]["width"],
+                                                        depth))
+        else:
+            self._observation_space = spaces.Box(-high, high, dtype=np.float32)
 
     def step(self, action):
         """Run one timestep of the environment's dynamics. When end of
@@ -59,7 +69,7 @@ class UnityEnv(gym.Env):
             done (boolean): whether the episode has ended.
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
         """
-        info = self.env.step(action)[self.brain_name]
+        info = self._env.step(action)[self.brain_name]
         multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
@@ -74,7 +84,7 @@ class UnityEnv(gym.Env):
         Returns: observation (object): the initial observation of the
             space.
         """
-        info = self.env.reset()[self.brain_name]
+        info = self._env.reset()[self.brain_name]
         multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
@@ -120,7 +130,7 @@ class UnityEnv(gym.Env):
         Environments will automatically close() themselves when
         garbage collected or when the program exits.
         """
-        self.env.close()
+        self._env.close()
 
     def seed(self, seed=None):
         """Sets the seed for this env's random number generator(s).

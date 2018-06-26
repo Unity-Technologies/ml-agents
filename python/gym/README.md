@@ -1,16 +1,21 @@
-# ML-Agents Gym Wrapper
+# Unity ML-Agents Gym Wrapper
 
-## `gym_wrapper.py`
-First draft on a gym wrapper for ML-Agents. To launch an environmnent do :
+A common way in which researchers interact with simulation environments is via wrapper provided by OpenAI called `gym`. Here we provide a gym wrapper, and instructions for using it with existing research projects which utilize gyms. 
+
+## `unity_gym.py`
+First draft on a gym wrapper for ML-Agents. To launch an environmnent use :
 
 ```python
-raw_env = UnityEnvironment(<env-name>)
-env = GymWrapper(raw_env)
+env = GymWrapper(environment_filename, worker_id, default_visual)
 ```
 
-The environment `env` will behave like a gym.
+* `environment_filename` refers to the path to the Unity environment.
+* `worker_id` refers to the port to use for communication with the environment.
+* `default_visual` refers to whether to use visual observations (True) or vector observations (False) as the default observation provided by the `reset` and `step` functions.
+
+The resulting environment `env` will behave like a gym.
 
 __Limitations :__
 
- * Only works with environments containing one external brain
- * Only works with environments containing one agent
+ * Only first agent in first external brain will be exposed via API.
+ * By default the first visual observation is provided as the `observation`, if present. Otherwise vector observations are provided.  
