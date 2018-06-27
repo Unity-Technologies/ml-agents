@@ -2,7 +2,7 @@
 
 # Unity ML-Agents Toolkit (Beta)
 
-**Unity Machine Learning Agents** (ML-Agents) is an open-source Unity plugin 
+**The Unity Machine Learning Agents Toolkit** (ML-Agents) is an open-source Unity plugin 
 that enables games and simulations to serve as environments for training
 intelligent agents. Agents can be trained using reinforcement learning,
 imitation learning, neuroevolution, or other machine learning methods through
