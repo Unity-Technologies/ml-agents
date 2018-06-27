@@ -2,19 +2,19 @@
 
 As discussed in our 
 [machine learning background page](Background-Machine-Learning.md), many of the
-algorithms we provide in ML-Agents leverage some form of deep learning.
+algorithms we provide in the ML-Agents toolkit leverage some form of deep learning.
 More specifically, our implementations are built on top of the open-source 
 library [TensorFlow](https://www.tensorflow.org/). This means that the models
-produced by ML-Agents are (currently) in a format only understood by
+produced by the ML-Agents toolkit are (currently) in a format only understood by
 TensorFlow. In this page we provide a brief overview of TensorFlow, in addition
-to TensorFlow-related tools that we leverage within ML-Agents.
+to TensorFlow-related tools that we leverage within the ML-Agents toolkit.
 
 ## TensorFlow
 
 [TensorFlow](https://www.tensorflow.org/) is an open source library for
 performing computations using data flow graphs, the underlying representation
 of deep learning models. It facilitates training and inference on CPUs and
-GPUs in a desktop, server, or mobile device. Within ML-Agents, when you
+GPUs in a desktop, server, or mobile device. Within the ML-Agents toolkit, when you
 train the behavior of an Agent, the output is a TensorFlow model (.bytes)
 file that you can then embed within an Internal Brain. Unless you implement 
 a new algorithm, the use of TensorFlow is mostly abstracted away and behind 
@@ -47,5 +47,5 @@ that contains an Internal Brain is built, inference is performed via
 TensorFlowSharp. We provide an additional in-depth overview of how to
 leverage [TensorFlowSharp within Unity](Using-TensorFlow-Sharp-in-Unity.md)
 which will become more relevant once you install and start training
-behaviors within ML-Agents. Given the reliance on TensorFlowSharp, the
+behaviors within the ML-Agents toolkit. Given the reliance on TensorFlowSharp, the
 Internal Brain is currently marked as experimental.

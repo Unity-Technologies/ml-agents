@@ -10,7 +10,7 @@ task, such as moving toward an unobstructed goal, then the agent can easily lear
 accomplish the task. From there, we can slowly add to the difficulty of the task by 
 increasing the size of the wall, until the agent can complete the initially 
 near-impossible task of scaling the wall. We are including just such an environment with 
-ML-Agents 0.2, called Wall Jump.
+the ML-Agents toolkit 0.2, called Wall Jump.
 
 ![Wall](images/curriculum.png)
 

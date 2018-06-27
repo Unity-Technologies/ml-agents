@@ -1,8 +1,8 @@
 # Background: Machine Learning
 
-Given that a number of users of ML-Agents might not have a formal machine 
+Given that a number of users of the ML-Agents toolkit might not have a formal machine 
 learning background, this page provides an overview to facilitate the 
-understanding of ML-Agents. However, We will not attempt to provide a thorough 
+understanding of the ML-Agents toolkit. However, We will not attempt to provide a thorough 
 treatment of machine learning as there are fantastic resources online.
 
 Machine learning, a branch of artificial intelligence, focuses on learning 
@@ -77,7 +77,7 @@ tasks are active areas of machine learning research and, in practice, require
 several iterations to achieve good performance.
 
 We now switch to reinforcement learning, the third class of
-machine learning algorithms, and arguably the one most relevant for ML-Agents.
+machine learning algorithms, and arguably the one most relevant for the ML-Agents toolkit.
 
 ## Reinforcement Learning
 
@@ -132,8 +132,8 @@ in many ways, one can view a non-playable character (NPC) as a virtual
 robot, with its own observations about the environment, its own set of actions
 and a specific objective. Thus it is natural to explore how we can
 train behaviors within Unity using reinforcement learning. This is precisely
-what ML-Agents offers. The video linked below includes a reinforcement
-learning demo showcasing training character behaviors using ML-Agents.
+what the ML-Agents toolkit offers. The video linked below includes a reinforcement
+learning demo showcasing training character behaviors using the ML-Agents toolkit.
 
 <p align="center">
     <a href="http://www.youtube.com/watch?feature=player_embedded&v=fiQsmdwEGT8" target="_blank">
