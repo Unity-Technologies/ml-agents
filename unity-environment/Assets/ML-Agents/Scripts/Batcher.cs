@@ -175,6 +175,10 @@ namespace MLAgents
                 Done = info.done,
                 Id = info.id,
             };
+            if (info.maskedActions != null)
+            {
+                agentInfoProto.MaskedActions.AddRange(info.maskedActions);
+            }
             foreach (Texture2D obs in info.visualObservations)
             {
                 agentInfoProto.VisualObservations.Add(
