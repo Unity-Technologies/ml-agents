@@ -457,6 +457,11 @@ class UnityEnvironment(object):
             else:
                 [x.memories.extend([0] * (memory_size - len(x.memories))) for x in agent_info_list]
                 memory = np.array([x.memories for x in agent_info_list])
+            m_actions = np.ones((len(agent_info_list), self.brains[b].vector_action_space_size))
+            for i, x in enumerate(agent_info_list):
+                if x.masked_actions is not None:
+                    for k in range(len(x.masked_actions)):
+                        m_actions[i, k] = 1 if x.masked_actions[k] else 0
             _data[b] = BrainInfo(
                 visual_observation=vis_obs,
                 vector_observation=np.array([x.stacked_vector_observation for x in agent_info_list]),
@@ -468,7 +473,7 @@ class UnityEnvironment(object):
                 vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
                 text_action=[x.stored_text_actions for x in agent_info_list],
                 max_reached=[x.max_step_reached for x in agent_info_list],
-                masked_action=[x.masked_actions for x in agent_info_list]
+                masked_action=m_actions
                 )
         return _data, global_done
 

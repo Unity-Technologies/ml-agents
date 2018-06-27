@@ -225,8 +225,15 @@ class LearningModel(object):
         self.policy = tf.layers.dense(hidden, self.a_size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
-        self.all_probs = tf.nn.softmax(self.policy, name="action_probs")
-        output = tf.multinomial(self.policy, 1)
+        self.masked_actions = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name="masked_actions")
+        raw_probs = tf.nn.softmax(self.policy, name="action_probs")
+
+        raw_probs = tf.multiply(self.masked_actions, raw_probs)
+
+        self.all_probs = tf.divide(raw_probs, tf.reshape(
+            tf.reduce_sum(raw_probs, axis=1), (-1,1)))
+
+        output = tf.multinomial(tf.log(self.all_probs), 1)
         self.output = tf.identity(output, name="action")
 
         value = tf.layers.dense(hidden, 1, activation=None)
