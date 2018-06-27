@@ -3,7 +3,7 @@
 
 ### Scripting Runtime Environment not setup correctly
 
-If you haven't switched your scripting runtime version from .NET 3.5 to .NET 4.6, you will see such error message:
+If you haven't switched your scripting runtime version from .NET 3.5 to .NET 4.6 or .NET 4.x, you will see such error message:
 
 ```
 error CS1061: Type `System.Text.StringBuilder' does not contain a definition for `Clear' and no extension method `Clear' of type `System.Text.StringBuilder' could be found. Are you missing an assembly reference?
