@@ -17,7 +17,7 @@ In order to use ML-Agents within Unity, you need to change some Unity settings f
 (**PC, Mac and Linux Standalone**, **iOS** or **Android**):
     1. Option the **Other Settings** section.
     2. Select **Scripting Runtime Version** to 
-    **Experimental (.NET 4.6 Equivalent)**
+    **Experimental (.NET 4.6 Equivalent or .NET 4.x Equivalent)**
     3. In **Scripting Defined Symbols**, add the flag `ENABLE_TENSORFLOW`. 
     After typing in the flag name, press Enter.
 6. Go to **File** > **Save Project**
