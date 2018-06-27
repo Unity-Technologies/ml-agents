@@ -1,4 +1,4 @@
-# Migrating from the ML-Agents toolkit v0.3 to the ML-Agents toolkit v0.4
+# Migrating from the ML-Agents toolkit v0.3 to v0.4
 
 ## Unity API
  * `using MLAgents;` needs to be added in all of the C# scripts that use ML-Agents. 
@@ -6,7 +6,7 @@
 ## Python API
  * We've changed some of the python packages dependencies in requirement.txt file. Make sure to run `pip install .` within your `ml-agents/python` folder to update your python packages. 
 
-# Migrating from the ML-Agents toolkit v0.2 to the ML-Agents toolkit v0.3
+# Migrating from the ML-Agents toolkit v0.2 to v0.3
 
 There are a large number of new features and improvements in the ML-Agents toolkit v0.3 which change both the training process and Unity API in ways which will cause incompatibilities with environments made using older versions. This page is designed to highlight those changes for users familiar with v0.1 or v0.2 in order to ensure a smooth transition.
 
