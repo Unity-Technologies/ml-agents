@@ -44,6 +44,7 @@ class UnityEnv(gym.Env):
             high = np.array([1] * brain.vector_action_space_size)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
         high = np.array([np.inf] * brain.vector_observation_space_size)
+        self.action_meanings = brain.vector_action_descriptions
         if self.use_visual:
             if brain.camera_resolutions[0]["blackAndWhite"]:
                 depth = 1
@@ -131,6 +132,9 @@ class UnityEnv(gym.Env):
         garbage collected or when the program exits.
         """
         self._env.close()
+
+    def get_action_meanings(self):
+        return self.action_meanings
 
     def seed(self, seed=None):
         """Sets the seed for this env's random number generator(s).
