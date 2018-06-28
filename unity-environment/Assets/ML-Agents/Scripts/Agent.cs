@@ -571,11 +571,12 @@ namespace MLAgents
 
             for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
             {
-                info.visualObservations.Add(ObservationToTexture(
+                ObservationToTexture(
                     agentParameters.agentCameras[i],
                     param.cameraResolutions[i].width,
                     param.cameraResolutions[i].height,
-                    textureArray[i]));
+                    ref textureArray[i]);
+                info.visualObservations.Add(textureArray[i]);
             }
 
             info.reward = reward;
@@ -941,7 +942,7 @@ namespace MLAgents
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
-        public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height, Texture2D texture2D)
+        public static void ObservationToTexture(Camera obsCamera, int width, int height, ref Texture2D texture2D)
         {
             Rect oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
@@ -972,7 +973,6 @@ namespace MLAgents
             obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRT;
             RenderTexture.ReleaseTemporary(tempRT);
-            return texture2D;
         }
     }
 }
