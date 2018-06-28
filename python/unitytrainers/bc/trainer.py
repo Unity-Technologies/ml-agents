@@ -42,7 +42,6 @@ class BehavioralCloningTrainer(Trainer):
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.use_recurrent = trainer_parameters['use_recurrent']
-        self.step = 0
         self.sequence_length = 1
         self.m_size = None
         if self.use_recurrent:
@@ -55,7 +54,6 @@ class BehavioralCloningTrainer(Trainer):
 
         self.training_buffer = Buffer()
         self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.is_continuous_observation = (env.brains[brain_name].vector_observation_space_type == "continuous")
         self.use_observations = (env.brains[brain_name].number_visual_observations > 0)
         if self.use_observations:
             logger.info('Cannot use observations with imitation learning')
@@ -75,6 +73,9 @@ class BehavioralCloningTrainer(Trainer):
                 normalize=False,
                 use_recurrent=trainer_parameters['use_recurrent'],
                 brain=self.brain)
+        self.inference_run_list = [self.model.sample_action]
+        if self.use_recurrent:
+            self.inference_run_list += [self.model.memory_out]
 
     def __str__(self):
 
@@ -109,7 +110,7 @@ class BehavioralCloningTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.step
+        return self.sess.run(self.model.global_step)
 
     @property
     def get_last_reward(self):
@@ -122,16 +123,11 @@ class BehavioralCloningTrainer(Trainer):
         else:
             return 0
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
+        Increment the step count of the trainer and Updates the last reward
         """
-        self.step += 1
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
-        """
+        self.sess.run(self.model.increment_step)
         return
 
     def take_action(self, all_brain_info: AllBrainInfo):
@@ -146,7 +142,7 @@ class BehavioralCloningTrainer(Trainer):
 
         agent_brain = all_brain_info[self.brain_name]
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
-        run_list = [self.model.sample_action]
+
         if self.use_observations:
             for i, _ in enumerate(agent_brain.visual_observations):
                 feed_dict[self.model.visual_in[i]] = agent_brain.visual_observations[i]
@@ -156,12 +152,11 @@ class BehavioralCloningTrainer(Trainer):
             if agent_brain.memories.shape[1] == 0:
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
             feed_dict[self.model.memory_in] = agent_brain.memories
-            run_list += [self.model.memory_out]
         if self.use_recurrent:
-            agent_action, memories = self.sess.run(run_list, feed_dict)
+            agent_action, memories = self.sess.run(self.inference_run_list, feed_dict)
             return agent_action, memories, None, None
         else:
-            agent_action = self.sess.run(run_list, feed_dict)
+            agent_action = self.sess.run(self.inference_run_list, feed_dict)
         return agent_action, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
@@ -251,8 +246,10 @@ class BehavioralCloningTrainer(Trainer):
         for l in range(len(info_student.agents)):
             if info_student.local_done[l]:
                 agent_id = info_student.agents[l]
-                self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
-                self.stats['episode_length'].append(self.episode_steps[agent_id])
+                self.stats['cumulative_reward'].append(
+                    self.cumulative_rewards.get(agent_id, 0))
+                self.stats['episode_length'].append(
+                    self.episode_steps.get(agent_id, 0))
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
 
@@ -296,11 +293,8 @@ class BehavioralCloningTrainer(Trainer):
                 feed_dict[self.model.true_action] = batch_actions.reshape([-1, self.brain.vector_action_space_size])
             else:
                 feed_dict[self.model.true_action] = batch_actions.reshape([-1])
-            if not self.is_continuous_observation:
-                feed_dict[self.model.vector_in] = batch_states.reshape([-1, self.brain.num_stacked_vector_observations])
-            else:
-                feed_dict[self.model.vector_in] = batch_states.reshape([-1, self.brain.vector_observation_space_size *
-                                                                       self.brain.num_stacked_vector_observations])
+            feed_dict[self.model.vector_in] = batch_states.reshape([-1, self.brain.vector_observation_space_size *
+                                                                   self.brain.num_stacked_vector_observations])
             if self.use_observations:
                 for i, _ in enumerate(self.model.visual_in):
                     _obs = np.array(_buffer['visual_observations%d' % i][start:end])

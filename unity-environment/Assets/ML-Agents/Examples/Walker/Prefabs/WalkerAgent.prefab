@@ -415,6 +415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4149577599396768}
   - component: {fileID: 114095122263002928}
+  - component: {fileID: 114914427405044950}
   m_Layer: 0
   m_Name: WalkerAgent
   m_TagString: Untagged
@@ -2138,13 +2139,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1951139309579916}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 0
 --- !u!114 &114085264024212618
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2153,13 +2155,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1956078425003976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114095122263002928
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2177,8 +2180,8 @@ MonoBehaviour:
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
-  goalDirection: {x: 1, y: 0, z: 0}
+    numberOfActionsBetweenDecisions: 3
+  target: {fileID: 0}
   hips: {fileID: 4178980744778630}
   chest: {fileID: 4210128103550454}
   spine: {fileID: 4786283472884902}
@@ -2203,13 +2206,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1075018522438980}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114266008813542904
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2218,13 +2222,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1603598095352382}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114274132433101900
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2233,13 +2238,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1366621498668090}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114298444411495568
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2248,13 +2254,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1865159199421306}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114442414695609972
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2263,13 +2270,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1944669260013398}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 0
 --- !u!114 &114500231387513536
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2278,13 +2286,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1050919177139640}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114542353308541564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2293,13 +2302,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1035041062710100}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 0
 --- !u!114 &114584838863670294
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2308,13 +2318,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1226403778944380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114625213176808800
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2323,13 +2334,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1550005645657994}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 0
 --- !u!114 &114690090025059694
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2338,13 +2350,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1751775391949052}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 0
+  penalizeGroundContact: 0
+  groundContactPenalty: 0
   touchingGround: 0
-  penalizeOnContact: 0
 --- !u!114 &114713577680667666
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2353,13 +2366,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1398551318619280}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114787271536612966
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2368,13 +2382,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1312906121110402}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!114 &114859585539225818
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2383,13 +2398,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1788327026571388}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
+--- !u!114 &114914427405044950
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1857740238369858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b29724baddfa457da6eeab446fa49ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxJointSpring: 10000
+  jointDampen: 50
+  maxJointForceLimit: 25000
+  bodyPartsList: []
 --- !u!114 &114983967692796378
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2398,13 +2429,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1596672762146112}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d834e5248d246138ae30cd155021d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2666e257ea992476cae0f7f163165e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  contactPenalty: -1
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
+  groundContactPenalty: -1
   touchingGround: 0
-  penalizeOnContact: 1
 --- !u!135 &135315403538457256
 SphereCollider:
   m_ObjectHideFlags: 1

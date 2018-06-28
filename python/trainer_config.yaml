@@ -130,12 +130,6 @@ Ball3DHardBrain:
     gamma: 0.995
     beta: 0.001
 
-BouncerBrain:
-    normalize: true
-    max_steps: 5.0e5
-    num_layers: 2
-    hidden_units: 56
-
 TennisBrain:
     normalize: true
 
@@ -148,6 +142,8 @@ CrawlerBrain:
     gamma: 0.995
     max_steps: 1e6
     summary_freq: 3000
+    num_layers: 3
+    hidden_units: 512
 
 WalkerBrain:
     normalize: true
@@ -155,12 +151,11 @@ WalkerBrain:
     time_horizon: 1000
     batch_size: 2048
     buffer_size: 20480
-    beta: 0.001
     gamma: 0.995
     max_steps: 2e6
     summary_freq: 3000
-    num_layers: 2
-    hidden_units: 256
+    num_layers: 3
+    hidden_units: 512
 
 ReacherBrain:
     normalize: true
@@ -220,7 +215,6 @@ StudentBrain:
     batches_per_epoch: 5
     num_layers: 4
     hidden_units: 64
-    use_recurrent: false
     sequence_length: 16
     buffer_size: 128
 

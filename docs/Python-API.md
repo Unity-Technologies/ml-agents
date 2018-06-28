@@ -29,14 +29,14 @@ env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 * `worker_id` indicates which port to use for communication with the environment. For use in parallel training regimes such as A3C.
 * `seed` indicates the seed to use when generating random numbers during the training process. In environments which do not involve physics calculations, setting the seed enables reproducible experimentation by ensuring that the environment and trainers utilize the same random seed.
 
-If you want to directly interact with the Editor, you need to use `file_name=None`, then press the :arrow_forward: button in the Editor when the message _"Ready to connect with the Editor"_ is displayed on the screen
+If you want to directly interact with the Editor, you need to use `file_name=None`, then press the :arrow_forward: button in the Editor when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen
 
 ## Interacting with a Unity Environment
 
 A BrainInfo object contains the following fields:
 
 * **`visual_observations`** : A list of 4 dimensional numpy arrays. Matrix n of the list corresponds to the n<sup>th</sup> observation of the brain. 
-* **`vector_observations`** : A two dimensional numpy array of dimension `(batch size, vector observation size)` if the vector observation space is continuous and `(batch size, 1)` if the vector observation space is discrete.
+* **`vector_observations`** : A two dimensional numpy array of dimension `(batch size, vector observation size)`.
 * **`text_observations`** : A list of string corresponding to the agents text observations.
 * **`memories`** : A two dimensional numpy array of dimension `(batch size, memory size)` which corresponds to the memories sent at the previous step.
 * **`rewards`** : A list as long as the number of agents using the brain containing the rewards they each obtained at the previous step. 
