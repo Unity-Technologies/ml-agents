@@ -150,7 +150,7 @@ class LearningModel(object):
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
-        with tf.name_scope(scope):
+        with tf.variable_scope(scope):
             vector_in = tf.reshape(observation_input, [-1])
             state_onehot = tf.one_hot(vector_in, s_size)
             hidden = state_onehot
@@ -168,10 +168,7 @@ class LearningModel(object):
         :return: List of encoded streams.
         """
         brain = self.brain
-        if brain.vector_action_space_type == "continuous":
-            activation_fn = tf.nn.tanh
-        else:
-            activation_fn = self.swish
+        activation_fn = self.swish
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):

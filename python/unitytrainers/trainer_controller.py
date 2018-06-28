@@ -1,4 +1,4 @@
-# # Unity ML Agents
+# # Unity ML-Agents Toolkit
 # ## ML-Agent Learning
 # Launches unitytrainers for each External Brains in a Unity Environment
 

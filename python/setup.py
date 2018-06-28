@@ -7,7 +7,7 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(name='unityagents',
-      version='0.3.0',
+      version='0.4.0',
       description='Unity Machine Learning Agents',
       license='Apache License 2.0',
       author='Unity Technologies',

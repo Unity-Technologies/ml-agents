@@ -1,4 +1,4 @@
-# # Unity ML Agents
+# # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
 
@@ -461,6 +461,9 @@ class PPOTrainer(Trainer):
                     else:
                         feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
                             [-1, self.brain.num_stacked_vector_observations])
+                        if self.use_curiosity:
+                            feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
+                                .reshape([-1, self.brain.num_stacked_vector_observations])
                 if self.use_visual_obs:
                     for i, _ in enumerate(self.model.visual_in):
                         _obs = np.array(buffer['visual_obs%d' % i][start:end])

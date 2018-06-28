@@ -236,22 +236,32 @@ namespace MLAgents
         /// their own experience.
         int stepCount;
 
-        // Flag to signify that an agent has been reset but the fact that it is
-        // done has not been communicated (required for On Demand Decisions).
+        /// Flag to signify that an agent has been reset but the fact that it is
+        /// done has not been communicated (required for On Demand Decisions).
         bool hasAlreadyReset;
 
-        // Flag to signify that an agent is done and should not reset until
-        // the fact that it is done has been communicated.
+        /// Flag to signify that an agent is done and should not reset until
+        /// the fact that it is done has been communicated.
         bool terminate;
 
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         int id;
 
+        /// Array of Texture2D used to render to from render buffer before  
+        /// transforming into float tensor.
+        Texture2D[] textureArray;
+        
         /// Monobehavior function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
         {
+            textureArray = new Texture2D[agentParameters.agentCameras.Count];
+            for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
+            {
+                textureArray[i] = new Texture2D(brain.brainParameters.cameraResolutions[i].width, 
+                    brain.brainParameters.cameraResolutions[i].height, TextureFormat.RGB24, false);
+            }
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             OnEnableHelper(academy);
@@ -561,10 +571,12 @@ namespace MLAgents
 
             for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
             {
-                info.visualObservations.Add(ObservationToTexture(
+                ObservationToTexture(
                     agentParameters.agentCameras[i],
                     param.cameraResolutions[i].width,
-                    param.cameraResolutions[i].height));
+                    param.cameraResolutions[i].height,
+                    ref textureArray[i]);
+                info.visualObservations.Add(textureArray[i]);
             }
 
             info.reward = reward;
@@ -926,37 +938,41 @@ namespace MLAgents
         /// Converts a camera and correspinding resolution to a 2D texture.
         /// </summary>
         /// <returns>The 2D texture.</returns>
-        /// <param name="camera">Camera.</param>
+        /// <param name="obsCamera">Camera.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
-        public static Texture2D ObservationToTexture(Camera camera, int width, int height)
+        /// <param name="texture2D">Texture2D to render to.</param>
+        public static void ObservationToTexture(Camera obsCamera, int width, int height, ref Texture2D texture2D)
         {
-            Rect oldRec = camera.rect;
-            camera.rect = new Rect(0f, 0f, 1f, 1f);
+            Rect oldRec = obsCamera.rect;
+            obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
             var depth = 24;
             var format = RenderTextureFormat.Default;
             var readWrite = RenderTextureReadWrite.Default;
 
             var tempRT =
                 RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-            var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+            
+            if (width != texture2D.width || height != texture2D.height)
+            {
+                texture2D.Resize(width, height);
+            }
 
             var prevActiveRT = RenderTexture.active;
-            var prevCameraRT = camera.targetTexture;
+            var prevCameraRT = obsCamera.targetTexture;
 
             // render to offscreen texture (readonly from CPU side)
             RenderTexture.active = tempRT;
-            camera.targetTexture = tempRT;
+            obsCamera.targetTexture = tempRT;
 
-            camera.Render();
+            obsCamera.Render();
 
-            tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-            tex.Apply();
-            camera.targetTexture = prevCameraRT;
-            camera.rect = oldRec;
+            texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
+            texture2D.Apply();
+            obsCamera.targetTexture = prevCameraRT;
+            obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRT;
             RenderTexture.ReleaseTemporary(tempRT);
-            return tex;
         }
     }
 }
