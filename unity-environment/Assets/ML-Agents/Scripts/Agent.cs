@@ -955,7 +955,7 @@ namespace MLAgents
             
             if (width != texture2D.width || height != texture2D.height)
             {
-                texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
+                texture2D.Resize(width, height);
             }
 
             var prevActiveRT = RenderTexture.active;
