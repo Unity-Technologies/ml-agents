@@ -190,9 +190,9 @@ class PPOTrainer(Trainer):
         self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
         if self.use_recurrent:
-            return run_out[self.model.output], run_out[self.model.memory_out], None, run_out
+            return run_out[self.model.output], run_out[self.model.memory_out], None, run_out[self.model.value], run_out
         else:
-            return run_out[self.model.output], None, None, run_out
+            return run_out[self.model.output], None, None, run_out[self.model.value], run_out
 
     def generate_intrinsic_rewards(self, curr_info, next_info):
         """

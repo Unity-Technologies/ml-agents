@@ -77,6 +77,8 @@ namespace MLAgents
         bool hasState;
         bool hasBatchSize;
         bool hasPrevAction;
+        bool hasValueEstimate;
+
         float[,] inputState;
         int[] inputPrevAction;
         List<float[,,,]> observationMatrixList;
@@ -157,6 +159,10 @@ namespace MLAgents
                 if (graph[graphScope + PreviousActionPlaceholderName] != null)
                 {
                     hasPrevAction = true;
+                }
+                if (graph[graphScope + "value_estimate"] != null)
+                {
+                    hasValueEstimate = true;
                 }
             }
 
@@ -328,6 +334,12 @@ namespace MLAgents
                 runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
             }
 
+            if (hasValueEstimate)
+            {
+                runner.Fetch(graph[graphScope + "value_estimate"][0]);
+            }
+
+
             TFTensor[] networkOutput;
             try
             {
@@ -363,6 +375,27 @@ namespace MLAgents
 
                     agent.UpdateMemoriesAction(m.ToList());
                     i++;
+                }
+            }
+
+            
+            if (hasValueEstimate)
+            {
+                float[,] value_estimates = new float[currentBatchSize,1];
+                if (hasRecurrent)
+                {
+                    value_estimates = networkOutput[2].GetValue() as float[,];
+                }
+                else
+                {
+                    value_estimates = networkOutput[1].GetValue() as float[,];
+                }
+                
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    agent.UpdateValueAction(value_estimates[i,0]);
+
                 }
             }
 
@@ -476,12 +509,14 @@ namespace MLAgents
                 if (brain.brainParameters.cameraResolutions.Count() > 0)
                 {
                     if (VisualObservationPlaceholderName == null)
+
                     {
                         VisualObservationPlaceholderName =
                             new string[brain.brainParameters.cameraResolutions.Count()];
                     }
 
                     if (VisualObservationPlaceholderName.Count() != brain.brainParameters.cameraResolutions.Count())
+
                     {
                         VisualObservationPlaceholderName =
                             new string[brain.brainParameters.cameraResolutions.Count()];
@@ -499,6 +534,7 @@ namespace MLAgents
                                 "visual_observation_" + obs_number;
                         }
                     }
+
 
                     var opn = serializedBrain.FindProperty("VisualObservationPlaceholderName");
                     serializedBrain.Update();
