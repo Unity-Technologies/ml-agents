@@ -1,11 +1,11 @@
 # Getting Started with the 3D Balance Ball Environment
 
-This tutorial walks through the end-to-end process of opening an ML-Agents 
+This tutorial walks through the end-to-end process of opening a ML-Agents toolkit
 example environment in Unity, building the Unity executable, training an agent 
 in it, and finally embedding the trained model into the Unity environment. 
 
-ML-Agents includes a number of [example environments](Learning-Environment-Examples.md) 
-which you can examine to help understand the different ways in which ML-Agents 
+The ML-Agents toolkit includes a number of [example environments](Learning-Environment-Examples.md) 
+which you can examine to help understand the different ways in which the ML-Agents toolkit 
 can be used. These environments can also serve as templates for new 
 environments or as ways to test new ML algorithms. After reading this tutorial, 
 you should be able to explore and build the example environments.
@@ -24,7 +24,7 @@ Let's get started!
 
 ## Installation
 
-In order to install and set up ML-Agents, the Python dependencies and Unity, 
+In order to install and set up the ML-Agents toolkit, the Python dependencies and Unity, 
 see the [installation instructions](Installation.md).
 
 ## Understanding a Unity Environment (3D Balance Ball)
@@ -108,7 +108,7 @@ when you embed the trained model in the Unity application, you will change the
 **Vector Observation Space**
 
 Before making a decision, an agent collects its observation about its state 
-in the world. ML-Agents classifies vector observations into two types:
+in the world. The ML-Agents toolkit classifies vector observations into two types:
 **Continuous** and **Discrete**. The **Continuous** vector observation space 
 collects observations in a vector of floating point numbers. The **Discrete** 
 vector observation space is an index into a table of states. Most of the example
@@ -124,7 +124,7 @@ values are defined in the agent's `CollectObservations()` function.)
 **Vector Action Space**
 
 An agent is given instructions from the brain in the form of *actions*. Like 
-states, ML-Agents classifies actions into two types: the **Continuous** 
+states, ML-Agents toolkit classifies actions into two types: the **Continuous** 
 vector action space is a vector of numbers that can vary continuously. What 
 each element of the vector means is defined by the agent logic (the PPO
 training process just learns what values are better given particular state 
@@ -193,7 +193,7 @@ In order to train an agent to correctly balance the ball, we will use a
 Reinforcement Learning algorithm called Proximal Policy Optimization (PPO). 
 This is a method that has been shown to be safe, efficient, and more general 
 purpose than many other RL algorithms, as such we have chosen it as the 
-example algorithm for use with ML-Agents. For more information on PPO, 
+example algorithm for use with ML-Agents toolkit. For more information on PPO, 
 OpenAI has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/) 
 explaining it.
 
@@ -217,7 +217,7 @@ When the message _"Start training by pressing the Play button in the Unity Edito
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
-The `--train` flag tells ML-Agents to run in training mode. 
+The `--train` flag tells the ML-Agents toolkit to run in training mode. 
 
 **Note**: You can train using an executable rather than the Editor. To do so, follow the intructions in 
 [Using an Execuatble](Learning-Environment-Executable.md).
@@ -271,7 +271,7 @@ Because TensorFlowSharp support is still experimental, it is disabled by
 default. In order to enable it, you must follow these steps. Please note that 
 the `Internal` Brain mode will only be available once completing these steps.
 
-To set up the TensorFlowSharp Support, follow [Setting up ML-Agents within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section.
+To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section.
 of the Basic Guide page.
 
 ### Embedding the trained model into Unity

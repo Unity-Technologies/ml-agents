@@ -1,12 +1,12 @@
 # Training ML-Agents
 
-ML-Agents conducts training using an external Python training process. During training, this external process communicates with the Academy object in the Unity scene to generate a block of agent experiences. These experiences become the training set for a neural network used to optimize the agent's policy (which is essentially a mathematical function mapping observations to actions). In reinforcement learning, the neural network optimizes the policy by maximizing the expected rewards. In imitation learning, the neural network optimizes the policy to achieve the smallest difference between the actions chosen by the agent trainee and the actions chosen by the expert in the same situation. 
+The ML-Agents toolkit conducts training using an external Python training process. During training, this external process communicates with the Academy object in the Unity scene to generate a block of agent experiences. These experiences become the training set for a neural network used to optimize the agent's policy (which is essentially a mathematical function mapping observations to actions). In reinforcement learning, the neural network optimizes the policy by maximizing the expected rewards. In imitation learning, the neural network optimizes the policy to achieve the smallest difference between the actions chosen by the agent trainee and the actions chosen by the expert in the same situation. 
 
 The output of the training process is a model file containing the optimized policy. This model file is a TensorFlow data graph containing the mathematical operations and the optimized weights selected during the training process. You can use the generated model file with the Internal Brain type in your Unity project to decide the best course of action for an agent. 
 
 Use the Python program, `learn.py` to train your agents. This program can be found in the `python` directory of the ML-Agents SDK. The [configuration file](#training-config-file), `trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
 
-For a broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Overview](ML-Agents-Overview.md).
+For a broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Toolkit Overview](ML-Agents-Overview.md).
 
 ## Training with learn.py
 

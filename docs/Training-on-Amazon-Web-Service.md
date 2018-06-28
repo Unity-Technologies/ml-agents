@@ -37,11 +37,11 @@ nvidia-smi
 export DISPLAY=:0
 ```
 
-## Configuring your own Instance
+## Configuring your own instance
 
 You could also choose to configure your own instance. To begin with, you will need an EC2 instance which contains the latest Nvidia drivers, CUDA9, and cuDNN. In this tutorial we used the [Deep Learning AMI (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C) listed under AWS Marketplace with a p2.xlarge instance. 
 
-### Installing ML-Agents on the instance
+### Installing the ML-Agents toolkit on the instance
 
 After launching your EC2 instance using the ami and ssh into it:
 

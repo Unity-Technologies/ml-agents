@@ -9,7 +9,7 @@ If you haven't switched your scripting runtime version from .NET 3.5 to .NET 4.6
 error CS1061: Type `System.Text.StringBuilder' does not contain a definition for `Clear' and no extension method `Clear' of type `System.Text.StringBuilder' could be found. Are you missing an assembly reference?
 ```
 
-This is because .NET 3.5 doesn't support method Clear() for StringBuilder, refer to [Setting Up ML-Agents Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution. 
+This is because .NET 3.5 doesn't support method Clear() for StringBuilder, refer to [Setting Up The ML-Agents Toolkit Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution. 
 
 ### TensorFlowSharp flag not turned on. 
 
@@ -19,7 +19,7 @@ If you have already imported the TensorFlowSharp plugin, but havn't set ENABLE_T
 You need to install and enable the TensorFlowSharp plugin in order to use the internal brain. 
 ```
 
-This error message occurs because the TensorFlowSharp plugin won't be usage without the ENABLE_TENSORFLOW flag, refer to [Setting Up ML-Agents Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution. 
+This error message occurs because the TensorFlowSharp plugin won't be usage without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution. 
 
 ### Tensorflow epsilon placeholder error
 
