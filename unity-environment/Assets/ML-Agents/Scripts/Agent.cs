@@ -591,7 +591,7 @@ namespace MLAgents
 
         }
 
-        public virtual void MaskAction(bool[] mask)
+        protected void MaskDiscreteAction(bool[] mask)
         {
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {

@@ -76,6 +76,14 @@ public class PushAgentBasic : Agent
 
     public override void CollectObservations()
     {
+        
+        bool[] my_mask = new bool[6];
+        my_mask[0] = true;
+        for (int k = 1; k < 6; k++)
+        {
+            my_mask[k] =  Random.value > 0.1f;
+        }
+        MaskDiscreteAction(my_mask);
         if (useVectorObs)
         {
             var rayDistance = 12f;

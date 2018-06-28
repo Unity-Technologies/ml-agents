@@ -77,10 +77,12 @@ namespace MLAgents
         bool hasState;
         bool hasBatchSize;
         bool hasPrevAction;
+        bool hasMaskedActions; 
         float[,] inputState;
         int[] inputPrevAction;
         List<float[,,,]> observationMatrixList;
         float[,] inputOldMemories;
+        float[,] maskedActions;
         List<Texture2D> texturesHolder;
         int memorySize;
 #endif
@@ -158,6 +160,11 @@ namespace MLAgents
                 {
                     hasPrevAction = true;
                 }
+
+                if (graph[graphScope + "masked_actions"] != null)
+                {
+                    hasMaskedActions = true;
+                }
             }
 
             observationMatrixList = new List<float[,,,]>();
@@ -219,6 +226,29 @@ namespace MLAgents
                     inputPrevAction[i] = Mathf.FloorToInt(actionList[0]);
                     i++;
                 }
+            }
+
+            if (hasMaskedActions)
+            {
+                maskedActions = new float[currentBatchSize, brain.brainParameters.vectorActionSize];
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    for (int j = 0; j < brain.brainParameters.vectorActionSize; j++)
+                    {
+                        if (agentInfo[agent].maskedActions != null)
+                        {
+                            maskedActions[i, j] = agentInfo[agent].maskedActions[j] ? 1.0f : 0.0f;
+                        }
+                        else
+                        {
+                            maskedActions[i, j] = 1.0f;
+                        }
+                    }
+
+                    i++;
+                }
+
             }
 
 
@@ -309,6 +339,12 @@ namespace MLAgents
             if (hasPrevAction)
             {
                 runner.AddInput(graph[graphScope + PreviousActionPlaceholderName][0], inputPrevAction);
+            }
+            
+            // Create the mask action tensor
+            if (hasMaskedActions)
+            {
+                runner.AddInput(graph[graphScope + "masked_actions"][0], maskedActions);
             }
 
             // Create the observation tensors
