@@ -99,7 +99,6 @@ Make sure you are connected to the internet and then type in the Anaconda Prompt
 
 ```
 pip install .
-
 ```
 
 This will complete the installation of all the required Python packages to run the ML-Agents toolkit.
