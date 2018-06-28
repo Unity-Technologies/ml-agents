@@ -139,12 +139,12 @@ class Trainer(object):
                 self.is_training and self.get_step <= self.get_max_steps):
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info(" {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
-                            .format(self.brain_name, self.get_step,
+                logger.info("{}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
+                            .format(self.run_id, self.brain_name, self.get_step,
                                     mean_reward, np.std(self.stats['cumulative_reward'])))
             else:
-                logger.info(" {}: Step: {}. No episode was completed since last summary."
-                            .format(self.brain_name, self.get_step))
+                logger.info("{}: {}: Step: {}. No episode was completed since last summary."
+                            .format(self.run_id, self.brain_name, self.get_step))
             summary = tf.Summary()
             for key in self.stats:
                 if len(self.stats[key]) > 0:
