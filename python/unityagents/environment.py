@@ -48,6 +48,7 @@ class UnityEnvironment(object):
         self._loaded = False    # If true, this means the environment was successfully loaded
         self.proc1 = None       # The process that is started. If None, no process was started
         self.communicator = self.get_communicator(worker_id, base_port)
+        self.environment_parameters = EnvironmentParametersProto()
 
         # If the environment name is 'editor', a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -383,6 +384,9 @@ class UnityEnvironment(object):
             raise UnityActionException(
                 "You cannot conduct step without first calling reset. Reset the environment with 'reset()'")
 
+    def modify_environment(self, parameters: EnvironmentParametersProto):
+        self.environment_parameters = parameters
+
     def close(self):
         """
         Sends a shutdown signal to the unity environment, and closes the socket connection.
@@ -492,7 +496,7 @@ class UnityEnvironment(object):
     def _generate_reset_input(self, training, config) -> UnityRLInput:
         rl_in = UnityRLInput()
         rl_in.is_training = training
-        rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
+        rl_in.environment_parameters.CopyFrom(self.environment_parameters)
         for key in config:
             rl_in.environment_parameters.float_parameters[key] = config[key]
         rl_in.command = 1

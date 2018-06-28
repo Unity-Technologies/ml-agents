@@ -130,6 +130,8 @@ namespace MLAgents
                  "environment when it resets.")]
         public ResetParameters resetParameters;
 
+        public CommunicatorObjects.EnvironmentParametersProto envParams;
+
         // Fields not provided in the Inspector.
 
         /// Boolean flag indicating whether a communicator is accessible by the
@@ -534,6 +536,7 @@ namespace MLAgents
                         {
                             resetParameters[kv.Key] = kv.Value;
                         }
+                        envParams = newResetParameters;
                     }
 
                     SetIsInference(!brainBatcher.GetIsTraining());
