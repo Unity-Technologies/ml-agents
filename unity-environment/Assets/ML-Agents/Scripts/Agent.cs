@@ -81,6 +81,7 @@ namespace MLAgents
         public float[] vectorActions;
         public string textActions;
         public List<float> memories;
+        public float value;
     }
 
     /// <summary>
@@ -755,6 +756,20 @@ namespace MLAgents
         public void UpdateTextAction(string textActions)
         {
             action.textActions = textActions;
+        }
+        
+        /// <summary>
+        /// Updates the value of the agent.
+        /// </summary>
+        /// <param name="textActions">Text actions.</param>
+        public void UpdateValueAction(float value)
+        {
+            action.value = value;
+        }
+
+        protected float GetValueEstimate()
+        {
+            return action.value;
         }
 
         /// <summary>

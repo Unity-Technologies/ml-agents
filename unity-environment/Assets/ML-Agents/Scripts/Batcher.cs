@@ -338,6 +338,8 @@ namespace MLAgents
                             action.Memories.ToList());
                         agent.UpdateTextAction(
                             action.TextActions);
+                        agent.UpdateValueAction(
+                            action.Value);
                     }
                 }
             
