@@ -145,15 +145,15 @@ namespace MujocoUnity
             this.gameObject.transform.rotation = _orginalTransformRotation;
             this.gameObject.transform.position = _orginalTransformPosition;
 
-            GetComponent<MujocoController>().SetMujocoJoints(mujocoJoints);
-            GetComponent<MujocoController>().SetMujocoSensors(mujocoSensors);
+            GetComponent<MujocoAgent>().SetMujocoJoints(mujocoJoints);
+            GetComponent<MujocoAgent>().SetMujocoSensors(mujocoSensors);
 
         }
         public void ApplyRandom()
         {
             if (OnGenerateApplyRandom != 0f){
                 float velocityScaler = 5000f;
-                foreach (var item in GetComponent<MujocoController>().MujocoJoints) {
+                foreach (var item in GetComponent<MujocoAgent>().MujocoJoints) {
                     var r = ((UnityEngine.Random.value * (OnGenerateApplyRandom*2))-OnGenerateApplyRandom);
                     // float r = 0f;
                     var childRb = item.Joint.GetComponent<Rigidbody>();

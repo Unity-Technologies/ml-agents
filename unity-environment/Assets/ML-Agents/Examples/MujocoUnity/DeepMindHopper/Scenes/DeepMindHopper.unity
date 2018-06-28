@@ -362,6 +362,11 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
+    - target: {fileID: 114957047460082758, guid: bdcc45df97881475799c1dfff10a437e,
+        type: 2}
+      propertyPath: CameraTarget
+      value: 
+      objectReference: {fileID: 1715640920}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
   m_IsPrefabParent: 0
@@ -1188,7 +1193,8 @@ MonoBehaviour:
   m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
-  continuousPlayerActions: []
+  keyContinuousPlayerActions: []
+  axisContinuousPlayerActions: []
   discretePlayerActions: []
   defaultAction: 0
   brain: {fileID: 846768605}

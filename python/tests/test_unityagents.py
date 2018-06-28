@@ -45,7 +45,7 @@ def test_handles_bad_filename():
 @mock.patch('unityagents.UnityEnvironment.get_communicator')
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
-        discrete=False, visual_input=False)
+        discrete_action=False, visual_inputs=0)
     env = UnityEnvironment(' ')
     with pytest.raises(UnityActionException):
         env.step([0])
@@ -57,7 +57,7 @@ def test_initialization(mock_communicator, mock_launcher):
 @mock.patch('unityagents.UnityEnvironment.get_communicator')
 def test_reset(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
-        discrete=False, visual_input=False)
+        discrete_action=False, visual_inputs=0)
     env = UnityEnvironment(' ')
     brain = env.brains['RealFakeBrain']
     brain_info = env.reset()
@@ -78,7 +78,7 @@ def test_reset(mock_communicator, mock_launcher):
 @mock.patch('unityagents.UnityEnvironment.get_communicator')
 def test_step(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
-        discrete=False, visual_input=False)
+        discrete_action=False, visual_inputs=0)
     env = UnityEnvironment(' ')
     brain = env.brains['RealFakeBrain']
     brain_info = env.reset()
@@ -109,7 +109,7 @@ def test_step(mock_communicator, mock_launcher):
 @mock.patch('unityagents.UnityEnvironment.get_communicator')
 def test_close(mock_communicator, mock_launcher):
     comm = MockCommunicator(
-        discrete=False, visual_input=False)
+        discrete_action=False, visual_inputs=0)
     mock_communicator.return_value = comm
     env = UnityEnvironment(' ')
     assert env._loaded

@@ -54,20 +54,20 @@ public class OpenAIHumanoidAgent : MujocoAgent {
         AddVectorObs(shoulders.transform.forward); // gyroscope 
         AddVectorObs(shoulders.transform.up);
 
-        AddVectorObs(MujocoController.SensorIsInTouch);
-        MujocoController.JointRotations.ForEach(x=>AddVectorObs(x));
-        AddVectorObs(MujocoController.JointVelocity);
+        AddVectorObs(SensorIsInTouch);
+        JointRotations.ForEach(x=>AddVectorObs(x));
+        AddVectorObs(JointVelocity);
     }
 
 
 
     float GetHumanoidArmEffort()
     {
-        var mJoints = MujocoController.MujocoJoints
+        var mJoints = MujocoJoints
             .Where(x=>x.JointName.ToLowerInvariant().Contains("shoulder") || x.JointName.ToLowerInvariant().Contains("elbow"))
             .ToList();
         var effort = mJoints
-            .Select(x=>Actions[MujocoController.MujocoJoints.IndexOf(x)])
+            .Select(x=>Actions[MujocoJoints.IndexOf(x)])
             .Select(x=>Mathf.Pow(Mathf.Abs(x),2))
             .Sum();
         return effort;            
@@ -241,16 +241,16 @@ public class OpenAIHumanoidAgent : MujocoAgent {
     float GetPhaseBonus()
     {
         bool noPhaseChange = true;
-        for (int i = 0; i < MujocoController.SensorIsInTouch.Count; i++)
+        for (int i = 0; i < SensorIsInTouch.Count; i++)
         {
-            noPhaseChange = noPhaseChange && MujocoController.SensorIsInTouch[i] == _lastSenorState[i];
-            _lastSenorState[i] = MujocoController.SensorIsInTouch[i];
+            noPhaseChange = noPhaseChange && SensorIsInTouch[i] == _lastSenorState[i];
+            _lastSenorState[i] = SensorIsInTouch[i];
         }
         // special case: both feet in air
-        if (MujocoController.SensorIsInTouch.Sum() == 0f)
+        if (SensorIsInTouch.Sum() == 0f)
             noPhaseChange = true;
         // special case: both feed down
-        if (MujocoController.SensorIsInTouch.Sum() == 2f) {
+        if (SensorIsInTouch.Sum() == 2f) {
             _phaseBonus = 0f;
             PhaseResetLeft();
             PhaseResetRight();
@@ -268,7 +268,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
 
         // new phase
         _phaseBonus = 0;
-        bool isLeftFootDown = MujocoController.SensorIsInTouch[0] != 0f;
+        bool isLeftFootDown = SensorIsInTouch[0] != 0f;
         if (_phase == 2 && isLeftFootDown) {
             _phaseBonus = CalcPhaseBonus(LeftMin, LeftMax);
             _phaseBonus += 0.1f;

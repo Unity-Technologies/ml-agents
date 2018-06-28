@@ -74,9 +74,14 @@ class PPOModel(LearningModel):
 
                 # Create the encoder ops for current and next visual input. Not that these encoders are siamese.
                 encoded_visual = self.create_visual_observation_encoder(self.visual_in[i], self.curiosity_enc_size,
-                                                                        self.swish, 1, "visual_obs_encoder", False)
-                encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i], self.curiosity_enc_size,
-                                                                             self.swish, 1, "visual_obs_encoder", True)
+                                                                        self.swish, 1, "stream_{}_visual_obs_encoder"
+                                                                        .format(i), False)
+
+                encoded_next_visual = self.create_visual_observation_encoder(self.next_visual_in[i],
+                                                                             self.curiosity_enc_size,
+                                                                             self.swish, 1,
+                                                                             "stream_{}_visual_obs_encoder".format(i),
+                                                                             True)
                 visual_encoders.append(encoded_visual)
                 next_visual_encoders.append(encoded_next_visual)
 
@@ -86,17 +91,34 @@ class PPOModel(LearningModel):
             encoded_next_state_list.append(hidden_next_visual)
 
         if self.o_size > 0:
-            # Create input op for next (t+1) vector observation.
-            self.next_vector_obs = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
-                                                  name='next_vector_observation')
 
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
-            encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in, self.curiosity_enc_size,
-                                                                            self.swish, 2, "vector_obs_encoder", False)
-            encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_obs,
-                                                                                 self.curiosity_enc_size, self.swish,
-                                                                                 2, "vector_obs_encoder", True)
+            if self.brain.vector_observation_space_type == "continuous":
+                # Create input op for next (t+1) vector observation.
+                self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
+                                                     name='next_vector_observation')
 
+                encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in,
+                                                                                self.curiosity_enc_size,
+                                                                                self.swish, 2, "vector_obs_encoder",
+                                                                                False)
+                encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_in,
+                                                                                     self.curiosity_enc_size,
+                                                                                     self.swish, 2,
+                                                                                     "vector_obs_encoder",
+                                                                                     True)
+            else:
+                self.next_vector_in = tf.placeholder(shape=[None, 1], dtype=tf.int32,
+                                                     name='next_vector_observation')
+
+                encoded_vector_obs = self.create_discrete_observation_encoder(self.vector_in, self.o_size,
+                                                                              self.curiosity_enc_size,
+                                                                              self.swish, 2, "vector_obs_encoder",
+                                                                              False)
+                encoded_next_vector_obs = self.create_discrete_observation_encoder(self.next_vector_in, self.o_size,
+                                                                                   self.curiosity_enc_size,
+                                                                                   self.swish, 2, "vector_obs_encoder",
+                                                                                   True)
             encoded_state_list.append(encoded_vector_obs)
             encoded_next_state_list.append(encoded_next_vector_obs)
 
@@ -116,11 +138,11 @@ class PPOModel(LearningModel):
         if self.brain.vector_action_space_type == "continuous":
             pred_action = tf.layers.dense(hidden, self.a_size, activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
-            self.inverse_loss = tf.reduce_mean(squared_difference)
+            self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(squared_difference, self.mask, 2)[1])
         else:
             pred_action = tf.layers.dense(hidden, self.a_size, activation=tf.nn.softmax)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
-            self.inverse_loss = tf.reduce_mean(cross_entropy)
+            self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(cross_entropy, self.mask, 2)[1])
 
     def create_forward_model(self, encoded_state, encoded_next_state):
         """
@@ -131,11 +153,13 @@ class PPOModel(LearningModel):
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
-        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size, activation=None)
+        # We compare against the concatenation of all observation streams, hence `self.v_size + int(self.o_size > 0)`.
+        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size * (self.v_size + int(self.o_size > 0)),
+                                          activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
         self.intrinsic_reward = tf.clip_by_value(self.curiosity_strength * squared_difference, 0, 1)
-        self.forward_loss = tf.reduce_mean(squared_difference)
+        self.forward_loss = tf.reduce_mean(tf.dynamic_partition(squared_difference, self.mask, 2)[1])
 
     def create_ppo_optimizer(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
         """
@@ -154,20 +178,17 @@ class PPOModel(LearningModel):
         self.learning_rate = tf.train.polynomial_decay(lr, self.global_step, max_step, 1e-10, power=1.0)
 
         self.old_value = tf.placeholder(shape=[None], dtype=tf.float32, name='old_value_estimates')
-        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
 
         decay_epsilon = tf.train.polynomial_decay(epsilon, self.global_step, max_step, 0.1, power=1.0)
         decay_beta = tf.train.polynomial_decay(beta, self.global_step, max_step, 1e-5, power=1.0)
         optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
-
-        mask = tf.equal(self.mask_input, 1.0)
 
         clipped_value_estimate = self.old_value + tf.clip_by_value(tf.reduce_sum(value, axis=1) - self.old_value,
                                                                    - decay_epsilon, decay_epsilon)
 
         v_opt_a = tf.squared_difference(self.returns_holder, tf.reduce_sum(value, axis=1))
         v_opt_b = tf.squared_difference(self.returns_holder, clipped_value_estimate)
-        self.value_loss = tf.reduce_mean(tf.boolean_mask(tf.maximum(v_opt_a, v_opt_b), mask))
+        self.value_loss = tf.reduce_mean(tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), self.mask, 2)[1])
 
         # Here we calculate PPO policy loss. In continuous control this is done independently for each action gaussian
         # and then averaged together. This provides significantly better performance than treating the probability
@@ -175,10 +196,11 @@ class PPOModel(LearningModel):
         r_theta = probs / (old_probs + 1e-10)
         p_opt_a = r_theta * self.advantage
         p_opt_b = tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
-        self.policy_loss = -tf.reduce_mean(tf.boolean_mask(tf.minimum(p_opt_a, p_opt_b), mask))
+        self.policy_loss = -tf.reduce_mean(tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1])
 
         self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(
-            tf.boolean_mask(entropy, mask))
+            tf.dynamic_partition(entropy, self.mask, 2)[1])
+
         if self.use_curiosity:
             self.loss += 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
         self.update_batch = optimizer.minimize(self.loss)

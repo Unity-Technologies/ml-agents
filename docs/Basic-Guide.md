@@ -7,7 +7,7 @@ we highly recommend the [Roll-a-ball tutorial](https://unity3d.com/learn/tutoria
 
 ## Setting up ML-Agents within Unity
 
-In order to use ML-Agents within Unity, you need to change some Unity settings first. Also [TensorFlowSharp plugin](https://github.com/migueldeicaza/TensorFlowSharp) is needed for you to use pretrained model within Unity. 
+In order to use ML-Agents within Unity, you need to change some Unity settings first. Also [TensorFlowSharp plugin](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage) is needed for you to use pretrained model within Unity, which is based on the [TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp). 
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
@@ -73,7 +73,7 @@ object.
 Where:
 - `<run-identifier>` is a string used to separate the results of different training runs
 - And the `--train` tells learn.py to run a training session (rather than inference)
-5. When the message _"Ready to connect with the Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
+5. When the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
 
 **Note**: Alternatively, you can use an executable rather than the Editor to perform training. Please refer to [this page](Learning-Environment-Executable.md) for instructions on how to build and use an executable.
 

@@ -4,22 +4,22 @@ namespace MujocoUnity
 {
     public class SensorBehavior : MonoBehaviour
     {
-        MujocoController _mujocoController;
+        MujocoAgent _mujocoAgent;
         Collider _collider;
         void Start ()
         {
-            _mujocoController = GetComponentInParent<MujocoController>();
+            _mujocoAgent = GetComponentInParent<MujocoAgent>();
             _collider = GetComponent<Collider>();
         }
         void OnCollisionEnter(Collision other) 
         {
-            if (_mujocoController!=null)
-                _mujocoController.SensorCollisionEnter(_collider, other);
+            if (_mujocoAgent!=null)
+                _mujocoAgent.SensorCollisionEnter(_collider, other);
         }
         void OnCollisionExit(Collision other) 
         {
-            if (_mujocoController!=null)
-                _mujocoController.SensorCollisionExit(_collider, other);
+            if (_mujocoAgent!=null)
+                _mujocoAgent.SensorCollisionExit(_collider, other);
         }
 
     }

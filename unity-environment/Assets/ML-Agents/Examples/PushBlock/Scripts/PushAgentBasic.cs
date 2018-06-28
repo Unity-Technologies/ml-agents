@@ -52,8 +52,6 @@ public class PushAgentBasic : Agent
 
     void Awake()
     {
-        // There is one brain in the scene so this should find our brain.
-        brain = FindObjectOfType<Brain>();
         academy = FindObjectOfType<PushBlockAcademy>(); //cache the academy
     }
 

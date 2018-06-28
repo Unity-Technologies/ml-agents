@@ -76,17 +76,11 @@ class Trainer(object):
         """
         raise UnityTrainerException("The get_last_reward property was not implemented.")
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
+        Increment the step count of the trainer and updates the last reward
         """
-        raise UnityTrainerException("The increment_step method was not implemented.")
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
-        """
-        raise UnityTrainerException("The update_last_reward method was not implemented.")
+        raise UnityTrainerException("The increment_step_and_update_last_reward method was not implemented.")
 
     def take_action(self, all_brain_info: AllBrainInfo):
         """
@@ -142,15 +136,14 @@ class Trainer(object):
         """
         if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
                 self.is_training and self.get_step <= self.get_max_steps):
-            steps = self.get_step
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
                 logger.info(" {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
-                            .format(self.brain_name, steps,
+                            .format(self.brain_name, self.get_step,
                                     mean_reward, np.std(self.stats['cumulative_reward'])))
             else:
                 logger.info(" {}: Step: {}. No episode was completed since last summary."
-                            .format(self.brain_name, steps))
+                            .format(self.brain_name, self.get_step))
             summary = tf.Summary()
             for key in self.stats:
                 if len(self.stats[key]) > 0:
@@ -158,7 +151,7 @@ class Trainer(object):
                     summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
                     self.stats[key] = []
             summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
-            self.summary_writer.add_summary(summary, steps)
+            self.summary_writer.add_summary(summary, self.get_step)
             self.summary_writer.flush()
 
     def write_tensorboard_text(self, key, input_dict):
@@ -169,9 +162,7 @@ class Trainer(object):
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
         try:
-            s_op = tf.summary.text(key,
-                                   tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict]))
-                                   )
+            s_op = tf.summary.text(key, tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict])))
             s = self.sess.run(s_op)
             self.summary_writer.add_summary(s, self.get_step)
         except:

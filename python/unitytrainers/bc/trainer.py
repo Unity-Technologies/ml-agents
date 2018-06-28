@@ -74,6 +74,9 @@ class BehavioralCloningTrainer(Trainer):
                 normalize=False,
                 use_recurrent=trainer_parameters['use_recurrent'],
                 brain=self.brain)
+        self.inference_run_list = [self.model.sample_action]
+        if self.use_recurrent:
+            self.inference_run_list += [self.model.memory_out]
 
     def __str__(self):
 
@@ -121,16 +124,11 @@ class BehavioralCloningTrainer(Trainer):
         else:
             return 0
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
+        Increment the step count of the trainer and Updates the last reward
         """
         self.sess.run(self.model.increment_step)
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
-        """
         return
 
     def take_action(self, all_brain_info: AllBrainInfo):
@@ -145,7 +143,7 @@ class BehavioralCloningTrainer(Trainer):
 
         agent_brain = all_brain_info[self.brain_name]
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
-        run_list = [self.model.sample_action]
+
         if self.use_observations:
             for i, _ in enumerate(agent_brain.visual_observations):
                 feed_dict[self.model.visual_in[i]] = agent_brain.visual_observations[i]
@@ -155,12 +153,11 @@ class BehavioralCloningTrainer(Trainer):
             if agent_brain.memories.shape[1] == 0:
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
             feed_dict[self.model.memory_in] = agent_brain.memories
-            run_list += [self.model.memory_out]
         if self.use_recurrent:
-            agent_action, memories = self.sess.run(run_list, feed_dict)
+            agent_action, memories = self.sess.run(self.inference_run_list, feed_dict)
             return agent_action, memories, None, None
         else:
-            agent_action = self.sess.run(run_list, feed_dict)
+            agent_action = self.sess.run(self.inference_run_list, feed_dict)
         return agent_action, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
@@ -250,8 +247,10 @@ class BehavioralCloningTrainer(Trainer):
         for l in range(len(info_student.agents)):
             if info_student.local_done[l]:
                 agent_id = info_student.agents[l]
-                self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
-                self.stats['episode_length'].append(self.episode_steps[agent_id])
+                self.stats['cumulative_reward'].append(
+                    self.cumulative_rewards.get(agent_id, 0))
+                self.stats['episode_length'].append(
+                    self.episode_steps.get(agent_id, 0))
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
 
