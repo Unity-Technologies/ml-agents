@@ -78,6 +78,7 @@ namespace MLAgents
         bool hasBatchSize;
         bool hasPrevAction;
         bool hasValueEstimate;
+
         float[,] inputState;
         int[] inputPrevAction;
         List<float[,,,]> observationMatrixList;
@@ -338,6 +339,7 @@ namespace MLAgents
                 runner.Fetch(graph[graphScope + "value_estimate"][0]);
             }
 
+
             TFTensor[] networkOutput;
             try
             {
@@ -393,6 +395,7 @@ namespace MLAgents
                 foreach (Agent agent in agentList)
                 {
                     agent.UpdateValueAction(value_estimates[i,0]);
+
                 }
             }
 
@@ -506,12 +509,14 @@ namespace MLAgents
                 if (brain.brainParameters.cameraResolutions.Count() > 0)
                 {
                     if (VisualObservationPlaceholderName == null)
+
                     {
                         VisualObservationPlaceholderName =
                             new string[brain.brainParameters.cameraResolutions.Count()];
                     }
 
                     if (VisualObservationPlaceholderName.Count() != brain.brainParameters.cameraResolutions.Count())
+
                     {
                         VisualObservationPlaceholderName =
                             new string[brain.brainParameters.cameraResolutions.Count()];
@@ -529,6 +534,7 @@ namespace MLAgents
                                 "visual_observation_" + obs_number;
                         }
                     }
+
 
                     var opn = serializedBrain.FindProperty("VisualObservationPlaceholderName");
                     serializedBrain.Update();
