@@ -215,25 +215,23 @@ class PPOTrainer(Trainer):
         prev_text_actions = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
+            agent_index = agent_brain_info.agents.index(agent_id)
             if agent_brain_info is None:
                 agent_brain_info = next_info
             for i in range(len(next_info.visual_observations)):
-                visual_observations[i].append(
-                    agent_brain_info.visual_observations[i][agent_brain_info.agents.index(agent_id)])
-            vector_observations.append(agent_brain_info.vector_observations[agent_brain_info.agents.index(agent_id)])
-            text_observations.append(agent_brain_info.text_observations[agent_brain_info.agents.index(agent_id)])
+                visual_observations[i].append(agent_brain_info.visual_observations[i][agent_index])
+            vector_observations.append(agent_brain_info.vector_observations[agent_index])
+            text_observations.append(agent_brain_info.text_observations[agent_index])
             if self.use_recurrent:
-                memories.append(agent_brain_info.memories[agent_brain_info.agents.index(agent_id)])
-            rewards.append(agent_brain_info.rewards[agent_brain_info.agents.index(agent_id)])
-            local_dones.append(agent_brain_info.local_done[agent_brain_info.agents.index(agent_id)])
-            max_reacheds.append(agent_brain_info.max_reached[agent_brain_info.agents.index(agent_id)])
-            agents.append(agent_brain_info.agents[agent_brain_info.agents.index(agent_id)])
-            prev_vector_actions.append(
-                agent_brain_info.previous_vector_actions[agent_brain_info.agents.index(agent_id)])
-            prev_text_actions.append(agent_brain_info.previous_text_actions[agent_brain_info.agents.index(agent_id)])
+                memories.append(agent_brain_info.memories[agent_index])
+            rewards.append(agent_brain_info.rewards[agent_index])
+            local_dones.append(agent_brain_info.local_done[agent_index])
+            max_reacheds.append(agent_brain_info.max_reached[agent_index])
+            agents.append(agent_brain_info.agents[agent_index])
+            prev_vector_actions.append(agent_brain_info.previous_vector_actions[agent_index])
+            prev_text_actions.append(agent_brain_info.previous_text_actions[agent_index])
         curr_info = BrainInfo(visual_observations, vector_observations, text_observations, memories, rewards,
-                              agents,
-                              local_dones, prev_vector_actions, prev_text_actions, max_reacheds)
+                              agents, local_dones, prev_vector_actions, prev_text_actions, max_reacheds)
         return curr_info
 
     def generate_intrinsic_rewards(self, curr_info, next_info):
