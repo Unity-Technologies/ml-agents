@@ -201,7 +201,7 @@ class PPOTrainer(Trainer):
         Constructs a BrainInfo which contains the lost recent previous experiences for all agents info
         which correspond to the agents in a provided next_info.
         :BrainInfo next_info: A t+1 BrainInfo.
-        :return:
+        :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
         visual_observations = [[]]
         vector_observations = []
