@@ -198,7 +198,7 @@ class PPOTrainer(Trainer):
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
-        Constructs a BrainInfo which contains the lost recent previous experiences for all agents info
+        Constructs a BrainInfo which contains the most recent previous experiences for all agents info
         which correspond to the agents in a provided next_info.
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
