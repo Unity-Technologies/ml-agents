@@ -8,7 +8,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from unityagents import AllBrainInfo
+from unityagents import AllBrainInfo, BrainInfo
 from unitytrainers.buffer import Buffer
 from unitytrainers.ppo.models import PPOModel
 from unitytrainers.trainer import UnityTrainerException, Trainer
@@ -196,10 +196,51 @@ class PPOTrainer(Trainer):
         else:
             return run_out[self.model.output], None, None, run_out
 
+    def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
+        """
+        Constructs a BrainInfo which contains the lost recent previous experiences for all agents info
+        which correspond to the agents in a provided next_info.
+        :BrainInfo next_info: A t+1 BrainInfo.
+        :return:
+        """
+        visual_observations = [[]]
+        vector_observations = []
+        text_observations = []
+        memories = []
+        rewards = []
+        local_dones = []
+        max_reacheds = []
+        agents = []
+        prev_vector_actions = []
+        prev_text_actions = []
+        for agent_id in next_info.agents:
+            agent_brain_info = self.training_buffer[agent_id].last_brain_info
+            if agent_brain_info is None:
+                agent_brain_info = next_info
+            for i in range(len(next_info.visual_observations)):
+                visual_observations[i].append(
+                    agent_brain_info.visual_observations[i][agent_brain_info.agents.index(agent_id)])
+            vector_observations.append(agent_brain_info.vector_observations[agent_brain_info.agents.index(agent_id)])
+            text_observations.append(agent_brain_info.text_observations[agent_brain_info.agents.index(agent_id)])
+            if self.use_recurrent:
+                memories.append(agent_brain_info.memories[agent_brain_info.agents.index(agent_id)])
+            rewards.append(agent_brain_info.rewards[agent_brain_info.agents.index(agent_id)])
+            local_dones.append(agent_brain_info.local_done[agent_brain_info.agents.index(agent_id)])
+            max_reacheds.append(agent_brain_info.max_reached[agent_brain_info.agents.index(agent_id)])
+            agents.append(agent_brain_info.agents[agent_brain_info.agents.index(agent_id)])
+            prev_vector_actions.append(
+                agent_brain_info.previous_vector_actions[agent_brain_info.agents.index(agent_id)])
+            prev_text_actions.append(agent_brain_info.previous_text_actions[agent_brain_info.agents.index(agent_id)])
+        curr_info = BrainInfo(visual_observations, vector_observations, text_observations, memories, rewards,
+                              agents,
+                              local_dones, prev_vector_actions, prev_text_actions, max_reacheds)
+        return curr_info
+
     def generate_intrinsic_rewards(self, curr_info, next_info):
         """
         Generates intrinsic reward used for Curiosity-based training.
-        :param next_info: Next BrainInfo.
+        :BrainInfo curr_info: Current BrainInfo.
+        :BrainInfo next_info: Next BrainInfo.
         :return: Intrinsic rewards for all agents.
         """
         if self.use_curiosity:
@@ -209,64 +250,23 @@ class PPOTrainer(Trainer):
             else:
                 feed_dict[self.model.action_holder] = next_info.previous_vector_actions.flatten()
 
-            if curr_info.agents == next_info.agents:
-                if self.use_visual_obs:
-                    for i in range(len(curr_info.visual_observations)):
-                        feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
-                        feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
-                if self.use_vector_obs:
-                    feed_dict[self.model.vector_in] = curr_info.vector_observations
-                    feed_dict[self.model.next_vector_in] = next_info.vector_observations
-                if self.use_recurrent:
-                    if curr_info.memories.shape[1] == 0:
-                        curr_info.memories = np.zeros((len(curr_info.agents), self.m_size))
-                    feed_dict[self.model.memory_in] = curr_info.memories
-                intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
-                                                  feed_dict=feed_dict) * float(self.has_updated)
-                return intrinsic_rewards
-            else:
-                agent_index_to_ignore = []
-                for agent_index, agent_id in enumerate(next_info.agents):
-                    if self.training_buffer[agent_id].last_brain_info is None:
-                        agent_index_to_ignore.append(agent_index)
-                if self.use_visual_obs:
-                    for i in range(len(next_info.visual_observations)):
-                        tmp = []
-                        for agent_id in next_info.agents:
-                            agent_brain_info = self.training_buffer[agent_id].last_brain_info
-                            if agent_brain_info is None:
-                                agent_brain_info = next_info
-                            agent_obs = agent_brain_info.visual_observations[i][agent_brain_info.agents.index(agent_id)]
-                            tmp += [agent_obs]
-                        feed_dict[self.model.visual_in[i]] = np.array(tmp)
-                        feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
-                if self.use_vector_obs:
-                    tmp = []
-                    for agent_id in next_info.agents:
-                        agent_brain_info = self.training_buffer[agent_id].last_brain_info
-                        if agent_brain_info is None:
-                            agent_brain_info = next_info
-                        agent_obs = agent_brain_info.vector_observations[agent_brain_info.agents.index(agent_id)]
-                        tmp += [agent_obs]
-                    feed_dict[self.model.vector_in] = np.array(tmp)
-                    feed_dict[self.model.next_vector_in] = next_info.vector_observations
-                if self.use_recurrent:
-                    tmp = []
-                    for agent_id in next_info.agents:
-                        agent_brain_info = self.training_buffer[agent_id].last_brain_info
-                        if agent_brain_info is None:
-                            agent_brain_info = next_info
-                        if agent_brain_info.memories.shape[1] == 0:
-                            agent_obs = np.zeros(self.m_size)
-                        else:
-                            agent_obs = agent_brain_info.memories[agent_brain_info.agents.index(agent_id)]
-                        tmp += [agent_obs]
-                    feed_dict[self.model.memory_in] = np.array(tmp)
-                intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
-                                                  feed_dict=feed_dict) * float(self.has_updated)
-                for index in agent_index_to_ignore:
-                    intrinsic_rewards[index] = 0
-                return intrinsic_rewards
+            if curr_info.agents != next_info.agents:
+                curr_info = self.construct_curr_info(next_info)
+
+            if self.use_visual_obs:
+                for i in range(len(curr_info.visual_observations)):
+                    feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
+                    feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
+            if self.use_vector_obs:
+                feed_dict[self.model.vector_in] = curr_info.vector_observations
+                feed_dict[self.model.next_vector_in] = next_info.vector_observations
+            if self.use_recurrent:
+                if curr_info.memories.shape[1] == 0:
+                    curr_info.memories = np.zeros((len(curr_info.agents), self.m_size))
+                feed_dict[self.model.memory_in] = curr_info.memories
+            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
+                                              feed_dict=feed_dict) * float(self.has_updated)
+            return intrinsic_rewards
         else:
             return None
 
