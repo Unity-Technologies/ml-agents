@@ -86,7 +86,6 @@ class PPOTrainer(Trainer):
         self.cumulative_rewards = {}
         self.episode_steps = {}
         self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.is_continuous_observation = (env.brains[brain_name].vector_observation_space_type == "continuous")
         self.use_visual_obs = (env.brains[brain_name].number_visual_observations > 0)
         self.use_vector_obs = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
@@ -101,8 +100,7 @@ class PPOTrainer(Trainer):
             self.inference_run_list.append(self.model.output_pre)
         if self.use_recurrent:
             self.inference_run_list.extend([self.model.memory_out])
-        if (self.is_training and self.is_continuous_observation and
-                self.use_vector_obs and self.trainer_parameters['normalize']):
+        if self.is_training and self.use_vector_obs and self.trainer_parameters['normalize']:
             self.inference_run_list.extend([self.model.update_mean, self.model.update_variance])
 
     def __str__(self):
@@ -463,20 +461,13 @@ class PPOTrainer(Trainer):
                     if self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).flatten()
                 if self.use_vector_obs:
-                    if self.is_continuous_observation:
-                        total_observation_length = self.brain.vector_observation_space_size * \
-                                                   self.brain.num_stacked_vector_observations
-                        feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
-                            [-1, total_observation_length])
-                        if self.use_curiosity:
-                            feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
-                                .reshape([-1, total_observation_length])
-                    else:
-                        feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
-                            [-1, self.brain.num_stacked_vector_observations])
-                        if self.use_curiosity:
-                            feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
-                                .reshape([-1, self.brain.num_stacked_vector_observations])
+                    total_observation_length = self.brain.vector_observation_space_size * \
+                                               self.brain.num_stacked_vector_observations
+                    feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
+                        [-1, total_observation_length])
+                    if self.use_curiosity:
+                        feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
+                            .reshape([-1, total_observation_length])
                 if self.use_visual_obs:
                     for i, _ in enumerate(self.model.visual_in):
                         _obs = np.array(buffer['visual_obs%d' % i][start:end])

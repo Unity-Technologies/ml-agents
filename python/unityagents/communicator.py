@@ -7,8 +7,7 @@ logger = logging.getLogger("unityagents")
 
 
 class Communicator(object):
-    def __init__(self, worker_id=0,
-                 base_port=5005):
+    def __init__(self, worker_id=0, base_port=5005):
         """
         Python side of the communication. Must be used in pair with the right Unity Communicator equivalent.
 

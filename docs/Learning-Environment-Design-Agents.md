@@ -27,15 +27,14 @@ When you turn on **On Demand Decisions** for an agent, your agent code must call
 
 ## Observations
 
-To make decisions, an agent must observe its environment to determine its current state. A state observation can take the following forms:
+To make decisions, an agent must observe its environment in order to infer the state of the world. A state observation can take the following forms:
 
-* **Continuous Vector** — a feature vector consisting of an array of numbers. 
-* **Discrete Vector** — an index into a state table (typically only useful for the simplest of environments).
+* **Vector Observation** — a feature vector consisting of an array of floating point numbers. 
 * **Visual Observations** — one or more camera images.
 
-When you use the **Continuous** or **Discrete** vector observation space for an agent, implement the `Agent.CollectObservations()` method to create the feature vector or state index. When you use **Visual Observations**, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectObservations()` method when your agent uses visual observations (unless it also uses vector observations).
+When you use vector observations for an agent, implement the `Agent.CollectObservations()` method to create the feature vector. When you use **Visual Observations**, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectObservations()` method when your agent uses visual observations (unless it also uses vector observations).
 
-### Continuous Vector Observation Space: Feature Vectors
+### Vector Observation Space: Feature Vectors
 
 For agents using a continuous state space, you create a feature vector to represent the agent's observation at each step of the simulation. The Brain class calls the `CollectObservations()` method of each of its agents. Your implementation of this function must call `AddVectorObs` to add vector observations. 
 
@@ -65,7 +64,6 @@ The feature vector must always contain the same number of elements and observati
 When you set up an Agent's brain in the Unity Editor, set the following properties to use a continuous vector observation:
 
 **Space Size** — The state size must match the length of your feature vector.
-**Space Type** — Set to **Continuous**.
 **Brain Type** — Set to **External** during training; set to **Internal** to use the trained model.
 
 The observation feature vector is a list of floating point numbers, which means you must convert any other data types to a float or a list of floats. 
@@ -121,7 +119,7 @@ For angles that can be outside the range [0,360], you can either reduce the angl
  
 ### Multiple Visual Observations
 
-Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures into a 3D Tensor which can be fed into a convolutional neural network (CNN). For more information on CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You can use camera observations and either continuous feature vector or discrete state observations at the same time.
+Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures into a 3D Tensor which can be fed into a convolutional neural network (CNN). For more information on CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You can use camera observations along side vector observations.
  
 Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
 
@@ -131,21 +129,6 @@ To add a visual observation to an agent, click on the `Add Camera` button in the
 
 In addition, make sure that the Agent's Brain expects a visual observation. In the Brain inspector, under **Brain Parameters** > **Visual Observations**, specify the number of Cameras the agent is using for its visual observations. For each visual observation, set the width and height of the image (in pixels) and whether or not the observation is color or grayscale (when `Black And White` is checked).
  
-### Discrete Vector Observation Space: Table Lookup
-
-You can use the discrete vector observation space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](Learning-Environment-Examples.md#basic) in the ML-Agents toolkit defines an agent with a discrete vector observation space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
-
-More generally, the discrete vector observation identifier could be an index into a table of the possible states. However, tables quickly become unwieldy as the environment becomes more complex. For example, even a simple game like [tic-tac-toe has 765 possible states](https://en.wikipedia.org/wiki/Game_complexity) (far more if you don't reduce the number of observations by combining those that are rotations or reflections of each other).
-
-To implement a discrete state observation, implement the `CollectObservations()` method of your Agent subclass and return a `List` containing a single number representing the state:
-
-```csharp
-public override void CollectObservations()
-{
-    AddVectorObs(stateIndex);  // stateIndex is the state identifier
-}
-```
-
 ## Vector Actions
 
 An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentAction()` function. When you specify that the vector action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Vector Action Space Size` property.  When you specify a **Discrete** vector action space type, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** vector action space type, the `Vector Action Space Size` is the number of elements in your action table. Set the `Vector Action Space Size` and `Vector Action Space Type` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
