@@ -562,36 +562,37 @@ namespace MLAgents
             else
                 pixels = 3;
             float[,,,] result = new float[batchSize, height, width, pixels];
+            float[] resultTemp = new float[batchSize * height * width * pixels];
+            int hwp = height * width * pixels;
+            int wp = width * pixels;
 
             for (int b = 0; b < batchSize; b++)
             {
                 Color32[] cc = textures[b].GetPixels32();
-                for (int w = 0; w < width; w++)
+                for (int h = height - 1; h >= 0; h--)
                 {
-                    for (int h = 0; h < height; h++)
+                    for (int w = 0; w < width; w++)
                     {
-                        Color32 currentPixel = cc[h * width + w];
+                        Color32 currentPixel = cc[(height - h - 1) * width + w];
                         if (!blackAndWhite)
                         {
                             // For Color32, the r, g and b values are between
                             // 0 and 255.
-                            result[b, textures[b].height - h - 1, w, 0] =
-                                currentPixel.r / 255.0f;
-                            result[b, textures[b].height - h - 1, w, 1] =
-                                currentPixel.g / 255.0f;
-                            result[b, textures[b].height - h - 1, w, 2] =
-                                currentPixel.b / 255.0f;
+                            resultTemp[b * hwp + h * wp + w * pixels] = currentPixel.r / 255.0f;
+                            resultTemp[b * hwp + h * wp + w * pixels + 1] = currentPixel.g / 255.0f;
+                            resultTemp[b * hwp + h * wp + w * pixels + 2] = currentPixel.b / 255.0f;
                         }
                         else
                         {
-                            result[b, textures[b].height - h - 1, w, 0] =
+                            resultTemp[b * hwp + h * wp + w * pixels] =
                                 (currentPixel.r + currentPixel.g + currentPixel.b)
-                                / 3;
+                                / 3f / 255.0f;
                         }
                     }
                 }
             }
 
+            System.Buffer.BlockCopy(resultTemp, 0, result, 0, batchSize * hwp * sizeof(float));
             return result;
         }
 

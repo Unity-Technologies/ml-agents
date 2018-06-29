@@ -420,7 +420,7 @@ public override void AgentAction(float[] vectorAction, string textAction)
 本节简要回顾了在 Unity 环境中使用 Agent 时
 如何组织场景。
 
-您需要在场景中包含三种游戏对象才能使用 Unity ML-Agents：
+您需要在场景中包含三种游戏对象才能使用 Unity ML-Agents 工具包：
  * Academy
  * Brain
  * Agent

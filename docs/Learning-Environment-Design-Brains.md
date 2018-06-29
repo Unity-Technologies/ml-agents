@@ -2,7 +2,7 @@
 
 The Brain encapsulates the decision making process. Brain objects must be children of the Academy in the Unity scene hierarchy. Every Agent must be assigned a Brain, but you can use the same Brain with more than one Agent. You can also create several Brains, attach each of the Brain to one or more than one Agent.  
 
-Use the Brain class directly, rather than a subclass. Brain behavior is determined by the **Brain Type**. ML-Agents defines four Brain Types:
+Use the Brain class directly, rather than a subclass. Brain behavior is determined by the **Brain Type**. The ML-Agents toolkit defines four Brain Types:
 
 * [External](Learning-Environment-Design-External-Internal-Brains.md) — The **External** and **Internal** types typically work together; set **External** when training your agents. You can also use the **External** brain to communicate with a Python script via the Python `UnityEnvironment` class included in the Python portion of the ML-Agents SDK.
 * [Internal](Learning-Environment-Design-External-Internal-Brains.md) – Set **Internal**  to make use of a trained model.
