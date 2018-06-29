@@ -1,6 +1,6 @@
 import json
 
-from .exception import UnityEnvironmentException
+from unityagents.exception import UnityEnvironmentException
 
 import logging
 
@@ -64,7 +64,7 @@ class Curriculum(object):
 
     def increment_lesson(self, progress):
         """
-        Increments the lesson number depending on the progree given.
+        Increments the lesson number depending on the progress given.
         :param progress: Measure of progress (either reward or percentage steps completed).
         """
         if self.data is None or progress is None:

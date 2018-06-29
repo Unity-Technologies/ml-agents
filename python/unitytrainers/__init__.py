@@ -1,4 +1,5 @@
 from .buffer import *
+from .curriculum import *
 from .models import *
 from .trainer_controller import *
 from .bc.models import *
