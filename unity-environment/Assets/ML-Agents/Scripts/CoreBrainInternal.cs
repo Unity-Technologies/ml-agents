@@ -586,7 +586,7 @@ namespace MLAgents
                         {
                             resultTemp[b * hwp + h * wp + w * pixels] =
                                 (currentPixel.r + currentPixel.g + currentPixel.b)
-                                / 3;
+                                / 3f / 255.0f;
                         }
                     }
                 }
