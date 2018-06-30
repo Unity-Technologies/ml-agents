@@ -87,9 +87,9 @@ DeepMindHopperBrain:
     batch_size: 2048
     buffer_size: 10240
     max_steps: 3e5
-    use_curiosity: true
-    curiosity_strength: 0.01
-    curiosity_enc_size: 256    
+    # use_curiosity: true
+    # curiosity_strength: 0.01
+    # curiosity_enc_size: 256    
 
 DeepMindWalkerBrain:
     beta: 1.0e-2

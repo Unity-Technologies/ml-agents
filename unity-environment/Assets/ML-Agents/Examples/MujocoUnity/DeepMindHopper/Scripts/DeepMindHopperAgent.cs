@@ -19,6 +19,11 @@ public class DeepMindHopperAgent : MujocoAgent {
         ObservationsFunction = ObservationsDefault;
         // OnTerminateRewardValue = -100f;
 
+        // TerminateFunction = TerminateOnNonFootHitTerrain;
+        // ObservationsFunction = ObservationsDefault;
+        // OnEpisodeCompleteGetRewardFunction = GetRewardOnEpisodeComplete;
+
+
         BodyParts["pelvis"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="torso");
         BodyParts["foot"] = GetComponentsInChildren<Rigidbody>().FirstOrDefault(x=>x.name=="foot");
         base.SetupBodyParts();
@@ -43,6 +48,11 @@ public class DeepMindHopperAgent : MujocoAgent {
         AddVectorObs(JointVelocity);
         var foot = BodyParts["foot"];
         AddVectorObs(foot.transform.position.y);
+    }
+
+    float GetRewardOnEpisodeComplete()
+    {
+        return FocalPoint.transform.position.x;
     }
 
     float StepRewardHopper101()
