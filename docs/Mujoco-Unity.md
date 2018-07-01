@@ -2,19 +2,19 @@
 
 ![MujocoUnity](images/MujocoUnityBanner.gif)
 
-Mujoco is a high end physics simulator used for bleeding edge research into robotics and reinforcement learning. Many of the standard benchmarks are implemented in Mujoco. 
+*Mujoco* is a high end physics simulator used for bleeding edge research into robotics and reinforcement learning. Many of the standard benchmarks are implemented in Mujoco. 
 
-MujocoUnity enables the reproduction of these benchmarks within Unity ml-agents using Unity’s native physics simulator, PhysX. Mujoco Unity maybe useful for:
+*MujocoUnity* enables the reproduction of these benchmarks within Unity ml-agents using Unity’s native physics simulator, PhysX. Mujoco Unity maybe useful for:
 * Video Game researchers interested in apply bleeding edge robotics research into the domain of locomotion and AI for video games.
 * Traditional academic researchers looking to leverage the strengths of Unity and ml-agents along with the body of existing research and benchmarks in Mujoco.
 * Benchmarking current and future algorithms within Unity ml-agents. For example, comparing the performance of ml-agents PPO implementation with OpenAI.Baselines implementation of PPO.
 
-References: 
+### References:
 * OpenAI Baselines / Gym / Roboschool
 * DeepMind 
 * Some other algos
 
-Important: 
+### Important: 
 * PhysX makes many tradeoffs in terms of accuracy when compared with Mujoco. It may not be the best choice for your research project.
 * MujocoUnity environments are running at 300-500 physics simulations per second. This is significantly higher that Unity’s defaults setting of 50 physics simulations per second.
 * Currently, MujocoUnity does not properly simulate how Mujoco handles joint observations - as such, it maybe difficult to do transfer learning (from simulation to real world robots)
@@ -130,8 +130,43 @@ Important:
 
 
 
-## Structure
-* TODO List Files
+## Details
+### Key Files / Folders
+* MujocoUnity - parent folder
+ * MujocoShared - Shared files
+   * Scripts/MujocoAgent.cs - Base Agent class for Mujoco implementations
+   * Scripts/MujocoSpawner.cs - Class for creating a Unity game object from a MuJoCo.xml file
+   * Scripts/MujocoJoint.cs - Model for mapping MuJoCo joints to Unity
+   * Scripts/MujocoSensor.cs - Model for mapping MuJoCo sensors to Unity
+   * Scripts/MujocoHelper.cs - Helper functions for MujocoSpawner.cs
+   * Scripts/HandleOverlap.cs - helper script to for detecting overlapping MuJoCo elements.
+   * Scripts/ProceduralCapsule.cs - Creates a Unity capsule which matches MuJoCo capsule
+   * Scripts/SendOnCollisionTrigger.cs - class for sending collisions to MujocoAgent.cs
+   * Scripts/SensorBehavior.cs - behavior class for sensors
+   * Scripts/SmoothFollow.cs - camera script
+ * DeepMindReferenceXml - Mujoco xml files used in DeepMind research (source)
+ * OpenAIReferenceXml - Mujoco xml files used in OpenAI research (source)
+ * DeepMindReferenceXml - Mujoco xml files used in DeepMind research (source)
+ * DeepMindHopper - Folder for reproducing DeepMindHopper 
+ * OpenAIHopper - Folder for reproducing OpenAIHopper 
+ * etc
+
+### Tuning params / Magic numbers
+* xxNamexx\Prefab\xxNamexx -> MujocoSpawner.Force2D = set to True when implementing a 2d model (hopper, walker)
+* xxNamexx\Prefab\xxNamexx -> MujocoSpawner.DefaultDesity:
+  * 1000 = default (= same as Mujoco)
+  * Note: maybe overriden within a .xml script
+* xxNamexx\Prefab\xxNamexx -> MujocoSpawner.MotorScale = Magic number for tuning (scaler applied to all motors)
+  * 1 = default () 
+  * 0.1 used by OpenAIAnt
+  * 0.5 used by OpenAIWalker
+  * 1.5 used by DeepMindHopper, DeepMindWalker
+  
+* xxNamexx\Prefab\xxNamexx -> xxAgentScript.MaxStep / DecisionFrequency: 
+  * 5000,5: OpenAIAnt, OpenAIHumanoid, DeepMindHumanoid
+  * 4000,4: OpenAIHopper, OpenAIWalker, DeepMindHopper, DeepMindWalker
+  * Note: all params taken from OpenAI.Gym
+
 
 
 
