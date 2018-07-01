@@ -24,6 +24,8 @@ public class CognitiveCrawler : Agent
     public float targetSpawnRadius;
 
     RayPerception rayPer;
+
+    public Transform obstacleWall;
     
     [Header("Target To Walk Towards")] [Space(10)]
     public Transform target;
@@ -46,7 +48,6 @@ public class CognitiveCrawler : Agent
             var rayDistance = 20f;
             float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f, -45f, -90f, -135f, -180f, -110f, -70f };
             var detectableObjects = new[] { "target", "wall" };
-            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
         }
     }
@@ -64,10 +65,8 @@ public class CognitiveCrawler : Agent
         else
         {
             Done();
-            motorAgent.Done();
         }
     }
-
 
     /// <summary>
     /// Moves the agent according to the selected action.
@@ -104,9 +103,13 @@ public class CognitiveCrawler : Agent
     /// </summary>
     public void GetRandomTargetPos()
     {
-        Vector3 newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-        newTargetPos.y = 5;
+        Vector3 newTargetPos = new Vector3(12.5f, 0f, Random.Range(-15f, 15f));
+        newTargetPos.y = 4;
+        target.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        target.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         target.position = newTargetPos + ground.position;
+        target.rotation = Quaternion.identity;
+        obstacleWall.transform.position = new Vector3(0f, 2f, Random.Range(-15f, 15f)) + ground.position;
     }
 
     /// <summary>
@@ -137,5 +140,6 @@ public class CognitiveCrawler : Agent
 	public override void AgentReset()
     {
         GetRandomTargetPos();
+        motorAgent.AgentReset();
     }
 }
