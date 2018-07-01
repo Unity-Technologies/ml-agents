@@ -153,6 +153,28 @@ CrawlerBrain:
     num_layers: 3
     hidden_units: 512
 
+MotorCrawlerBrain:
+    normalize: true
+    num_epoch: 3
+    time_horizon: 1000
+    batch_size: 2024
+    buffer_size: 20240
+    gamma: 0.995
+    max_steps: 1e6
+    summary_freq: 2000
+    num_layers: 3
+    hidden_units: 256
+
+CognitiveCrawlerBrain:
+    max_steps: 1.0e6
+    batch_size: 128
+    buffer_size: 2048
+    beta: 1.0e-2
+    hidden_units: 256
+    summary_freq: 2000
+    time_horizon: 64
+    num_layers: 2
+
 WalkerBrain:
     normalize: true
     num_epoch: 3
