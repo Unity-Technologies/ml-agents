@@ -30,7 +30,7 @@ Important:
 
 
 * Set-up: Simple (OpenAI) and complex (DeepMind) Humanoid agents. 
-* Goal: The agents must move its body toward the goal as quickly as possible without falling.
+* Goal: The agent must move its body toward the goal as quickly as possible without falling.
 * Agents: The environment contains 16 independent agents linked to a single brain.
 * Agent Reward Function: 
   * Reference OpenAI.Roboschool and / or DeepMind
@@ -45,6 +45,8 @@ Important:
     * +leg phase bonus (for height of knees)
     * +0.01 times body direction alignment with goal direction.
     * -0.01 times head velocity difference from body velocity.
+* Agent Terminate Function: 
+  * TerminateOnNonFootHitTerrain - Agent terminates when a body part other than foot collides with the terrain.
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: (Continuous) 74 (Simple Humanoid), 88 (Complex Humanoid) variables
     * Vector Action space: (Continuous) Size of 17 (Simple Humanoid), 21 (Complex Humanoid) corresponding to target rotations applicable to the joints. 
@@ -52,7 +54,80 @@ Important:
 * Reset Parameters: None.
 * Benchmark Mean Reward: **TODO show vs OpenAI PPO**
 
-## TODO - other models
+
+## Hopper
+
+| **DeepMindHopper** | **OpenAIHopper** |
+| --- | --- |
+| ![DeepMindHopper](images/DeepMindHopper101-1m.gif) | ![OpenAIHopper](images/OpenAIHopper102-300k.gif) |
+
+* Set-up: OpenAI and DeepMind Hopper agents. 
+* Goal: The agent must move its body toward the goal as quickly as possible without falling.
+* Agents: The environment contains 16 independent agents linked to a single brain.
+* Agent Reward Function: 
+  * Reference OpenAI.Roboschool and / or DeepMind
+    * -effort penality
+    * +velocity
+    * +uprightBonus
+    * -height penality if below .65m OpenAI, 1.1m DeepMind
+* Agent Terminate Function: 
+  * DeepMindHopper: TerminateOnNonFootHitTerrain - Agent terminates when a body part other than foot collides with the terrain.
+  * OpenAIHopper
+    * TerminateOnNonFootHitTerrain
+    * Terminate if height < .3m
+    * Terminate if head tilt > 0.4
+* Brains: One brain with the following observation/action space.
+    * Vector Observation space: (Continuous) 26 (OpenAIHopper), 31 (DeepMindHopper) variables
+    * Vector Action space: (Continuous) Size of 3 (OpenAIHopper), 4 (DeepMindHopper) corresponding to target rotations applicable to the joints. 
+    * Visual Observations: None.
+* Reset Parameters: None.
+
+
+## Walker
+
+| **DeepMindWalker** | **OpenAIWalker** |
+| --- | --- |
+| ![DeepMindWalker](images/DeepMindWalker108-1m.gif) | ![OpenAIWalker](images/OpenAIWalker106-300k.gif) |
+
+* Set-up: OpenAI and DeepMind Walker agents. 
+* Goal: The agent must move its body toward the goal as quickly as possible without falling.
+* Agents: The environment contains 16 independent agents linked to a single brain.
+* Agent Reward Function: 
+  * Reference OpenAI.Roboschool and / or DeepMind
+    * -effort penality
+    * +velocity
+    * +uprightBonus
+    * -height penality if below .65m OpenAI, 1.1m DeepMind
+* Agent Terminate Function: 
+  * TerminateOnNonFootHitTerrain - Agent terminates when a body part other than foot collides with the terrain.
+* Brains: One brain with the following observation/action space.
+    * Vector Observation space: (Continuous) 41 variables
+    * Vector Action space: (Continuous) Size of 6 corresponding to target rotations applicable to the joints. 
+    * Visual Observations: None.
+* Reset Parameters: None.
+
+## Ant
+
+| **OpenAIAnt** |
+| --- | 
+| ![OpenAIAnt](images/OpenAIAnt102-1m.gif) | 
+
+* Set-up: OpenAI and Ant agent. 
+* Goal: The agent must move its body toward the goal as quickly as possible without falling.
+* Agents: The environment contains 16 independent agents linked to a single brain.
+* Agent Reward Function: 
+  * Reference OpenAI.Roboschool and / or DeepMind
+    * -joints at limit penality
+    * -effort penality 
+    * +velocity
+* Agent Terminate Function: 
+  * Terminate if head body > 0.2
+* Brains: One brain with the following observation/action space.
+    * Vector Observation space: (Continuous) 53 variables
+    * Vector Action space: (Continuous) Size of 8 corresponding to target rotations applicable to the joints. 
+    * Visual Observations: None.
+* Reset Parameters: None.
+
 
 
 ## Structure
@@ -60,8 +135,4 @@ Important:
 
 
 
-| DeepMindHumanoid | DeepMindHopper | DeepMindWalker | |
-|:--------------:|:--------------:|:--------------:|:--------------:|
-| ![DeepMindHumanoid](images/DeepMindHumanoid102-2m.gif) | ![DeepMindHopper](images/DeepMindHopper101-1m.gif) | ![DeepMindWalker](images/DeepMindWalker108-1m.gif) |
-| **OpenAIAnt** ![OpenAIAnt](images/OpenAIAnt102-1m.gif) | **OpenAIHopper** ![OpenAIHopper](images/OpenAIHopper102-300k.gif) | **OpenAIWalker** ![OpenAIWalker](images/OpenAIWalker106-300k.gif) | **OpenAIHumanoid** ![OpenAIHumanoid](images/OpenAIHumanoid164-2m.gif) |
 
