@@ -2,23 +2,22 @@
 
 ![MujocoUnity](images/MujocoUnityBanner.gif)
 
-*Mujoco* is a high end physics simulator used for bleeding edge research into robotics and reinforcement learning. Many of the standard benchmarks are implemented in Mujoco. 
+**Mujoco** is a high end physics simulator used for bleeding edge research into robotics and reinforcement learning. Many of the standard benchmarks are implemented in Mujoco. 
 
-*MujocoUnity* enables the reproduction of these benchmarks within Unity ml-agents using Unity’s native physics simulator, PhysX. Mujoco Unity maybe useful for:
+**MujocoUnity** enables the reproduction of these benchmarks within Unity ml-agents using Unity’s native physics simulator, PhysX. Mujoco Unity maybe useful for:
 * Video Game researchers interested in apply bleeding edge robotics research into the domain of locomotion and AI for video games.
 * Traditional academic researchers looking to leverage the strengths of Unity and ml-agents along with the body of existing research and benchmarks in Mujoco.
-* Benchmarking current and future algorithms within Unity ml-agents. For example, comparing the performance of ml-agents PPO implementation with OpenAI.Baselines implementation of PPO.
+* Benchmarking current and future algorithms within Unity ml-agents. For example, comparing the performance of ml-agents PPO implementation with OpenAI.Baselines implementation of PPO (see below).
 
-### References:
-* OpenAI Baselines / Gym / Roboschool
-* DeepMind 
-* Some other algos
+## Benchmarking ML-Agents vs OpenAI Baselines
 
-### Important: 
-* PhysX makes many tradeoffs in terms of accuracy when compared with Mujoco. It may not be the best choice for your research project.
-* MujocoUnity environments are running at 300-500 physics simulations per second. This is significantly higher that Unity’s defaults setting of 50 physics simulations per second.
-* Currently, MujocoUnity does not properly simulate how Mujoco handles joint observations - as such, it maybe difficult to do transfer learning (from simulation to real world robots)
-* A good primer on the differences between physics engines is ['Physics simulation engines have traditional made tradeoffs between performance’](https://homes.cs.washington.edu/~todorov/papers/ErezICRA15.pdf) and it’s accompanying [video](https://homes.cs.washington.edu/~todorov/media/ErezICRA15.mp4)
+
+|  |  |
+| --- | --- |
+| ![Compare](images/ML-Agents%20PPO%20vs%20OpenAI%20Baselines%20PPO.png) | ML-Agents PPO implementation is **3x more sample efficent** than OpenAI Baselines PPO implementation |
+
+Comparison of learning momemtum between ML-Agents.PPO and OpenAI.Baselines.PPO training using Simple Humanid. ML-Agents.PPO learning excelrates at 2m steps where as OpenAI.Baselines.PPO excelertes after 6m steps. [OpenAI.Baselines.PPO paper](https://arxiv.org/pdf/1707.06347.pdf)
+
 
 
 ## Humanoid
@@ -52,7 +51,7 @@
     * Vector Action space: (Continuous) Size of 17 (Simple Humanoid), 21 (Complex Humanoid) corresponding to target rotations applicable to the joints. 
     * Visual Observations: None.
 * Reset Parameters: None.
-* Benchmark Mean Reward: **TODO show vs OpenAI PPO**
+
 
 
 ## Hopper
@@ -144,9 +143,8 @@
    * Scripts/SendOnCollisionTrigger.cs - class for sending collisions to MujocoAgent.cs
    * Scripts/SensorBehavior.cs - behavior class for sensors
    * Scripts/SmoothFollow.cs - camera script
- * DeepMindReferenceXml - Mujoco xml files used in DeepMind research (source)
- * OpenAIReferenceXml - Mujoco xml files used in OpenAI research (source)
- * DeepMindReferenceXml - Mujoco xml files used in DeepMind research (source)
+ * DeepMindReferenceXml - Mujoco xml files used in DeepMind research [source](https://github.com/deepmind/dm_control/blob/master/dm_control/suite/walker.py)
+ * OpenAIReferenceXml - Mujoco xml files used in OpenAI research [source](https://github.com/openai/roboschool/tree/master/roboschool/mujoco_assets)
  * DeepMindHopper - Folder for reproducing DeepMindHopper 
  * OpenAIHopper - Folder for reproducing OpenAIHopper 
  * etc
@@ -166,6 +164,20 @@
   * 5000,5: OpenAIAnt, OpenAIHumanoid, DeepMindHumanoid
   * 4000,4: OpenAIHopper, OpenAIWalker, DeepMindHopper, DeepMindWalker
   * Note: all params taken from OpenAI.Gym
+
+### Important: 
+* PhysX makes many tradeoffs in terms of accuracy when compared with Mujoco. It may not be the best choice for your research project.
+* MujocoUnity environments are running at 300-500 physics simulations per second. This is significantly higher that Unity’s defaults setting of 50 physics simulations per second.
+* Currently, MujocoUnity does not properly simulate how Mujoco handles joint observations - as such, it maybe difficult to do transfer learning (from simulation to real world robots)
+
+
+### References:
+* [OpenAI.Gym Mujoco](https://github.com/openai/gym/tree/master/gym/envs/mujoco) implementation. Good reference for enviroment setup, reward functions and termination functions.
+* [OpenAI.Roboschool](https://github.com/openai/roboschool) - Alternative OpenAI mujoco implementation with more advanced enviroments. Alternative reference for reward functions and termination functions.
+* DeepMind paper [Emergence of Locomotion Behaviours in Rich Environments](https://arxiv.org/pdf/1707.02286) and [video](https://youtu.be/hx_bgoTF7bs)- see page 13 b.2 for detail of reward functions
+* [MuJoCo](http://www.mujoco.org) homepage
+* A good primer on the differences between physics engines is ['Physics simulation engines have traditional made tradeoffs between performance’](https://homes.cs.washington.edu/~todorov/papers/ErezICRA15.pdf) and it’s accompanying [video](https://homes.cs.washington.edu/~todorov/media/ErezICRA15.mp4)
+* [MuJoCo Unity Plugin](http://www.mujoco.org/book/unity.html) MuJoCo's Unity plugin which uses socket to comunicate between MuJoCo (for running the physics simulation and control) and Unity (for rendering)
 
 
 
