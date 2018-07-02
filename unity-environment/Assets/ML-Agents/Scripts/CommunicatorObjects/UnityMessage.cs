@@ -68,9 +68,9 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityMessage(UnityMessage other) : this() {
-      Header = other.header_ != null ? other.Header.Clone() : null;
-      UnityOutput = other.unityOutput_ != null ? other.UnityOutput.Clone() : null;
-      UnityInput = other.unityInput_ != null ? other.UnityInput.Clone() : null;
+      header_ = other.header_ != null ? other.header_.Clone() : null;
+      unityOutput_ = other.unityOutput_ != null ? other.unityOutput_.Clone() : null;
+      unityInput_ = other.unityInput_ != null ? other.unityInput_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 

@@ -6,7 +6,7 @@ we highly recommend the
 [Tutorials page](https://unity3d.com/learn/tutorials). The 
 [Roll-a-ball tutorial](https://unity3d.com/learn/tutorials/s/roll-ball-tutorial)
 is a fantastic resource to learn all the basic concepts of Unity to get started
-with ML-Agents: 
+with the ML-Agents toolkit: 
 * [Editor](https://docs.unity3d.com/Manual/UsingTheEditor.html)
 * [Interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
 * [Scene](https://docs.unity3d.com/Manual/CreatingScenes.html)

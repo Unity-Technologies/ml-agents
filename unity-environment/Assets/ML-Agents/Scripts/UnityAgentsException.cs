@@ -7,7 +7,7 @@ using System;
 namespace MLAgents
 {
 
-    [System.Serializable]
+    [Serializable]
     /// Contains exceptions specific to ML-Agents.
     public class UnityAgentsException : System.Exception
     {

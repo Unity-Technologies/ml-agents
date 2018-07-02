@@ -5,19 +5,19 @@ This guide will show you how to use a pretrained model in an example Unity envir
 If you are not familiar with the [Unity Engine](https://unity3d.com/unity),
 we highly recommend the [Roll-a-ball tutorial](https://unity3d.com/learn/tutorials/s/roll-ball-tutorial) to learn all the basic concepts of Unity. 
 
-## Setting up ML-Agents within Unity
+## Setting up the ML-Agents Toolkit within Unity
 
-In order to use ML-Agents within Unity, you need to change some Unity settings first. Also [TensorFlowSharp plugin](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage) is needed for you to use pretrained model within Unity, which is based on the [TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp). 
+In order to use the ML-Agents toolkit within Unity, you need to change some Unity settings first. Also [TensorFlowSharp plugin](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage) is needed for you to use pretrained model within Unity, which is based on the [TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp). 
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `unity-environment` folder within the ML-Agents project and click **Open**.
+3. Using the file dialog that opens, locate the `unity-environment` folder within the the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target 
 (**PC, Mac and Linux Standalone**, **iOS** or **Android**):
     1. Option the **Other Settings** section.
     2. Select **Scripting Runtime Version** to 
-    **Experimental (.NET 4.6 Equivalent)**
+    **Experimental (.NET 4.6 Equivalent or .NET 4.x Equivalent)**
     3. In **Scripting Defined Symbols**, add the flag `ENABLE_TENSORFLOW`. 
     After typing in the flag name, press Enter.
 6. Go to **File** > **Save Project**
@@ -67,7 +67,7 @@ object.
 
 ### Training the environment
 1. Open a command or terminal window. 
-2. Nagivate to the folder where you installed ML-Agents. 
+2. Nagivate to the folder where you installed the ML-Agents toolkit. 
 3. Change to the `python` directory. 
 4. Run `python3 learn.py --run-id=<run-identifier> --train`
 Where:
@@ -99,7 +99,7 @@ to the **Graph Model** placeholder in the **Ball3DBrain** inspector window.
 
 ## Next Steps
 
-* For more information on ML-Agents, in addition to helpful background, check out the [ML-Agents Overview](ML-Agents-Overview.md) page.
+* For more information on the ML-Agents toolkit, in addition to helpful background, check out the [ML-Agents Toolkit Overview](ML-Agents-Overview.md) page.
 * For a more detailed walk-through of our 3D Balance Ball environment, check out the [Getting Started](Getting-Started-with-Balance-Ball.md) page.
 * For a "Hello World" introduction to creating your own learning environment, check out the [Making a New Learning Environment](Learning-Environment-Create-New.md) page.
 * For a series of Youtube video tutorials, checkout the [Machine Learning Agents PlayList](https://www.youtube.com/playlist?list=PLX2vGYjWbI0R08eWQkO7nQkGiicHAX7IX) page. 

@@ -77,7 +77,7 @@ namespace MLAgents.CommunicatorObjects {
       version_ = other.version_;
       logPath_ = other.logPath_;
       brainParameters_ = other.brainParameters_.Clone();
-      EnvironmentParameters = other.environmentParameters_ != null ? other.EnvironmentParameters.Clone() : null;
+      environmentParameters_ = other.environmentParameters_ != null ? other.environmentParameters_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 

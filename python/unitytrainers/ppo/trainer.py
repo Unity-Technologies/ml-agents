@@ -1,4 +1,4 @@
-# # Unity ML Agents
+# # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
 
@@ -8,7 +8,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from unityagents import AllBrainInfo
+from unityagents import AllBrainInfo, BrainInfo
 from unitytrainers.buffer import Buffer
 from unitytrainers.ppo.models import PPOModel
 from unitytrainers.trainer import UnityTrainerException, Trainer
@@ -86,7 +86,6 @@ class PPOTrainer(Trainer):
         self.cumulative_rewards = {}
         self.episode_steps = {}
         self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.is_continuous_observation = (env.brains[brain_name].vector_observation_space_type == "continuous")
         self.use_visual_obs = (env.brains[brain_name].number_visual_observations > 0)
         self.use_vector_obs = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
@@ -101,8 +100,7 @@ class PPOTrainer(Trainer):
             self.inference_run_list.append(self.model.output_pre)
         if self.use_recurrent:
             self.inference_run_list.extend([self.model.memory_out])
-        if (self.is_training and self.is_continuous_observation and
-                self.use_vector_obs and self.trainer_parameters['normalize']):
+        if self.is_training and self.use_vector_obs and self.trainer_parameters['normalize']:
             self.inference_run_list.extend([self.model.update_mean, self.model.update_variance])
 
     def __str__(self):
@@ -196,22 +194,61 @@ class PPOTrainer(Trainer):
         else:
             return run_out[self.model.output], None, None, run_out
 
+    def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
+        """
+        Constructs a BrainInfo which contains the most recent previous experiences for all agents info
+        which correspond to the agents in a provided next_info.
+        :BrainInfo next_info: A t+1 BrainInfo.
+        :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
+        """
+        visual_observations = [[]]
+        vector_observations = []
+        text_observations = []
+        memories = []
+        rewards = []
+        local_dones = []
+        max_reacheds = []
+        agents = []
+        prev_vector_actions = []
+        prev_text_actions = []
+        for agent_id in next_info.agents:
+            agent_brain_info = self.training_buffer[agent_id].last_brain_info
+            agent_index = agent_brain_info.agents.index(agent_id)
+            if agent_brain_info is None:
+                agent_brain_info = next_info
+            for i in range(len(next_info.visual_observations)):
+                visual_observations[i].append(agent_brain_info.visual_observations[i][agent_index])
+            vector_observations.append(agent_brain_info.vector_observations[agent_index])
+            text_observations.append(agent_brain_info.text_observations[agent_index])
+            if self.use_recurrent:
+                memories.append(agent_brain_info.memories[agent_index])
+            rewards.append(agent_brain_info.rewards[agent_index])
+            local_dones.append(agent_brain_info.local_done[agent_index])
+            max_reacheds.append(agent_brain_info.max_reached[agent_index])
+            agents.append(agent_brain_info.agents[agent_index])
+            prev_vector_actions.append(agent_brain_info.previous_vector_actions[agent_index])
+            prev_text_actions.append(agent_brain_info.previous_text_actions[agent_index])
+        curr_info = BrainInfo(visual_observations, vector_observations, text_observations, memories, rewards,
+                              agents, local_dones, prev_vector_actions, prev_text_actions, max_reacheds)
+        return curr_info
+
     def generate_intrinsic_rewards(self, curr_info, next_info):
         """
         Generates intrinsic reward used for Curiosity-based training.
-        :param curr_info: Current BrainInfo.
-        :param next_info: Next BrainInfo.
+        :BrainInfo curr_info: Current BrainInfo.
+        :BrainInfo next_info: Next BrainInfo.
         :return: Intrinsic rewards for all agents.
         """
         if self.use_curiosity:
-            if curr_info.agents != next_info.agents:
-                raise UnityTrainerException("Training with Curiosity-driven exploration"
-                                            " and On-Demand Decision making is currently not supported.")
-            feed_dict = {self.model.batch_size: len(curr_info.vector_observations), self.model.sequence_length: 1}
+            feed_dict = {self.model.batch_size: len(next_info.vector_observations), self.model.sequence_length: 1}
             if self.is_continuous_action:
                 feed_dict[self.model.output] = next_info.previous_vector_actions
             else:
                 feed_dict[self.model.action_holder] = next_info.previous_vector_actions.flatten()
+
+            if curr_info.agents != next_info.agents:
+                curr_info = self.construct_curr_info(next_info)
+
             if self.use_visual_obs:
                 for i in range(len(curr_info.visual_observations)):
                     feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
@@ -262,11 +299,11 @@ class PPOTrainer(Trainer):
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
 
-        intrinsic_rewards = self.generate_intrinsic_rewards(curr_info, next_info)
-
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info
             self.training_buffer[agent_id].last_take_action_outputs = take_action_outputs
+
+        intrinsic_rewards = self.generate_intrinsic_rewards(curr_info, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -424,20 +461,13 @@ class PPOTrainer(Trainer):
                     if self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).flatten()
                 if self.use_vector_obs:
-                    if self.is_continuous_observation:
-                        total_observation_length = self.brain.vector_observation_space_size * \
-                                                   self.brain.num_stacked_vector_observations
-                        feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
-                            [-1, total_observation_length])
-                        if self.use_curiosity:
-                            feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
-                                .reshape([-1, total_observation_length])
-                    else:
-                        feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
-                            [-1, self.brain.num_stacked_vector_observations])
-                        if self.use_curiosity:
-                            feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
-                                .reshape([-1, self.brain.num_stacked_vector_observations])
+                    total_observation_length = self.brain.vector_observation_space_size * \
+                                               self.brain.num_stacked_vector_observations
+                    feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
+                        [-1, total_observation_length])
+                    if self.use_curiosity:
+                        feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
+                            .reshape([-1, total_observation_length])
                 if self.use_visual_obs:
                     for i, _ in enumerate(self.model.visual_in):
                         _obs = np.array(buffer['visual_obs%d' % i][start:end])

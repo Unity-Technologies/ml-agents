@@ -91,34 +91,20 @@ class PPOModel(LearningModel):
             encoded_next_state_list.append(hidden_next_visual)
 
         if self.o_size > 0:
-
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
-            if self.brain.vector_observation_space_type == "continuous":
-                # Create input op for next (t+1) vector observation.
-                self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
-                                                     name='next_vector_observation')
+            # Create input op for next (t+1) vector observation.
+            self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
+                                                 name='next_vector_observation')
 
-                encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in,
-                                                                                self.curiosity_enc_size,
-                                                                                self.swish, 2, "vector_obs_encoder",
-                                                                                False)
-                encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_in,
-                                                                                     self.curiosity_enc_size,
-                                                                                     self.swish, 2,
-                                                                                     "vector_obs_encoder",
-                                                                                     True)
-            else:
-                self.next_vector_in = tf.placeholder(shape=[None, 1], dtype=tf.int32,
-                                                     name='next_vector_observation')
-
-                encoded_vector_obs = self.create_discrete_observation_encoder(self.vector_in, self.o_size,
-                                                                              self.curiosity_enc_size,
-                                                                              self.swish, 2, "vector_obs_encoder",
-                                                                              False)
-                encoded_next_vector_obs = self.create_discrete_observation_encoder(self.next_vector_in, self.o_size,
-                                                                                   self.curiosity_enc_size,
-                                                                                   self.swish, 2, "vector_obs_encoder",
-                                                                                   True)
+            encoded_vector_obs = self.create_vector_observation_encoder(self.vector_in,
+                                                                        self.curiosity_enc_size,
+                                                                        self.swish, 2, "vector_obs_encoder",
+                                                                        False)
+            encoded_next_vector_obs = self.create_vector_observation_encoder(self.next_vector_in,
+                                                                             self.curiosity_enc_size,
+                                                                             self.swish, 2,
+                                                                                 "vector_obs_encoder",
+                                                                             True)
             encoded_state_list.append(encoded_vector_obs)
             encoded_next_state_list.append(encoded_next_vector_obs)
 
