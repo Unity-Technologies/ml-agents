@@ -236,22 +236,32 @@ namespace MLAgents
         /// their own experience.
         int stepCount;
 
-        // Flag to signify that an agent has been reset but the fact that it is
-        // done has not been communicated (required for On Demand Decisions).
+        /// Flag to signify that an agent has been reset but the fact that it is
+        /// done has not been communicated (required for On Demand Decisions).
         bool hasAlreadyReset;
 
-        // Flag to signify that an agent is done and should not reset until
-        // the fact that it is done has been communicated.
+        /// Flag to signify that an agent is done and should not reset until
+        /// the fact that it is done has been communicated.
         bool terminate;
 
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         int id;
 
+        /// Array of Texture2D used to render to from render buffer before  
+        /// transforming into float tensor.
+        Texture2D[] textureArray;
+        
         /// Monobehavior function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
         {
+            textureArray = new Texture2D[agentParameters.agentCameras.Count];
+            for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
+            {
+                textureArray[i] = new Texture2D(brain.brainParameters.cameraResolutions[i].width, 
+                    brain.brainParameters.cameraResolutions[i].height, TextureFormat.RGB24, false);
+            }
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             OnEnableHelper(academy);
@@ -462,25 +472,14 @@ namespace MLAgents
             action.textActions = "";
             info.memories = new List<float>();
             action.memories = new List<float>();
-            if (param.vectorObservationSpaceType == SpaceType.continuous)
-            {
-                info.vectorObservation =
-                    new List<float>(param.vectorObservationSize);
-                info.stackedVectorObservation =
-                    new List<float>(param.vectorObservationSize
-                                    * brain.brainParameters.numStackedVectorObservations);
-                info.stackedVectorObservation.AddRange(
-                    new float[param.vectorObservationSize
-                              * param.numStackedVectorObservations]);
-            }
-            else
-            {
-                info.vectorObservation = new List<float>(1);
-                info.stackedVectorObservation =
-                    new List<float>(param.numStackedVectorObservations);
-                info.stackedVectorObservation.AddRange(
-                    new float[param.numStackedVectorObservations]);
-            }
+            info.vectorObservation =
+                new List<float>(param.vectorObservationSize);
+            info.stackedVectorObservation =
+                new List<float>(param.vectorObservationSize
+                                * brain.brainParameters.numStackedVectorObservations);
+            info.stackedVectorObservation.AddRange(
+                new float[param.vectorObservationSize
+                          * param.numStackedVectorObservations]);
 
             info.visualObservations = new List<Texture2D>();
         }
@@ -516,37 +515,20 @@ namespace MLAgents
             CollectObservations();
 
             BrainParameters param = brain.brainParameters;
-            if (param.vectorObservationSpaceType == SpaceType.continuous)
+            if (info.vectorObservation.Count != param.vectorObservationSize)
             {
-                if (info.vectorObservation.Count != param.vectorObservationSize)
-                {
-                    throw new UnityAgentsException(string.Format(
-                        "Vector Observation size mismatch between continuous " +
-                        "agent {0} and brain {1}. " +
-                        "Was Expecting {2} but received {3}. ",
-                        gameObject.name, brain.gameObject.name,
-                        brain.brainParameters.vectorObservationSize,
-                        info.vectorObservation.Count));
-                }
-
-                info.stackedVectorObservation.RemoveRange(
-                    0, param.vectorObservationSize);
-                info.stackedVectorObservation.AddRange(info.vectorObservation);
+                throw new UnityAgentsException(string.Format(
+                    "Vector Observation size mismatch between continuous " +
+                    "agent {0} and brain {1}. " +
+                    "Was Expecting {2} but received {3}. ",
+                    gameObject.name, brain.gameObject.name,
+                    brain.brainParameters.vectorObservationSize,
+                    info.vectorObservation.Count));
             }
-            else
-            {
-                if (info.vectorObservation.Count != 1)
-                {
-                    throw new UnityAgentsException(string.Format(
-                        "Vector Observation size mismatch between discrete agent" +
-                        " {0} and brain {1}. Was Expecting {2} but received {3}. ",
-                        gameObject.name, brain.gameObject.name,
-                        1, info.vectorObservation.Count));
-                }
 
-                info.stackedVectorObservation.RemoveRange(0, 1);
-                info.stackedVectorObservation.AddRange(info.vectorObservation);
-            }
+            info.stackedVectorObservation.RemoveRange(
+                0, param.vectorObservationSize);
+            info.stackedVectorObservation.AddRange(info.vectorObservation);
 
             info.visualObservations.Clear();
             if (param.cameraResolutions.Length > agentParameters.agentCameras.Count)
@@ -561,10 +543,12 @@ namespace MLAgents
 
             for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
             {
-                info.visualObservations.Add(ObservationToTexture(
+                ObservationToTexture(
                     agentParameters.agentCameras[i],
                     param.cameraResolutions[i].width,
-                    param.cameraResolutions[i].height));
+                    param.cameraResolutions[i].height,
+                    ref textureArray[i]);
+                info.visualObservations.Add(textureArray[i]);
             }
 
             info.reward = reward;
@@ -595,6 +579,8 @@ namespace MLAgents
         ///     - <see cref="AddVectorObs(float[])"/>
         ///     - <see cref="AddVectorObs(List{float})"/>
         ///     - <see cref="AddVectorObs(Quaternion)"/>
+        ///     - <see cref="AddVectorObs(bool)"/>
+        ///     - <see cref="AddVectorObs(int, int)"/>
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
         /// this method is called and the resulting size of the vector observation
@@ -626,7 +612,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(int observation)
         {
-            info.vectorObservation.Add((float) observation);
+            info.vectorObservation.Add(observation);
         }
 
         /// <summary>
@@ -693,6 +679,13 @@ namespace MLAgents
         protected void AddVectorObs(bool observation)
         {
             info.vectorObservation.Add(observation ? 1f : 0f);
+        }
+
+        protected void AddVectorObs(int observation, int range)
+        {
+            float[] oneHotVector = new float[range];
+            oneHotVector[observation] = 1;
+            info.vectorObservation.AddRange(oneHotVector);
         }
 
         /// <summary>
@@ -797,6 +790,7 @@ namespace MLAgents
         /// The agent must set maxStepReached.</param>
         /// <param name="academyDone">If set to <c>true</c> 
         /// The agent must set done.</param>
+        /// <param name="academyStepCounter">Number of current steps in episode</param>
         void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
         {
             if (academyDone)
@@ -926,37 +920,41 @@ namespace MLAgents
         /// Converts a camera and correspinding resolution to a 2D texture.
         /// </summary>
         /// <returns>The 2D texture.</returns>
-        /// <param name="camera">Camera.</param>
+        /// <param name="obsCamera">Camera.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
-        public static Texture2D ObservationToTexture(Camera camera, int width, int height)
+        /// <param name="texture2D">Texture2D to render to.</param>
+        public static void ObservationToTexture(Camera obsCamera, int width, int height, ref Texture2D texture2D)
         {
-            Rect oldRec = camera.rect;
-            camera.rect = new Rect(0f, 0f, 1f, 1f);
+            Rect oldRec = obsCamera.rect;
+            obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
             var depth = 24;
             var format = RenderTextureFormat.Default;
             var readWrite = RenderTextureReadWrite.Default;
 
             var tempRT =
                 RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-            var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+            
+            if (width != texture2D.width || height != texture2D.height)
+            {
+                texture2D.Resize(width, height);
+            }
 
             var prevActiveRT = RenderTexture.active;
-            var prevCameraRT = camera.targetTexture;
+            var prevCameraRT = obsCamera.targetTexture;
 
             // render to offscreen texture (readonly from CPU side)
             RenderTexture.active = tempRT;
-            camera.targetTexture = tempRT;
+            obsCamera.targetTexture = tempRT;
 
-            camera.Render();
+            obsCamera.Render();
 
-            tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-            tex.Apply();
-            camera.targetTexture = prevCameraRT;
-            camera.rect = oldRec;
+            texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
+            texture2D.Apply();
+            obsCamera.targetTexture = prevCameraRT;
+            obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRT;
             RenderTexture.ReleaseTemporary(tempRT);
-            return tex;
         }
     }
 }

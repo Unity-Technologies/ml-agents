@@ -14,7 +14,7 @@ namespace MLAgents
         void SetBrain(Brain b);
 
         /// Implement this method to initialize CoreBrain
-        void InitializeCoreBrain(MLAgents.Batcher brainBatcher);
+        void InitializeCoreBrain(Batcher brainBatcher);
 
         /// Implement this method to define the logic for deciding actions
         void DecideAction(Dictionary<Agent, AgentInfo> agentInfo);

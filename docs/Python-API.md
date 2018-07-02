@@ -1,6 +1,6 @@
 # Python API
 
-ML-Agents provides a Python API for controlling the agent simulation loop of a environment or game built with Unity. This API is used by the ML-Agent training algorithms (run with `learn.py`), but you can also write your Python programs using this API. 
+The ML-Agents toolkit provides a Python API for controlling the agent simulation loop of a environment or game built with Unity. This API is used by the ML-Agent training algorithms (run with `learn.py`), but you can also write your Python programs using this API. 
 
 The key objects in the Python API include:
 
@@ -36,7 +36,7 @@ If you want to directly interact with the Editor, you need to use `file_name=Non
 A BrainInfo object contains the following fields:
 
 * **`visual_observations`** : A list of 4 dimensional numpy arrays. Matrix n of the list corresponds to the n<sup>th</sup> observation of the brain. 
-* **`vector_observations`** : A two dimensional numpy array of dimension `(batch size, vector observation size)` if the vector observation space is continuous and `(batch size, 1)` if the vector observation space is discrete.
+* **`vector_observations`** : A two dimensional numpy array of dimension `(batch size, vector observation size)`.
 * **`text_observations`** : A list of string corresponding to the agents text observations.
 * **`memories`** : A two dimensional numpy array of dimension `(batch size, memory size)` which corresponds to the memories sent at the previous step.
 * **`rewards`** : A list as long as the number of agents using the brain containing the rewards they each obtained at the previous step. 

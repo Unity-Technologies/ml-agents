@@ -50,13 +50,6 @@ namespace MLAgents
                 EditorGUILayout.LabelField("Vector Observation");
                 EditorGUI.indentLevel++;
 
-                SerializedProperty bpVectorObsType =
-                    serializedBrain.FindProperty("brainParameters.vectorObservationSpaceType");
-                EditorGUILayout.PropertyField(bpVectorObsType, new GUIContent("Space Type",
-                    "Corresponds to whether state " +
-                    "vector contains a single integer (Discrete) " +
-                    "or a series of real-valued floats (Continuous)."));
-
                 SerializedProperty bpVectorObsSize =
                     serializedBrain.FindProperty("brainParameters.vectorObservationSize");
                 EditorGUILayout.PropertyField(bpVectorObsSize, new GUIContent("Space Size",
@@ -106,9 +99,6 @@ namespace MLAgents
             EditorGUI.indentLevel = indentLevel;
             SerializedProperty bt = serializedBrain.FindProperty("brainType");
             EditorGUILayout.PropertyField(bt);
-
-
-
 
             if (bt.enumValueIndex < 0)
             {

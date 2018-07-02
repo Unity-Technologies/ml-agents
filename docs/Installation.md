@@ -16,9 +16,9 @@ _Linux Build Support_ component when installing Unity.
         width="500" border="10" />
 </p>
 
-## Clone the ml-agents Repository
+## Clone the Ml-Agents Repository
 
-Once installed, you will want to clone the ML-Agents GitHub repository. 
+Once installed, you will want to clone the ML-Agents Toolkit GitHub repository. 
 
     git clone https://github.com/Unity-Technologies/ml-agents.git
 
@@ -28,7 +28,7 @@ Both directories are located at the root of the repository.
 
 ## Install Python (with Dependencies)
 
-In order to use ML-Agents, you need Python 3 along with
+In order to use ML-Agents toolkit, you need Python 3.5 or 3.6 along with
 the dependencies listed in the [requirements file](../python/requirements.txt).
 Some of the primary dependencies include:
 - [TensorFlow](Background-TensorFlow.md) 
@@ -59,7 +59,7 @@ If you'd like to use Docker for ML-Agents, please follow
 ## Next Steps
 
 The [Basic Guide](Basic-Guide.md) page contains several short 
-tutorials on setting up ML-Agents within Unity, running a pre-trained model, in
+tutorials on setting up the ML-Agents toolkit within Unity, running a pre-trained model, in
 addition to building and training environments.
 
 ## Help

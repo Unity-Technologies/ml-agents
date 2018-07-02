@@ -93,8 +93,7 @@ class UnityEnvironment(object):
                     "cameraResolutions": resolution,
                     "vectorActionSize": brain_param.vector_action_size,
                     "vectorActionDescriptions": brain_param.vector_action_descriptions,
-                    "vectorActionSpaceType": brain_param.vector_action_space_type,
-                    "vectorObservationSpaceType": brain_param.vector_observation_space_type
+                    "vectorActionSpaceType": brain_param.vector_action_space_type
                 })
             if brain_param.brain_type == 2:
                 self._external_brain_names += [brain_param.brain_name]
