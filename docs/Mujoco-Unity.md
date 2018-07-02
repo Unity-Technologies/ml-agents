@@ -169,6 +169,7 @@ Comparison of learning momemtum between ML-Agents.PPO and OpenAI.Baselines.PPO t
   * Note: all params taken from OpenAI.Gym
 
 ### Important: 
+* This is not a complete implementation of MuJoCo; it is focused on doing just enough to get the locomotion enviroments working in unity. See Scripts/MujocoSpawner.cs for which MuJoCo commands and ignored or partially implemented.
 * PhysX makes many tradeoffs in terms of accuracy when compared with Mujoco. It may not be the best choice for your research project.
 * MujocoUnity environments are running at 300-500 physics simulations per second. This is significantly higher that Unity’s defaults setting of 50 physics simulations per second.
 * Currently, MujocoUnity does not properly simulate how Mujoco handles joint observations - as such, it maybe difficult to do transfer learning (from simulation to real world robots)
