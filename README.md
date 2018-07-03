@@ -85,6 +85,7 @@ translating more pages and to other languages. Consequently,
 we welcome any enhancements and improvements from the community.
 
 - [Chinese](docs/localized/zh-CN/)
+- [Japanese/日本語](docs/localized/JP/)
 
 ## License
 

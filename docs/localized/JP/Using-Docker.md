@@ -1,28 +1,37 @@
-# Using Docker For ML-Agents
+# DockerをML-Agentsに使う
+我々は前回はWindows/Macにおいて、このレポジトリーを使う方を想定して説明しておりました。
+ですので、今回のこの記事においてはPython/Tensorflow等のライブラリを直接インストールしたくない方に向けた記事となっております。
+今回の記事では、GPUの使用は想定しておりません。ですので、[`Xvfb`](https://en.wikipedia.org/wiki/Xvfb)を使用して、グラフィックの部分を構築します。
+`Xvfb`は`ML-Agents`仮想的なグラッフィクのアプリケーションをサポートする良いユーティリティです。ただ、前述の通り、`ML-Agents`がGPUを使用することを想定していないので、リッチなコンテンツの使用の際には幾分遅くなります。 
 
-We currently offer a solution for Windows and Mac users who would like to do training or inference using Docker. This option may be appealing to those who would like to avoid installing Python and TensorFlow themselves. The current setup forces both TensorFlow and Unity to _only_ rely on the CPU for computations. Consequently, our Docker simulation does not use a GPU and uses [`Xvfb`](https://en.wikipedia.org/wiki/Xvfb) to do visual rendering. `Xvfb` is a utility that enables `ML-Agents` (or any other application) to do rendering virtually i.e. it does not assume that the machine running `ML-Agents` has a GPU or a display attached to it. This means that rich environments which involve agents using camera-based visual observations might be slower.
+## 必要なもの
 
-
-## Requirements
 - Unity _Linux Build Support_ Component
 - [Docker](https://www.docker.com)
 
-## Setup
+## セットアップ
 
-- [Download](https://unity3d.com/get-unity/download) the Unity Installer and
-add the _Linux Build Support_ Component
+- Unity Installerを[Download](https://unity3d.com/get-unity/download)してく、_Linux Build Support_をコンポネントに追加してください。
 
-- [Download](https://www.docker.com/community-edition#/download) and
-install Docker if you don't have it setup on your machine.
+- また、未設定であれば、Dockerを[Download](https://www.docker.com/community-edition#/download)とインストールしてください。
 
-- Since Docker runs a container in an environment that is isolated from the host machine, a mounted directory in your host machine is used to share data, e.g. the Unity executable, curriculum files and TensorFlow graph. For convenience, we created an empty `unity-volume` directory at the root of the repository for this purpose, but feel free to use any other directory. The remainder of this guide assumes that the `unity-volume` directory is the one used.
+- Dockerはcontainerの上で動きます、host machineは異なる環境です。
+mounted directoryは基本的にはデータの保管場所としてお使いください。例えば、the Unity executable, curriculum files and TensorFlow graphなどです。
+また、利便性のために、我々は空の`unity-volume`directoryをrootに用意しました。ご自由にお使いください。 
+しかし、ここから先のパートでは、`unity-volume` directoryを使っているものとして、進めていきます。
 
-## Usage
+## 使用例
 
-Using Docker for ML-Agents involves three steps: building the Unity environment with specific flags, building a Docker container and, finally, running the container. If you are not familiar with building a Unity environment for ML-Agents, please read through our [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md) guide first.
+DockerをML-Agentsに使用するには３ステップあります。
 
-### Build the Environment (Optional)
-_If you want to used the Editor to perform training, you can skip this step._
+1. Unity environmentをspecific flagsとともにビルドする。
+2. Docker containerをビルドする。
+3. Docker containerをランする。
+Unity environmentをML-Agentsのためにビルドする方法が分からなければ、こちらをご覧ください。
+[Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)。
+
+### Environmentをビルドする (オプショナル)
+_基本的にはスキップしていただいて構いません。_
 
 Since Docker typically runs a container sharing a (linux) kernel with the host machine, the 
 Unity environment **has** to be built for the **linux platform**. When building a Unity environment, please select the following options from the the Build Settings window:
@@ -34,16 +43,18 @@ Then click `Build`, pick an environment name (e.g. `3DBall`) and set the output 
 
 ![Build Settings For Docker](images/docker_build_settings.png)
 
-### Build the Docker Container
+### Docker Containerをビルドする
 
-First, make sure the Docker engine is running on your machine. Then build the Docker container by calling the following command at the top-level of the repository:
+まず、Docker engineがランしていることを確認してください。
+そして、Docker containerを下記のコマンドを実行してビルドしてください。
+
 
 ```
 docker build -t <image-name> .
 ``` 
-Replace `<image-name>` with a name for the Docker image, e.g. `balance.ball.v0.1`.
+`<image-name>`をご自分のDocker imageの名前に置き換えてください。例：`balance.ball.v0.1`
 
-**Note** if you modify hyperparameters in `trainer_config.yaml` you will have to build a new Docker Container before running.
+**注意** もし、`trainer_config.yaml`に入っている、hyperparametersを変更したのであれば、Docker Containerを新しくビルドしてください。
 
 ### Run the Docker Container
 
