@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace MLAgents
 {
     /// <summary>
@@ -199,6 +198,14 @@ namespace MLAgents
         /// </summary>
         [HideInInspector] public AgentParameters agentParameters;
 
+
+        /// Added by M.Baske to enable frame-stacking.
+        [HideInInspector] public VisualObservations visualObservations;
+        /// Added for testing.
+        [HideInInspector] public List<Texture2D> VisualObservationsTextureList 
+                                                 => info.visualObservations;
+
+
         /// Current Agent information (message sent to Brain).
         AgentInfo info;
 
@@ -256,7 +263,18 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            textureArray = new Texture2D[agentParameters.agentCameras.Count];
+            /// Modified by M.Baske to enable frame-stacking.
+            /// 
+            /// Changing
+            /// textureArray = new Texture2D[agentParameters.agentCameras.Count];
+            /// to
+            textureArray = new Texture2D[brain.brainParameters.cameraResolutions.Length];
+            /// to prevent a runtime error since agentCameras.Count no longer 
+            /// matches cameraResolutions.Length
+            /// 
+            /// textureArray is not used with frame-stacking. It is replaced by
+            /// TextureManager's input property.
+
             for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
             {
                 textureArray[i] = new Texture2D(brain.brainParameters.cameraResolutions[i].width, 
@@ -493,6 +511,11 @@ namespace MLAgents
             }
 
             info.visualObservations = new List<Texture2D>();
+
+            /// Added by M.Baske to enable frame-stacking.
+            ///
+            visualObservations = brain.gameObject.GetComponent<VisualObservations>();
+            visualObservations.OnAgentResetData(this);
         }
 
         /// <summary>
@@ -559,6 +582,13 @@ namespace MLAgents
             }
 
             info.visualObservations.Clear();
+            
+            /// Modified by M.Baske to enable frame-stacking.
+            ///
+            visualObservations.ApplyObservations(this, info.visualObservations);
+
+            /// Original code:
+            /*
             if (param.cameraResolutions.Length > agentParameters.agentCameras.Count)
             {
                 throw new UnityAgentsException(string.Format(
@@ -578,6 +608,7 @@ namespace MLAgents
                     ref textureArray[i]);
                 info.visualObservations.Add(textureArray[i]);
             }
+            */
 
             info.reward = reward;
             info.done = done;
