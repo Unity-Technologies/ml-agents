@@ -98,6 +98,8 @@ namespace MujocoUnity
         List<float> qpos;
         List<float> qglobpos;
         List<float> qvel;
+        List<float> recentVelocity;
+
 
 
 
@@ -153,6 +155,7 @@ namespace MujocoUnity
             SetupMujoco();
             UpdateQ();
             _hasValidModel = true;
+            recentVelocity = new List<float>();
         }
         void SetupMujoco()
         {
@@ -235,6 +238,14 @@ namespace MujocoUnity
                 lowestFoot = feetYpos[0];
 			var height = FocalPoint.transform.position.y - lowestFoot;
             return height;
+        }
+        internal float GetAverageVelocity(string bodyPart = null)
+        {
+            var v = GetVelocity(bodyPart);
+            recentVelocity.Add(v);
+            if (recentVelocity.Count >= 10)
+                recentVelocity.RemoveAt(0);
+            return recentVelocity.Average();
         }
         internal float GetVelocity(string bodyPart = null)
         {
