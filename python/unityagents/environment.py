@@ -217,11 +217,6 @@ class UnityEnvironment(object):
         # return SocketCommunicator(worker_id, base_port)
 
     def __str__(self):
-        # Set reset parameters from trainer.
-        '''_new_reset_param = self._curriculum.get_config()
-        for k in _new_reset_param:
-            self._resetParameters[k] = _new_reset_param[k]'''
-        
         return '''Unity Academy name: {0}
         Number of Brains: {1}
         Number of External Brains : {2}
@@ -231,7 +226,7 @@ class UnityEnvironment(object):
                                          for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-    def reset(self, config, train_mode=True, lesson=None) -> AllBrainInfo:
+    def reset(self, config, train_mode=True) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A Data structure corresponding to the initial reset state of the environment.

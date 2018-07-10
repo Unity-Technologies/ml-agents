@@ -12,10 +12,8 @@ import yaml
 from tensorflow.python.tools import freeze_graph
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
+from unitytrainers import Curriculum
 from unityagents import UnityEnvironment, UnityEnvironmentException
-
-from .curriculum import Curriculum
-from unityagents.exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 
 from communicator_objects import UnityRLInitializationInput
 
