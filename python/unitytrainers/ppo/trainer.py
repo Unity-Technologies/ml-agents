@@ -436,9 +436,6 @@ class PPOTrainer(Trainer):
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
-        print('advantages:', advantages)
-        print('advantages mean:', advantages.mean())
-        print('advantages std:', advantages.std())
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
         num_epoch = self.trainer_parameters['num_epoch']
