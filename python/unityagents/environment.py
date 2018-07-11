@@ -226,12 +226,14 @@ class UnityEnvironment(object):
                                          for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-    def reset(self, config, train_mode=True) -> AllBrainInfo:
+    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A Data structure corresponding to the initial reset state of the environment.
         """
-        if config != {}:
+        if config is None:
+            config = self._resetParameters
+        elif config != {}:
             logger.info("\nAcademy Reset with parameters : \t{0}"
                         .format(', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
         for k in config:
