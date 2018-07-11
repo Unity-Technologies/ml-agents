@@ -111,8 +111,8 @@ dummy_curriculum = json.loads('''{
     "measure" : "reward",
     "thresholds" : [10, 20, 50],
     "min_lesson_length" : 3,
-    "signal_smoothing" : true, 
-    "parameters" : 
+    "signal_smoothing" : true,
+    "parameters" :
     {
         "param1" : [0.7, 0.5, 0.3, 0.1],
         "param2" : [100, 50, 20, 15],
@@ -123,8 +123,8 @@ bad_curriculum = json.loads('''{
     "measure" : "reward",
     "thresholds" : [10, 20, 50],
     "min_lesson_length" : 3,
-    "signal_smoothing" : false, 
-    "parameters" : 
+    "signal_smoothing" : false,
+    "parameters" :
     {
         "param1" : [0.7, 0.5, 0.3, 0.1],
         "param2" : [100, 50, 20],
