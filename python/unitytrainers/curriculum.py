@@ -16,7 +16,8 @@ class Curriculum(object):
         """
         self.lesson_length = 0
         self.max_lesson_number = 0
-        self.measure_type = None
+        self._measure_type = None
+        self._lesson_number = 0
         if location is None:
             self.data = None
         else:
@@ -48,19 +49,19 @@ class Curriculum(object):
                         "The parameter {0} in Curriculum {1} must have {2} values "
                         "but {3} were found".format(key, location,
                                                     self.max_lesson_number + 1, len(parameters[key])))
-        self.set_lesson_number(0)
 
     @property
     def measure(self):
         return self.measure_type
 
     @property
-    def get_lesson_number(self):
-        return self.lesson_number
+    def lesson_number(self):
+        return self._lesson_number
 
-    def set_lesson_number(self, value):
+    @lesson_number.setter
+    def lesson_number(self, lesson_number):
         self.lesson_length = 0
-        self.lesson_number = max(0, min(value, self.max_lesson_number))
+        self._lesson_number = max(0, min(lesson_number, self.max_lesson_number))
 
     def increment_lesson(self, progress):
         """

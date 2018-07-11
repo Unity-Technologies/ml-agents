@@ -216,4 +216,15 @@ public class PushAgentBasic : Agent
         agentRB.velocity = Vector3.zero;
         agentRB.angularVelocity = Vector3.zero;
     }
+
+
+    private void FixedUpdate()
+    {
+        // Set the size of the goal according to the current lesson in the
+        // curriculum.
+        goal.transform.localScale = new Vector3(
+            academy.resetParameters["goal_width"],
+            goal.transform.localScale.y,
+            academy.resetParameters["goal_length"]);
+    }
 }

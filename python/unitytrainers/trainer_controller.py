@@ -86,7 +86,7 @@ class TrainerController(object):
             self.env_name = 'editor_'+self.env.academy_name
         else:
             self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
-        self.curriculum = Curriculum(curriculum_file, self.env._resetParameters)
+        self.curriculum = Curriculum(self.curriculum_file, self.env._resetParameters)
 
     def _get_progress(self):
         if self.curriculum_file is not None:

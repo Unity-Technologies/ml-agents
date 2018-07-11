@@ -1,0 +1,11 @@
+{
+    "measure" : "progress",
+    "thresholds" : [0.1],
+    "min_lesson_length" : 2,
+    "signal_smoothing" : true, 
+    "parameters" : 
+    {
+        "goal_width" : [25.0, 5.0],
+        "goal_length" : [5.0, 1.0]
+    }
+}
