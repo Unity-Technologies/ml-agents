@@ -26,8 +26,7 @@ dummy_start = '''{
       "memorySize": 0,
       "cameraResolutions": [],
       "vectorActionDescriptions": ["",""],
-      "vectorActionSpaceType": 1,
-      "vectorObservationSpaceType": 1
+      "vectorActionSpaceType": 1
       }]
 }'''.encode()
 

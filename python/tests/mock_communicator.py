@@ -30,7 +30,6 @@ class MockCommunicator(Communicator):
             camera_resolutions=resolutions,
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),
-            vector_observation_space_type=1,
             brain_name="RealFakeBrain",
             brain_type=2
         )
