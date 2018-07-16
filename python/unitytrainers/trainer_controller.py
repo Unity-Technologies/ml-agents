@@ -15,8 +15,6 @@ from unitytrainers.bc.trainer import BehavioralCloningTrainer
 from unitytrainers import Curriculum
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
-from communicator_objects import UnityRLInitializationInput
-
 
 class TrainerController(object):
     def __init__(self, env_path, run_id, save_freq, curriculum_file, fast_simulation, load, train,
