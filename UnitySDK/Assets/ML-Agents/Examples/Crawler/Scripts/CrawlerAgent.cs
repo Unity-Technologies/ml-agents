@@ -228,7 +228,7 @@ public class CrawlerAgent : Agent
     void RewardFunctionMovingTowards()
     {
         movingTowardsDot = Vector3.Dot(jdController.bodyPartsDict[body].rb.velocity, dirToTarget.normalized);
-        AddReward(0.03f * movingTowardsDot);
+        AddReward(0.01f * movingTowardsDot);
     }
 
     /// <summary>
@@ -253,10 +253,15 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        if (dirToTarget != Vector3.zero)
+        if (respawnTargetWhenTouched)
         {
-            transform.rotation = Quaternion.LookRotation(dirToTarget);
+            GetRandomTargetPos();
         }
+        
+        //if (dirToTarget != Vector3.zero)
+        //{
+        //    transform.rotation = Quaternion.LookRotation(dirToTarget);
+        //}
 
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {

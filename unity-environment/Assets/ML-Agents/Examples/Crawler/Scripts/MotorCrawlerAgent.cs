@@ -192,7 +192,7 @@ public class MotorCrawlerAgent : Agent
     void RewardFunctionMovingTowards()
     {
         movingTowardsDot = Vector3.Dot(jdController.bodyPartsDict[body].rb.velocity, dirToTarget.normalized);
-        AddReward(0.03f * movingTowardsDot);
+        AddReward(Mathf.Clamp(0.01f * movingTowardsDot, -2f / agentParameters.maxStep, 2f / agentParameters.maxStep));
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ public class MotorCrawlerAgent : Agent
     void RewardFunctionFacingTarget()
     {
         facingDot = Vector3.Dot(dirToTarget.normalized, body.forward);
-        AddReward(0.01f * facingDot);
+        AddReward(1f / agentParameters.maxStep * facingDot);
     }
 
     /// <summary>
@@ -209,7 +209,7 @@ public class MotorCrawlerAgent : Agent
     /// </summary>
     void RewardFunctionTimePenalty()
     {
-        AddReward(-0.001f);
+        AddReward(-1f / agentParameters.maxStep);
     }
 
     public override void AgentOnDone()
