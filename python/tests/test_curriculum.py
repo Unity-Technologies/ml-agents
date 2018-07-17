@@ -37,24 +37,33 @@ bad_curriculum_json_str = '''
     }
     '''
 
+@pytest.fixture
+def location():
+    return 'TestBrain.json'
+
+
+@pytest.fixture
+def default_reset_parameters():
+    return {"param1": 1, "param2": 1, "param3": 1}
+
 
 @patch('builtins.open', new_callable=mock_open, read_data=dummy_curriculum_json_str)
-def test_init_curriculum_happy_path(mock_file):
-    curriculum = Curriculum('TestBrain.json', {"param1": 1, "param2": 1, "param3": 1})
+def test_init_curriculum_happy_path(mock_file, location, default_reset_parameters):
+    curriculum = Curriculum(location, default_reset_parameters)
 
     assert curriculum.lesson_number == 0
     assert curriculum.measure == 'reward'
 
 
 @patch('builtins.open', new_callable=mock_open, read_data=bad_curriculum_json_str)
-def test_init_curriculum_bad_curriculum_raises_error(mock_file):
+def test_init_curriculum_bad_curriculum_raises_error(mock_file, location, default_reset_parameters):
     with pytest.raises(UnityEnvironmentException):
-        Curriculum('TestBrainCurriculum.json', {"param1": 1, "param2": 1, "param3": 1})
+        Curriculum(location, default_reset_parameters)
 
 
 @patch('builtins.open', new_callable=mock_open, read_data=dummy_curriculum_json_str)
-def test_increment_lesson(mock_file):
-    curriculum = Curriculum('TestBrain.json', {"param1": 1, "param2": 1, "param3": 1})
+def test_increment_lesson(mock_file, location, default_reset_parameters):
+    curriculum = Curriculum(location, default_reset_parameters)
     assert curriculum.lesson_number == 0
 
     curriculum.lesson_number = 1

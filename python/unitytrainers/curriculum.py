@@ -18,6 +18,7 @@ class Curriculum(object):
         self.max_lesson_number = 0
         self._measure_type = None
         self._lesson_number = 0
+
         if location is None:
             self.data = None
         else:
@@ -35,15 +36,16 @@ class Curriculum(object):
                 if key not in self.data:
                     raise CurriculumError("{0} does not contain a "
                                                     "{1} field.".format(location, key))
-            parameters = self.data['parameters']
-            self.measure_type = self.data['measure']
+            self.smoothing_value = 0
+            self._measure_type = self.data['measure']
             self.max_lesson_number = len(self.data['thresholds'])
+
+            parameters = self.data['parameters']
             for key in parameters:
                 if key not in default_reset_parameters:
                     raise CurriculumError(
                         "The parameter {0} in Curriculum {1} is not present in "
                         "the Environment".format(key, location))
-            for key in parameters:
                 if len(parameters[key]) != self.max_lesson_number + 1:
                     raise CurriculumError(
                         "The parameter {0} in Curriculum {1} must have {2} values "
@@ -52,7 +54,7 @@ class Curriculum(object):
 
     @property
     def measure(self):
-        return self.measure_type
+        return self._measure_type
 
     @property
     def lesson_number(self):

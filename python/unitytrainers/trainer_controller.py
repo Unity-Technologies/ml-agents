@@ -12,25 +12,25 @@ import yaml
 from tensorflow.python.tools import freeze_graph
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
-from unitytrainers import Curriculum
+from unitytrainers import School
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 
 class TrainerController(object):
-    def __init__(self, env_path, run_id, save_freq, curriculum_file, fast_simulation, load, train,
-                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path,
+    def __init__(self, env_path, run_id, save_freq, curriculum_folder, fast_simulation, load, train,
+                 worker_id, keep_checkpoints, lesson_nums, seed, docker_target_name, trainer_config_path,
                  no_graphics):
         """
         :param env_path: Location to the environment executable to be loaded.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
-        :param curriculum_file: Curriculum json file for environment
+        :param curriculum_folder: Folder containing JSON curriculums for the env
         :param fast_simulation: Whether to run the game at training speed
         :param load: Whether to load the model or randomly initialize
         :param train: Whether to train model, or only run inference
         :param worker_id: Number to add to communication port (5005). Used for multi-environment
         :param keep_checkpoints: How many model checkpoints to keep
-        :param lesson: Start learning from this lesson
+        :param lesson_nums: Dict from brain name to starting lesson number
         :param seed: Random seed used for training.
         :param docker_target_name: Name of docker volume that will contain all data.
         :param trainer_config_path: Fully qualified path to location of trainer configuration file
@@ -47,7 +47,7 @@ class TrainerController(object):
         if docker_target_name == '':
             self.docker_training = False
             self.model_path = './models/{run_id}'.format(run_id=run_id)
-            self.curriculum_file = curriculum_file
+            self.curriculum_folder = curriculum_folder
             self.summaries_dir = './summaries'
         else:
             self.docker_training = True
@@ -57,17 +57,17 @@ class TrainerController(object):
             if env_path is not None:
                 env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
                                                                      env_name=env_path)
-            if curriculum_file is None:
-                self.curriculum_file = None
+            if curriculum_folder is None:
+                self.curriculum_folder = None
             else:
-                self.curriculum_file = '/{docker_target_name}/{curriculum_file}'.format(
+                self.curriculum_folder = '/{docker_target_name}/{curriculum_file}'.format(
                     docker_target_name=docker_target_name,
-                    curriculum_file=curriculum_file)
+                    curriculum_folder=curriculum_folder)
             self.summaries_dir = '/{docker_target_name}/summaries'.format(docker_target_name=docker_target_name)
         self.logger = logging.getLogger("unityagents")
         self.run_id = run_id
         self.save_freq = save_freq
-        self.lesson = lesson
+        self.lesson_nums = lesson_nums
         self.fast_simulation = fast_simulation
         self.load_model = load
         self.train_model = train
@@ -86,21 +86,19 @@ class TrainerController(object):
             self.env_name = 'editor_'+self.env.academy_name
         else:
             self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
-        self.curriculum = Curriculum(self.curriculum_file, self.env._resetParameters)
+        self.school = School(self.curriculum_folder, self.env._resetParameters)
 
-    def _get_progress(self):
-        if self.curriculum_file is not None:
-            progress = 0
-            if self.curriculum.measure_type == "progress":
-                for brain_name in self.env.external_brain_names:
-                    progress += self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
-                return progress / len(self.env.external_brain_names)
-            elif self.curriculum.measure_type == "reward":
-                for brain_name in self.env.external_brain_names:
-                    progress += self.trainers[brain_name].get_last_reward
-                return progress
-            else:
-                return None
+    def _get_progresses(self):
+        if self.curriculum_folder is not None:
+            brain_names_to_progresses = {}
+            for brain_name, curriculum in self.school.brains_to_curriculums.items():
+                if curriculum.measure_type == "progress":
+                    progress = self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
+                    brain_names_to_progresses[brain_name] = progress
+                elif curriculum.measure_type == "reward":
+                    progress = self.trainers[brain_name].get_last_reward
+                    brain_names_to_progresses[brain_name] = progress
+            return brain_names_to_progresses
         else:
             return None
 
@@ -213,7 +211,7 @@ class TrainerController(object):
                                             .format(model_path))
 
     def start_learning(self):
-        self.curriculum.set_lesson_number(self.lesson)
+        self.school.set_lesson_nums(self.lesson_nums)
         trainer_config = self._load_config()
         self._create_model_path(self.model_path)
 
@@ -221,7 +219,7 @@ class TrainerController(object):
 
         with tf.Session() as sess:
             self._initialize_trainers(trainer_config, sess)
-            for k, t in self.trainers.items():
+            for _, t in self.trainers.items():
                 self.logger.info(t)
             init = tf.global_variables_initializer()
             saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
@@ -236,16 +234,20 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            self.curriculum.increment_lesson(self._get_progress())
-            curr_info = self.env.reset(config=self.curriculum.get_config(), train_mode=self.fast_simulation)
+            self.school.increment_lessons(self._get_progresses)
+            # TODO: Environment needs a new reset method which takes into account all reset params from all
+            # brains.
+            curr_info = self.env.reset(config=self.school.get_config(), train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters', trainer.parameters)
             try:
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
-                        self.curriculum.increment_lesson(self._get_progress())
-                        curr_info = self.env.reset(config=self.curriculum.get_config(), train_mode=self.fast_simulation)
+                        self.school.increment_lessons(self._get_progresses())
+                        # TODO: Environment needs a new reset method which takes into account all reset params from all
+                        # brains.
+                        curr_info = self.env.reset(config=self.school.get_config(), train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
@@ -270,7 +272,8 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        trainer.write_summary(self.curriculum.lesson_number)
+                        # TODO: Not sure how to replace this line.
+                        #trainer.write_summary(self.curriculum.lesson_number)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:

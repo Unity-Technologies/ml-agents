@@ -29,14 +29,16 @@ reinforcement learning will be able to accomplish tasks otherwise much more diff
 
 ## How-To
  
-So how does it work? In order to define a curriculum, the first step is to decide which 
+In order to define a curriculum, the first step is to decide which 
 parameters of the environment will vary. In the case of the Wall Area environment, what 
-varies is the height of the wall. We can define this as a reset parameter in the Academy 
+varies is the height of the wall. We define this as a `Reset Parameter` in the Academy 
 object of our scene, and by doing so it becomes adjustable via the Python API. Rather 
 than adjusting it by hand, we then create a simple JSON file which describes the 
 structure of the curriculum. Within it we can set at what points in the training process 
 our wall height will change, either based on the percentage of training steps which have 
-taken place, or what the average reward the agent has received in the recent past is. 
+taken place, or what the average reward the agent has received in the recent past is.
+Finally, we have to use the reset parameter we defined and modify the environment from
+the agent's `AgentReset()` function.
 Once these are in place, we simply launch learn.py using the `–curriculum-file` flag to 
 point to the JSON file, and PPO we will train using Curriculum Learning. Of course we can 
 then keep track of the current lesson and progress via TensorBoard.

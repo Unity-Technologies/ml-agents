@@ -215,11 +215,7 @@ public class PushAgentBasic : Agent
         transform.position = GetRandomSpawnPos();
         agentRB.velocity = Vector3.zero;
         agentRB.angularVelocity = Vector3.zero;
-    }
 
-
-    private void FixedUpdate()
-    {
         // Set the size of the goal according to the current lesson in the
         // curriculum.
         goal.transform.localScale = new Vector3(
