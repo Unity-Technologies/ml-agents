@@ -46,9 +46,12 @@ public class CognitiveCrawler : Agent
         if (useVectorObs)
         {
             var rayDistance = 20f;
-            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f, -45f, -90f, -135f, -180f, -110f, -70f };
+            float[] rayAngles = { 20f, 45f, 90f, 135f, 160f, 110f, 70f};
+            float[] rayAnglesUp = { 30f, 60f, 90f, 120f, 150f};
             var detectableObjects = new[] { "target", "wall" };
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAnglesUp, detectableObjects, 1.5f, 3f));
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAnglesUp, detectableObjects, 1.5f, -3f));
         }
     }
     
@@ -58,6 +61,7 @@ public class CognitiveCrawler : Agent
     public void TouchedTarget()
     {
         AddReward(2f);
+        motorAgent.AddReward(2f);
         if (respawnTargetWhenTouched)
         {
             GetRandomTargetPos();
@@ -65,6 +69,7 @@ public class CognitiveCrawler : Agent
         else
         {
             Done();
+            motorAgent.Done();
         }
     }
 
@@ -84,17 +89,36 @@ public class CognitiveCrawler : Agent
             case 0:
                 goalDirection = transform.forward * 10f;
                 break;
+           // case 1:
+           //     goalDirection = transform.forward * -10f;
+           //     break;
             case 1:
-                goalDirection = transform.forward * -10f;
-                break;
-            case 2:
                 goalDirection = transform.right * -10f;
                 break;
-            case 3:
+            case 2:
                 goalDirection = transform.right * 10f;
                 break;
+//            case 4:
+//                goalDirection = transform.right + transform.forward * 10f;
+//                break;
+//            case 5:
+//                goalDirection = transform.right + transform.forward * -10f;
+//                break;
+//            case 6:
+//                goalDirection = transform.right - transform.forward * 10f;
+//                break;
+//            case 7:
+//                goalDirection = transform.right - transform.forward * -10f;
+//                break;
+
         }
 
+        if (Application.isEditor)
+        {
+            Debug.DrawRay(transform.position,
+                goalDirection, Color.green, 0.01f, true);
+        }
+        
         motorAgent.dirToTarget = goalDirection;
     }
     
@@ -103,13 +127,12 @@ public class CognitiveCrawler : Agent
     /// </summary>
     public void GetRandomTargetPos()
     {
-        Vector3 newTargetPos = new Vector3(12.5f, 0f, Random.Range(-15f, 15f));
-        newTargetPos.y = 4;
+        Vector3 newTargetPos = new Vector3(15f, 4f, Random.Range(-17f, 17f));
         target.GetComponent<Rigidbody>().velocity = Vector3.zero;
         target.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         target.position = newTargetPos + ground.position;
         target.rotation = Quaternion.identity;
-        obstacleWall.transform.position = new Vector3(0f, 2f, Random.Range(-15f, 15f)) + ground.position;
+        obstacleWall.transform.position = new Vector3(0f, 2f, Random.Range(-17f, 17f)) + ground.position;
     }
 
     /// <summary>

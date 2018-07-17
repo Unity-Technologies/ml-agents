@@ -178,6 +178,70 @@ class PPOTrainer(Trainer):
                               prev_text_actions, max_reacheds)
         return curr_info
 
+    def generate_intrinsic_rewards(self, curr_info, next_info):
+        """
+        Generates intrinsic reward used for Curiosity-based training.
+        :BrainInfo curr_info: Current BrainInfo.
+        :BrainInfo next_info: Next BrainInfo.
+        :return: Intrinsic rewards for all agents.
+        """
+        if self.use_curiosity:
+            if not next_info.agents:
+                return list(np.array(curr_info.rewards) * 0.0)
+
+            feed_dict = {self.model.batch_size: len(next_info.vector_observations), self.model.sequence_length: 1}
+            if self.is_continuous_action:
+                feed_dict[self.model.output] = next_info.previous_vector_actions
+            else:
+                feed_dict[self.model.action_holder] = next_info.previous_vector_actions
+
+            if curr_info.agents != next_info.agents:
+                curr_info = self.construct_curr_info(next_info)
+
+            if len(curr_info.agents) == 0:
+                return []
+
+            if self.use_visual_obs:
+                for i in range(len(curr_info.visual_observations)):
+                    feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
+                    feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
+            if self.use_vector_obs:
+                feed_dict[self.model.vector_in] = curr_info.vector_observations
+                feed_dict[self.model.next_vector_in] = next_info.vector_observations
+            if self.use_recurrent:
+                if curr_info.memories.shape[1] == 0:
+                    curr_info.memories = np.zeros((len(curr_info.agents), self.m_size))
+                feed_dict[self.model.memory_in] = curr_info.memories
+            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
+                                              feed_dict=feed_dict) * float(self.has_updated)
+            return intrinsic_rewards
+        else:
+            return None
+
+    def generate_value_estimate(self, brain_info, idx):
+        """
+        Generates value estimates for bootstrapping.
+        :param brain_info: BrainInfo to be used for bootstrapping.
+        :param idx: Index in BrainInfo of agent.
+        :return: Value estimate.
+        """
+        feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
+        if self.use_visual_obs:
+            for i in range(len(brain_info.visual_observations)):
+                feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
+        if self.use_vector_obs:
+            feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
+        if self.use_recurrent:
+            if brain_info.memories.shape[1] == 0:
+                brain_info.memories = np.zeros(
+                    (len(brain_info.vector_observations), self.m_size))
+            feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
+        if not self.is_continuous_action and self.use_recurrent:
+            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape(
+                [-1, len(self.brain.vector_action_space_size)])
+        value_estimate = self.sess.run(self.model.value, feed_dict)
+        return value_estimate
+
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
         """
         Adds experiences to each agent's experience history.
