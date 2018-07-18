@@ -2,7 +2,7 @@ import pytest
 import json
 from unittest.mock import patch, mock_open
 
-from unityagents import UnityEnvironmentException
+from unitytrainers.exception import CurriculumError
 from unitytrainers import Curriculum
 
 
@@ -57,7 +57,7 @@ def test_init_curriculum_happy_path(mock_file, location, default_reset_parameter
 
 @patch('builtins.open', new_callable=mock_open, read_data=bad_curriculum_json_str)
 def test_init_curriculum_bad_curriculum_raises_error(mock_file, location, default_reset_parameters):
-    with pytest.raises(UnityEnvironmentException):
+    with pytest.raises(CurriculumError):
         Curriculum(location, default_reset_parameters)
 
 
