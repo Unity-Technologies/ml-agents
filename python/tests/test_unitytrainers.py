@@ -8,8 +8,9 @@ from unitytrainers.buffer import Buffer
 from unitytrainers.models import *
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
-from unitytrainers import Curriculum
-from unityagents import UnityEnvironmentException
+from unitytrainers.curriculum import Curriculum
+from unitytrainers.exception import CurriculumError
+from unityagents.exception import UnityEnvironmentException
 from .mock_communicator import MockCommunicator
 
 dummy_start = '''{
@@ -244,10 +245,10 @@ def test_curriculum():
         with mock.patch(open_name, create=True) as mock_open:
             mock_open.return_value = 0
             mock_load.return_value = bad_curriculum
-            with pytest.raises(UnityEnvironmentException):
+            with pytest.raises(CurriculumError):
                 Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
             mock_load.return_value = dummy_curriculum
-            with pytest.raises(UnityEnvironmentException):
+            with pytest.raises(CurriculumError):
                 Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1})
             curriculum = Curriculum('tests/test_unityagents.py', {"param1": 1, "param2": 1, "param3": 1})
             assert curriculum.get_lesson_number == 0
