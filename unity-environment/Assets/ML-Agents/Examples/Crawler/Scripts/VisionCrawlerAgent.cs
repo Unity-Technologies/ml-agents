@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
-public class CognitiveCrawler : Agent
+public class VisionCrawler : Agent
 {
     /// <summary>
     /// Detects when the block touches the goal.
@@ -89,28 +89,12 @@ public class CognitiveCrawler : Agent
             case 0:
                 goalDirection = transform.forward * 10f;
                 break;
-           // case 1:
-           //     goalDirection = transform.forward * -10f;
-           //     break;
             case 1:
                 goalDirection = transform.right * -10f;
                 break;
             case 2:
                 goalDirection = transform.right * 10f;
                 break;
-//            case 4:
-//                goalDirection = transform.right + transform.forward * 10f;
-//                break;
-//            case 5:
-//                goalDirection = transform.right + transform.forward * -10f;
-//                break;
-//            case 6:
-//                goalDirection = transform.right - transform.forward * 10f;
-//                break;
-//            case 7:
-//                goalDirection = transform.right - transform.forward * -10f;
-//                break;
-
         }
 
         if (Application.isEditor)
