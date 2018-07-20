@@ -34,6 +34,8 @@ Some of the primary dependencies include:
 - [TensorFlow](Background-TensorFlow.md) 
 - [Jupyter](Background-Jupyter.md) 
 
+**NOTE** If you are using Anaconda and are having trouble with TensorFlow, please see the following [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda) on how to install TensorFlow in an Anaconda environment. 
+
 ### Windows Users
 
 If you are a Windows user who is new to Python and TensorFlow, follow [this guide](Installation-Windows.md) to set up your Python environment.
