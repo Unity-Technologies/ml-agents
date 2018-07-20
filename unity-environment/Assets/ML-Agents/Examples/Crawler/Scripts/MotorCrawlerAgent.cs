@@ -12,7 +12,7 @@ public class MotorCrawlerAgent : Agent
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
-    public CognitiveCrawler cognitiveAgent;
+    public VisionCrawler visionAgent;
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -215,7 +215,7 @@ public class MotorCrawlerAgent : Agent
     public override void AgentOnDone()
     {
         base.AgentOnDone();
-        cognitiveAgent.Done();
+        visionAgent.Done();
     }
 
     /// <summary>
