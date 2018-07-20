@@ -18,7 +18,7 @@ from unityagents import UnityEnvironment, UnityEnvironmentException
 
 class TrainerController(object):
     def __init__(self, env_path, run_id, save_freq, curriculum_folder, fast_simulation, load, train,
-                 worker_id, keep_checkpoints, lesson_nums, seed, docker_target_name, trainer_config_path,
+                 worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path,
                  no_graphics):
         """
         :param env_path: Location to the environment executable to be loaded.
@@ -30,7 +30,7 @@ class TrainerController(object):
         :param train: Whether to train model, or only run inference
         :param worker_id: Number to add to communication port (5005). Used for multi-environment
         :param keep_checkpoints: How many model checkpoints to keep
-        :param lesson_nums: Dict from brain name to starting lesson number
+        :param lesson: Start learning from this lesson
         :param seed: Random seed used for training.
         :param docker_target_name: Name of docker volume that will contain all data.
         :param trainer_config_path: Fully qualified path to location of trainer configuration file
@@ -67,7 +67,7 @@ class TrainerController(object):
         self.logger = logging.getLogger("unityagents")
         self.run_id = run_id
         self.save_freq = save_freq
-        self.lesson_nums = lesson_nums
+        self.lesson = lesson
         self.fast_simulation = fast_simulation
         self.load_model = load
         self.train_model = train
@@ -92,10 +92,10 @@ class TrainerController(object):
         if self.curriculum_folder is not None:
             brain_names_to_progresses = {}
             for brain_name, curriculum in self.school.brains_to_curriculums.items():
-                if curriculum.measure_type == "progress":
+                if curriculum.measure == "progress":
                     progress = self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
                     brain_names_to_progresses[brain_name] = progress
-                elif curriculum.measure_type == "reward":
+                elif curriculum.measure == "reward":
                     progress = self.trainers[brain_name].get_last_reward
                     brain_names_to_progresses[brain_name] = progress
             return brain_names_to_progresses
@@ -154,6 +154,7 @@ class TrainerController(object):
 
     def _initialize_trainers(self, trainer_config, sess):
         trainer_parameters_dict = {}
+        # TODO: This probably doesn't need to be reinitialized.
         self.trainers = {}
         for brain_name in self.env.external_brain_names:
             trainer_parameters = trainer_config['default'].copy()
@@ -211,7 +212,8 @@ class TrainerController(object):
                                             .format(model_path))
 
     def start_learning(self):
-        self.school.set_lesson_nums(self.lesson_nums)
+        # TODO: Should be able to start learning at different lesson numbers for each curriculum.
+        self.school.set_all_curriculums_to_lesson_num(self.lesson)
         trainer_config = self._load_config()
         self._create_model_path(self.model_path)
 
@@ -234,9 +236,7 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            self.school.increment_lessons(self._get_progresses)
-            # TODO: Environment needs a new reset method which takes into account all reset params from all
-            # brains.
+            self.school.increment_lessons(self._get_progresses())
             curr_info = self.env.reset(config=self.school.get_config(), train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
@@ -245,8 +245,6 @@ class TrainerController(object):
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
                         self.school.increment_lessons(self._get_progresses())
-                        # TODO: Environment needs a new reset method which takes into account all reset params from all
-                        # brains.
                         curr_info = self.env.reset(config=self.school.get_config(), train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
@@ -272,8 +270,7 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        # TODO: Not sure how to replace this line.
-                        #trainer.write_summary(self.curriculum.lesson_number)
+                        trainer.write_summary(self.school.lesson_nums)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:

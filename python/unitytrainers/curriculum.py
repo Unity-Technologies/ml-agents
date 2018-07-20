@@ -15,9 +15,9 @@ class Curriculum(object):
         :param default_reset_parameters: Set of reset parameters for environment.
         """
         self.lesson_length = 0
-        self.max_lesson_number = 0
-        self._measure_type = None
-        self._lesson_number = 0
+        self.max_lesson_num = 0
+        self.measure = None
+        self._lesson_num = 0
 
         if location is None:
             self.data = None
@@ -37,8 +37,8 @@ class Curriculum(object):
                     raise CurriculumError("{0} does not contain a "
                                                     "{1} field.".format(location, key))
             self.smoothing_value = 0
-            self._measure_type = self.data['measure']
-            self.max_lesson_number = len(self.data['thresholds'])
+            self.measure = self.data['measure']
+            self.max_lesson_num = len(self.data['thresholds'])
 
             parameters = self.data['parameters']
             for key in parameters:
@@ -46,24 +46,20 @@ class Curriculum(object):
                     raise CurriculumError(
                         "The parameter {0} in Curriculum {1} is not present in "
                         "the Environment".format(key, location))
-                if len(parameters[key]) != self.max_lesson_number + 1:
+                if len(parameters[key]) != self.max_lesson_num + 1:
                     raise CurriculumError(
                         "The parameter {0} in Curriculum {1} must have {2} values "
                         "but {3} were found".format(key, location,
-                                                    self.max_lesson_number + 1, len(parameters[key])))
+                                                    self.max_lesson_num + 1, len(parameters[key])))
 
     @property
-    def measure(self):
-        return self._measure_type
+    def lesson_num(self):
+        return self._lesson_num
 
-    @property
-    def lesson_number(self):
-        return self._lesson_number
-
-    @lesson_number.setter
-    def lesson_number(self, lesson_number):
+    @lesson_num.setter
+    def lesson_num(self, lesson_num):
         self.lesson_length = 0
-        self._lesson_number = max(0, min(lesson_number, self.max_lesson_number))
+        self._lesson_num = max(0, min(lesson_num, self.max_lesson_num))
 
     def increment_lesson(self, progress):
         """
@@ -76,17 +72,17 @@ class Curriculum(object):
             progress = self.smoothing_value * 0.25 + 0.75 * progress
             self.smoothing_value = progress
         self.lesson_length += 1
-        if self.lesson_number < self.max_lesson_number:
-            if ((progress > self.data['thresholds'][self.lesson_number]) and
+        if self.lesson_num < self.max_lesson_num:
+            if ((progress > self.data['thresholds'][self.lesson_num]) and
                     (self.lesson_length > self.data['min_lesson_length'])):
                 self.lesson_length = 0
-                self.lesson_number += 1
+                self.lesson_num += 1
                 config = {}
                 parameters = self.data["parameters"]
                 for key in parameters:
-                    config[key] = parameters[key][self.lesson_number]
+                    config[key] = parameters[key][self.lesson_num]
                 logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
-                            .format(self.lesson_number,
+                            .format(self.lesson_num,
                                     ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
 
     def get_config(self, lesson=None):
@@ -98,8 +94,8 @@ class Curriculum(object):
         if self.data is None:
             return {}
         if lesson is None:
-            lesson = self.lesson_number
-        lesson = max(0, min(lesson, self.max_lesson_number))
+            lesson = self.lesson_num
+        lesson = max(0, min(lesson, self.max_lesson_num))
         config = {}
         parameters = self.data["parameters"]
         for key in parameters:
