@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
-public class VisionCrawler : Agent
+public class VisionCrawlerAgent : Agent
 {
     /// <summary>
     /// Detects when the block touches the goal.

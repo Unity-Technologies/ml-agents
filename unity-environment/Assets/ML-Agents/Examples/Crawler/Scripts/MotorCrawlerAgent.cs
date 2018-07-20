@@ -12,7 +12,7 @@ public class MotorCrawlerAgent : Agent
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
-    public VisionCrawler visionAgent;
+    public VisionCrawlerAgent visionAgent;
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
