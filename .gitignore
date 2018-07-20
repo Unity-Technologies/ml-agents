@@ -75,5 +75,8 @@ python/summaries
 *.eggs*
 *.gitignore.swp
 
+# VSCode hidden files
+*.vscode/
 
-.DS_Store
+# pytest cache 
+*.pytest_cache/
