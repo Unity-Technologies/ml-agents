@@ -39,7 +39,7 @@ our wall height will change, either based on the percentage of training steps wh
 taken place, or what the average reward the agent has received in the recent past is.
 Finally, we have to use the reset parameter we defined and modify the environment from
 the agent's `AgentReset()` function.
-Once these are in place, we simply launch learn.py using the `–curriculum-file` flag to 
+Once these are in place, we simply launch learn.py using the `–curriculum` flag to 
 point to the JSON file, and PPO we will train using Curriculum Learning. Of course we can 
 then keep track of the current lesson and progress via TensorBoard.
 
