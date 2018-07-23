@@ -257,10 +257,9 @@ namespace MLAgents
         void OnEnable()
         {
             textureArray = new Texture2D[agentParameters.agentCameras.Count];
-            for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
+            for (int i = 0; i < agentParameters.agentCameras.Count; i++)
             {
-                textureArray[i] = new Texture2D(brain.brainParameters.cameraResolutions[i].width, 
-                    brain.brainParameters.cameraResolutions[i].height, TextureFormat.RGB24, false);
+                textureArray[i] = new Texture2D(1, 1, TextureFormat.RGB24, false);
             }
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
