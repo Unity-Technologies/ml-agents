@@ -1,15 +1,15 @@
-"""Contains the School class."""
+"""Contains the MetaCurriculum class."""
 
 import os
 from unitytrainers import Curriculum
 
-class School(object):
-    """A School holds curriculums. Each curriculum is associated to a particular
+class MetaCurriculum(object):
+    """A MetaCurriculum holds curriculums. Each curriculum is associated to a particular
     brain in the environment.
     """
 
     def __init__(self, curriculum_folder, default_reset_parameters):
-        """Initializes a School object.
+        """Initializes a MetaCurriculum object.
 
         Args:
             curriculum_folder (str): The relative or absolute path of the
@@ -50,7 +50,7 @@ class School(object):
             self.brains_to_curriculums[brain_name].lesson_num = lesson
 
     def increment_lessons(self, progresses):
-        """Increments all the lessons of all the curriculums in this School.
+        """Increments all the lessons of all the curriculums in this MetaCurriculum.
 
         Args:
             progresses (dict): A dict of brain name to progress.
@@ -60,7 +60,7 @@ class School(object):
 
 
     def set_all_curriculums_to_lesson_num(self, lesson_num):
-        """Sets all the curriculums in this school to a specified lesson number.
+        """Sets all the curriculums in this meta curriculum to a specified lesson number.
 
         Args:
             lesson_num (int): The lesson number which all the curriculums will
@@ -71,7 +71,7 @@ class School(object):
 
 
     def get_config(self):
-        """Get the combined configuration of all curriculums in this School.
+        """Get the combined configuration of all curriculums in this MetaCurriculum.
 
         Returns:
             A dict from parameter to value.

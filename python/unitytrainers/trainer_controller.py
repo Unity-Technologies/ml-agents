@@ -12,7 +12,7 @@ import yaml
 from tensorflow.python.tools import freeze_graph
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
-from unitytrainers import School
+from unitytrainers import MetaCurriculum
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 
@@ -86,12 +86,12 @@ class TrainerController(object):
             self.env_name = 'editor_'+self.env.academy_name
         else:
             self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
-        self.school = School(self.curriculum_folder, self.env._resetParameters)
+        self.meta_curriculum = MetaCurriculum(self.curriculum_folder, self.env._resetParameters)
 
     def _get_progresses(self):
         if self.curriculum_folder is not None:
             brain_names_to_progresses = {}
-            for brain_name, curriculum in self.school.brains_to_curriculums.items():
+            for brain_name, curriculum in self.meta_curriculum.brains_to_curriculums.items():
                 if curriculum.measure == "progress":
                     progress = self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
                     brain_names_to_progresses[brain_name] = progress
@@ -213,7 +213,7 @@ class TrainerController(object):
 
     def start_learning(self):
         # TODO: Should be able to start learning at different lesson numbers for each curriculum.
-        self.school.set_all_curriculums_to_lesson_num(self.lesson)
+        self.meta_curriculum.set_all_curriculums_to_lesson_num(self.lesson)
         trainer_config = self._load_config()
         self._create_model_path(self.model_path)
 
@@ -236,16 +236,16 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            self.school.increment_lessons(self._get_progresses())
-            curr_info = self.env.reset(config=self.school.get_config(), train_mode=self.fast_simulation)
+            self.meta_curriculum.increment_lessons(self._get_progresses())
+            curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters', trainer.parameters)
             try:
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
-                        self.school.increment_lessons(self._get_progresses())
-                        curr_info = self.env.reset(config=self.school.get_config(), train_mode=self.fast_simulation)
+                        self.meta_curriculum.increment_lessons(self._get_progresses())
+                        curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
@@ -270,7 +270,7 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        trainer.write_summary(self.school.lesson_nums)
+                        trainer.write_summary(self.meta_curriculum.lesson_nums)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:
