@@ -473,7 +473,7 @@ class UnityEnvironment(object):
                 vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
                 text_action=[x.stored_text_actions for x in agent_info_list],
                 max_reached=[x.max_step_reached for x in agent_info_list],
-                masked_action=m_actions
+                action_mask=m_actions
                 )
         return _data, global_done
 

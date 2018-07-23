@@ -236,9 +236,9 @@ namespace MLAgents
                 {
                     for (int j = 0; j < brain.brainParameters.vectorActionSize; j++)
                     {
-                        if (agentInfo[agent].maskedActions != null)
+                        if (agentInfo[agent].actionMasks != null)
                         {
-                            maskedActions[i, j] = agentInfo[agent].maskedActions[j] ? 1.0f : 0.0f;
+                            maskedActions[i, j] = agentInfo[agent].actionMasks[j] ? 1.0f : 0.0f;
                         }
                         else
                         {

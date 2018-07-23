@@ -42,7 +42,7 @@ namespace MLAgents
         /// </summary>
         public string storedTextActions;
 
-        public bool[] maskedActions;
+        public bool[] actionMasks;
 
         /// <summary>
         /// Used by the Trainer to store information about the agent. This data
@@ -504,11 +504,7 @@ namespace MLAgents
             info.storedVectorActions = action.vectorActions;
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
-//            for (int i = 0; i < brain.brainParameters.vectorActionSize; i++)
-//            {
-//                info.maskedActions[i] = true;
-//            }
-            info.maskedActions = null;
+            info.actionMasks = null;
 
             CollectObservations();
 
@@ -591,7 +587,7 @@ namespace MLAgents
 
         }
 
-        protected void MaskDiscreteAction(bool[] mask)
+        protected void SetActionMask(bool[] mask)
         {
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
@@ -605,7 +601,7 @@ namespace MLAgents
                     "Invalid : Action mask bust have the same length as the number of possible " +
                     "actions.");
             }
-            info.maskedActions = mask;
+            info.actionMasks = mask;
         }
 
         /// <summary>

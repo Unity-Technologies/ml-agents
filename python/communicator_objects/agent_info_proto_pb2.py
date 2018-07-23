@@ -103,7 +103,7 @@ _AGENTINFOPROTO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='masked_actions', full_name='communicator_objects.AgentInfoProto.masked_actions', index=10,
+      name='action_masks', full_name='communicator_objects.AgentInfoProto.action_masks', index=10,
       number=11, type=8, cpp_type=7, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,

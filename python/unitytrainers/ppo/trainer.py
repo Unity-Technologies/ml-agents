@@ -183,7 +183,7 @@ class PPOTrainer(Trainer):
         if self.use_vector_obs:
             feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
         if not self.is_continuous_action:
-            feed_dict[self.model.masked_actions] = curr_brain_info.masked_actions
+            feed_dict[self.model.action_masks] = curr_brain_info.action_masks
 
         values = self.sess.run(self.inference_run_list, feed_dict=feed_dict)
         run_out = dict(zip(self.inference_run_list, values))
@@ -294,7 +294,7 @@ class PPOTrainer(Trainer):
                         actions_pre = stored_take_action_outputs[self.model.output_pre]
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
                     else:
-                        self.training_buffer[agent_id]['masked_actions'].append(stored_info.masked_actions[idx])
+                        self.training_buffer[agent_id]['action_masks'].append(stored_info.masked_actions[idx])
                     a_dist = stored_take_action_outputs[self.model.all_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
@@ -425,7 +425,7 @@ class PPOTrainer(Trainer):
                     feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).flatten()
                     if self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).flatten()
-                    feed_dict[self.model.masked_actions] = np.array(buffer['masked_actions'][start:end]).reshape(
+                    feed_dict[self.model.action_masks] = np.array(buffer['action_masks'][start:end]).reshape(
                         [-1, self.brain.vector_action_space_size]
                     )
                 if self.use_vector_obs:
