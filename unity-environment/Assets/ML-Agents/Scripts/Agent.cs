@@ -42,6 +42,8 @@ namespace MLAgents
         /// </summary>
         public string storedTextActions;
 
+        public bool[] actionMasks;
+
         /// <summary>
         /// Used by the Trainer to store information about the agent. This data
         /// structure is not consumed or modified by the agent directly, they are
@@ -512,6 +514,8 @@ namespace MLAgents
             info.storedVectorActions = action.vectorActions;
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
+            info.actionMasks = null;
+
             CollectObservations();
 
             BrainParameters param = brain.brainParameters;
@@ -593,6 +597,23 @@ namespace MLAgents
         public virtual void CollectObservations()
         {
 
+        }
+
+        protected void SetActionMask(bool[] mask)
+        {
+            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            {
+                throw new UnityAgentsException(
+                    "Invalid : Cannot set a mask for actions with Continuous Control.");
+            }
+
+            if (mask.Length != brain.brainParameters.vectorActionSize)
+            {
+                throw new UnityAgentsException(
+                    "Invalid : Action mask bust have the same length as the number of possible " +
+                    "actions.");
+            }
+            info.actionMasks = mask;
         }
 
         /// <summary>
