@@ -51,7 +51,11 @@ namespace MLAgents
 
             unityInput = UnityMessage.Parser.ParseFrom(Receive()).UnityInput;
 #if UNITY_EDITOR
+#if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+#else
+            EditorApplication.playmodeStateChanged += HandleOnPlayModeChanged;
+#endif
 #endif
             return initializationInput.UnityInput;
 
@@ -148,18 +152,32 @@ namespace MLAgents
         }
 
 #if UNITY_EDITOR
+#if UNITY_2017_2_OR_NEWER
         /// <summary>
         /// When the editor exits, the communicator must be closed
         /// </summary>
         /// <param name="state">State.</param>
-        void HandleOnPlayModeChanged(PlayModeStateChange state)
+        private void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
-            if (state == PlayModeStateChange.ExitingPlayMode)
+            if (state==PlayModeStateChange.ExitingPlayMode)
             {
                 Close();
             }
         }
+#else
+        /// <summary>
+        /// When the editor exits, the communicator must be closed
+        /// </summary>
+        private void HandleOnPlayModeChanged()
+        {
+            // This method is run whenever the playmode state is changed.
+            if (!EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Close();
+            }
+        }
+#endif
 #endif
 
     }
