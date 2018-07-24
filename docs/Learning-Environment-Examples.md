@@ -99,7 +99,7 @@ If you would like to contribute environments, please see our
     * -0.0025 for every step.
     * +1.0 if the block touches the goal.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 15 variables corresponding to position and velocities of agent, block, and goal.
+    * Vector Observation space: (Continuous) 70 variables corresponding to 14 ray-casts each detecting one of three possible objects (wall, goal, or block).
     * Vector Action space: (Continuous) Size of 2, corresponding to movement in X and Z directions.
     * Visual Observations (Optional): One first-person camera. Use `VisualPushBlock` scene.
 * Reset Parameters: None.
