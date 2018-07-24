@@ -92,6 +92,7 @@ if __name__ == '__main__':
     if env_path is None and num_runs > 1:
         raise TrainerError("It is not possible to launch more than one concurrent training session "
                            "when training from the editor")
+
     jobs = []
     for i in range(num_runs):
         p = multiprocessing.Process(target=run_training, args=(i,))
