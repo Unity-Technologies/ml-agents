@@ -10,7 +10,7 @@ task, such as moving toward an unobstructed goal, then the agent can easily lear
 accomplish the task. From there, we can slowly add to the difficulty of the task by
 increasing the size of the wall, until the agent can complete the initially
 near-impossible task of scaling the wall. We are including just such an environment with
-the ML-Agents toolkit 0.2, called Wall Jump.
+the ML-Agents toolkit 0.2, called __Wall Jump__.
 
 ![Wall](images/curriculum.png)
 
@@ -29,20 +29,28 @@ reinforcement learning will be able to accomplish tasks otherwise much more diff
 
 ## How-To
 
+Each Brain in an environment can have a corresponding curriculum. These
+curriculums are held in what we call a metacurriculum. A metacurriculum allows
+different brains to follow different curriculums within the same environment.
+
+### Specifying a Metacurriculum
+
+We first create a folder inside `python/curricula/` for the environment we want
+to use curriculum learning with. For example, if we were creating a metacurriculum
+for Wall Jump, we would create the folder `python/curricula/wall-jump/`. We will place
+our curriculums inside this folder.
+
+### Specifying a Curriculum
+
 In order to define a curriculum, the first step is to decide which
-parameters of the environment will vary. In the case of the Wall Area environment, what
+parameters of the environment will vary. In the case of the Wall Jump environment, what
 varies is the height of the wall. We define this as a `Reset Parameter` in the Academy
 object of our scene, and by doing so it becomes adjustable via the Python API. Rather
-than adjusting it by hand, we then create a simple JSON file which describes the
-structure of the curriculum. Within it we can set at what points in the training process
+than adjusting it by hand, we will create a simple JSON file which describes the
+structure of the curriculum. Within it, we can specify which points in the training process
 our wall height will change, either based on the percentage of training steps which have
 taken place, or what the average reward the agent has received in the recent past is.
-Finally, we have to use the reset parameter we defined and modify the environment from
-the agent's `AgentReset()` function.
-Once these are in place, we simply launch learn.py using the `–curriculum` flag to
-point to the JSON file, and PPO we will train using Curriculum Learning. Of course we can
-then keep track of the current lesson and progress via TensorBoard.
-
+Below is an example curriculum for the BigWallBrain in the Wall Jump environment.
 
 ```json
 {
@@ -53,8 +61,7 @@ then keep track of the current lesson and progress via TensorBoard.
     "parameters" :
     {
         "big_wall_min_height" : [0.0, 4.0, 6.0, 8.0],
-        "big_wall_max_height" : [4.0, 7.0, 8.0, 8.0],
-        "small_wall_height" : [1.5, 2.0, 2.5, 4.0]
+        "big_wall_max_height" : [4.0, 7.0, 8.0, 8.0]
     }
 }
 ```
@@ -69,3 +76,23 @@ incrementing the lesson.
     * If `true`, weighting will be 0.75 (new) 0.25 (old).
 * `parameters` (dictionary of key:string, value:float array) - Corresponds to academy reset parameters to control. Length of each array
 should be one greater than number of thresholds.
+
+
+Once our curriculum is defined, we have to use the reset parameters we defined and modify
+the environment from the agent's `AgentReset()` function. See
+[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/unity-environment/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
+for an example.
+
+We will save this file into our metacurriculum folder with the name of its
+corresponding Brain. For example, in the Wall Jump environment, there are
+two brains---BigWallBrain and SmallWallBrain. If we want to define a
+curriculum for the BigWallBrain, we will save `BigWallBrain.json` into
+`python/curricula/wall-jump/`.
+
+### Training with a Curriculum
+
+Once we have specified our metacurriculum and curriculums, we can launch `learn.py` using the `–curriculum`
+flag to point to the metacurriculum folder and PPO will train using Curriculum Learning. For example,
+to train agents in the Wall Jump environment with curriculum learning, we can run
+`python learn.py --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train`.
+We can then keep track of the current lessons and progresses via TensorBoard.
