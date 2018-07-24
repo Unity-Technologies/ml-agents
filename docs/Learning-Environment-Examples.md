@@ -28,7 +28,7 @@ If you would like to contribute environments, please see our
     * +0.1 for arriving at suboptimal state.
     * +1.0 for arriving at optimal state.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Discrete) One variable corresponding to current state.
+    * Vector Observation space: One variable corresponding to current state.
     * Vector Action space: (Discrete) Two possible actions (Move left, move right).
     * Visual Observations: None.
 * Reset Parameters: None
@@ -45,8 +45,8 @@ If you would like to contribute environments, please see our
     * +0.1 for every step the ball remains on the platform. 
     * -1.0 if the ball falls from the platform.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 8 variables corresponding to rotation of platform, and position, rotation, and velocity of ball.
-    * Vector Observation space (Hard Version): (Continuous) 5 variables corresponding to rotation of platform and position and rotation of ball.
+    * Vector Observation space: 8 variables corresponding to rotation of platform, and position, rotation, and velocity of ball.
+    * Vector Observation space (Hard Version): 5 variables corresponding to rotation of platform and position and rotation of ball.
     * Vector Action space: (Continuous) Size of 2, with one value corresponding to X-rotation, and the other to Z-rotation.
     * Visual Observations: None.
 * Reset Parameters: None
@@ -81,7 +81,7 @@ If you would like to contribute environments, please see our
     * +0.1 To agent when hitting ball over net.
     * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 8 variables corresponding to position and velocity of ball and racket.
+    * Vector Observation space: 8 variables corresponding to position and velocity of ball and racket.
     * Vector Action space: (Continuous) Size of 2, corresponding to movement toward net or away from net, and jumping.
     * Visual Observations: None.
 * Reset Parameters: One, corresponding to size of ball.
@@ -118,7 +118,7 @@ If you would like to contribute environments, please see our
     * +1.0 if the agent touches the goal.
     * -1.0 if the agent falls off the platform.
 * Brains: Two brains, each with the following observation/action space.
-    * Vector Observation space: (Continuous) 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
+    * Vector Observation space: 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
     * Vector Action space: (Discrete) Size of 74, corresponding to 14 raycasts each detecting 4 possible objects. plus the global position of the agent and whether or not the agent is grounded.
     * Visual Observations: None.
 * Reset Parameters: 4, corresponding to the height of the possible walls.
@@ -134,7 +134,7 @@ If you would like to contribute environments, please see our
 * Agent Reward Function (independent): 
     * +0.1 Each step agent's hand is in goal location.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm Rigidbodies.
+    * Vector Observation space: 26 variables corresponding to position, rotation, velocity, and angular velocities of the two arm Rigidbodies.
     * Vector Action space: (Continuous) Size of 4, corresponding to torque applicable to two joints. 
     * Visual Observations: None.
 * Reset Parameters: Two, corresponding to goal size, and goal movement speed.
@@ -153,7 +153,7 @@ If you would like to contribute environments, please see our
     * +0.03 times body velocity in the goal direction.
     * +0.01 times body direction alignment with goal direction.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 117 variables corresponding to position, rotation, velocity, and angular velocities of each limb plus the acceleration and angular acceleration of the body.
+    * Vector Observation space: 117 variables corresponding to position, rotation, velocity, and angular velocities of each limb plus the acceleration and angular acceleration of the body.
     * Vector Action space: (Continuous) Size of 20, corresponding to target rotations for joints. 
     * Visual Observations: None.
 * Reset Parameters: None
@@ -170,7 +170,7 @@ If you would like to contribute environments, please see our
     * +1 for interaction with yellow banana
     * -1 for interaction with blue banana.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 53 corresponding to velocity of agent (2), whether agent is frozen and/or shot its laser (2), plus ray-based perception of objects around agent's forward direction (49; 7 raycast angles with 7 measurements for each).
+    * Vector Observation space: 53 corresponding to velocity of agent (2), whether agent is frozen and/or shot its laser (2), plus ray-based perception of objects around agent's forward direction (49; 7 raycast angles with 7 measurements for each).
     * Vector Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
     * Visual Observations (Optional): First-person camera per-agent. Use `VisualBanana` scene. 
 * Reset Parameters: None.
@@ -189,7 +189,7 @@ If you would like to contribute environments, please see our
     * -0.1 For moving to incorrect goal.
     * -0.0003 Existential penalty.
 * Brains: One brain with the following observation/action space:
-    * Vector Observation space: (Continuous) 30 corresponding to local ray-casts detecting objects, goals, and walls.
+    * Vector Observation space: 30 corresponding to local ray-casts detecting objects, goals, and walls.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
     * Visual Observations (Optional): First-person view for the agent. Use `VisualHallway` scene.
 * Reset Parameters: None.
@@ -208,7 +208,7 @@ If you would like to contribute environments, please see our
     * -1 For bouncing out of bounds.
     * -0.05 Times the action squared. Energy expenditure penalty.
 * Brains: One brain with the following observation/action space:
-    * Vector Observation space: (Continuous) 6 corresponding to local position of agent and banana.
+    * Vector Observation space: 6 corresponding to local position of agent and banana.
     * Vector Action space: (Continuous) 3 corresponding to agent force applied for the jump.
     * Visual Observations: None.
 * Reset Parameters: None.
@@ -233,7 +233,7 @@ If you would like to contribute environments, please see our
         * +0.1 When ball enters opponents goal.
         * +0.001 Existential bonus.
 * Brains: Two brain with the following observation/action space:
-    * Vector Observation space: (Continuous) 112 corresponding to local 14 ray casts, each detecting 7 possible object types, along with the object's distance. Perception is in 180 degree view from front of agent.
+    * Vector Observation space: 112 corresponding to local 14 ray casts, each detecting 7 possible object types, along with the object's distance. Perception is in 180 degree view from front of agent.
     * Vector Action space: (Discrete) 
         * Striker: 6 corresponding to forward, backward, sideways movement, as well as rotation.
         * Goalie: 4 corresponding to forward, backward, sideways movement.
@@ -254,7 +254,7 @@ If you would like to contribute environments, please see our
     * +0.01 times body direction alignment with goal direction.
     * -0.01 times head velocity difference from body velocity.
 * Brains: One brain with the following observation/action space.
-    * Vector Observation space: (Continuous) 215 variables corresponding to position, rotation, velocity, and angular velocities of each limb, along with goal direction.
+    * Vector Observation space: 215 variables corresponding to position, rotation, velocity, and angular velocities of each limb, along with goal direction.
     * Vector Action space: (Continuous) Size of 39, corresponding to target rotations applicable to the joints. 
     * Visual Observations: None.
 * Reset Parameters: None.
@@ -270,7 +270,7 @@ If you would like to contribute environments, please see our
 * Agent Reward Function (independent):
     * +2 For moving to golden brick (minus 0.001 per step).
 * Brains: One brain with the following observation/action space:
-    * Vector Observation space: (Continuous) 148 corresponding to local ray-casts detecting switch, bricks, golden brick, and walls, plus variable indicating switch state.
+    * Vector Observation space: 148 corresponding to local ray-casts detecting switch, bricks, golden brick, and walls, plus variable indicating switch state.
     * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
     * Visual Observations (Optional): First-person camera per-agent. Use `VisualPyramids` scene. 
 * Reset Parameters: None.

@@ -28,7 +28,7 @@ namespace MLAgents
         /// <param name="communicatorParameters">Communicator parameters.</param>
         public RPCCommunicator(CommunicatorParameters communicatorParameters)
         {
-            this.m_communicatorParameters = communicatorParameters;
+            m_communicatorParameters = communicatorParameters;
         }
 
         /// <summary>

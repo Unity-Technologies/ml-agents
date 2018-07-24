@@ -68,8 +68,8 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityOutput(UnityOutput other) : this() {
-      RlOutput = other.rlOutput_ != null ? other.RlOutput.Clone() : null;
-      RlInitializationOutput = other.rlInitializationOutput_ != null ? other.RlInitializationOutput.Clone() : null;
+      rlOutput_ = other.rlOutput_ != null ? other.rlOutput_.Clone() : null;
+      rlInitializationOutput_ = other.rlInitializationOutput_ != null ? other.rlInitializationOutput_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 

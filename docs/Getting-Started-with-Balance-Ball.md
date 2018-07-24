@@ -108,11 +108,8 @@ when you embed the trained model in the Unity application, you will change the
 **Vector Observation Space**
 
 Before making a decision, an agent collects its observation about its state 
-in the world. The ML-Agents toolkit classifies vector observations into two types:
-**Continuous** and **Discrete**. The **Continuous** vector observation space 
-collects observations in a vector of floating point numbers. The **Discrete** 
-vector observation space is an index into a table of states. Most of the example
-environments use a continuous vector observation space. 
+in the world. The vector observation is a vector of floating point numbers
+which contain relevant information for the agent to make decisions. 
 
 The Brain instance used in the 3D Balance Ball example uses the **Continuous** 
 vector observation space with a **State Size** of 8. This means that the 

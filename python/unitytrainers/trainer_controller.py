@@ -12,6 +12,7 @@ import yaml
 from tensorflow.python.tools import freeze_graph
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
+from unitytrainers import Curriculum
 from unityagents import UnityEnvironment, UnityEnvironmentException
 
 
@@ -79,22 +80,22 @@ class TrainerController(object):
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
-                                    curriculum=self.curriculum_file, seed=self.seed,
-                                    docker_training=self.docker_training,
+                                    seed=self.seed, docker_training=self.docker_training,
                                     no_graphics=no_graphics)
         if env_path is None:
             self.env_name = 'editor_'+self.env.academy_name
         else:
             self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
+        self.curriculum = Curriculum(curriculum_file, self.env._resetParameters)
 
     def _get_progress(self):
         if self.curriculum_file is not None:
             progress = 0
-            if self.env.curriculum.measure_type == "progress":
+            if self.curriculum.measure_type == "progress":
                 for brain_name in self.env.external_brain_names:
                     progress += self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
                 return progress / len(self.env.external_brain_names)
-            elif self.env.curriculum.measure_type == "reward":
+            elif self.curriculum.measure_type == "reward":
                 for brain_name in self.env.external_brain_names:
                     progress += self.trainers[brain_name].get_last_reward
                 return progress
@@ -212,7 +213,7 @@ class TrainerController(object):
                                             .format(model_path))
 
     def start_learning(self):
-        self.env.curriculum.set_lesson_number(self.lesson)
+        self.curriculum.set_lesson_number(self.lesson)
         trainer_config = self._load_config()
         self._create_model_path(self.model_path)
 
@@ -235,16 +236,16 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            self.env.curriculum.increment_lesson(self._get_progress())
-            curr_info = self.env.reset(train_mode=self.fast_simulation)
+            self.curriculum.increment_lesson(self._get_progress())
+            curr_info = self.env.reset(config=self.curriculum.get_config(), train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters', trainer.parameters)
             try:
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
-                        self.env.curriculum.increment_lesson(self._get_progress())
-                        curr_info = self.env.reset(train_mode=self.fast_simulation)
+                        self.curriculum.increment_lesson(self._get_progress())
+                        curr_info = self.env.reset(config=self.curriculum.get_config(), train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
@@ -263,7 +264,7 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        trainer.write_summary(self.env.curriculum.lesson_number)
+                        trainer.write_summary(self.curriculum.lesson_number)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:

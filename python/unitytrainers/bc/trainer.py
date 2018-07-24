@@ -54,10 +54,7 @@ class BehavioralCloningTrainer(Trainer):
 
         self.training_buffer = Buffer()
         self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.is_continuous_observation = (env.brains[brain_name].vector_observation_space_type == "continuous")
         self.use_visual_observations = (env.brains[brain_name].number_visual_observations > 0)
-        if self.use_visual_observations:
-            logger.info('Cannot use observations with imitation learning')
         self.use_vector_observations = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
@@ -292,12 +289,8 @@ class BehavioralCloningTrainer(Trainer):
             else:
                 feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).reshape([-1])
             if self.use_vector_observations:
-                if not self.is_continuous_observation:
-                    feed_dict[self.model.vector_in] = np.array(_buffer['vector_observations'][start:end])\
-                        .reshape([-1, self.brain.num_stacked_vector_observations])
-                else:
-                    feed_dict[self.model.vector_in] = np.array(_buffer['vector_observations'][start:end])\
-                        .reshape([-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
+                feed_dict[self.model.vector_in] = np.array(_buffer['vector_observations'][start:end])\
+                    .reshape([-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
             if self.use_visual_observations:
                 for i, _ in enumerate(self.model.visual_in):
                     _obs = np.array(_buffer['visual_observations%d' % i][start:end])
