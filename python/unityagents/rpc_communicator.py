@@ -18,7 +18,6 @@ class UnityToExternalServicerImplementation(UnityToExternalServicer):
     def __init__(self):
         self.parent_conn, self.child_conn = Pipe()
 
-
     def Initialize(self, request, context):
         self.child_conn.send(request)
         return self.child_conn.recv()
