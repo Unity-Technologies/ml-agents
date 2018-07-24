@@ -25,14 +25,14 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci1jb21tdW5pY2F0b3Jfb2JqZWN0cy9hZ2VudF9hY3Rpb25fcHJvdG8ucHJv",
-            "dG8SFGNvbW11bmljYXRvcl9vYmplY3RzIlIKEEFnZW50QWN0aW9uUHJvdG8S",
+            "dG8SFGNvbW11bmljYXRvcl9vYmplY3RzImEKEEFnZW50QWN0aW9uUHJvdG8S",
             "FgoOdmVjdG9yX2FjdGlvbnMYASADKAISFAoMdGV4dF9hY3Rpb25zGAIgASgJ",
-            "EhAKCG1lbW9yaWVzGAMgAygCQh+qAhxNTEFnZW50cy5Db21tdW5pY2F0b3JP",
-            "YmplY3RzYgZwcm90bzM="));
+            "EhAKCG1lbW9yaWVzGAMgAygCEg0KBXZhbHVlGAQgASgCQh+qAhxNTEFnZW50",
+            "cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentActionProto), global::MLAgents.CommunicatorObjects.AgentActionProto.Parser, new[]{ "VectorActions", "TextActions", "Memories" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentActionProto), global::MLAgents.CommunicatorObjects.AgentActionProto.Parser, new[]{ "VectorActions", "TextActions", "Memories", "Value" }, null, null, null)
           }));
     }
     #endregion
@@ -67,6 +67,7 @@ namespace MLAgents.CommunicatorObjects {
       vectorActions_ = other.vectorActions_.Clone();
       textActions_ = other.textActions_;
       memories_ = other.memories_.Clone();
+      value_ = other.value_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -106,6 +107,17 @@ namespace MLAgents.CommunicatorObjects {
       get { return memories_; }
     }
 
+    /// <summary>Field number for the "value" field.</summary>
+    public const int ValueFieldNumber = 4;
+    private float value_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float Value {
+      get { return value_; }
+      set {
+        value_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as AgentActionProto);
@@ -122,6 +134,7 @@ namespace MLAgents.CommunicatorObjects {
       if(!vectorActions_.Equals(other.vectorActions_)) return false;
       if (TextActions != other.TextActions) return false;
       if(!memories_.Equals(other.memories_)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Value, other.Value)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -131,6 +144,7 @@ namespace MLAgents.CommunicatorObjects {
       hash ^= vectorActions_.GetHashCode();
       if (TextActions.Length != 0) hash ^= TextActions.GetHashCode();
       hash ^= memories_.GetHashCode();
+      if (Value != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Value);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -150,6 +164,10 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteString(TextActions);
       }
       memories_.WriteTo(output, _repeated_memories_codec);
+      if (Value != 0F) {
+        output.WriteRawTag(37);
+        output.WriteFloat(Value);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -163,6 +181,9 @@ namespace MLAgents.CommunicatorObjects {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(TextActions);
       }
       size += memories_.CalculateSize(_repeated_memories_codec);
+      if (Value != 0F) {
+        size += 1 + 4;
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -179,6 +200,9 @@ namespace MLAgents.CommunicatorObjects {
         TextActions = other.TextActions;
       }
       memories_.Add(other.memories_);
+      if (other.Value != 0F) {
+        Value = other.Value;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -202,6 +226,10 @@ namespace MLAgents.CommunicatorObjects {
           case 26:
           case 29: {
             memories_.AddEntriesFrom(input, _repeated_memories_codec);
+            break;
+          }
+          case 37: {
+            Value = input.ReadFloat();
             break;
           }
         }

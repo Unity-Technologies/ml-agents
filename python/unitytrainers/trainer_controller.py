@@ -116,7 +116,7 @@ class TrainerController(object):
                 if self.trainers[brain_name].parameters["trainer"] == "imitation":
                     nodes += [scope + x for x in ["action"]]
                 else:
-                    nodes += [scope + x for x in ["action", "value_estimate", "action_probs"]]
+                    nodes += [scope + x for x in ["action", "value_estimate", "action_probs", "value_estimate"]]
                 if self.trainers[brain_name].parameters["use_recurrent"]:
                     nodes += [scope + x for x in ["recurrent_out", "memory_size"]]
         if len(scopes) > 1:
@@ -249,14 +249,20 @@ class TrainerController(object):
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
-                    take_action_vector, take_action_memories, take_action_text, take_action_outputs = {}, {}, {}, {}
+                    take_action_vector, \
+                    take_action_memories, \
+                    take_action_text, \
+                    take_action_value, \
+                    take_action_outputs \
+                        = {}, {}, {}, {}, {}
                     for brain_name, trainer in self.trainers.items():
                         (take_action_vector[brain_name],
                          take_action_memories[brain_name],
                          take_action_text[brain_name],
+                         take_action_value,
                          take_action_outputs[brain_name]) = trainer.take_action(curr_info)
                     new_info = self.env.step(vector_action=take_action_vector, memory=take_action_memories,
-                                             text_action=take_action_text)
+                                             text_action=take_action_text, value=take_action_value)
                     for brain_name, trainer in self.trainers.items():
                         trainer.add_experiences(curr_info, new_info, take_action_outputs[brain_name])
                         trainer.process_experiences(curr_info, new_info)

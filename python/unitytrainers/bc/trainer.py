@@ -151,10 +151,10 @@ class BehavioralCloningTrainer(Trainer):
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
             feed_dict[self.model.memory_in] = agent_brain.memories
             agent_action, memories = self.sess.run(self.inference_run_list, feed_dict)
-            return agent_action, memories, None, None
+            return agent_action, memories, None, None, None
         else:
             agent_action = self.sess.run(self.inference_run_list, feed_dict)
-        return agent_action, None, None, None
+        return agent_action, None, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
         """
