@@ -39,7 +39,7 @@ class MetaCurriculum(object):
     def lesson_nums(self):
         """A dict from brain name to the brain's curriculum's lesson number."""
         lesson_nums = {}
-        for brain_name, curriculum in self.brains_to_curriculums:
+        for brain_name, curriculum in self.brains_to_curriculums.items():
             lesson_nums[brain_name] = curriculum.lesson_num
 
         return lesson_nums
