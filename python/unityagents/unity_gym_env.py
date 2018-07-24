@@ -19,10 +19,10 @@ def multi_agent_check(info):
 
 
 class UnityEnv(gym.Env):
-    def __init__(self, environment_filename: str, worker_id = 0, default_visual = True):
+    def __init__(self, environment_filename: str, worker_id=0, default_visual=True):
         """
         Environment initialization
-        :param unity_environment: The UnityEnvironment to be wrapped for gym
+        :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym
         """
         self._env = UnityEnvironment(environment_filename, worker_id)
         self.name = self._env.academy_name
@@ -68,7 +68,7 @@ class UnityEnv(gym.Env):
             observation (object): agent's observation of the current environment
             reward (float) : amount of reward returned after previous action
             done (boolean): whether the episode has ended.
-            info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
+            info (dict): contains auxiliary diagnostic information.
         """
         info = self._env.step(action)[self.brain_name]
         multi_agent_check(info)
@@ -77,8 +77,8 @@ class UnityEnv(gym.Env):
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
-        return default_observation, info.rewards[0], info.local_done[0], {"text_observation": info.text_observations[0],
-                                                                          "brain_info": info}
+        return default_observation, info.rewards[0], \
+               info.local_done[0], {"text_observation": info.text_observations[0], "brain_info": info}
 
     def reset(self):
         """Resets the state of the environment and returns an initial observation.
