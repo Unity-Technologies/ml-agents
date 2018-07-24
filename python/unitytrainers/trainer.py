@@ -151,7 +151,6 @@ class Trainer(object):
                     stat_mean = float(np.mean(self.stats[key]))
                     summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
                     self.stats[key] = []
-            # summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
             self.write_tensorboard_text('LessonNumbers', lesson_nums)
             self.summary_writer.add_summary(summary, self.get_step)
             self.summary_writer.flush()
