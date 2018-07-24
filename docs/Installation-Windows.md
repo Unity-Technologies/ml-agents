@@ -1,12 +1,12 @@
-# Installing ML-Agents for Windows
+# Installing ML-Agents Toolkit for Windows
 
-ML-Agents supports Windows 10. While it might be possible to run ML-Agents using other versions of Windows, it has not been tested on other versions. Furthermore, ML-Agents has not been tested on a Windows VM such as Bootcamp or Parallels.
+The ML-Agents toolkit supports Windows 10. While it might be possible to run the ML-Agents toolkit using other versions of Windows, it has not been tested on other versions. Furthermore, the ML-Agents toolkit has not been tested on a Windows VM such as Bootcamp or Parallels.
 
-To use ML-Agents, you install Python and the required Python packages as outlined below. This guide also covers how set up GPU-based training (for advanced users). GPU-based training is not required for the v0.4 release of ML-Agents. However, training on a GPU might be required by future versions and features.
+To use the ML-Agents toolkit, you install Python and the required Python packages as outlined below. This guide also covers how set up GPU-based training (for advanced users). GPU-based training is not required for the v0.4 release of the ML-Agents toolkit. However, training on a GPU might be required by future versions and features.
 
 ## Step 1: Install Python via Anaconda
 
-[Download](https://www.anaconda.com/download/#windows) and install Anaconda for Windows. By using Anaconda, you can manage separate environments for different distributions of Python. Python 3 is required as we no longer support Python 2. In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
+[Download](https://www.anaconda.com/download/#windows) and install Anaconda for Windows. By using Anaconda, you can manage separate environments for different distributions of Python. Python 3.5 or 3.6 is required as we no longer support Python 2. In this guide, we are using Python version 3.6 and Anaconda version 5.1 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe) or [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe) direct links).
 
 <p align="center">
     <img src="images/anaconda_install.PNG" 
@@ -47,7 +47,7 @@ Double click "Path" under __System variable__ to edit the "Path" variable, click
 
 ## Step 2: Setup and Activate a New Conda Environment
 
-You will create a new [Conda environment](https://conda.io/docs/) to be used with ML-Agents. This means that all the packages that you install are localized to just this environment. It will not affect any other installation of Python or other environments. Whenever you want to run ML-Agents, you will need activate this Conda environment.
+You will create a new [Conda environment](https://conda.io/docs/) to be used with the ML-Agents toolkit. This means that all the packages that you install are localized to just this environment. It will not affect any other installation of Python or other environments. Whenever you want to run ML-Agents, you will need activate this Conda environment.
 
 To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_ in the search bar) and type in the following command:
 
@@ -71,7 +71,7 @@ activate ml-agents
 
 You should see `(ml-agents)` prepended on the last line.
 
-Next, install `tensorflow`. Install this package using `pip` - which is a package management system used to install Python packages. Latest versions of Tensorflow won't work, so you will need to make sure that you install version 1.4.0. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
+Next, install `tensorflow`. Install this package using `pip` - which is a package management system used to install Python packages. Latest versions of Tensorflow won't work, so you will need to make sure that you install version 1.7.1. In the same Anaconda Prompt, type in the following command _(make sure you are connected to the internet)_:
 
 ```
 pip install tensorflow==1.7.1
@@ -79,9 +79,9 @@ pip install tensorflow==1.7.1
 
 ## Step 3: Install Required Python Packages
 
-ML-Agents depends on a number of Python packages. Use `pip` to install these Python dependencies.
+The ML-Agents toolkit depends on a number of Python packages. Use `pip` to install these Python dependencies.
 
-If you haven't already, clone the ML-Agents Github repository to your local computer. You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in an Anaconda Prompt _(if you open a new prompt, be sure to activate the ml-agents Conda environment by typing `activate ml-agents`)_:
+If you haven't already, clone the ML-Agents Toolkit Github repository to your local computer. You can do this using Git ([download here](https://git-scm.com/download/win)) and running the following commands in an Anaconda Prompt _(if you open a new prompt, be sure to activate the ml-agents Conda environment by typing `activate ml-agents`)_:
 
 ```
 git clone https://github.com/Unity-Technologies/ml-agents.git
@@ -89,7 +89,7 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 
 If you don't want to use Git, you can always directly download all the files [here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
 
-In our example, the files are located in `C:\Downloads`. After you have either cloned or downloaded the files, from the Anaconda Prompt, change to the python directory inside the ML-agents directory:
+In our example, the files are located in `C:\Downloads`. After you have either cloned or downloaded the files, from the Anaconda Prompt, change to the python directory inside the ml-agents directory:
 
 ```
 cd C:\Downloads\ml-agents\python
@@ -99,20 +99,19 @@ Make sure you are connected to the internet and then type in the Anaconda Prompt
 
 ```
 pip install .
-
 ```
 
-This will complete the installation of all the required Python packages to run ML-Agents.
+This will complete the installation of all the required Python packages to run the ML-Agents toolkit.
 
-## (Optional) Step 4: GPU Training using ML-Agents 
+## (Optional) Step 4: GPU Training using The ML-Agents Toolkit
 
-GPU is not required for ML-Agents and won't speed up the PPO algorithm a lot during training(but something in the future will benefit from GPU). This is a guide for advanced users who want to train using GPUs. Additionally, you will need to check if your GPU is CUDA compatible. Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
+GPU is not required for the ML-Agents toolkit and won't speed up the PPO algorithm a lot during training(but something in the future will benefit from GPU). This is a guide for advanced users who want to train using GPUs. Additionally, you will need to check if your GPU is CUDA compatible. Please check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
-As of ML-Agents v0.4, only CUDA v9.0 and cuDNN v7.0.5 is supported.
+As of the ML-Agents toolkit v0.4, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
 ### Install Nvidia CUDA toolkit
 
-[Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the CUDA toolkit 9.0 from Nvidia's archive. The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ (Step Visual Studio 2017) compiler and a runtime library and is needed to run ML-Agents. In this guide, we are using version 9.0.176 (https://developer.nvidia.com/compute/cuda/9.0/Prod/network_installers/cuda_9.0.176_win10_network-exe)).
+[Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the CUDA toolkit 9.0 from Nvidia's archive. The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ (Step Visual Studio 2017) compiler and a runtime library and is needed to run the ML-Agents toolkit. In this guide, we are using version 9.0.176 (https://developer.nvidia.com/compute/cuda/9.0/Prod/network_installers/cuda_9.0.176_win10_network-exe)).
 
 Before installing, please make sure you __close any running instances of Unity or Visual Studio__.
 

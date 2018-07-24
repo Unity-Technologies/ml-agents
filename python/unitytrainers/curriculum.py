@@ -1,6 +1,6 @@
 import json
 
-from .exception import UnityEnvironmentException
+from .exception import CurriculumError
 
 import logging
 
@@ -24,27 +24,27 @@ class Curriculum(object):
                 with open(location) as data_file:
                     self.data = json.load(data_file)
             except IOError:
-                raise UnityEnvironmentException(
+                raise CurriculumError(
                     "The file {0} could not be found.".format(location))
             except UnicodeDecodeError:
-                raise UnityEnvironmentException("There was an error decoding {}".format(location))
+                raise CurriculumError("There was an error decoding {}".format(location))
             self.smoothing_value = 0
             for key in ['parameters', 'measure', 'thresholds',
                         'min_lesson_length', 'signal_smoothing']:
                 if key not in self.data:
-                    raise UnityEnvironmentException("{0} does not contain a "
+                    raise CurriculumError("{0} does not contain a "
                                                     "{1} field.".format(location, key))
             parameters = self.data['parameters']
             self.measure_type = self.data['measure']
             self.max_lesson_number = len(self.data['thresholds'])
             for key in parameters:
                 if key not in default_reset_parameters:
-                    raise UnityEnvironmentException(
+                    raise CurriculumError(
                         "The parameter {0} in Curriculum {1} is not present in "
                         "the Environment".format(key, location))
             for key in parameters:
                 if len(parameters[key]) != self.max_lesson_number + 1:
-                    raise UnityEnvironmentException(
+                    raise CurriculumError(
                         "The parameter {0} in Curriculum {1} must have {2} values "
                         "but {3} were found".format(key, location,
                                                     self.max_lesson_number + 1, len(parameters[key])))
@@ -64,7 +64,7 @@ class Curriculum(object):
 
     def increment_lesson(self, progress):
         """
-        Increments the lesson number depending on the progree given.
+        Increments the lesson number depending on the progress given.
         :param progress: Measure of progress (either reward or percentage steps completed).
         """
         if self.data is None or progress is None:

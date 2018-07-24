@@ -1,6 +1,6 @@
 # Python API
 
-ML-Agents provides a Python API for controlling the agent simulation loop of a environment or game built with Unity. This API is used by the ML-Agent training algorithms (run with `learn.py`), but you can also write your Python programs using this API. 
+The ML-Agents toolkit provides a Python API for controlling the agent simulation loop of a environment or game built with Unity. This API is used by the ML-Agent training algorithms (run with `learn.py`), but you can also write your Python programs using this API. 
 
 The key objects in the Python API include:
 

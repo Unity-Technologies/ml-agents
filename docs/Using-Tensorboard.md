@@ -1,6 +1,6 @@
 # Using TensorBoard to Observe Training
 
-ML-Agents saves statistics during learning session that you can view with a TensorFlow utility named, [TensorBoard](https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard).
+The ML-Agents toolkit saves statistics during learning session that you can view with a TensorFlow utility named, [TensorBoard](https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard).
 
 The `learn.py` program saves training statistics to a folder named `summaries`, organized by the `run-id` value you assign to a training session.
 
@@ -21,7 +21,7 @@ On the left side of the TensorBoard window, you can select which of the training
  
 When you run the training program, `learn.py`, you can use the `--save-freq` option to specify how frequently to save the statistics.
 
-## ML-Agents training statistics
+## The ML-Agents toolkit training statistics
 
 The ML-agents training program saves the following statistics:
 

@@ -8,7 +8,7 @@ In this example, we will train a ball to roll to a randomly placed cube. The bal
 
 ## Overview
 
-Using ML-Agents in a Unity project involves the following basic steps:
+Using the ML-Agents toolkit in a Unity project involves the following basic steps:
 
 1. Create an environment for your agents to live in. An environment can range from a simple physical simulation containing a few objects to an entire game or ecosystem.
 2. Implement an Academy subclass and add it to a GameObject in the Unity scene containing the environment. This GameObject will serve as the parent for any Brain objects in the scene. Your Academy class can implement a few optional methods to update the scene independently of any agents. For example, you can add, move, or delete agents and other entities in the environment.
