@@ -1,4 +1,4 @@
-# Setting up a Custom Instance on Microsoft Azure for Training
+# Setting up a Custom Instance on Microsoft Azure for Training (works with the ML-Agents toolkit v0.3)
 
 This page contains instructions for setting up a custom Virtual Machine on Microsoft Azure so you can running ML-Agents training in the cloud.
 

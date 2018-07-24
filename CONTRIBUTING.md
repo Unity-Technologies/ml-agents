@@ -1,7 +1,7 @@
 # Contribution Guidelines
 
-Thank you for your interest in contributing to ML-Agents! We are incredibly
-excited to see how members of our community will use and extend ML-Agents.
+Thank you for your interest in contributing to the ML-Agents toolkit! We are incredibly
+excited to see how members of our community will use and extend the ML-Agents toolkit.
 To facilitate your contributions, we've outlined a brief set of guidelines
 to ensure that your extensions can be easily integrated.
 
@@ -11,7 +11,7 @@ First, please read through our [code of conduct](CODE_OF_CONDUCT.md),
 as we expect all our contributors to follow it.
 
 Second, before starting on a project that you intend to contribute
-to ML-Agents (whether environments or modifications to the codebase), 
+to the ML-Agents toolkit (whether environments or modifications to the codebase), 
 we **strongly** recommend posting on our 
 [Issues page](https://github.com/Unity-Technologies/ml-agents/issues) and
 briefly outlining the changes you plan to make. This will enable us to provide
