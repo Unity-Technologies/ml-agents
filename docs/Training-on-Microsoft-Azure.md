@@ -1,4 +1,4 @@
-# Training on Microsoft Azure
+# Training on Microsoft Azure (works with ML-Agents toolkit v0.3)
 
 This page contains instructions for setting up training on Microsoft Azure through either [Azure Container Instances](https://azure.microsoft.com/services/container-instances/) or Virtual Machines. Non "headless" training has not yet been tested to verify support. 
 
@@ -78,4 +78,4 @@ Once you have started training, you can [use Tensorboard to observe the training
 
 ## Running on Azure Container Instances
 
-[Azure Container Instances](https://azure.microsoft.com/services/container-instances/) allow you to spin up a container, on demand, that will run your training and then be shut down.  This ensures you aren't leaving a billable VM running when it isn't needed.  You can read more about [ML-Agents support for Docker containers here](Using-Docker.md).  Using ACI enables you to offload training of your models without needing to install Python and Tensorflow on your own computer.  You can find [instructions, including a pre-deployed image in DockerHub for you to use, available here](https://github.com/druttka/unity-ml-on-azure).
+[Azure Container Instances](https://azure.microsoft.com/services/container-instances/) allow you to spin up a container, on demand, that will run your training and then be shut down.  This ensures you aren't leaving a billable VM running when it isn't needed.  You can read more about [The ML-Agents toolkit support for Docker containers here](Using-Docker.md).  Using ACI enables you to offload training of your models without needing to install Python and Tensorflow on your own computer.  You can find [instructions, including a pre-deployed image in DockerHub for you to use, available here](https://github.com/druttka/unity-ml-on-azure).

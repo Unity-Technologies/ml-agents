@@ -8,7 +8,6 @@ import subprocess
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
-from .curriculum import Curriculum
 
 from communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto,\
     EnvironmentParametersProto, UnityRLInitializationInput, UnityRLInitializationOutput,\
@@ -27,8 +26,8 @@ logger = logging.getLogger("unityagents")
 
 class UnityEnvironment(object):
     def __init__(self, file_name=None, worker_id=0,
-                 base_port=5005, curriculum=None,
-                 seed=0, docker_training=False, no_graphics=False):
+                 base_port=5005, seed=0,
+                 docker_training=False, no_graphics=False):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -100,15 +99,10 @@ class UnityEnvironment(object):
         self._num_brains = len(self._brain_names)
         self._num_external_brains = len(self._external_brain_names)
         self._resetParameters = dict(aca_params.environment_parameters.float_parameters) # TODO
-        self._curriculum = Curriculum(curriculum, self._resetParameters)
         logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
         if self._num_external_brains == 0:
             logger.warning(" No External Brains found in the Unity Environment. "
                            "You will not be able to pass actions to your agent(s).")
-
-    @property
-    def curriculum(self):
-        return self._curriculum
 
     @property
     def logfile_path(self):
@@ -223,26 +217,22 @@ class UnityEnvironment(object):
         # return SocketCommunicator(worker_id, base_port)
 
     def __str__(self):
-        _new_reset_param = self._curriculum.get_config()
-        for k in _new_reset_param:
-            self._resetParameters[k] = _new_reset_param[k]
         return '''Unity Academy name: {0}
         Number of Brains: {1}
         Number of External Brains : {2}
-        Lesson number : {3}
-        Reset Parameters :\n\t\t{4}'''.format(self._academy_name, str(self._num_brains),
-                                 str(self._num_external_brains), self._curriculum.get_lesson_number,
-                                  "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
+        Reset Parameters :\n\t\t{3}'''.format(self._academy_name, str(self._num_brains),
+                                 str(self._num_external_brains),
+                                 "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
                                          for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-    def reset(self, train_mode=True, config=None, lesson=None) -> AllBrainInfo:
+    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A Data structure corresponding to the initial reset state of the environment.
         """
         if config is None:
-            config = self._curriculum.get_config(lesson)
+            config = self._resetParameters
         elif config != {}:
             logger.info("\nAcademy Reset with parameters : \t{0}"
                         .format(', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))

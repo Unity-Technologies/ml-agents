@@ -10,7 +10,7 @@ using UnityEditor;
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
  * 
- * ML-Agents contains five entities: Academy, Brain, Agent, Communicator and
+ * The ML-Agents toolkit contains five entities: Academy, Brain, Agent, Communicator and
  * Python API. The academy, and all its brains and connected agents live within
  * a learning environment (herin called Environment), while the communicator
  * manages the communication between the learning environment and the Python
