@@ -85,7 +85,8 @@ class PPOTrainer(Trainer):
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
         self.episode_steps = {}
-        self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
+        # self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
+        self.is_continuous_action = False
         self.use_visual_obs = (env.brains[brain_name].number_visual_observations > 0)
         self.use_vector_obs = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
@@ -185,7 +186,6 @@ class PPOTrainer(Trainer):
 
         values = self.sess.run(self.inference_run_list, feed_dict=feed_dict)
         run_out = dict(zip(self.inference_run_list, values))
-
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
         self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
@@ -452,12 +452,12 @@ class PPOTrainer(Trainer):
                              self.model.old_value: np.array(buffer['value_estimates'][start:end]).flatten(),
                              self.model.advantage: np.array(buffer['advantages'][start:end]).reshape([-1, 1]),
                              self.model.all_old_probs: np.array(buffer['action_probs'][start:end]).reshape(
-                                 [-1, self.brain.vector_action_space_size])}
+                                 [-1, 11])}
                 if self.is_continuous_action:
                     feed_dict[self.model.output_pre] = np.array(buffer['actions_pre'][start:end]).reshape(
                         [-1, self.brain.vector_action_space_size])
                 else:
-                    feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).flatten()
+                    feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).reshape([-1, 4])
                     if self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).flatten()
                 if self.use_vector_obs:

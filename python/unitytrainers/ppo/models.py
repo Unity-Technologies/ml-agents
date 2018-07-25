@@ -30,11 +30,12 @@ class PPOModel(LearningModel):
         if num_layers < 1:
             num_layers = 1
         self.last_reward, self.new_reward, self.update_reward = self.create_reward_encoder()
-        if brain.vector_action_space_type == "continuous":
-            self.create_cc_actor_critic(h_size, num_layers)
-            self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
-        else:
-            self.create_dc_actor_critic(h_size, num_layers)
+        self.create_mdc_actor_critic(h_size, num_layers)
+        # if brain.vector_action_space_type == "continuous":
+        #     self.create_mdc_actor_critic(h_size, num_layers)
+        #     self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
+        # else:
+        #     self.create_dc_actor_critic(h_size, num_layers)
         if self.use_curiosity:
             self.curiosity_enc_size = curiosity_enc_size
             self.curiosity_strength = curiosity_strength
