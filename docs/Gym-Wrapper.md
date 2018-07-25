@@ -13,9 +13,10 @@ env = GymWrapper(environment_filename, worker_id, default_visual)
 * `worker_id` refers to the port to use for communication with the environment.
 * `default_visual` refers to whether to use visual observations (True) or vector observations (False) as the default observation provided by the `reset` and `step` functions.
 
-The resulting environment `env` will behave like a gym.
+The returned environment `env` will function as a gym.
 
 __Limitations :__
 
  * Only first agent in first external brain will be exposed via API.
  * By default the first visual observation is provided as the `observation`, if present. Otherwise vector observations are provided.  
+ * All other output from the environment can still be accessed from the `info` provided by `env.reset()` and `env.step(action)`.

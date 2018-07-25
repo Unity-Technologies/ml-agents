@@ -18,7 +18,7 @@ def multi_agent_check(info):
             "if it is wrapped in a gym.")
 
 
-class UnityEnv(gym.Env):
+class UnityGymEnv(gym.Env):
     def __init__(self, environment_filename: str, worker_id=0, default_visual=True):
         """
         Environment initialization
