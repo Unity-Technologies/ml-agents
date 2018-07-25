@@ -304,69 +304,52 @@ class LearningModel(object):
         hidden_streams = self.create_observation_streams(1, h_size, num_layers)
         hidden = hidden_streams[0]
 
+        action_sizes = [3, 3, 3, 2]
+
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
-            self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
-            prev_action_oh = tf.one_hot(self.prev_action, self.a_size)
+            self.prev_action = tf.placeholder(shape=[None, len(action_sizes)], dtype=tf.int32, name='prev_action')
+            prev_action_oh = tf.concat([
+                tf.one_hot(self.prev_action[:, i], action_sizes[i]) for i in range(len(action_sizes))], axis=1)
             hidden = tf.concat([hidden, prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
             hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in, self.sequence_length)
             self.memory_out = tf.identity(memory_out, name='recurrent_out')
 
-        action_sizes = [3, 3, 3, 2]
-        self.policy_branch_one = tf.layers.dense(hidden, action_sizes[0], activation=None, use_bias=False,
-                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.policy_branch_two = tf.layers.dense(hidden, action_sizes[1], activation=None, use_bias=False,
-                                          kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.policy_branch_three = tf.layers.dense(hidden, action_sizes[2], activation=None, use_bias=False,
-                                          kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-        self.policy_branch_four = tf.layers.dense(hidden, action_sizes[3], activation=None, use_bias=False,
-                                          kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
+        policy_branches = []
+        for size in action_sizes:
+            policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
+                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
 
-        self.all_probs = tf.concat([tf.nn.softmax(self.policy_branch_one),
-                                    tf.nn.softmax(self.policy_branch_two),
-                                    tf.nn.softmax(self.policy_branch_three),
-                                    tf.nn.softmax(self.policy_branch_four)
-                                    ], axis=1, name="action_probs")
+        self.all_probs = tf.concat([tf.nn.softmax(branch) for branch in policy_branches], axis=1, name="action_probs")
 
-        output = tf.concat([tf.multinomial(self.policy_branch_one, 1),
-                            tf.multinomial(self.policy_branch_two, 1),
-                            tf.multinomial(self.policy_branch_three, 1),
-                            tf.multinomial(self.policy_branch_four, 1)], axis=1)
+        output = tf.concat([tf.multinomial(branch, 1) for branch in policy_branches], axis=1)
 
         self.output = tf.identity(output, name="action")
 
         value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
-        self.entropy = (-tf.reduce_sum(
-            tf.nn.softmax(self.policy_branch_one) * tf.log(tf.nn.softmax(self.policy_branch_one) + 1e-10), axis=1) \
-                       -tf.reduce_sum(
-            tf.nn.softmax(self.policy_branch_two) * tf.log(tf.nn.softmax(self.policy_branch_two) + 1e-10), axis=1) \
-                       -tf.reduce_sum(
-            tf.nn.softmax(self.policy_branch_three) * tf.log(tf.nn.softmax(self.policy_branch_three) + 1e-10), axis=1) \
-                       -tf.reduce_sum(
-            tf.nn.softmax(self.policy_branch_four) * tf.log(tf.nn.softmax(self.policy_branch_four) + 1e-10), axis=1)) / 4.0
 
-        self.action_holder = tf.placeholder(shape=[None, 4], dtype=tf.int32, name="action_holder")
+        self.entropy = - (sum([tf.reduce_sum(tf.nn.softmax(branch) * tf.log(tf.nn.softmax(branch) + 1e-10), axis=1)
+                               for branch in policy_branches])) / len(policy_branches)
+
+        self.action_holder = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
-            tf.one_hot(self.action_holder[:, 0], action_sizes[0]),
-            tf.one_hot(self.action_holder[:, 1], action_sizes[1]),
-            tf.one_hot(self.action_holder[:, 2], action_sizes[2]),
-            tf.one_hot(self.action_holder[:, 3], action_sizes[3])]
-            , axis=1)
+            tf.one_hot(self.action_holder[:, i], action_sizes[i]) for i in range(len(action_sizes))], axis=1)
 
-        self.all_old_probs = tf.placeholder(shape=[None, 11], dtype=tf.float32, name='old_probabilities')
+        self.all_old_probs = tf.placeholder(shape=[None, sum(action_sizes)], dtype=tf.float32, name='old_probabilities')
 
+        action_starting_indices = [0] + list(np.cumsum(action_sizes))
         # We reshape these tensors to [batch x 1] in order to be of the same rank as continuous control probabilities.
         # self.probs = tf.expand_dims(tf.reduce_sum(self.all_probs * self.selected_actions, axis=1), 1)
-        self.probs = tf.stack([tf.reduce_sum(self.all_probs[:, 0:3] * self.selected_actions[:, 0:3], axis=1),
-                                tf.reduce_sum(self.all_probs[:, 3:6] * self.selected_actions[:, 3:6], axis=1),
-                                tf.reduce_sum(self.all_probs[:, 6:9] * self.selected_actions[:, 6:9], axis=1),
-                                tf.reduce_sum(self.all_probs[:, 9:11] * self.selected_actions[:, 9:11], axis=1)], axis=1)
+        self.probs = tf.stack([
+            tf.reduce_sum(self.all_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
+                          * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
+            for i in range(len(action_sizes))], axis=1)
 
         # self.old_probs = tf.expand_dims(tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1), 1)
-        self.old_probs = tf.stack([tf.reduce_sum(self.all_old_probs[:, 0:3] * self.selected_actions[:, 0:3], axis=1),
-                   tf.reduce_sum(self.all_old_probs[:, 3:6] * self.selected_actions[:, 3:6], axis=1),
-                   tf.reduce_sum(self.all_old_probs[:, 6:9] * self.selected_actions[:, 6:9], axis=1),
-                   tf.reduce_sum(self.all_old_probs[:, 9:11] * self.selected_actions[:, 9:11], axis=1)], axis=1)
+        self.old_probs = tf.stack(
+            [tf.reduce_sum(self.all_old_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
+                           * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
+             for i in range(len(action_sizes))], axis=1)

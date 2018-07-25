@@ -76,28 +76,49 @@ public class WallJumpAgentModified : Agent
     /// <c>false</c> otherwise.</returns>
     /// <param name="boxWidth">The width of the box used to perform 
     /// the ground check. </param>
-    public bool DoGroundCheck(float boxWidth)
+    public bool DoGroundCheck(bool smallCheck)
     {
-        hitGroundColliders = new Collider[3];
-        Physics.OverlapBoxNonAlloc(
-            gameObject.transform.position + new Vector3(0, -0.05f, 0),
-                            new Vector3(boxWidth / 2f, 0.5f, boxWidth / 2f),
-                            hitGroundColliders,
-                            gameObject.transform.rotation);
-        bool grounded = false;
-        foreach (Collider col in hitGroundColliders)
+        if (!smallCheck)
+        {
+            hitGroundColliders = new Collider[3];
+            Physics.OverlapBoxNonAlloc(
+                gameObject.transform.position + new Vector3(0, -0.05f, 0),
+                new Vector3(0.95f / 2f, 0.5f, 0.95f / 2f),
+                hitGroundColliders,
+                gameObject.transform.rotation);
+            bool grounded = false;
+            foreach (Collider col in hitGroundColliders)
+            {
+
+                if (col != null && col.transform != this.transform &&
+                    (col.CompareTag("walkableSurface") ||
+                     col.CompareTag("block") ||
+                     col.CompareTag("wall")))
+                {
+                    grounded = true; //then we're grounded
+                    break;
+                }
+            }
+            return grounded;
+        }
+        else
         {
 
-            if (col != null && col.transform != this.transform &&
-                (col.CompareTag("walkableSurface") ||
-                col.CompareTag("block") ||
-                 col.CompareTag("wall")))
+            RaycastHit hit;
+            Physics.Raycast(transform.position + new Vector3(0, -0.05f, 0), -Vector3.up, out hit,
+                1f);
+
+            if (hit.collider != null &&
+                (hit.collider.CompareTag("walkableSurface") ||
+                 hit.collider.CompareTag("block") ||
+                 hit.collider.CompareTag("wall"))
+                && hit.normal.y > 0.95f)
             {
-                grounded = true; //then we're grounded
-                break;
+                return true;
             }
+
+            return false;
         }
-        return grounded;
     }
 
 
@@ -132,7 +153,7 @@ public class WallJumpAgentModified : Agent
             Vector3 agentPos = agentRB.position - ground.transform.position;
 
             AddVectorObs(agentPos / 20f);
-            AddVectorObs(DoGroundCheck(0.4f) ? 1 : 0);
+            AddVectorObs(DoGroundCheck(true) ? 1 : 0);
     }
 
     /// <summary>
@@ -170,29 +191,12 @@ public class WallJumpAgentModified : Agent
     {
 
         AddReward(-0.0005f);
-        bool smallGrounded = DoGroundCheck(0.4f);
-        bool largeGrounded = DoGroundCheck(1.0f);
+        bool smallGrounded = DoGroundCheck(true);
+        bool largeGrounded = DoGroundCheck(false);
 
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
-//        if(act[1] > act[0])
-//                dirToGo = transform.forward * 1f * (largeGrounded ? 1f : 0.5f);
-//        if(act[1] < act[0])
-//                dirToGo = transform.forward * -1f * (largeGrounded ? 1f : 0.5f);
-//        if(act[2] > act[3])
-//                rotateDir = transform.up * -1f;
-//        if(act[2] < act[3])
-//                rotateDir = transform.up * 1f;
-//        if(act[4] > act[5])
-//                dirToGo = transform.right * -0.6f * (largeGrounded ? 1f : 0.5f);
-//        if(act[4] < act[5])
-//                dirToGo = transform.right * 0.6f * (largeGrounded ? 1f : 0.5f);
-//        if(act[6] < act[7])
-//            if ((jumpingTime <= 0f) && smallGrounded)
-//            {
-//                Jump();
-//            }
         if ((int)(act[0])==1)
             dirToGo = transform.forward * 1f * (largeGrounded ? 1f : 0.5f);
         else if ((int)(act[0])==2)
@@ -251,7 +255,7 @@ public class WallJumpAgentModified : Agent
     // Detect when the agent hits the goal
     void OnTriggerStay(Collider col)
     {
-        if (col.gameObject.CompareTag("goal") && DoGroundCheck(0.4f))
+        if (col.gameObject.CompareTag("goal") && DoGroundCheck(true))
         {
             SetReward(1f);
             Done();
