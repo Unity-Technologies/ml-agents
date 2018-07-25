@@ -19,7 +19,7 @@ logger = logging.getLogger("unityagents")
 class BehavioralCloningTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -36,7 +36,7 @@ class BehavioralCloningTrainer(Trainer):
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain_name))
 
-        super(BehavioralCloningTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
+        super(BehavioralCloningTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training, run_id)
 
         self.variable_scope = trainer_parameters['graph_scope']
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']

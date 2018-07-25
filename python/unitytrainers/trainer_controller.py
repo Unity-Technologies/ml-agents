@@ -181,10 +181,10 @@ class TrainerController(object):
             if trainer_parameters_dict[brain_name]['trainer'] == "imitation":
                 self.trainers[brain_name] = BehavioralCloningTrainer(sess, self.env, brain_name,
                                                                      trainer_parameters_dict[brain_name],
-                                                                     self.train_model, self.seed)
+                                                                     self.train_model, self.seed, self.run_id)
             elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(sess, self.env, brain_name, trainer_parameters_dict[brain_name],
-                                                       self.train_model, self.seed)
+                                                       self.train_model, self.seed, self.run_id)
             else:
                 raise UnityEnvironmentException("The trainer config contains an unknown trainer type for brain {}"
                                                 .format(brain_name))
