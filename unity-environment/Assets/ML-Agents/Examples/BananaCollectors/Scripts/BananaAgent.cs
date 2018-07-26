@@ -100,19 +100,29 @@ public class BananaAgent : Agent
             }
             else
             {
-                switch ((int)act[0])
+                switch ((int) act[0])
                 {
                     case 1:
                         dirToGo = transform.forward;
                         break;
                     case 2:
-                        shootCommand = true;
+                        dirToGo = -transform.forward;
                         break;
-                    case 3:
+                }
+
+                switch ((int) act[1])
+                {
+                    case 1:
                         rotateDir = -transform.up;
                         break;
-                    case 4:
+                    case 2:
                         rotateDir = transform.up;
+                        break; 
+                }
+                switch ((int) act[2])
+                {
+                    case 1:
+                        shootCommand = true;
                         break;
                 }
             }
