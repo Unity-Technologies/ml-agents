@@ -35,6 +35,7 @@ namespace MLAgents
             }
 
             BrainParameters parameters = myBrain.brainParameters;
+            // TODO : Remove the try Catch
             try
             {
                 int numberOfDescriptions = 0;
