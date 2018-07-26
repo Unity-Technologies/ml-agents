@@ -135,16 +135,18 @@ class Trainer(object):
         Saves training statistics to Tensorboard.
         :param lesson_number: The lesson the trainer is at.
         """
-        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-                self.is_training and self.get_step <= self.get_max_steps):
+        if self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0:
+            training = self.is_training and self.get_step <= self.get_max_steps
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info("{}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
+                logger.info(" {}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}. {}"
                             .format(self.run_id, self.brain_name, self.get_step,
-                                    mean_reward, np.std(self.stats['cumulative_reward'])))
+                                    mean_reward, np.std(self.stats['cumulative_reward']),
+                                    "Training." if training else "Not Training."))
             else:
-                logger.info("{}: {}: Step: {}. No episode was completed since last summary."
-                            .format(self.run_id, self.brain_name, self.get_step))
+                logger.info(" {}: {}: Step: {}. No episode was completed since last summary. {}"
+                            .format(self.run_id, self.brain_name, self.get_step,
+                                    "Training." if training else "Not Training."))
             summary = tf.Summary()
             for key in self.stats:
                 if len(self.stats[key]) > 0:

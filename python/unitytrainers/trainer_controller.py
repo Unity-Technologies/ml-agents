@@ -271,7 +271,7 @@ class TrainerController(object):
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
                         trainer.write_summary(self.curriculum.lesson_number)
-                        if self.train_model and trainer.get_step <= trainer.get_max_steps:
+                        if not self.train_model or trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:
                         global_step += 1
