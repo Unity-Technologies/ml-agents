@@ -35,22 +35,8 @@ namespace MLAgents
             }
 
             BrainParameters parameters = myBrain.brainParameters;
-            // TODO : Remove the try Catch
-            try
-            {
-                int numberOfDescriptions = 0;
-                if (parameters.vectorActionSpaceType == SpaceType.continuous)
-                    numberOfDescriptions = parameters.vectorActionSize[0];
-                else
-                    numberOfDescriptions = parameters.vectorActionSize.Length;
-                if (parameters.vectorActionDescriptions == null ||
-                    parameters.vectorActionDescriptions.Length != numberOfDescriptions)
-                    parameters.vectorActionDescriptions = new string[numberOfDescriptions];
-            }
-            catch
-            {
                 
-            }
+
 
             serializedBrain.Update();
 
@@ -114,7 +100,14 @@ namespace MLAgents
                         "The number of discrete actions for each action branch."), true);
                 }
 
-                
+                int numberOfDescriptions = 0;
+                if (parameters.vectorActionSpaceType == SpaceType.continuous)
+                    numberOfDescriptions = parameters.vectorActionSize[0];
+                else
+                    numberOfDescriptions = parameters.vectorActionSize.Length;
+                if (parameters.vectorActionDescriptions == null ||
+                    parameters.vectorActionDescriptions.Length != numberOfDescriptions)
+                    parameters.vectorActionDescriptions = new string[numberOfDescriptions];                
 
                 SerializedProperty bpVectorActionDescription =
                     serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");

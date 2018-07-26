@@ -120,7 +120,6 @@ namespace MLAgents
             {
                 foreach (Agent agent in agentInfo.Keys)
                 {
-                    // TODO : Implement for multi-discrete
                     var action = new float[brain.brainParameters.vectorActionSize.Length];
                     foreach (DiscretePlayerAction dha in discretePlayerActions)
                     {
