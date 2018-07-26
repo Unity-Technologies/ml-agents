@@ -306,6 +306,7 @@ namespace MLAgents
                             (MLAgents.CommunicatorObjects.BrainTypeProto)
                             brain.brainType));
                 }
+                
 
                 academyParameters.EnvironmentParameters =
                     new MLAgents.CommunicatorObjects.EnvironmentParametersProto();

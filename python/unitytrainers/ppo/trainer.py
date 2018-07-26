@@ -19,7 +19,7 @@ logger = logging.getLogger("unityagents")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -38,7 +38,7 @@ class PPOTrainer(Trainer):
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
                                             "brain {1}.".format(k, brain_name))
 
-        super(PPOTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
+        super(PPOTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training, run_id)
 
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
@@ -167,7 +167,7 @@ class PPOTrainer(Trainer):
         """
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
-            return [], [], [], None
+            return [], [], [], None, None
 
         feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations),
                      self.model.sequence_length: 1}
@@ -190,9 +190,9 @@ class PPOTrainer(Trainer):
         self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
         if self.use_recurrent:
-            return run_out[self.model.output], run_out[self.model.memory_out], None, run_out
+            return run_out[self.model.output], run_out[self.model.memory_out], None, run_out[self.model.value], run_out
         else:
-            return run_out[self.model.output], None, None, run_out
+            return run_out[self.model.output], None, None, run_out[self.model.value], run_out
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
