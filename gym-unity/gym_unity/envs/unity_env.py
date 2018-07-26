@@ -16,7 +16,7 @@ def multi_agent_check(info):
         logger.warn("Environment contains multiple agents. Only first agent is controllable via gym interface.")
 
 
-class UnityGymEnv(gym.Env):
+class UnityEnv(gym.Env):
     def __init__(self, environment_filename: str, worker_id=0, default_visual=True):
         """
         Environment initialization
