@@ -71,14 +71,17 @@ class UnityGymEnv(gym.Env):
         """
 
         # Use random actions for all other agents in environment.
-        if self._env.brains[self.brain_name].vector_action_space_type == 'continuous':
-            all_actions = np.random.randn(len(self._current_state.agents),
-                                          self._env.brains[self.brain_name].vector_action_space_size)
-        else:
-            all_actions = np.random.randint(0, self._env.brains[self.brain_name].vector_action_space_size,
-                                            size=(len(self._current_state.agents)))
+        if len(self._current_state.agents) > 1:
+            if self._env.brains[self.brain_name].vector_action_space_type == 'continuous':
+                all_actions = np.random.randn(len(self._current_state.agents),
+                                              self._env.brains[self.brain_name].vector_action_space_size)
+            else:
+                all_actions = np.random.randint(0, self._env.brains[self.brain_name].vector_action_space_size,
+                                                size=(len(self._current_state.agents)))
 
-        all_actions[0, :] = action
+            all_actions[0, :] = action
+        else:
+            all_actions = action
         info = self._env.step(all_actions)[self.brain_name]
         self._current_state = info
         if self.use_visual:
