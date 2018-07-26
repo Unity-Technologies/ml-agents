@@ -43,7 +43,7 @@ env = UnityMultiAgentEnv(environment_filename, worker_id, default_visual)
 
 The returned environment `env` will function as a gym.
 
-For more on using the gym interface, see our [Jupyter Notebook tutorial](python/notebooks/getting-started-gym.ipynb).
+For more on using the gym interface, see our [Jupyter Notebook tutorial](../python/notebooks/getting-started-gym.ipynb).
 
 ## Limitation
 
