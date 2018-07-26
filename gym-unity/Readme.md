@@ -15,7 +15,7 @@ pip install gym-unity
 or by running the following from the root directory of the repository:
 
 ```
-pip install -e ./gym-unity/
+pip install -e ./gym-unity
 ```
 
 
