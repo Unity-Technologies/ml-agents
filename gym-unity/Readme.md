@@ -2,16 +2,40 @@
 
 A common way in which machine learning researchers interact with simulation environments is via a wrapper provided by OpenAI called `gym`. For more information on the gym interface, see [here](https://github.com/openai/gym). 
 
-We provide a gym wrapper, and instructions for using it with existing research projects which utilize gyms. 
+We provide a two gym wrappers, and instructions for using them with existing research projects which utilize gyms. 
+
+## Installation
+
+The gym wrapper can be installed using:
+
+```
+pip install gym-unity
+```
+
+or by running the following from the root directory of the repository:
+
+```
+pip install -e ./gym-unity/
+```
+
 
 ## Using the Gym Interface
-The gym interface is available from `python/environment/unity_gym_env.py`. To launch an environmnent from the root of the project repository use:
+The gym interface is available from `gym_unity.envs`. To launch a single agent environmnent from the root of the project repository use:
 
 ```python
-from unityagents.unity_gym_env import UnityGymEnv
+from gym_unity.envs import UnityEnv
 
-env = UnityGymEnv(environment_filename, worker_id, default_visual)
+env = UnityEnv(environment_filename, worker_id, default_visual)
 ```
+
+To launch a multi-agent environment, use:
+
+```python
+from gym_unity.envs import UnityMultiAgentEnv
+
+env = UnityMultiAgentEnv(environment_filename, worker_id, default_visual)
+```
+
 
 * `environment_filename` refers to the path to the Unity environment.
 * `worker_id` refers to the port to use for communication with the environment.
@@ -19,11 +43,11 @@ env = UnityGymEnv(environment_filename, worker_id, default_visual)
 
 The returned environment `env` will function as a gym.
 
-For more on using the gym interface, see our [Jupyter Notebook tutorial](./python/Basics-Gym.ipynb).
+For more on using the gym interface, see our [Jupyter Notebook tutorial](python/notebooks/getting-started-gym.ipynb).
 
 ## Limitation
 
  * It is only possible to use an environment with a single Brain.
- * Only first agent in first external Brain will be exposed via API.
- * By default the first visual observation is provided as the `observation`, if present. Otherwise vector observations are provided.  
- * All other output from the environment can still be accessed from the `info` provided by `env.reset()` and `env.step(action)`.
+ * In mutli-agent environments launched with `UnityEnv`, only the first agent will be controllable.
+ * By default the first visual observation is provided as the `observation`, if present. Otherwise vector observations are provided. 
+ * All `BrainInfo` output from the environment can still be accessed from the `info` provided by `env.step(action)`.
