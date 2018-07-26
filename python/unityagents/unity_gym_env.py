@@ -13,10 +13,7 @@ class UnityGymWrapperException(error.Error):
 
 def multi_agent_check(info):
     if len(info.agents) != 1:
-        raise UnityGymWrapperException(
-            "There can only be one agent in a UnityEnvironment "
-            "if it is wrapped in a gym.")
-
+        logger.warn("Environment contains multiple agents. Only first agent is controllable via gym interface.")
 
 class UnityGymEnv(gym.Env):
     def __init__(self, environment_filename: str, worker_id=0, default_visual=True):
@@ -71,15 +68,18 @@ class UnityGymEnv(gym.Env):
             done (boolean): whether the episode has ended.
             info (dict): contains auxiliary diagnostic information.
         """
+
+        # Use random actions for all other agents in environment.
         if self._env.brains[self.brain_name].vector_action_space_type == 'continuous':
-            all_actions = np.random.randn(len(self._current_state.agents), self._env.brains[self.brain_name].vector_action_space_size)
+            all_actions = np.random.randn(len(self._current_state.agents),
+                                          self._env.brains[self.brain_name].vector_action_space_size)
         else:
-            all_actions = np.random.randint(0, self._env.brains[self.brain_name].vector_action_space_size, size=(len(self._current_state.agents)))
+            all_actions = np.random.randint(0, self._env.brains[self.brain_name].vector_action_space_size,
+                                            size=(len(self._current_state.agents)))
 
         all_actions[0, :] = action
         info = self._env.step(all_actions)[self.brain_name]
         self._current_state = info
-        #multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
             default_observation = self.visual_obs
@@ -94,7 +94,7 @@ class UnityGymEnv(gym.Env):
             space.
         """
         info = self._env.reset()[self.brain_name]
-        #multi_agent_check(info)
+        multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
             default_observation = self.visual_obs
