@@ -27,6 +27,7 @@ class UnityGymEnv(gym.Env):
         self._env = UnityEnvironment(environment_filename, worker_id)
         self.name = self._env.academy_name
         self.visual_obs = None
+        self._current_state = None
         if len(self._env.brains) != 1:
             raise UnityGymWrapperException(
                 "There can only be one brain in a UnityEnvironment "
@@ -70,8 +71,15 @@ class UnityGymEnv(gym.Env):
             done (boolean): whether the episode has ended.
             info (dict): contains auxiliary diagnostic information.
         """
-        info = self._env.step(action)[self.brain_name]
-        multi_agent_check(info)
+        if self._env.brains[self.brain_name].vector_action_space_type == 'continuous':
+            all_actions = np.random.randn(len(self._current_state.agents), self._env.brains[self.brain_name].vector_action_space_size)
+        else:
+            all_actions = np.random.randint(0, self._env.brains[self.brain_name].vector_action_space_size, size=(len(self._current_state.agents)))
+
+        all_actions[0, :] = action
+        info = self._env.step(all_actions)[self.brain_name]
+        self._current_state = info
+        #multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
             default_observation = self.visual_obs
@@ -86,12 +94,13 @@ class UnityGymEnv(gym.Env):
             space.
         """
         info = self._env.reset()[self.brain_name]
-        multi_agent_check(info)
+        #multi_agent_check(info)
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
+        self._current_state = info
         return default_observation
 
     def render(self, mode='rgb_array'):
