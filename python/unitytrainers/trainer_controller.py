@@ -259,7 +259,7 @@ class TrainerController(object):
                         (take_action_vector[brain_name],
                          take_action_memories[brain_name],
                          take_action_text[brain_name],
-                         take_action_value,
+                         take_action_value[brain_name],
                          take_action_outputs[brain_name]) = trainer.take_action(curr_info)
                     new_info = self.env.step(vector_action=take_action_vector, memory=take_action_memories,
                                              text_action=take_action_text, value=take_action_value)
