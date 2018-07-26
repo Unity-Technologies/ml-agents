@@ -12,10 +12,16 @@ class UnityGymWrapperException(error.Error):
 
 
 class UnityMultiAgentEnv(gym.Env):
+    """
+    Provides Gym wrapper for multi-agent Unity environments. 
+    Designed to be compatible with OpenAI's multi-agent particle environment wrapper: 
+    https://github.com/openai/multiagent-particle-envs
+    """
+
     def __init__(self, environment_filename: str, worker_id=0, default_visual=True):
         """
         Environment initialization
-        :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym
+        :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
         """
         self._env = UnityEnvironment(environment_filename, worker_id)
         self.name = self._env.academy_name
