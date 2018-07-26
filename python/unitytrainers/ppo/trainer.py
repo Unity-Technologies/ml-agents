@@ -167,7 +167,7 @@ class PPOTrainer(Trainer):
         """
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
-            return [], [], [], None
+            return [], [], [], None, None
 
         feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations),
                      self.model.sequence_length: 1}
