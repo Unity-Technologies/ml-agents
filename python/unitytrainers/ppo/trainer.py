@@ -85,8 +85,7 @@ class PPOTrainer(Trainer):
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
         self.episode_steps = {}
-        # self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.is_continuous_action = False
+        self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
         self.use_visual_obs = (env.brains[brain_name].number_visual_observations > 0)
         self.use_vector_obs = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
@@ -275,7 +274,6 @@ class PPOTrainer(Trainer):
         :param idx: Index in BrainInfo of agent.
         :return: Value estimate.
         """
-        action_sizes = [3, 3, 3, 2]
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
         if self.use_visual_obs:
             for i in range(len(brain_info.visual_observations)):
@@ -288,7 +286,8 @@ class PPOTrainer(Trainer):
                     (len(brain_info.vector_observations), self.m_size))
             feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
         if not self.is_continuous_action and self.use_recurrent:
-            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape([-1, len(action_sizes)])
+            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape(
+                [-1, len(self.brain.vector_action_space_size)])
         value_estimate = self.sess.run(self.model.value, feed_dict)
         return value_estimate
 
@@ -436,7 +435,6 @@ class PPOTrainer(Trainer):
         """
         Uses training_buffer to update model.
         """
-        action_sizes = [3, 3, 3, 2]
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
@@ -456,16 +454,16 @@ class PPOTrainer(Trainer):
                              self.model.old_value: np.array(buffer['value_estimates'][start:end]).flatten(),
                              self.model.advantage: np.array(buffer['advantages'][start:end]).reshape([-1, 1]),
                              self.model.all_old_probs: np.array(buffer['action_probs'][start:end]).reshape(
-                                 [-1, sum(action_sizes)])}
+                                 [-1, sum(self.brain.vector_action_space_size)])}
                 if self.is_continuous_action:
                     feed_dict[self.model.output_pre] = np.array(buffer['actions_pre'][start:end]).reshape(
-                        [-1, self.brain.vector_action_space_size])
+                        [-1, self.brain.vector_action_space_size[0]])
                 else:
-                    feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]
-                                                                   ).reshape([-1, len(action_sizes)])
+                    feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).reshape(
+                        [-1, len(self.brain.vector_action_space_size)])
                     if self.use_recurrent:
-                        feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]
-                                                                     ).reshape([-1, len(action_sizes)])
+                        feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).reshape(
+                            [-1, len(self.brain.vector_action_space_size)])
                 if self.use_vector_obs:
                     total_observation_length = self.brain.vector_observation_space_size * \
                                                self.brain.num_stacked_vector_observations

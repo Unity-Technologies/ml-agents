@@ -200,44 +200,6 @@ class LearningModel(object):
         recurrent_output = tf.reshape(recurrent_output, shape=[-1, _half_point])
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
-    def create_dc_actor_critic(self, h_size, num_layers):
-        """
-        Creates Discrete control actor-critic model.
-        :param h_size: Size of hidden linear layers.
-        :param num_layers: Number of hidden linear layers.
-        """
-        hidden_streams = self.create_observation_streams(1, h_size, num_layers)
-        hidden = hidden_streams[0]
-
-        if self.use_recurrent:
-            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
-            self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
-            prev_action_oh = tf.one_hot(self.prev_action, self.a_size)
-            hidden = tf.concat([hidden, prev_action_oh], axis=1)
-
-            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
-            hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in, self.sequence_length)
-            self.memory_out = tf.identity(memory_out, name='recurrent_out')
-
-        self.policy = tf.layers.dense(hidden, self.a_size, activation=None, use_bias=False,
-                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-
-        self.all_probs = tf.nn.softmax(self.policy, name="action_probs")
-        output = tf.multinomial(self.policy, 1)
-        self.output = tf.identity(output, name="action")
-
-        value = tf.layers.dense(hidden, 1, activation=None)
-        self.value = tf.identity(value, name="value_estimate")
-        self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
-        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
-        self.selected_actions = tf.one_hot(self.action_holder, self.a_size)
-
-        self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
-
-        # We reshape these tensors to [batch x 1] in order to be of the same rank as continuous control probabilities.
-        self.probs = tf.expand_dims(tf.reduce_sum(self.all_probs * self.selected_actions, axis=1), 1)
-        self.old_probs = tf.expand_dims(tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1), 1)
-
     def create_cc_actor_critic(self, h_size, num_layers):
         """
         Creates Continuous control actor-critic model.
@@ -260,10 +222,10 @@ class LearningModel(object):
             hidden_policy = hidden_streams[0]
             hidden_value = hidden_streams[1]
 
-        mu = tf.layers.dense(hidden_policy, self.a_size, activation=None,
+        mu = tf.layers.dense(hidden_policy, self.a_size[0], activation=None,
                              kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
-        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size], dtype=tf.float32,
+        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size[0]], dtype=tf.float32,
                                        initializer=tf.zeros_initializer())
 
         sigma_sq = tf.exp(log_sigma_sq)
@@ -287,14 +249,14 @@ class LearningModel(object):
         value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32,
+        self.all_old_probs = tf.placeholder(shape=[None, self.a_size[0]], dtype=tf.float32,
                                             name='old_probabilities')
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.probs = tf.identity(self.all_probs)
         self.old_probs = tf.identity(self.all_old_probs)
 
-    def create_mdc_actor_critic(self, h_size, num_layers):
+    def create_dc_actor_critic(self, h_size, num_layers):
         """
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.
@@ -304,13 +266,11 @@ class LearningModel(object):
         hidden_streams = self.create_observation_streams(1, h_size, num_layers)
         hidden = hidden_streams[0]
 
-        action_sizes = [3, 3, 3, 2]
-
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
-            self.prev_action = tf.placeholder(shape=[None, len(action_sizes)], dtype=tf.int32, name='prev_action')
+            self.prev_action = tf.placeholder(shape=[None, len(self.a_size)], dtype=tf.int32, name='prev_action')
             prev_action_oh = tf.concat([
-                tf.one_hot(self.prev_action[:, i], action_sizes[i]) for i in range(len(action_sizes))], axis=1)
+                tf.one_hot(self.prev_action[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
             hidden = tf.concat([hidden, prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
@@ -318,7 +278,7 @@ class LearningModel(object):
             self.memory_out = tf.identity(memory_out, name='recurrent_out')
 
         policy_branches = []
-        for size in action_sizes:
+        for size in self.a_size:
             policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
 
@@ -336,20 +296,20 @@ class LearningModel(object):
 
         self.action_holder = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
-            tf.one_hot(self.action_holder[:, i], action_sizes[i]) for i in range(len(action_sizes))], axis=1)
+            tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
 
-        self.all_old_probs = tf.placeholder(shape=[None, sum(action_sizes)], dtype=tf.float32, name='old_probabilities')
+        self.all_old_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
 
-        action_starting_indices = [0] + list(np.cumsum(action_sizes))
+        action_starting_indices = [0] + list(np.cumsum(self.a_size))
         # We reshape these tensors to [batch x 1] in order to be of the same rank as continuous control probabilities.
         # self.probs = tf.expand_dims(tf.reduce_sum(self.all_probs * self.selected_actions, axis=1), 1)
         self.probs = tf.stack([
             tf.reduce_sum(self.all_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                           * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
-            for i in range(len(action_sizes))], axis=1)
+            for i in range(len(self.a_size))], axis=1)
 
         # self.old_probs = tf.expand_dims(tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1), 1)
         self.old_probs = tf.stack(
             [tf.reduce_sum(self.all_old_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                            * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
-             for i in range(len(action_sizes))], axis=1)
+             for i in range(len(self.a_size))], axis=1)
