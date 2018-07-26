@@ -59,10 +59,11 @@ namespace MLAgents
 
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
-        public int vectorActionSize = 1;
+        public int[] vectorActionSize = new int[1]{1};
         /**< \brief If continuous : The length of the float vector that represents
          * the action
          * <br> If discrete : The number of possible values the action can take*/
+        public int[] test = new int[3]{1,2,3};
 
         public resolution[] cameraResolutions;
         /**<\brief  The list of observation resolutions for the brain */

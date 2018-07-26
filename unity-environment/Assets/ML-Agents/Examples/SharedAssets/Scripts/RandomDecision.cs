@@ -16,7 +16,10 @@ namespace MLAgents
             brainParameters =
                 gameObject.GetComponent<Brain>().brainParameters;
             actionSpaceType = brainParameters.vectorActionSpaceType;
-            actionSpaceSize = brainParameters.vectorActionSize;
+            if (actionSpaceType == SpaceType.continuous)
+                actionSpaceSize = brainParameters.vectorActionSize[0];
+            else 
+                actionSpaceSize = brainParameters.vectorActionSize.Length;
         }
 
         public float[] Decide(
@@ -38,6 +41,7 @@ namespace MLAgents
                 return act.ToArray();
             }
 
+            // TODO : Modify for multi discrete actions
             return new float[1] {Random.Range(0, actionSpaceSize)};
         }
 

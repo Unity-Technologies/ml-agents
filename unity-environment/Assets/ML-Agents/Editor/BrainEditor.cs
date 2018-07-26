@@ -35,9 +35,21 @@ namespace MLAgents
             }
 
             BrainParameters parameters = myBrain.brainParameters;
-            if (parameters.vectorActionDescriptions == null ||
-                parameters.vectorActionDescriptions.Length != parameters.vectorActionSize)
-                parameters.vectorActionDescriptions = new string[parameters.vectorActionSize];
+            try
+            {
+                int numberOfDescriptions = 0;
+                if (parameters.vectorActionSpaceType == SpaceType.continuous)
+                    numberOfDescriptions = parameters.vectorActionSize[0];
+                else
+                    numberOfDescriptions = parameters.vectorActionSize.Length;
+                if (parameters.vectorActionDescriptions == null ||
+                    parameters.vectorActionDescriptions.Length != numberOfDescriptions)
+                    parameters.vectorActionDescriptions = new string[numberOfDescriptions];
+            }
+            catch
+            {
+                
+            }
 
             serializedBrain.Update();
 
@@ -80,13 +92,28 @@ namespace MLAgents
                     "Corresponds to whether state" +
                     " vector contains a single integer (Discrete) " +
                     "or a series of real-valued floats (Continuous)."));
+                if (bpVectorActionType.enumValueIndex == 1)
+                {
+                    //Continuous case :
+                    SerializedProperty bpVectorActionSize =
+                        serializedBrain.FindProperty("brainParameters.vectorActionSize");
+                    bpVectorActionSize.arraySize = 1;
+                    SerializedProperty continuousActionSize =
+                        bpVectorActionSize.GetArrayElementAtIndex(0);
+                    EditorGUILayout.PropertyField(continuousActionSize, new GUIContent(
+                        "Space Size", "Length of continuous action vector."));
+                    
+                }
+                else
+                {
+                    // Discrete case :
+                    SerializedProperty bpVectorActionSize =
+                        serializedBrain.FindProperty("brainParameters.vectorActionSize");
+                    EditorGUILayout.PropertyField(bpVectorActionSize, new GUIContent("Branches",
+                        "The number of discrete actions for each action branch."), true);
+                }
 
-                SerializedProperty bpVectorActionSize =
-                    serializedBrain.FindProperty("brainParameters.vectorActionSize");
-                EditorGUILayout.PropertyField(bpVectorActionSize, new GUIContent("Space Size",
-                    "Length of action vector " +
-                    "for brain (In Continuous state space)." +
-                    "Or number of possible values (In Discrete action space)."));
+                
 
                 SerializedProperty bpVectorActionDescription =
                     serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
