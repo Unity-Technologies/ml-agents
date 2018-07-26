@@ -178,7 +178,7 @@ namespace MLAgents
             foreach (Texture2D obs in info.visualObservations)
             {
                 agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToJPG())
+                    ByteString.CopyFrom(obs.EncodeToPNG())
                 );
             }
             return agentInfoProto;
