@@ -23,6 +23,7 @@ For more on using the gym wrapper, see our [Jupyter Notebook tutorial](./python/
 
 ## Limitation
 
- * Only first agent in first external brain will be exposed via API.
+ * It is only possible to use an environment with a single Brain.
+ * Only first agent in first external Brain will be exposed via API.
  * By default the first visual observation is provided as the `observation`, if present. Otherwise vector observations are provided.  
  * All other output from the environment can still be accessed from the `info` provided by `env.reset()` and `env.step(action)`.
