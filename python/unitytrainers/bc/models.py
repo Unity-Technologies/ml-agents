@@ -38,7 +38,7 @@ class BehavioralCloningModel(LearningModel):
             self.action_percent = tf.reduce_mean(tf.cast(
                 tf.equal(tf.cast(tf.argmax(self.action_probs, axis=1), tf.int32), self.sample_action), tf.float32))
         else:
-            self.policy = tf.layers.dense(hidden_reg, self.a_size, activation=None, use_bias=False, name='pre_action',
+            self.policy = tf.layers.dense(hidden_reg, self.a_size[0], activation=None, use_bias=False, name='pre_action',
                                           kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
             self.clipped_sample_action = tf.clip_by_value(self.policy, -1, 1)
             self.sample_action = tf.identity(self.clipped_sample_action, name="action")

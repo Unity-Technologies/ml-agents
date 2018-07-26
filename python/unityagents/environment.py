@@ -494,7 +494,8 @@ class UnityEnvironment(object):
                     text_actions=text_action[b][i],
                 )
                 if b in value:
-                    action.value = value[b][i]
+                    if value[b] is not None:
+                        action.value = value[b][i]
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = 0
         return self.wrap_unity_input(rl_in)
