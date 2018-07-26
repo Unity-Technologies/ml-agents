@@ -44,7 +44,7 @@ def test_dc_bc_model(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.sample_action, model.policy]
+            run_list = [model.sample_action, model.action_probs]
             feed_dict = {model.batch_size: 2,
                          model.dropout_rate: 1.0,
                          model.sequence_length: 1,
@@ -67,7 +67,7 @@ def test_visual_dc_bc_model(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.sample_action, model.policy]
+            run_list = [model.sample_action, model.action_probs]
             feed_dict = {model.batch_size: 2,
                          model.dropout_rate: 1.0,
                          model.sequence_length: 1,
