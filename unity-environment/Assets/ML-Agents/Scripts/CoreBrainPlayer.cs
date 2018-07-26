@@ -18,6 +18,7 @@ namespace MLAgents
         private struct DiscretePlayerAction
         {
             public KeyCode key;
+            public int branchIndex;
             public int value;
         }
 
@@ -54,8 +55,6 @@ namespace MLAgents
         [Tooltip("The list of keys and the value they correspond to for discrete control.")]
         /// Contains the mapping from input to discrete actions
         private DiscretePlayerAction[] discretePlayerActions;
-        [SerializeField]
-        private int defaultAction = 0;
 
         /// Reference to the brain that uses this CoreBrainPlayer
         public Brain brain;
@@ -122,17 +121,14 @@ namespace MLAgents
                 foreach (Agent agent in agentInfo.Keys)
                 {
                     // TODO : Implement for multi-discrete
-                    var action = new float[1] {defaultAction};
+                    var action = new float[brain.brainParameters.vectorActionSize.Length];
                     foreach (DiscretePlayerAction dha in discretePlayerActions)
                     {
                         if (Input.GetKey(dha.key))
                         {
-                            action[0] = (float) dha.value;
-                            break;
+                            action[dha.branchIndex] = (float) dha.value;
                         }
                     }
-
-
                     agent.UpdateVectorAction(action);
 
                 }
@@ -166,40 +162,38 @@ namespace MLAgents
             {
                 axisContinuousPlayerActions = new AxisContinuousPlayerAction[0];
             }
-            // TODO : Reimplement for multi-discrete actions
-//            foreach (KeyContinuousPlayerAction action in keyContinuousPlayerActions)
-//            {
-//                if (action.index >= brain.brainParameters.vectorActionSize)
-//                {
-//                    EditorGUILayout.HelpBox(
-//                        string.Format(
-//                            "Key {0} is assigned to index {1} " +
-//                            "but the action size is only of size {2}"
-//                        , action.key.ToString(), action.index.ToString(), 
-//                            brain.brainParameters.vectorActionSize.ToString()), 
-//                        MessageType.Error);
-//                }
-//            }
-//            foreach (AxisContinuousPlayerAction action in axisContinuousPlayerActions)
-//            {
-//                if (action .index >= brain.brainParameters.vectorActionSize)
-//                {
-//                    EditorGUILayout.HelpBox(
-//                        string.Format(
-//                            "Axis {0} is assigned to index {1} " +
-//                            "but the action size is only of size {2}"
-//                        , action.axis, action.index.ToString(),
-//                            brain.brainParameters.vectorActionSize.ToString()), 
-//                        MessageType.Error);
-//                }
-//            }
-//            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input", 
-//                EditorStyles.helpBox );
+            foreach (KeyContinuousPlayerAction action in keyContinuousPlayerActions)
+            {
+                if (action.index >= brain.brainParameters.vectorActionSize[0])
+                {
+                    EditorGUILayout.HelpBox(
+                        string.Format(
+                            "Key {0} is assigned to index {1} " +
+                            "but the action size is only of size {2}"
+                        , action.key.ToString(), action.index.ToString(), 
+                            brain.brainParameters.vectorActionSize.ToString()), 
+                        MessageType.Error);
+                }
+            }
+            foreach (AxisContinuousPlayerAction action in axisContinuousPlayerActions)
+            {
+                if (action .index >= brain.brainParameters.vectorActionSize[0])
+                {
+                    EditorGUILayout.HelpBox(
+                        string.Format(
+                            "Axis {0} is assigned to index {1} " +
+                            "but the action size is only of size {2}"
+                        , action.axis, action.index.ToString(),
+                            brain.brainParameters.vectorActionSize.ToString()), 
+                        MessageType.Error);
+                }
+            }
+            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input", 
+                EditorStyles.helpBox );
         }
         else
         {
             GUILayout.Label("Edit the discrete inputs for your actions", EditorStyles.boldLabel);
-            defaultAction = EditorGUILayout.IntField("Default Action", defaultAction);
             var dhas = serializedBrain.FindProperty("discretePlayerActions");
             serializedBrain.Update();
             EditorGUILayout.PropertyField(dhas, true);
