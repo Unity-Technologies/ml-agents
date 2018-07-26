@@ -245,7 +245,7 @@ class PPOTrainer(Trainer):
             if self.is_continuous_action:
                 feed_dict[self.model.output] = next_info.previous_vector_actions
             else:
-                feed_dict[self.model.action_holder] = next_info.previous_vector_actions.flatten()
+                feed_dict[self.model.action_holder] = next_info.previous_vector_actions
 
             if curr_info.agents != next_info.agents:
                 curr_info = self.construct_curr_info(next_info)

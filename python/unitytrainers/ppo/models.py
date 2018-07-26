@@ -122,11 +122,11 @@ class PPOModel(LearningModel):
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
         if self.brain.vector_action_space_type == "continuous":
-            pred_action = tf.layers.dense(hidden, self.a_size, activation=None)
+            pred_action = tf.layers.dense(hidden, self.a_size[0], activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(squared_difference, self.mask, 2)[1])
         else:
-            pred_action = tf.layers.dense(hidden, self.a_size, activation=tf.nn.softmax)
+            pred_action = tf.layers.dense(hidden, sum(self.a_size), activation=tf.nn.softmax)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(cross_entropy, self.mask, 2)[1])
 
