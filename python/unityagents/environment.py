@@ -48,8 +48,12 @@ class UnityEnvironment(object):
         self.proc1 = None       # The process that is started. If None, no process was started
         self.communicator = self.get_communicator(worker_id, base_port)
 
-        # If the environment name is 'editor', a new environment will not be launched
+        # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
+        # If the worker-id is not 0 and the environment name is None, an error is thrown
+        if file_name is None and worker_id!=0:
+            raise UnityEnvironmentException(
+                "If the environment name is None, the worker-id must be 0 in order to connect with the Editor.")
         if file_name is not None:
             self.executable_launcher(file_name, docker_training, no_graphics)
         else:
