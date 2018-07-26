@@ -262,7 +262,6 @@ class LearningModel(object):
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         """
-        print("Multi Discrete Action AC is used")
         hidden_streams = self.create_observation_streams(1, h_size, num_layers)
         hidden = hidden_streams[0]
 

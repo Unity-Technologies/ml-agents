@@ -402,8 +402,8 @@ namespace MLAgents
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    var a = new float[brain.brainParameters.vectorActionSize];
-                    for (int j = 0; j < brain.brainParameters.vectorActionSize; j++)
+                    var a = new float[brain.brainParameters.vectorActionSize[0]];
+                    for (int j = 0; j < brain.brainParameters.vectorActionSize[0]; j++)
                     {
                         a[j] = output[i, j];
                     }
@@ -418,7 +418,12 @@ namespace MLAgents
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    var a = new float[1] {(float) (output[i, 0])};
+                    var actSize = brain.brainParameters.vectorActionSize.Length;
+                    var a = new float[actSize];
+                    for (int actIdx = 0; actIdx < actSize; actIdx++)
+                    {
+                        a[actIdx] = output[i, actIdx];
+                    }
                     agent.UpdateVectorAction(a);
                     i++;
                 }
