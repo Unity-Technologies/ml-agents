@@ -43,7 +43,7 @@ A BrainInfo object contains the following fields:
 * **`local_done`** : A list as long as the number of agents using the brain containing  `done` flags (whether or not the agent is done). 
 * **`max_reached`** : A list as long as the number of agents using the brain containing true if the agents reached their max steps.
 * **`agents`** : A list of the unique ids of the agents using the brain.
-* **`previous_actions`** : A two dimensional numpy array of dimension `(batch size, vector action size)` if the vector action space is continuous and `(batch size, 1)` if the vector action space is discrete.
+* **`previous_actions`** : A two dimensional numpy array of dimension `(batch size, vector action size)` if the vector action space is continuous and `(batch size, number of branches)` if the vector action space is discrete.
 
 Once loaded, you can use your UnityEnvironment object, which referenced by a variable named `env` in this example, can be used in the following way:  
 - **Print : `print(str(env))`**  
