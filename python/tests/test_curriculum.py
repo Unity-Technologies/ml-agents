@@ -51,6 +51,7 @@ def default_reset_parameters():
 def test_init_curriculum_happy_path(mock_file, location, default_reset_parameters):
     curriculum = Curriculum(location, default_reset_parameters)
 
+    assert curriculum._brain_name == 'TestBrain'
     assert curriculum.lesson_num == 0
     assert curriculum.measure == 'reward'
 
