@@ -5,6 +5,7 @@
 import logging
 import os
 import yaml
+import re
 
 import numpy as np
 import tensorflow as tf
