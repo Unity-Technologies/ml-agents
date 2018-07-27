@@ -4,7 +4,7 @@ from .exception import CurriculumError
 
 import logging
 
-logger = logging.getLogger("unityagents")
+logger = logging.getLogger('unitytrainers')
 
 
 class Curriculum(object):
@@ -27,9 +27,9 @@ class Curriculum(object):
                     self.data = json.load(data_file)
             except IOError:
                 raise CurriculumError(
-                    "The file {0} could not be found.".format(location))
+                    'The file {0} could not be found.'.format(location))
             except UnicodeDecodeError:
-                raise CurriculumError("There was an error decoding {}".format(location))
+                raise CurriculumError('There was an error decoding {}'.format(location))
             self.smoothing_value = 0
             for key in ['parameters', 'measure', 'thresholds',
                         'min_lesson_length', 'signal_smoothing']:
@@ -44,12 +44,12 @@ class Curriculum(object):
             for key in parameters:
                 if key not in default_reset_parameters:
                     raise CurriculumError(
-                        "The parameter {0} in Curriculum {1} is not present in "
-                        "the Environment".format(key, location))
+                        'The parameter {0} in Curriculum {1} is not present in '
+                        'the Environment'.format(key, location))
                 if len(parameters[key]) != self.max_lesson_num + 1:
                     raise CurriculumError(
-                        "The parameter {0} in Curriculum {1} must have {2} values "
-                        "but {3} were found".format(key, location,
+                        'The parameter {0} in Curriculum {1} must have {2} values '
+                        'but {3} were found'.format(key, location,
                                                     self.max_lesson_num + 1, len(parameters[key])))
 
     @property
@@ -68,7 +68,7 @@ class Curriculum(object):
         """
         if self.data is None or progress is None:
             return
-        if self.data["signal_smoothing"]:
+        if self.data['signal_smoothing']:
             progress = self.smoothing_value * 0.25 + 0.75 * progress
             self.smoothing_value = progress
         self.lesson_length += 1
@@ -78,10 +78,10 @@ class Curriculum(object):
                 self.lesson_length = 0
                 self.lesson_num += 1
                 config = {}
-                parameters = self.data["parameters"]
+                parameters = self.data['parameters']
                 for key in parameters:
                     config[key] = parameters[key][self.lesson_num]
-                logger.info("\nLesson changed. Now in Lesson {0} : \t{1}"
+                logger.info('\nLesson changed. Now in Lesson {0} : \t{1}'
                             .format(self.lesson_num,
                                     ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
 
@@ -97,7 +97,7 @@ class Curriculum(object):
             lesson = self.lesson_num
         lesson = max(0, min(lesson, self.max_lesson_num))
         config = {}
-        parameters = self.data["parameters"]
+        parameters = self.data['parameters']
         for key in parameters:
             config[key] = parameters[key][lesson]
         return config

@@ -3,17 +3,19 @@
 # Launches unitytrainers for each External Brains in a Unity Environment
 
 import logging
-import numpy as np
 import os
-import re
-import tensorflow as tf
 import yaml
 
+import numpy as np
+import tensorflow as tf
 from tensorflow.python.tools import freeze_graph
+from unityagents.environment import UnityEnvironment
+from unityagents.exception import UnityEnvironmentException
+
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
-from unitytrainers import MetaCurriculum
-from unityagents import UnityEnvironment, UnityEnvironmentException
+from unitytrainers.meta_curriculum import MetaCurriculum
+from unitytrainers.exception import MetaCurriculumError
 
 
 class TrainerController(object):
@@ -37,12 +39,14 @@ class TrainerController(object):
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         """
         self.trainer_config_path = trainer_config_path
+
         if env_path is not None:
             env_path = (env_path.strip()
                         .replace('.app', '')
                         .replace('.exe', '')
                         .replace('.x86_64', '')
                         .replace('.x86', ''))  # Strip out executable extensions if passed
+
         # Recognize and use docker volume if one is passed as an argument
         if docker_target_name == '':
             self.docker_training = False
@@ -57,13 +61,13 @@ class TrainerController(object):
             if env_path is not None:
                 env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
                                                                      env_name=env_path)
-            if curriculum_folder is None:
-                self.curriculum_folder = None
-            else:
+            if curriculum_folder is not None:
                 self.curriculum_folder = '/{docker_target_name}/{curriculum_file}'.format(
                     docker_target_name=docker_target_name,
                     curriculum_folder=curriculum_folder)
+
             self.summaries_dir = '/{docker_target_name}/summaries'.format(docker_target_name=docker_target_name)
+
         self.logger = logging.getLogger("unityagents")
         self.run_id = run_id
         self.save_freq = save_freq
@@ -86,10 +90,26 @@ class TrainerController(object):
             self.env_name = 'editor_'+self.env.academy_name
         else:
             self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
-        self.meta_curriculum = MetaCurriculum(self.curriculum_folder, self.env._resetParameters)
+
+        if curriculum_folder is None:
+            self.meta_curriculum = None
+        else:
+            self.meta_curriculum = MetaCurriculum(self.curriculum_folder, self.env._resetParameters)
+
+        if self.meta_curriculum is not None and self.curriculum_folder is not None:
+            for brain_name in self.meta_curriculum.brains_to_curriculums.keys():
+                if brain_name not in self.env.external_brain_names:
+                    raise MetaCurriculumError('One of the curriculums '
+                                              'defined in ' +
+                                              self.curriculum_folder +
+                                              'does not have a corresponding '
+                                              'Brain. Please check that the '
+                                              'curriculum file has the same '
+                                              'name as the Brain '
+                                              'whose curriculum it defines.')
 
     def _get_progresses(self):
-        if self.curriculum_folder is not None:
+        if self.meta_curriculum is not None:
             brain_names_to_progresses = {}
             for brain_name, curriculum in self.meta_curriculum.brains_to_curriculums.items():
                 if curriculum.measure == "progress":

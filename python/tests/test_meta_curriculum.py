@@ -27,9 +27,11 @@ def progresses():
     return {'Brain1' : 0.2, 'Brain2' : 0.3}
 
 
+@patch('unitytrainers.Curriculum.get_config', return_value={})
 @patch('unitytrainers.Curriculum.__init__', return_value=None)
 @patch('os.listdir', return_value=['Brain1.json', 'Brain2.json'])
 def test_init_meta_curriculum_happy_path(listdir, mock_curriculum_init,
+                                         mock_curriculum_get_config,
                                          default_reset_parameters):
     meta_curriculum = MetaCurriculum('test/', default_reset_parameters)
 

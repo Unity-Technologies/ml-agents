@@ -13,3 +13,8 @@ class CurriculumError(TrainerError):
     Any error related to training with a curriculum.
     """
     pass
+
+class MetaCurriculumError(TrainerError):
+    """
+    Any error related to the configuration of a metacurriculum.
+    """

@@ -1,7 +1,13 @@
 """Contains the MetaCurriculum class."""
 
 import os
-from unitytrainers import Curriculum
+from unitytrainers.curriculum import Curriculum
+from unitytrainers.exception import MetaCurriculumError
+
+import logging
+
+logger = logging.getLogger('unitytrainers')
+
 
 class MetaCurriculum(object):
     """A MetaCurriculum holds curriculums. Each curriculum is associated to a particular
@@ -22,13 +28,20 @@ class MetaCurriculum(object):
         if curriculum_folder is None:
             self._brains_to_curriculums = None
         else:
+            used_reset_parameters = set()
             self._brains_to_curriculums = {}
             for curriculum_filename in os.listdir(curriculum_folder):
                 brain_name = curriculum_filename.split('.')[0]
                 curriculum_filepath = \
                     os.path.join(curriculum_folder, curriculum_filename)
-                self._brains_to_curriculums[brain_name] = \
-                    Curriculum(curriculum_filepath, default_reset_parameters)
+                curriculum = Curriculum(curriculum_filepath, default_reset_parameters)
+                if any([(parameter in curriculum.get_config().keys()) for parameter in used_reset_parameters]):
+                    logger.info('Two of more curriculums have attempted to change '
+                                'the same reset parameter. The result will be '
+                                'non-deterministic.')
+                used_reset_parameters.update(curriculum.get_config().keys())
+                self._brains_to_curriculums[brain_name] = curriculum
+
 
     @property
     def brains_to_curriculums(self):
