@@ -13,7 +13,7 @@ class UnityGymWrapperException(error.Error):
 
 def multi_agent_check(info):
     if len(info.agents) != 1:
-        logger.warn("Environment contains multiple agents. Only first agent is controllable via gym interface.")
+        raise UnityGymWrapperException("The environment cannot contain more than one agent.")
 
 
 class UnityEnv(gym.Env):
@@ -69,20 +69,8 @@ class UnityEnv(gym.Env):
             done (boolean): whether the episode has ended.
             info (dict): contains auxiliary diagnostic information, including BrainInfo.
         """
-
-        # Use random actions for all other agents in environment.
-        if len(self._current_state.agents) > 1:
-            if self._env.brains[self.brain_name].vector_action_space_type == 'continuous':
-                all_actions = np.random.randn(len(self._current_state.agents),
-                                              self._env.brains[self.brain_name].vector_action_space_size)
-            else:
-                all_actions = np.random.randint(0, self._env.brains[self.brain_name].vector_action_space_size,
-                                                size=(len(self._current_state.agents)))
-
-            all_actions[0, :] = action
-        else:
-            all_actions = action
-        info = self._env.step(all_actions)[self.brain_name]
+        info = self._env.step(action)[self.brain_name]
+        multi_agent_check(info)
         self._current_state = info
         if self.use_visual:
             self.visual_obs = info.visual_observations[0][0, :, :, :]
