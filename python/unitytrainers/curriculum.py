@@ -82,7 +82,7 @@ class Curriculum(object):
                 parameters = self.data['parameters']
                 for key in parameters:
                     config[key] = parameters[key][self.lesson_num]
-                logger.info('\n{0} lesson changed. Now in Lesson {1} : \t{2}'
+                logger.info('{0} lesson changed. Now in lesson {1}: {2}'
                             .format(self._brain_name,
                                     self.lesson_num,
                                     ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))

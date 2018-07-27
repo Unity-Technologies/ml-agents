@@ -291,7 +291,7 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        trainer.write_summary(self.meta_curriculum.lesson_nums)
+                        trainer.write_summary(self.meta_curriculum.brains_to_curriculums[brain_name].lesson_num)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:

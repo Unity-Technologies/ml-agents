@@ -130,10 +130,10 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def write_summary(self, lesson_nums):
+    def write_summary(self, lesson_num):
         """
         Saves training statistics to Tensorboard.
-        :param lesson_nums: The lesson the trainer is at.
+        :param lesson_num: The lesson the trainer is at.
         """
         if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
                 self.is_training and self.get_step <= self.get_max_steps):
@@ -151,7 +151,7 @@ class Trainer(object):
                     stat_mean = float(np.mean(self.stats[key]))
                     summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
                     self.stats[key] = []
-            self.write_tensorboard_text('LessonNumbers', lesson_nums)
+            summary.value.add(tag='Info/Lesson', simple_value=lesson_num)
             self.summary_writer.add_summary(summary, self.get_step)
             self.summary_writer.flush()
 
