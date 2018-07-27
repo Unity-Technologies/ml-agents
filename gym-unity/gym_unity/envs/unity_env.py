@@ -13,7 +13,8 @@ class UnityGymWrapperException(error.Error):
 
 def multi_agent_check(info):
     if len(info.agents) != 1:
-        raise UnityGymWrapperException("The environment cannot contain more than one agent.")
+        raise UnityGymWrapperException("The environment cannot contain more than one agent. "
+                                       "Please use `UnityMultiAgentEnv for multi-agent environments.")
 
 
 class UnityEnv(gym.Env):
