@@ -27,24 +27,27 @@ class UnityEnv(gym.Env):
         self.name = self._env.academy_name
         self.visual_obs = None
         self._current_state = None
+
         if len(self._env.brains) != 1:
             raise UnityGymWrapperException(
                 "There can only be one brain in a UnityEnvironment "
                 "if it is wrapped in a gym.")
         self.brain_name = self._env.external_brain_names[0]
         brain = self._env.brains[self.brain_name]
+
         self.use_visual = brain.number_visual_observations == 1 and default_visual
         if brain.num_stacked_vector_observations != 1:
             raise UnityGymWrapperException(
                 "There can only be one stacked vector observation in a UnityEnvironment "
                 "if it is wrapped in a gym.")
+
         if brain.vector_action_space_type == "discrete":
             self._action_space = spaces.Discrete(brain.vector_action_space_size)
         else:
             high = np.array([1] * brain.vector_action_space_size)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
-        high = np.array([np.inf] * brain.vector_observation_space_size)
         self.action_meanings = brain.vector_action_descriptions
+
         if self.use_visual:
             if brain.camera_resolutions[0]["blackAndWhite"]:
                 depth = 1
@@ -55,6 +58,7 @@ class UnityEnv(gym.Env):
                                                         brain.camera_resolutions[0]["width"],
                                                         depth))
         else:
+            high = np.array([np.inf] * brain.vector_observation_space_size)
             self._observation_space = spaces.Box(-high, high, dtype=np.float32)
 
     def step(self, action):

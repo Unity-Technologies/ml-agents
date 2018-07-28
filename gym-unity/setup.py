@@ -9,6 +9,6 @@ setup(name='gym_unity',
       author='Unity Technologies',
       author_email='ML-Agents@unity3d.com',
       url='https://github.com/Unity-Technologies/ml-agents',
-      packages=['gym_unity'],
+      packages=find_packages(),
       install_requires = ['gym', 'unityagents']
      )
