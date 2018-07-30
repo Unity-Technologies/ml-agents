@@ -130,7 +130,7 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def write_summary(self, lesson_num):
+    def write_summary(self, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
         :param lesson_num: The lesson the trainer is at.

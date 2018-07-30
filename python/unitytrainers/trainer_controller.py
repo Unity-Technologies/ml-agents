@@ -97,7 +97,7 @@ class TrainerController(object):
         else:
             self.meta_curriculum = MetaCurriculum(self.curriculum_folder, self.env._resetParameters)
 
-        if self.meta_curriculum is not None and self.curriculum_folder is not None:
+        if self.meta_curriculum is not None:
             for brain_name in self.meta_curriculum.brains_to_curriculums.keys():
                 if brain_name not in self.env.external_brain_names:
                     raise MetaCurriculumError('One of the curriculums '
@@ -234,7 +234,8 @@ class TrainerController(object):
 
     def start_learning(self):
         # TODO: Should be able to start learning at different lesson numbers for each curriculum.
-        self.meta_curriculum.set_all_curriculums_to_lesson_num(self.lesson)
+        if self.meta_curriculum is not None:
+            self.meta_curriculum.set_all_curriculums_to_lesson_num(self.lesson)
         trainer_config = self._load_config()
         self._create_model_path(self.model_path)
 
@@ -257,16 +258,22 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            self.meta_curriculum.increment_lessons(self._get_progresses())
-            curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
+            if self.meta_curriculum is not None:
+                self.meta_curriculum.increment_lessons(self._get_progresses())
+                curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
+            else:
+                curr_info = self.env.reset(train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters', trainer.parameters)
             try:
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
-                        self.meta_curriculum.increment_lessons(self._get_progresses())
-                        curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
+                        if self.meta_curriculum is not None:
+                            self.meta_curriculum.increment_lessons(self._get_progresses())
+                            curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
+                        else:
+                            curr_info = self.env.reset(train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
@@ -291,7 +298,10 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        trainer.write_summary(self.meta_curriculum.brains_to_curriculums[brain_name].lesson_num)
+                        if self.meta_curriculum is not None:
+                            trainer.write_summary(lesson=self.meta_curriculum.brains_to_curriculums[brain_name].lesson_num)
+                        else:
+                            trainer.write_summary()
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:
