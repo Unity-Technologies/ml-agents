@@ -64,7 +64,7 @@ class Trainer(object):
     @property
     def get_step(self):
         """
-        Returns the number of steps the trainer has performed
+        Returns the number of training steps the trainer has performed
         :return: the step count of the trainer
         """
         raise UnityTrainerException("The get_step property was not implemented.")
@@ -130,17 +130,18 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def write_summary(self, lesson_number):
+    def write_summary(self, lesson_number, global_step):
         """
         Saves training statistics to Tensorboard.
         :param lesson_number: The lesson the trainer is at.
+        :param global_step: The number of steps the simulation has been going for
         """
-        if self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0:
+        if global_step % self.trainer_parameters['summary_freq'] == 0 and global_step != 0:
             is_training = "Training." if self.is_training and self.get_step <= self.get_max_steps else "Not Training."
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
                 logger.info(" {}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}. {}"
-                            .format(self.run_id, self.brain_name, self.get_step,
+                            .format(self.run_id, self.brain_name, min(self.get_step, self.get_max_steps),
                                     mean_reward, np.std(self.stats['cumulative_reward']), is_training))
             else:
                 logger.info(" {}: {}: Step: {}. No episode was completed since last summary. {}"

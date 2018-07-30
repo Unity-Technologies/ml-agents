@@ -270,11 +270,10 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        trainer.write_summary(self.curriculum.lesson_number)
-                        if not self.train_model or trainer.get_step <= trainer.get_max_steps:
+                        trainer.write_summary(self.curriculum.lesson_number, global_step)
+                        if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
-                    if self.train_model:
-                        global_step += 1
+                    global_step += 1
                     if global_step % self.save_freq == 0 and global_step != 0 and self.train_model:
                         # Save Tensorflow model
                         self._save_model(sess, steps=global_step, saver=saver)
