@@ -210,7 +210,7 @@ on the same graph.
 To summarize, go to your command line, enter the `ml-agents/python` directory and type: 
 
 ```
-python3 learn.py --run-id=<run-identifier> --train 
+python learn.py --run-id=<run-identifier> --train 
 ```
 
 When the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
