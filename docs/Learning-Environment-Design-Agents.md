@@ -170,18 +170,22 @@ By default the output from our provided PPO algorithm pre-clamps the values of `
 
 When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array containing indices. With the discrete vector action space, `Branches` is an array of integers, each value corresponds to the number of possibilities for each branch.
 
-The [Area example](Learning-Environment-Examples.md#push-block) defines five actions in one branch for the discrete vector action space: a jump action and one action for each cardinal direction:
+For example, if we wanted an agent that can move in an plane and jump, we could define two branches (one for motion and one for jumping) because we want our agent be able to move __and__ jump concurently.
+We define the first branch to have 5 possible actions (don't move, go left, go right, go backward, go forward) and the second one to have 2 possible actions (don't jump, jump). The AgentAction method would look something like :
 
 ```csharp
-// Get the action index
+// Get the action index for movement
 int movement = Mathf.FloorToInt(act[0]); 
+// Get the action index for jumping
+int jump = Mathf.FloorToInt(act[1]); 
 
-// Look up the index in the action list:
+// Look up the index in the movement action list:
 if (movement == 1) { directionX = -1; }
 if (movement == 2) { directionX = 1; }
 if (movement == 3) { directionZ = -1; }
 if (movement == 4) { directionZ = 1; }
-if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+// Look up the index in the jump action list:
+if (jump == 1 && IsGrounded()) { directionY = 1; }
 
 // Apply the action results to move the agent
 gameObject.GetComponent<Rigidbody>().AddForce(
