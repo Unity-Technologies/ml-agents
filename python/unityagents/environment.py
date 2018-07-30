@@ -237,8 +237,8 @@ class UnityEnvironment(object):
         """
         if config is None:
             config = self._resetParameters
-        elif config != {}:
-            logger.info("\nAcademy Reset with parameters : \t{0}"
+        elif config:
+            logger.info("Academy reset with parameters: {0}"
                         .format(', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
         for k in config:
             if (k in self._resetParameters) and (isinstance(config[k], (int, float))):
