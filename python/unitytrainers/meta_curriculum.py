@@ -25,22 +25,29 @@ class MetaCurriculum(object):
             default_reset_parameters (dict): The default reset parameters
                 of the environment.
         """
-        if curriculum_folder is None:
-            self._brains_to_curriculums = None
-        else:
-            used_reset_parameters = set()
-            self._brains_to_curriculums = {}
+        used_reset_parameters = set()
+        self._brains_to_curriculums = {}
+
+        try:
             for curriculum_filename in os.listdir(curriculum_folder):
                 brain_name = curriculum_filename.split('.')[0]
                 curriculum_filepath = \
                     os.path.join(curriculum_folder, curriculum_filename)
                 curriculum = Curriculum(curriculum_filepath, default_reset_parameters)
+
+                # Check if any two curriculums use the same reset params.
                 if any([(parameter in curriculum.get_config().keys()) for parameter in used_reset_parameters]):
-                    logger.info('Two of more curriculums have attempted to change '
-                                'the same reset parameter. The result will be '
+                    logger.info('WARNING: Two of more curriculums will '
+                                'attempt to change the same reset '
+                                'parameter. The result will be '
                                 'non-deterministic.')
+
                 used_reset_parameters.update(curriculum.get_config().keys())
                 self._brains_to_curriculums[brain_name] = curriculum
+        except NotADirectoryError:
+            raise MetaCurriculumError(curriculum_folder + ' is not a '
+                                      'directory. Refer to the ML-Agents '
+                                      'curriculum learning docs.')
 
 
     @property

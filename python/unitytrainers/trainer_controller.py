@@ -104,7 +104,7 @@ class TrainerController(object):
                                               'defined in ' +
                                               self.curriculum_folder + ' '
                                               'does not have a corresponding '
-                                              'Brain. Please check that the '
+                                              'Brain. Check that the '
                                               'curriculum file has the same '
                                               'name as the Brain '
                                               'whose curriculum it defines.')

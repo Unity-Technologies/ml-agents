@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, call, Mock
 
 from unitytrainers.meta_curriculum import MetaCurriculum
+from unitytrainers.exception import MetaCurriculumError
 
 
 class MetaCurriculumTest(MetaCurriculum):
@@ -44,6 +45,12 @@ def test_init_meta_curriculum_happy_path(listdir, mock_curriculum_init,
              call('test/Brain2.json', default_reset_parameters)]
 
     mock_curriculum_init.assert_has_calls(calls)
+
+
+@patch('os.listdir', side_effect=NotADirectoryError())
+def test_init_meta_curriculum_bad_curriculum_folder_raises_error(listdir):
+    with pytest.raises(MetaCurriculumError):
+        MetaCurriculum('test/', default_reset_parameters)
 
 
 @patch('unitytrainers.Curriculum')
