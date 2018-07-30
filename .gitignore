@@ -62,6 +62,7 @@ python/summaries
 # Mac hidden files
 *.DS_Store
 */.ipynb_checkpoints
+*/.ipynb_checkpoints/*.ipynb
 */.idea
 *.pyc
 *.idea/misc.xml
