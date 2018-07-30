@@ -37,7 +37,7 @@ class MetaCurriculum(object):
 
                 # Check if any two curriculums use the same reset params.
                 if any([(parameter in curriculum.get_config().keys()) for parameter in used_reset_parameters]):
-                    logger.info('WARNING: Two of more curriculums will '
+                    logger.warning('Two or more curriculums will '
                                 'attempt to change the same reset '
                                 'parameter. The result will be '
                                 'non-deterministic.')
