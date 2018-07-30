@@ -69,9 +69,9 @@ object.
 1. Open a command or terminal window. 
 2. Nagivate to the folder where you installed the ML-Agents toolkit. 
 3. Change to the `python` directory. 
-4. Run `python3 learn.py --run-id=<run-identifier> --train`
+4. Run `python learn.py --run-id=<run-identifier> --train`
 Where:
-- `<run-identifier>` is a string used to separate the results of different training runs
+- `<run-identifier>` is a string used to separate the results of different training runs. Replace it with your desired name.
 - And the `--train` tells learn.py to run a training session (rather than inference)
 5. When the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen, you can press the :arrow_forward: button in Unity to start training in the Editor.
 
