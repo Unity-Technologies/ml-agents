@@ -102,7 +102,7 @@ class TrainerController(object):
                 if brain_name not in self.env.external_brain_names:
                     raise MetaCurriculumError('One of the curriculums '
                                               'defined in ' +
-                                              self.curriculum_folder +
+                                              self.curriculum_folder + ' '
                                               'does not have a corresponding '
                                               'Brain. Please check that the '
                                               'curriculum file has the same '
