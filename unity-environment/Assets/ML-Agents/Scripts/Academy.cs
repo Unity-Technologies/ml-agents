@@ -345,6 +345,18 @@ namespace MLAgents
             ConfigureEnvironment();
         }
 
+        private void UpdateResetParameters()
+        {
+            var newResetParameters = brainBatcher.GetEnvironmentParameters();
+            if (newResetParameters != null)
+            {
+                foreach (var kv in newResetParameters.FloatParameters)
+                {
+                    resetParameters[kv.Key] = kv.Value;
+                }
+            }
+        }
+
         void HandleLog(string logString, string stackTrace, LogType type)
         {
             logWriter = new StreamWriter(logPath, true);
@@ -527,15 +539,7 @@ namespace MLAgents
                 if (brainBatcher.GetCommand() ==
                     MLAgents.CommunicatorObjects.CommandProto.Reset)
                 {
-                    // Update reset parameters.
-                    var newResetParameters = brainBatcher.GetEnvironmentParameters();
-                    if (newResetParameters != null)
-                    {
-                        foreach (var kv in newResetParameters.FloatParameters)
-                        {
-                            resetParameters[kv.Key] = kv.Value;
-                        }
-                    }
+                    UpdateResetParameters();
 
                     SetIsInference(!brainBatcher.GetIsTraining());
 
@@ -554,6 +558,7 @@ namespace MLAgents
             }
             else if (!firstAcademyReset)
             {
+                UpdateResetParameters();
                 ForcedFullReset();
             }
 
