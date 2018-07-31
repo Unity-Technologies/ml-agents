@@ -161,6 +161,9 @@ class UnityEnv(gym.Env):
         if not self._multiagent and n_agents > 1:
             raise UnityGymException("The environment was launched as a single-agent environment, however"
                                     "there is more than one agent in the scene.")
+        elif self._multiagent and n_agents <= 1:
+            raise UnityGymException("The environment was launched as a mutli-agent environment, however"
+                                    "there is only one agent in the scene.")
         if self._n_agents is None:
             self._n_agents = n_agents
             logger.info("{} agents within environment.".format(n_agents))
