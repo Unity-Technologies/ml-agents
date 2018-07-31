@@ -12,7 +12,6 @@ from unityagents import AllBrainInfo, BrainInfo
 from unitytrainers.buffer import Buffer
 from unitytrainers.ppo.models import PPOModel
 from unitytrainers.trainer import UnityTrainerException, Trainer
-import math
 
 logger = logging.getLogger("unityagents")
 
@@ -337,9 +336,7 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
-                    if math.isnan(next_info.rewards[next_idx]):
-                        logger.warning("The reward for agent "+str(next_idx)+" was NaN for brain "+self.brain_name)
-                        next_info.rewards[next_idx] = 0
+
                     if self.use_curiosity:
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx] +
                                                                          intrinsic_rewards[next_idx])
