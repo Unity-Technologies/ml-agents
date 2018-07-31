@@ -14,15 +14,17 @@ class UnityGymException(error.Error):
 class UnityEnv(gym.Env):
     """
     Provides Gym wrapper for Unity Learning Environments.
+    Multi-agent environments use lists for object types, as done here:
+    https://github.com/openai/multiagent-particle-envs
     """
 
     def __init__(self, environment_filename: str, worker_id=0, use_visual=True, multiagent=False):
         """
         Environment initialization
+        :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
         :param worker_id: Worker number for environment.
         :param use_visual: Whether to use visual observation or vector observation.
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
-        :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
         """
         self._env = UnityEnvironment(environment_filename, worker_id)
         self.name = self._env.academy_name
@@ -67,7 +69,8 @@ class UnityEnv(gym.Env):
 
     def reset(self):
         """Resets the state of the environment and returns an initial observation.
-        Returns: observation (object): the initial observation of the
+        In the case of multi-agent environments, this is a list.
+        Returns: observation (object/list): the initial observation of the
             space.
         """
         info = self._env.reset()[self.brain_name]
@@ -85,17 +88,20 @@ class UnityEnv(gym.Env):
         episode is reached, you are responsible for calling `reset()`
         to reset this environment's state.
         Accepts an action and returns a tuple (observation, reward, done, info).
+        In the case of multi-agent environments, these are lists.
         Args:
-            action (object): an action provided by the environment
+            action (object/list): an action provided by the environment
         Returns:
-            observation (object): agent's observation of the current environment
-            reward (float) : amount of reward returned after previous action
-            done (boolean): whether the episode has ended.
+            observation (object/list): agent's observation of the current environment
+            reward (float/list) : amount of reward returned after previous action
+            done (boolean/list): whether the episode has ended.
             info (dict): contains auxiliary diagnostic information, including BrainInfo.
         """
 
         # Use random actions for all other agents in environment.
         if self._multiagent:
+            if not isinstance(action, list):
+                raise UnityGymException("The environment was expecting `action` to be a list.")
             if len(action) != self._n_agents:
                 raise UnityGymException("The environment was expecting a list of {} actions.".format(self._n_agents))
             else:
@@ -119,8 +125,8 @@ class UnityEnv(gym.Env):
         else:
             default_observation = info.vector_observations[0, :]
 
-        return default_observation, info.rewards[0], \
-               info.local_done[0], {"text_observation": info.text_observations[0], "brain_info": info}
+        return default_observation, info.rewards[0], info.local_done[0], {"text_observation": info.text_observations[0],
+                                                                          "brain_info": info}
 
     def _multi_step(self, info):
         if self.use_visual:
@@ -128,8 +134,8 @@ class UnityEnv(gym.Env):
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations
-        return list(default_observation), info.rewards, \
-               info.local_done, {"text_observation": info.text_observations, "brain_info": info}
+        return list(default_observation), info.rewards,  info.local_done, {"text_observation": info.text_observations,
+                                                                           "brain_info": info}
 
     def render(self, mode='rgb_array'):
         return self.visual_obs
@@ -154,13 +160,13 @@ class UnityEnv(gym.Env):
     def _check_agents(self, n_agents):
         if not self._multiagent and n_agents > 1:
             raise UnityGymException("The environment was launched as a single-agent environment, however"
-                                           "there is more than one agent in the scene.")
+                                    "there is more than one agent in the scene.")
         if self._n_agents is None:
             self._n_agents = n_agents
             logger.info("{} agents within environment.".format(n_agents))
         elif self._n_agents != n_agents:
             raise UnityGymException("The number of agents in the environment has changed since "
-                                           "initialization. This is not supported.")
+                                    "initialization. This is not supported.")
 
     @property
     def metadata(self):
