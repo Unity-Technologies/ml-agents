@@ -3,28 +3,31 @@
 # Launches unitytrainers for each External Brains in a Unity Environment
 
 import logging
-import numpy as np
 import os
-import re
-import tensorflow as tf
 import yaml
+import re
 
+import numpy as np
+import tensorflow as tf
 from tensorflow.python.tools import freeze_graph
+from unityagents.environment import UnityEnvironment
+from unityagents.exception import UnityEnvironmentException
+
 from unitytrainers.ppo.trainer import PPOTrainer
 from unitytrainers.bc.trainer import BehavioralCloningTrainer
-from unitytrainers import Curriculum
-from unityagents import UnityEnvironment, UnityEnvironmentException
+from unitytrainers.meta_curriculum import MetaCurriculum
+from unitytrainers.exception import MetaCurriculumError
 
 
 class TrainerController(object):
-    def __init__(self, env_path, run_id, save_freq, curriculum_file, fast_simulation, load, train,
+    def __init__(self, env_path, run_id, save_freq, curriculum_folder, fast_simulation, load, train,
                  worker_id, keep_checkpoints, lesson, seed, docker_target_name, trainer_config_path,
                  no_graphics):
         """
         :param env_path: Location to the environment executable to be loaded.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
-        :param curriculum_file: Curriculum json file for environment
+        :param curriculum_folder: Folder containing JSON curriculums for the env
         :param fast_simulation: Whether to run the game at training speed
         :param load: Whether to load the model or randomly initialize
         :param train: Whether to train model, or only run inference
@@ -37,17 +40,19 @@ class TrainerController(object):
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         """
         self.trainer_config_path = trainer_config_path
+
         if env_path is not None:
             env_path = (env_path.strip()
                         .replace('.app', '')
                         .replace('.exe', '')
                         .replace('.x86_64', '')
                         .replace('.x86', ''))  # Strip out executable extensions if passed
+
         # Recognize and use docker volume if one is passed as an argument
         if docker_target_name == '':
             self.docker_training = False
             self.model_path = './models/{run_id}'.format(run_id=run_id)
-            self.curriculum_file = curriculum_file
+            self.curriculum_folder = curriculum_folder
             self.summaries_dir = './summaries'
         else:
             self.docker_training = True
@@ -57,13 +62,13 @@ class TrainerController(object):
             if env_path is not None:
                 env_path = '/{docker_target_name}/{env_name}'.format(docker_target_name=docker_target_name,
                                                                      env_name=env_path)
-            if curriculum_file is None:
-                self.curriculum_file = None
-            else:
-                self.curriculum_file = '/{docker_target_name}/{curriculum_file}'.format(
+            if curriculum_folder is not None:
+                self.curriculum_folder = '/{docker_target_name}/{curriculum_file}'.format(
                     docker_target_name=docker_target_name,
-                    curriculum_file=curriculum_file)
+                    curriculum_folder=curriculum_folder)
+
             self.summaries_dir = '/{docker_target_name}/summaries'.format(docker_target_name=docker_target_name)
+
         self.logger = logging.getLogger("unityagents")
         self.run_id = run_id
         self.save_freq = save_freq
@@ -86,21 +91,35 @@ class TrainerController(object):
             self.env_name = 'editor_'+self.env.academy_name
         else:
             self.env_name = os.path.basename(os.path.normpath(env_path))  # Extract out name of environment
-        self.curriculum = Curriculum(curriculum_file, self.env._resetParameters)
 
-    def _get_progress(self):
-        if self.curriculum_file is not None:
-            progress = 0
-            if self.curriculum.measure_type == "progress":
-                for brain_name in self.env.external_brain_names:
-                    progress += self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
-                return progress / len(self.env.external_brain_names)
-            elif self.curriculum.measure_type == "reward":
-                for brain_name in self.env.external_brain_names:
-                    progress += self.trainers[brain_name].get_last_reward
-                return progress
-            else:
-                return None
+        if curriculum_folder is None:
+            self.meta_curriculum = None
+        else:
+            self.meta_curriculum = MetaCurriculum(self.curriculum_folder, self.env._resetParameters)
+
+        if self.meta_curriculum is not None and self.curriculum_folder is not None:
+            for brain_name in self.meta_curriculum.brains_to_curriculums.keys():
+                if brain_name not in self.env.external_brain_names:
+                    raise MetaCurriculumError('One of the curriculums '
+                                              'defined in ' +
+                                              self.curriculum_folder + ' '
+                                              'does not have a corresponding '
+                                              'Brain. Check that the '
+                                              'curriculum file has the same '
+                                              'name as the Brain '
+                                              'whose curriculum it defines.')
+
+    def _get_progresses(self):
+        if self.meta_curriculum is not None:
+            brain_names_to_progresses = {}
+            for brain_name, curriculum in self.meta_curriculum.brains_to_curriculums.items():
+                if curriculum.measure == "progress":
+                    progress = self.trainers[brain_name].get_step / self.trainers[brain_name].get_max_steps
+                    brain_names_to_progresses[brain_name] = progress
+                elif curriculum.measure == "reward":
+                    progress = self.trainers[brain_name].get_last_reward
+                    brain_names_to_progresses[brain_name] = progress
+            return brain_names_to_progresses
         else:
             return None
 
@@ -156,6 +175,7 @@ class TrainerController(object):
 
     def _initialize_trainers(self, trainer_config, sess):
         trainer_parameters_dict = {}
+        # TODO: This probably doesn't need to be reinitialized.
         self.trainers = {}
         for brain_name in self.env.external_brain_names:
             trainer_parameters = trainer_config['default'].copy()
@@ -213,7 +233,8 @@ class TrainerController(object):
                                             .format(model_path))
 
     def start_learning(self):
-        self.curriculum.set_lesson_number(self.lesson)
+        # TODO: Should be able to start learning at different lesson numbers for each curriculum.
+        self.meta_curriculum.set_all_curriculums_to_lesson_num(self.lesson)
         trainer_config = self._load_config()
         self._create_model_path(self.model_path)
 
@@ -221,7 +242,7 @@ class TrainerController(object):
 
         with tf.Session() as sess:
             self._initialize_trainers(trainer_config, sess)
-            for k, t in self.trainers.items():
+            for _, t in self.trainers.items():
                 self.logger.info(t)
             init = tf.global_variables_initializer()
             saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
@@ -236,16 +257,16 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            self.curriculum.increment_lesson(self._get_progress())
-            curr_info = self.env.reset(config=self.curriculum.get_config(), train_mode=self.fast_simulation)
+            self.meta_curriculum.increment_lessons(self._get_progresses())
+            curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters', trainer.parameters)
             try:
                 while any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()]) or not self.train_model:
                     if self.env.global_done:
-                        self.curriculum.increment_lesson(self._get_progress())
-                        curr_info = self.env.reset(config=self.curriculum.get_config(), train_mode=self.fast_simulation)
+                        self.meta_curriculum.increment_lessons(self._get_progresses())
+                        curr_info = self.env.reset(config=self.meta_curriculum.get_config(), train_mode=self.fast_simulation)
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
@@ -270,7 +291,7 @@ class TrainerController(object):
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
-                        trainer.write_summary(self.curriculum.lesson_number)
+                        trainer.write_summary(self.meta_curriculum.brains_to_curriculums[brain_name].lesson_num)
                         if self.train_model and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:
