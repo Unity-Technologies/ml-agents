@@ -12,6 +12,7 @@ from unityagents import AllBrainInfo, BrainInfo
 from unitytrainers.buffer import Buffer
 from unitytrainers.ppo.models import PPOModel
 from unitytrainers.trainer import UnityTrainerException, Trainer
+import math
 
 logger = logging.getLogger("unityagents")
 
@@ -165,7 +166,6 @@ class PPOTrainer(Trainer):
         :return: a tuple containing action, memories, values and an object
         to be passed to add experiences
         """
-        action_sizes = [3, 3, 3, 2]
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
             return [], [], [], None, None
@@ -175,7 +175,7 @@ class PPOTrainer(Trainer):
         if self.use_recurrent:
             if not self.is_continuous_action:
                 feed_dict[self.model.prev_action] = curr_brain_info.previous_vector_actions.reshape(
-                    [-1, len(action_sizes)])
+                    [-1, len(self.brain.vector_action_space_size)])
             if curr_brain_info.memories.shape[1] == 0:
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
@@ -337,6 +337,9 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
+                    if math.isnan(next_info.rewards[next_idx]):
+                        logger.warning("The reward for agent "+str(next_idx)+" was NaN for brain "+self.brain_name)
+                        next_info.rewards[next_idx] = 0
                     if self.use_curiosity:
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx] +
                                                                          intrinsic_rewards[next_idx])
@@ -344,7 +347,6 @@ class PPOTrainer(Trainer):
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
-
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]

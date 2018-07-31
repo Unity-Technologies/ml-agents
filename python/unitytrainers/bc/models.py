@@ -23,9 +23,13 @@ class BehavioralCloningModel(LearningModel):
         if brain.vector_action_space_type == "discrete":
             policy_branches = []
             for size in self.a_size:
-                policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
-                                                       kernel_initializer=c_layers.variance_scaling_initializer(
-                                                           factor=0.01)))
+                policy_branches.append(
+                    tf.layers.dense(
+                        hidden,
+                        size,
+                        activation=None,
+                        use_bias=False,
+                        kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
             self.action_probs = tf.concat(
                 [tf.nn.softmax(branch) for branch in policy_branches], axis=1, name="action_probs")
             self.sample_action_float = tf.concat([tf.multinomial(branch, 1) for branch in policy_branches], axis=1)

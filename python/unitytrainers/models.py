@@ -300,14 +300,12 @@ class LearningModel(object):
         self.all_old_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
 
         action_starting_indices = [0] + list(np.cumsum(self.a_size))
-        # We reshape these tensors to [batch x 1] in order to be of the same rank as continuous control probabilities.
-        # self.probs = tf.expand_dims(tf.reduce_sum(self.all_probs * self.selected_actions, axis=1), 1)
+        # We reshape these tensors to [batch x nb_branches] in order to be of the same rank as continuous control
+        # probabilities.
         self.probs = tf.stack([
             tf.reduce_sum(self.all_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                           * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
             for i in range(len(self.a_size))], axis=1)
-
-        # self.old_probs = tf.expand_dims(tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1), 1)
         self.old_probs = tf.stack(
             [tf.reduce_sum(self.all_old_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                            * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
