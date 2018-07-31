@@ -196,20 +196,24 @@ public class WallJumpAgent : Agent
 
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
+        int dirToGoForwardAction = (int) act[0];
+        int rotateDirAction = (int) act[1];
+        int dirToGoSideAction = (int) act[2];
+        int jumpAction = (int) act[3];
 
-        if ((int)(act[0])==1)
+        if (dirToGoForwardAction==1)
             dirToGo = transform.forward * 1f * (largeGrounded ? 1f : 0.5f);
-        else if ((int)(act[0])==2)
+        else if (dirToGoForwardAction==2)
             dirToGo = transform.forward * -1f * (largeGrounded ? 1f : 0.5f);
-        if ((int)(act[1])==1)
+        if (rotateDirAction==1)
             rotateDir = transform.up * -1f;
-        else if ((int)(act[1])==2)
+        else if (rotateDirAction==2)
             rotateDir = transform.up * 1f;
-        if ((int)(act[2])==1)
+        if (dirToGoSideAction==1)
             dirToGo = transform.right * -0.6f * (largeGrounded ? 1f : 0.5f);
-        else if ((int)(act[2])==2)
+        else if (dirToGoSideAction==2)
             dirToGo = transform.right * 0.6f * (largeGrounded ? 1f : 0.5f);
-        if (act[3] > 0.5f)
+        if (jumpAction == 1)
             if ((jumpingTime <= 0f) && smallGrounded)
             {
                 Jump();
