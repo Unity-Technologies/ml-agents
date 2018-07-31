@@ -103,7 +103,7 @@ namespace MLAgents
                             bpVectorActionSize.GetArrayElementAtIndex(branchIndex);
                         EditorGUILayout.PropertyField(branchActionSize, new GUIContent(
                             "Branch " + branchIndex+" Size", 
-                            "Number of bins for the branch no " + branchIndex+"."));
+                            "Number of possible actions for the branch number " + branchIndex+"."));
                     }
                     EditorGUI.indentLevel--;
 

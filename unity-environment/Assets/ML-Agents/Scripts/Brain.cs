@@ -63,7 +63,6 @@ namespace MLAgents
         /**< \brief If continuous : The length of the float vector that represents
          * the action
          * <br> If discrete : The number of possible values the action can take*/
-        public int[] test = new int[3]{1,2,3};
 
         public resolution[] cameraResolutions;
         /**<\brief  The list of observation resolutions for the brain */
