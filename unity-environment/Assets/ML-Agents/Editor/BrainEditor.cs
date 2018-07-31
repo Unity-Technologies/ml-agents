@@ -92,8 +92,21 @@ namespace MLAgents
                     // Discrete case :
                     SerializedProperty bpVectorActionSize =
                         serializedBrain.FindProperty("brainParameters.vectorActionSize");
-                    EditorGUILayout.PropertyField(bpVectorActionSize, new GUIContent("Branches",
-                        "The number of discrete actions for each action branch."), true);
+                    bpVectorActionSize.arraySize = EditorGUILayout.IntField(
+                        "Nb Branches", bpVectorActionSize.arraySize);
+                    EditorGUI.indentLevel++;
+                    for (int branchIndex = 0;
+                        branchIndex < bpVectorActionSize.arraySize;
+                        branchIndex++)
+                    {
+                        SerializedProperty branchActionSize =
+                            bpVectorActionSize.GetArrayElementAtIndex(branchIndex);
+                        EditorGUILayout.PropertyField(branchActionSize, new GUIContent(
+                            "Branch " + branchIndex+" Size", 
+                            "Number of bins for the branch no " + branchIndex+"."));
+                    }
+                    EditorGUI.indentLevel--;
+
                 }
 
                     BrainParameters parameters = myBrain.brainParameters;
