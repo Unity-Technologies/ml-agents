@@ -50,11 +50,11 @@ For more on using the gym interface, see our [Jupyter Notebook tutorial](../pyth
 
 OpenAI provides a set of open-source maintained and tested Reinforcement Learning algorithms called the [Baselines](https://github.com/openai/baselines). 
 
-Using the provided Gym wrapper, it is possible to train ML-Agents environments using these algorithms. This requires the creation of custom training scripts to launch algorithm, however in most cases these scripts can be created by making slightly modifications to the provided ones for Atari and Mujoco environments.
+Using the provided Gym wrapper, it is possible to train ML-Agents environments using these algorithms. This requires the creation of custom training scripts to launch each algorithm. In most cases these scripts can be created by making slightly modifications to the ones provided for Atari and Mujoco environments.
 
 ### Example - DQN Baseline
 
-In order to train an agent to play the `GridWorld` environment using the Baselines DQN algorithm, create a file called `train_unity.py` within the `baselines/deepq/experiments` subfolder of the baselines repository. Then create and `/envs/` directory within the repository, and build the GridWorld environment to that directory. For more information on building Unity environments, see [here](../docs/Learning-Environment-Executable.md). Add the following code to the `train_unity.py` file:
+In order to train an agent to play the `GridWorld` environment using the Baselines DQN algorithm, create a file called `train_unity.py` within the `baselines/deepq/experiments` subfolder of the baselines repository. This file will be a modification of the `run_atari.py` file within the same folder. Then create and `/envs/` directory within the repository, and build the GridWorld environment to that directory. For more information on building Unity environments, see [here](../docs/Learning-Environment-Executable.md). Add the following code to the `train_unity.py` file:
 
 ```
 import gym
@@ -96,9 +96,11 @@ python -m baselines.deepq.experiments.train_unity
 
 ### Other Algorithms
 
-Other algorithms in the Baselines repository can be run using similar scripts. In most cases, the primary change needed to use a Unity environment is to import `UnityEnv`, and to replace the environment creation code with a call to `UnityEnv`, passing the environment binary path. For vision-based environments, modification should be done to Atari training scripts, and for vector observation environments, modification should be done to Mujoco scripts.
+Other algorithms in the Baselines repository can be run using scripts similar to the example provided above. In most cases, the primary changes needed to use a Unity environment are to import `UnityEnv`, and to replace the environment creation code, typically `gym.make()`, with a call to `UnityEnv(env_path)` passing the environment binary path. 
 
-Some algorithms will make use of `make_atari_env` or `make_mujoco_env` functions. These are defined in `baselines/common/cmd_util.py`. In order to use Unity environments for these algorithms, add the following import statement and function to `cmd_utils.py`:
+A typical rule of thumb is that for vision-based environments, modification should be done to Atari training scripts, and for vector observation environments, modification should be done to Mujoco scripts.
+
+Some algorithms will make use of `make_atari_env()` or `make_mujoco_env()` functions. These are defined in `baselines/common/cmd_util.py`. In order to use Unity environments for these algorithms, add the following import statement and function to `cmd_utils.py`:
 
 ```python
 from gym_unity.envs import UnityEnv
