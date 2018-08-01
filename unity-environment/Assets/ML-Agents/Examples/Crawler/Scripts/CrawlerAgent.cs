@@ -145,7 +145,7 @@ public class CrawlerAgent : Agent
     {
         for (int actionIndex = 0; actionIndex < vectorAction.Length; actionIndex++)
         {
-            vectorAction[actionIndex] = (vectorAction[actionIndex] - 10f) / 10f;
+            vectorAction[actionIndex] = (vectorAction[actionIndex] - 5f) / 5f;
         }
 
         if (detectTargets)
