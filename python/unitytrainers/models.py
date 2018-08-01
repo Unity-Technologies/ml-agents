@@ -290,8 +290,7 @@ class LearningModel(object):
         value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.entropy = - (sum([tf.reduce_sum(tf.nn.softmax(branch) * tf.log(tf.nn.softmax(branch) + 1e-10), axis=1)
-                               for branch in policy_branches])) / len(policy_branches)
+        self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1) / len(policy_branches)
 
         self.action_holder = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
@@ -306,7 +305,9 @@ class LearningModel(object):
             tf.reduce_sum(self.all_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                           * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
             for i in range(len(self.a_size))], axis=1)
-        self.old_probs = tf.stack(
-            [tf.reduce_sum(self.all_old_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
+        self.old_probs = tf.stack([
+                tf.reduce_sum(self.all_old_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                            * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
              for i in range(len(self.a_size))], axis=1)
+
+
