@@ -100,7 +100,12 @@ public class BananaAgent : Agent
             }
             else
             {
-                switch ((int) act[0])
+                var forwardAxis = (int)act[0];
+                var rightAxis = (int)act[1];
+                var rotateAxis = (int)act[2];
+                var shootAxis = (int)act[3];
+                
+                switch (forwardAxis)
                 {
                     case 1:
                         dirToGo = transform.forward;
@@ -109,8 +114,18 @@ public class BananaAgent : Agent
                         dirToGo = -transform.forward;
                         break;
                 }
+                
+                switch (rightAxis)
+                {
+                    case 1:
+                        dirToGo = transform.right;
+                        break;
+                    case 2:
+                        dirToGo = -transform.right;
+                        break;
+                }
 
-                switch ((int) act[1])
+                switch (rotateAxis)
                 {
                     case 1:
                         rotateDir = -transform.up;
@@ -119,7 +134,7 @@ public class BananaAgent : Agent
                         rotateDir = transform.up;
                         break; 
                 }
-                switch ((int) act[2])
+                switch (shootAxis)
                 {
                     case 1:
                         shootCommand = true;
