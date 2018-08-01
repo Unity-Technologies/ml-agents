@@ -93,7 +93,7 @@ namespace MLAgents
                     SerializedProperty bpVectorActionSize =
                         serializedBrain.FindProperty("brainParameters.vectorActionSize");
                     bpVectorActionSize.arraySize = EditorGUILayout.IntField(
-                        "Nb Branches", bpVectorActionSize.arraySize);
+                        "Branches Size", bpVectorActionSize.arraySize);
                     EditorGUI.indentLevel++;
                     for (int branchIndex = 0;
                         branchIndex < bpVectorActionSize.arraySize;
@@ -109,6 +109,8 @@ namespace MLAgents
 
                 }
 
+                try
+                {
                     BrainParameters parameters = myBrain.brainParameters;
                     int numberOfDescriptions = 0;
                     if (parameters.vectorActionSpaceType == SpaceType.continuous)
@@ -118,6 +120,11 @@ namespace MLAgents
                     if (parameters.vectorActionDescriptions == null ||
                         parameters.vectorActionDescriptions.Length != numberOfDescriptions)
                         parameters.vectorActionDescriptions = new string[numberOfDescriptions];
+                }
+                catch
+                {
+
+                }
 
                 SerializedProperty bpVectorActionDescription =
                     serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
