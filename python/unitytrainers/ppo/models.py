@@ -179,7 +179,7 @@ class PPOModel(LearningModel):
         # Here we calculate PPO policy loss. In continuous control this is done independently for each action gaussian
         # and then averaged together. This provides significantly better performance than treating the probability
         # as an average of probabilities, or as a joint probability.
-        r_theta = probs / (old_probs + 1e-10)
+        r_theta = tf.exp(probs - old_probs)
         p_opt_a = r_theta * self.advantage
         p_opt_b = tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
         self.policy_loss = -tf.reduce_mean(tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1])

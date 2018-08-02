@@ -253,8 +253,8 @@ class LearningModel(object):
                                             name='old_probabilities')
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.probs = tf.identity(self.all_probs)
-        self.old_probs = tf.identity(self.all_old_probs)
+        self.probs = tf.reduce_sum(tf.log(tf.identity(self.all_probs)), axis=1, keep_dims=True)
+        self.old_probs = tf.reduce_sum(tf.log(tf.identity(self.all_old_probs)), axis=1, keep_dims=True)
 
     def create_dc_actor_critic(self, h_size, num_layers):
         """
@@ -290,7 +290,7 @@ class LearningModel(object):
         value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1) / len(policy_branches)
+        self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
 
         self.action_holder = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
@@ -301,13 +301,13 @@ class LearningModel(object):
         action_starting_indices = [0] + list(np.cumsum(self.a_size))
         # We reshape these tensors to [batch x nb_branches] in order to be of the same rank as continuous control
         # probabilities.
-        self.probs = tf.stack([
+        self.probs = tf.reduce_sum(tf.log(tf.stack([
             tf.reduce_sum(self.all_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                           * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
-            for i in range(len(self.a_size))], axis=1)
-        self.old_probs = tf.stack([
+            for i in range(len(self.a_size))], axis=1)), axis=1, keep_dims=True)
+        self.old_probs = tf.reduce_sum(tf.log(tf.stack([
                 tf.reduce_sum(self.all_old_probs[:, action_starting_indices[i]:action_starting_indices[i+1]]
                            * self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i+1]], axis=1)
-             for i in range(len(self.a_size))], axis=1)
+             for i in range(len(self.a_size))], axis=1)), axis=1, keep_dims=True)
 
 
