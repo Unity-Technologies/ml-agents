@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 import tensorflow as tf
 from unitytrainers.models import LearningModel
@@ -126,7 +127,9 @@ class PPOModel(LearningModel):
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(squared_difference, self.mask, 2)[1])
         else:
-            pred_action = tf.layers.dense(hidden, sum(self.a_size), activation=tf.nn.softmax)
+            pred_action = tf.concat(
+                [tf.layers.dense(hidden, self.a_size[i], activation=tf.nn.softmax)
+                 for i in range(len(self.a_size))], axis=1)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(cross_entropy, self.mask, 2)[1])
 

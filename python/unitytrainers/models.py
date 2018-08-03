@@ -290,28 +290,30 @@ class LearningModel(object):
         value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.entropy = tf.nn.softmax_cross_entropy_with_logits_v2(
-            labels=tf.nn.softmax(self.all_probs),
-            logits=self.all_probs)
-
         self.action_holder = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
             tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
 
         self.all_old_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
 
-        action_starting_indices = [0] + list(np.cumsum(self.a_size))
+        action_idx = [0] + list(np.cumsum(self.a_size))
+
+        self.entropy = tf.reduce_sum((tf.stack([
+            tf.nn.softmax_cross_entropy_with_logits_v2(
+            labels=tf.nn.softmax(self.all_probs[:, action_idx[i]:action_idx[i + 1]]),
+            logits=self.all_probs[:, action_idx[i]:action_idx[i + 1]])
+            for i in range(len(self.a_size))], axis=1)), axis=1)
 
         self.probs = tf.reduce_sum((tf.stack([
-            -tf.nn.softmax_cross_entropy_with_logits(
-                labels=self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i + 1]],
-                logits=self.all_probs[:, action_starting_indices[i]:action_starting_indices[i + 1]]
+            -tf.nn.softmax_cross_entropy_with_logits_v2(
+                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                logits=self.all_probs[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
         self.old_probs = tf.reduce_sum((tf.stack([
-            -tf.nn.softmax_cross_entropy_with_logits(
-                labels=self.selected_actions[:, action_starting_indices[i]:action_starting_indices[i + 1]],
-                logits=self.all_old_probs[:, action_starting_indices[i]:action_starting_indices[i + 1]]
+            -tf.nn.softmax_cross_entropy_with_logits_v2(
+                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                logits=self.all_old_probs[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
 
