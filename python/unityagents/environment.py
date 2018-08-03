@@ -466,9 +466,11 @@ class UnityEnvironment(object):
                 memory = np.array([x.memories for x in agent_info_list])
             if any([math.isnan(x.reward) for x in agent_info_list]):
                 logger.warning("An agent had a NaN reward for brain "+b)
+            if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
+                logger.warning("An agent had a NaN observation for brain " + b)
             _data[b] = BrainInfo(
                 visual_observation=vis_obs,
-                vector_observation=np.array([x.stacked_vector_observation for x in agent_info_list]),
+                vector_observation=np.nan_to_num(np.array([x.stacked_vector_observation for x in agent_info_list])),
                 text_observations=[x.text_observation for x in agent_info_list],
                 memory=memory,
                 reward=[x.reward if not math.isnan(x.reward) else 0 for x in agent_info_list],
