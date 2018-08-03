@@ -2,7 +2,6 @@ import atexit
 import glob
 import io
 import logging
-import math
 import numpy as np
 import os
 import subprocess
@@ -464,7 +463,7 @@ class UnityEnvironment(object):
             else:
                 [x.memories.extend([0] * (memory_size - len(x.memories))) for x in agent_info_list]
                 memory = np.array([x.memories for x in agent_info_list])
-            if any([math.isnan(x.reward) for x in agent_info_list]):
+            if any([np.isnan(x.reward) for x in agent_info_list]):
                 logger.warning("An agent had a NaN reward for brain "+b)
             if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
                 logger.warning("An agent had a NaN observation for brain " + b)
@@ -473,7 +472,7 @@ class UnityEnvironment(object):
                 vector_observation=np.nan_to_num(np.array([x.stacked_vector_observation for x in agent_info_list])),
                 text_observations=[x.text_observation for x in agent_info_list],
                 memory=memory,
-                reward=[x.reward if not math.isnan(x.reward) else 0 for x in agent_info_list],
+                reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
                 agents=[x.id for x in agent_info_list],
                 local_done=[x.done for x in agent_info_list],
                 vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
