@@ -263,6 +263,21 @@ class TrainerController(object):
                                             'permissions are set correctly.'
                                             .format(model_path))
 
+    def _increment_lessons_and_reset_env(self):
+        """Increments the lessons of curriculums if there is a metacurriculum
+        and resets the environment.
+
+        Returns:
+            A Data structure corresponding to the initial reset state of the
+            environment.
+        """
+        if self.meta_curriculum is not None:
+            self.meta_curriculum.increment_lessons(self._get_progresses())
+            return self.env.reset(config=self.meta_curriculum.get_config(),
+                                       train_mode=self.fast_simulation)
+        else:
+            return self.env.reset(train_mode=self.fast_simulation)
+
     def start_learning(self):
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
@@ -292,13 +307,7 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            if self.meta_curriculum is not None:
-                self.meta_curriculum.increment_lessons(self._get_progresses())
-                curr_info = self.env.reset(
-                    config=self.meta_curriculum.get_config(),
-                    train_mode=self.fast_simulation)
-            else:
-                curr_info = self.env.reset(train_mode=self.fast_simulation)
+            curr_info = self._increment_lessons_and_reset_env()
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters',
@@ -308,15 +317,7 @@ class TrainerController(object):
                            for k, t in self.trainers.items()]) \
                       or not self.train_model:
                     if self.env.global_done:
-                        if self.meta_curriculum is not None:
-                            self.meta_curriculum.increment_lessons(
-                                self._get_progresses())
-                            curr_info = self.env.reset(
-                                config=self.meta_curriculum.get_config(),
-                                train_mode=self.fast_simulation)
-                        else:
-                            curr_info = self.env.reset(
-                                train_mode=self.fast_simulation)
+                        curr_info = self._increment_lessons_and_reset_env()
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                     # Decide and take an action
