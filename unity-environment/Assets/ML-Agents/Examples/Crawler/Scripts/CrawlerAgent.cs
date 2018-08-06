@@ -143,6 +143,11 @@ public class CrawlerAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        for (int actionIndex = 0; actionIndex < vectorAction.Length; actionIndex++)
+        {
+            vectorAction[actionIndex] = (vectorAction[actionIndex] - 5f) / 5f;
+        }
+
         if (detectTargets)
         {
             foreach (var bodyPart in jdController.bodyPartsDict.Values)
