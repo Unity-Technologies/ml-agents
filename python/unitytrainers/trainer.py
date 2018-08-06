@@ -6,7 +6,7 @@ import numpy as np
 
 from unityagents import UnityException, AllBrainInfo
 
-logger = logging.getLogger("unityagents")
+logger = logging.getLogger("unitytrainers")
 
 
 class UnityTrainerException(UnityException):
@@ -130,11 +130,11 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def write_summary(self, lesson_number, global_step):
+    def write_summary(self, global_step, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
-        :param lesson_number: The lesson the trainer is at.
         :param global_step: The number of steps the simulation has been going for
+        :param lesson_number: The lesson the trainer is at.
         """
         if global_step % self.trainer_parameters['summary_freq'] == 0 and global_step != 0:
             is_training = "Training." if self.is_training and self.get_step <= self.get_max_steps else "Not Training."
@@ -152,7 +152,7 @@ class Trainer(object):
                     stat_mean = float(np.mean(self.stats[key]))
                     summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
                     self.stats[key] = []
-            summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
+            summary.value.add(tag='Info/Lesson', simple_value=lesson_num)
             self.summary_writer.add_summary(summary, self.get_step)
             self.summary_writer.flush()
 
