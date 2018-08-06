@@ -94,7 +94,7 @@ class PPOTrainer(Trainer):
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
-        self.inference_run_list = [self.model.output, self.model.all_probs, self.model.value,
+        self.inference_run_list = [self.model.output, self.model.all_log_probs, self.model.value,
                                    self.model.entropy, self.model.learning_rate]
         if self.is_continuous_action:
             self.inference_run_list.append(self.model.output_pre)
@@ -331,7 +331,7 @@ class PPOTrainer(Trainer):
                     if self.is_continuous_action:
                         actions_pre = stored_take_action_outputs[self.model.output_pre]
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
-                    a_dist = stored_take_action_outputs[self.model.all_probs]
+                    a_dist = stored_take_action_outputs[self.model.all_log_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
@@ -452,7 +452,7 @@ class PPOTrainer(Trainer):
                              self.model.returns_holder: np.array(buffer['discounted_returns'][start:end]).flatten(),
                              self.model.old_value: np.array(buffer['value_estimates'][start:end]).flatten(),
                              self.model.advantage: np.array(buffer['advantages'][start:end]).reshape([-1, 1]),
-                             self.model.all_old_probs: np.array(buffer['action_probs'][start:end]).reshape(
+                             self.model.all_old_log_probs: np.array(buffer['action_probs'][start:end]).reshape(
                                  [-1, sum(self.brain.vector_action_space_size)])}
                 if self.is_continuous_action:
                     feed_dict[self.model.output_pre] = np.array(buffer['actions_pre'][start:end]).reshape(

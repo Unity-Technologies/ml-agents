@@ -126,12 +126,24 @@ namespace MLAgents
 
                 }
 
-                SerializedProperty bpVectorActionDescription =
-                    serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
-                EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent(
-                    "Action Descriptions", "A list of strings used to name" +
-                                           " the available actions for the Brain."), true);
-
+                if (bpVectorActionType.enumValueIndex == 1)
+                {
+                    //Continuous case :
+                    SerializedProperty bpVectorActionDescription =
+                        serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
+                    EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent(
+                        "Action Descriptions", "A list of strings used to name" +
+                                               " the available actions for the Brain."), true);
+                }
+                else
+                {
+                    // Discrete case :
+                    SerializedProperty bpVectorActionDescription =
+                        serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
+                    EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent(
+                        "Branch Descriptions", "A list of strings used to name" +
+                                               " the available branches for the Brain."), true);
+                }
             }
 
             EditorGUI.indentLevel = indentLevel;

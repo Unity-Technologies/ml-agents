@@ -242,19 +242,19 @@ class LearningModel(object):
         all_probs = - 0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq \
                     - 0.5 * tf.log(2.0 * np.pi) - 0.5 * log_sigma_sq
 
-        self.all_probs = tf.identity(all_probs, name='action_probs')
+        self.all_log_probs = tf.identity(all_probs, name='action_probs')
 
         self.entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + log_sigma_sq)
 
         value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.all_old_probs = tf.placeholder(shape=[None, self.a_size[0]], dtype=tf.float32,
-                                            name='old_probabilities')
+        self.all_old_log_probs = tf.placeholder(shape=[None, self.a_size[0]], dtype=tf.float32,
+                                                name='old_probabilities')
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.probs = tf.reduce_sum((tf.identity(self.all_probs)), axis=1, keepdims=True)
-        self.old_probs = tf.reduce_sum((tf.identity(self.all_old_probs)), axis=1, keepdims=True)
+        self.log_probs = tf.reduce_sum((tf.identity(self.all_log_probs)), axis=1, keepdims=True)
+        self.old_log_probs = tf.reduce_sum((tf.identity(self.all_old_log_probs)), axis=1, keepdims=True)
 
     def create_dc_actor_critic(self, h_size, num_layers):
         """
@@ -281,7 +281,7 @@ class LearningModel(object):
             policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
 
-        self.all_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
+        self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
 
         output = tf.concat([tf.multinomial(branch, 1) for branch in policy_branches], axis=1)
 
@@ -294,26 +294,26 @@ class LearningModel(object):
         self.selected_actions = tf.concat([
             tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
 
-        self.all_old_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
+        self.all_old_log_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
 
         action_idx = [0] + list(np.cumsum(self.a_size))
 
         self.entropy = tf.reduce_sum((tf.stack([
             tf.nn.softmax_cross_entropy_with_logits_v2(
-            labels=tf.nn.softmax(self.all_probs[:, action_idx[i]:action_idx[i + 1]]),
-            logits=self.all_probs[:, action_idx[i]:action_idx[i + 1]])
+            labels=tf.nn.softmax(self.all_log_probs[:, action_idx[i]:action_idx[i + 1]]),
+            logits=self.all_log_probs[:, action_idx[i]:action_idx[i + 1]])
             for i in range(len(self.a_size))], axis=1)), axis=1)
 
-        self.probs = tf.reduce_sum((tf.stack([
+        self.log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
                 labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
-                logits=self.all_probs[:, action_idx[i]:action_idx[i + 1]]
+                logits=self.all_log_probs[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
-        self.old_probs = tf.reduce_sum((tf.stack([
+        self.old_log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
                 labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
-                logits=self.all_old_probs[:, action_idx[i]:action_idx[i + 1]]
+                logits=self.all_old_log_probs[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
 

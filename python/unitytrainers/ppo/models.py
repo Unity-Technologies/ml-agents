@@ -42,7 +42,7 @@ class PPOModel(LearningModel):
             encoded_state, encoded_next_state = self.create_curiosity_encoders()
             self.create_inverse_model(encoded_state, encoded_next_state)
             self.create_forward_model(encoded_state, encoded_next_state)
-        self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
+        self.create_ppo_optimizer(self.log_probs, self.old_log_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
 
     @staticmethod
