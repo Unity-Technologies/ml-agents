@@ -79,11 +79,10 @@ class TrainerController(object):
         self.worker_id = worker_id
         self.keep_checkpoints = keep_checkpoints
         self.trainers = {}
-        if seed == -1:
-            seed = np.random.randint(0, 999999)
         self.seed = seed
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
+        print(self.seed)
         self.env = UnityEnvironment(file_name=env_path, worker_id=self.worker_id,
                                     seed=self.seed, docker_training=self.docker_training,
                                     no_graphics=no_graphics)
