@@ -24,7 +24,7 @@ def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.probs, model.value, model.entropy,
+            run_list = [model.output, model.log_probs, model.value, model.entropy,
                         model.learning_rate]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
@@ -48,7 +48,7 @@ def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.probs, model.value, model.entropy,
+            run_list = [model.output, model.log_probs, model.value, model.entropy,
                         model.learning_rate]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
@@ -73,7 +73,7 @@ def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
@@ -99,7 +99,7 @@ def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
@@ -123,7 +123,7 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate, model.memory_out]
             feed_dict = {model.batch_size: 1,
                          model.sequence_length: 2,
@@ -149,7 +149,7 @@ def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate, model.memory_out]
             feed_dict = {model.batch_size: 1,
                          model.sequence_length: 2,
@@ -173,7 +173,7 @@ def test_ppo_model_dc_vector_curio(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate, model.intrinsic_reward]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
@@ -199,7 +199,7 @@ def test_ppo_model_cc_vector_curio(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate, model.intrinsic_reward]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
@@ -225,7 +225,7 @@ def test_ppo_model_dc_visual_curio(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate, model.intrinsic_reward]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
@@ -256,7 +256,7 @@ def test_ppo_model_cc_visual_curio(mock_communicator, mock_launcher):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            run_list = [model.output, model.all_probs, model.value, model.entropy,
+            run_list = [model.output, model.all_log_probs, model.value, model.entropy,
                         model.learning_rate, model.intrinsic_reward]
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
