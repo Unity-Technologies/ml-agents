@@ -13,9 +13,9 @@ def test_gym_wrapper(mock_communicator, mock_launcher):
 
     # Test for incorrect number of agents.
     with pytest.raises(UnityGymException):
-        UnityEnv(' ', multiagent=True)
+        UnityEnv(' ', use_visual=False, multiagent=True)
 
-    env = UnityEnv(' ')
+    env = UnityEnv(' ', use_visual=False)
     assert isinstance(env, UnityEnv)
     assert isinstance(env.reset(), np.ndarray)
     actions = env.action_space.sample()
@@ -36,7 +36,7 @@ def test_multi_agent(mock_communicator, mock_launcher):
     with pytest.raises(UnityGymException):
         UnityEnv(' ', multiagent=False)
 
-    env = UnityEnv(' ', multiagent=True)
+    env = UnityEnv(' ', use_visual=False, multiagent=True)
     assert isinstance(env.reset(), list)
     actions = [env.action_space.sample() for i in range(env.number_agents)]
     obs, rew, done, info = env.step(actions)

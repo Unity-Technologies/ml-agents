@@ -29,9 +29,9 @@ env = UnityEnv(environment_filename, worker_id, default_visual, multiagent)
 ```
 
 * `environment_filename` refers to the path to the Unity environment.
-* `worker_id` refers to the port to use for communication with the environment.
-* `default_visual` refers to whether to use visual observations (True) or vector observations (False) as the default observation provided by the `reset` and `step` functions.
-* `multiagent` refers to whether you intent to launch an environment which contains more than one agent.
+* `worker_id` refers to the port to use for communication with the environment. Defaults to `0`.
+* `use_visual` refers to whether to use visual observations (True) or vector observations (False) as the default observation provided by the `reset` and `step` functions. Defaults to `False`.
+* `multiagent` refers to whether you intent to launch an environment which contains more than one agent. Defaults to `False`.
 
 The returned environment `env` will function as a gym.
 
@@ -64,7 +64,7 @@ from baselines import deepq
 from gym_unity.envs import UnityEnv
 
 def main():
-    env = UnityEnv("./envs/GridWorld", 0)
+    env = UnityEnv("./envs/GridWorld", 0, use_visual=True)
     model = deepq.models.cnn_to_mlp(
         convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
         hiddens=[256],
@@ -112,7 +112,7 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
     """
     def make_env(rank): # pylint: disable=C0111
         def _thunk():
-            env = UnityEnv(env_directory, rank)
+            env = UnityEnv(env_directory, rank, use_visual=True)
             env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
             return env
         return _thunk
@@ -120,7 +120,7 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
         return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
     else:
         rank = MPI.COMM_WORLD.Get_rank()
-        env = UnityEnv(env_directory, rank)
+        env = UnityEnv(env_directory, rank, use_visual=False)
         env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
         return env
 

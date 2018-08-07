@@ -18,7 +18,7 @@ class UnityEnv(gym.Env):
     https://github.com/openai/multiagent-particle-envs
     """
 
-    def __init__(self, environment_filename: str, worker_id=0, use_visual=True, multiagent=False):
+    def __init__(self, environment_filename: str, worker_id=0, use_visual=False, multiagent=False):
         """
         Environment initialization
         :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
@@ -43,7 +43,7 @@ class UnityEnv(gym.Env):
 
         if use_visual and brain.number_visual_observations == 0:
             raise UnityGymException("`use_visual` was set to True, however there are no"
-                                    "visual observations as part of this environment.")
+                                    " visual observations as part of this environment.")
         self.use_visual = brain.number_visual_observations == 1 and use_visual
 
         if brain.num_stacked_vector_observations != 1:
