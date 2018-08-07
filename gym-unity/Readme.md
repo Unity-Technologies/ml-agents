@@ -43,6 +43,7 @@ For more on using the gym interface, see our [Jupyter Notebook tutorial](../pyth
  * It is only possible to use an environment with a single Brain.
  * By default the first visual observation is provided as the `observation`, if present. Otherwise vector observations are provided. 
  * All `BrainInfo` output from the environment can still be accessed from the `info` provided by `env.step(action)`.
+ * Stacked vector observations are not supported.
  * Environment registration for use with `gym.make()` is currently not supported.
 
 
