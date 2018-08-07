@@ -9,7 +9,7 @@ We provide a a gym wrapper, and instructions for using it with existing machine 
 The gym wrapper can be installed using:
 
 ```
-pip install gym-unity
+pip install gym_unity
 ```
 
 or by running the following from the `/gym-unity` directory of the repository:
