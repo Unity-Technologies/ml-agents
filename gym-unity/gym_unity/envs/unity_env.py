@@ -47,9 +47,11 @@ class UnityEnv(gym.Env):
         # Check for number of agents in scene.
         initial_info = self._env.reset()[self.brain_name]
         self._check_agents(len(initial_info.agents))
-
         if brain.vector_action_space_type == "discrete":
-            self._action_space = spaces.Discrete(brain.vector_action_space_size)
+            if len(brain.vector_action_space_size) == 1:
+                self._action_space = spaces.Discrete(brain.vector_action_space_size[0])
+            else:
+                self._action_space = spaces.MultiDiscrete(brain.vector_action_space_size)
         else:
             high = np.array([1] * brain.vector_action_space_size)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
