@@ -148,22 +148,22 @@ public class PushAgentBasic : Agent
         // Goalies and Strikers have slightly different action spaces.
         switch (action)
         {
-            case 0:
+            case 1:
                 dirToGo = transform.forward * 1f;
                 break;
-            case 1:
+            case 2:
                 dirToGo = transform.forward * -1f;
                 break;
-            case 2:
+            case 3:
                 rotateDir = transform.up * 1f;
                 break;
-            case 3:
+            case 4:
                 rotateDir = transform.up * -1f;
                 break;
-            case 4:
+            case 5:
                 dirToGo = transform.right * -0.75f;
                 break;
-            case 5:
+            case 6:
                 dirToGo = transform.right * 0.75f;
                 break;
         }

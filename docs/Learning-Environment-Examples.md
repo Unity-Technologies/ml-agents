@@ -118,8 +118,12 @@ If you would like to contribute environments, please see our
     * +1.0 if the agent touches the goal.
     * -1.0 if the agent falls off the platform.
 * Brains: Two brains, each with the following observation/action space.
-    * Vector Observation space: 16 variables corresponding to position and velocities of agent, block, and goal, plus the height of the wall.
-    * Vector Action space: (Discrete) Size of 74, corresponding to 14 raycasts each detecting 4 possible objects. plus the global position of the agent and whether or not the agent is grounded.
+    * Vector Observation space: Size of 74, corresponding to 14 raycasts each detecting 4 possible objects. plus the global position of the agent and whether or not the agent is grounded.
+    * Vector Action space: (Discrete) 4 Branches : 
+	    * Forward Motion (3 possible actions : Forward, Backwards, No Action)
+	    * Rotation (3 possible acions : Rotate Left, Rotate Right, No Action)
+	    * Side Motion (3 possible acions : Left, Right, No Action)
+	    * Jump (2 possible actions: Jump, No Action)
     * Visual Observations: None.
 * Reset Parameters: 4, corresponding to the height of the possible walls.
 * Benchmark Mean Reward (Big & Small Wall Brain): 0.8
@@ -171,7 +175,11 @@ If you would like to contribute environments, please see our
     * -1 for interaction with blue banana.
 * Brains: One brain with the following observation/action space.
     * Vector Observation space: 53 corresponding to velocity of agent (2), whether agent is frozen and/or shot its laser (2), plus ray-based perception of objects around agent's forward direction (49; 7 raycast angles with 7 measurements for each).
-    * Vector Action space: (Continuous) Size of 3, corresponding to forward movement, y-axis rotation, and whether to use laser to disable other agents.
+    * Vector Action space: (Discrete) 4 Branches : 
+	    * Forward Motion (3 possible actions : Forward, Backwards, No Action)
+	    * Side Motion (3 possible acions : Left, Right, No Action)
+	    * Rotation (3 possible acions : Rotate Left, Rotate Right, No Action)
+	    * Laser (2 possible actions: Laser, No Action)
     * Visual Observations (Optional): First-person camera per-agent. Use `VisualBanana` scene. 
 * Reset Parameters: None.
 * Benchmark Mean Reward: 10
@@ -190,7 +198,7 @@ If you would like to contribute environments, please see our
     * -0.0003 Existential penalty.
 * Brains: One brain with the following observation/action space:
     * Vector Observation space: 30 corresponding to local ray-casts detecting objects, goals, and walls.
-    * Vector Action space: (Discrete) 4 corresponding to agent rotation and forward/backward movement.
+    * Vector Action space: (Discrete) 1 Branch, 4 actions corresponding to agent rotation and forward/backward movement.
     * Visual Observations (Optional): First-person view for the agent. Use `VisualHallway` scene.
 * Reset Parameters: None.
 * Benchmark Mean Reward: 0.7
@@ -234,9 +242,9 @@ If you would like to contribute environments, please see our
         * +0.001 Existential bonus.
 * Brains: Two brain with the following observation/action space:
     * Vector Observation space: 112 corresponding to local 14 ray casts, each detecting 7 possible object types, along with the object's distance. Perception is in 180 degree view from front of agent.
-    * Vector Action space: (Discrete) 
-        * Striker: 6 corresponding to forward, backward, sideways movement, as well as rotation.
-        * Goalie: 4 corresponding to forward, backward, sideways movement.
+    * Vector Action space: (Discrete) One Branch
+        * Striker: 6 actions corresponding to forward, backward, sideways movement, as well as rotation.
+        * Goalie: 4 actions corresponding to forward, backward, sideways movement.
     * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward (Striker & Goalie Brain): 0 (the means will be inverse of each other and criss crosses during training)

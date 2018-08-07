@@ -199,7 +199,7 @@ namespace MLAgents
                 {
                     VectorObservationSize = brainParameters.vectorObservationSize,
                     NumStackedVectorObservations = brainParameters.numStackedVectorObservations,
-                    VectorActionSize = brainParameters.vectorActionSize,
+                    VectorActionSize = {brainParameters.vectorActionSize},
                     VectorActionSpaceType =
                     (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorActionSpaceType,
                     BrainName = name,

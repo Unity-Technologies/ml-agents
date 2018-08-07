@@ -55,12 +55,12 @@ def test_step(mock_communicator, mock_launcher):
     env = UnityEnvironment(' ')
     brain = env.brains['RealFakeBrain']
     brain_info = env.reset()
-    brain_info = env.step([0] * brain.vector_action_space_size * len(brain_info['RealFakeBrain'].agents))
+    brain_info = env.step([0] * brain.vector_action_space_size[0] * len(brain_info['RealFakeBrain'].agents))
     with pytest.raises(UnityActionException):
         env.step([0])
-    brain_info = env.step([-1] * brain.vector_action_space_size * len(brain_info['RealFakeBrain'].agents))
+    brain_info = env.step([-1] * brain.vector_action_space_size[0] * len(brain_info['RealFakeBrain'].agents))
     with pytest.raises(UnityActionException):
-        env.step([0] * brain.vector_action_space_size * len(brain_info['RealFakeBrain'].agents))
+        env.step([0] * brain.vector_action_space_size[0] * len(brain_info['RealFakeBrain'].agents))
     env.close()
     assert env.global_done
     assert isinstance(brain_info, dict)

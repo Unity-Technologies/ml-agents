@@ -9,14 +9,12 @@ namespace MLAgents
     {
         BrainParameters brainParameters;
         SpaceType actionSpaceType;
-        int actionSpaceSize;
 
         public void Awake()
         {
             brainParameters =
                 gameObject.GetComponent<Brain>().brainParameters;
             actionSpaceType = brainParameters.vectorActionSpaceType;
-            actionSpaceSize = brainParameters.vectorActionSize;
         }
 
         public float[] Decide(
@@ -30,15 +28,22 @@ namespace MLAgents
             {
                 List<float> act = new List<float>();
 
-                for (int i = 0; i < actionSpaceSize; i++)
+                for (int i = 0; i < brainParameters.vectorActionSize[0]; i++)
                 {
                     act.Add(2 * Random.value - 1);
                 }
 
                 return act.ToArray();
             }
-
-            return new float[1] {Random.Range(0, actionSpaceSize)};
+            else
+            {
+                float[] act = new float[brainParameters.vectorActionSize.Length];
+                for (int i = 0; i < brainParameters.vectorActionSize.Length; i++)
+                {
+                    act[i]=Random.Range(0, brainParameters.vectorActionSize[i]);
+                }
+                return act;
+            }
         }
 
         public List<float> MakeMemory(

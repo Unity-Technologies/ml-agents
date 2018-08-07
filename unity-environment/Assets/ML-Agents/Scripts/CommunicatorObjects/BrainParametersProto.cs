@@ -31,7 +31,7 @@ namespace MLAgents.CommunicatorObjects {
             "amVjdHMvc3BhY2VfdHlwZV9wcm90by5wcm90byL5AgoUQnJhaW5QYXJhbWV0",
             "ZXJzUHJvdG8SHwoXdmVjdG9yX29ic2VydmF0aW9uX3NpemUYASABKAUSJwof",
             "bnVtX3N0YWNrZWRfdmVjdG9yX29ic2VydmF0aW9ucxgCIAEoBRIaChJ2ZWN0",
-            "b3JfYWN0aW9uX3NpemUYAyABKAUSQQoSY2FtZXJhX3Jlc29sdXRpb25zGAQg",
+            "b3JfYWN0aW9uX3NpemUYAyADKAUSQQoSY2FtZXJhX3Jlc29sdXRpb25zGAQg",
             "AygLMiUuY29tbXVuaWNhdG9yX29iamVjdHMuUmVzb2x1dGlvblByb3RvEiIK",
             "GnZlY3Rvcl9hY3Rpb25fZGVzY3JpcHRpb25zGAUgAygJEkYKGHZlY3Rvcl9h",
             "Y3Rpb25fc3BhY2VfdHlwZRgGIAEoDjIkLmNvbW11bmljYXRvcl9vYmplY3Rz",
@@ -75,7 +75,7 @@ namespace MLAgents.CommunicatorObjects {
     public BrainParametersProto(BrainParametersProto other) : this() {
       vectorObservationSize_ = other.vectorObservationSize_;
       numStackedVectorObservations_ = other.numStackedVectorObservations_;
-      vectorActionSize_ = other.vectorActionSize_;
+      vectorActionSize_ = other.vectorActionSize_.Clone();
       cameraResolutions_ = other.cameraResolutions_.Clone();
       vectorActionDescriptions_ = other.vectorActionDescriptions_.Clone();
       vectorActionSpaceType_ = other.vectorActionSpaceType_;
@@ -113,13 +113,12 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "vector_action_size" field.</summary>
     public const int VectorActionSizeFieldNumber = 3;
-    private int vectorActionSize_;
+    private static readonly pb::FieldCodec<int> _repeated_vectorActionSize_codec
+        = pb::FieldCodec.ForInt32(26);
+    private readonly pbc::RepeatedField<int> vectorActionSize_ = new pbc::RepeatedField<int>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int VectorActionSize {
+    public pbc::RepeatedField<int> VectorActionSize {
       get { return vectorActionSize_; }
-      set {
-        vectorActionSize_ = value;
-      }
     }
 
     /// <summary>Field number for the "camera_resolutions" field.</summary>
@@ -190,7 +189,7 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (VectorObservationSize != other.VectorObservationSize) return false;
       if (NumStackedVectorObservations != other.NumStackedVectorObservations) return false;
-      if (VectorActionSize != other.VectorActionSize) return false;
+      if(!vectorActionSize_.Equals(other.vectorActionSize_)) return false;
       if(!cameraResolutions_.Equals(other.cameraResolutions_)) return false;
       if(!vectorActionDescriptions_.Equals(other.vectorActionDescriptions_)) return false;
       if (VectorActionSpaceType != other.VectorActionSpaceType) return false;
@@ -204,7 +203,7 @@ namespace MLAgents.CommunicatorObjects {
       int hash = 1;
       if (VectorObservationSize != 0) hash ^= VectorObservationSize.GetHashCode();
       if (NumStackedVectorObservations != 0) hash ^= NumStackedVectorObservations.GetHashCode();
-      if (VectorActionSize != 0) hash ^= VectorActionSize.GetHashCode();
+      hash ^= vectorActionSize_.GetHashCode();
       hash ^= cameraResolutions_.GetHashCode();
       hash ^= vectorActionDescriptions_.GetHashCode();
       if (VectorActionSpaceType != 0) hash ^= VectorActionSpaceType.GetHashCode();
@@ -231,10 +230,7 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(16);
         output.WriteInt32(NumStackedVectorObservations);
       }
-      if (VectorActionSize != 0) {
-        output.WriteRawTag(24);
-        output.WriteInt32(VectorActionSize);
-      }
+      vectorActionSize_.WriteTo(output, _repeated_vectorActionSize_codec);
       cameraResolutions_.WriteTo(output, _repeated_cameraResolutions_codec);
       vectorActionDescriptions_.WriteTo(output, _repeated_vectorActionDescriptions_codec);
       if (VectorActionSpaceType != 0) {
@@ -263,9 +259,7 @@ namespace MLAgents.CommunicatorObjects {
       if (NumStackedVectorObservations != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumStackedVectorObservations);
       }
-      if (VectorActionSize != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(VectorActionSize);
-      }
+      size += vectorActionSize_.CalculateSize(_repeated_vectorActionSize_codec);
       size += cameraResolutions_.CalculateSize(_repeated_cameraResolutions_codec);
       size += vectorActionDescriptions_.CalculateSize(_repeated_vectorActionDescriptions_codec);
       if (VectorActionSpaceType != 0) {
@@ -294,9 +288,7 @@ namespace MLAgents.CommunicatorObjects {
       if (other.NumStackedVectorObservations != 0) {
         NumStackedVectorObservations = other.NumStackedVectorObservations;
       }
-      if (other.VectorActionSize != 0) {
-        VectorActionSize = other.VectorActionSize;
-      }
+      vectorActionSize_.Add(other.vectorActionSize_);
       cameraResolutions_.Add(other.cameraResolutions_);
       vectorActionDescriptions_.Add(other.vectorActionDescriptions_);
       if (other.VectorActionSpaceType != 0) {
@@ -327,8 +319,9 @@ namespace MLAgents.CommunicatorObjects {
             NumStackedVectorObservations = input.ReadInt32();
             break;
           }
+          case 26:
           case 24: {
-            VectorActionSize = input.ReadInt32();
+            vectorActionSize_.AddEntriesFrom(input, _repeated_vectorActionSize_codec);
             break;
           }
           case 34: {

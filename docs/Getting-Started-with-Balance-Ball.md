@@ -120,16 +120,16 @@ values are defined in the agent's `CollectObservations()` function.)
 
 **Vector Action Space**
 
-An agent is given instructions from the brain in the form of *actions*. Like 
-states, ML-Agents toolkit classifies actions into two types: the **Continuous** 
+An agent is given instructions from the brain in the form of *actions*. 
+ML-Agents toolkit classifies actions into two types: the **Continuous** 
 vector action space is a vector of numbers that can vary continuously. What 
 each element of the vector means is defined by the agent logic (the PPO
 training process just learns what values are better given particular state 
 observations based on the rewards received when it tries different values). 
 For example, an element might represent a force or torque applied to a 
 `RigidBody` in the agent. The **Discrete** action vector space defines its
-actions as a table. A specific action given to the agent is an index into 
-this table. 
+actions as tables. An action given to the agent is an array of indeces into 
+tables. 
 
 The 3D Balance Ball example is programmed to use both types of vector action
 space. 

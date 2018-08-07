@@ -27,22 +27,22 @@ public class GridAgent : Agent
 
         // 0 - Forward, 1 - Backward, 2 - Left, 3 - Right
         Vector3 targetPos = transform.position;
-        if (action == 3)
+        if (action == 4)
         {
             targetPos = transform.position + new Vector3(1f, 0, 0f);
         }
 
-        if (action == 2)
+        if (action == 3)
         {
             targetPos = transform.position + new Vector3(-1f, 0, 0f);
         }
 
-        if (action == 0)
+        if (action == 1)
         {
             targetPos = transform.position + new Vector3(0f, 0, 1f);
         }
 
-        if (action == 1)
+        if (action == 2)
         {
             targetPos = transform.position + new Vector3(0f, 0, -1f);
         }
