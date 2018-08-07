@@ -283,7 +283,16 @@ class LearningModel(object):
 
         self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
 
-        output = tf.concat([tf.multinomial(branch, 1) for branch in policy_branches], axis=1)
+        action_idx = [0] + list(np.cumsum(self.a_size))
+
+        # TODO : Put this into a separate metod
+        self.action_masks = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name="action_masks")
+        branch_masks = [self.action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(self.a_size))]
+        raw_probs = [tf.multiply(tf.nn.softmax(policy_branches[k]), branch_masks[k])
+                             for k in range(len(self.a_size))]
+        normalized_probs = [tf.divide(raw_probs, tf.reduce_sum(raw_probs,axis=1, keepdims=True))]
+        output = tf.concat([tf.multinomial(tf.log(normalized_probs[k]), 1) for k in range(len(self.a_size))], axis=1)
+        # TODO : end
 
         self.output = tf.identity(output, name="action")
 
@@ -295,8 +304,6 @@ class LearningModel(object):
             tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
 
         self.all_old_log_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
-
-        action_idx = [0] + list(np.cumsum(self.a_size))
 
         self.entropy = tf.reduce_sum((tf.stack([
             tf.nn.softmax_cross_entropy_with_logits_v2(

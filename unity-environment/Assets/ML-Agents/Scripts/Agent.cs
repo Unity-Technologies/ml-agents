@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -41,6 +42,11 @@ namespace MLAgents
         /// Keeps track of the last text action taken by the Brain.
         /// </summary>
         public string storedTextActions;
+
+        /// <summary>
+        /// For discrete control, specifies the actions that the agent cannot take
+        /// </summary>
+        public bool[] actionMasks;
 
         /// <summary>
         /// Used by the Trainer to store information about the agent. This data
@@ -512,6 +518,7 @@ namespace MLAgents
             info.storedVectorActions = action.vectorActions;
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
+            info.actionMasks = null;
             CollectObservations();
 
             BrainParameters param = brain.brainParameters;
@@ -593,6 +600,35 @@ namespace MLAgents
         public virtual void CollectObservations()
         {
 
+        }
+
+        protected void SetActionMask(int branch, List<int> actionIndices)
+        {
+            // Action Masks can only be used in Discrete Control.
+            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            {
+                throw new UnityAgentsException(
+                    "Invalid : Cannot set a mask for actions with Continuous Control.");
+            }
+
+            int totalNumberActions = brain.brainParameters.vectorActionSize.Sum();
+            
+            // By default, the masks are null. If we want to specify a new mask, we initialize
+            // the actionMasks with trues.
+            if (info.actionMasks == null)
+            {
+                info.actionMasks = new bool[totalNumberActions];
+                for (var actionIndex = 0; actionIndex < totalNumberActions; actionIndex++)
+                {
+                    info.actionMasks[actionIndex] = true;
+                }
+            }
+            
+            // TODO : Need the cumsum
+            foreach (var actionIndex in actionIndices)
+            {
+                info.actionMasks[actionIndex /* + the starting index of the branch */] = false;
+            }
         }
 
         /// <summary>

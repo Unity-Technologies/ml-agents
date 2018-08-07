@@ -469,6 +469,11 @@ class UnityEnvironment(object):
                 logger.warning("An agent had a NaN reward for brain "+b)
             if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
                 logger.warning("An agent had a NaN observation for brain " + b)
+            mask_actions = np.ones((len(agent_info_list), sum(self.brains[b].vector_action_space_size)))
+            for agent_index, agent_info in enumerate(agent_info_list):
+                if agent_info.masked_actions is not None:
+                    for k in range(len(agent_info.masked_actions)):
+                        mask_actions[agent_index, k] = 1 if agent_info.masked_actions[k] else 0
             _data[b] = BrainInfo(
                 visual_observation=vis_obs,
                 vector_observation=np.nan_to_num(np.array([x.stacked_vector_observation for x in agent_info_list])),
@@ -479,7 +484,8 @@ class UnityEnvironment(object):
                 local_done=[x.done for x in agent_info_list],
                 vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
                 text_action=[x.stored_text_actions for x in agent_info_list],
-                max_reached=[x.max_step_reached for x in agent_info_list]
+                max_reached=[x.max_step_reached for x in agent_info_list],
+                action_mask=mask_actions
                 )
         return _data, global_done
 
