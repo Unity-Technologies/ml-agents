@@ -88,8 +88,6 @@ class TrainerController(object):
         self.worker_id = worker_id
         self.keep_checkpoints = keep_checkpoints
         self.trainers = {}
-        if seed == -1:
-            seed = np.random.randint(0, 999999)
         self.seed = seed
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
@@ -349,11 +347,12 @@ class TrainerController(object):
                         # Write training statistics to Tensorboard.
                         if self.meta_curriculum is not None:
                             trainer.write_summary(
-                                lesson=self.meta_curriculum
+                                global_step,
+                                lesson_num=self.meta_curriculum
                                            .brains_to_curriculums[brain_name]
                                            .lesson_num)
                         else:
-                            trainer.write_summary()
+                            trainer.write_summary(global_step)
                         if self.train_model \
                            and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
