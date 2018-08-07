@@ -458,13 +458,13 @@ namespace MLAgents
             BrainParameters param = brain.brainParameters;
             if (param.vectorActionSpaceType == SpaceType.continuous)
             {
-                action.vectorActions = new float[param.vectorActionSize];
-                info.storedVectorActions = new float[param.vectorActionSize];
+                action.vectorActions = new float[param.vectorActionSize[0]];
+                info.storedVectorActions = new float[param.vectorActionSize[0]];
             }
             else
             {
-                action.vectorActions = new float[1];
-                info.storedVectorActions = new float[1];
+                action.vectorActions = new float[param.vectorActionSize.Length];
+                info.storedVectorActions = new float[param.vectorActionSize.Length];
             }
 
             if (info.textObservation == null)

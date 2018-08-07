@@ -136,7 +136,7 @@ class BehavioralCloningTrainer(Trainer):
         to be passed to add experiences
         """
         if len(all_brain_info[self.brain_name].agents) == 0:
-            return [], [], [], None
+            return [], [], [], None, None
 
         agent_brain = all_brain_info[self.brain_name]
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
@@ -285,9 +285,10 @@ class BehavioralCloningTrainer(Trainer):
                          self.model.sequence_length: self.sequence_length}
             if self.is_continuous_action:
                 feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).\
-                    reshape([-1, self.brain.vector_action_space_size])
+                    reshape([-1, self.brain.vector_action_space_size[0]])
             else:
-                feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).reshape([-1])
+                feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).reshape(
+                    [-1, len(self.brain.vector_action_space_size)])
             if self.use_vector_observations:
                 feed_dict[self.model.vector_in] = np.array(_buffer['vector_observations'][start:end])\
                     .reshape([-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])

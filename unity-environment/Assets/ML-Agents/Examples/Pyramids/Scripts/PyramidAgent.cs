@@ -58,16 +58,16 @@ public class PyramidAgent : Agent
             var action = Mathf.FloorToInt(act[0]);
             switch (action)
             {
-                case 0:
+                case 1:
                     dirToGo = transform.forward * 1f;
                     break;
-                case 1:
+                case 2:
                     dirToGo = transform.forward * -1f;
                     break;
-                case 2:
+                case 3:
                     rotateDir = transform.up * 1f;
                     break;
-                case 3:
+                case 4:
                     rotateDir = transform.up * -1f;
                     break;
             }

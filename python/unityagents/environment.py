@@ -335,9 +335,9 @@ class UnityEnvironment(object):
                 if b not in vector_action:
                     # raise UnityActionException("You need to input an action for the brain {0}".format(b))
                     if self._brains[b].vector_action_space_type == "discrete":
-                        vector_action[b] = [0.0] * n_agent
+                        vector_action[b] = [0.0] * n_agent * len(self._brains[b].vector_action_space_size)
                     else:
-                        vector_action[b] = [0.0] * n_agent * self._brains[b].vector_action_space_size
+                        vector_action[b] = [0.0] * n_agent * self._brains[b].vector_action_space_size[0]
                 else:
                     vector_action[b] = self._flatten(vector_action[b])
                 if b not in memory:
@@ -359,14 +359,16 @@ class UnityEnvironment(object):
                         "There was a mismatch between the provided text_action and environment's expectation: "
                         "The brain {0} expected {1} text_action but was given {2}".format(
                             b, n_agent, len(text_action[b])))
-                if not ((self._brains[b].vector_action_space_type == "discrete" and len(vector_action[b]) == n_agent) or
+                if not ((self._brains[b].vector_action_space_type == "discrete" and len(
+                        vector_action[b]) == n_agent * len(self._brains[b].vector_action_space_size)) or
                             (self._brains[b].vector_action_space_type == "continuous" and len(
-                                vector_action[b]) == self._brains[b].vector_action_space_size * n_agent)):
+                                vector_action[b]) == self._brains[b].vector_action_space_size[0] * n_agent)):
                     raise UnityActionException(
                         "There was a mismatch between the provided action and environment's expectation: "
                         "The brain {0} expected {1} {2} action(s), but was provided: {3}"
-                        .format(b, n_agent if self._brains[b].vector_action_space_type == "discrete" else
-                        str(self._brains[b].vector_action_space_size * n_agent),
+                        .format(b, str(len(self._brains[b].vector_action_space_size) * n_agent)
+                        if self._brains[b].vector_action_space_type == "discrete"
+                        else str(self._brains[b].vector_action_space_size[0] * n_agent),
                         self._brains[b].vector_action_space_type,
                         str(vector_action[b])))
 
@@ -496,7 +498,8 @@ class UnityEnvironment(object):
                     text_actions=text_action[b][i],
                 )
                 if b in value:
-                    action.value = value[b][i]
+                    if value[b] is not None:
+                        action.value = value[b][i]
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = 0
         return self.wrap_unity_input(rl_in)

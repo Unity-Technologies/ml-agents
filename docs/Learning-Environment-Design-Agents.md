@@ -131,11 +131,11 @@ In addition, make sure that the Agent's Brain expects a visual observation. In t
  
 ## Vector Actions
 
-An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentAction()` function. When you specify that the vector action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Vector Action Space Size` property.  When you specify a **Discrete** vector action space type, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** vector action space type, the `Vector Action Space Size` is the number of elements in your action table. Set the `Vector Action Space Size` and `Vector Action Space Type` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
+An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentAction()` function. When you specify that the vector action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Vector Action Space Size` property.  When you specify a **Discrete** vector action space type, the action parameter is an array containing integers. Each integer is an index into a list or table of commands. In the **Discrete** vector action space type, the action parameter is an array of indices. The number of indices in the array is determined by the number of branches defined in the `Branches Size` property. Each branch corresponds to an action table, you can specify the size of each table by modifying the `Branches` property. Set the `Vector Action Space Size` and `Vector Action Space Type` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
 
 Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentAction()` function. You simply specify the type of vector action space, and, for the continuous vector action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionAct()`.
 
-For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete vector actions. In the continuous case, you would set the vector action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would set the vector action size to four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to four.  
+For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete vector actions. In the continuous case, you would set the vector action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would use one Branch with a size of four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to three. Alternatively, you could create two branches of size two (one for horizontal movement and one for vertical movement), and the brain would create an action array containing two elements with values ranging from zero to one.
 
 Note that when you are programming actions for an agent, it is often helpful to test your action logic using a **Player** brain, which lets you map keyboard commands to actions. See [Brains](Learning-Environment-Design-Brains.md).
 
@@ -168,20 +168,24 @@ By default the output from our provided PPO algorithm pre-clamps the values of `
  
 ### Discrete Action Space
 
-When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete vector action space, `Vector Action Space Size` represents the number of actions in your action table.
+When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array containing indices. With the discrete vector action space, `Branches` is an array of integers, each value corresponds to the number of possibilities for each branch.
 
-The [Area example](Learning-Environment-Examples.md#push-block) defines five actions for the discrete vector action space: a jump action and one action for each cardinal direction:
+For example, if we wanted an agent that can move in an plane and jump, we could define two branches (one for motion and one for jumping) because we want our agent be able to move __and__ jump concurently.
+We define the first branch to have 5 possible actions (don't move, go left, go right, go backward, go forward) and the second one to have 2 possible actions (don't jump, jump). The AgentAction method would look something like :
 
 ```csharp
-// Get the action index
+// Get the action index for movement
 int movement = Mathf.FloorToInt(act[0]); 
+// Get the action index for jumping
+int jump = Mathf.FloorToInt(act[1]); 
 
-// Look up the index in the action list:
+// Look up the index in the movement action list:
 if (movement == 1) { directionX = -1; }
 if (movement == 2) { directionX = 1; }
 if (movement == 3) { directionZ = -1; }
 if (movement == 4) { directionZ = 1; }
-if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+// Look up the index in the jump action list:
+if (jump == 1 && IsGrounded()) { directionY = 1; }
 
 // Apply the action results to move the agent
 gameObject.GetComponent<Rigidbody>().AddForce(

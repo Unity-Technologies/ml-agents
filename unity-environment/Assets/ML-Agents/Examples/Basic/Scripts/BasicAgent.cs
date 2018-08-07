@@ -35,10 +35,10 @@ public class BasicAgent : Agent
 	    
 		switch (movement)
 		{
-		    case 0:
+		    case 1:
 		        direction = -1;
 		        break;
-		    case 1:
+		    case 2:
 		        direction = 1;
 		        break;
 		}

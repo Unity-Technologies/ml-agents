@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 import tensorflow as tf
 from unitytrainers.models import LearningModel
@@ -41,7 +42,7 @@ class PPOModel(LearningModel):
             encoded_state, encoded_next_state = self.create_curiosity_encoders()
             self.create_inverse_model(encoded_state, encoded_next_state)
             self.create_forward_model(encoded_state, encoded_next_state)
-        self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
+        self.create_ppo_optimizer(self.log_probs, self.old_log_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
 
     @staticmethod
@@ -122,11 +123,13 @@ class PPOModel(LearningModel):
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
         if self.brain.vector_action_space_type == "continuous":
-            pred_action = tf.layers.dense(hidden, self.a_size, activation=None)
+            pred_action = tf.layers.dense(hidden, self.a_size[0], activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(squared_difference, self.mask, 2)[1])
         else:
-            pred_action = tf.layers.dense(hidden, self.a_size, activation=tf.nn.softmax)
+            pred_action = tf.concat(
+                [tf.layers.dense(hidden, self.a_size[i], activation=tf.nn.softmax)
+                 for i in range(len(self.a_size))], axis=1)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(cross_entropy, self.mask, 2)[1])
 
@@ -179,7 +182,7 @@ class PPOModel(LearningModel):
         # Here we calculate PPO policy loss. In continuous control this is done independently for each action gaussian
         # and then averaged together. This provides significantly better performance than treating the probability
         # as an average of probabilities, or as a joint probability.
-        r_theta = probs / (old_probs + 1e-10)
+        r_theta = tf.exp(probs - old_probs)
         p_opt_a = r_theta * self.advantage
         p_opt_b = tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
         self.policy_loss = -tf.reduce_mean(tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1])
