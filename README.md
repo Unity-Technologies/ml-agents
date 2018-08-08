@@ -1,5 +1,7 @@
 <img src="docs/images/unity-wide.png" align="middle" width="3000"/>
 
+<img src="docs/images/image-banner.png" align="middle" width="3000"/>
+
 # Unity ML-Agents Toolkit (Beta)
 
 **The Unity Machine Learning Agents Toolkit** (ML-Agents) is an open-source Unity plugin 
