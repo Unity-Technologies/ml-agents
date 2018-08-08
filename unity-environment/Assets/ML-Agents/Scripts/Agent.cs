@@ -255,6 +255,10 @@ namespace MLAgents
         /// to separate between different agents in the environment.
         int id;
 
+        /// When using discrete control, is the starting indices of the actions
+        /// when all the branches are concatenated with each other.
+        int[] startingActionIndices;
+
         /// Array of Texture2D used to render to from render buffer before  
         /// transforming into float tensor.
         Texture2D[] textureArray;
@@ -602,7 +606,7 @@ namespace MLAgents
 
         }
 
-        protected void SetActionMask(int branch, List<int> actionIndices)
+        protected void SetActionMask(int branch, int[] actionIndices)
         {
             // Action Masks can only be used in Discrete Control.
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
@@ -618,17 +622,31 @@ namespace MLAgents
             if (info.actionMasks == null)
             {
                 info.actionMasks = new bool[totalNumberActions];
-                for (var actionIndex = 0; actionIndex < totalNumberActions; actionIndex++)
+            }
+
+            // If this is the first time the masked actions are used, we generate the starting
+            // indices for each branch.
+            if (startingActionIndices == null)
+            {
+                var runningSum = 0;
+                startingActionIndices = new int[brain.brainParameters.vectorActionSize.Length];
+                for (var actionIndex = 0;
+                    actionIndex < brain.brainParameters.vectorActionSize.Length - 1;
+                    actionIndex++)
                 {
-                    info.actionMasks[actionIndex] = true;
+                    runningSum += brain.brainParameters.vectorActionSize[actionIndex];
+                    startingActionIndices[actionIndex + 1] = runningSum;
                 }
             }
-            
-            // TODO : Need the cumsum
+
             foreach (var actionIndex in actionIndices)
             {
-                info.actionMasks[actionIndex /* + the starting index of the branch */] = false;
+                if (actionIndex >= brain.brainParameters.vectorActionSize[branch])
+                    Debug.Log("Error to implement");
+                
+                info.actionMasks[actionIndex + startingActionIndices[branch]] = true;
             }
+           
         }
 
         /// <summary>

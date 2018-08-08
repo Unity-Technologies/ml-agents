@@ -70,6 +70,10 @@ namespace MLAgents
 
         /// Modify only in inspector : Name of the previous action node
         public string PreviousActionPlaceholderName = "prev_action";
+
+        /// Name of the action mask node
+        private string ActionMaskPlaceholderName = "action_masks";
+        
 #if ENABLE_TENSORFLOW
         TFGraph graph;
         TFSession session;
@@ -77,11 +81,13 @@ namespace MLAgents
         bool hasState;
         bool hasBatchSize;
         bool hasPrevAction;
+        bool hasMaskedActions; 
         bool hasValueEstimate;
         float[,] inputState;
         int[] inputPrevAction;
         List<float[,,,]> observationMatrixList;
         float[,] inputOldMemories;
+        float[,] maskedActions;
         List<Texture2D> texturesHolder;
         int memorySize;
 #endif
@@ -163,7 +169,12 @@ namespace MLAgents
                 {
                     hasValueEstimate = true;
                 }
+                if (graph[graphScope + ActionMaskPlaceholderName] != null)
+                {
+                    hasMaskedActions = true;
+                }
             }
+
 
             observationMatrixList = new List<float[,,,]>();
             texturesHolder = new List<Texture2D>();
@@ -225,8 +236,31 @@ namespace MLAgents
                     i++;
                 }
             }
-
-
+            
+            if (hasMaskedActions)
+            {
+                maskedActions = new float[
+                    currentBatchSize, 
+                    brain.brainParameters.vectorActionSize.Sum()
+                ];
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    for (int j = 0; j < brain.brainParameters.vectorActionSize.Sum(); j++)
+                    {
+                        if (agentInfo[agent].actionMasks != null)
+                        {
+                            maskedActions[i, j] = agentInfo[agent].actionMasks[j] ? 0.0f : 1.0f;
+                        }
+                        else
+                        {
+                            maskedActions[i, j] = 1.0f;
+                        }
+                    }
+                    i++;
+                }
+            }
+            
             observationMatrixList.Clear();
             for (int observationIndex =
                     0;
@@ -316,6 +350,12 @@ namespace MLAgents
                 runner.AddInput(graph[graphScope + PreviousActionPlaceholderName][0], inputPrevAction);
             }
 
+            // Create the mask action tensor
+            if (hasMaskedActions)
+            {
+                runner.AddInput(graph[graphScope + ActionMaskPlaceholderName][0], maskedActions);
+            }
+            
             // Create the observation tensors
             for (int obsNumber =
                     0;
