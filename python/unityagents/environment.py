@@ -465,15 +465,16 @@ class UnityEnvironment(object):
             else:
                 [x.memories.extend([0] * (memory_size - len(x.memories))) for x in agent_info_list]
                 memory = np.array([x.memories for x in agent_info_list])
+            mask_actions = np.ones((len(agent_info_list), sum(self.brains[b].vector_action_space_size)))
+            for agent_index, agent_info in enumerate(agent_info_list):
+                if agent_info.action_mask is not None:
+                    for k in range(len(agent_info.action_mask)):
+                        mask_actions[agent_index, k] = 0 if agent_info.action_mask[k] else 1
+            print(mask_actions)
             if any([np.isnan(x.reward) for x in agent_info_list]):
                 logger.warning("An agent had a NaN reward for brain "+b)
             if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
                 logger.warning("An agent had a NaN observation for brain " + b)
-            mask_actions = np.ones((len(agent_info_list), sum(self.brains[b].vector_action_space_size)))
-            for agent_index, agent_info in enumerate(agent_info_list):
-                if agent_info.masked_actions is not None:
-                    for k in range(len(agent_info.masked_actions)):
-                        mask_actions[agent_index, k] = 1 if agent_info.masked_actions[k] else 0
             _data[b] = BrainInfo(
                 visual_observation=vis_obs,
                 vector_observation=np.nan_to_num(np.array([x.stacked_vector_observation for x in agent_info_list])),

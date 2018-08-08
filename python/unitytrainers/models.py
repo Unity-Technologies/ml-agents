@@ -286,13 +286,16 @@ class LearningModel(object):
         action_idx = [0] + list(np.cumsum(self.a_size))
 
         # TODO : Put this into a separate metod
-        self.action_masks = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name="action_masks")
+        self.action_masks = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name="action_masks")
         branch_masks = [self.action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(self.a_size))]
         raw_probs = [tf.multiply(tf.nn.softmax(policy_branches[k]), branch_masks[k])
                              for k in range(len(self.a_size))]
-        normalized_probs = [tf.divide(raw_probs, tf.reduce_sum(raw_probs,axis=1, keepdims=True))]
+        normalized_probs = [tf.divide(raw_probs[k], tf.reduce_sum(raw_probs[k], axis=1, keepdims=True))
+                            for k in range(len(self.a_size))]
         output = tf.concat([tf.multinomial(tf.log(normalized_probs[k]), 1) for k in range(len(self.a_size))], axis=1)
         # TODO : end
+
+        # output = tf.concat([tf.multinomial(branch, 1) for branch in policy_branches], axis=1)
 
         self.output = tf.identity(output, name="action")
 

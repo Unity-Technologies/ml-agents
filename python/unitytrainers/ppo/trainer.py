@@ -334,7 +334,7 @@ class PPOTrainer(Trainer):
                         actions_pre = stored_take_action_outputs[self.model.output_pre]
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
                     else:
-                        self.training_buffer[agent_id]['action_masks'].append(stored_info.masked_actions[idx])
+                        self.training_buffer[agent_id]['action_masks'].append(stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs[self.model.all_log_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
