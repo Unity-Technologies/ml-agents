@@ -33,6 +33,13 @@ namespace MLAgents
         static bool isInstantiated;
         static GameObject canvas;
         static Dictionary<Transform, Dictionary<string, DisplayValue>> displayTransformValues;
+
+        /// <summary>
+        /// Camera used to calculate GUI screen position relative to the target
+        /// transform.
+        /// </summary>
+        static Dictionary<Transform, Camera> transformCamera;
+
         static Color[] barColors;
 
         struct DisplayValue
@@ -68,10 +75,13 @@ namespace MLAgents
         /// <param name="value">The string value you want to display.</param>
         /// <param name="target">The transform you want to attach the information to.
         /// </param>
+        /// <param name="camera">Camera used to calculate GUI position relative to
+        /// the target. If null, `Camera.main` will be used.</param>
         public static void Log(
             string key,
             string value,
-            Transform target = null)
+            Transform target = null,
+            Camera camera = null)
         {
             if (!isInstantiated)
             {
@@ -83,6 +93,8 @@ namespace MLAgents
             {
                 target = canvas.transform;
             }
+
+            transformCamera[target] = camera;
 
             if (!displayTransformValues.Keys.Contains(target))
             {
@@ -133,10 +145,13 @@ namespace MLAgents
         /// <param name="value">The float value you want to display.</param>
         /// <param name="target">The transform you want to attach the information to.
         /// </param>
+        /// <param name="camera">Camera used to calculate GUI position relative to
+        /// the target. If null, `Camera.main` will be used.</param>
         public static void Log(
             string key,
             float value,
-            Transform target = null)
+            Transform target = null,
+            Camera camera = null)
         {
             if (!isInstantiated)
             {
@@ -148,6 +163,8 @@ namespace MLAgents
             {
                 target = canvas.transform;
             }
+
+            transformCamera[target] = camera;
 
             if (!displayTransformValues.Keys.Contains(target))
             {
@@ -188,11 +205,14 @@ namespace MLAgents
         /// <param name="displayType">The type of display.</param>
         /// <param name="target">The transform you want to attach the information to.
         /// </param>
+        /// <param name="camera">Camera used to calculate GUI position relative to
+        /// the target. If null, `Camera.main` will be used.</param>
         public static void Log(
             string key,
             float[] value,
             Transform target = null,
-            DisplayType displayType = DisplayType.INDEPENDENT
+            DisplayType displayType = DisplayType.INDEPENDENT,
+            Camera camera = null
         )
         {
             if (!isInstantiated)
@@ -205,6 +225,8 @@ namespace MLAgents
             {
                 target = canvas.transform;
             }
+
+            transformCamera[target] = camera;
 
             if (!displayTransformValues.Keys.Contains(target))
             {
@@ -334,6 +356,8 @@ namespace MLAgents
 
             displayTransformValues = new Dictionary<Transform,
                 Dictionary<string, DisplayValue>>();
+
+            transformCamera = new Dictionary<Transform, Camera>();
         }
 
         /// <summary> <inheritdoc/> </summary>
@@ -354,6 +378,13 @@ namespace MLAgents
                     continue;
                 }
 
+                // get camera
+                Camera cam = transformCamera[target];
+                if (cam == null)
+                {
+                    cam = Camera.main;
+                }
+
                 float widthScaler = (Screen.width / 1000f);
                 float keyPixelWidth = 100 * widthScaler;
                 float keyPixelHeight = 20 * widthScaler;
@@ -364,11 +395,11 @@ namespace MLAgents
                     Screen.width / 2 - keyPixelWidth, Screen.height);
                 if (!(target == canvas.transform))
                 {
-                    Vector3 cam2obj = target.position - Camera.main.transform.position;
+                    Vector3 cam2obj = target.position - cam.transform.position;
                     scale = Mathf.Min(
                         1,
-                        20f / (Vector3.Dot(cam2obj, Camera.main.transform.forward)));
-                    Vector3 worldPosition = Camera.main.WorldToScreenPoint(
+                        20f / (Vector3.Dot(cam2obj, cam.transform.forward)));
+                    Vector3 worldPosition = cam.WorldToScreenPoint(
                         target.position + new Vector3(0, verticalOffset, 0));
                     origin = new Vector3(
                         worldPosition.x - keyPixelWidth * scale, Screen.height - worldPosition.y);
