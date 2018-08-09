@@ -64,7 +64,7 @@ can interact with it.
 If you want to use the [Python API](Python-API.md) to interact with your executable, you can pass the name of the executable with the argument 'file_name' of the `UnityEnvironment`. For instance :
 
 ```python
-from unityagents import UnityEnvironment
+from mlagents.envs import UnityEnvironment
 env = UnityEnvironment(file_name=<env_name>)
 ```
 
