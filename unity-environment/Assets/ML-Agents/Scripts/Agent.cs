@@ -44,7 +44,8 @@ namespace MLAgents
         public string storedTextActions;
 
         /// <summary>
-        /// For discrete control, specifies the actions that the agent cannot take
+        /// For discrete control, specifies the actions that the agent cannot take. Is true if
+        /// the action is masked.
         /// </summary>
         public bool[] actionMasks;
 
@@ -606,14 +607,65 @@ namespace MLAgents
 
         }
 
-        protected void SetActionMask(int branch, int[] actionIndices)
+        /// <summary>
+        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
+        protected void SetActionMask(IEnumerable<int> actionIndices)
+        {
+            SetActionMask(0, actionIndices);
+        }
+        
+        /// <summary>
+        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="actionIndex">The index of the masked action on branch 0</param>
+        protected void SetActionMask(int actionIndex)
+        {
+            SetActionMask(0, new int[1]{actionIndex});
+        }
+        
+        /// <summary>
+        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="branch">The branch for which the actions will be masked</param>
+        /// <param name="actionIndex">The index of the masked action</param>
+        protected void SetActionMask(int branch, int actionIndex)
+        {
+            SetActionMask(branch, new int[1]{actionIndex});
+        }
+
+        /// <summary>
+        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="branch">The branch for which the actions will be masked</param>
+        /// <param name="actionIndices"></param>
+        /// <exception cref="UnityAgentsException">The indices of the masked actions</exception>
+        protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
         {
             // Action Masks can only be used in Discrete Control.
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 throw new UnityAgentsException(
-                    "Invalid : Cannot set a mask for actions with Continuous Control.");
+                    "Invalid Action Making : Cannot set mask for actions with Continuous Control.");
             }
+            
+            // If the branch does not exist, raise an error
+            if (branch >= brain.brainParameters.vectorActionSize.Length )
+                throw new UnityAgentsException(
+                    "Invalid Action Making : Branch "+branch+" does not exist.");
 
             int totalNumberActions = brain.brainParameters.vectorActionSize.Sum();
             
@@ -629,9 +681,9 @@ namespace MLAgents
             if (startingActionIndices == null)
             {
                 var runningSum = 0;
-                startingActionIndices = new int[brain.brainParameters.vectorActionSize.Length];
+                startingActionIndices = new int[brain.brainParameters.vectorActionSize.Length + 1];
                 for (var actionIndex = 0;
-                    actionIndex < brain.brainParameters.vectorActionSize.Length - 1;
+                    actionIndex < brain.brainParameters.vectorActionSize.Length;
                     actionIndex++)
                 {
                     runningSum += brain.brainParameters.vectorActionSize[actionIndex];
@@ -642,10 +694,20 @@ namespace MLAgents
             foreach (var actionIndex in actionIndices)
             {
                 if (actionIndex >= brain.brainParameters.vectorActionSize[branch])
-                    Debug.Log("Error to implement");
+                    throw new UnityAgentsException(
+                        "Invalid Action Making: Action Mask is too large for specified branch.");
                 
                 info.actionMasks[actionIndex + startingActionIndices[branch]] = true;
             }
+
+            bool allActionsMasked = true;
+            for (int i = startingActionIndices[branch]; i < startingActionIndices[branch + 1]; i++)
+            {
+                allActionsMasked = allActionsMasked && info.actionMasks[i];
+            }
+            if (allActionsMasked)
+                throw new UnityAgentsException(
+                    "Invalid Action Making : All the actions of branch "+branch+" are masked.");
            
         }
 
