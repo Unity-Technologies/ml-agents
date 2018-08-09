@@ -33,7 +33,7 @@ def main():
     logger = logging.getLogger("mlagents.learn")
     _USAGE = '''
     Usage:
-      learn (<env>) [options]
+      learn (<trainer-config-path>) [<env>] [options]
       learn [options]
       learn --help
 
@@ -77,17 +77,13 @@ def main():
     lesson = int(options['--lesson'])
     fast_simulation = not bool(options['--slow'])
     no_graphics = options['--no-graphics']
-
-    # Constants
-    # Assumption that this yaml is present in same dir as this file
-    base_path = os.path.dirname(__file__)
-    TRAINER_CONFIG_PATH = os.path.abspath(os.path.join(base_path, "trainer_config.yaml"))
+    trainer_config_path = options['<trainer-config-path>']
 
 
     def run_training(sub_id, use_seed):
         tc = TrainerController(env_path, run_id + "-" + str(sub_id), save_freq, curriculum_file, fast_simulation,
                                load_model, train_model, worker_id + sub_id, keep_checkpoints, lesson, use_seed,
-                               docker_target_name, TRAINER_CONFIG_PATH, no_graphics)
+                               docker_target_name, trainer_config_path, no_graphics)
         tc.start_learning()
 
 
