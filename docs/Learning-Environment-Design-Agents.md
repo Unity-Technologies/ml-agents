@@ -196,7 +196,7 @@ gameObject.GetComponent<Rigidbody>().AddForce(
 Note that the above code example is a simplified extract from the AreaAgent class, which provides alternate implementations for both the discrete and the continuous action spaces.
 
 #### Masking Discrete Actions
-When using Discrete Actions, it is possible to specify that some actions are impossible for the next decision. Then the agent is controlled by a the External or Internal Brain, the agent will be unable to perform the specified action. Note that when the agent is controlled by a Player or Heuristic Brain, the agent will still be able to decide to perform the masked action. In order to mask an action, call the method `SetActionMask` in the `CollectObservation` method :
+When using Discrete Actions, it is possible to specify that some actions are impossible for the next decision. Then the agent is controlled by an External or Internal Brain, the agent will be unable to perform the specified action. Note that when the agent is controlled by a Player or Heuristic Brain, the agent will still be able to decide to perform the masked action. In order to mask an action, call the method `SetActionMask` in the `CollectObservation` method :
 
 ```csharp
 SetActionMask(branch, actionIndices)
