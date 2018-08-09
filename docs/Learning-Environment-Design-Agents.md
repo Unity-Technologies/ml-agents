@@ -195,6 +195,23 @@ gameObject.GetComponent<Rigidbody>().AddForce(
 
 Note that the above code example is a simplified extract from the AreaAgent class, which provides alternate implementations for both the discrete and the continuous action spaces.
 
+#### Masking Discrete Actions
+When using Discrete Actions, it is possible to specify that some actions are impossible for the next decision. Then the agent is controlled by a the External or Internal Brain, the agent will be unable to perform the specified action. Note that when the agent is controlled by a Player or Heuristic Brain, the agent will still be able to decide to perform the masked action. In order to mask an action, call the method `SetActionMask` in the `CollectObservation` method :
+
+```csharp
+SetActionMask(branch, actionIndices)
+```
+Where : 
+
+ * `branch` is the index of the branch on which you want to mask the action
+ * `actionIndices` is a list of `int` or a single `int` corresponding to the action that the agent cannot perform.
+
+Notes: 
+
+ * You can call `SetActionMask` multiple times if you want to put masks on multiple branches.
+ * You cannot mask all the actions of a branch.
+
+
 ## Rewards
 
 In reinforcement learning, the reward is a signal that the agent has done something right. The PPO reinforcement learning algorithm works by optimizing the choices an agent makes such that the agent earns the highest cumulative reward over time. The better your reward mechanism, the better your agent will learn.
