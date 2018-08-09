@@ -470,7 +470,6 @@ class UnityEnvironment(object):
                 if agent_info.action_mask is not None:
                     for k in range(len(agent_info.action_mask)):
                         mask_actions[agent_index, k] = 0 if agent_info.action_mask[k] else 1
-            print(mask_actions)
             if any([np.isnan(x.reward) for x in agent_info_list]):
                 logger.warning("An agent had a NaN reward for brain "+b)
             if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
