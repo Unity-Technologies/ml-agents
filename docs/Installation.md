@@ -57,10 +57,11 @@ If your Python environment doesn't include `pip`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install dependencies, **go into the `python` subdirectory** of the
-repository, and run from the command line:
+To install dependencies, enter the top level ml-agents directory and run from
+the command line:
 
-    pip3 install .
+    pip install -r requirements.txt
+    pip install .
 
 ## Docker-based Installation
 
