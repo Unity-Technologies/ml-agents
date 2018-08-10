@@ -14,7 +14,7 @@ environment:
 
 1. Launch Unity.
 2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `unity-environment` folder 
+3. Using the file dialog that opens, locate the `MLAgentsSDK` folder 
 within the ML-Agents project and click **Open**.
 4. In the **Project** window, navigate to the folder 
 `Assets/ML-Agents/Examples/3DBall/`.
@@ -64,7 +64,7 @@ can interact with it.
 If you want to use the [Python API](Python-API.md) to interact with your executable, you can pass the name of the executable with the argument 'file_name' of the `UnityEnvironment`. For instance :
 
 ```python
-from unityagents import UnityEnvironment
+from mlagents.envs import UnityEnvironment
 env = UnityEnvironment(file_name=<env_name>)
 ```
 
@@ -92,10 +92,10 @@ If the learn.py runs correctly and starts training, you should see something lik
 
 ![Training running](images/training-running.png)
 
-You can press Ctrl+C to stop the training, and your trained model will be at `ml-agents/python/models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below:
+You can press Ctrl+C to stop the training, and your trained model will be at `models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds to your model's latest checkpoint. You can now embed this trained model into your internal brain by following the steps below:
 
 1. Move your model file into 
-`unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+`MLAgentsSDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the **Ball3DBrain** object from the Scene hierarchy.
 4. Change the **Type of Brain** to **Internal**.

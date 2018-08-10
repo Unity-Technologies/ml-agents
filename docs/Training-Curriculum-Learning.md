@@ -37,10 +37,10 @@ different brains to follow different curriculums within the same environment.
 
 ### Specifying a Metacurriculum
 
-We first create a folder inside `python/curricula/` for the environment we want
+We first create a folder inside `curricula/` for the environment we want
 to use curriculum learning with. For example, if we were creating a
 metacurriculum for Wall Jump, we would create the folder
-`python/curricula/wall-jump/`. We will place our curriculums inside this folder.
+`curricula/wall-jump/`. We will place our curriculums inside this folder.
 
 ### Specifying a Curriculum
 
@@ -86,7 +86,7 @@ the BigWallBrain in the Wall Jump environment.
 
 Once our curriculum is defined, we have to use the reset parameters we defined
 and modify the environment from the agent's `AgentReset()` function. See
-[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/unity-environment/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
+[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/MLAgentsSDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example. Note that if the Academy's __Max Steps__ is not set to some
 positive number the environment will never be reset. The Academy must reset
 for the environment to reset.
@@ -95,7 +95,7 @@ We will save this file into our metacurriculum folder with the name of its
 corresponding Brain. For example, in the Wall Jump environment, there are two
 brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
 the BigWallBrain, we will save `BigWallBrain.json` into
-`python/curricula/wall-jump/`.
+`curricula/wall-jump/`.
 
 ### Training with a Curriculum
 
