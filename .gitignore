@@ -83,3 +83,8 @@ python/summaries
 
 # pytest cache 
 *.pytest_cache/
+
+# Ignore compiled protobuf files.
+ml-agents-protobuf/cs
+ml-agents-protobuf/python
+ml-agents-protobuf/Grpc*
