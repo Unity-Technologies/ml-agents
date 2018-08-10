@@ -132,10 +132,10 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'tensorflow>=1.7.1',
+        'tensorflow>=1.7',
         'Pillow>=4.2.1',
         'matplotlib',
-        'numpy>=1.11.0',
+        'numpy>=1.13.3,<=1.14.5',
         'jupyter',
         'pytest>=3.2.2',
         'docopt',
