@@ -37,7 +37,9 @@ During a training session, the training program prints out and saves updates at 
 
 And then opening the URL: [localhost:6006](http://localhost:6006).
  
-When training is finished, you can find the saved model in the `python/models` folder under the assigned run-id — in the cats example, the path to the model would be `python/models/cob_1/CatsOnBicycles_cob_1.bytes`.
+When training is finished, you can find the saved model in the `models` folder
+under the assigned run-id — in the cats example, the path to the model would be
+`models/cob_1/CatsOnBicycles_cob_1.bytes`.
 
 While this example used the default training hyperparameters, you can edit the [training_config.yaml file](#training-config-file) with a text editor to set different values. 
 
@@ -48,7 +50,7 @@ In addition to passing the path of the Unity executable containing your training
 * `--curriculum=<file>` – Specify a curriculum JSON file for defining the lessons for curriculum training. See [Curriculum Training](Training-Curriculum-Learning.md) for more information.
 * `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to keep. Checkpoints are saved after the number of steps specified by the `save-freq` option. Once the maximum number of checkpoints has been reached, the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>` – Specify which lesson to start with when performing curriculum training. Defaults to 0.
-* `--load` – If set, the training code loads an already trained model to initialize the neural network before training. The learning code looks for the model in `python/models/<run-id>/` (which is also where it saves models at the end of training). When not set (the default), the neural network weights are randomly initialized and an existing model is not loaded.
+* `--load` – If set, the training code loads an already trained model to initialize the neural network before training. The learning code looks for the model in `models/<run-id>/` (which is also where it saves models at the end of training). When not set (the default), the neural network weights are randomly initialized and an existing model is not loaded.
 * `--num-runs=<n>` - Sets the number of concurrent training sessions to perform. Default is set to 1. Set to higher values when benchmarking performance and multiple training sessions is desired. Training sessions are independent, and do not improve learning performance.
 * `--run-id=<path>` – Specifies an identifier for each training run. This identifier is used to name the subdirectories in which the trained model and summary statistics are saved as well as the saved model itself. The default id is "ppo". If you use TensorBoard to view the training statistics, always set a unique run-id for each training run. (The statistics for all runs with the same id are combined as if they were produced by a the same session.)
 * `--save-freq=<n>` Specifies how often (in  steps) to save the model during training. Defaults to 50000.

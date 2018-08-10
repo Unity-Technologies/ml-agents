@@ -26,6 +26,9 @@ On Windows & Linux: [See here](https://github.com/google/protobuf/blob/master/sr
 1. Install pre-requisites.
 2. Un-comment line 4 in `make.bat`, and set to correct Grpc.Tools sub-directory.
 3. Run `make.bat`
-4. Copy created `communicator_objects` and `CommunicatorObjects` folders to their respective sub-directories within the `ml-agents` repository. 
-    * For Python, the generated files should be copied to: `python/communicator_objects` 
-    * For C#, the generated files should be copied to: `unity-environment/Assets/ML-Agents/Scripts/CommunicatorObjects`.
+4. Copy created `communicator_objects` and `CommunicatorObjects` folders to
+   their respective sub-directories within the `ml-agents` repository.
+    * For Python, the generated files should be copied to:
+      `mlagents/envs/communicator_objects`
+    * For C#, the generated files should be copied to:
+      `MLAgentsSDK/Assets/ML-Agents/Scripts/CommunicatorObjects`.
