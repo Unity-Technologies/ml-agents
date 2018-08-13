@@ -213,9 +213,9 @@ class PPOTrainer(Trainer):
         prev_text_actions = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
-            agent_index = agent_brain_info.agents.index(agent_id)
             if agent_brain_info is None:
                 agent_brain_info = next_info
+            agent_index = agent_brain_info.agents.index(agent_id)
             for i in range(len(next_info.visual_observations)):
                 visual_observations[i].append(agent_brain_info.visual_observations[i][agent_index])
             vector_observations.append(agent_brain_info.vector_observations[agent_index])
