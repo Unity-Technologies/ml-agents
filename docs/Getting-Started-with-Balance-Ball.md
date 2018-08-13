@@ -108,11 +108,8 @@ when you embed the trained model in the Unity application, you will change the
 **Vector Observation Space**
 
 Before making a decision, an agent collects its observation about its state 
-in the world. The ML-Agents toolkit classifies vector observations into two types:
-**Continuous** and **Discrete**. The **Continuous** vector observation space 
-collects observations in a vector of floating point numbers. The **Discrete** 
-vector observation space is an index into a table of states. Most of the example
-environments use a continuous vector observation space. 
+in the world. The vector observation is a vector of floating point numbers
+which contain relevant information for the agent to make decisions. 
 
 The Brain instance used in the 3D Balance Ball example uses the **Continuous** 
 vector observation space with a **State Size** of 8. This means that the 
@@ -123,16 +120,16 @@ values are defined in the agent's `CollectObservations()` function.)
 
 **Vector Action Space**
 
-An agent is given instructions from the brain in the form of *actions*. Like 
-states, ML-Agents toolkit classifies actions into two types: the **Continuous** 
+An agent is given instructions from the brain in the form of *actions*. 
+ML-Agents toolkit classifies actions into two types: the **Continuous** 
 vector action space is a vector of numbers that can vary continuously. What 
 each element of the vector means is defined by the agent logic (the PPO
 training process just learns what values are better given particular state 
 observations based on the rewards received when it tries different values). 
 For example, an element might represent a force or torque applied to a 
 `RigidBody` in the agent. The **Discrete** action vector space defines its
-actions as a table. A specific action given to the agent is an index into 
-this table. 
+actions as tables. An action given to the agent is an array of indeces into 
+tables. 
 
 The 3D Balance Ball example is programmed to use both types of vector action
 space. 

@@ -65,10 +65,8 @@ We need to define three entities at every moment of the game
 Observations can be numeric and/or visual. Numeric observations measure 
 attributes of the environment from the point of view of the agent. For
 our medic this would be attributes of the battlefield that are visible to it.
-Observations can either be _discrete_ or _continuous_ depending on the complexity
-of the game and agent. For most interesting environments, an agent will require 
-several continuous numeric observations, while for simple environments with 
-a small number of unique configurations, a discrete observation will suffice. 
+For most interesting environments, an agent will require 
+several continuous numeric observations. 
 Visual observations, on the other hand, are images generated from the cameras 
 attached to the agent and represent what the agent is seeing at that point
 in time. It is common to confuse an agent's observation with the environment

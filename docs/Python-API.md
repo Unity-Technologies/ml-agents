@@ -36,14 +36,14 @@ If you want to directly interact with the Editor, you need to use `file_name=Non
 A BrainInfo object contains the following fields:
 
 * **`visual_observations`** : A list of 4 dimensional numpy arrays. Matrix n of the list corresponds to the n<sup>th</sup> observation of the brain. 
-* **`vector_observations`** : A two dimensional numpy array of dimension `(batch size, vector observation size)` if the vector observation space is continuous and `(batch size, 1)` if the vector observation space is discrete.
+* **`vector_observations`** : A two dimensional numpy array of dimension `(batch size, vector observation size)`.
 * **`text_observations`** : A list of string corresponding to the agents text observations.
 * **`memories`** : A two dimensional numpy array of dimension `(batch size, memory size)` which corresponds to the memories sent at the previous step.
 * **`rewards`** : A list as long as the number of agents using the brain containing the rewards they each obtained at the previous step. 
 * **`local_done`** : A list as long as the number of agents using the brain containing  `done` flags (whether or not the agent is done). 
 * **`max_reached`** : A list as long as the number of agents using the brain containing true if the agents reached their max steps.
 * **`agents`** : A list of the unique ids of the agents using the brain.
-* **`previous_actions`** : A two dimensional numpy array of dimension `(batch size, vector action size)` if the vector action space is continuous and `(batch size, 1)` if the vector action space is discrete.
+* **`previous_actions`** : A two dimensional numpy array of dimension `(batch size, vector action size)` if the vector action space is continuous and `(batch size, number of branches)` if the vector action space is discrete.
 
 Once loaded, you can use your UnityEnvironment object, which referenced by a variable named `env` in this example, can be used in the following way:  
 - **Print : `print(str(env))`**  

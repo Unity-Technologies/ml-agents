@@ -4,7 +4,7 @@ from typing import Dict
 class BrainInfo:
     def __init__(self, visual_observation, vector_observation, text_observations, memory=None,
                  reward=None, agents=None, local_done=None,
-                 vector_action=None, text_action=None, max_reached=None):
+                 vector_action=None, text_action=None, max_reached=None, action_mask=None):
         """
         Describes experience at current step of all agents linked to a brain.
         """
@@ -18,6 +18,7 @@ class BrainInfo:
         self.agents = agents
         self.previous_vector_actions = vector_action
         self.previous_text_actions = text_action
+        self.action_masks = action_mask
 
 
 AllBrainInfo = Dict[str, BrainInfo]
@@ -38,21 +39,18 @@ class BrainParameters:
         self.vector_action_space_size = brain_param["vectorActionSize"]
         self.vector_action_descriptions = brain_param["vectorActionDescriptions"]
         self.vector_action_space_type = ["discrete", "continuous"][brain_param["vectorActionSpaceType"]]
-        self.vector_observation_space_type = ["discrete", "continuous"][brain_param["vectorObservationSpaceType"]]
 
     def __str__(self):
-        return '''Unity brain name: {0}
-        Number of Visual Observations (per agent): {1}
-        Vector Observation space type: {2}
-        Vector Observation space size (per agent): {3}
-        Number of stacked Vector Observation: {4}
-        Vector Action space type: {5}
-        Vector Action space size (per agent): {6}
-        Vector Action descriptions: {7}'''.format(self.brain_name,
-                                                  str(self.number_visual_observations),
-                                                  self.vector_observation_space_type,
-                                                  str(self.vector_observation_space_size),
-                                                  str(self.num_stacked_vector_observations),
-                                                  self.vector_action_space_type,
-                                                  str(self.vector_action_space_size),
-                                                  ', '.join(self.vector_action_descriptions))
+        return '''Unity brain name: {}
+        Number of Visual Observations (per agent): {}
+        Vector Observation space size (per agent): {}
+        Number of stacked Vector Observation: {}
+        Vector Action space type: {}
+        Vector Action space size (per agent): {}
+        Vector Action descriptions: {}'''.format(self.brain_name,
+                                                 str(self.number_visual_observations),
+                                                 str(self.vector_observation_space_size),
+                                                 str(self.num_stacked_vector_observations),
+                                                 self.vector_action_space_type,
+                                                 str(self.vector_action_space_size),
+                                                 ', '.join(self.vector_action_descriptions))

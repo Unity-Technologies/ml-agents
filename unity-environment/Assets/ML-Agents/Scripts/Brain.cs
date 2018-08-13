@@ -59,7 +59,7 @@ namespace MLAgents
 
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
-        public int vectorActionSize = 1;
+        public int[] vectorActionSize = new int[1]{1};
         /**< \brief If continuous : The length of the float vector that represents
          * the action
          * <br> If discrete : The number of possible values the action can take*/
@@ -72,9 +72,6 @@ namespace MLAgents
 
         public SpaceType vectorActionSpaceType = SpaceType.discrete;
         /**< \brief Defines if the action is discrete or continuous */
-
-        public SpaceType vectorObservationSpaceType = SpaceType.continuous;
-        /**< \brief Defines if the state is discrete or continuous */
     }
 
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
@@ -88,7 +85,7 @@ namespace MLAgents
  */
     public class Brain : MonoBehaviour
     {
-        private bool isInitialized = false;
+        private bool isInitialized;
 
         private Dictionary<Agent, AgentInfo> agentInfos =
             new Dictionary<Agent, AgentInfo>(1024);
@@ -104,7 +101,7 @@ namespace MLAgents
         public BrainType brainType;
 
         //[HideInInspector]
-        ///**<  \brief Keeps track of the agents which subscribe to this brain*/
+        /// Keeps track of the agents which subscribe to this brain*/
         // public Dictionary<int, Agent> agents = new Dictionary<int, Agent>();
 
         [SerializeField] ScriptableObject[] CoreBrains;
@@ -186,12 +183,11 @@ namespace MLAgents
                     {
                         CoreBrains[(int) bt] =
                             ScriptableObject.CreateInstance(
-                                "CoreBrain" + bt.ToString());
+                                "CoreBrain" + bt);
                     }
                     else
                     {
-                        CoreBrains[(int) bt] =
-                            ScriptableObject.Instantiate(CoreBrains[(int) bt]);
+                        CoreBrains[(int) bt] = Instantiate(CoreBrains[(int) bt]);
                     }
                 }
 
@@ -220,16 +216,14 @@ namespace MLAgents
             if (!gameObject.activeSelf)
             {
                 throw new UnityAgentsException(
-                    string.Format("Agent {0} tried to request an action " +
-                                  "from brain {1} but it is not active.",
-                        agent.gameObject.name, gameObject.name));
+                    $"Agent {agent.gameObject.name} tried to request an action " +
+                    $"from brain {gameObject.name} but it is not active.");
             }
             else if (!isInitialized)
             {
                 throw new UnityAgentsException(
-                    string.Format("Agent {0} tried to request an action " +
-                                  "from brain {1} but it was not initialized.",
-                        agent.gameObject.name, gameObject.name));
+                    $"Agent {agent.gameObject.name} tried to request an action " +
+                    $"from brain {gameObject.name} but it was not initialized.");
             }
             else
             {

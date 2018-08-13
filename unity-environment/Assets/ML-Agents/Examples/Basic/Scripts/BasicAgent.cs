@@ -9,13 +9,13 @@ public class BasicAgent : Agent
     private BasicAcademy academy;
     public float timeBetweenDecisionsAtInference;
     private float timeSinceDecision;
-    public int position;
-    public int smallGoalPosition;
-    public int largeGoalPosition;
+    int position;
+    int smallGoalPosition;
+    int largeGoalPosition;
     public GameObject largeGoal;
     public GameObject smallGoal;
-    public int minPosition;
-    public int maxPosition;
+    int minPosition;
+    int maxPosition;
 
     public override void InitializeAgent()
     {
@@ -24,7 +24,7 @@ public class BasicAgent : Agent
 
     public override void CollectObservations()
     {
-        AddVectorObs(position);
+        AddVectorObs(position, 20);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -35,10 +35,10 @@ public class BasicAgent : Agent
 	    
 		switch (movement)
 		{
-		    case 0:
+		    case 1:
 		        direction = -1;
 		        break;
-		    case 1:
+		    case 2:
 		        direction = 1;
 		        break;
 		}
@@ -47,7 +47,7 @@ public class BasicAgent : Agent
         if (position < minPosition) { position = minPosition; }
         if (position > maxPosition) { position = maxPosition; }
 
-        gameObject.transform.position = new Vector3(position, 0f, 0f);
+        gameObject.transform.position = new Vector3(position - 10f, 0f, 0f);
 
         AddReward(-0.01f);
 
@@ -66,13 +66,13 @@ public class BasicAgent : Agent
 
     public override void AgentReset()
     {
-        position = 0;
-        minPosition = -10;
-        maxPosition = 10;
-        smallGoalPosition = -3;
-        largeGoalPosition = 7;
-        smallGoal.transform.position = new Vector3(smallGoalPosition, 0f, 0f);
-        largeGoal.transform.position = new Vector3(largeGoalPosition, 0f, 0f);
+        position = 10;
+        minPosition = 0;
+        maxPosition = 20;
+        smallGoalPosition = 7;
+        largeGoalPosition = 17;
+        smallGoal.transform.position = new Vector3(smallGoalPosition - 10f, 0f, 0f);
+        largeGoal.transform.position = new Vector3(largeGoalPosition - 10f, 0f, 0f);
     }
 
     public override void AgentOnDone()

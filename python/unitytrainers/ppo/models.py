@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 import tensorflow as tf
 from unitytrainers.models import LearningModel
@@ -41,7 +42,7 @@ class PPOModel(LearningModel):
             encoded_state, encoded_next_state = self.create_curiosity_encoders()
             self.create_inverse_model(encoded_state, encoded_next_state)
             self.create_forward_model(encoded_state, encoded_next_state)
-        self.create_ppo_optimizer(self.probs, self.old_probs, self.value,
+        self.create_ppo_optimizer(self.log_probs, self.old_log_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
 
     @staticmethod
@@ -91,34 +92,20 @@ class PPOModel(LearningModel):
             encoded_next_state_list.append(hidden_next_visual)
 
         if self.o_size > 0:
-
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
-            if self.brain.vector_observation_space_type == "continuous":
-                # Create input op for next (t+1) vector observation.
-                self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
-                                                     name='next_vector_observation')
+            # Create input op for next (t+1) vector observation.
+            self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
+                                                 name='next_vector_observation')
 
-                encoded_vector_obs = self.create_continuous_observation_encoder(self.vector_in,
-                                                                                self.curiosity_enc_size,
-                                                                                self.swish, 2, "vector_obs_encoder",
-                                                                                False)
-                encoded_next_vector_obs = self.create_continuous_observation_encoder(self.next_vector_in,
-                                                                                     self.curiosity_enc_size,
-                                                                                     self.swish, 2,
-                                                                                     "vector_obs_encoder",
-                                                                                     True)
-            else:
-                self.next_vector_in = tf.placeholder(shape=[None, 1], dtype=tf.int32,
-                                                     name='next_vector_observation')
-
-                encoded_vector_obs = self.create_discrete_observation_encoder(self.vector_in, self.o_size,
-                                                                              self.curiosity_enc_size,
-                                                                              self.swish, 2, "vector_obs_encoder",
-                                                                              False)
-                encoded_next_vector_obs = self.create_discrete_observation_encoder(self.next_vector_in, self.o_size,
-                                                                                   self.curiosity_enc_size,
-                                                                                   self.swish, 2, "vector_obs_encoder",
-                                                                                   True)
+            encoded_vector_obs = self.create_vector_observation_encoder(self.vector_in,
+                                                                        self.curiosity_enc_size,
+                                                                        self.swish, 2, "vector_obs_encoder",
+                                                                        False)
+            encoded_next_vector_obs = self.create_vector_observation_encoder(self.next_vector_in,
+                                                                             self.curiosity_enc_size,
+                                                                             self.swish, 2,
+                                                                                 "vector_obs_encoder",
+                                                                             True)
             encoded_state_list.append(encoded_vector_obs)
             encoded_next_state_list.append(encoded_next_vector_obs)
 
@@ -136,11 +123,13 @@ class PPOModel(LearningModel):
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
         if self.brain.vector_action_space_type == "continuous":
-            pred_action = tf.layers.dense(hidden, self.a_size, activation=None)
+            pred_action = tf.layers.dense(hidden, self.a_size[0], activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(squared_difference, self.mask, 2)[1])
         else:
-            pred_action = tf.layers.dense(hidden, self.a_size, activation=tf.nn.softmax)
+            pred_action = tf.concat(
+                [tf.layers.dense(hidden, self.a_size[i], activation=tf.nn.softmax)
+                 for i in range(len(self.a_size))], axis=1)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(cross_entropy, self.mask, 2)[1])
 
@@ -193,7 +182,7 @@ class PPOModel(LearningModel):
         # Here we calculate PPO policy loss. In continuous control this is done independently for each action gaussian
         # and then averaged together. This provides significantly better performance than treating the probability
         # as an average of probabilities, or as a joint probability.
-        r_theta = probs / (old_probs + 1e-10)
+        r_theta = tf.exp(probs - old_probs)
         p_opt_a = r_theta * self.advantage
         p_opt_b = tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * self.advantage
         self.policy_loss = -tf.reduce_mean(tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1])

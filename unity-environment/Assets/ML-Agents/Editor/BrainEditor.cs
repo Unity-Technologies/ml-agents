@@ -34,11 +34,6 @@ namespace MLAgents
                     MessageType.Error);
             }
 
-            BrainParameters parameters = myBrain.brainParameters;
-            if (parameters.vectorActionDescriptions == null ||
-                parameters.vectorActionDescriptions.Length != parameters.vectorActionSize)
-                parameters.vectorActionDescriptions = new string[parameters.vectorActionSize];
-
             serializedBrain.Update();
 
 
@@ -49,13 +44,6 @@ namespace MLAgents
                 EditorGUI.indentLevel++;
                 EditorGUILayout.LabelField("Vector Observation");
                 EditorGUI.indentLevel++;
-
-                SerializedProperty bpVectorObsType =
-                    serializedBrain.FindProperty("brainParameters.vectorObservationSpaceType");
-                EditorGUILayout.PropertyField(bpVectorObsType, new GUIContent("Space Type",
-                    "Corresponds to whether state " +
-                    "vector contains a single integer (Discrete) " +
-                    "or a series of real-valued floats (Continuous)."));
 
                 SerializedProperty bpVectorObsSize =
                     serializedBrain.FindProperty("brainParameters.vectorObservationSize");
@@ -87,28 +75,80 @@ namespace MLAgents
                     "Corresponds to whether state" +
                     " vector contains a single integer (Discrete) " +
                     "or a series of real-valued floats (Continuous)."));
+                if (bpVectorActionType.enumValueIndex == 1)
+                {
+                    //Continuous case :
+                    SerializedProperty bpVectorActionSize =
+                        serializedBrain.FindProperty("brainParameters.vectorActionSize");
+                    bpVectorActionSize.arraySize = 1;
+                    SerializedProperty continuousActionSize =
+                        bpVectorActionSize.GetArrayElementAtIndex(0);
+                    EditorGUILayout.PropertyField(continuousActionSize, new GUIContent(
+                        "Space Size", "Length of continuous action vector."));
+                    
+                }
+                else
+                {
+                    // Discrete case :
+                    SerializedProperty bpVectorActionSize =
+                        serializedBrain.FindProperty("brainParameters.vectorActionSize");
+                    bpVectorActionSize.arraySize = EditorGUILayout.IntField(
+                        "Branches Size", bpVectorActionSize.arraySize);
+                    EditorGUI.indentLevel++;
+                    for (int branchIndex = 0;
+                        branchIndex < bpVectorActionSize.arraySize;
+                        branchIndex++)
+                    {
+                        SerializedProperty branchActionSize =
+                            bpVectorActionSize.GetArrayElementAtIndex(branchIndex);
+                        EditorGUILayout.PropertyField(branchActionSize, new GUIContent(
+                            "Branch " + branchIndex+" Size", 
+                            "Number of possible actions for the branch number " + branchIndex+"."));
+                    }
+                    EditorGUI.indentLevel--;
 
-                SerializedProperty bpVectorActionSize =
-                    serializedBrain.FindProperty("brainParameters.vectorActionSize");
-                EditorGUILayout.PropertyField(bpVectorActionSize, new GUIContent("Space Size",
-                    "Length of action vector " +
-                    "for brain (In Continuous state space)." +
-                    "Or number of possible values (In Discrete action space)."));
+                }
 
-                SerializedProperty bpVectorActionDescription =
-                    serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
-                EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent(
-                    "Action Descriptions", "A list of strings used to name" +
-                                           " the available actions for the Brain."), true);
+                try
+                {
+                    BrainParameters parameters = myBrain.brainParameters;
+                    int numberOfDescriptions = 0;
+                    if (parameters.vectorActionSpaceType == SpaceType.continuous)
+                        numberOfDescriptions = parameters.vectorActionSize[0];
+                    else
+                        numberOfDescriptions = parameters.vectorActionSize.Length;
+                    if (parameters.vectorActionDescriptions == null ||
+                        parameters.vectorActionDescriptions.Length != numberOfDescriptions)
+                        parameters.vectorActionDescriptions = new string[numberOfDescriptions];
+                }
+                catch
+                {
 
+                }
+
+                if (bpVectorActionType.enumValueIndex == 1)
+                {
+                    //Continuous case :
+                    SerializedProperty bpVectorActionDescription =
+                        serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
+                    EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent(
+                        "Action Descriptions", "A list of strings used to name" +
+                                               " the available actions for the Brain."), true);
+                }
+                else
+                {
+                    // Discrete case :
+                    SerializedProperty bpVectorActionDescription =
+                        serializedBrain.FindProperty("brainParameters.vectorActionDescriptions");
+                    EditorGUILayout.PropertyField(bpVectorActionDescription, new GUIContent(
+                        "Branch Descriptions", "A list of strings used to name" +
+                                               " the available branches for the Brain."), true);
+                }
             }
 
             EditorGUI.indentLevel = indentLevel;
             SerializedProperty bt = serializedBrain.FindProperty("brainType");
             EditorGUILayout.PropertyField(bt);
-
-
-
 
             if (bt.enumValueIndex < 0)
             {

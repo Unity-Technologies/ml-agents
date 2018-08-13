@@ -175,10 +175,14 @@ namespace MLAgents
                 Done = info.done,
                 Id = info.id,
             };
+            if (info.actionMasks != null)
+            {
+                agentInfoProto.ActionMask.AddRange(info.actionMasks);
+            }
             foreach (Texture2D obs in info.visualObservations)
             {
                 agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToJPG())
+                    ByteString.CopyFrom(obs.EncodeToPNG())
                 );
             }
             return agentInfoProto;
@@ -199,11 +203,9 @@ namespace MLAgents
                 {
                     VectorObservationSize = brainParameters.vectorObservationSize,
                     NumStackedVectorObservations = brainParameters.numStackedVectorObservations,
-                    VectorActionSize = brainParameters.vectorActionSize,
+                    VectorActionSize = {brainParameters.vectorActionSize},
                     VectorActionSpaceType =
                     (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorActionSpaceType,
-                    VectorObservationSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorObservationSpaceType,
                     BrainName = name,
                     BrainType = type
                 };
@@ -340,6 +342,8 @@ namespace MLAgents
                             action.Memories.ToList());
                         agent.UpdateTextAction(
                             action.TextActions);
+                        agent.UpdateValueAction(
+                            action.Value);
                     }
                 }
             

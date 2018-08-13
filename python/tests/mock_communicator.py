@@ -26,11 +26,10 @@ class MockCommunicator(Communicator):
         bp = BrainParametersProto(
             vector_observation_size=3,
             num_stacked_vector_observations=2,
-            vector_action_size=2,
+            vector_action_size=[2],
             camera_resolutions=resolutions,
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),
-            vector_observation_space_type=1,
             brain_name="RealFakeBrain",
             brain_type=2
         )

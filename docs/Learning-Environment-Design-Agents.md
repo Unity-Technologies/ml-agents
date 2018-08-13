@@ -27,15 +27,14 @@ When you turn on **On Demand Decisions** for an agent, your agent code must call
 
 ## Observations
 
-To make decisions, an agent must observe its environment to determine its current state. A state observation can take the following forms:
+To make decisions, an agent must observe its environment in order to infer the state of the world. A state observation can take the following forms:
 
-* **Continuous Vector** — a feature vector consisting of an array of numbers. 
-* **Discrete Vector** — an index into a state table (typically only useful for the simplest of environments).
+* **Vector Observation** — a feature vector consisting of an array of floating point numbers. 
 * **Visual Observations** — one or more camera images.
 
-When you use the **Continuous** or **Discrete** vector observation space for an agent, implement the `Agent.CollectObservations()` method to create the feature vector or state index. When you use **Visual Observations**, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectObservations()` method when your agent uses visual observations (unless it also uses vector observations).
+When you use vector observations for an agent, implement the `Agent.CollectObservations()` method to create the feature vector. When you use **Visual Observations**, you only need to identify which Unity Camera objects will provide images and the base Agent class handles the rest. You do not need to implement the `CollectObservations()` method when your agent uses visual observations (unless it also uses vector observations).
 
-### Continuous Vector Observation Space: Feature Vectors
+### Vector Observation Space: Feature Vectors
 
 For agents using a continuous state space, you create a feature vector to represent the agent's observation at each step of the simulation. The Brain class calls the `CollectObservations()` method of each of its agents. Your implementation of this function must call `AddVectorObs` to add vector observations. 
 
@@ -65,7 +64,6 @@ The feature vector must always contain the same number of elements and observati
 When you set up an Agent's brain in the Unity Editor, set the following properties to use a continuous vector observation:
 
 **Space Size** — The state size must match the length of your feature vector.
-**Space Type** — Set to **Continuous**.
 **Brain Type** — Set to **External** during training; set to **Internal** to use the trained model.
 
 The observation feature vector is a list of floating point numbers, which means you must convert any other data types to a float or a list of floats. 
@@ -121,7 +119,7 @@ For angles that can be outside the range [0,360], you can either reduce the angl
  
 ### Multiple Visual Observations
 
-Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures into a 3D Tensor which can be fed into a convolutional neural network (CNN). For more information on CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You can use camera observations and either continuous feature vector or discrete state observations at the same time.
+Camera observations use rendered textures from one or more cameras in a scene. The brain vectorizes the textures into a 3D Tensor which can be fed into a convolutional neural network (CNN). For more information on CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You can use camera observations along side vector observations.
  
 Agents using camera images can capture state of arbitrary complexity and are useful when the state is difficult to describe numerically. However, they are also typically less efficient and slower to train, and sometimes don't succeed at all.  
 
@@ -131,28 +129,13 @@ To add a visual observation to an agent, click on the `Add Camera` button in the
 
 In addition, make sure that the Agent's Brain expects a visual observation. In the Brain inspector, under **Brain Parameters** > **Visual Observations**, specify the number of Cameras the agent is using for its visual observations. For each visual observation, set the width and height of the image (in pixels) and whether or not the observation is color or grayscale (when `Black And White` is checked).
  
-### Discrete Vector Observation Space: Table Lookup
-
-You can use the discrete vector observation space when an agent only has a limited number of possible states and those states can be enumerated by a single number. For instance, the [Basic example environment](Learning-Environment-Examples.md#basic) in the ML-Agents toolkit defines an agent with a discrete vector observation space. The states of this agent are the integer steps between two linear goals. In the Basic example, the agent learns to move to the goal that provides the greatest reward.
-
-More generally, the discrete vector observation identifier could be an index into a table of the possible states. However, tables quickly become unwieldy as the environment becomes more complex. For example, even a simple game like [tic-tac-toe has 765 possible states](https://en.wikipedia.org/wiki/Game_complexity) (far more if you don't reduce the number of observations by combining those that are rotations or reflections of each other).
-
-To implement a discrete state observation, implement the `CollectObservations()` method of your Agent subclass and return a `List` containing a single number representing the state:
-
-```csharp
-public override void CollectObservations()
-{
-    AddVectorObs(stateIndex);  // stateIndex is the state identifier
-}
-```
-
 ## Vector Actions
 
-An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentAction()` function. When you specify that the vector action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Vector Action Space Size` property.  When you specify a **Discrete** vector action space type, the action parameter is an array containing only a single value, which is an index into your list or table of commands. In the **Discrete** vector action space type, the `Vector Action Space Size` is the number of elements in your action table. Set the `Vector Action Space Size` and `Vector Action Space Type` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
+An action is an instruction from the brain that the agent carries out. The action is passed to the agent as a parameter when the Academy invokes the agent's `AgentAction()` function. When you specify that the vector action space is **Continuous**, the action parameter passed to the agent is an array of control signals with length equal to the `Vector Action Space Size` property.  When you specify a **Discrete** vector action space type, the action parameter is an array containing integers. Each integer is an index into a list or table of commands. In the **Discrete** vector action space type, the action parameter is an array of indices. The number of indices in the array is determined by the number of branches defined in the `Branches Size` property. Each branch corresponds to an action table, you can specify the size of each table by modifying the `Branches` property. Set the `Vector Action Space Size` and `Vector Action Space Type` properties on the Brain object assigned to the agent (using the Unity Editor Inspector window). 
 
 Neither the Brain nor the training algorithm know anything about what the action values themselves mean. The training algorithm simply tries different values for the action list and observes the affect on the accumulated rewards over time and many training episodes. Thus, the only place actions are defined for an agent is in the `AgentAction()` function. You simply specify the type of vector action space, and, for the continuous vector action space, the number of values, and then apply the received values appropriately (and consistently) in `ActionAct()`.
 
-For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete vector actions. In the continuous case, you would set the vector action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would set the vector action size to four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to four.  
+For example, if you designed an agent to move in two dimensions, you could use either continuous or the discrete vector actions. In the continuous case, you would set the vector action size to two (one for each dimension), and the agent's brain would create an action with two floating point values. In the discrete case, you would use one Branch with a size of four (one for each direction), and the brain would create an action array containing a single element with a value ranging from zero to three. Alternatively, you could create two branches of size two (one for horizontal movement and one for vertical movement), and the brain would create an action array containing two elements with values ranging from zero to one.
 
 Note that when you are programming actions for an agent, it is often helpful to test your action logic using a **Player** brain, which lets you map keyboard commands to actions. See [Brains](Learning-Environment-Design-Brains.md).
 
@@ -185,20 +168,24 @@ By default the output from our provided PPO algorithm pre-clamps the values of `
  
 ### Discrete Action Space
 
-When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array containing a single element. The value is the index of the action to in your table or list of actions. With the discrete vector action space, `Vector Action Space Size` represents the number of actions in your action table.
+When an agent uses a brain set to the **Discrete** vector action space, the action parameter passed to the agent's `AgentAction()` function is an array containing indices. With the discrete vector action space, `Branches` is an array of integers, each value corresponds to the number of possibilities for each branch.
 
-The [Area example](Learning-Environment-Examples.md#push-block) defines five actions for the discrete vector action space: a jump action and one action for each cardinal direction:
+For example, if we wanted an agent that can move in an plane and jump, we could define two branches (one for motion and one for jumping) because we want our agent be able to move __and__ jump concurently.
+We define the first branch to have 5 possible actions (don't move, go left, go right, go backward, go forward) and the second one to have 2 possible actions (don't jump, jump). The AgentAction method would look something like :
 
 ```csharp
-// Get the action index
+// Get the action index for movement
 int movement = Mathf.FloorToInt(act[0]); 
+// Get the action index for jumping
+int jump = Mathf.FloorToInt(act[1]); 
 
-// Look up the index in the action list:
+// Look up the index in the movement action list:
 if (movement == 1) { directionX = -1; }
 if (movement == 2) { directionX = 1; }
 if (movement == 3) { directionZ = -1; }
 if (movement == 4) { directionZ = 1; }
-if (movement == 5 && GetComponent<Rigidbody>().velocity.y <= 0) { directionY = 1; }
+// Look up the index in the jump action list:
+if (jump == 1 && IsGrounded()) { directionY = 1; }
 
 // Apply the action results to move the agent
 gameObject.GetComponent<Rigidbody>().AddForce(
@@ -207,6 +194,23 @@ gameObject.GetComponent<Rigidbody>().AddForce(
 ```
 
 Note that the above code example is a simplified extract from the AreaAgent class, which provides alternate implementations for both the discrete and the continuous action spaces.
+
+#### Masking Discrete Actions
+When using Discrete Actions, it is possible to specify that some actions are impossible for the next decision. Then the agent is controlled by an External or Internal Brain, the agent will be unable to perform the specified action. Note that when the agent is controlled by a Player or Heuristic Brain, the agent will still be able to decide to perform the masked action. In order to mask an action, call the method `SetActionMask` in the `CollectObservation` method :
+
+```csharp
+SetActionMask(branch, actionIndices)
+```
+Where : 
+
+ * `branch` is the index of the branch on which you want to mask the action
+ * `actionIndices` is a list of `int` or a single `int` corresponding to the action that the agent cannot perform.
+
+Notes: 
+
+ * You can call `SetActionMask` multiple times if you want to put masks on multiple branches.
+ * You cannot mask all the actions of a branch.
+
 
 ## Rewards
 

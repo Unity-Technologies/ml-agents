@@ -28,7 +28,7 @@ namespace MLAgents
         /// <param name="communicatorParameters">Communicator parameters.</param>
         public RPCCommunicator(CommunicatorParameters communicatorParameters)
         {
-            this.m_communicatorParameters = communicatorParameters;
+            m_communicatorParameters = communicatorParameters;
         }
 
         /// <summary>
@@ -50,7 +50,11 @@ namespace MLAgents
             var result = m_client.Exchange(WrapMessage(unityOutput, 200));
             unityInput = m_client.Exchange(WrapMessage(null, 200)).UnityInput;
 #if UNITY_EDITOR
+#if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+#else
+            EditorApplication.playmodeStateChanged += HandleOnPlayModeChanged;
+#endif
 #endif
             return result.UnityInput;
         }
@@ -131,6 +135,7 @@ namespace MLAgents
         }
 
 #if UNITY_EDITOR
+#if UNITY_2017_2_OR_NEWER
         /// <summary>
         /// When the editor exits, the communicator must be closed
         /// </summary>
@@ -143,6 +148,19 @@ namespace MLAgents
                 Close();
             }
         }
+#else
+        /// <summary>
+        /// When the editor exits, the communicator must be closed
+        /// </summary>
+        private void HandleOnPlayModeChanged()
+        {
+            // This method is run whenever the playmode state is changed.
+            if (!EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Close();
+            }
+        }
+#endif
 #endif
 
     }
