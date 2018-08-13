@@ -3,19 +3,19 @@
 # GRPC-TOOLS required. Install with `nuget install Grpc.Tools`. 
 # Then un-comment and replace [DIRECTORY] with location of files.
 # For example, on macOS, you might have something like:
-COMPILER=Grpc.Tools.1.14.1/tools/macosx_x64
+# COMPILER=Grpc.Tools.1.14.1/tools/macosx_x64
 # COMPILER=[DIRECTORY]
 
 SRC_DIR=proto/mlagents/envs/communicator_objects
-DST_DIR_C=cs/CommunicatorObjects
-DST_DIR_P=python
+DST_DIR_C=../MLAgentsSDK/Assets/ML-Agents/Scripts/CommunicatorObjects
+DST_DIR_P=..
 PROTO_PATH=proto
 
 PYTHON_PACKAGE=mlagents/envs/communicator_objects
 
 # clean
 rm -rf $DST_DIR_C
-rm -rf $DST_DIR_P
+rm -rf $DST_DIR_P/$PYTHON_PACKAGE
 mkdir -p $DST_DIR_C
 mkdir -p $DST_DIR_P/$PYTHON_PACKAGE
 

@@ -43,7 +43,7 @@ file in the same directory as `envs`. For example, if the filename of your Unity
 environment is 3DBall.app, in python, run:
 
 ```python
-from unityagents import UnityEnvironment
+from mlagents.env import UnityEnvironment
 env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 ```
 

@@ -94,7 +94,9 @@ If you receive an exception `"Couldn't launch new environment because
 communication port {} is still in use. "`, you can change the worker number in
 the Python script when calling
 
-`UnityEnvironment(file_name=filename, worker_id=X)`
+```python
+UnityEnvironment(file_name=filename, worker_id=X)
+```
 
 ## Mean reward : nan
 
