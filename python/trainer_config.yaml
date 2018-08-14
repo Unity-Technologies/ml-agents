@@ -26,6 +26,7 @@ BananaBrain:
     batch_size: 1024
     beta: 5.0e-3
     buffer_size: 10240
+    max_steps: 1.0e5
 
 BouncerBrain:
     normalize: true
@@ -103,11 +104,13 @@ PyramidBrain:
 
 VisualPyramidBrain:
     use_curiosity: true
+    curiosity_strength: 0.01
+    curiosity_enc_size: 256
     time_horizon: 128
-    batch_size: 32
-    buffer_size: 1024
+    batch_size: 64
+    buffer_size: 2024
     hidden_units: 256
-    num_layers: 2
+    num_layers: 1
     beta: 1.0e-2
     max_steps: 5.0e5
     num_epoch: 3
@@ -179,6 +182,36 @@ HallwayBrain:
     num_epoch: 3
     buffer_size: 1024
     batch_size: 128
+    max_steps: 5.0e5
+    summary_freq: 1000
+    time_horizon: 64
+
+VisualHallwayBrain:
+    use_recurrent: true
+    sequence_length: 64
+    num_layers: 1
+    hidden_units: 128
+    memory_size: 256
+    beta: 1.0e-2
+    gamma: 0.99
+    num_epoch: 3
+    buffer_size: 1024
+    batch_size: 64
+    max_steps: 5.0e5
+    summary_freq: 1000
+    time_horizon: 64
+
+VisualPushBlockBrain:
+    use_recurrent: true
+    sequence_length: 32
+    num_layers: 1
+    hidden_units: 128
+    memory_size: 256
+    beta: 1.0e-2
+    gamma: 0.99
+    num_epoch: 3
+    buffer_size: 1024
+    batch_size: 64
     max_steps: 5.0e5
     summary_freq: 1000
     time_horizon: 64
