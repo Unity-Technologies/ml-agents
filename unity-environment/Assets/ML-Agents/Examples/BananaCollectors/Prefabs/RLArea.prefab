@@ -829,7 +829,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 4294967294
   m_IsActive: 1
 --- !u!1 &1573257363500854
 GameObject:
@@ -2038,7 +2038,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1819751139121548}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4573776289891160}
@@ -5810,10 +5810,10 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1819751139121548}
   turnSpeed: 300
@@ -5889,10 +5889,10 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1819751139121548}
   turnSpeed: 300
@@ -5918,10 +5918,10 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1819751139121548}
   turnSpeed: 300
@@ -5947,10 +5947,10 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1819751139121548}
   turnSpeed: 300
@@ -5976,10 +5976,10 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1819751139121548}
   turnSpeed: 300
