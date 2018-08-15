@@ -11,7 +11,7 @@ There are a variety of possible imitation learning algorithms which can be used,
 3. Set the "Student" brain to External mode.
 4. Link the brains to the desired agents (one agent as the teacher and at least one agent as a student).
 5. In `trainer_config.yaml`, add an entry for the "Student" brain. Set the `trainer` parameter of this entry to `imitation`, and the `brain_to_imitate` parameter to the name of the teacher brain: "Teacher". Additionally, set `batches_per_epoch`, which controls how much training to do each moment. Increase the `max_steps` option if you'd like to keep training the agents for a longer period of time.
-6. Launch the training process with `learn --train --slow`, and press the :arrow_forward: button in Unity when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen
+6. Launch the training process with `mlagents-learn --train --slow`, and press the :arrow_forward: button in Unity when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen
 7. From the Unity window, control the agent with the Teacher brain by providing "teacher demonstrations" of the behavior you would like to see.
 8. Watch as the agent(s) with the student brain attached begin to behave similarly to the demonstrations.
 9. Once the Student agents are exhibiting the desired behavior, end the training process with `CTL+C` from the command line.

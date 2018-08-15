@@ -35,7 +35,7 @@ To use a graph model:
     
 4. Once the `environment.bytes` file is imported, drag it from the **Project** window to the **Graph Model** field of the Brain component.
 
-If you are using a model produced by the ML-Agents `learn.py` program, use the default values for the other Internal Brain parameters.
+If you are using a model produced by the ML-Agents `mlagents-learn` command, use the default values for the other Internal Brain parameters.
 
 ### Internal Brain properties
 

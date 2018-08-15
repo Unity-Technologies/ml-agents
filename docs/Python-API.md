@@ -2,7 +2,7 @@
 
 The ML-Agents toolkit provides a Python API for controlling the agent simulation
 loop of a environment or game built with Unity. This API is used by the ML-Agent
-training algorithms (run with `learn.py`), but you can also write your Python
+training algorithms (run with `mlagents-learn`), but you can also write your Python
 programs using this API.
 
 The key objects in the Python API include:
@@ -15,7 +15,8 @@ The key objects in the Python API include:
 - **BrainParameters** — describes the data elements in a BrainInfo object. For
   example, provides the array length of an observation in BrainInfo.
 
-These classes are all defined in the `mlagents/envs` folder of the ML-Agents SDK.
+These classes are all defined in the `python/mlagents/mlagents/envs` folder of
+the ML-Agents SDK.
 
 To communicate with an agent in a Unity environment from a Python program, the
 agent must either use an **External** brain or use a brain that is broadcasting
@@ -38,9 +39,9 @@ release._
 ## Loading a Unity Environment
 
 Python-side communication happens through `UnityEnvironment` which is located in
-`mlagents/envs`. To load a Unity environment from a built binary file, put the
-file in the same directory as `envs`. For example, if the filename of your Unity
-environment is 3DBall.app, in python, run:
+`python/mlagents/mlagents/envs`. To load a Unity environment from a built binary
+file, put the file in the same directory as `envs`. For example, if the filename
+of your Unity environment is 3DBall.app, in python, run:
 
 ```python
 from mlagents.env import UnityEnvironment

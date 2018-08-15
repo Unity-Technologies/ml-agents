@@ -92,14 +92,15 @@ communicate with the external training process when making their decisions.
 
 1. Open a command or terminal window.
 2. Nagivate to the folder where you installed the ML-Agents toolkit.
-3. Run `learn <trainer-config-path> --run-id=<run-identifier> --train` Where:
+3. Run `mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train`
+   Where:
     - `<trainer-config-path>` is the relative or absolute filepath of the
       trainer configuration. The defaults used by environments in the ML-Agents
       SDK can be found in `trainer_config.yaml`.
     - `<run-identifier>` is a string used to separate the results of different
       training runs
-    - And the `--train` tells learn.py to run a training session (rather than
-      inference)
+    - And the `--train` tells `mlagents-learn` to run a training session (rather
+      than inference)
 5. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
    in Unity to start training in the Editor.
@@ -114,7 +115,7 @@ use an executable.
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
 environment first.
 
-If the learn.py runs correctly and starts training, you should see something
+If `mlagents-learn` runs correctly and starts training, you should see something
 like this:
 
 ![Training running](images/training-running.png)

@@ -193,9 +193,8 @@ has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it.
 
 To train the agents within the Ball Balance environment, we will be using the
-python package. We have provided a convenient Python wrapper script called
-`learn.py` which accepts arguments used to configure both training and inference
-phases.
+python package. We have provided a convenient script called `mlagents-learn`
+which accepts arguments used to configure both training and inference phases.
 
 We can use `run_id` to identify the experiment and create a folder where the
 model and summary statistics are stored. When using TensorBoard to observe the
@@ -207,7 +206,7 @@ saved to the same directory and will all be included on the same graph.
 To summarize, go to your command line, enter the `ml-agents` directory and type:
 
 ```shell
-learn trainer_config.yaml --run-id=<run-identifier> --train
+mlagents-learn trainer_config.yaml --run-id=<run-identifier> --train
 ```
 
 When the message _"Start training by pressing the Play button in the Unity
@@ -225,7 +224,7 @@ Execuatble](Learning-Environment-Executable.md).
 
 ### Observing Training Progress
 
-Once you start training using `learn.py` in the way described in the previous
+Once you start training using `mlagents-learn` in the way described in the previous
 section, the `ml-agents` directory will contain a `summaries` directory. In
 order to observe the training process in more detail, you can use TensorBoard.
 From the command line run:

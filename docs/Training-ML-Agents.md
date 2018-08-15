@@ -4,21 +4,26 @@ The ML-Agents toolkit conducts training using an external Python training proces
 
 The output of the training process is a model file containing the optimized policy. This model file is a TensorFlow data graph containing the mathematical operations and the optimized weights selected during the training process. You can use the generated model file with the Internal Brain type in your Unity project to decide the best course of action for an agent. 
 
-Use the Python program, `learn.py` to train your agents. This program can be found in the `python` directory of the ML-Agents SDK. The [configuration file](#training-config-file), `trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
+Use the command `mlagents-learn` to train your agents. This command is installed with the `mlagents` package
+and its implementation can be found at `python/mlagents/learn.py`. The [configuration file](#training-config-file), `trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
 
 For a broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Toolkit Overview](ML-Agents-Overview.md).
 
-## Training with learn.py
+## Training with mlagents-learn
 
-Use the Python `learn.py` program to train agents. `learn.py` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioral cloning imitation learning](Training-Imitation-Learning.md).
+Use the `mlagents-learn` command to train agents. `mlagents-learn` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioral cloning imitation learning](Training-Imitation-Learning.md).
 
-Run `learn.py` from the command line to launch the training process. Use the command line patterns and the `trainer_config.yaml` file to control training options.
+Run `mlagents-learn` from the command line to launch the training process. Use the command line patterns and the `trainer_config.yaml` file to control training options.
 
 The basic command for training is:
 
-    python3 learn.py <env_name> --run-id=<run-identifier> --train
+```shell
+mlagents-learn <trainer-config-file> <env_name> --run-id=<run-identifier> --train
+```
 
-where 
+where
+
+ * `<trainer-config-file>` is the filepath of the trainer configuration yaml.
  * `<env_name>`__(Optional)__ is the name (including path) of your Unity executable containing the agents to be trained. If `<env_name>` is not passed, the training will happen in the Editor. Press the :arrow_forward: button in Unity when the message _"Start training by pressing the Play button in the Unity Editor"_ is displayed on the screen.
  * `<run-identifier>` is an optional identifier you can use to identify the results of individual training runs.
 
@@ -29,7 +34,7 @@ For example, suppose you have a project in Unity named "CatsOnBicycles" which co
 3. Navigate to the ml-agents `python` folder.
 4. Run the following to launch the training process using the path to the Unity environment you built in step 1:
 
-        python3 learn.py ../../projects/Cats/CatsOnBicycles.app --run-id=cob_1 --train
+        mlagents-learn ../../projects/Cats/CatsOnBicycles.app --run-id=cob_1 --train
 
 During a training session, the training program prints out and saves updates at regular intervals (specified by the `summary_freq` option). The saved statistics are grouped by the `run-id` value so you should assign a unique id to each training run if you plan to view the statistics. You can view these statistics using TensorBoard during or after training by running the following command (from the ML-Agents python directory):
 
@@ -45,7 +50,7 @@ While this example used the default training hyperparameters, you can edit the [
 
 ### Command line training options
 
-In addition to passing the path of the Unity executable containing your training environment, you can set the following command line options when invoking `learn.py`:
+In addition to passing the path of the Unity executable containing your training environment, you can set the following command line options when invoking `mlagents-learn`:
 
 * `--curriculum=<file>` – Specify a curriculum JSON file for defining the lessons for curriculum training. See [Curriculum Training](Training-Curriculum-Learning.md) for more information.
 * `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to keep. Checkpoints are saved after the number of steps specified by the `save-freq` option. Once the maximum number of checkpoints has been reached, the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
@@ -57,13 +62,13 @@ In addition to passing the path of the Unity executable containing your training
 * `--seed=<n>` – Specifies a number to use as a seed for the random number generator used by the training code.
 * `--slow` – Specify this option to run the Unity environment at normal, game speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate** specified in the Academy's **Inference Configuration**. By default, training runs using the speeds specified in your Academy's **Training Configuration**. See [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
 * `--train` – Specifies whether to train model or only run in inference mode. When training, **always** use the `--train` option.
-* `--worker-id=<n>` – When you are running more than one training environment at the same time, assign each a unique worker-id number. The worker-id is added to the communication port opened between the current instance of learn.py and the ExternalCommunicator object in the Unity environment. Defaults to 0.
+* `--worker-id=<n>` – When you are running more than one training environment at the same time, assign each a unique worker-id number. The worker-id is added to the communication port opened between the current instance of `mlagents-learn` and the ExternalCommunicator object in the Unity environment. Defaults to 0.
 * `--docker-target-name=<dt>` – The Docker Volume on which to store curriculum, executable and model files. See [Using Docker](Using-Docker.md).
 * `--no-graphics` - Specify this option to run the Unity executable in `-batchmode` and doesn't initialize the graphics driver. Use this only if your training doesn't involve visual observations (reading from Pixels). See [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more details.
 
 ### Training config file
 
-The training config file, `trainer_config.yaml` specifies the training method, the hyperparameters, and a few additional values to use during training. The file is divided into sections. The **default** section defines the default values for all the available settings. You can also add new sections to override these defaults to train specific Brains. Name each of these override sections after the GameObject containing the Brain component that should use these settings. (This GameObject will be a child of the Academy in your scene.) Sections for the example environments are included in the provided config file. `Learn.py` finds the config file by name and looks for it in the same directory as itself.
+The training config file, `trainer_config.yaml` specifies the training method, the hyperparameters, and a few additional values to use during training. The file is divided into sections. The **default** section defines the default values for all the available settings. You can also add new sections to override these defaults to train specific Brains. Name each of these override sections after the GameObject containing the Brain component that should use these settings. (This GameObject will be a child of the Academy in your scene.) Sections for the example environments are included in the provided config file.
 
 | ** Setting ** | **Description** | **Applies To Trainer**|
 | :--                | :--                       | :--                                  |

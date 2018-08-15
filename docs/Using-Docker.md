@@ -108,10 +108,10 @@ Notes on argument values:
   disk where it can read the Unity executable and store the graph. **This should
   therefore be identical to `target`.**
 - `trainer-config-path`, `train`, `run-id`: ML-Agents arguments passed to
-  `learn.py`. `trainer-config-path` is the filepath of the trainer config file,
-  `train` trains the algorithm, and `run-id` is used to tag each experiment with
-  a unique identifier. We recommend placing the trainer-config file inside
-  `unity-volume` so that the container has access to the file.
+  `mlagents-learn`. `trainer-config-path` is the filepath of the trainer config
+  file, `train` trains the algorithm, and `run-id` is used to tag each
+  experiment with a unique identifier. We recommend placing the trainer-config
+  file inside `unity-volume` so that the container has access to the file.
 
 To train with a `3DBall` environment executable, the command would be:
 

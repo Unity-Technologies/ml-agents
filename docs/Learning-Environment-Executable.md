@@ -72,23 +72,24 @@ env = UnityEnvironment(file_name=<env_name>)
 1. Open a command or terminal window. 
 2. Nagivate to the folder where you installed ML-Agents. 
 3. Change to the python directory. 
-4. Run `python3 learn.py <env_name> --run-id=<run-identifier> --train`
+4. Run `mlagents-learn <trainer-config-file> <env_name> --run-id=<run-identifier> --train`
 Where:
-- `<env_name>` is the name and path to the executable you exported from Unity (without extension)
-- `<run-identifier>` is a string used to separate the results of different training runs
-- And the `--train` tells learn.py to run a training session (rather than inference)
+  - `<trainer-config-file>` is the filepath of the trainer configuration yaml.
+  - `<env_name>` is the name and path to the executable you exported from Unity (without extension)
+  - `<run-identifier>` is a string used to separate the results of different training runs
+- And the `--train` tells `mlagents-learn` to run a training session (rather than inference)
 
 For example, if you are training with a 3DBall executable you exported to the ml-agents/python directory, run:
 
-```
-python3 learn.py 3DBall --run-id=firstRun --train
+```shell
+mlagents-learn 3DBall --run-id=firstRun --train
 ```
 
 ![Training command example](images/training-command-example.png)
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
-If the learn.py runs correctly and starts training, you should see something like this:
+If the `mlagents-learn` runs correctly and starts training, you should see something like this:
 
 ![Training running](images/training-running.png)
 
