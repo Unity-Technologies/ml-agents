@@ -288,16 +288,6 @@ if (distanceToTarget < 1.42f)
 
 **Note:** When you mark an agent as done, it stops its activity until it is reset. You can have the agent reset immediately, by setting the Agent.ResetOnDone property to true in the inspector or you can wait for the Academy to reset the environment. This RollerBall environment relies on the `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so it never resets the environment).
 
-To encourage the agent along, we also reward it for getting closer to the target (saving the previous distance measurement between steps):
-
-```csharp
-// Getting closer
-if (distanceToTarget < previousDistance)
-{
-    AddReward(0.1f);
-}
-```
-
 It can also encourage an agent to finish a task more quickly to assign a negative reward at each step:
 
 ```csharp
@@ -337,12 +327,6 @@ public override void AgentAction(float[] vectorAction, string textAction)
         Done();
     }
     
-    // Getting closer
-    if (distanceToTarget < previousDistance)
-    {
-        AddReward(0.1f);
-    }
-
     // Time penalty
     AddReward(-0.05f);
 
@@ -352,7 +336,6 @@ public override void AgentAction(float[] vectorAction, string textAction)
         AddReward(-1.0f);
         Done();
     }
-    previousDistance = distanceToTarget;
 
     // Actions, size = 2
     Vector3 controlSignal = Vector3.zero;
@@ -366,11 +349,12 @@ Note the `speed` and `previousDistance` class variables defined before the funct
 
 ## Final Editor Setup
 
-Now, that all the GameObjects and ML-Agent components are in place, it is time to connect everything together in the Unity Editor. This involves assigning the Brain object to the Agent and setting the Brain properties so that they are compatible with our agent code. 
+Now, that all the GameObjects and ML-Agent components are in place, it is time to connect everything together in the Unity Editor. This involves assigning the Brain object to the Agent, changing some of the Agent Components properties, and setting the Brain properties so that they are compatible with our agent code. 
 
 1. Expand the Academy GameObject in the Hierarchy window, so that the Brain object is visible.
 2. Select the RollerAgent GameObject to show its properties in the Inspector window.
 3. Drag the Brain object from the Hierarchy window to the RollerAgent Brain field.
+4. Change `Decision Frequency` from `1` to `5`.
 
 ![Assign the Brain to the RollerAgent](images/mlagents-NewTutAssignBrain.png)
 
