@@ -41,7 +41,6 @@ class PPOTrainer(Trainer):
 
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
 
-        self.sequence_length = 1
         self.step = 0
 
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
@@ -211,7 +210,6 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
-
                     if self.use_curiosity:
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx] +
                                                                          intrinsic_rewards[next_idx])
@@ -268,7 +266,7 @@ class PPOTrainer(Trainer):
                     + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
                 self.training_buffer.append_update_buffer(agent_id, batch_size=None,
-                                                          training_length=self.sequence_length)
+                                                          training_length=self.policy.sequence_length)
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
@@ -303,13 +301,13 @@ class PPOTrainer(Trainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         size_of_buffer = len(self.training_buffer.update_buffer['actions'])
-        return size_of_buffer > max(int(self.trainer_parameters['buffer_size'] / self.sequence_length), 1)
+        return size_of_buffer > max(int(self.trainer_parameters['buffer_size'] / self.policy.sequence_length), 1)
 
     def update_model(self):
         """
         Uses training_buffer to update model.
         """
-        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
+        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
