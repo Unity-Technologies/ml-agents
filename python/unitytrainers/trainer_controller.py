@@ -140,8 +140,8 @@ class TrainerController(object):
         nodes = []
         scopes = []
         for brain_name in self.trainers.keys():
-            if self.trainers[brain_name].graph_scope is not None:
-                scope = self.trainers[brain_name].graph_scope + '/'
+            if self.trainers[brain_name].policy.graph_scope is not None:
+                scope = self.trainers[brain_name].policy.graph_scope + '/'
                 if scope == '/':
                     scope = ''
                 scopes += [scope]

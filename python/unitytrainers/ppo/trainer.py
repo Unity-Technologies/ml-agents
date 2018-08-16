@@ -10,7 +10,7 @@ import tensorflow as tf
 
 from unityagents import AllBrainInfo, BrainInfo
 from unitytrainers.buffer import Buffer
-from unitytrainers.policy import PPOPolicy
+from unitytrainers.ppo.policy import PPOPolicy
 from unitytrainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("unityagents")
@@ -96,26 +96,15 @@ class PPOTrainer(Trainer):
         """
         return self.step
 
-    @property
-    def get_last_reward(self):
-        """
-        Returns the last reward the trainer has had
-        :return: the new last reward
-        """
-        return self.policy.sess.run(self.policy.model.last_reward)
-
     def increment_step_and_update_last_reward(self):
         """
         Increment the step count of the trainer and Updates the last reward
         """
         if len(self.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(self.stats['cumulative_reward'])
-            self.policy.sess.run([self.policy.model.update_reward,
-                                  self.policy.model.increment_step],
-                                 feed_dict={self.policy.model.new_reward: mean_reward})
-        else:
-            self.policy.sess.run(self.policy.model.increment_step)
-        self.step = self.policy.sess.run(self.policy.model.global_step)
+            self.policy.update_reward(mean_reward)
+        self.policy.increment_step()
+        self.step = self.policy.get_current_step()
 
     def take_action(self, all_brain_info: AllBrainInfo):
         """
@@ -129,14 +118,14 @@ class PPOTrainer(Trainer):
             return [], [], [], None, None
 
         run_out = self.policy.act(curr_brain_info)
-        self.stats['value_estimate'].append(run_out[self.policy.model.value].mean())
-        self.stats['entropy'].append(run_out[self.policy.model.entropy].mean())
-        self.stats['learning_rate'].append(run_out[self.policy.model.learning_rate])
+        self.stats['value_estimate'].append(run_out['value'].mean())
+        self.stats['entropy'].append(run_out['entropy'].mean())
+        self.stats['learning_rate'].append(run_out['learning_rate'])
         if self.use_recurrent:
-            return run_out[self.policy.model.output], run_out[self.policy.model.memory_out], None, \
-                   run_out[self.policy.model.value], run_out
+            return run_out['action'], run_out['memory_out'], None, \
+                   run_out['value'], run_out
         else:
-            return run_out[self.policy.model.output], None, None, run_out[self.policy.model.value], run_out
+            return run_out['action'], None, None, run_out['value'], run_out
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
@@ -217,12 +206,12 @@ class PPOTrainer(Trainer):
                         if stored_info.memories.shape[1] == 0:
                             stored_info.memories = np.zeros((len(stored_info.agents), self.policy.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
-                    actions = stored_take_action_outputs[self.policy.model.output]
+                    actions = stored_take_action_outputs['action']
                     if self.is_continuous_action:
-                        actions_pre = stored_take_action_outputs[self.policy.model.output_pre]
+                        actions_pre = stored_take_action_outputs['pre_action']
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
-                    a_dist = stored_take_action_outputs[self.policy.model.all_log_probs]
-                    value = stored_take_action_outputs[self.policy.model.value]
+                    a_dist = stored_take_action_outputs['log_probs']
+                    value = stored_take_action_outputs['value']
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
@@ -335,11 +324,11 @@ class PPOTrainer(Trainer):
             buffer = self.training_buffer.update_buffer
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
                 run_out = self.policy.update(buffer, n_sequences, l)
-                value_total.append(run_out[self.policy.model.value_loss])
-                policy_total.append(np.abs(run_out[self.policy.model.policy_loss]))
+                value_total.append(run_out['value_loss'])
+                policy_total.append(np.abs(run_out['policy_loss']))
                 if self.use_curiosity:
-                    inverse_total.append(run_out[self.policy.model.inverse_loss])
-                    forward_total.append(run_out[self.policy.model.forward_loss])
+                    inverse_total.append(run_out['inverse_loss'])
+                    forward_total.append(run_out['forward_loss'])
         self.stats['value_loss'].append(np.mean(value_total))
         self.stats['policy_loss'].append(np.mean(policy_total))
         if self.use_curiosity:
