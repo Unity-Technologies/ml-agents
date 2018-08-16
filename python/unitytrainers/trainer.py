@@ -29,6 +29,7 @@ class Trainer(object):
         """
         self.brain_name = brain_name
         self.run_id = run_id
+        self.sess = sess
         self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
         self.is_training = training
