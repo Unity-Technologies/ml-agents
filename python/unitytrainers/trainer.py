@@ -32,7 +32,6 @@ class Trainer(object):
         self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
         self.is_training = training
-        self.sess = sess
         self.stats = {}
         self.summary_writer = None
 

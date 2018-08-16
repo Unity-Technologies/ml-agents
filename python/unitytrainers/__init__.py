@@ -8,3 +8,4 @@ from .bc.trainer import *
 from .ppo.models import *
 from .ppo.trainer import *
 from .exception import *
+from .policy import *
