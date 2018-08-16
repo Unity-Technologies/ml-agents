@@ -41,8 +41,9 @@ class BCPolicy(Policy):
             if curr_brain_info.memories.shape[1] == 0:
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
-            agent_action, memories = self.sess.run(list(self.inference_dict.values()), feed_dict)
-            return agent_action
+        network_output = self.sess.run(list(self.inference_dict.values()), feed_dict)
+        run_out = dict(zip(list(self.inference_dict.keys()), network_output))
+        return run_out['action']
 
     def update(self, batch, n_sequences, i):
         start = i * n_sequences

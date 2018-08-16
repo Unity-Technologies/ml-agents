@@ -38,7 +38,7 @@ class BehavioralCloningTrainer(Trainer):
                                             "brain {1}.".format(k, brain.brain_name))
 
         self.policy = BCPolicy(seed, brain, trainer_parameters, sess)
-
+        self.brain_name = brain.brain_name
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
