@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 from unityagents import AllBrainInfo
-from unitytrainers.bc.models import BehavioralCloningModel
+from unitytrainers.bc.policy import BCPolicy
 from unitytrainers.buffer import Buffer
 from unitytrainers.trainer import UnityTrainerException, Trainer
 
@@ -19,14 +19,15 @@ logger = logging.getLogger("unityagents")
 class BehavioralCloningTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
+    def __init__(self, sess, brain, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
-        :param env: The UnityEnvironment.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
+        super(BehavioralCloningTrainer, self).__init__(sess, brain, trainer_parameters, training, run_id)
+
         self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
                            'summary_freq', 'max_steps', 'batches_per_epoch', 'use_recurrent', 'hidden_units',
                            'num_layers', 'sequence_length', 'memory_size']
@@ -34,49 +35,25 @@ class BehavioralCloningTrainer(Trainer):
         for k in self.param_keys:
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
-                                            "brain {1}.".format(k, brain_name))
+                                            "brain {1}.".format(k, brain.brain_name))
 
-        super(BehavioralCloningTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training, run_id)
+        self.policy = BCPolicy(seed, brain, trainer_parameters, sess)
 
-        self.variable_scope = trainer_parameters['graph_scope']
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
-        self.use_recurrent = trainer_parameters['use_recurrent']
-        self.sequence_length = 1
-        self.m_size = None
-        if self.use_recurrent:
-            self.m_size = trainer_parameters["memory_size"]
-            self.sequence_length = trainer_parameters["sequence_length"]
-        self.n_sequences = max(int(trainer_parameters['batch_size'] / self.sequence_length), 1)
+        self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
         self.cumulative_rewards = {}
         self.episode_steps = {}
         self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
 
         self.training_buffer = Buffer()
-        self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.use_visual_observations = (env.brains[brain_name].number_visual_observations > 0)
-        self.use_vector_observations = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
-        with tf.variable_scope(self.variable_scope):
-            tf.set_random_seed(seed)
-            self.model = BehavioralCloningModel(
-                h_size=int(trainer_parameters['hidden_units']),
-                lr=float(trainer_parameters['learning_rate']),
-                n_layers=int(trainer_parameters['num_layers']),
-                m_size=self.m_size,
-                normalize=False,
-                use_recurrent=trainer_parameters['use_recurrent'],
-                brain=self.brain)
-        self.inference_run_list = [self.model.sample_action]
-        if self.use_recurrent:
-            self.inference_run_list += [self.model.memory_out]
 
     def __str__(self):
-
         return '''Hyperparameters for the Imitation Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
@@ -86,13 +63,6 @@ class BehavioralCloningTrainer(Trainer):
         Returns the trainer parameters of the trainer.
         """
         return self.trainer_parameters
-
-    @property
-    def graph_scope(self):
-        """
-        Returns the graph scope of the trainer.
-        """
-        return self.variable_scope
 
     @property
     def get_max_steps(self):
@@ -108,7 +78,7 @@ class BehavioralCloningTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.sess.run(self.model.global_step)
+        return self.policy.get_current_step()
 
     @property
     def get_last_reward(self):
@@ -125,7 +95,7 @@ class BehavioralCloningTrainer(Trainer):
         """
         Increment the step count of the trainer and Updates the last reward
         """
-        self.sess.run(self.model.increment_step)
+        self.policy.increment_step()
         return
 
     def take_action(self, all_brain_info: AllBrainInfo):
@@ -139,21 +109,7 @@ class BehavioralCloningTrainer(Trainer):
             return [], [], [], None, None
 
         agent_brain = all_brain_info[self.brain_name]
-        feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
-
-        if self.use_visual_observations:
-            for i, _ in enumerate(agent_brain.visual_observations):
-                feed_dict[self.model.visual_in[i]] = agent_brain.visual_observations[i]
-        if self.use_vector_observations:
-            feed_dict[self.model.vector_in] = agent_brain.vector_observations
-        if self.use_recurrent:
-            if agent_brain.memories.shape[1] == 0:
-                agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
-            feed_dict[self.model.memory_in] = agent_brain.memories
-            agent_action, memories = self.sess.run(self.inference_run_list, feed_dict)
-            return agent_action, memories, None, None, None
-        else:
-            agent_action = self.sess.run(self.inference_run_list, feed_dict)
+        agent_action = self.policy.act(agent_brain)
         return agent_action, None, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
@@ -188,16 +144,17 @@ class BehavioralCloningTrainer(Trainer):
                     info_teacher_record, next_info_teacher_record = "true", "true"
                 if info_teacher_record == "true" and next_info_teacher_record == "true":
                     if not stored_info_teacher.local_done[idx]:
-                        if self.use_visual_observations:
+                        if self.policy.use_visual_obs:
                             for i, _ in enumerate(stored_info_teacher.visual_observations):
                                 self.training_buffer[agent_id]['visual_observations%d' % i]\
                                     .append(stored_info_teacher.visual_observations[i][idx])
-                        if self.use_vector_observations:
+                        if self.policy.use_vector_obs:
                             self.training_buffer[agent_id]['vector_observations']\
                                 .append(stored_info_teacher.vector_observations[idx])
-                        if self.use_recurrent:
+                        if self.policy.use_recurrent:
                             if stored_info_teacher.memories.shape[1] == 0:
-                                stored_info_teacher.memories = np.zeros((len(stored_info_teacher.agents), self.m_size))
+                                stored_info_teacher.memories = np.zeros((len(stored_info_teacher.agents),
+                                                                         self.policy.m_size))
                             self.training_buffer[agent_id]['memory'].append(stored_info_teacher.memories[idx])
                         self.training_buffer[agent_id]['actions'].append(next_info_teacher.
                                                                          previous_vector_actions[next_idx])
@@ -236,7 +193,7 @@ class BehavioralCloningTrainer(Trainer):
                     and len(self.training_buffer[info_teacher.agents[l]]['actions']) > 0):
                 agent_id = info_teacher.agents[l]
                 self.training_buffer.append_update_buffer(agent_id, batch_size=None,
-                                                          training_length=self.sequence_length)
+                                                          training_length=self.policy.sequence_length)
                 self.training_buffer[agent_id].reset_agent()
 
         info_student = next_info[self.brain_name]
@@ -274,31 +231,11 @@ class BehavioralCloningTrainer(Trainer):
         """
         self.training_buffer.update_buffer.shuffle()
         batch_losses = []
-        for j in range(
-                min(len(self.training_buffer.update_buffer['actions']) // self.n_sequences, self.batches_per_epoch)):
+        num_batches = min(len(self.training_buffer.update_buffer['actions']) //
+                          self.n_sequences, self.batches_per_epoch)
+        for j in range(num_batches):
             _buffer = self.training_buffer.update_buffer
-            start = j * self.n_sequences
-            end = (j + 1) * self.n_sequences
-
-            feed_dict = {self.model.dropout_rate: 0.5,
-                         self.model.batch_size: self.n_sequences,
-                         self.model.sequence_length: self.sequence_length}
-            if self.is_continuous_action:
-                feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).\
-                    reshape([-1, self.brain.vector_action_space_size[0]])
-            else:
-                feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).reshape(
-                    [-1, len(self.brain.vector_action_space_size)])
-            if self.use_vector_observations:
-                feed_dict[self.model.vector_in] = np.array(_buffer['vector_observations'][start:end])\
-                    .reshape([-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
-            if self.use_visual_observations:
-                for i, _ in enumerate(self.model.visual_in):
-                    _obs = np.array(_buffer['visual_observations%d' % i][start:end])
-                    feed_dict[self.model.visual_in[i]] = _obs
-            if self.use_recurrent:
-                feed_dict[self.model.memory_in] = np.zeros([self.n_sequences, self.m_size])
-            loss, _ = self.sess.run([self.model.loss, self.model.update], feed_dict=feed_dict)
+            loss = self.policy.update(_buffer, self.n_sequences, j)
             batch_losses.append(loss)
         if len(batch_losses) > 0:
             self.stats['losses'].append(np.mean(batch_losses))

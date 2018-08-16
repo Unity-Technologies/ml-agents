@@ -194,13 +194,6 @@ class PPOPolicy(Policy):
     def get_update_vars(self):
         return list(self.update_dict.keys())
 
-    def get_current_step(self):
-        step = self.sess.run(self.model.global_step)
-        return step
-
-    def increment_step(self):
-        self.sess.run(self.model.increment_step)
-
     def update_reward(self, new_reward):
         self.sess.run(self.model.update_reward,
                       feed_dict={self.model.new_reward: new_reward})

@@ -14,10 +14,9 @@ class Policy(object):
         """
         Initialized the policy.
         :param seed: Random seed to use for TensorFlow.
-        :param env: Environment.
-        :param brain_name:
-        :param trainer_parameters:
-        :param sess:
+        :param brain: The corresponding Brain for this policy.
+        :param trainer_parameters: The trainer parameters.
+        :param sess: The current TensorFlow session.
         """
         self.m_size = None
         self.model = None
@@ -63,3 +62,10 @@ class Policy(object):
         Returns the graph scope of the trainer.
         """
         return self.variable_scope
+
+    def get_current_step(self):
+        step = self.sess.run(self.model.global_step)
+        return step
+
+    def increment_step(self):
+        self.sess.run(self.model.increment_step)
