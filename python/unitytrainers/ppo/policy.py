@@ -9,13 +9,13 @@ logger = logging.getLogger("unityagents")
 
 
 class PPOPolicy(Policy):
-    def __init__(self, seed, env, brain_name, trainer_parameters, sess, is_training):
-        super().__init__(seed, env, brain_name, trainer_parameters, sess)
+    def __init__(self, seed, brain, trainer_parameters, sess, is_training):
+        super().__init__(seed, brain, trainer_parameters, sess)
         self.has_updated = False
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
         with tf.variable_scope(self.variable_scope):
             tf.set_random_seed(seed)
-            self.model = PPOModel(env.brains[brain_name],
+            self.model = PPOModel(brain,
                                   lr=float(trainer_parameters['learning_rate']),
                                   h_size=int(trainer_parameters['hidden_units']),
                                   epsilon=float(trainer_parameters['epsilon']),

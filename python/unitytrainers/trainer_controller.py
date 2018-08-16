@@ -72,8 +72,8 @@ class TrainerController(object):
             if curriculum_folder is not None:
                 self.curriculum_folder = \
                     '/{docker_target_name}/{curriculum_file}'.format(
-                    docker_target_name=docker_target_name,
-                    curriculum_folder=curriculum_folder)
+                        docker_target_name=docker_target_name,
+                        curriculum_file=curriculum_folder)
 
             self.summaries_dir = '/{docker_target_name}/summaries'.format(
                 docker_target_name=docker_target_name)
@@ -97,7 +97,7 @@ class TrainerController(object):
                                     docker_training=self.docker_training,
                                     no_graphics=no_graphics)
         if env_path is None:
-            self.env_name = 'editor_'+self.env.academy_name
+            self.env_name = 'editor_' + self.env.academy_name
         else:
             # Extract out name of environment
             self.env_name = os.path.basename(os.path.normpath(env_path))
@@ -106,7 +106,7 @@ class TrainerController(object):
             self.meta_curriculum = None
         else:
             self.meta_curriculum = MetaCurriculum(self.curriculum_folder,
-                self.env._resetParameters)
+                                                  self.env._resetParameters)
 
         if self.meta_curriculum:
             for brain_name in self.meta_curriculum.brains_to_curriculums.keys():
@@ -114,20 +114,20 @@ class TrainerController(object):
                     raise MetaCurriculumError('One of the curriculums '
                                               'defined in ' +
                                               self.curriculum_folder + ' '
-                                              'does not have a corresponding '
-                                              'Brain. Check that the '
-                                              'curriculum file has the same '
-                                              'name as the Brain '
-                                              'whose curriculum it defines.')
+                                                                       'does not have a corresponding '
+                                                                       'Brain. Check that the '
+                                                                       'curriculum file has the same '
+                                                                       'name as the Brain '
+                                                                       'whose curriculum it defines.')
 
     def _get_progresses(self):
         if self.meta_curriculum:
             brain_names_to_progresses = {}
             for brain_name, curriculum \
-                in self.meta_curriculum.brains_to_curriculums.items():
+                    in self.meta_curriculum.brains_to_curriculums.items():
                 if curriculum.measure == "progress":
                     progress = (self.trainers[brain_name].get_step /
-                        self.trainers[brain_name].get_max_steps)
+                                self.trainers[brain_name].get_max_steps)
                     brain_names_to_progresses[brain_name] = progress
                 elif curriculum.measure == "reward":
                     progress = self.trainers[brain_name].get_last_reward
@@ -146,11 +146,11 @@ class TrainerController(object):
                     scope = ''
                 scopes += [scope]
                 if self.trainers[brain_name].parameters["trainer"] \
-                   == "imitation":
+                        == "imitation":
                     nodes += [scope + x for x in ["action"]]
                 else:
                     nodes += [scope + x for x in ["action", "value_estimate",
-                        "action_probs", "value_estimate"]]
+                                                  "action_probs", "value_estimate"]]
                 if self.trainers[brain_name].parameters["use_recurrent"]:
                     nodes += [scope + x for x in ["recurrent_out",
                                                   "memory_size"]]
@@ -188,7 +188,7 @@ class TrainerController(object):
             input_checkpoint=ckpt.model_checkpoint_path,
             output_node_names=target_nodes,
             output_graph=(self.model_path + '/' + self.env_name + "_"
-                + self.run_id + '.bytes'),
+                          + self.run_id + '.bytes'),
             clear_devices=True, initializer_nodes="", input_saver="",
             restore_op_name="save/restore_all",
             filename_tensor_name="save/Const:0")
@@ -220,12 +220,12 @@ class TrainerController(object):
         for brain_name in self.env.external_brain_names:
             if trainer_parameters_dict[brain_name]['trainer'] == "imitation":
                 self.trainers[brain_name] = BehavioralCloningTrainer(
-                    sess, self.env, brain_name,
+                    sess, self.env.brains[brain_name],
                     trainer_parameters_dict[brain_name], self.train_model,
                     self.seed, self.run_id)
             elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(
-                    sess, self.env, brain_name,
+                    sess, self.env.brains[brain_name],
                     trainer_parameters_dict[brain_name],
                     self.train_model, self.seed, self.run_id)
             else:
@@ -272,7 +272,7 @@ class TrainerController(object):
         if self.meta_curriculum is not None:
             self.meta_curriculum.increment_lessons(self._get_progresses())
             return self.env.reset(config=self.meta_curriculum.get_config(),
-                                       train_mode=self.fast_simulation)
+                                  train_mode=self.fast_simulation)
         else:
             return self.env.reset(train_mode=self.fast_simulation)
 
@@ -313,7 +313,7 @@ class TrainerController(object):
             try:
                 while any([t.get_step <= t.get_max_steps \
                            for k, t in self.trainers.items()]) \
-                      or not self.train_model:
+                        or not self.train_model:
                     if self.env.global_done:
                         curr_info = self._increment_lessons_and_reset_env()
                         for brain_name, trainer in self.trainers.items():
@@ -338,10 +338,10 @@ class TrainerController(object):
                                              value=take_action_value)
                     for brain_name, trainer in self.trainers.items():
                         trainer.add_experiences(curr_info, new_info,
-                            take_action_outputs[brain_name])
+                                                take_action_outputs[brain_name])
                         trainer.process_experiences(curr_info, new_info)
                         if trainer.is_ready_update() and self.train_model \
-                           and trainer.get_step <= trainer.get_max_steps:
+                                and trainer.get_step <= trainer.get_max_steps:
                             # Perform gradient descent with experience buffer
                             trainer.update_model()
                         # Write training statistics to Tensorboard.
@@ -349,17 +349,17 @@ class TrainerController(object):
                             trainer.write_summary(
                                 global_step,
                                 lesson_num=self.meta_curriculum
-                                           .brains_to_curriculums[brain_name]
-                                           .lesson_num)
+                                    .brains_to_curriculums[brain_name]
+                                    .lesson_num)
                         else:
                             trainer.write_summary(global_step)
                         if self.train_model \
-                           and trainer.get_step <= trainer.get_max_steps:
+                                and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
                     if self.train_model:
                         global_step += 1
                     if global_step % self.save_freq == 0 and global_step != 0 \
-                       and self.train_model:
+                            and self.train_model:
                         # Save Tensorflow model
                         self._save_model(sess, steps=global_step, saver=saver)
                     curr_info = new_info

@@ -19,18 +19,16 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the abstract class for the unitytrainers"""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, run_id):
+    def __init__(self, sess, brain_name, trainer_parameters, training, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
         :param sess: Tensorflow session.
-        :param env: The UnityEnvironment.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
+        self.sess = sess
         self.brain_name = brain_name
         self.run_id = run_id
-        self.sess = sess
-        self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
         self.is_training = training
         self.stats = {}
@@ -133,8 +131,8 @@ class Trainer(object):
     def write_summary(self, global_step, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
+        :param lesson_num: Current lesson number in curriculum.
         :param global_step: The number of steps the simulation has been going for
-        :param lesson_number: The lesson the trainer is at.
         """
         if global_step % self.trainer_parameters['summary_freq'] == 0 and global_step != 0:
             is_training = "Training." if self.is_training and self.get_step <= self.get_max_steps else "Not Training."

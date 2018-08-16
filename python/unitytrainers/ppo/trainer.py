@@ -19,14 +19,15 @@ logger = logging.getLogger("unityagents")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
+    def __init__(self, sess, brain, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
-        :param env: The UnityEnvironment.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
+        super(PPOTrainer, self).__init__(sess, brain.brain_name, trainer_parameters, training, run_id)
+
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
@@ -36,19 +37,14 @@ class PPOTrainer(Trainer):
         for k in self.param_keys:
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
-                                            "brain {1}.".format(k, brain_name))
+                                            "brain {1}.".format(k, brain.brain_name))
 
-        super(PPOTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training, run_id)
-        self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
-        self.is_continuous_action = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.use_visual_obs = (env.brains[brain_name].number_visual_observations > 0)
-        self.use_vector_obs = (env.brains[brain_name].vector_observation_space_size > 0)
 
         self.sequence_length = 1
         self.step = 0
 
-        self.policy = PPOPolicy(seed, env, brain_name, trainer_parameters,
+        self.policy = PPOPolicy(seed, brain, trainer_parameters,
                                 sess, self.is_training)
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
@@ -121,7 +117,7 @@ class PPOTrainer(Trainer):
         self.stats['value_estimate'].append(run_out['value'].mean())
         self.stats['entropy'].append(run_out['entropy'].mean())
         self.stats['learning_rate'].append(run_out['learning_rate'])
-        if self.use_recurrent:
+        if self.policy.use_recurrent:
             return run_out['action'], run_out['memory_out'], None, \
                    run_out['value'], run_out
         else:
@@ -153,7 +149,7 @@ class PPOTrainer(Trainer):
                 visual_observations[i].append(agent_brain_info.visual_observations[i][agent_index])
             vector_observations.append(agent_brain_info.vector_observations[agent_index])
             text_observations.append(agent_brain_info.text_observations[agent_index])
-            if self.use_recurrent:
+            if self.policy.use_recurrent:
                 memories.append(agent_brain_info.memories[agent_index])
             rewards.append(agent_brain_info.rewards[agent_index])
             local_dones.append(agent_brain_info.local_done[agent_index])
@@ -192,22 +188,22 @@ class PPOTrainer(Trainer):
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
                 if not stored_info.local_done[idx]:
-                    if self.use_visual_obs:
+                    if self.policy.use_visual_obs:
                         for i, _ in enumerate(stored_info.visual_observations):
                             self.training_buffer[agent_id]['visual_obs%d' % i].append(
                                 stored_info.visual_observations[i][idx])
                             self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
                                 next_info.visual_observations[i][next_idx])
-                    if self.use_vector_obs:
+                    if self.policy.use_vector_obs:
                         self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
                         self.training_buffer[agent_id]['next_vector_in'].append(
                             next_info.vector_observations[next_idx])
-                    if self.use_recurrent:
+                    if self.policy.use_recurrent:
                         if stored_info.memories.shape[1] == 0:
                             stored_info.memories = np.zeros((len(stored_info.agents), self.policy.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
                     actions = stored_take_action_outputs['action']
-                    if self.is_continuous_action:
+                    if self.policy.use_continuous_act:
                         actions_pre = stored_take_action_outputs['pre_action']
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
                     a_dist = stored_take_action_outputs['log_probs']
