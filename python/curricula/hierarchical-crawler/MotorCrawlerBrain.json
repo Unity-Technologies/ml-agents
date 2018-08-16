@@ -1,10 +1,10 @@
 {
     "measure" : "progress",
-    "thresholds" : [0.9],
+    "thresholds" : [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
     "min_lesson_length" : 2,
     "signal_smoothing" : true, 
     "parameters" : 
     {
-        "wall_height" : [0.0, 5.0]
+        "wall_height" : [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 5.0, 5.0, 5.0]
     }
 }

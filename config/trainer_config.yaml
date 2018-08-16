@@ -165,6 +165,9 @@ MotorCrawlerBrain:
     num_layers: 3
     hidden_units: 256
 
+VisionCrawlerBrain:
+    max_steps: 1e6
+
 CognitiveCrawlerBrain:
     max_steps: 1.0e6
     batch_size: 128
