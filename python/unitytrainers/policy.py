@@ -43,18 +43,23 @@ class Policy(object):
                                             "but it must be divisible by 4."
                                             .format(brain.brain_name, self.m_size))
 
-    def act(self, curr_brain_info):
+    def inference(self, brain_info):
         """
-
-        :param curr_brain_info:
-        :return:
+        Performs inference pass on model.
+        :param brain_info: BrainInfo input to network.
+        :return: Output from network based on self.inference_dict.
         """
-        action = None
-        return action
+        return None
 
     def update(self, batch, n_sequences, i):
-        results = None
-        return results
+        """
+        Performs update on model.
+        :param batch: Buffer of experiences.
+        :param n_sequences: Number of sequences to process.
+        :param i: Buffer index.
+        :return: Results of update.
+        """
+        return None
 
     @property
     def graph_scope(self):
@@ -64,8 +69,27 @@ class Policy(object):
         return self.variable_scope
 
     def get_current_step(self):
+        """
+        Gets current model step.
+        :return: current model step.
+        """
         step = self.sess.run(self.model.global_step)
         return step
 
     def increment_step(self):
+        """
+        Increments model step.
+        """
         self.sess.run(self.model.increment_step)
+
+    def get_inference_vars(self):
+        """
+        :return:list of inference var names
+        """
+        return list(self.inference_dict.keys())
+
+    def get_update_vars(self):
+        """
+        :return:list of update var names
+        """
+        return list(self.update_dict.keys())

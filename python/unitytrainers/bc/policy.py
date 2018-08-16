@@ -10,6 +10,12 @@ logger = logging.getLogger("unityagents")
 
 class BCPolicy(Policy):
     def __init__(self, seed, brain, trainer_parameters, sess):
+        """
+        :param seed: Random seed.
+        :param brain: Assigned Brain object.
+        :param trainer_parameters: Defined training parameters.
+        :param sess: TensorFlow session.
+        """
         super().__init__(seed, brain, trainer_parameters, sess)
 
         with tf.variable_scope(self.variable_scope):
@@ -29,23 +35,35 @@ class BCPolicy(Policy):
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
 
-    def act(self, curr_brain_info):
+    def inference(self, brain_info):
+        """
+        Performs inference pass on model.
+        :param brain_info: BrainInfo input to network.
+        :return: Selected action.
+        """
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
 
         if self.use_visual_obs:
-            for i, _ in enumerate(curr_brain_info.visual_observations):
-                feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
+            for i, _ in enumerate(brain_info.visual_observations):
+                feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
         if self.use_vector_obs:
-            feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
+            feed_dict[self.model.vector_in] = brain_info.vector_observations
         if self.use_recurrent:
-            if curr_brain_info.memories.shape[1] == 0:
-                curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
-            feed_dict[self.model.memory_in] = curr_brain_info.memories
+            if brain_info.memories.shape[1] == 0:
+                brain_info.memories = np.zeros((len(brain_info.agents), self.m_size))
+            feed_dict[self.model.memory_in] = brain_info.memories
         network_output = self.sess.run(list(self.inference_dict.values()), feed_dict)
         run_out = dict(zip(list(self.inference_dict.keys()), network_output))
         return run_out['action']
 
     def update(self, batch, n_sequences, i):
+        """
+        Performs update on model.
+        :param batch: Buffer of experiences.
+        :param n_sequences: Number of sequences to process.
+        :param i: Buffer index.
+        :return: Loss function value from update.
+        """
         start = i * n_sequences
         end = (i + 1) * n_sequences
 
@@ -69,3 +87,4 @@ class BCPolicy(Policy):
             feed_dict[self.model.memory_in] = np.zeros([n_sequences, self.m_size])
         loss, _ = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)
         return loss
+

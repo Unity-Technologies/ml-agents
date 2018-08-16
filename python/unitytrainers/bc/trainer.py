@@ -109,7 +109,7 @@ class BehavioralCloningTrainer(Trainer):
             return [], [], [], None, None
 
         agent_brain = all_brain_info[self.brain_name]
-        agent_action = self.policy.act(agent_brain)
+        agent_action = self.policy.inference(agent_brain)
         return agent_action, None, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):

@@ -10,6 +10,14 @@ logger = logging.getLogger("unityagents")
 
 class PPOPolicy(Policy):
     def __init__(self, seed, brain, trainer_parameters, sess, is_training):
+        """
+        Policy for Proximal Policy Optimization Networks.
+        :param seed: Random seed.
+        :param brain: Assigned Brain object.
+        :param trainer_parameters: Defined training parameters.
+        :param sess: TensorFlow session.
+        :param is_training: Whether the model should be trained.
+        """
         super().__init__(seed, brain, trainer_parameters, sess)
         self.has_updated = False
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
@@ -47,27 +55,39 @@ class PPOPolicy(Policy):
             self.update_dict['forward_loss'] = self.model.forward_loss
             self.update_dict['inverse_loss'] = self.model.inverse_loss
 
-    def act(self, curr_brain_info):
-        feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations),
+    def inference(self, brain_info):
+        """
+        Performs inference pass on model.
+        :param brain_info: BrainInfo object containing inputs.
+        :return: Outputs from network as defined by self.inference_dict.
+        """
+        feed_dict = {self.model.batch_size: len(brain_info.vector_observations),
                      self.model.sequence_length: 1}
         if self.use_recurrent:
             if not self.use_continuous_act:
-                feed_dict[self.model.prev_action] = curr_brain_info.previous_vector_actions.reshape(
+                feed_dict[self.model.prev_action] = brain_info.previous_vector_actions.reshape(
                     [-1, len(self.model.a_size)])
-            if curr_brain_info.memories.shape[1] == 0:
-                curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
-            feed_dict[self.model.memory_in] = curr_brain_info.memories
+            if brain_info.memories.shape[1] == 0:
+                brain_info.memories = np.zeros((len(brain_info.agents), self.m_size))
+            feed_dict[self.model.memory_in] = brain_info.memories
         if self.use_visual_obs:
-            for i, _ in enumerate(curr_brain_info.visual_observations):
-                feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
+            for i, _ in enumerate(brain_info.visual_observations):
+                feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
         if self.use_vector_obs:
-            feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
+            feed_dict[self.model.vector_in] = brain_info.vector_observations
 
         network_output = self.sess.run(list(self.inference_dict.values()), feed_dict=feed_dict)
         run_out = dict(zip(list(self.inference_dict.keys()), network_output))
         return run_out
 
     def update(self, buffer, n_sequences, i):
+        """
+        Updates model using buffer.
+        :param buffer: Experience buffer.
+        :param n_sequences: Number of sequences in buffer.
+        :param i: Index to get batch.
+        :return: Output from update process.
+        """
         start = i * n_sequences
         end = (i + 1) * n_sequences
         feed_dict = {self.model.batch_size: n_sequences,
@@ -174,13 +194,6 @@ class PPOPolicy(Policy):
         value_estimate = self.sess.run(self.model.value, feed_dict)
         return value_estimate
 
-    @property
-    def graph_scope(self):
-        """
-        Returns the graph scope of the trainer.
-        """
-        return self.variable_scope
-
     def get_last_reward(self):
         """
         Returns the last reward the trainer has had
@@ -188,12 +201,10 @@ class PPOPolicy(Policy):
         """
         return self.sess.run(self.model.last_reward)
 
-    def get_inference_vars(self):
-        return list(self.inference_dict.keys())
-
-    def get_update_vars(self):
-        return list(self.update_dict.keys())
-
     def update_reward(self, new_reward):
+        """
+        Updates reward value for policy.
+        :param new_reward: New reward to save.
+        """
         self.sess.run(self.model.update_reward,
                       feed_dict={self.model.new_reward: new_reward})
