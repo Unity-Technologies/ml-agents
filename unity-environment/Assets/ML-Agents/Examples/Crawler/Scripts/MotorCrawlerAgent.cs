@@ -47,8 +47,12 @@ public class MotorCrawlerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
+    CrawlerAcademy academy;
+    public GameObject wall;
+
     public override void InitializeAgent()
     {
+        academy = FindObjectOfType<CrawlerAcademy>();
         jdController = GetComponent<JointDriveController>();
         currentDecisionStep = 1;
 
@@ -235,5 +239,10 @@ public class MotorCrawlerAgent : Agent
 
         isNewDecisionStep = true;
         currentDecisionStep = 1;
+
+        wall.transform.localScale = new Vector3(
+            wall.transform.localScale.x,
+            academy.resetParameters["wall_height"],
+            wall.transform.localScale.z);
     }
 }

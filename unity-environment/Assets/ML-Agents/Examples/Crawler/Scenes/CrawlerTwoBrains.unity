@@ -2278,6 +2278,19 @@ Prefab:
       propertyPath: agentParameters.numberOfActionsBetweenDecisions
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 1213877200563720, guid: 160da72de4af74134a254ad0d0eafedd, type: 2}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 114623187748972146, guid: 160da72de4af74134a254ad0d0eafedd,
+        type: 2}
+      propertyPath: wall
+      value: 
+      objectReference: {fileID: 1579454860}
+    - target: {fileID: 1161747692826034, guid: 160da72de4af74134a254ad0d0eafedd, type: 2}
+      propertyPath: m_TagString
+      value: wall
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114064061039955916, guid: 160da72de4af74134a254ad0d0eafedd, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 160da72de4af74134a254ad0d0eafedd, type: 2}
@@ -2332,6 +2345,11 @@ Transform:
 --- !u!4 &1579454859 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4951481817337492, guid: 160da72de4af74134a254ad0d0eafedd,
+    type: 2}
+  m_PrefabInternal: {fileID: 1579454853}
+--- !u!1 &1579454860 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1161747692826034, guid: 160da72de4af74134a254ad0d0eafedd,
     type: 2}
   m_PrefabInternal: {fileID: 1579454853}
 --- !u!1001 &1646039569
@@ -3152,7 +3170,7 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     resetParameters:
-    - key: draw_wall
+    - key: wall_height
       value: 1
 --- !u!114 &2095421681
 MonoBehaviour:
