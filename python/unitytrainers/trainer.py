@@ -122,7 +122,7 @@ class Trainer(object):
         """
         raise UnityTrainerException("The is_ready_update method was not implemented.")
 
-    def update_model(self):
+    def update_policy(self):
         """
         Uses training_buffer to update model.
         """

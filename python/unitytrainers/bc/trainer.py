@@ -100,7 +100,7 @@ class BehavioralCloningTrainer(Trainer):
 
     def take_action(self, all_brain_info: AllBrainInfo):
         """
-        Decides actions given state/observation information, and takes them in environment.
+        Decides actions using policy given current brain info.
         :param all_brain_info: AllBrainInfo from environment.
         :return: a tuple containing action, memories, values and an object
         to be passed to add experiences
@@ -225,9 +225,9 @@ class BehavioralCloningTrainer(Trainer):
         """
         return len(self.training_buffer.update_buffer['actions']) > self.n_sequences
 
-    def update_model(self):
+    def update_policy(self):
         """
-        Uses training_buffer to update model.
+        Updates the policy.
         """
         self.training_buffer.update_buffer.shuffle()
         batch_losses = []

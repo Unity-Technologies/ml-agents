@@ -343,7 +343,7 @@ class TrainerController(object):
                         if trainer.is_ready_update() and self.train_model \
                                 and trainer.get_step <= trainer.get_max_steps:
                             # Perform gradient descent with experience buffer
-                            trainer.update_model()
+                            trainer.update_policy()
                         # Write training statistics to Tensorboard.
                         if self.meta_curriculum is not None:
                             trainer.write_summary(
