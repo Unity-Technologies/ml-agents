@@ -103,6 +103,8 @@ class PPOTrainer(Trainer):
         if self.is_training and self.use_vector_obs and self.trainer_parameters['normalize']:
             self.inference_run_list.extend([self.model.update_mean, self.model.update_variance])
 
+        self.action_masking_name = 'action_masks'
+
     def __str__(self):
         return '''Hyperparameters for the PPO Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
@@ -334,7 +336,7 @@ class PPOTrainer(Trainer):
                         actions_pre = stored_take_action_outputs[self.model.output_pre]
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
                     else:
-                        self.training_buffer[agent_id]['action_masks'].append(stored_info.action_masks[idx])
+                        self.training_buffer[agent_id][self.action_masking_name].append(stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs[self.model.all_log_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
@@ -467,7 +469,7 @@ class PPOTrainer(Trainer):
                     if self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).reshape(
                             [-1, len(self.brain.vector_action_space_size)])
-                    feed_dict[self.model.action_masks] = np.array(buffer['action_masks'][start:end]).reshape(
+                    feed_dict[self.model.action_masks] = np.array(buffer[self.action_masking_name][start:end]).reshape(
                         [-1, sum(self.brain.vector_action_space_size)]
                     )
                 if self.use_vector_obs:
