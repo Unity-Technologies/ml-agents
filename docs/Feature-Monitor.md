@@ -4,20 +4,20 @@
 
 The monitor allows visualizing information related to the agents or training process within a Unity scene. 
 
-You can track many different things both related and unrelated to the agents themselves. To use the Monitor, it first needs to be activated somewhere in the code. The `Start()` method of your `Academy` script is a good place:
+You can track many different things both related and unrelated to the agents themselves. By default, the Monitor is only active in the *inference* phase, so not during training. To change this behaviour, you can activate or deactivate it by calling `SetActive(boolean)`. For example to also show the monitor during training, you can call it in the `InitializeAcademy()` method of your `Academy`:
 
 ```csharp
 using MLAgents;
 
-public class RollerAcademy : Academy { 
-    void Start()
+public class YourAcademy : Academy { 
+    public override void InitializeAcademy()
     {
         Monitor.SetActive(true);
     }
 }
 ```
 
-Next, to add values to monitor, call the `Log` function anywhere in your code :
+To add values to monitor, call the `Log` function anywhere in your code :
 
 ```csharp
 Monitor.Log(key, value, target)
