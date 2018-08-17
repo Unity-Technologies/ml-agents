@@ -256,9 +256,8 @@ namespace MLAgents
         /// to separate between different agents in the environment.
         int id;
 
-        /// When using discrete control, is the starting indices of the actions
-        /// when all the branches are concatenated with each other.
-        int[] startingActionIndices;
+        /// Keeps track of the actions that are masked at each step.
+        private ActionMasker actionMasker;
 
         /// Array of Texture2D used to render to from render buffer before  
         /// transforming into float tensor.
@@ -467,6 +466,7 @@ namespace MLAgents
             }
 
             BrainParameters param = brain.brainParameters;
+            actionMasker = new ActionMasker(param);
             if (param.vectorActionSpaceType == SpaceType.continuous)
             {
                 action.vectorActions = new float[param.vectorActionSize[0]];
@@ -523,8 +523,9 @@ namespace MLAgents
             info.storedVectorActions = action.vectorActions;
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
-            info.actionMasks = null;
+            actionMasker.ResetMask();
             CollectObservations();
+            info.actionMasks = actionMasker.GetMask();
 
             BrainParameters param = brain.brainParameters;
             if (info.vectorObservation.Count != param.vectorObservationSize)
@@ -616,7 +617,7 @@ namespace MLAgents
         /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
         protected void SetActionMask(IEnumerable<int> actionIndices)
         {
-            SetActionMask(0, actionIndices);
+            actionMasker.ModifyActionMask(0, actionIndices);
         }
         
         /// <summary>
@@ -628,7 +629,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action on branch 0</param>
         protected void SetActionMask(int actionIndex)
         {
-            SetActionMask(0, new int[1]{actionIndex});
+            actionMasker.ModifyActionMask(0, new int[1]{actionIndex});
         }
         
         /// <summary>
@@ -641,75 +642,22 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action</param>
         protected void SetActionMask(int branch, int actionIndex)
         {
-            SetActionMask(branch, new int[1]{actionIndex});
+            actionMasker.ModifyActionMask(branch, new int[1]{actionIndex});
         }
 
         /// <summary>
-        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// Modifies an action mask for discrete control agents. When used, the agent will not be
         /// able to perform the action passed as argument at the next decision. If no branch is
         /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
         /// to the action the agent will be unable to perform.
         /// </summary>
         /// <param name="branch">The branch for which the actions will be masked</param>
-        /// <param name="actionIndices"></param>
-        /// <exception cref="UnityAgentsException">The indices of the masked actions</exception>
+        /// <param name="actionIndices">The indices of the masked actions</param>
         protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
         {
-            // Action Masks can only be used in Discrete Control.
-            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
-            {
-                throw new UnityAgentsException(
-                    "Invalid Action Making : Cannot set mask for actions with Continuous Control.");
-            }
-            
-            // If the branch does not exist, raise an error
-            if (branch >= brain.brainParameters.vectorActionSize.Length )
-                throw new UnityAgentsException(
-                    "Invalid Action Making : Branch "+branch+" does not exist.");
-
-            int totalNumberActions = brain.brainParameters.vectorActionSize.Sum();
-            
-            // By default, the masks are null. If we want to specify a new mask, we initialize
-            // the actionMasks with trues.
-            if (info.actionMasks == null)
-            {
-                info.actionMasks = new bool[totalNumberActions];
-            }
-
-            // If this is the first time the masked actions are used, we generate the starting
-            // indices for each branch.
-            if (startingActionIndices == null)
-            {
-                var runningSum = 0;
-                startingActionIndices = new int[brain.brainParameters.vectorActionSize.Length + 1];
-                for (var actionIndex = 0;
-                    actionIndex < brain.brainParameters.vectorActionSize.Length;
-                    actionIndex++)
-                {
-                    runningSum += brain.brainParameters.vectorActionSize[actionIndex];
-                    startingActionIndices[actionIndex + 1] = runningSum;
-                }
-            }
-
-            foreach (var actionIndex in actionIndices)
-            {
-                if (actionIndex >= brain.brainParameters.vectorActionSize[branch])
-                    throw new UnityAgentsException(
-                        "Invalid Action Making: Action Mask is too large for specified branch.");
-                
-                info.actionMasks[actionIndex + startingActionIndices[branch]] = true;
-            }
-
-            bool allActionsMasked = true;
-            for (int i = startingActionIndices[branch]; i < startingActionIndices[branch + 1]; i++)
-            {
-                allActionsMasked = allActionsMasked && info.actionMasks[i];
-            }
-            if (allActionsMasked)
-                throw new UnityAgentsException(
-                    "Invalid Action Making : All the actions of branch "+branch+" are masked.");
-           
+            actionMasker.ModifyActionMask(branch, actionIndices);
         }
+        
 
         /// <summary>
         /// Adds a float observation to the vector observations of the agent.
