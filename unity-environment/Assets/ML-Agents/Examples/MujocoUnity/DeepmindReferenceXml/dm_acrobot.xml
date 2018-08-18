@@ -1,0 +1,43 @@
+<!--
+Based on Coulomb's [1] rather than Spong's [2] model.
+[1] Coulom, Rémi. Reinforcement learning using neural networks, with applications to motor control.
+    Diss. Institut National Polytechnique de Grenoble-INPG, 2002.
+[2] Spong, Mark W. "The swing up control problem for the acrobot."
+    IEEE control systems 15, no. 1 (1995): 49-55.
+-->
+<mujoco model="acrobot">
+  <include file="./common/visual.xml"/>
+  <include file="./common/skybox.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <default>
+    <joint damping=".05"/>
+    <geom type="capsule" mass="1"/>
+  </default>
+
+  <option timestep="0.01" integrator="RK4">
+    <flag constraint="disable" energy="enable"/>
+  </option>
+
+  <worldbody>
+    <light name="light" pos="0 0 6"/>
+    <geom name="floor" size="3 3 .2" type="plane" material="grid"/>
+    <site name="target" type="sphere" pos="0 0 4" size="0.2" material="target" group="3"/>
+    <camera name="fixed" pos="0 -6 2" zaxis="0 -1 0"/>
+    <camera name="lookat" mode="targetbodycom" target="upper_arm" pos="0 -2 3" zaxis="0 -1 0"/>
+    <body name="upper_arm" pos="0 0 2">
+      <joint name="shoulder" type="hinge" axis="0 1 0"/>
+      <geom name="upper_arm_decoration" material="decoration" type="cylinder" fromto="0 -.06 0 0 .06 0" size="0.051" mass="0"/>
+      <geom name="upper_arm" fromto="0 0 0 0 0 1" size="0.05" material="self"/>
+      <body name="lower_arm" pos="0 0 1">
+        <joint name="elbow" type="hinge" axis="0 1 0"/>
+        <geom name="lower_arm" fromto="0 0 0 0 0 1" size="0.049" material="self"/>
+        <site name="tip" pos="0 0 1" size="0.01"/>
+      </body>
+    </body>
+  </worldbody>
+
+   <actuator>
+    <motor name="elbow" joint="elbow" gear="2" ctrllimited="true" ctrlrange="-1 1"/>
+  </actuator>
+</mujoco>

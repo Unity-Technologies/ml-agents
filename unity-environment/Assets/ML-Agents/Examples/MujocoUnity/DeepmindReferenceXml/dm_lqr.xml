@@ -1,0 +1,26 @@
+<mujoco model="LQR">
+  <include file="./common/skybox.xml"/>
+  <include file="./common/visual.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <option timestep=".03"/>
+
+  <default>
+    <joint type="slide" axis="0 1 0"/>
+    <geom type="sphere" size=".1" material="self"/>
+    <site size=".01"/>
+    <tendon width=".02" material="self"/>
+  </default>
+
+  <option>
+    <flag constraint="disable"/>
+  </option>
+
+  <worldbody>
+    <light name="light" pos="0 0 2"/>
+    <camera name="cam0" pos="-1.428 -0.311 0.856" xyaxes="0.099 -0.995 0.000 0.350 0.035 0.936"/>
+    <camera name="cam1" pos="1.787 2.452 4.331" xyaxes="-1 0 0 0 -0.868 0.497"/>
+    <geom name="floor" size="4 1 .2" type="plane" material="grid"/>
+    <geom name="origin" pos="2 0 .05" size="2 .003 .05" type="box" rgba=".5 .5 .5 .5"/>
+  </worldbody>
+</mujoco>

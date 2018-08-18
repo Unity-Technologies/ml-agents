@@ -1,0 +1,47 @@
+<mujoco model="two-link planar reacher">
+  <include file="./common/skybox.xml"/>
+  <include file="./common/visual.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <option timestep="0.02">
+    <flag contact="disable"/>
+  </option>
+
+  <default>
+    <joint type="hinge" axis="0 0 1" damping="0.01"/>
+    <motor gear=".05" ctrlrange="-1 1" ctrllimited="true"/>
+  </default>
+
+  <worldbody>
+    <light name="light" pos="0 0 1"/>
+    <camera name="fixed" pos="0 0 .75" quat="1 0 0 0"/>
+    <!-- Arena -->
+    <geom name="ground" type="plane" pos="0 0 0" size=".3 .3 10" material="grid"/>
+    <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .02" material="decoration"/>
+    <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" material="decoration"/>
+    <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" material="decoration"/>
+    <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" material="decoration"/>
+
+    <!-- Arm -->
+    <geom name="root" type="cylinder" fromto="0 0 0 0 0 0.02" size=".011" material="decoration"/>
+    <body name="arm" pos="0 0 .01">
+      <geom name="arm" type="capsule" fromto="0 0 0 0.12 0 0" size=".01" material="self"/>
+      <joint name="shoulder"/>
+      <body name="hand" pos=".12 0 0">
+        <geom name="hand" type="capsule" fromto="0 0 0 0.1 0 0" size=".01" material="self"/>
+        <joint name="wrist" limited="true" range="-160 160"/>
+        <body name="finger" pos=".12 0 0">
+          <camera name="hand" pos="0 0 .2" mode="track"/>
+          <geom name="finger" type="sphere" size=".01" material="effector"/>
+        </body>
+      </body>
+    </body>
+    <!-- Target -->
+    <geom name="target" pos="0 0 .01" material="target" type="sphere" size=".05"/>
+  </worldbody>
+
+  <actuator>
+    <motor name="shoulder" joint="shoulder"/>
+    <motor name="wrist" joint="wrist"/>
+  </actuator>
+</mujoco>

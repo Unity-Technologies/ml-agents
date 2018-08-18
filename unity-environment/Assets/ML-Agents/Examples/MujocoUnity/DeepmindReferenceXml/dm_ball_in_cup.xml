@@ -1,0 +1,54 @@
+<mujoco model="ball in cup">
+
+  <include file="./common/visual.xml"/>
+  <include file="./common/skybox.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <default>
+    <motor ctrllimited="true" ctrlrange="-1 1" gear="5"/>
+    <default class="cup">
+      <joint type="slide" damping="3" stiffness="20"/>
+      <geom type="capsule" size=".008" material="self"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <light name="light" directional="true" diffuse=".6 .6 .6" pos="0 0 2" specular=".3 .3 .3"/>
+    <geom name="ground" type="plane" pos="0 0 0" size=".6 .2 10" material="grid"/>
+    <camera name="cam0" pos="0 -1 .8" xyaxes="1 0 0 0 1 2"/>
+    <camera name="cam1" pos="0 -1 .4" xyaxes="1 0 0 0 0 1" />
+
+    <body name="cup" pos="0 0 .6" childclass="cup">
+      <joint name="cup_x" axis="1 0 0"/>
+      <joint name="cup_z" axis="0 0 1"/>
+      <geom name="cup_part_0" fromto="-.05 0 0 -.05 0 -.075" />
+      <geom name="cup_part_1" fromto="-.05 0 -.075 -.025 0 -.1" />
+      <geom name="cup_part_2" fromto="-.025 0 -.1 .025 0 -.1" />
+      <geom name="cup_part_3" fromto=".025 0 -.1 .05 0 -.075" />
+      <geom name="cup_part_4" fromto=".05 0 -.075 .05 0 0" />
+      <site name="cup" pos="0 0 -.108" size=".005"/>
+      <site name="target" type="box" pos="0 0 -.05" size=".05 .006 .05" group="4"/>
+    </body>
+
+    <body name="ball" pos="0 0 .2">
+      <joint name="ball_x" type="slide" axis="1 0 0"/>
+      <joint name="ball_z" type="slide" axis="0 0 1"/>
+      <geom name="ball" type="sphere" size=".025" material="effector"/>
+      <site name="ball" size=".005"/>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="x" joint="cup_x"/>
+    <motor name="z" joint="cup_z"/>
+  </actuator>
+
+  <tendon>
+    <spatial name="string" limited="true" range="0 0.3" width="0.003">
+      <site site="ball"/>
+      <site site="cup"/>
+    </spatial>
+  </tendon>
+
+</mujoco>
+
