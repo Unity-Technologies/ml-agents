@@ -178,7 +178,7 @@ namespace MLAgents
             foreach (Texture2D obs in info.visualObservations)
             {
                 agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToJPG())
+                    ByteString.CopyFrom(obs.EncodeToPNG())
                 );
             }
             return agentInfoProto;
@@ -199,7 +199,7 @@ namespace MLAgents
                 {
                     VectorObservationSize = brainParameters.vectorObservationSize,
                     NumStackedVectorObservations = brainParameters.numStackedVectorObservations,
-                    VectorActionSize = brainParameters.vectorActionSize,
+                    VectorActionSize = {brainParameters.vectorActionSize},
                     VectorActionSpaceType =
                     (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorActionSpaceType,
                     BrainName = name,
@@ -338,6 +338,8 @@ namespace MLAgents
                             action.Memories.ToList());
                         agent.UpdateTextAction(
                             action.TextActions);
+                        agent.UpdateValueAction(
+                            action.Value);
                     }
                 }
             

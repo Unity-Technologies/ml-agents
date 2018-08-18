@@ -18,6 +18,7 @@ namespace MLAgents
         private struct DiscretePlayerAction
         {
             public KeyCode key;
+            public int branchIndex;
             public int value;
         }
 
@@ -54,8 +55,6 @@ namespace MLAgents
         [Tooltip("The list of keys and the value they correspond to for discrete control.")]
         /// Contains the mapping from input to discrete actions
         private DiscretePlayerAction[] discretePlayerActions;
-        [SerializeField]
-        private int defaultAction = 0;
 
         /// Reference to the brain that uses this CoreBrainPlayer
         public Brain brain;
@@ -95,7 +94,7 @@ namespace MLAgents
             {
                 foreach (Agent agent in agentInfo.Keys)
                 {
-                    var action = new float[brain.brainParameters.vectorActionSize];
+                    var action = new float[brain.brainParameters.vectorActionSize[0]];
                     foreach (KeyContinuousPlayerAction cha in keyContinuousPlayerActions)
                         {
                             if (Input.GetKey(cha.key))
@@ -121,17 +120,14 @@ namespace MLAgents
             {
                 foreach (Agent agent in agentInfo.Keys)
                 {
-                    var action = new float[1] {defaultAction};
+                    var action = new float[brain.brainParameters.vectorActionSize.Length];
                     foreach (DiscretePlayerAction dha in discretePlayerActions)
                     {
                         if (Input.GetKey(dha.key))
                         {
-                            action[0] = (float) dha.value;
-                            break;
+                            action[dha.branchIndex] = (float) dha.value;
                         }
                     }
-
-
                     agent.UpdateVectorAction(action);
 
                 }
@@ -167,7 +163,7 @@ namespace MLAgents
             }
             foreach (KeyContinuousPlayerAction action in keyContinuousPlayerActions)
             {
-                if (action.index >= brain.brainParameters.vectorActionSize)
+                if (action.index >= brain.brainParameters.vectorActionSize[0])
                 {
                     EditorGUILayout.HelpBox(
                         string.Format(
@@ -180,7 +176,7 @@ namespace MLAgents
             }
             foreach (AxisContinuousPlayerAction action in axisContinuousPlayerActions)
             {
-                if (action .index >= brain.brainParameters.vectorActionSize)
+                if (action .index >= brain.brainParameters.vectorActionSize[0])
                 {
                     EditorGUILayout.HelpBox(
                         string.Format(
@@ -197,7 +193,6 @@ namespace MLAgents
         else
         {
             GUILayout.Label("Edit the discrete inputs for your actions", EditorStyles.boldLabel);
-            defaultAction = EditorGUILayout.IntField("Default Action", defaultAction);
             var dhas = serializedBrain.FindProperty("discretePlayerActions");
             serializedBrain.Update();
             EditorGUILayout.PropertyField(dhas, true);

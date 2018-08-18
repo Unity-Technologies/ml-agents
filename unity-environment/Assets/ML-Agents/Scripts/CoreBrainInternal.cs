@@ -77,6 +77,7 @@ namespace MLAgents
         bool hasState;
         bool hasBatchSize;
         bool hasPrevAction;
+        bool hasValueEstimate;
         float[,] inputState;
         int[] inputPrevAction;
         List<float[,,,]> observationMatrixList;
@@ -157,6 +158,10 @@ namespace MLAgents
                 if (graph[graphScope + PreviousActionPlaceholderName] != null)
                 {
                     hasPrevAction = true;
+                }
+                if (graph[graphScope + "value_estimate"] != null)
+                {
+                    hasValueEstimate = true;
                 }
             }
 
@@ -328,6 +333,11 @@ namespace MLAgents
                 runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
             }
 
+            if (hasValueEstimate)
+            {
+                runner.Fetch(graph[graphScope + "value_estimate"][0]);
+            }
+
             TFTensor[] networkOutput;
             try
             {
@@ -366,14 +376,34 @@ namespace MLAgents
                 }
             }
 
+            
+            if (hasValueEstimate)
+            {
+                float[,] value_estimates = new float[currentBatchSize,1];
+                if (hasRecurrent)
+                {
+                    value_estimates = networkOutput[2].GetValue() as float[,];
+                }
+                else
+                {
+                    value_estimates = networkOutput[1].GetValue() as float[,];
+                }
+                
+                var i = 0;
+                foreach (Agent agent in agentList)
+                {
+                    agent.UpdateValueAction(value_estimates[i,0]);
+                }
+            }
+
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 var output = networkOutput[0].GetValue() as float[,];
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    var a = new float[brain.brainParameters.vectorActionSize];
-                    for (int j = 0; j < brain.brainParameters.vectorActionSize; j++)
+                    var a = new float[brain.brainParameters.vectorActionSize[0]];
+                    for (int j = 0; j < brain.brainParameters.vectorActionSize[0]; j++)
                     {
                         a[j] = output[i, j];
                     }
@@ -388,7 +418,12 @@ namespace MLAgents
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    var a = new float[1] {(float) (output[i, 0])};
+                    var actSize = brain.brainParameters.vectorActionSize.Length;
+                    var a = new float[actSize];
+                    for (int actIdx = 0; actIdx < actSize; actIdx++)
+                    {
+                        a[actIdx] = output[i, actIdx];
+                    }
                     agent.UpdateVectorAction(a);
                     i++;
                 }

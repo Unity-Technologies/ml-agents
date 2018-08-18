@@ -848,7 +848,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 4294967294
   m_IsActive: 1
 --- !u!1 &1901019347833374
 GameObject:
@@ -4448,7 +4448,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1655886918472060}
   contribute: 0
-  useVisual: 1
+  useVectorObs: 0
 --- !u!114 &114661537450162482
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4478,7 +4478,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1995320573564588}
   contribute: 0
-  useVisual: 1
+  useVectorObs: 0
 --- !u!114 &114813974235827884
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4508,7 +4508,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1929077749028892}
   contribute: 0
-  useVisual: 1
+  useVectorObs: 0
 --- !u!114 &114863868205103286
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4538,7 +4538,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 866f7a84824d141dbbe50dd1893207d9, type: 2}
   myLaser: {fileID: 1708530989208544}
   contribute: 0
-  useVisual: 1
+  useVectorObs: 0
 --- !u!114 &114928211057886896
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -1,7 +1,7 @@
 # Background: Jupyter
 
 [Jupyter](https://jupyter.org) is a fantastic tool for writing code with 
-embedded visualizations. We provide one such notebook, `python/Basics.ipynb`, 
+embedded visualizations. We provide one such notebook, `python/notebooks/getting-started.ipynb`, 
 for testing the Python control interface to a Unity build. This notebook is 
 introduced in the 
 [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md)

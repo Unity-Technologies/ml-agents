@@ -6,7 +6,7 @@ from communicator_objects import UnityMessage, UnityOutput, UnityInput,\
 
 
 class MockCommunicator(Communicator):
-    def __init__(self, discrete_action=False, visual_inputs=0):
+    def __init__(self, discrete_action=False, visual_inputs=0, stack=True, num_agents=3):
         """
         Python side of the grpc communication. Python is the client and Unity the server
 
@@ -17,6 +17,11 @@ class MockCommunicator(Communicator):
         self.steps = 0
         self.visual_inputs = visual_inputs
         self.has_been_closed = False
+        self.num_agents = num_agents
+        if stack:
+            self.num_stacks = 2
+        else:
+            self.num_stacks = 1
 
     def initialize(self, inputs: UnityInput) -> UnityOutput:
         resolutions = [ResolutionProto(
@@ -25,12 +30,11 @@ class MockCommunicator(Communicator):
             gray_scale=False) for i in range(self.visual_inputs)]
         bp = BrainParametersProto(
             vector_observation_size=3,
-            num_stacked_vector_observations=2,
-            vector_action_size=2,
+            num_stacked_vector_observations=self.num_stacks,
+            vector_action_size=[2],
             camera_resolutions=resolutions,
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),
-            vector_observation_space_type=1,
             brain_name="RealFakeBrain",
             brain_type=2
         )
@@ -51,10 +55,15 @@ class MockCommunicator(Communicator):
         else:
             vector_action = [1, 2]
         list_agent_info = []
-        for i in range(3):
+        if self.num_stacks == 1:
+            observation = [1, 2, 3]
+        else:
+            observation = [1, 2, 3, 1, 2, 3]
+
+        for i in range(self.num_agents):
             list_agent_info.append(
                 AgentInfoProto(
-                    stacked_vector_observation=[1, 2, 3, 1, 2, 3],
+                    stacked_vector_observation=observation,
                     reward=1,
                     stored_vector_actions=vector_action,
                     stored_text_actions="",

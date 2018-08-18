@@ -6,7 +6,7 @@ import numpy as np
 
 from unityagents import UnityException, AllBrainInfo
 
-logger = logging.getLogger("unityagents")
+logger = logging.getLogger("unitytrainers")
 
 
 class UnityTrainerException(UnityException):
@@ -19,7 +19,7 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the abstract class for the unitytrainers"""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
         :param sess: Tensorflow session.
@@ -28,6 +28,7 @@ class Trainer(object):
         :param training: Whether the trainer is set for training.
         """
         self.brain_name = brain_name
+        self.run_id = run_id
         self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
         self.is_training = training
@@ -63,7 +64,7 @@ class Trainer(object):
     @property
     def get_step(self):
         """
-        Returns the number of steps the trainer has performed
+        Returns the number of training steps the trainer has performed
         :return: the step count of the trainer
         """
         raise UnityTrainerException("The get_step property was not implemented.")
@@ -129,28 +130,29 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def write_summary(self, lesson_number):
+    def write_summary(self, global_step, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
+        :param global_step: The number of steps the simulation has been going for
         :param lesson_number: The lesson the trainer is at.
         """
-        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-                self.is_training and self.get_step <= self.get_max_steps):
+        if global_step % self.trainer_parameters['summary_freq'] == 0 and global_step != 0:
+            is_training = "Training." if self.is_training and self.get_step <= self.get_max_steps else "Not Training."
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info(" {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
-                            .format(self.brain_name, self.get_step,
-                                    mean_reward, np.std(self.stats['cumulative_reward'])))
+                logger.info(" {}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}. {}"
+                            .format(self.run_id, self.brain_name, min(self.get_step, self.get_max_steps),
+                                    mean_reward, np.std(self.stats['cumulative_reward']), is_training))
             else:
-                logger.info(" {}: Step: {}. No episode was completed since last summary."
-                            .format(self.brain_name, self.get_step))
+                logger.info(" {}: {}: Step: {}. No episode was completed since last summary. {}"
+                            .format(self.run_id, self.brain_name, self.get_step, is_training))
             summary = tf.Summary()
             for key in self.stats:
                 if len(self.stats[key]) > 0:
                     stat_mean = float(np.mean(self.stats[key]))
                     summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
                     self.stats[key] = []
-            summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
+            summary.value.add(tag='Info/Lesson', simple_value=lesson_num)
             self.summary_writer.add_summary(summary, self.get_step)
             self.summary_writer.flush()
 
