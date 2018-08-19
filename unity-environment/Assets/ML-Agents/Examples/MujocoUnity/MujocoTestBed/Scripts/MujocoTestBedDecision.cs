@@ -38,7 +38,7 @@ public class MujocoTestBedDecision : MonoBehaviour, Decision
     void Start()
     {
         _brain = this.GetComponent<Brain>();
-        Actions = Enumerable.Repeat<float>(0f, _brain.brainParameters.vectorActionSize).ToArray();
+        Actions = Enumerable.Repeat<float>(0f, _brain.brainParameters.vectorActionSize[0]).ToArray();
     }
 
     public List<float> MakeMemory(

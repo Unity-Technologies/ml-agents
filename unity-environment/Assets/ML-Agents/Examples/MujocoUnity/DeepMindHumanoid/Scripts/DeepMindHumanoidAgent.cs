@@ -123,7 +123,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
     }
     float StepRewardOaiHumanoidRunOnSpot161()
     {
-        float velocity = GetVelocity();
+        // float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);
         float uprightBonus = 
             (GetUprightBonus("shoulders") / 6)
@@ -184,7 +184,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
     // implement phase bonus (reward for left then right)
     List<bool> _lastSenorState;
     float _phaseBonus;
-    int _phase;
+    // int _phase;
 
     public float LeftMin;
     public float LeftMax;
@@ -195,7 +195,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
     void PhaseBonusInitalize()
     {
         _lastSenorState = Enumerable.Repeat<bool>(false, NumSensors).ToList();
-        _phase = 0;
+        // _phase = 0;
         _phaseBonus = 0f;
         PhaseResetLeft();
         PhaseResetRight();
@@ -286,7 +286,7 @@ public class DeepMindHumanoidAgent : MujocoAgent {
             _phaseBonus += 0.1f;
             PhaseResetRight();
         }
-        _phase = isLeftFootDown ? 1 : 2;
+        // _phase = isLeftFootDown ? 1 : 2;
         return _phaseBonus;
     }    
 }
