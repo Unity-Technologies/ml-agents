@@ -26,7 +26,8 @@ The Brain Inspector window in the Unity Editor displays the properties assigned 
 	* `Visual Observations`	- Describes height, width, and whether to grayscale visual observations for the Brain.
 	* `Vector Action`
 		* `Space Type` - Corresponds to whether action vector contains a single integer (Discrete) or a series of real-valued floats (Continuous).
-		* `Space Size` - Length of action vector for brain (In _Continuous_ state space). Or number of possible values (in _Discrete_ action space).
+		* `Space Size` (Continuous) - Length of action vector for brain.
+		* `Branches` (Discrete) - An array of integers, defines multiple concurent discrete actions. The values in the `Branches` array correspond to the number of possible discrete values for each action branch.
 		* `Action Descriptions` - A list of strings used to name the available actions for the Brain.
 * `Type of Brain` - Describes how the Brain will decide actions.
     * `External` - Actions are decided by an external process, such as the PPO training process.

@@ -122,7 +122,7 @@ public class OpenAIHumanoidAgent : MujocoAgent {
     }
     float StepRewardOaiHumanoidRunOnSpot161()
     {
-        float velocity = GetVelocity();
+        // float velocity = GetVelocity();
         float heightPenality = GetHeightPenality(1.2f);
         float uprightBonus = 
             (GetUprightBonus("shoulders") / 6)

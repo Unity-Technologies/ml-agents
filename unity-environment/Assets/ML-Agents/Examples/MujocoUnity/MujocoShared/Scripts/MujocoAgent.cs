@@ -555,17 +555,13 @@ namespace MujocoUnity
                     pos = targ.localEulerAngles.z;
                     globPos = targ.eulerAngles.z;
                 }
-                ConfigurableJoint configurableJoint = joint as ConfigurableJoint;
                 pos = ((pos - 180f) % 180 ) / 180;
-                // pos /= 180f;
                 globPos = ((globPos - 180f) % 180 ) / 180;
                 var lastPos = qpos[3+i];
                 qpos[3+i] = pos;
                 JointAngles[i] = pos;
                 var lastgPos = qglobpos[3+i];
                 qglobpos[3+i] = globPos;
-                // var vel = joint.gameObject.GetComponent<Rigidbody>().velocity.x;
-                // var vel = configurableJoint.
                 var vel = (qpos[3+i] - lastPos) / (dt);
                 qvel[3+i] = vel;
                 JointVelocity[i] = vel;

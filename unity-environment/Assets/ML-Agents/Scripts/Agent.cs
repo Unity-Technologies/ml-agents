@@ -81,6 +81,7 @@ namespace MLAgents
         public float[] vectorActions;
         public string textActions;
         public List<float> memories;
+        public float value;
     }
 
     /// <summary>
@@ -257,10 +258,9 @@ namespace MLAgents
         void OnEnable()
         {
             textureArray = new Texture2D[agentParameters.agentCameras.Count];
-            for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
+            for (int i = 0; i < agentParameters.agentCameras.Count; i++)
             {
-                textureArray[i] = new Texture2D(brain.brainParameters.cameraResolutions[i].width, 
-                    brain.brainParameters.cameraResolutions[i].height, TextureFormat.RGB24, false);
+                textureArray[i] = new Texture2D(1, 1, TextureFormat.RGB24, false);
             }
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
@@ -458,13 +458,13 @@ namespace MLAgents
             BrainParameters param = brain.brainParameters;
             if (param.vectorActionSpaceType == SpaceType.continuous)
             {
-                action.vectorActions = new float[param.vectorActionSize];
-                info.storedVectorActions = new float[param.vectorActionSize];
+                action.vectorActions = new float[param.vectorActionSize[0]];
+                info.storedVectorActions = new float[param.vectorActionSize[0]];
             }
             else
             {
-                action.vectorActions = new float[1];
-                info.storedVectorActions = new float[1];
+                action.vectorActions = new float[param.vectorActionSize.Length];
+                info.storedVectorActions = new float[param.vectorActionSize.Length];
             }
 
             if (info.textObservation == null)
@@ -767,6 +767,20 @@ namespace MLAgents
         public void UpdateTextAction(string textActions)
         {
             action.textActions = textActions;
+        }
+        
+        /// <summary>
+        /// Updates the value of the agent.
+        /// </summary>
+        /// <param name="textActions">Text actions.</param>
+        public void UpdateValueAction(float value)
+        {
+            action.value = value;
+        }
+
+        protected float GetValueEstimate()
+        {
+            return action.value;
         }
 
         /// <summary>

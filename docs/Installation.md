@@ -28,11 +28,15 @@ Both directories are located at the root of the repository.
 
 ## Install Python (with Dependencies)
 
-In order to use ML-Agents toolkit, you need Python 3.5 or 3.6 along with
+In order to use ML-Agents toolkit, you need Python 3.6 along with
 the dependencies listed in the [requirements file](../python/requirements.txt).
 Some of the primary dependencies include:
 - [TensorFlow](Background-TensorFlow.md) 
 - [Jupyter](Background-Jupyter.md) 
+
+**NOTES**
+- We do not currently support Python 3.7 or Python 3.5.
+- If you are using Anaconda and are having trouble with TensorFlow, please see the following [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda) on how to install TensorFlow in an Anaconda environment. 
 
 ### Windows Users
 

@@ -18,7 +18,7 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 2. Calls the `AgentReset()` function for each agent in the scene.
 3. Calls the  `CollectObservations()` function for each agent in the scene.
 4. Uses each agent's Brain class to decide on the agent's next action. 
-5. Calls your subclass's `AcademyAct()` function.
+5. Calls your subclass's `AcademyStep()` function.
 6. Calls the `AgentAction()` function for each agent in the scene, passing in the action chosen by the agent's brain. (This function is not called if the agent is done.)
 7. Calls the agent's `AgentOnDone()` function if the agent has reached its `Max Step` count or has otherwise marked itself as `done`. Optionally, you can set an agent to restart if it finishes before the end of an episode. In this case, the Academy calls the `AgentReset()` function.
 8. When the Academy reaches its own `Max Step` count, it starts the next episode again by calling your Academy subclass's `AcademyReset()` function.

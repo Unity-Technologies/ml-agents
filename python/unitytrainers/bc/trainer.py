@@ -19,7 +19,7 @@ logger = logging.getLogger("unityagents")
 class BehavioralCloningTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -36,7 +36,7 @@ class BehavioralCloningTrainer(Trainer):
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain_name))
 
-        super(BehavioralCloningTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
+        super(BehavioralCloningTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training, run_id)
 
         self.variable_scope = trainer_parameters['graph_scope']
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
@@ -136,7 +136,7 @@ class BehavioralCloningTrainer(Trainer):
         to be passed to add experiences
         """
         if len(all_brain_info[self.brain_name].agents) == 0:
-            return [], [], [], None
+            return [], [], [], None, None
 
         agent_brain = all_brain_info[self.brain_name]
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
@@ -151,10 +151,10 @@ class BehavioralCloningTrainer(Trainer):
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
             feed_dict[self.model.memory_in] = agent_brain.memories
             agent_action, memories = self.sess.run(self.inference_run_list, feed_dict)
-            return agent_action, memories, None, None
+            return agent_action, memories, None, None, None
         else:
             agent_action = self.sess.run(self.inference_run_list, feed_dict)
-        return agent_action, None, None, None
+        return agent_action, None, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
         """
@@ -285,9 +285,10 @@ class BehavioralCloningTrainer(Trainer):
                          self.model.sequence_length: self.sequence_length}
             if self.is_continuous_action:
                 feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).\
-                    reshape([-1, self.brain.vector_action_space_size])
+                    reshape([-1, self.brain.vector_action_space_size[0]])
             else:
-                feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).reshape([-1])
+                feed_dict[self.model.true_action] = np.array(_buffer['actions'][start:end]).reshape(
+                    [-1, len(self.brain.vector_action_space_size)])
             if self.use_vector_observations:
                 feed_dict[self.model.vector_in] = np.array(_buffer['vector_observations'][start:end])\
                     .reshape([-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])

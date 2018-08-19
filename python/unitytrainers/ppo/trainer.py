@@ -19,7 +19,7 @@ logger = logging.getLogger("unityagents")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
+    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -38,7 +38,7 @@ class PPOTrainer(Trainer):
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
                                             "brain {1}.".format(k, brain_name))
 
-        super(PPOTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
+        super(PPOTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training, run_id)
 
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
@@ -94,7 +94,7 @@ class PPOTrainer(Trainer):
 
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
-        self.inference_run_list = [self.model.output, self.model.all_probs, self.model.value,
+        self.inference_run_list = [self.model.output, self.model.all_log_probs, self.model.value,
                                    self.model.entropy, self.model.learning_rate]
         if self.is_continuous_action:
             self.inference_run_list.append(self.model.output_pre)
@@ -167,13 +167,14 @@ class PPOTrainer(Trainer):
         """
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
-            return [], [], [], None
+            return [], [], [], None, None
 
         feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations),
                      self.model.sequence_length: 1}
         if self.use_recurrent:
             if not self.is_continuous_action:
-                feed_dict[self.model.prev_action] = curr_brain_info.previous_vector_actions.flatten()
+                feed_dict[self.model.prev_action] = curr_brain_info.previous_vector_actions.reshape(
+                    [-1, len(self.brain.vector_action_space_size)])
             if curr_brain_info.memories.shape[1] == 0:
                 curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = curr_brain_info.memories
@@ -185,14 +186,13 @@ class PPOTrainer(Trainer):
 
         values = self.sess.run(self.inference_run_list, feed_dict=feed_dict)
         run_out = dict(zip(self.inference_run_list, values))
-
         self.stats['value_estimate'].append(run_out[self.model.value].mean())
         self.stats['entropy'].append(run_out[self.model.entropy].mean())
         self.stats['learning_rate'].append(run_out[self.model.learning_rate])
         if self.use_recurrent:
-            return run_out[self.model.output], run_out[self.model.memory_out], None, run_out
+            return run_out[self.model.output], run_out[self.model.memory_out], None, run_out[self.model.value], run_out
         else:
-            return run_out[self.model.output], None, None, run_out
+            return run_out[self.model.output], None, None, run_out[self.model.value], run_out
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
@@ -213,9 +213,9 @@ class PPOTrainer(Trainer):
         prev_text_actions = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
-            agent_index = agent_brain_info.agents.index(agent_id)
             if agent_brain_info is None:
                 agent_brain_info = next_info
+            agent_index = agent_brain_info.agents.index(agent_id)
             for i in range(len(next_info.visual_observations)):
                 visual_observations[i].append(agent_brain_info.visual_observations[i][agent_index])
             vector_observations.append(agent_brain_info.vector_observations[agent_index])
@@ -244,7 +244,7 @@ class PPOTrainer(Trainer):
             if self.is_continuous_action:
                 feed_dict[self.model.output] = next_info.previous_vector_actions
             else:
-                feed_dict[self.model.action_holder] = next_info.previous_vector_actions.flatten()
+                feed_dict[self.model.action_holder] = next_info.previous_vector_actions
 
             if curr_info.agents != next_info.agents:
                 curr_info = self.construct_curr_info(next_info)
@@ -285,7 +285,8 @@ class PPOTrainer(Trainer):
                     (len(brain_info.vector_observations), self.m_size))
             feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
         if not self.is_continuous_action and self.use_recurrent:
-            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].flatten()
+            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape(
+                [-1, len(self.brain.vector_action_space_size)])
         value_estimate = self.sess.run(self.model.value, feed_dict)
         return value_estimate
 
@@ -317,7 +318,7 @@ class PPOTrainer(Trainer):
                             self.training_buffer[agent_id]['visual_obs%d' % i].append(
                                 stored_info.visual_observations[i][idx])
                             self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
-                                next_info.visual_observations[i][idx])
+                                next_info.visual_observations[i][next_idx])
                     if self.use_vector_obs:
                         self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
                         self.training_buffer[agent_id]['next_vector_in'].append(
@@ -330,11 +331,12 @@ class PPOTrainer(Trainer):
                     if self.is_continuous_action:
                         actions_pre = stored_take_action_outputs[self.model.output_pre]
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
-                    a_dist = stored_take_action_outputs[self.model.all_probs]
+                    a_dist = stored_take_action_outputs[self.model.all_log_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
+
                     if self.use_curiosity:
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx] +
                                                                          intrinsic_rewards[next_idx])
@@ -342,7 +344,6 @@ class PPOTrainer(Trainer):
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
-
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
@@ -451,15 +452,17 @@ class PPOTrainer(Trainer):
                              self.model.returns_holder: np.array(buffer['discounted_returns'][start:end]).flatten(),
                              self.model.old_value: np.array(buffer['value_estimates'][start:end]).flatten(),
                              self.model.advantage: np.array(buffer['advantages'][start:end]).reshape([-1, 1]),
-                             self.model.all_old_probs: np.array(buffer['action_probs'][start:end]).reshape(
-                                 [-1, self.brain.vector_action_space_size])}
+                             self.model.all_old_log_probs: np.array(buffer['action_probs'][start:end]).reshape(
+                                 [-1, sum(self.brain.vector_action_space_size)])}
                 if self.is_continuous_action:
                     feed_dict[self.model.output_pre] = np.array(buffer['actions_pre'][start:end]).reshape(
-                        [-1, self.brain.vector_action_space_size])
+                        [-1, self.brain.vector_action_space_size[0]])
                 else:
-                    feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).flatten()
+                    feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).reshape(
+                        [-1, len(self.brain.vector_action_space_size)])
                     if self.use_recurrent:
-                        feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).flatten()
+                        feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).reshape(
+                            [-1, len(self.brain.vector_action_space_size)])
                 if self.use_vector_obs:
                     total_observation_length = self.brain.vector_observation_space_size * \
                                                self.brain.num_stacked_vector_observations

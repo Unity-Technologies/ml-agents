@@ -157,8 +157,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -180,14 +179,13 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &248293859
 Prefab:
   m_ObjectHideFlags: 0
@@ -232,8 +230,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -255,24 +252,23 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &330974583
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
+--- !u!114 &310371355
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
   brain: {fileID: 0}
@@ -320,8 +316,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -343,37 +338,13 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &453496190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 0
-  graphModel: {fileID: 4900000, guid: 5da540edf1a464d4c950bcb64022cd5a, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 846768605}
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &471931718
 Prefab:
   m_ObjectHideFlags: 0
@@ -418,8 +389,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -442,26 +412,37 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &489419866
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
+--- !u!114 &527033640
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
+  broadcast: 0
+  graphModel: {fileID: 4900000, guid: 5da540edf1a464d4c950bcb64022cd5a, type: 3}
+  graphScope: 
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
   brain: {fileID: 846768605}
 --- !u!1 &762086410
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 762086412}
   - component: {fileID: 762086411}
@@ -475,7 +456,7 @@ GameObject:
 --- !u!108 &762086411
 Light:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 762086410}
   m_Enabled: 1
@@ -502,6 +483,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
@@ -511,7 +493,7 @@ Light:
 --- !u!4 &762086412
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 762086410}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
@@ -524,9 +506,9 @@ Transform:
 --- !u!1 &846768603
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 846768604}
   - component: {fileID: 846768605}
@@ -540,7 +522,7 @@ GameObject:
 --- !u!4 &846768604
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 846768603}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
@@ -553,7 +535,7 @@ Transform:
 --- !u!114 &846768605
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 846768603}
   m_Enabled: 1
@@ -564,21 +546,36 @@ MonoBehaviour:
   brainParameters:
     vectorObservationSize: 26
     numStackedVectorObservations: 1
-    vectorActionSize: 3
+    vectorActionSize: 03000000
     cameraResolutions: []
     vectorActionDescriptions:
     - 
     - 
     - 
     vectorActionSpaceType: 1
-    vectorObservationSpaceType: 1
   brainType: 3
   CoreBrains:
-  - {fileID: 1166979358}
-  - {fileID: 330974583}
-  - {fileID: 489419866}
-  - {fileID: 453496190}
-  instanceID: 15846
+  - {fileID: 878676455}
+  - {fileID: 310371355}
+  - {fileID: 1990780599}
+  - {fileID: 527033640}
+  instanceID: 19850
+--- !u!114 &878676455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  keyContinuousPlayerActions: []
+  axisContinuousPlayerActions: []
+  discretePlayerActions: []
+  brain: {fileID: 846768605}
 --- !u!1001 &983200749
 Prefab:
   m_ObjectHideFlags: 0
@@ -623,8 +620,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -646,14 +642,13 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1097058351
 Prefab:
   m_ObjectHideFlags: 0
@@ -698,8 +693,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -722,8 +716,8 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1130138205
 Prefab:
   m_ObjectHideFlags: 0
@@ -768,8 +762,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -792,25 +785,8 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &1166979358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  keyContinuousPlayerActions: []
-  axisContinuousPlayerActions: []
-  discretePlayerActions: []
-  defaultAction: 0
-  brain: {fileID: 846768605}
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1177414414
 Prefab:
   m_ObjectHideFlags: 0
@@ -855,8 +831,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -879,8 +854,8 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1338699288
 Prefab:
   m_ObjectHideFlags: 0
@@ -925,8 +900,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -949,8 +923,8 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1388458299
 Prefab:
   m_ObjectHideFlags: 0
@@ -995,8 +969,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1019,14 +992,14 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 1574236049}
   - component: {fileID: 1574236048}
@@ -1040,7 +1013,7 @@ GameObject:
 --- !u!114 &1574236048
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1574236047}
   m_Enabled: 1
@@ -1066,7 +1039,7 @@ MonoBehaviour:
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1574236047}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1121,32 +1094,13 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
-      propertyPath: CameraTarget
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114269483692438478, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
-      propertyPath: MujocoXml
-      value: 
-      objectReference: {fileID: 4900000, guid: 587dad4884e3b443f87a60702e858808, type: 3}
-    - target: {fileID: 114273002288772650, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
-      propertyPath: ShowMonitor
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1197355327420184, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
       propertyPath: m_Name
       value: OpenAIHopper (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 1197355327420184, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1648000515
 Prefab:
   m_ObjectHideFlags: 0
@@ -1191,8 +1145,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 1715640920}
@@ -1212,8 +1165,8 @@ Prefab:
       value: 
       objectReference: {fileID: 1715640920}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1665787214
 Prefab:
   m_ObjectHideFlags: 0
@@ -1258,8 +1211,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1281,20 +1233,19 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1715640920
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 1715640925}
   - component: {fileID: 1715640924}
@@ -1312,34 +1263,38 @@ GameObject:
 --- !u!81 &1715640921
 AudioListener:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
 --- !u!124 &1715640922
 Behaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
 --- !u!92 &1715640923
 Behaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
 --- !u!20 &1715640924
 Camera:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -1369,7 +1324,7 @@ Camera:
 --- !u!4 &1715640925
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1382,7 +1337,7 @@ Transform:
 --- !u!114 &1715640926
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
@@ -1440,8 +1395,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1464,8 +1418,8 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1949309594
 Prefab:
   m_ObjectHideFlags: 0
@@ -1510,8 +1464,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1533,14 +1486,13 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1955322807
 Prefab:
   m_ObjectHideFlags: 0
@@ -1581,8 +1533,8 @@ Prefab:
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 5c84efa957b234869acd7581daeaef29, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: 5c84efa957b234869acd7581daeaef29, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1967983385
 Prefab:
   m_ObjectHideFlags: 0
@@ -1627,8 +1579,7 @@ Prefab:
       propertyPath: brain
       value: 
       objectReference: {fileID: 846768605}
-    - target: {fileID: 114063291264432040, guid: c203e1674311c40d8ae452a23d416ae9,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1651,5 +1602,17 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: c203e1674311c40d8ae452a23d416ae9, type: 2}
+  m_IsPrefabAsset: 0
+--- !u!114 &1990780599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 846768605}

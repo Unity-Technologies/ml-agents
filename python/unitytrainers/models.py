@@ -200,44 +200,6 @@ class LearningModel(object):
         recurrent_output = tf.reshape(recurrent_output, shape=[-1, _half_point])
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
-    def create_dc_actor_critic(self, h_size, num_layers):
-        """
-        Creates Discrete control actor-critic model.
-        :param h_size: Size of hidden linear layers.
-        :param num_layers: Number of hidden linear layers.
-        """
-        hidden_streams = self.create_observation_streams(1, h_size, num_layers)
-        hidden = hidden_streams[0]
-
-        if self.use_recurrent:
-            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
-            self.prev_action = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_action')
-            prev_action_oh = tf.one_hot(self.prev_action, self.a_size)
-            hidden = tf.concat([hidden, prev_action_oh], axis=1)
-
-            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
-            hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in, self.sequence_length)
-            self.memory_out = tf.identity(memory_out, name='recurrent_out')
-
-        self.policy = tf.layers.dense(hidden, self.a_size, activation=None, use_bias=False,
-                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
-
-        self.all_probs = tf.nn.softmax(self.policy, name="action_probs")
-        output = tf.multinomial(self.policy, 1)
-        self.output = tf.identity(output, name="action")
-
-        value = tf.layers.dense(hidden, 1, activation=None)
-        self.value = tf.identity(value, name="value_estimate")
-        self.entropy = -tf.reduce_sum(self.all_probs * tf.log(self.all_probs + 1e-10), axis=1)
-        self.action_holder = tf.placeholder(shape=[None], dtype=tf.int32)
-        self.selected_actions = tf.one_hot(self.action_holder, self.a_size)
-
-        self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32, name='old_probabilities')
-
-        # We reshape these tensors to [batch x 1] in order to be of the same rank as continuous control probabilities.
-        self.probs = tf.expand_dims(tf.reduce_sum(self.all_probs * self.selected_actions, axis=1), 1)
-        self.old_probs = tf.expand_dims(tf.reduce_sum(self.all_old_probs * self.selected_actions, axis=1), 1)
-
     def create_cc_actor_critic(self, h_size, num_layers):
         """
         Creates Continuous control actor-critic model.
@@ -260,10 +222,10 @@ class LearningModel(object):
             hidden_policy = hidden_streams[0]
             hidden_value = hidden_streams[1]
 
-        mu = tf.layers.dense(hidden_policy, self.a_size, activation=None,
+        mu = tf.layers.dense(hidden_policy, self.a_size[0], activation=None,
                              kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
-        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size], dtype=tf.float32,
+        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size[0]], dtype=tf.float32,
                                        initializer=tf.zeros_initializer())
 
         sigma_sq = tf.exp(log_sigma_sq)
@@ -277,19 +239,81 @@ class LearningModel(object):
         self.selected_actions = tf.stop_gradient(output_post)
 
         # Compute probability of model output.
-        a = tf.exp(-1 * tf.pow(tf.stop_gradient(self.output_pre) - mu, 2) / (2 * sigma_sq))
-        b = 1 / tf.sqrt(2 * sigma_sq * np.pi)
-        all_probs = tf.multiply(a, b)
-        self.all_probs = tf.identity(all_probs, name='action_probs')
+        all_probs = - 0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq \
+                    - 0.5 * tf.log(2.0 * np.pi) - 0.5 * log_sigma_sq
 
-        self.entropy = tf.reduce_mean(0.5 * tf.log(2 * np.pi * np.e * sigma_sq))
+        self.all_log_probs = tf.identity(all_probs, name='action_probs')
+
+        self.entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + log_sigma_sq)
 
         value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.all_old_probs = tf.placeholder(shape=[None, self.a_size], dtype=tf.float32,
-                                            name='old_probabilities')
+        self.all_old_log_probs = tf.placeholder(shape=[None, self.a_size[0]], dtype=tf.float32,
+                                                name='old_probabilities')
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.probs = tf.identity(self.all_probs)
-        self.old_probs = tf.identity(self.all_old_probs)
+        self.log_probs = tf.reduce_sum((tf.identity(self.all_log_probs)), axis=1, keepdims=True)
+        self.old_log_probs = tf.reduce_sum((tf.identity(self.all_old_log_probs)), axis=1, keepdims=True)
+
+    def create_dc_actor_critic(self, h_size, num_layers):
+        """
+        Creates Discrete control actor-critic model.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        """
+        hidden_streams = self.create_observation_streams(1, h_size, num_layers)
+        hidden = hidden_streams[0]
+
+        if self.use_recurrent:
+            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
+            self.prev_action = tf.placeholder(shape=[None, len(self.a_size)], dtype=tf.int32, name='prev_action')
+            prev_action_oh = tf.concat([
+                tf.one_hot(self.prev_action[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
+            hidden = tf.concat([hidden, prev_action_oh], axis=1)
+
+            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
+            hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in, self.sequence_length)
+            self.memory_out = tf.identity(memory_out, name='recurrent_out')
+
+        policy_branches = []
+        for size in self.a_size:
+            policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
+                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
+
+        self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
+
+        output = tf.concat([tf.multinomial(branch, 1) for branch in policy_branches], axis=1)
+
+        self.output = tf.identity(output, name="action")
+
+        value = tf.layers.dense(hidden, 1, activation=None)
+        self.value = tf.identity(value, name="value_estimate")
+
+        self.action_holder = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
+        self.selected_actions = tf.concat([
+            tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
+
+        self.all_old_log_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
+
+        action_idx = [0] + list(np.cumsum(self.a_size))
+
+        self.entropy = tf.reduce_sum((tf.stack([
+            tf.nn.softmax_cross_entropy_with_logits_v2(
+            labels=tf.nn.softmax(self.all_log_probs[:, action_idx[i]:action_idx[i + 1]]),
+            logits=self.all_log_probs[:, action_idx[i]:action_idx[i + 1]])
+            for i in range(len(self.a_size))], axis=1)), axis=1)
+
+        self.log_probs = tf.reduce_sum((tf.stack([
+            -tf.nn.softmax_cross_entropy_with_logits_v2(
+                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                logits=self.all_log_probs[:, action_idx[i]:action_idx[i + 1]]
+            )
+            for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
+        self.old_log_probs = tf.reduce_sum((tf.stack([
+            -tf.nn.softmax_cross_entropy_with_logits_v2(
+                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                logits=self.all_old_log_probs[:, action_idx[i]:action_idx[i + 1]]
+            )
+            for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
+

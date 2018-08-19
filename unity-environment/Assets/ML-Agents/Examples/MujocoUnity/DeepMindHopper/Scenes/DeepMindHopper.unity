@@ -157,8 +157,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -172,8 +171,8 @@ Prefab:
       value: DeepMindHopper (13)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &162870965
 Prefab:
   m_ObjectHideFlags: 0
@@ -218,8 +217,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -233,20 +231,8 @@ Prefab:
       value: DeepMindHopper (11)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &204201903
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 846768605}
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &330585218
 Prefab:
   m_ObjectHideFlags: 0
@@ -291,8 +277,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -306,8 +291,8 @@ Prefab:
       value: DeepMindHopper (8)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &611177062
 Prefab:
   m_ObjectHideFlags: 0
@@ -352,8 +337,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 1715640920}
@@ -368,27 +352,14 @@ Prefab:
       value: 
       objectReference: {fileID: 1715640920}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &625804634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 0}
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &762086410
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 762086412}
   - component: {fileID: 762086411}
@@ -402,7 +373,7 @@ GameObject:
 --- !u!108 &762086411
 Light:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 762086410}
   m_Enabled: 1
@@ -429,6 +400,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
@@ -438,7 +410,7 @@ Light:
 --- !u!4 &762086412
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 762086410}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
@@ -451,9 +423,9 @@ Transform:
 --- !u!1 &846768603
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 846768604}
   - component: {fileID: 846768605}
@@ -467,7 +439,7 @@ GameObject:
 --- !u!4 &846768604
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 846768603}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
@@ -480,7 +452,7 @@ Transform:
 --- !u!114 &846768605
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 846768603}
   m_Enabled: 1
@@ -491,7 +463,7 @@ MonoBehaviour:
   brainParameters:
     vectorObservationSize: 31
     numStackedVectorObservations: 1
-    vectorActionSize: 4
+    vectorActionSize: 04000000
     cameraResolutions: []
     vectorActionDescriptions:
     - 
@@ -499,14 +471,13 @@ MonoBehaviour:
     - 
     - 
     vectorActionSpaceType: 1
-    vectorObservationSpaceType: 1
   brainType: 3
   CoreBrains:
-  - {fileID: 1725167542}
-  - {fileID: 625804634}
-  - {fileID: 204201903}
-  - {fileID: 1533717265}
-  instanceID: 22586
+  - {fileID: 1742735440}
+  - {fileID: 1629480893}
+  - {fileID: 1093385689}
+  - {fileID: 1325579288}
+  instanceID: 17056
 --- !u!1001 &857000159
 Prefab:
   m_ObjectHideFlags: 0
@@ -551,8 +522,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -566,8 +536,8 @@ Prefab:
       value: DeepMindHopper (7)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &912634130
 Prefab:
   m_ObjectHideFlags: 0
@@ -612,8 +582,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -627,8 +596,20 @@ Prefab:
       value: DeepMindHopper (9)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
+--- !u!114 &1093385689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  brain: {fileID: 846768605}
 --- !u!1001 &1206653966
 Prefab:
   m_ObjectHideFlags: 0
@@ -673,8 +654,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -688,8 +668,31 @@ Prefab:
       value: DeepMindHopper (5)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
+--- !u!114 &1325579288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  graphModel: {fileID: 4900000, guid: 1088efc3b07974d9e8ff6902db83cb3c, type: 3}
+  graphScope: 
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
+  brain: {fileID: 846768605}
 --- !u!1001 &1468944203
 Prefab:
   m_ObjectHideFlags: 0
@@ -734,8 +737,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -749,8 +751,8 @@ Prefab:
       value: DeepMindHopper (12)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1531352303
 Prefab:
   m_ObjectHideFlags: 0
@@ -795,8 +797,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -810,31 +811,8 @@ Prefab:
       value: DeepMindHopper (10)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
---- !u!114 &1533717265
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: 1088efc3b07974d9e8ff6902db83cb3c, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 846768605}
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1545262014
 Prefab:
   m_ObjectHideFlags: 0
@@ -879,8 +857,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -894,14 +871,14 @@ Prefab:
       value: DeepMindHopper (6)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 1574236049}
   - component: {fileID: 1574236048}
@@ -915,7 +892,7 @@ GameObject:
 --- !u!114 &1574236048
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1574236047}
   m_Enabled: 1
@@ -941,7 +918,7 @@ MonoBehaviour:
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1574236047}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -952,6 +929,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1629480893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 0}
 --- !u!1001 &1661613075
 Prefab:
   m_ObjectHideFlags: 0
@@ -996,8 +986,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1011,8 +1000,8 @@ Prefab:
       value: DeepMindHopper (3)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1706488558
 Prefab:
   m_ObjectHideFlags: 0
@@ -1057,8 +1046,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1072,14 +1060,14 @@ Prefab:
       value: DeepMindHopper (14)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1715640920
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 1715640925}
   - component: {fileID: 1715640924}
@@ -1097,34 +1085,38 @@ GameObject:
 --- !u!81 &1715640921
 AudioListener:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
 --- !u!124 &1715640922
 Behaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
 --- !u!92 &1715640923
 Behaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
 --- !u!20 &1715640924
 Camera:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -1154,7 +1146,7 @@ Camera:
 --- !u!4 &1715640925
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1167,7 +1159,7 @@ Transform:
 --- !u!114 &1715640926
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1715640920}
   m_Enabled: 1
@@ -1181,22 +1173,21 @@ MonoBehaviour:
   clampToFloor: 0
   heightDamping: 5
   rotationDamping: 0
---- !u!114 &1725167542
+--- !u!114 &1742735440
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
   keyContinuousPlayerActions: []
   axisContinuousPlayerActions: []
   discretePlayerActions: []
-  defaultAction: 0
   brain: {fileID: 846768605}
 --- !u!1001 &1752341486
 Prefab:
@@ -1238,8 +1229,8 @@ Prefab:
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 5c84efa957b234869acd7581daeaef29, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: 5c84efa957b234869acd7581daeaef29, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1762102511
 Prefab:
   m_ObjectHideFlags: 0
@@ -1284,8 +1275,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1299,8 +1289,8 @@ Prefab:
       value: DeepMindHopper (2)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1888869913
 Prefab:
   m_ObjectHideFlags: 0
@@ -1345,8 +1335,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1360,8 +1349,8 @@ Prefab:
       value: DeepMindHopper (15)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1952566067
 Prefab:
   m_ObjectHideFlags: 0
@@ -1406,8 +1395,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1421,8 +1409,8 @@ Prefab:
       value: DeepMindHopper (1)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1001 &1984776245
 Prefab:
   m_ObjectHideFlags: 0
@@ -1467,8 +1455,7 @@ Prefab:
       propertyPath: ShowMonitor
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114063291264432040, guid: bdcc45df97881475799c1dfff10a437e,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: CameraTarget
       value: 
       objectReference: {fileID: 0}
@@ -1482,5 +1469,5 @@ Prefab:
       value: DeepMindHopper (4)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
-  m_IsPrefabParent: 0
+  m_SourcePrefab: {fileID: 100100000, guid: bdcc45df97881475799c1dfff10a437e, type: 2}
+  m_IsPrefabAsset: 0
