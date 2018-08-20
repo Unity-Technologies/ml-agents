@@ -63,6 +63,7 @@ def dummy_config():
             curiosity_enc_size: 1
         ''')
 
+
 @pytest.fixture
 def dummy_bc_config():
     return yaml.load(

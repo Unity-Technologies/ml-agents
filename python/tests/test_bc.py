@@ -3,10 +3,25 @@ import pytest
 
 import numpy as np
 import tensorflow as tf
+import yaml
 
 from unitytrainers.bc.models import BehavioralCloningModel
+from unitytrainers.bc.policy import BCPolicy
 from unityagents import UnityEnvironment
 from .mock_communicator import MockCommunicator
+
+
+@pytest.fixture
+def dummy_config():
+    return yaml.load(
+        '''
+        hidden_units: 128
+        learning_rate: 3.0e-4
+        num_layers: 2
+        use_recurrent: false
+        sequence_lenght: 32
+        memory_size: 32
+        ''')
 
 
 @mock.patch('unityagents.UnityEnvironment.executable_launcher')
@@ -29,6 +44,27 @@ def test_cc_bc_model(mock_communicator, mock_launcher):
                                                    [3, 4, 5, 3, 4, 5]])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
+
+
+@mock.patch('unityagents.UnityEnvironment.executable_launcher')
+@mock.patch('unityagents.UnityEnvironment.get_communicator')
+def test_bc_policy(mock_communicator, mock_launcher):
+    tf.reset_default_graph()
+    with tf.Session() as sess:
+        mock_communicator.return_value = MockCommunicator(
+            discrete_action=False, visual_inputs=0)
+        env = UnityEnvironment(' ')
+        brain_infos = env.reset()
+        brain_info = brain_infos[env.brain_names[0]]
+
+        trainer_parameters = dummy_config()
+        graph_scope = env.brain_names[0]
+        trainer_parameters['graph_scope'] = graph_scope
+        policy = BCPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, sess)
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        result = policy.evaluate(brain_info)
+        env.close()
 
 
 @mock.patch('unityagents.UnityEnvironment.executable_launcher')
