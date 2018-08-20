@@ -76,7 +76,7 @@ python/summaries
 *.gitignore.swp
 
 # xml files for Continuous Control 
-!unity-environment/Assets/ML-Agents/Examples/MujocoUnity/**/*.xml
+!unity-environment/Assets/ML-Agents/Examples/ContinuousControl/**/*.xml
 
 # VSCode hidden files
 *.vscode/
