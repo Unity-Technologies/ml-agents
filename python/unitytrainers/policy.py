@@ -43,11 +43,11 @@ class Policy(object):
                                             "but it must be divisible by 4."
                                             .format(brain.brain_name, self.m_size))
 
-    def inference(self, brain_info):
+    def evaluate(self, brain_info):
         """
-        Performs inference pass on model.
+        Evaluates policy.
         :param brain_info: BrainInfo input to network.
-        :return: Output from network based on self.inference_dict.
+        :return: Output from policy based on self.inference_dict.
         """
         return None
 

@@ -112,7 +112,7 @@ class PPOTrainer(Trainer):
         if len(curr_brain_info.agents) == 0:
             return [], [], [], None, None
 
-        run_out = self.policy.inference(curr_brain_info)
+        run_out = self.policy.evaluate(curr_brain_info)
         self.stats['value_estimate'].append(run_out['value'].mean())
         self.stats['entropy'].append(run_out['entropy'].mean())
         self.stats['learning_rate'].append(run_out['learning_rate'])

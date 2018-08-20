@@ -35,9 +35,9 @@ class BCPolicy(Policy):
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
 
-    def inference(self, brain_info):
+    def evaluate(self, brain_info):
         """
-        Performs inference pass on model.
+        Evaluates policy based on brain_info.
         :param brain_info: BrainInfo input to network.
         :return: Selected action.
         """

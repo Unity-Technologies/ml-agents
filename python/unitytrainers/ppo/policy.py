@@ -55,9 +55,9 @@ class PPOPolicy(Policy):
             self.update_dict['forward_loss'] = self.model.forward_loss
             self.update_dict['inverse_loss'] = self.model.inverse_loss
 
-    def inference(self, brain_info):
+    def evaluate(self, brain_info):
         """
-        Performs inference pass on model.
+        Evaluates policy based on brain_info.
         :param brain_info: BrainInfo object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
