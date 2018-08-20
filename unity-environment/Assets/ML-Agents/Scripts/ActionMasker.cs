@@ -27,19 +27,12 @@ namespace MLAgents
         /// </summary>
         /// <param name="branch">The branch for which the actions will be masked</param>
         /// <param name="actionIndices">The indices of the masked actions</param>
-        public void ModifyActionMask(int branch, IEnumerable<int> actionIndices)
-        {
-            // Action Masks can only be used in Discrete Control.
-            if (_brainParameters.vectorActionSpaceType == SpaceType.continuous)
-            {
-                throw new UnityAgentsException(
-                    "Invalid Action Making : Cannot set mask for actions with Continuous Control.");
-            }
-            
+        public void SetActionMask(int branch, IEnumerable<int> actionIndices)
+        {   
             // If the branch does not exist, raise an error
             if (branch >= _brainParameters.vectorActionSize.Length )
                 throw new UnityAgentsException(
-                    "Invalid Action Making : Branch "+branch+" does not exist.");
+                    "Invalid Action Masking : Branch "+branch+" does not exist.");
 
             int totalNumberActions = _brainParameters.vectorActionSize.Sum();
             
@@ -63,7 +56,7 @@ namespace MLAgents
                 if (actionIndex >= _brainParameters.vectorActionSize[branch])
                 {
                     throw new UnityAgentsException(
-                        "Invalid Action Making: Action Mask is too large for specified branch.");
+                        "Invalid Action Masking: Action Mask is too large for specified branch.");
                 }
                 _currentMask[actionIndex + _startingActionIndices[branch]] = true;
             } 
@@ -76,17 +69,32 @@ namespace MLAgents
         /// actions.</returns>
         public bool[] GetMask()
         {
+            CheckMask();
+            return _currentMask;
+        }
+
+        /// <summary>
+        /// Makes sure that the current mask is usable.
+        /// </summary>
+        private void CheckMask()
+        {
+            // Action Masks can only be used in Discrete Control.
+            if (_brainParameters.vectorActionSpaceType != SpaceType.discrete)
+            {
+                throw new UnityAgentsException(
+                    "Invalid Action Masking : Can only set action mask for Discrete Control.");
+            }
+            
             var numBranches = _brainParameters.vectorActionSize.Length;
-            for (var branchIndex =0 ; branchIndex < numBranches; branchIndex++ )
+            for (var branchIndex = 0 ; branchIndex < numBranches; branchIndex++ )
             {
                 if (AreAllActionsMasked(branchIndex))
                 {
                     throw new UnityAgentsException(
-                        "Invalid Action Making : All the actions of branch " + branchIndex +
+                        "Invalid Action Masking : All the actions of branch " + branchIndex +
                         " are masked.");
                 }
             }
-            return _currentMask;
         }
 
         /// <summary>
@@ -120,24 +128,26 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Checks if all the actions in a branch are masked
+        /// Checks if all the actions in the input branch are masked
         /// </summary>
-        /// <param name="branch"> The index of the branch we check</param>
-        /// <returns>True if all the action of a branch are masked</returns>
+        /// <param name="branch"> The index of the branch to check</param>
+        /// <returns> True if all the actions of the branch are masked</returns>
         private bool AreAllActionsMasked(int branch)
         {
             if (_currentMask == null)
             {
                 return false;
             }
-            var allActionsMasked = true;
             var start = _startingActionIndices[branch];
             var end = _startingActionIndices[branch + 1];
             for (var i = start; i < end; i++)
             {
-                allActionsMasked = allActionsMasked && _currentMask[i];
+                if (!_currentMask[i])
+                {
+                    return false;
+                }
             }
-            return allActionsMasked;
+            return true;
 
         }
     }

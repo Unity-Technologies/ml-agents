@@ -617,7 +617,7 @@ namespace MLAgents
         /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
         protected void SetActionMask(IEnumerable<int> actionIndices)
         {
-            actionMasker.ModifyActionMask(0, actionIndices);
+            actionMasker.SetActionMask(0, actionIndices);
         }
         
         /// <summary>
@@ -629,7 +629,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action on branch 0</param>
         protected void SetActionMask(int actionIndex)
         {
-            actionMasker.ModifyActionMask(0, new int[1]{actionIndex});
+            actionMasker.SetActionMask(0, new int[1]{actionIndex});
         }
         
         /// <summary>
@@ -642,7 +642,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action</param>
         protected void SetActionMask(int branch, int actionIndex)
         {
-            actionMasker.ModifyActionMask(branch, new int[1]{actionIndex});
+            actionMasker.SetActionMask(branch, new int[1]{actionIndex});
         }
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace MLAgents
         /// <param name="actionIndices">The indices of the masked actions</param>
         protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
         {
-            actionMasker.ModifyActionMask(branch, actionIndices);
+            actionMasker.SetActionMask(branch, actionIndices);
         }
         
 
