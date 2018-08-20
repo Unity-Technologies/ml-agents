@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace MujocoUnity
+namespace MLAgents
 {
     public static class MujocoHelper
     {

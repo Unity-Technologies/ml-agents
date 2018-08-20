@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MujocoUnity 
+namespace MLAgents 
 {
     public class SendOnCollisionTrigger : MonoBehaviour {
 		// Use this for initialization

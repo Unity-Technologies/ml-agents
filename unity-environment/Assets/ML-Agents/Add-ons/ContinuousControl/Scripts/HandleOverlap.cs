@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MujocoUnity
+namespace MLAgents
 {
 	public class HandleOverlap : MonoBehaviour {
         public GameObject Parent;

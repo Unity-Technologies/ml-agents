@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MujocoUnity
+namespace MLAgents
 {
     [System.Serializable]
     public class MujocoSensor

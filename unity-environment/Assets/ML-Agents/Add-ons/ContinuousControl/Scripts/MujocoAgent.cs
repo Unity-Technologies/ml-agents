@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using MLAgents;
 
-namespace MujocoUnity
+namespace MLAgents
 {
     public class MujocoAgent : Agent
     {
@@ -106,7 +106,7 @@ namespace MujocoUnity
         public override void AgentReset()
         {
             if (mujocoSpawner == null)
-                mujocoSpawner = this.GetComponent<MujocoUnity.MujocoSpawner>();
+                mujocoSpawner = this.GetComponent<MujocoSpawner>();
 
             Transform[] allChildren = GetComponentsInChildren<Transform>();
             if (_hasValidModel) {

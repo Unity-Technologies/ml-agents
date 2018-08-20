@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Linq;
 using UnityEngine;
 
-namespace MujocoUnity
+namespace MLAgents
 {
 	public class MujocoSpawner : MonoBehaviour { 
 
