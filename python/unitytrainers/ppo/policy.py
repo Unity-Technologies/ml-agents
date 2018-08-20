@@ -9,42 +9,42 @@ logger = logging.getLogger("unityagents")
 
 
 class PPOPolicy(Policy):
-    def __init__(self, seed, brain, trainer_parameters, sess, is_training):
+    def __init__(self, seed, brain, trainer_params, sess, is_training):
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
         :param brain: Assigned Brain object.
-        :param trainer_parameters: Defined training parameters.
+        :param trainer_params: Defined training parameters.
         :param sess: TensorFlow session.
         :param is_training: Whether the model should be trained.
         """
-        super().__init__(seed, brain, trainer_parameters, sess)
+        super().__init__(seed, brain, trainer_params, sess)
         self.has_updated = False
-        self.use_curiosity = bool(trainer_parameters['use_curiosity'])
+        self.use_curiosity = bool(trainer_params['use_curiosity'])
         with tf.variable_scope(self.variable_scope):
             tf.set_random_seed(seed)
             self.model = PPOModel(brain,
-                                  lr=float(trainer_parameters['learning_rate']),
-                                  h_size=int(trainer_parameters['hidden_units']),
-                                  epsilon=float(trainer_parameters['epsilon']),
-                                  beta=float(trainer_parameters['beta']),
-                                  max_step=float(trainer_parameters['max_steps']),
-                                  normalize=trainer_parameters['normalize'],
-                                  use_recurrent=trainer_parameters['use_recurrent'],
-                                  num_layers=int(trainer_parameters['num_layers']),
+                                  lr=float(trainer_params['learning_rate']),
+                                  h_size=int(trainer_params['hidden_units']),
+                                  epsilon=float(trainer_params['epsilon']),
+                                  beta=float(trainer_params['beta']),
+                                  max_step=float(trainer_params['max_steps']),
+                                  normalize=trainer_params['normalize'],
+                                  use_recurrent=trainer_params['use_recurrent'],
+                                  num_layers=int(trainer_params['num_layers']),
                                   m_size=self.m_size,
-                                  use_curiosity=bool(trainer_parameters['use_curiosity']),
-                                  curiosity_strength=float(trainer_parameters['curiosity_strength']),
-                                  curiosity_enc_size=float(trainer_parameters['curiosity_enc_size']))
+                                  use_curiosity=bool(trainer_params['use_curiosity']),
+                                  curiosity_strength=float(trainer_params['curiosity_strength']),
+                                  curiosity_enc_size=float(trainer_params['curiosity_enc_size']))
 
         self.inference_dict = {'action': self.model.output, 'log_probs': self.model.all_log_probs,
-                               'value': self.model.value, 'entropy': self.model.entropy, 'learning_rate':
-                                   self.model.learning_rate}
+                               'value': self.model.value, 'entropy': self.model.entropy,
+                               'learning_rate': self.model.learning_rate}
         if self.use_continuous_act:
             self.inference_dict['pre_action'] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
-        if is_training and self.use_vector_obs and trainer_parameters['normalize']:
+        if is_training and self.use_vector_obs and trainer_params['normalize']:
             self.inference_dict['update_mean'] = self.model.update_mean
             self.inference_dict['update_variance'] = self.model.update_variance
 
@@ -80,43 +80,40 @@ class PPOPolicy(Policy):
         run_out = dict(zip(list(self.inference_dict.keys()), network_output))
         return run_out
 
-    def update(self, buffer, n_sequences, i):
+    def update(self, mini_batch, num_sequences):
         """
         Updates model using buffer.
-        :param buffer: Experience buffer.
-        :param n_sequences: Number of sequences in buffer.
-        :param i: Index to get batch.
+        :param num_sequences: Number of trajectories in batch.
+        :param mini_batch: Experience batch.
         :return: Output from update process.
         """
-        start = i * n_sequences
-        end = (i + 1) * n_sequences
-        feed_dict = {self.model.batch_size: n_sequences,
+        feed_dict = {self.model.batch_size: num_sequences,
                      self.model.sequence_length: self.sequence_length,
-                     self.model.mask_input: np.array(buffer['masks'][start:end]).flatten(),
-                     self.model.returns_holder: np.array(buffer['discounted_returns'][start:end]).flatten(),
-                     self.model.old_value: np.array(buffer['value_estimates'][start:end]).flatten(),
-                     self.model.advantage: np.array(buffer['advantages'][start:end]).reshape([-1, 1]),
-                     self.model.all_old_log_probs: np.array(buffer['action_probs'][start:end]).reshape(
+                     self.model.mask_input: mini_batch['masks'].flatten(),
+                     self.model.returns_holder: mini_batch['discounted_returns'].flatten(),
+                     self.model.old_value: mini_batch['value_estimates'].flatten(),
+                     self.model.advantage: mini_batch['advantages'].reshape([-1, 1]),
+                     self.model.all_old_log_probs: mini_batch['action_probs'].reshape(
                          [-1, sum(self.model.a_size)])}
         if self.use_continuous_act:
-            feed_dict[self.model.output_pre] = np.array(buffer['actions_pre'][start:end]).reshape(
+            feed_dict[self.model.output_pre] = mini_batch['actions_pre'].reshape(
                 [-1, self.model.a_size[0]])
         else:
-            feed_dict[self.model.action_holder] = np.array(buffer['actions'][start:end]).reshape(
+            feed_dict[self.model.action_holder] = mini_batch['actions'].reshape(
                 [-1, len(self.model.a_size)])
             if self.use_recurrent:
-                feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).reshape(
+                feed_dict[self.model.prev_action] = mini_batch['prev_action'].reshape(
                     [-1, len(self.model.a_size)])
         if self.use_vector_obs:
             total_observation_length = self.model.o_size
-            feed_dict[self.model.vector_in] = np.array(buffer['vector_obs'][start:end]).reshape(
+            feed_dict[self.model.vector_in] = mini_batch['vector_obs'].reshape(
                 [-1, total_observation_length])
             if self.use_curiosity:
-                feed_dict[self.model.next_vector_in] = np.array(buffer['next_vector_in'][start:end]) \
-                    .reshape([-1, total_observation_length])
+                feed_dict[self.model.next_vector_in] = mini_batch['next_vector_in'].reshape(
+                    [-1, total_observation_length])
         if self.use_visual_obs:
             for i, _ in enumerate(self.model.visual_in):
-                _obs = np.array(buffer['visual_obs%d' % i][start:end])
+                _obs = mini_batch['visual_obs%d' % i]
                 if self.sequence_length > 1 and self.use_recurrent:
                     (_batch, _seq, _w, _h, _c) = _obs.shape
                     feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
@@ -124,14 +121,14 @@ class PPOPolicy(Policy):
                     feed_dict[self.model.visual_in[i]] = _obs
             if self.use_curiosity:
                 for i, _ in enumerate(self.model.visual_in):
-                    _obs = np.array(buffer['next_visual_obs%d' % i][start:end])
+                    _obs = mini_batch['next_visual_obs%d' % i]
                     if self.sequence_length > 1 and self.use_recurrent:
                         (_batch, _seq, _w, _h, _c) = _obs.shape
                         feed_dict[self.model.next_visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
                     else:
                         feed_dict[self.model.next_visual_in[i]] = _obs
         if self.use_recurrent:
-            mem_in = np.array(buffer['memory'][start:end])[:, 0, :]
+            mem_in = mini_batch['memory'][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
         self.has_updated = True
         network_out = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)

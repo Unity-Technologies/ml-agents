@@ -51,12 +51,11 @@ class Policy(object):
         """
         return None
 
-    def update(self, batch, n_sequences, i):
+    def update(self, mini_batch, num_sequences):
         """
-        Performs update on model.
-        :param batch: Buffer of experiences.
-        :param n_sequences: Number of sequences to process.
-        :param i: Buffer index.
+        Performs update of the policy.
+        :param num_sequences: Number of experience trajectories in batch.
+        :param mini_batch: Batch of experiences.
         :return: Results of update.
         """
         return None

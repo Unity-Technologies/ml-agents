@@ -317,7 +317,9 @@ class PPOTrainer(Trainer):
             self.training_buffer.update_buffer.shuffle()
             buffer = self.training_buffer.update_buffer
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
-                run_out = self.policy.update(buffer, n_sequences, l)
+                start = l * n_sequences
+                end = (l + 1) * n_sequences
+                run_out = self.policy.update(buffer.make_mini_batch(start, end), n_sequences)
                 value_total.append(run_out['value_loss'])
                 policy_total.append(np.abs(run_out['policy_loss']))
                 if self.use_curiosity:

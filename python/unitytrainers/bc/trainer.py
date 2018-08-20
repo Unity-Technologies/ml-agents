@@ -233,9 +233,12 @@ class BehavioralCloningTrainer(Trainer):
         batch_losses = []
         num_batches = min(len(self.training_buffer.update_buffer['actions']) //
                           self.n_sequences, self.batches_per_epoch)
-        for j in range(num_batches):
-            _buffer = self.training_buffer.update_buffer
-            loss = self.policy.update(_buffer, self.n_sequences, j)
+        for i in range(num_batches):
+            buffer = self.training_buffer.update_buffer
+            start = i * self.n_sequences
+            end = (i + 1) * self.n_sequences
+            mini_batch = buffer.make_mini_batch(start, end)
+            loss = self.policy.update(mini_batch, self.n_sequences)
             batch_losses.append(loss)
         if len(batch_losses) > 0:
             self.stats['losses'].append(np.mean(batch_losses))

@@ -56,35 +56,33 @@ class BCPolicy(Policy):
         run_out = dict(zip(list(self.inference_dict.keys()), network_output))
         return run_out['action']
 
-    def update(self, batch, n_sequences, i):
+    def update(self, mini_batch, num_sequences):
         """
         Performs update on model.
-        :param batch: Buffer of experiences.
-        :param n_sequences: Number of sequences to process.
-        :param i: Buffer index.
+        :param mini_batch: Batch of experiences.
+        :param num_sequences: Number of sequences to process.
         :return: Loss function value from update.
         """
-        start = i * n_sequences
-        end = (i + 1) * n_sequences
 
         feed_dict = {self.model.dropout_rate: 0.5,
-                     self.model.batch_size: n_sequences,
+                     self.model.batch_size: num_sequences,
                      self.model.sequence_length: self.sequence_length}
         if self.use_continuous_act:
-            feed_dict[self.model.true_action] = np.array(batch['actions'][start:end]). \
+            feed_dict[self.model.true_action] = mini_batch['actions']. \
                 reshape([-1, self.brain.vector_action_space_size[0]])
         else:
-            feed_dict[self.model.true_action] = np.array(batch['actions'][start:end]).reshape(
+            feed_dict[self.model.true_action] = mini_batch['actions'].reshape(
                 [-1, len(self.brain.vector_action_space_size)])
         if self.use_vector_obs:
-            feed_dict[self.model.vector_in] = np.array(batch['vector_observations'][start:end]) \
-                .reshape([-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
+            apparent_obs_size = self.brain.vector_observation_space_size * \
+                                self.brain.num_stacked_vector_observations
+            feed_dict[self.model.vector_in] = mini_batch['vector_observations'] \
+                .reshape([-1,apparent_obs_size])
         if self.use_vector_obs:
             for i, _ in enumerate(self.model.visual_in):
-                _obs = np.array(batch['visual_observations%d' % i][start:end])
+                _obs = mini_batch['visual_observations%d' % i]
                 feed_dict[self.model.visual_in[i]] = _obs
         if self.use_recurrent:
-            feed_dict[self.model.memory_in] = np.zeros([n_sequences, self.m_size])
+            feed_dict[self.model.memory_in] = np.zeros([num_sequences, self.m_size])
         loss, _ = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)
         return loss
-
