@@ -18,7 +18,8 @@ logger = logging.getLogger("unityagents")
 
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
-
+    action_masking_name = 'action_masks'
+    
     def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
@@ -102,8 +103,6 @@ class PPOTrainer(Trainer):
             self.inference_run_list.extend([self.model.memory_out])
         if self.is_training and self.use_vector_obs and self.trainer_parameters['normalize']:
             self.inference_run_list.extend([self.model.update_mean, self.model.update_variance])
-
-        self.action_masking_name = 'action_masks'
 
     def __str__(self):
         return '''Hyperparameters for the PPO Trainer of brain {0}: \n{1}'''.format(
