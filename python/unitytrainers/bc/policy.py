@@ -80,8 +80,8 @@ class BCPolicy(Policy):
                 .reshape([-1,apparent_obs_size])
         if self.use_vector_obs:
             for i, _ in enumerate(self.model.visual_in):
-                _obs = mini_batch['visual_observations%d' % i]
-                feed_dict[self.model.visual_in[i]] = _obs
+                visual_obs = mini_batch['visual_observations%d' % i]
+                feed_dict[self.model.visual_in[i]] = visual_obs
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = np.zeros([num_sequences, self.m_size])
         loss, _ = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)

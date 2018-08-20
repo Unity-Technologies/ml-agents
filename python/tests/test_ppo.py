@@ -57,7 +57,7 @@ def test_bc_policy(mock_communicator, mock_launcher):
         policy = PPOPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, sess, False)
         init = tf.global_variables_initializer()
         sess.run(init)
-        result = policy.evaluate(brain_info)
+        policy.evaluate(brain_info)
         env.close()
 
 
