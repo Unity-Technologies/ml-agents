@@ -110,7 +110,10 @@ class BehavioralCloningTrainer(Trainer):
 
         agent_brain = all_brain_info[self.brain_name]
         run_out = self.policy.evaluate(agent_brain)
-        return run_out['action'], None, None, None, None
+        if self.policy.use_recurrent:
+            return run_out['action'], run_out['memory_out'], None, None, None
+        else:
+            return run_out['action'], None, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
         """
