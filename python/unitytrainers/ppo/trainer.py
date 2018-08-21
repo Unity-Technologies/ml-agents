@@ -178,6 +178,7 @@ class PPOTrainer(Trainer):
             curr_to_use = self.construct_curr_info(next_info)
         else:
             curr_to_use = curr_info
+
         intrinsic_rewards = self.policy.get_intrinsic_rewards(curr_to_use, next_info)
 
         for agent_id in next_info.agents:

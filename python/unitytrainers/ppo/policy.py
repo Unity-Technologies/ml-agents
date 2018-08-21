@@ -143,6 +143,9 @@ class PPOPolicy(Policy):
         :return: Intrinsic rewards for all agents.
         """
         if self.use_curiosity:
+            if len(curr_info.agents) == 0:
+                return []
+
             feed_dict = {self.model.batch_size: len(next_info.vector_observations),
                          self.model.sequence_length: 1}
             if self.use_continuous_act:
