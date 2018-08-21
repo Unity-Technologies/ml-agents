@@ -167,7 +167,6 @@ namespace MLAgents
             {
                 StackedVectorObservation = { info.stackedVectorObservation },
                 StoredVectorActions = { info.storedVectorActions },
-                Memories = { info.memories },
                 StoredTextActions = info.storedTextActions,
                 TextObservation = info.textObservation,
                 Reward = info.reward,
@@ -175,6 +174,11 @@ namespace MLAgents
                 Done = info.done,
                 Id = info.id,
             };
+
+            if (info.memories != null)
+            {
+                agentInfoProto.Memories.Add(info.memories);
+            }
             foreach (Texture2D obs in info.visualObservations)
             {
                 agentInfoProto.VisualObservations.Add(
