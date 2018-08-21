@@ -78,5 +78,8 @@ python/summaries
 # VSCode hidden files
 *.vscode/
 
+.DS_Store
+.ipynb_checkpoints
+
 # pytest cache 
 *.pytest_cache/
