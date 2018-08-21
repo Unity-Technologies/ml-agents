@@ -249,6 +249,9 @@ class PPOTrainer(Trainer):
             if curr_info.agents != next_info.agents:
                 curr_info = self.construct_curr_info(next_info)
 
+            if len(curr_info.agents) == 0:
+                return []
+
             if self.use_visual_obs:
                 for i in range(len(curr_info.visual_observations)):
                     feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
