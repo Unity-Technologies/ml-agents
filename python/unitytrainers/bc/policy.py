@@ -39,7 +39,7 @@ class BCPolicy(Policy):
         """
         Evaluates policy based on brain_info.
         :param brain_info: BrainInfo input to network.
-        :return: Selected action.
+        :return: Results of evaluation.
         """
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
 
@@ -54,14 +54,14 @@ class BCPolicy(Policy):
             feed_dict[self.model.memory_in] = brain_info.memories
         network_output = self.sess.run(list(self.inference_dict.values()), feed_dict)
         run_out = dict(zip(list(self.inference_dict.keys()), network_output))
-        return run_out['action']
+        return run_out
 
     def update(self, mini_batch, num_sequences):
         """
         Performs update on model.
         :param mini_batch: Batch of experiences.
         :param num_sequences: Number of sequences to process.
-        :return: Loss function value from update.
+        :return: Results of update.
         """
 
         feed_dict = {self.model.dropout_rate: 0.5,
@@ -84,5 +84,6 @@ class BCPolicy(Policy):
                 feed_dict[self.model.visual_in[i]] = visual_obs
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = np.zeros([num_sequences, self.m_size])
-        loss, _ = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)
-        return loss
+        network_output = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)
+        run_out = dict(zip(list(self.update_dict.keys()), network_output))
+        return run_out

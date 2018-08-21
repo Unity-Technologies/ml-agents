@@ -109,8 +109,8 @@ class BehavioralCloningTrainer(Trainer):
             return [], [], [], None, None
 
         agent_brain = all_brain_info[self.brain_name]
-        agent_action = self.policy.evaluate(agent_brain)
-        return agent_action, None, None, None, None
+        run_out = self.policy.evaluate(agent_brain)
+        return run_out['action'], None, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
         """
@@ -238,7 +238,8 @@ class BehavioralCloningTrainer(Trainer):
             start = i * self.n_sequences
             end = (i + 1) * self.n_sequences
             mini_batch = buffer.make_mini_batch(start, end)
-            loss = self.policy.update(mini_batch, self.n_sequences)
+            run_out = self.policy.update(mini_batch, self.n_sequences)
+            loss = run_out['policy_loss']
             batch_losses.append(loss)
         if len(batch_losses) > 0:
             self.stats['losses'].append(np.mean(batch_losses))
