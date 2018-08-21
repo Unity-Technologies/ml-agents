@@ -69,14 +69,14 @@ namespace MLAgents
         /// actions.</returns>
         public bool[] GetMask()
         {
-            CheckMask();
+            AssertMask();
             return _currentMask;
         }
 
         /// <summary>
         /// Makes sure that the current mask is usable.
         /// </summary>
-        private void CheckMask()
+        private void AssertMask()
         {
             // Action Masks can only be used in Discrete Control.
             if (_brainParameters.vectorActionSpaceType != SpaceType.discrete)
