@@ -146,6 +146,8 @@ class BehavioralCloningTrainer(Trainer):
                 feed_dict[self.model.visual_in[i]] = agent_brain.visual_observations[i]
         if self.use_vector_observations:
             feed_dict[self.model.vector_in] = agent_brain.vector_observations
+        if not self.is_continuous_action:
+            feed_dict[self.model.action_masks] = agent_brain.action_masks
         if self.use_recurrent:
             if agent_brain.memories.shape[1] == 0:
                 agent_brain.memories = np.zeros((len(agent_brain.agents), self.m_size))
@@ -163,7 +165,6 @@ class BehavioralCloningTrainer(Trainer):
         :param next_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
         :param take_action_outputs: The outputs of the take action method.
         """
-
         # Used to collect teacher experience into training buffer
         info_teacher = curr_info[self.brain_to_imitate]
         next_info_teacher = next_info[self.brain_to_imitate]
@@ -296,6 +297,9 @@ class BehavioralCloningTrainer(Trainer):
                 for i, _ in enumerate(self.model.visual_in):
                     _obs = np.array(_buffer['visual_observations%d' % i][start:end])
                     feed_dict[self.model.visual_in[i]] = _obs
+            if not self.is_continuous_action:
+                feed_dict[self.model.action_masks] = np.ones(
+                    (self.n_sequences, sum(self.brain.vector_action_space_size)))
             if self.use_recurrent:
                 feed_dict[self.model.memory_in] = np.zeros([self.n_sequences, self.m_size])
             loss, _ = self.sess.run([self.model.loss, self.model.update], feed_dict=feed_dict)
