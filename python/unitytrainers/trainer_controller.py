@@ -71,9 +71,9 @@ class TrainerController(object):
                     docker_target_name=docker_target_name, env_name=env_path)
             if curriculum_folder is not None:
                 self.curriculum_folder = \
-                    '/{docker_target_name}/{curriculum_file}'.format(
+                    '/{docker_target_name}/{curriculum_folder}'.format(
                         docker_target_name=docker_target_name,
-                        curriculum_file=curriculum_folder)
+                        curriculum_folder=curriculum_folder)
 
             self.summaries_dir = '/{docker_target_name}/summaries'.format(
                 docker_target_name=docker_target_name)
