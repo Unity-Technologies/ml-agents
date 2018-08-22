@@ -232,7 +232,7 @@ public class MotorCrawlerAgent : Agent
             transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
 
-        Vector3 offset = new Vector3(academy.resetParameters["dist_to_target"], 0.0f, 0.0f);
+        Vector3 offset = new Vector3(academy.resetParameters["spawn_offset"], 0.0f, 0.0f);
 
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
