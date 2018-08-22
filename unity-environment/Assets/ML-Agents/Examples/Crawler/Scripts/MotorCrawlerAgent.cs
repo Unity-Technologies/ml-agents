@@ -232,17 +232,23 @@ public class MotorCrawlerAgent : Agent
             transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
 
+        Vector3 offset = new Vector3(academy.resetParameters["dist_to_target"], 0.0f, 0.0f);
+
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
-            bodyPart.Reset(bodyPart);
+            bodyPart.Reset(bodyPart, offset);
         }
 
         isNewDecisionStep = true;
         currentDecisionStep = 1;
 
-        wall.transform.localScale = new Vector3(
+        /*wall.transform.localScale = new Vector3(
             wall.transform.localScale.x,
             academy.resetParameters["wall_height"],
-            wall.transform.localScale.z);
+            wall.transform.localScale.z);*/
+        if (academy.resetParameters["spawn_wall"] - 1.0 < 0.5)
+            wall.SetActive(false);
+        else
+            wall.SetActive(true);
     }
 }

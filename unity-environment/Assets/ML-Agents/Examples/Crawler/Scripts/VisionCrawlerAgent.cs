@@ -17,6 +17,8 @@ public class VisionCrawlerAgent : Agent
 
     public MotorCrawlerAgent motorAgent;
 
+    CrawlerAcademy academy;
+
     public Transform ground;
 
     public bool respawnTargetWhenTouched;
@@ -39,6 +41,7 @@ public class VisionCrawlerAgent : Agent
     {
         base.InitializeAgent();
         rayPer = GetComponent<RayPerception>();
+        academy = FindObjectOfType<CrawlerAcademy>();
     }
 
     public override void CollectObservations()
@@ -111,7 +114,7 @@ public class VisionCrawlerAgent : Agent
     /// </summary>
     public void GetRandomTargetPos()
     {
-        Vector3 newTargetPos = new Vector3(15f, 4f, Random.Range(-17f, 17f));
+        Vector3 newTargetPos = new Vector3(15f, 4f, Random.Range(-1 * academy.resetParameters["target_spawn_radius"], academy.resetParameters["target_spawn_radius"]));
         target.GetComponent<Rigidbody>().velocity = Vector3.zero;
         target.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         target.position = newTargetPos + ground.position;
