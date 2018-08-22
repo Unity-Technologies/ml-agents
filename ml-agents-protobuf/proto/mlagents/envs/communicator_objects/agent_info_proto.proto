@@ -14,5 +14,5 @@ message AgentInfoProto {
     bool done = 8;
     bool max_step_reached = 9;
     int32 id = 10;
+    repeated bool action_mask = 11;
 }
-
