@@ -1,18 +1,5 @@
-import json
-import unittest.mock as mock
-
-import yaml
-import pytest
 import numpy as np
-
-from unitytrainers.trainer_controller import TrainerController
 from unitytrainers.buffer import Buffer
-from unitytrainers.ppo.trainer import PPOTrainer
-from unitytrainers.bc.trainer import BehavioralCloningTrainer
-from unitytrainers.curriculum import Curriculum
-from unitytrainers.exception import CurriculumError
-from unityagents.exception import UnityEnvironmentException
-from .mock_communicator import MockCommunicator
 
 
 def assert_array(a, b):
@@ -48,9 +35,11 @@ def test_buffer():
     ]))
     b[4].reset_agent()
     assert len(b[4]) == 0
-    b.append_update_buffer(3,
-                           batch_size=None, training_length=2)
-    b.append_update_buffer(2,
-                           batch_size=None, training_length=2)
+    b.append_update_buffer(3, batch_size=None, training_length=2)
+    b.append_update_buffer(2, batch_size=None, training_length=2)
     assert len(b.update_buffer['action']) == 10
     assert np.array(b.update_buffer['action']).shape == (10, 2, 2)
+
+    c = b.update_buffer.make_mini_batch(start=0, end=1)
+    assert c.keys() == b.update_buffer.keys()
+    assert c['action'].shape == (1, 2, 2)
