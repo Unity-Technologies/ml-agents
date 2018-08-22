@@ -1,8 +1,15 @@
 import logging
 
-from unitytrainers.trainer import UnityTrainerException
+from unityagents import UnityException
 
 logger = logging.getLogger("unityagents")
+
+
+class UnityPolicyException(UnityException):
+    """
+    Related to errors with the Trainer.
+    """
+    pass
 
 
 class Policy(object):
@@ -10,6 +17,7 @@ class Policy(object):
     Contains a TensorFlow model, and the necessary
     functions to interact with it to perform inference and updating
     """
+
     def __init__(self, seed, brain, trainer_parameters, sess):
         """
         Initialized the policy.
@@ -35,13 +43,13 @@ class Policy(object):
             self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
             if self.m_size == 0:
-                raise UnityTrainerException("The memory size for brain {0} is 0 even "
-                                            "though the trainer uses recurrent."
-                                            .format(brain.brain_name))
+                raise UnityPolicyException("The memory size for brain {0} is 0 even "
+                                           "though the trainer uses recurrent."
+                                           .format(brain.brain_name))
             elif self.m_size % 4 != 0:
-                raise UnityTrainerException("The memory size for brain {0} is {1} "
-                                            "but it must be divisible by 4."
-                                            .format(brain.brain_name, self.m_size))
+                raise UnityPolicyException("The memory size for brain {0} is {1} "
+                                           "but it must be divisible by 4."
+                                           .format(brain.brain_name, self.m_size))
 
     def evaluate(self, brain_info):
         """
@@ -49,7 +57,7 @@ class Policy(object):
         :param brain_info: BrainInfo input to network.
         :return: Output from policy based on self.inference_dict.
         """
-        return None
+        raise UnityPolicyException("The evaluate function was not implemented.")
 
     def update(self, mini_batch, num_sequences):
         """
@@ -58,7 +66,7 @@ class Policy(object):
         :param mini_batch: Batch of experiences.
         :return: Results of update.
         """
-        return None
+        raise UnityPolicyException("The update function was not implemented.")
 
     @property
     def graph_scope(self):
