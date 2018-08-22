@@ -131,7 +131,8 @@ def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                     [3, 4, 5, 3, 4, 5]]),
                          model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                         model.visual_in[1]: np.ones([2, 40, 30, 3])
+                         model.visual_in[1]: np.ones([2, 40, 30, 3]),
+                         model.action_masks: np.ones([2,2])
                          }
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
@@ -155,7 +156,8 @@ def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
-                                                    [3, 4, 5, 3, 4, 5]])}
+                                                    [3, 4, 5, 3, 4, 5]]),
+                         model.action_masks: np.ones([2,2])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -181,7 +183,8 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
                          model.prev_action: [[0], [0]],
                          model.memory_in: np.zeros((1, memory_size)),
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
-                                                    [3, 4, 5, 3, 4, 5]])}
+                                                    [3, 4, 5, 3, 4, 5]]),
+                         model.action_masks: np.ones([1,2])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -232,7 +235,8 @@ def test_ppo_model_dc_vector_curio(mock_communicator, mock_launcher):
                                                     [3, 4, 5, 3, 4, 5]]),
                          model.next_vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                          [3, 4, 5, 3, 4, 5]]),
-                         model.action_holder: [[0], [0]]}
+                         model.action_holder: [[0], [0]],
+                         model.action_masks: np.ones([2,2])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -288,7 +292,8 @@ def test_ppo_model_dc_visual_curio(mock_communicator, mock_launcher):
                          model.visual_in[0]: np.ones([2, 40, 30, 3]),
                          model.visual_in[1]: np.ones([2, 40, 30, 3]),
                          model.next_visual_in[0]: np.ones([2, 40, 30, 3]),
-                         model.next_visual_in[1]: np.ones([2, 40, 30, 3])
+                         model.next_visual_in[1]: np.ones([2, 40, 30, 3]),
+                         model.action_masks: np.ones([2,2])
                          }
             sess.run(run_list, feed_dict=feed_dict)
             env.close()

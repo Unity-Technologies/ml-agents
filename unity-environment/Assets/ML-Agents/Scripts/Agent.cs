@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -41,6 +42,12 @@ namespace MLAgents
         /// Keeps track of the last text action taken by the Brain.
         /// </summary>
         public string storedTextActions;
+
+        /// <summary>
+        /// For discrete control, specifies the actions that the agent cannot take. Is true if
+        /// the action is masked.
+        /// </summary>
+        public bool[] actionMasks;
 
         /// <summary>
         /// Used by the Trainer to store information about the agent. This data
@@ -249,6 +256,9 @@ namespace MLAgents
         /// to separate between different agents in the environment.
         int id;
 
+        /// Keeps track of the actions that are masked at each step.
+        private ActionMasker actionMasker;
+
         /// Array of Texture2D used to render to from render buffer before  
         /// transforming into float tensor.
         Texture2D[] textureArray;
@@ -456,6 +466,7 @@ namespace MLAgents
             }
 
             BrainParameters param = brain.brainParameters;
+            actionMasker = new ActionMasker(param);
             if (param.vectorActionSpaceType == SpaceType.continuous)
             {
                 action.vectorActions = new float[param.vectorActionSize[0]];
@@ -512,7 +523,9 @@ namespace MLAgents
             info.storedVectorActions = action.vectorActions;
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
+            actionMasker.ResetMask();
             CollectObservations();
+            info.actionMasks = actionMasker.GetMask();
 
             BrainParameters param = brain.brainParameters;
             if (info.vectorObservation.Count != param.vectorObservationSize)
@@ -594,6 +607,57 @@ namespace MLAgents
         {
 
         }
+
+        /// <summary>
+        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
+        protected void SetActionMask(IEnumerable<int> actionIndices)
+        {
+            actionMasker.SetActionMask(0, actionIndices);
+        }
+        
+        /// <summary>
+        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="actionIndex">The index of the masked action on branch 0</param>
+        protected void SetActionMask(int actionIndex)
+        {
+            actionMasker.SetActionMask(0, new int[1]{actionIndex});
+        }
+        
+        /// <summary>
+        /// Sets an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="branch">The branch for which the actions will be masked</param>
+        /// <param name="actionIndex">The index of the masked action</param>
+        protected void SetActionMask(int branch, int actionIndex)
+        {
+            actionMasker.SetActionMask(branch, new int[1]{actionIndex});
+        }
+
+        /// <summary>
+        /// Modifies an action mask for discrete control agents. When used, the agent will not be
+        /// able to perform the action passed as argument at the next decision. If no branch is
+        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
+        /// to the action the agent will be unable to perform.
+        /// </summary>
+        /// <param name="branch">The branch for which the actions will be masked</param>
+        /// <param name="actionIndices">The indices of the masked actions</param>
+        protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
+        {
+            actionMasker.SetActionMask(branch, actionIndices);
+        }
+        
 
         /// <summary>
         /// Adds a float observation to the vector observations of the agent.

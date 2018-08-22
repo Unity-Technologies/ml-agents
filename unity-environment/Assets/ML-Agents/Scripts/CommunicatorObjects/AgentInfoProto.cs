@@ -25,18 +25,18 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Citjb21tdW5pY2F0b3Jfb2JqZWN0cy9hZ2VudF9pbmZvX3Byb3RvLnByb3Rv",
-            "EhRjb21tdW5pY2F0b3Jfb2JqZWN0cyL9AQoOQWdlbnRJbmZvUHJvdG8SIgoa",
+            "EhRjb21tdW5pY2F0b3Jfb2JqZWN0cyKSAgoOQWdlbnRJbmZvUHJvdG8SIgoa",
             "c3RhY2tlZF92ZWN0b3Jfb2JzZXJ2YXRpb24YASADKAISGwoTdmlzdWFsX29i",
             "c2VydmF0aW9ucxgCIAMoDBIYChB0ZXh0X29ic2VydmF0aW9uGAMgASgJEh0K",
             "FXN0b3JlZF92ZWN0b3JfYWN0aW9ucxgEIAMoAhIbChNzdG9yZWRfdGV4dF9h",
             "Y3Rpb25zGAUgASgJEhAKCG1lbW9yaWVzGAYgAygCEg4KBnJld2FyZBgHIAEo",
             "AhIMCgRkb25lGAggASgIEhgKEG1heF9zdGVwX3JlYWNoZWQYCSABKAgSCgoC",
-            "aWQYCiABKAVCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnBy",
-            "b3RvMw=="));
+            "aWQYCiABKAUSEwoLYWN0aW9uX21hc2sYCyADKAhCH6oCHE1MQWdlbnRzLkNv",
+            "bW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask" }, null, null, null)
           }));
     }
     #endregion
@@ -78,6 +78,7 @@ namespace MLAgents.CommunicatorObjects {
       done_ = other.done_;
       maxStepReached_ = other.maxStepReached_;
       id_ = other.id_;
+      actionMask_ = other.actionMask_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -192,6 +193,16 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "action_mask" field.</summary>
+    public const int ActionMaskFieldNumber = 11;
+    private static readonly pb::FieldCodec<bool> _repeated_actionMask_codec
+        = pb::FieldCodec.ForBool(90);
+    private readonly pbc::RepeatedField<bool> actionMask_ = new pbc::RepeatedField<bool>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<bool> ActionMask {
+      get { return actionMask_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as AgentInfoProto);
@@ -215,6 +226,7 @@ namespace MLAgents.CommunicatorObjects {
       if (Done != other.Done) return false;
       if (MaxStepReached != other.MaxStepReached) return false;
       if (Id != other.Id) return false;
+      if(!actionMask_.Equals(other.actionMask_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -231,6 +243,7 @@ namespace MLAgents.CommunicatorObjects {
       if (Done != false) hash ^= Done.GetHashCode();
       if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
       if (Id != 0) hash ^= Id.GetHashCode();
+      hash ^= actionMask_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -272,6 +285,7 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(80);
         output.WriteInt32(Id);
       }
+      actionMask_.WriteTo(output, _repeated_actionMask_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -302,6 +316,7 @@ namespace MLAgents.CommunicatorObjects {
       if (Id != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
       }
+      size += actionMask_.CalculateSize(_repeated_actionMask_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -335,6 +350,7 @@ namespace MLAgents.CommunicatorObjects {
       if (other.Id != 0) {
         Id = other.Id;
       }
+      actionMask_.Add(other.actionMask_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -387,6 +403,11 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 80: {
             Id = input.ReadInt32();
+            break;
+          }
+          case 90:
+          case 88: {
+            actionMask_.AddEntriesFrom(input, _repeated_actionMask_codec);
             break;
           }
         }

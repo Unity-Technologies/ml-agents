@@ -32,7 +32,9 @@ class BehavioralCloningModel(LearningModel):
                         kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
             self.action_probs = tf.concat(
                 [tf.nn.softmax(branch) for branch in policy_branches], axis=1, name="action_probs")
-            self.sample_action_float = tf.concat([tf.multinomial(branch, 1) for branch in policy_branches], axis=1)
+            self.action_masks = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name="action_masks")
+            self.sample_action_float = self.create_discrete_action_masking_layer(
+                policy_branches, self.action_masks, self.a_size)
             self.sample_action_float = tf.identity(self.sample_action_float, name="action")
             self.sample_action = tf.cast(self.sample_action_float, tf.int32)
             self.true_action = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="teacher_action")
