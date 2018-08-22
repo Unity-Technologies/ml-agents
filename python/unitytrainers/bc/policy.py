@@ -48,6 +48,8 @@ class BCPolicy(Policy):
                 feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
         if self.use_vector_obs:
             feed_dict[self.model.vector_in] = brain_info.vector_observations
+        if not self.use_continuous_act:
+            feed_dict[self.model.action_masks] = brain_info.action_masks
         if self.use_recurrent:
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = np.zeros((len(brain_info.agents), self.m_size))
@@ -73,6 +75,8 @@ class BCPolicy(Policy):
         else:
             feed_dict[self.model.true_action] = mini_batch['actions'].reshape(
                 [-1, len(self.brain.vector_action_space_size)])
+            feed_dict[self.model.action_masks] = np.ones(
+                (num_sequences, sum(self.brain.vector_action_space_size)))
         if self.use_vector_obs:
             apparent_obs_size = self.brain.vector_observation_space_size * \
                                 self.brain.num_stacked_vector_observations

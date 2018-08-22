@@ -206,6 +206,9 @@ class PPOTrainer(Trainer):
                     if self.policy.use_continuous_act:
                         actions_pre = stored_take_action_outputs['pre_action']
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
+                    else:
+                        self.training_buffer[agent_id]['action_mask'].append(
+                            stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs['log_probs']
                     value = stored_take_action_outputs['value']
                     self.training_buffer[agent_id]['actions'].append(actions[idx])

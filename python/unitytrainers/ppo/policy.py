@@ -75,6 +75,8 @@ class PPOPolicy(Policy):
                 feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
         if self.use_vector_obs:
             feed_dict[self.model.vector_in] = brain_info.vector_observations
+        if not self.use_continuous_act:
+            feed_dict[self.model.action_masks] = brain_info.action_masks
 
         network_output = self.sess.run(list(self.inference_dict.values()), feed_dict=feed_dict)
         run_out = dict(zip(list(self.inference_dict.keys()), network_output))
@@ -104,6 +106,8 @@ class PPOPolicy(Policy):
             if self.use_recurrent:
                 feed_dict[self.model.prev_action] = mini_batch['prev_action'].reshape(
                     [-1, len(self.model.a_size)])
+            feed_dict[self.model.action_masks] = mini_batch['action_mask'].reshape(
+                [-1, sum(self.brain.vector_action_space_size)])
         if self.use_vector_obs:
             total_observation_length = self.model.o_size
             feed_dict[self.model.vector_in] = mini_batch['vector_obs'].reshape(
