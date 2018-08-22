@@ -174,7 +174,6 @@ namespace MLAgents
                 Done = info.done,
                 Id = info.id,
             };
-
             if (info.memories != null)
             {
                 agentInfoProto.Memories.Add(info.memories);

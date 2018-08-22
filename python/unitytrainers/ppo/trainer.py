@@ -18,7 +18,8 @@ logger = logging.getLogger("unityagents")
 
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
-
+    action_masking_name = 'action_masks'
+    
     def __init__(self, sess, env, brain_name, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
@@ -183,6 +184,8 @@ class PPOTrainer(Trainer):
                 feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
         if self.use_vector_obs:
             feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
+        if not self.is_continuous_action:
+            feed_dict[self.model.action_masks] = curr_brain_info.action_masks
 
         values = self.sess.run(self.inference_run_list, feed_dict=feed_dict)
         run_out = dict(zip(self.inference_run_list, values))
@@ -334,6 +337,8 @@ class PPOTrainer(Trainer):
                     if self.is_continuous_action:
                         actions_pre = stored_take_action_outputs[self.model.output_pre]
                         self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
+                    else:
+                        self.training_buffer[agent_id][self.action_masking_name].append(stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs[self.model.all_log_probs]
                     value = stored_take_action_outputs[self.model.value]
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
@@ -466,6 +471,9 @@ class PPOTrainer(Trainer):
                     if self.use_recurrent:
                         feed_dict[self.model.prev_action] = np.array(buffer['prev_action'][start:end]).reshape(
                             [-1, len(self.brain.vector_action_space_size)])
+                    feed_dict[self.model.action_masks] = np.array(buffer[self.action_masking_name][start:end]).reshape(
+                        [-1, sum(self.brain.vector_action_space_size)]
+                    )
                 if self.use_vector_obs:
                     total_observation_length = self.brain.vector_observation_space_size * \
                                                self.brain.num_stacked_vector_observations
