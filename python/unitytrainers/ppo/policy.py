@@ -163,7 +163,7 @@ class PPOPolicy(Policy):
             else:
                 feed_dict[self.model.action_holder] = next_info.previous_vector_actions
 
-            for i in range(len(curr_info.visual_observations)):
+            for i in range(self.model.vis_obs_size):
                 feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
                 feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
             if self.model.vec_obs_size:
