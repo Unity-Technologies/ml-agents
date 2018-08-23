@@ -25,6 +25,7 @@ def run_training(sub_id, run_seed, run_options):
         docker_target_name = run_options['--docker-target-name']
 
     # General parameters
+    env_path = run_options['<env>']
     run_id = run_options['--run-id']
     load_model = run_options['--load']
     train_model = run_options['--train']
@@ -97,9 +98,8 @@ def main():
     logger.info(options)
     num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
-    env_path = options['<env>']
 
-    if env_path is None and num_runs > 1:
+    if options['<env>'] is None and num_runs > 1:
         raise TrainerError("It is not possible to launch more than one concurrent training session "
                            "when training from the editor")
 

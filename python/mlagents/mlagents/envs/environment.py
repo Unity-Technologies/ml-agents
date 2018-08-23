@@ -507,7 +507,7 @@ class UnityEnvironment(object):
                 )
                 if b in value:
                     if value[b] is not None:
-                        action.value = value[b][i]
+                        action.value = float(value[b][i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = 0
         return self.wrap_unity_input(rl_in)
