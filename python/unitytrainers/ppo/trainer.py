@@ -159,7 +159,8 @@ class PPOTrainer(Trainer):
             agents.append(agent_brain_info.agents[agent_index])
             prev_vector_actions.append(agent_brain_info.previous_vector_actions[agent_index])
             prev_text_actions.append(agent_brain_info.previous_text_actions[agent_index])
-        memories = np.vstack(memories)
+        if self.policy.use_recurrent:
+            memories = np.vstack(memories)
         curr_info = BrainInfo(visual_observations, vector_observations, text_observations,
                               memories, rewards, agents, local_dones, prev_vector_actions,
                               prev_text_actions, max_reacheds)
@@ -193,12 +194,11 @@ class PPOTrainer(Trainer):
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
                 if not stored_info.local_done[idx]:
-                    if self.policy.use_visual_obs:
-                        for i, _ in enumerate(stored_info.visual_observations):
-                            self.training_buffer[agent_id]['visual_obs%d' % i].append(
-                                stored_info.visual_observations[i][idx])
-                            self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
-                                next_info.visual_observations[i][next_idx])
+                    for i, _ in enumerate(stored_info.visual_observations):
+                        self.training_buffer[agent_id]['visual_obs%d' % i].append(
+                            stored_info.visual_observations[i][idx])
+                        self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
+                            next_info.visual_observations[i][next_idx])
                     if self.policy.use_vector_obs:
                         self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
                         self.training_buffer[agent_id]['next_vector_in'].append(

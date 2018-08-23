@@ -22,7 +22,7 @@ class BehavioralCloningModel(LearningModel):
 
         if brain.vector_action_space_type == "discrete":
             policy_branches = []
-            for size in self.a_size:
+            for size in self.act_size:
                 policy_branches.append(
                     tf.layers.dense(
                         hidden,
@@ -32,23 +32,23 @@ class BehavioralCloningModel(LearningModel):
                         kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
             self.action_probs = tf.concat(
                 [tf.nn.softmax(branch) for branch in policy_branches], axis=1, name="action_probs")
-            self.action_masks = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name="action_masks")
+            self.action_masks = tf.placeholder(shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks")
             self.sample_action_float = self.create_discrete_action_masking_layer(
-                policy_branches, self.action_masks, self.a_size)
+                policy_branches, self.action_masks, self.act_size)
             self.sample_action_float = tf.identity(self.sample_action_float, name="action")
             self.sample_action = tf.cast(self.sample_action_float, tf.int32)
             self.true_action = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="teacher_action")
             self.action_oh = tf.concat([
-                tf.one_hot(self.true_action[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
+                tf.one_hot(self.true_action[:, i], self.act_size[i]) for i in range(len(self.act_size))], axis=1)
             self.loss = tf.reduce_sum(-tf.log(self.action_probs + 1e-10) * self.action_oh)
             self.action_percent = tf.reduce_mean(tf.cast(
                 tf.equal(tf.cast(tf.argmax(self.action_probs, axis=1), tf.int32), self.sample_action), tf.float32))
         else:
-            self.policy = tf.layers.dense(hidden_reg, self.a_size[0], activation=None, use_bias=False, name='pre_action',
+            self.policy = tf.layers.dense(hidden_reg, self.act_size[0], activation=None, use_bias=False, name='pre_action',
                                           kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
             self.clipped_sample_action = tf.clip_by_value(self.policy, -1, 1)
             self.sample_action = tf.identity(self.clipped_sample_action, name="action")
-            self.true_action = tf.placeholder(shape=[None, self.a_size[0]], dtype=tf.float32, name="teacher_action")
+            self.true_action = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32, name="teacher_action")
             self.clipped_true_action = tf.clip_by_value(self.true_action, -1, 1)
             self.loss = tf.reduce_sum(tf.squared_difference(self.clipped_true_action, self.sample_action))
 

@@ -74,7 +74,7 @@ class PPOPolicy(Policy):
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[self.model.prev_action] = brain_info.previous_vector_actions.reshape(
-                    [-1, len(self.model.a_size)])
+                    [-1, len(self.model.act_size)])
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
@@ -104,26 +104,25 @@ class PPOPolicy(Policy):
                      self.model.old_value: mini_batch['value_estimates'].flatten(),
                      self.model.advantage: mini_batch['advantages'].reshape([-1, 1]),
                      self.model.all_old_log_probs: mini_batch['action_probs'].reshape(
-                         [-1, sum(self.model.a_size)])}
+                         [-1, sum(self.model.act_size)])}
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch['actions_pre'].reshape(
-                [-1, self.model.a_size[0]])
+                [-1, self.model.act_size[0]])
         else:
             feed_dict[self.model.action_holder] = mini_batch['actions'].reshape(
-                [-1, len(self.model.a_size)])
+                [-1, len(self.model.act_size)])
             if self.use_recurrent:
                 feed_dict[self.model.prev_action] = mini_batch['prev_action'].reshape(
-                    [-1, len(self.model.a_size)])
+                    [-1, len(self.model.act_size)])
             feed_dict[self.model.action_masks] = mini_batch['action_mask'].reshape(
                 [-1, sum(self.brain.vector_action_space_size)])
-        if self.use_vector_obs:
-            total_observation_length = self.model.o_size
+        if self.model.vec_obs_size > 0:
             feed_dict[self.model.vector_in] = mini_batch['vector_obs'].reshape(
-                [-1, total_observation_length])
+                [-1, self.model.vec_obs_size])
             if self.use_curiosity:
                 feed_dict[self.model.next_vector_in] = mini_batch['next_vector_in'].reshape(
-                    [-1, total_observation_length])
-        if self.use_visual_obs:
+                    [-1, self.model.vec_obs_size])
+        if self.model.vis_obs_size > 0:
             for i, _ in enumerate(self.model.visual_in):
                 _obs = mini_batch['visual_obs%d' % i]
                 if self.sequence_length > 1 and self.use_recurrent:
@@ -165,11 +164,10 @@ class PPOPolicy(Policy):
             else:
                 feed_dict[self.model.action_holder] = next_info.previous_vector_actions
 
-            if self.use_visual_obs:
-                for i in range(len(curr_info.visual_observations)):
-                    feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
-                    feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
-            if self.use_vector_obs:
+            for i in range(len(curr_info.visual_observations)):
+                feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
+                feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
+            if self.model.vec_obs_size:
                 feed_dict[self.model.vector_in] = curr_info.vector_observations
                 feed_dict[self.model.next_vector_in] = next_info.vector_observations
             if self.use_recurrent:
@@ -193,7 +191,7 @@ class PPOPolicy(Policy):
         if self.use_visual_obs:
             for i in range(len(brain_info.visual_observations)):
                 feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
-        if self.use_vector_obs:
+        if self.model.vec_obs_size > 0:
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
         if self.use_recurrent:
             if brain_info.memories.shape[1] == 0:
@@ -202,7 +200,7 @@ class PPOPolicy(Policy):
             feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
         if not self.use_continuous_act and self.use_recurrent:
             feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape(
-                [-1, len(self.model.a_size)])
+                [-1, len(self.model.act_size)])
         value_estimate = self.sess.run(self.model.value, feed_dict)
         return value_estimate
 

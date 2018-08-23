@@ -63,11 +63,11 @@ class PPOModel(LearningModel):
         encoded_state_list = []
         encoded_next_state_list = []
 
-        if self.v_size > 0:
+        if self.vis_obs_size > 0:
             self.next_visual_in = []
             visual_encoders = []
             next_visual_encoders = []
-            for i in range(self.v_size):
+            for i in range(self.vis_obs_size):
                 # Create input ops for next (t+1) visual observations.
                 next_visual_input = self.create_visual_input(self.brain.camera_resolutions[i],
                                                              name="next_visual_observation_" + str(i))
@@ -91,10 +91,10 @@ class PPOModel(LearningModel):
             encoded_state_list.append(hidden_visual)
             encoded_next_state_list.append(hidden_next_visual)
 
-        if self.o_size > 0:
+        if self.vec_obs_size > 0:
             # Create the encoder ops for current and next vector input. Not that these encoders are siamese.
             # Create input op for next (t+1) vector observation.
-            self.next_vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32,
+            self.next_vector_in = tf.placeholder(shape=[None, self.vec_obs_size], dtype=tf.float32,
                                                  name='next_vector_observation')
 
             encoded_vector_obs = self.create_vector_observation_encoder(self.vector_in,
@@ -123,13 +123,13 @@ class PPOModel(LearningModel):
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
         if self.brain.vector_action_space_type == "continuous":
-            pred_action = tf.layers.dense(hidden, self.a_size[0], activation=None)
+            pred_action = tf.layers.dense(hidden, self.act_size[0], activation=None)
             squared_difference = tf.reduce_sum(tf.squared_difference(pred_action, self.selected_actions), axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(squared_difference, self.mask, 2)[1])
         else:
             pred_action = tf.concat(
-                [tf.layers.dense(hidden, self.a_size[i], activation=tf.nn.softmax)
-                 for i in range(len(self.a_size))], axis=1)
+                [tf.layers.dense(hidden, self.act_size[i], activation=tf.nn.softmax)
+                 for i in range(len(self.act_size))], axis=1)
             cross_entropy = tf.reduce_sum(-tf.log(pred_action + 1e-10) * self.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(tf.dynamic_partition(cross_entropy, self.mask, 2)[1])
 
@@ -142,8 +142,8 @@ class PPOModel(LearningModel):
         """
         combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=self.swish)
-        # We compare against the concatenation of all observation streams, hence `self.v_size + int(self.o_size > 0)`.
-        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size * (self.v_size + int(self.o_size > 0)),
+        # We compare against the concatenation of all observation streams, hence `self.vis_obs_size + int(self.vec_obs_size > 0)`.
+        pred_next_state = tf.layers.dense(hidden, self.curiosity_enc_size * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                                           activation=None)
 
         squared_difference = 0.5 * tf.reduce_sum(tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
