@@ -44,7 +44,7 @@ class PPOPolicy(Policy):
             self.inference_dict['pre_action'] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
-        if is_training and self.use_vector_obs and trainer_params['normalize']:
+        if is_training and self.model.vec_obs_size > 0 and trainer_params['normalize']:
             self.inference_dict['update_mean'] = self.model.update_mean
             self.inference_dict['update_variance'] = self.model.update_variance
 
@@ -78,10 +78,9 @@ class PPOPolicy(Policy):
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
-        if self.use_visual_obs:
-            for i, _ in enumerate(brain_info.visual_observations):
-                feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
-        if self.use_vector_obs:
+        for i, _ in enumerate(brain_info.visual_observations):
+            feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
+        if self.model.vec_obs_size > 0:
             feed_dict[self.model.vector_in] = brain_info.vector_observations
         if not self.use_continuous_act:
             feed_dict[self.model.action_masks] = brain_info.action_masks
@@ -188,9 +187,8 @@ class PPOPolicy(Policy):
         :return: Value estimate.
         """
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
-        if self.use_visual_obs:
-            for i in range(len(brain_info.visual_observations)):
-                feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
+        for i in range(len(brain_info.visual_observations)):
+            feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
         if self.model.vec_obs_size > 0:
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
         if self.use_recurrent:

@@ -43,10 +43,9 @@ class BCPolicy(Policy):
         """
         feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
 
-        if self.use_visual_obs:
-            for i, _ in enumerate(brain_info.visual_observations):
-                feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
-        if self.use_vector_obs:
+        for i, _ in enumerate(brain_info.visual_observations):
+            feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
+        if self.model.vec_obs_size > 0:
             feed_dict[self.model.vector_in] = brain_info.vector_observations
         if not self.use_continuous_act:
             feed_dict[self.model.action_masks] = brain_info.action_masks
@@ -77,15 +76,14 @@ class BCPolicy(Policy):
                 [-1, len(self.brain.vector_action_space_size)])
             feed_dict[self.model.action_masks] = np.ones(
                 (num_sequences, sum(self.brain.vector_action_space_size)))
-        if self.use_vector_obs:
+        if self.model.vec_obs_size > 0:
             apparent_obs_size = self.brain.vector_observation_space_size * \
                                 self.brain.num_stacked_vector_observations
             feed_dict[self.model.vector_in] = mini_batch['vector_observations'] \
                 .reshape([-1,apparent_obs_size])
-        if self.use_vector_obs:
-            for i, _ in enumerate(self.model.visual_in):
-                visual_obs = mini_batch['visual_observations%d' % i]
-                feed_dict[self.model.visual_in[i]] = visual_obs
+        for i, _ in enumerate(self.model.visual_in):
+            visual_obs = mini_batch['visual_observations%d' % i]
+            feed_dict[self.model.visual_in[i]] = visual_obs
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = np.zeros([num_sequences, self.m_size])
         network_output = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)
