@@ -38,14 +38,10 @@ def run_training(sub_id, run_seed, run_options):
     lesson = int(run_options['--lesson'])
     fast_simulation = not bool(run_options['--slow'])
     no_graphics = run_options['--no-graphics']
-
-    # Constants
-    # Assumption that this yaml is present in same dir as this file
-    base_path = os.path.dirname(__file__)
-    trainer_config_path = os.path.abspath(os.path.join(base_path, "trainer_config.yaml"))
+    trainer_config_path = run_options['<trainer-config-path>']
 
     # Create controller and begin training.
-    tc = TrainerController(run_options['<env>'], run_id + "-" + str(sub_id),
+    tc = TrainerController(env_path, run_id + '-' + str(sub_id),
                            save_freq, curriculum_file, fast_simulation,
                            load_model, train_model, worker_id + sub_id,
                            keep_checkpoints, lesson, run_seed,
@@ -100,8 +96,8 @@ def main():
     seed = int(options['--seed'])
 
     if options['<env>'] is None and num_runs > 1:
-        raise TrainerError("It is not possible to launch more than one concurrent training session "
-                           "when training from the editor")
+        raise TrainerError('It is not possible to launch more than one concurrent training session '
+                           'when training from the editor.')
 
     jobs = []
     for i in range(num_runs):
