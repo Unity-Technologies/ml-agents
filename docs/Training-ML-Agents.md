@@ -5,7 +5,7 @@ The ML-Agents toolkit conducts training using an external Python training proces
 The output of the training process is a model file containing the optimized policy. This model file is a TensorFlow data graph containing the mathematical operations and the optimized weights selected during the training process. You can use the generated model file with the Internal Brain type in your Unity project to decide the best course of action for an agent. 
 
 Use the command `mlagents-learn` to train your agents. This command is installed with the `mlagents` package
-and its implementation can be found at `python/mlagents/learn.py`. The [configuration file](#training-config-file), `trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
+and its implementation can be found at `python/ml-agents/learn.py`. The [configuration file](#training-config-file), `trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
 
 For a broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Toolkit Overview](ML-Agents-Overview.md).
 

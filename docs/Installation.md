@@ -23,13 +23,14 @@ Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
     git clone https://github.com/Unity-Technologies/ml-agents.git
 
 The `MLAgentsSDK` directory in this repository contains the Unity Assets
-to add to your projects. The `mlagents` directory contains the python package
-which provides trainers and a python API to interface with Unity.
+to add to your projects. The `python` directory contains python packages
+which provide trainers, a python API to interface with Unity, and a package
+to interface with OpenAI Gym.
 
 ## Install Python (with Dependencies)
 
 In order to use ML-Agents toolkit, you need Python 3.6 along with
-the dependencies listed in the [requirements file](../python/mlagents/requirements.txt).
+the dependencies listed in the [requirements file](../python/ml-agents/requirements.txt).
 Some of the primary dependencies include:
 
 - [TensorFlow](Background-TensorFlow.md)
@@ -57,7 +58,7 @@ If your Python environment doesn't include `pip`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install dependencies, enter the `python/mlagents/` directory and run from
+To install dependencies, enter the `python/ml-agents/` directory and run from
 the command line:
 
     pip install -r requirements.txt

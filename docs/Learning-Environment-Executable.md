@@ -89,7 +89,7 @@ mlagents-learn 3DBall --run-id=firstRun --train
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
-If the `mlagents-learn` runs correctly and starts training, you should see something like this:
+If `mlagents-learn` runs correctly and starts training, you should see something like this:
 
 ![Training running](images/training-running.png)
 

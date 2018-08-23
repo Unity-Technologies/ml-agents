@@ -123,12 +123,12 @@ RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y xvfb
 
 
-COPY python/mlagents/requirements.txt .
+COPY python/ml-agents/requirements.txt .
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 COPY README.md .
-COPY python/mlagents /mlagents
-WORKDIR /mlagents
+COPY python/ml-agents /ml-agents
+WORKDIR /ml-agents
 RUN pip install .
 
 # port 5005 is the port used in in Editor training.
