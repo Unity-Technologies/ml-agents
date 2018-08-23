@@ -4434,10 +4434,10 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20214279307138674}
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1575621625717122}
   turnSpeed: 300
@@ -4464,10 +4464,10 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20216502261607616}
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1575621625717122}
   turnSpeed: 300
@@ -4494,10 +4494,10 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20704335789641980}
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1575621625717122}
   turnSpeed: 300
@@ -4524,10 +4524,10 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20130538700979288}
-    maxStep: 0
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+    numberOfActionsBetweenDecisions: 5
   myAcademyObj: {fileID: 0}
   area: {fileID: 1575621625717122}
   turnSpeed: 300
