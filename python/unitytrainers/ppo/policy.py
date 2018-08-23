@@ -55,6 +55,14 @@ class PPOPolicy(Policy):
             self.update_dict['forward_loss'] = self.model.forward_loss
             self.update_dict['inverse_loss'] = self.model.inverse_loss
 
+    def make_empty_memory(self, num_agents):
+        """
+        Creates empty memory for use with RNNs
+        :param num_agents: Number of agents.
+        :return: Numpy array of zeros.
+        """
+        return np.zeros((num_agents, self.m_size))
+
     def evaluate(self, brain_info):
         """
         Evaluates policy based on brain_info.
@@ -68,7 +76,7 @@ class PPOPolicy(Policy):
                 feed_dict[self.model.prev_action] = brain_info.previous_vector_actions.reshape(
                     [-1, len(self.model.a_size)])
             if brain_info.memories.shape[1] == 0:
-                brain_info.memories = np.zeros((len(brain_info.agents), self.m_size))
+                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
         if self.use_visual_obs:
             for i, _ in enumerate(brain_info.visual_observations):
@@ -166,7 +174,7 @@ class PPOPolicy(Policy):
                 feed_dict[self.model.next_vector_in] = next_info.vector_observations
             if self.use_recurrent:
                 if curr_info.memories.shape[1] == 0:
-                    curr_info.memories = np.zeros((len(curr_info.agents), self.m_size))
+                    curr_info.memories = self.make_empty_memory(len(curr_info.agents))
                 feed_dict[self.model.memory_in] = curr_info.memories
             intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
                                               feed_dict=feed_dict) * float(self.has_updated)

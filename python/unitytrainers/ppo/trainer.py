@@ -149,15 +149,20 @@ class PPOTrainer(Trainer):
             vector_observations.append(agent_brain_info.vector_observations[agent_index])
             text_observations.append(agent_brain_info.text_observations[agent_index])
             if self.policy.use_recurrent:
-                memories.append(agent_brain_info.memories[agent_index])
+                if len(agent_brain_info.memories > 0):
+                    memories.append(agent_brain_info.memories[agent_index])
+                else:
+                    memories.append(self.policy.make_empty_memory(1))
             rewards.append(agent_brain_info.rewards[agent_index])
             local_dones.append(agent_brain_info.local_done[agent_index])
             max_reacheds.append(agent_brain_info.max_reached[agent_index])
             agents.append(agent_brain_info.agents[agent_index])
             prev_vector_actions.append(agent_brain_info.previous_vector_actions[agent_index])
             prev_text_actions.append(agent_brain_info.previous_text_actions[agent_index])
-        curr_info = BrainInfo(visual_observations, vector_observations, text_observations, memories, rewards,
-                              agents, local_dones, prev_vector_actions, prev_text_actions, max_reacheds)
+        memories = np.vstack(memories)
+        curr_info = BrainInfo(visual_observations, vector_observations, text_observations,
+                              memories, rewards, agents, local_dones, prev_vector_actions,
+                              prev_text_actions, max_reacheds)
         return curr_info
 
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
