@@ -246,7 +246,7 @@ public class MotorCrawlerAgent : Agent
             wall.transform.localScale.x,
             academy.resetParameters["wall_height"],
             wall.transform.localScale.z);*/
-        if (academy.resetParameters["spawn_wall"] - 1.0 < 0.5)
+        if (academy.resetParameters["spawn_wall"] - 1.0 < -0.5)
             wall.SetActive(false);
         else
             wall.SetActive(true);
