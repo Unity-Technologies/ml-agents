@@ -199,7 +199,7 @@ class PPOTrainer(Trainer):
                             stored_info.visual_observations[i][idx])
                         self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
                             next_info.visual_observations[i][next_idx])
-                    if self.policy.use_vector_obs:
+                    if self.policy.use_vec_obs:
                         self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
                         self.training_buffer[agent_id]['next_vector_in'].append(
                             next_info.vector_observations[next_idx])

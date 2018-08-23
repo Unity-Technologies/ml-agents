@@ -1,6 +1,7 @@
 import logging
 
 from unityagents import UnityException
+from unitytrainers.models import LearningModel
 
 logger = logging.getLogger("unityagents")
 
@@ -27,7 +28,7 @@ class Policy(object):
         :param sess: The current TensorFlow session.
         """
         self.m_size = None
-        self.model = None
+        self.model = LearningModel(0, False, False, brain)
         self.inference_dict = {}
         self.update_dict = {}
         self.sequence_length = 1
@@ -36,8 +37,6 @@ class Policy(object):
         self.variable_scope = trainer_parameters['graph_scope']
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_continuous_act = (brain.vector_action_space_type == "continuous")
-        self.use_visual_obs = (brain.number_visual_observations > 0)
-        self.use_vector_obs = (brain.vector_observation_space_size > 0)
         self.sess = sess
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
@@ -100,3 +99,19 @@ class Policy(object):
         :return:list of update var names
         """
         return list(self.update_dict.keys())
+
+    @property
+    def vis_obs_size(self):
+        return self.model.vis_obs_size
+
+    @property
+    def vec_obs_size(self):
+        return self.model.vec_obs_size
+
+    @property
+    def use_vis_obs(self):
+        return self.model.vis_obs_size > 0
+
+    @property
+    def use_vec_obs(self):
+        return self.model.vec_obs_size > 0

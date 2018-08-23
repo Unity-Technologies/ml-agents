@@ -147,11 +147,10 @@ class BehavioralCloningTrainer(Trainer):
                     info_teacher_record, next_info_teacher_record = "true", "true"
                 if info_teacher_record == "true" and next_info_teacher_record == "true":
                     if not stored_info_teacher.local_done[idx]:
-                        if self.policy.use_visual_obs:
-                            for i, _ in enumerate(stored_info_teacher.visual_observations):
-                                self.training_buffer[agent_id]['visual_observations%d' % i]\
-                                    .append(stored_info_teacher.visual_observations[i][idx])
-                        if self.policy.use_vector_obs:
+                        for i in range(self.policy.vis_obs_size):
+                            self.training_buffer[agent_id]['visual_observations%d' % i]\
+                                .append(stored_info_teacher.visual_observations[i][idx])
+                        if self.policy.use_vec_obs:
                             self.training_buffer[agent_id]['vector_observations']\
                                 .append(stored_info_teacher.vector_observations[idx])
                         if self.policy.use_recurrent:

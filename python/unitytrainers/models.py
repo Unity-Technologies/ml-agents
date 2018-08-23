@@ -11,8 +11,6 @@ class LearningModel(object):
     def __init__(self, m_size, normalize, use_recurrent, brain):
         self.brain = brain
         self.vector_in = None
-        self.normalize = False
-        self.use_recurrent = False
         self.global_step, self.increment_step = self.create_global_steps()
         self.visual_in = []
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')

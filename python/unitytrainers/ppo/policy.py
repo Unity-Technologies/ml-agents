@@ -44,7 +44,7 @@ class PPOPolicy(Policy):
             self.inference_dict['pre_action'] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
-        if is_training and self.model.vec_obs_size > 0 and trainer_params['normalize']:
+        if is_training and self.use_vec_obs and trainer_params['normalize']:
             self.inference_dict['update_mean'] = self.model.update_mean
             self.inference_dict['update_variance'] = self.model.update_variance
 
@@ -80,7 +80,7 @@ class PPOPolicy(Policy):
             feed_dict[self.model.memory_in] = brain_info.memories
         for i, _ in enumerate(brain_info.visual_observations):
             feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
-        if self.model.vec_obs_size > 0:
+        if self.use_vec_obs:
             feed_dict[self.model.vector_in] = brain_info.vector_observations
         if not self.use_continuous_act:
             feed_dict[self.model.action_masks] = brain_info.action_masks
@@ -115,12 +115,12 @@ class PPOPolicy(Policy):
                     [-1, len(self.model.act_size)])
             feed_dict[self.model.action_masks] = mini_batch['action_mask'].reshape(
                 [-1, sum(self.brain.vector_action_space_size)])
-        if self.model.vec_obs_size > 0:
+        if self.use_vec_obs:
             feed_dict[self.model.vector_in] = mini_batch['vector_obs'].reshape(
-                [-1, self.model.vec_obs_size])
+                [-1, self.vec_obs_size])
             if self.use_curiosity:
                 feed_dict[self.model.next_vector_in] = mini_batch['next_vector_in'].reshape(
-                    [-1, self.model.vec_obs_size])
+                    [-1, self.vec_obs_size])
         if self.model.vis_obs_size > 0:
             for i, _ in enumerate(self.model.visual_in):
                 _obs = mini_batch['visual_obs%d' % i]
@@ -166,7 +166,7 @@ class PPOPolicy(Policy):
             for i in range(self.model.vis_obs_size):
                 feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
                 feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
-            if self.model.vec_obs_size:
+            if self.use_vec_obs:
                 feed_dict[self.model.vector_in] = curr_info.vector_observations
                 feed_dict[self.model.next_vector_in] = next_info.vector_observations
             if self.use_recurrent:
@@ -189,7 +189,7 @@ class PPOPolicy(Policy):
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
         for i in range(len(brain_info.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
-        if self.model.vec_obs_size > 0:
+        if self.use_vec_obs:
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
         if self.use_recurrent:
             if brain_info.memories.shape[1] == 0:
