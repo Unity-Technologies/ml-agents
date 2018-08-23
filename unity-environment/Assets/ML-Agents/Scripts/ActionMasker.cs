@@ -69,7 +69,10 @@ namespace MLAgents
         /// actions.</returns>
         public bool[] GetMask()
         {
-            AssertMask();
+            if (_currentMask != null)
+            {
+                AssertMask();
+            }
             return _currentMask;
         }
 
