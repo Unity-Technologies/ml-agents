@@ -1,0 +1,26 @@
+<mujoco model="pendulum">
+  <include file="./common/visual.xml"/>
+  <include file="./common/skybox.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <option timestep="0.02">
+    <flag contact="disable" energy="enable"/>
+  </option>
+
+  <worldbody>
+    <light name="light" pos="0 0 2"/>
+    <geom name="floor" size="2 2 .2" type="plane" material="grid"/>
+    <camera name="fixed" pos="0 -1.5 2" xyaxes='1 0 0 0 1 1'/>
+    <camera name="lookat" mode="targetbodycom" target="pole" pos="0 -2 1"/>
+    <body name="pole" pos="0 0 .6">
+      <joint name="hinge" type="hinge" axis="0 1 0" damping="0.1"/>
+      <geom name="base" material="decoration" type="cylinder" fromto="0 -.03 0 0 .03 0" size="0.021" mass="0"/>
+      <geom name="pole" material="self" type="capsule" fromto="0 0 0 0 0 0.5" size="0.02" mass="0"/>
+      <geom name="mass" material="effector" type="sphere" pos="0 0 0.5" size="0.05" mass="1"/>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="torque" joint="hinge" gear="1" ctrlrange="-1 1" ctrllimited="true"/>
+  </actuator>
+</mujoco>

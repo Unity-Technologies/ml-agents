@@ -284,3 +284,16 @@ If you would like to contribute environments, please see our
 * Reset Parameters: None.
 * Optional Imitation Learning scene: `PyramidsIL`.
 * Benchmark Mean Reward: 1.75
+
+## [MujocoUnity](Mujoco-Unity.md)
+
+![MujocoUnity](images/MujocoUnityBanner.gif)
+
+**Mujoco** is a high end physics simulator used for bleeding edge research into robotics and reinforcement learning. Many of the standard benchmarks are implemented in Mujoco. 
+
+**MujocoUnity** enables the reproduction of these benchmarks within Unity ml-agents using Unity’s native physics simulator, PhysX. Mujoco Unity maybe useful for:
+* Video Game researchers interested in apply bleeding edge robotics research into the domain of locomotion and AI for video games.
+* Traditional academic researchers looking to leverage the strengths of Unity and ml-agents along with the body of existing research and benchmarks in Mujoco.
+* Benchmarking current and future algorithms within Unity ml-agents. For example, comparing the performance of ml-agents PPO implementation with OpenAI.Baselines implementation of PPO.
+
+See [Mujoco-Unity](Mujoco-Unity.md) for more details.
