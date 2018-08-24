@@ -133,22 +133,24 @@ class LearningModel(object):
         return hidden_flat
 
     @staticmethod
-    def create_discrete_action_masking_layer(branches_logits, action_masks, action_size):
+    def create_discrete_action_masking_layer(all_logits, action_masks, action_size):
         """
         Creates a masking layer for the discrete actions
-        :param branches_logits: A list of the unnormalized action probabilities fir each branch
+        :param all_logits: The concatenated unnormalized action probabilities for all branches
         :param action_masks: The mask for the logits. Must be of dimension [None x total_number_of_action]
         :param action_size: A list containing the number of possible actions for each branch
-        :return: The action output dimension [batch_size, num_branches]
+        :return: The action output dimension [batch_size, num_branches] and the concatenated normalized logits
         """
         action_idx = [0] + list(np.cumsum(action_size))
+        branches_logits = [all_logits[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
+
         branch_masks = [action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
-        raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k])
+        raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k]) + (1-branch_masks[k])*1.0e-10
                      for k in range(len(action_size))]
         normalized_probs = [tf.divide(raw_probs[k], tf.reduce_sum(raw_probs[k], axis=1, keepdims=True))
                             for k in range(len(action_size))]
         output = tf.concat([tf.multinomial(tf.log(normalized_probs[k]), 1) for k in range(len(action_size))], axis=1)
-        return output
+        return output, tf.concat([tf.log(normalized_probs[k]) for k in range(len(action_size))], axis=1)
 
     def create_observation_streams(self, num_streams, h_size, num_layers):
         """
@@ -302,18 +304,23 @@ class LearningModel(object):
         self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
 
         self.action_masks = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name="action_masks")
-        output = self.create_discrete_action_masking_layer(policy_branches, self.action_masks, self.a_size)
+        output, normalized_logits = self.create_discrete_action_masking_layer(
+            self.all_log_probs, self.action_masks, self.a_size)
 
         self.output = tf.identity(output, name="action")
 
         value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.action_holder = tf.placeholder(shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
+        self.action_holder = tf.placeholder(
+            shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
             tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
 
-        self.all_old_log_probs = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
+        self.all_old_log_probs = tf.placeholder(
+            shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
+        _, old_normalized_logits = self.create_discrete_action_masking_layer(
+            self.all_old_log_probs, self.action_masks, self.a_size)
 
         action_idx = [0] + list(np.cumsum(self.a_size))
 
@@ -326,13 +333,13 @@ class LearningModel(object):
         self.log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
                 labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
-                logits=self.all_log_probs[:, action_idx[i]:action_idx[i + 1]]
+                logits=normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
         self.old_log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
                 labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
-                logits=self.all_old_log_probs[:, action_idx[i]:action_idx[i + 1]]
+                logits=old_normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
 
