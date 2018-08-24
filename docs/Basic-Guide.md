@@ -39,7 +39,7 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
 **Plugins** > **Computer**.
 
 **Note**: If you don't see anything under **Assets**, drag the
-`ml-agents/MLAgentsSDK/Assets/ML-Agents` folder under **Assets** within
+`MLAgentsSDK/Assets/ML-Agents` folder under **Assets** within
 Project window.
 
 ![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
@@ -96,7 +96,7 @@ communicate with the external training process when making their decisions.
    Where:
     - `<trainer-config-path>` is the relative or absolute filepath of the
       trainer configuration. The defaults used by environments in the ML-Agents
-      SDK can be found in `trainer_config.yaml`.
+      SDK can be found in `config/trainer_config.yaml`.
     - `<run-identifier>` is a string used to separate the results of different
       training runs
     - And the `--train` tells `mlagents-learn` to run a training session (rather

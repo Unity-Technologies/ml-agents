@@ -37,10 +37,10 @@ different brains to follow different curriculums within the same environment.
 
 ### Specifying a Metacurriculum
 
-We first create a folder inside `curricula/` for the environment we want
+We first create a folder inside `config/curricula/` for the environment we want
 to use curriculum learning with. For example, if we were creating a
 metacurriculum for Wall Jump, we would create the folder
-`curricula/wall-jump/`. We will place our curriculums inside this folder.
+`config/curricula/wall-jump/`. We will place our curriculums inside this folder.
 
 ### Specifying a Curriculum
 
@@ -103,6 +103,10 @@ Once we have specified our metacurriculum and curriculums, we can launch
 `mlagents-learn` using the `–curriculum` flag to point to the metacurriculum
 folder and PPO will train using Curriculum Learning. For example, to train
 agents in the Wall Jump environment with curriculum learning, we can run
-`mlagents-learn --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum
---train`. We can then keep track of the current lessons and progresses via
-TensorBoard.
+
+```shell
+mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train
+```
+
+We can then keep track of the current
+lessons and progresses via TensorBoard.

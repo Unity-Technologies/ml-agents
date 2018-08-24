@@ -82,9 +82,10 @@ the repository:
 docker run --name <container-name> \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            -p 5005:5005 \
-           <image-name>:latest <environment-name> \
+           <image-name>:latest \
            --docker-target-name=unity-volume \
            <trainer-config-path> \
+           --env=<environment-name> \
            --train \
            --run-id=<run-id>
 ```
@@ -96,9 +97,9 @@ Notes on argument values:
   random name if this is not set. _Note that this must be unique for every run
   of a Docker image._
 - `<image-name>` references the image name used when building the container.
-- `<environemnt-name>` __(Optional)__: If you are training with a linux
+- `<environment-name>` __(Optional)__: If you are training with a linux
   executable, this is the name of the executable. If you are training in the
-  Editor, do not pass a `<environemnt-name>` argument and press the
+  Editor, do not pass a `<environment-name>` argument and press the
   :arrow_forward: button in Unity when the message _"Start training by pressing
   the Play button in the Unity Editor"_ is displayed on the screen.
 - `source`: Reference to the path in your host OS where you will store the Unity

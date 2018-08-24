@@ -123,11 +123,11 @@ RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y xvfb
 
 
-COPY python/ml-agents/requirements.txt .
+COPY ml-agents/requirements.txt .
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 COPY README.md .
-COPY python/ml-agents /ml-agents
+COPY ml-agents /ml-agents
 WORKDIR /ml-agents
 RUN pip install .
 

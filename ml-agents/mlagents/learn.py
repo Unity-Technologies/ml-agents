@@ -25,7 +25,9 @@ def run_training(sub_id, run_seed, run_options):
         docker_target_name = run_options['--docker-target-name']
 
     # General parameters
-    env_path = run_options['<env>']
+    env_path = run_options['--env']
+    if env_path == 'None':
+        env_path = None
     run_id = run_options['--run-id']
     load_model = run_options['--load']
     train_model = run_options['--train']
@@ -33,7 +35,7 @@ def run_training(sub_id, run_seed, run_options):
     keep_checkpoints = int(run_options['--keep-checkpoints'])
     worker_id = int(run_options['--worker-id'])
     curriculum_file = str(run_options['--curriculum'])
-    if curriculum_file == "None":
+    if curriculum_file == 'None':
         curriculum_file = None
     lesson = int(run_options['--lesson'])
     fast_simulation = not bool(run_options['--slow'])
@@ -50,31 +52,35 @@ def run_training(sub_id, run_seed, run_options):
 
 
 def main():
-    print('''
+    try:
+        print('''
     
-                    ▄▄▄▓▓▓▓
-               ╓▓▓▓▓▓▓█▓▓▓▓▓
-          ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
-        ▄▓▓▓▀'      ▄▓▓▀  ▓▓▓      ▄▄     ▄▄ ,▄▄ ▄▄▄▄   ,▄▄ ▄▓▓▌▄ ▄▄▄    ,▄▄
-      ▄▓▓▓▀        ▄▓▓▀   ▐▓▓▌     ▓▓▌   ▐▓▓ ▐▓▓▓▀▀▀▓▓▌ ▓▓▓ ▀▓▓▌▀ ^▓▓▌  ╒▓▓▌
-    ▄▓▓▓▓▓▄▄▄▄▄▄▄▄▓▓▓      ▓▀      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌   ▐▓▓▄ ▓▓▌
-    ▀▓▓▓▓▀▀▀▀▀▀▀▀▀▀▓▓▄     ▓▓      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌    ▐▓▓▐▓▓
-      ^█▓▓▓        ▀▓▓▄   ▐▓▓▌     ▓▓▓▓▄▓▓▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▓▄    ▓▓▓▓`
-        '▀▓▓▓▄      ^▓▓▓  ▓▓▓       └▀▀▀▀ ▀▀ ^▀▀    `▀▀ `▀▀   '▀▀    ▐▓▓▌
-           ▀▀▀▀▓▄▄▄   ▓▓▓▓▓▓,                                      ▓▓▓▓▀
-               `▀█▓▓▓▓▓▓▓▓▓▌
-                    ¬`▀▀▀█▓
-                    
-''')
+                        ▄▄▄▓▓▓▓
+                   ╓▓▓▓▓▓▓█▓▓▓▓▓
+              ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
+            ▄▓▓▓▀'      ▄▓▓▀  ▓▓▓      ▄▄     ▄▄ ,▄▄ ▄▄▄▄   ,▄▄ ▄▓▓▌▄ ▄▄▄    ,▄▄
+          ▄▓▓▓▀        ▄▓▓▀   ▐▓▓▌     ▓▓▌   ▐▓▓ ▐▓▓▓▀▀▀▓▓▌ ▓▓▓ ▀▓▓▌▀ ^▓▓▌  ╒▓▓▌
+        ▄▓▓▓▓▓▄▄▄▄▄▄▄▄▓▓▓      ▓▀      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌   ▐▓▓▄ ▓▓▌
+        ▀▓▓▓▓▀▀▀▀▀▀▀▀▀▀▓▓▄     ▓▓      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌    ▐▓▓▐▓▓
+          ^█▓▓▓        ▀▓▓▄   ▐▓▓▌     ▓▓▓▓▄▓▓▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▓▄    ▓▓▓▓`
+            '▀▓▓▓▄      ^▓▓▓  ▓▓▓       └▀▀▀▀ ▀▀ ^▀▀    `▀▀ `▀▀   '▀▀    ▐▓▓▌
+               ▀▀▀▀▓▄▄▄   ▓▓▓▓▓▓,                                      ▓▓▓▓▀
+                   `▀█▓▓▓▓▓▓▓▓▓▌
+                        ¬`▀▀▀█▓
 
-    logger = logging.getLogger("mlagents.learn")
+        ''')
+    # TODO: figure this out
+    except:
+        print('UNITY!!!')
+
+    logger = logging.getLogger('mlagents.learn')
     _USAGE = '''
     Usage:
-      learn (<trainer-config-path>) [<env>] [options]
-      learn [options]
+      learn <trainer-config-path> [options]
       learn --help
 
     Options:
+      --env=<file>               Name of the Unity executable [default: None].
       --curriculum=<file>        Curriculum json file for environment [default: None].
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
@@ -95,7 +101,7 @@ def main():
     num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
 
-    if options['<env>'] is None and num_runs > 1:
+    if options['--env'] != 'None' and num_runs > 1:
         raise TrainerError('It is not possible to launch more than one concurrent training session '
                            'when training from the editor.')
 

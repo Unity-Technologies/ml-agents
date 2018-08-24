@@ -170,7 +170,7 @@ Current limitations of the Unity Engine require that a screen be available to re
 3. Select Linux as the Target Platform, and x86_64 as the target architecture.
 4. Check Headless Mode (If you haven't setup the X Server).
 5. Click Build to build the Unity environment executable.
-6. Upload the executable to your EC2 instance within `ml-agents/python` folder.
+6. Upload the executable to your EC2 instance within `ml-agents` folder.
 7. Test the instance setup from Python using:
 
     ```python

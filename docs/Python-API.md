@@ -15,7 +15,7 @@ The key objects in the Python API include:
 - **BrainParameters** — describes the data elements in a BrainInfo object. For
   example, provides the array length of an observation in BrainInfo.
 
-These classes are all defined in the `python/ml-agents/mlagents/envs` folder of
+These classes are all defined in the `ml-agents/mlagents/envs` folder of
 the ML-Agents SDK.
 
 To communicate with an agent in a Unity environment from a Python program, the
@@ -39,7 +39,7 @@ release._
 ## Loading a Unity Environment
 
 Python-side communication happens through `UnityEnvironment` which is located in
-`python/ml-agents/mlagents/envs`. To load a Unity environment from a built binary
+`ml-agents/mlagents/envs`. To load a Unity environment from a built binary
 file, put the file in the same directory as `envs`. For example, if the filename
 of your Unity environment is 3DBall.app, in python, run:
 

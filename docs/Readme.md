@@ -53,4 +53,4 @@
 
 * [API Reference](API-Reference.md)
 * [How to use the Python API](Python-API.md)
-* [Wrapping Learning Environment as a Gym](../python/gym-unity/Readme.md)
+* [Wrapping Learning Environment as a Gym](../gym-unity/Readme.md)

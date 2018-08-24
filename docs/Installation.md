@@ -30,7 +30,7 @@ to interface with OpenAI Gym.
 ## Install Python (with Dependencies)
 
 In order to use ML-Agents toolkit, you need Python 3.6 along with
-the dependencies listed in the [requirements file](../python/ml-agents/requirements.txt).
+the dependencies listed in the [requirements file](../ml-agents/requirements.txt).
 Some of the primary dependencies include:
 
 - [TensorFlow](Background-TensorFlow.md)
@@ -58,7 +58,7 @@ If your Python environment doesn't include `pip`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install dependencies, enter the `python/ml-agents/` directory and run from
+To install dependencies, enter the `ml-agents/` directory and run from
 the command line:
 
     pip install -r requirements.txt

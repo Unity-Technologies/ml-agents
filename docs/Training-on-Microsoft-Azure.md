@@ -17,7 +17,7 @@ Setting up your own instance requires a number of package installations.  Please
 
 ## Installing ML-Agents
 
-2. [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp) the `python` sub-folder of this ml-agents repo to the remote Azure instance, and set it as the working directory.
+2. [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp) the `ml-agents` sub-folder of this ml-agents repo to the remote Azure instance, and set it as the working directory.
 2. Install the required packages with `pip3 install .`.
 
 ## Testing
@@ -46,11 +46,11 @@ You should receive a message confirming that the environment was loaded successf
 To run your training on the VM:
 
 1.  [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp) your built Unity application to your Virtual Machine.
-2.  Set the `python` sub-folder of the ml-agents repo to your working directory.
+2.  Set the `ml-agents` sub-folder of the ml-agents repo to your working directory.
 3.  Run the following command:
 
 ```
-python3 learn.py <your_app> --run-id=<run_id> --train
+mlagents-learn <trainer_config> --env=<your_app> --run-id=<run_id> --train
 ```
 
 Where `<your_app>` is the path to your app (i.e. `~/unity-volume/3DBallHeadless`) and `<run_id>` is an identifer you would like to identify your training run with.

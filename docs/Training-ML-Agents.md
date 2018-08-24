@@ -5,7 +5,7 @@ The ML-Agents toolkit conducts training using an external Python training proces
 The output of the training process is a model file containing the optimized policy. This model file is a TensorFlow data graph containing the mathematical operations and the optimized weights selected during the training process. You can use the generated model file with the Internal Brain type in your Unity project to decide the best course of action for an agent. 
 
 Use the command `mlagents-learn` to train your agents. This command is installed with the `mlagents` package
-and its implementation can be found at `python/ml-agents/learn.py`. The [configuration file](#training-config-file), `trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
+and its implementation can be found at `ml-agents/learn.py`. The [configuration file](#training-config-file), `config/trainer_config.yaml` specifies the hyperparameters used during training. You can edit this file with a text editor to add a specific configuration for each brain.
 
 For a broader overview of reinforcement learning, imitation learning and the ML-Agents training process, see [ML-Agents Toolkit Overview](ML-Agents-Overview.md).
 
@@ -13,12 +13,12 @@ For a broader overview of reinforcement learning, imitation learning and the ML-
 
 Use the `mlagents-learn` command to train agents. `mlagents-learn` supports training with [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning), [curriculum learning](Training-Curriculum-Learning.md), and [behavioral cloning imitation learning](Training-Imitation-Learning.md).
 
-Run `mlagents-learn` from the command line to launch the training process. Use the command line patterns and the `trainer_config.yaml` file to control training options.
+Run `mlagents-learn` from the command line to launch the training process. Use the command line patterns and the `config/trainer_config.yaml` file to control training options.
 
 The basic command for training is:
 
 ```shell
-mlagents-learn <trainer-config-file> <env_name> --run-id=<run-identifier> --train
+mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier> --train
 ```
 
 where
@@ -34,7 +34,7 @@ For example, suppose you have a project in Unity named "CatsOnBicycles" which co
 3. Navigate to the ml-agents `python` folder.
 4. Run the following to launch the training process using the path to the Unity environment you built in step 1:
 
-        mlagents-learn ../../projects/Cats/CatsOnBicycles.app --run-id=cob_1 --train
+        mlagents-learn config/trainer_config.yaml --env=../../projects/Cats/CatsOnBicycles.app --run-id=cob_1 --train
 
 During a training session, the training program prints out and saves updates at regular intervals (specified by the `summary_freq` option). The saved statistics are grouped by the `run-id` value so you should assign a unique id to each training run if you plan to view the statistics. You can view these statistics using TensorBoard during or after training by running the following command (from the ML-Agents python directory):
 
@@ -52,6 +52,7 @@ While this example used the default training hyperparameters, you can edit the [
 
 In addition to passing the path of the Unity executable containing your training environment, you can set the following command line options when invoking `mlagents-learn`:
 
+* `--env=<env>` - Specify an executable environment to train.
 * `--curriculum=<file>` – Specify a curriculum JSON file for defining the lessons for curriculum training. See [Curriculum Training](Training-Curriculum-Learning.md) for more information.
 * `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to keep. Checkpoints are saved after the number of steps specified by the `save-freq` option. Once the maximum number of checkpoints has been reached, the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>` – Specify which lesson to start with when performing curriculum training. Defaults to 0.
@@ -68,7 +69,7 @@ In addition to passing the path of the Unity executable containing your training
 
 ### Training config file
 
-The training config file, `trainer_config.yaml` specifies the training method, the hyperparameters, and a few additional values to use during training. The file is divided into sections. The **default** section defines the default values for all the available settings. You can also add new sections to override these defaults to train specific Brains. Name each of these override sections after the GameObject containing the Brain component that should use these settings. (This GameObject will be a child of the Academy in your scene.) Sections for the example environments are included in the provided config file.
+The training config file, `config/trainer_config.yaml` specifies the training method, the hyperparameters, and a few additional values to use during training. The file is divided into sections. The **default** section defines the default values for all the available settings. You can also add new sections to override these defaults to train specific Brains. Name each of these override sections after the GameObject containing the Brain component that should use these settings. (This GameObject will be a child of the Academy in your scene.) Sections for the example environments are included in the provided config file.
 
 | ** Setting ** | **Description** | **Applies To Trainer**|
 | :--                | :--                       | :--                                  |
@@ -104,4 +105,4 @@ For specific advice on setting hyperparameters based on the type of training you
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
 
-You can also compare the [example environments](Learning-Environment-Examples.md) to the corresponding sections of the `trainer-config.yaml` file for each example to see how the hyperparameters and other configuration variables have been changed from the defaults.
+You can also compare the [example environments](Learning-Environment-Examples.md) to the corresponding sections of the `config/trainer_config.yaml` file for each example to see how the hyperparameters and other configuration variables have been changed from the defaults.

@@ -206,7 +206,7 @@ saved to the same directory and will all be included on the same graph.
 To summarize, go to your command line, enter the `ml-agents` directory and type:
 
 ```shell
-mlagents-learn trainer_config.yaml --run-id=<run-identifier> --train
+mlagents-learn config/trainer_config.yaml --run-id=<run-identifier> --train
 ```
 
 When the message _"Start training by pressing the Play button in the Unity

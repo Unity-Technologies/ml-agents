@@ -16,7 +16,7 @@ easy to do by hand, but our training algorithms can learn to keep
 track of what is important to remember with [LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory). 
 
 ## How to use
-When configuring the trainer parameters in the `trainer_config.yaml` 
+When configuring the trainer parameters in the `config/trainer_config.yaml` 
 file, add the following parameters to the Brain you want to use.
 
 ```json

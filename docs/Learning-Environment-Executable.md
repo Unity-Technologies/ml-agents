@@ -50,10 +50,9 @@ launches our environment executable. This means:
 the 3DBall Scene is the only one checked. (If the list is empty, than only the 
 current scene is included in the build).
 6. Click **Build**:
-    - In the File dialog, navigate to the `python` folder in your ML-Agents 
-    directory.
+    - In the File dialog, navigate to your ML-Agents directory.
     - Assign a file name and click **Save**.
-    - (For Windows）With Unity 2018.1, it will ask you to select a folder instead of a file name. Create a subfolder within `python` folder and select that folder to build. In the following steps you will refer to this subfolder's name as `env_name`. 
+    - (For Windows）With Unity 2018.1, it will ask you to select a folder instead of a file name. Create a subfolder within the ML-Agents folder and select that folder to build. In the following steps you will refer to this subfolder's name as `env_name`. 
 
 ![Build Window](images/mlagents-BuildWindow.png)
 
@@ -72,7 +71,7 @@ env = UnityEnvironment(file_name=<env_name>)
 1. Open a command or terminal window. 
 2. Nagivate to the folder where you installed ML-Agents. 
 3. Change to the python directory. 
-4. Run `mlagents-learn <trainer-config-file> <env_name> --run-id=<run-identifier> --train`
+4. Run `mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier> --train`
 Where:
   - `<trainer-config-file>` is the filepath of the trainer configuration yaml.
   - `<env_name>` is the name and path to the executable you exported from Unity (without extension)
@@ -82,7 +81,7 @@ Where:
 For example, if you are training with a 3DBall executable you exported to the ml-agents/python directory, run:
 
 ```shell
-mlagents-learn 3DBall --run-id=firstRun --train
+mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=firstRun --train
 ```
 
 ![Training command example](images/training-command-example.png)
