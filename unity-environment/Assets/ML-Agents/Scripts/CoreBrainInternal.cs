@@ -84,7 +84,7 @@ namespace MLAgents
         bool hasMaskedActions; 
         bool hasValueEstimate;
         float[,] inputState;
-        int[] inputPrevAction;
+        int[,] inputPrevAction;
         List<float[,,,]> observationMatrixList;
         float[,] inputOldMemories;
         float[,] maskedActions;
@@ -227,12 +227,16 @@ namespace MLAgents
             // Create the state tensor
             if (hasPrevAction)
             {
-                inputPrevAction = new int[currentBatchSize];
+                int totalNumberActions = brain.brainParameters.vectorActionSize.Length;
+                inputPrevAction = new int[currentBatchSize, totalNumberActions];
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
                     float[] actionList = agentInfo[agent].storedVectorActions;
-                    inputPrevAction[i] = Mathf.FloorToInt(actionList[0]);
+                    for (var j = 0 ; j < totalNumberActions; j++)
+                    {
+                        inputPrevAction[i,j] = Mathf.FloorToInt(actionList[j]);
+                    }
                     i++;
                 }
             }
