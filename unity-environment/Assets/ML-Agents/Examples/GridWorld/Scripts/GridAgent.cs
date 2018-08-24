@@ -16,7 +16,26 @@ public class GridAgent : Agent
 
     public override void CollectObservations()
     {
-
+        // Prevents the agent from picking an action that would make it collide with a wall
+        var positionX = (int) transform.position.x;
+        var positionZ = (int) transform.position.z;
+        var maxPosition = academy.gridSize - 1;
+        if (positionX == 0)
+        {
+            SetActionMask(3);
+        }
+        if (positionX == maxPosition)
+        {
+            SetActionMask(4);
+        }
+        if (positionZ == 0)
+        {
+            SetActionMask(2);
+        }
+        if (positionZ == maxPosition)
+        {
+            SetActionMask(1);
+        }
     }
 
     // to be implemented by the developer
