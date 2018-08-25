@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+enum CommandProto {
+        STEP = 0;
+        RESET = 1;
+        QUIT = 2;
+    }

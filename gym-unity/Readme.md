@@ -35,17 +35,17 @@ env = UnityEnv(environment_filename, worker_id, default_visual, multiagent)
 
 The returned environment `env` will function as a gym.
 
-For more on using the gym interface, see our [Jupyter Notebook tutorial](../python/notebooks/getting-started-gym.ipynb).
-
+For more on using the gym interface, see our [Jupyter Notebook tutorial](../notebooks/getting-started-gym.ipynb).
 
 ## Limitation
 
- * It is only possible to use an environment with a single Brain.
- * By default the first visual observation is provided as the `observation`, if present. Otherwise vector observations are provided. 
- * All `BrainInfo` output from the environment can still be accessed from the `info` provided by `env.step(action)`.
- * Stacked vector observations are not supported.
- * Environment registration for use with `gym.make()` is currently not supported.
-
+* It is only possible to use an environment with a single Brain.
+* By default the first visual observation is provided as the `observation`, if
+  present. Otherwise vector observations are provided. 
+* All `BrainInfo` output from the environment can still be accessed from the
+  `info` provided by `env.step(action)`.
+* Stacked vector observations are not supported.
+* Environment registration for use with `gym.make()` is currently not supported.
 
 ## Running OpenAI Baselines Algorithms
 

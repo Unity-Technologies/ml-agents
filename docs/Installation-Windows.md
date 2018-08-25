@@ -92,7 +92,7 @@ If you don't want to use Git, you can always directly download all the files [he
 In our example, the files are located in `C:\Downloads`. After you have either cloned or downloaded the files, from the Anaconda Prompt, change to the python directory inside the ml-agents directory:
 
 ```
-cd C:\Downloads\ml-agents\python
+cd C:\Downloads\ml-agents\ml-agents
 ```
 
 Make sure you are connected to the internet and then type in the Anaconda Prompt:

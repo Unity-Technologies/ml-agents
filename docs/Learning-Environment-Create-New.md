@@ -29,7 +29,7 @@ The first task to accomplish is simply creating a new Unity project and importin
 
 2. In a file system window, navigate to the folder containing your cloned ML-Agents repository. 
 
-3. Drag the `ML-Agents` folder from `unity-environments/Assets` to the Unity Editor Project window.
+3. Drag the `ML-Agents` folder from `MLAgentsSDK/Assets` to the Unity Editor Project window.
 
 Your Unity **Project** window should contain the following assets:
 
@@ -391,11 +391,11 @@ The **Index** value corresponds to the index of the action array passed to `Agen
 
 Press **Play** to run the scene and use the WASD keys to move the agent around the platform. Make sure that there are no errors displayed in the Unity editor Console window and that the agent resets when it reaches its target or falls from the platform. Note that for more involved debugging, the ML-Agents SDK includes a convenient Monitor class that you can use to easily display agent status information in the Game window.
 
-One additional test you can perform is to first ensure that your environment 
-and the Python API work as expected using the `python/Basics` 
-[Jupyter notebook](Background-Jupyter.md). Within `Basics`, be sure to set 
-`env_name` to the name of the environment file you specify when building
-this environment.
+One additional test you can perform is to first ensure that your environment and
+the Python API work as expected using the `notebooks/getting-started.ipynb`
+[Jupyter notebook](Background-Jupyter.md). Within the notebook, be sure to set
+`env_name` to the name of the environment file you specify when building this
+environment.
 
 Now you can train the Agent. To get ready for training, you must first to change the **Brain Type** from **Player** to **External**. From there, the process is the same as described in [Training ML-Agents](Training-ML-Agents.md). 
 

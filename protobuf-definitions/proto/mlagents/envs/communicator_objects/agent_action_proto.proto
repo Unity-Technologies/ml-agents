@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message AgentActionProto {
+    repeated float vector_actions = 1;
+    string text_actions = 2;
+    repeated float memories = 3;
+    float value = 4;
+}
