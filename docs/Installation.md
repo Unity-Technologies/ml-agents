@@ -61,7 +61,6 @@ on installing it.
 To install dependencies, enter the `ml-agents/` directory and run from
 the command line:
 
-    pip install -r requirements.txt
     pip install .
 
 ## Docker-based Installation

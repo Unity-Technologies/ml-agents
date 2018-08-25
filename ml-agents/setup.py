@@ -28,7 +28,7 @@ setup(
     packages=find_packages(exclude=['tests', 'tests.*', '*.tests', '*.tests.*']),  # Required
 
     install_requires=[
-        'tensorflow>=1.7',
+        'tensorflow>=1.7,<1.8',
         'Pillow>=4.2.1',
         'matplotlib',
         'numpy>=1.13.3,<=1.14.5',
@@ -36,7 +36,7 @@ setup(
         'pytest>=3.2.2',
         'docopt',
         'pyyaml',
-        'protobuf>=3.6.0',
+        'protobuf>=3.6,<3.7',
         'grpcio>=1.11.0'],
 
     entry_points={
