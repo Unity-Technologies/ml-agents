@@ -70,19 +70,18 @@ the BigWallBrain in the Wall Jump environment.
 ```
 
 * `measure` - What to measure learning progress, and advancement in lessons by.
-    * `reward` - Uses a measure received reward.
-    * `progress` - Uses ratio of steps/max_steps.
+  * `reward` - Uses a measure received reward.
+  * `progress` - Uses ratio of steps/max_steps.
 * `thresholds` (float array) - Points in value of `measure` where lesson should
   be increased.
 * `min_lesson_length` (int) - How many times the progress measure should be
   reported before incrementing the lesson.
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
-    * If `true`, weighting will be 0.75 (new) 0.25 (old).
+  * If `true`, weighting will be 0.75 (new) 0.25 (old).
 * `parameters` (dictionary of key:string, value:float array) - Corresponds to
   academy reset parameters to control. Length of each array should be one
   greater than number of thresholds.
-
 
 Once our curriculum is defined, we have to use the reset parameters we defined
 and modify the environment from the agent's `AgentReset()` function. See
@@ -104,7 +103,7 @@ Once we have specified our metacurriculum and curriculums, we can launch
 folder and PPO will train using Curriculum Learning. For example, to train
 agents in the Wall Jump environment with curriculum learning, we can run
 
-```shell
+```sh
 mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train
 ```
 

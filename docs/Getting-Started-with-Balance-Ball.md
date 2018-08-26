@@ -128,7 +128,7 @@ process just learns what values are better given particular state observations
 based on the rewards received when it tries different values). For example, an
 element might represent a force or torque applied to a `RigidBody` in the agent.
 The **Discrete** action vector space defines its actions as tables. An action
-given to the agent is an array of indeces into tables. 
+given to the agent is an array of indeces into tables.
 
 The 3D Balance Ball example is programmed to use both types of vector action
 space. You can try training with both settings to observe whether there is a
@@ -180,7 +180,7 @@ The Ball3DAgent subclass defines the following methods:
 
 ## Training the Brain with Reinforcement Learning
 
-Now that we have an environment, we can perform the training. 
+Now that we have an environment, we can perform the training.
 
 ### Training with PPO
 
@@ -205,7 +205,7 @@ saved to the same directory and will all be included on the same graph.
 
 To summarize, go to your command line, enter the `ml-agents` directory and type:
 
-```shell
+```sh
 mlagents-learn config/trainer_config.yaml --run-id=<run-identifier> --train
 ```
 
@@ -224,12 +224,12 @@ Execuatble](Learning-Environment-Executable.md).
 
 ### Observing Training Progress
 
-Once you start training using `mlagents-learn` in the way described in the previous
-section, the `ml-agents` directory will contain a `summaries` directory. In
-order to observe the training process in more detail, you can use TensorBoard.
-From the command line run:
+Once you start training using `mlagents-learn` in the way described in the
+previous section, the `ml-agents` directory will contain a `summaries`
+directory. In order to observe the training process in more detail, you can use
+TensorBoard. From the command line run:
 
-```shell
+```sh
 tensorboard --logdir=summaries
 ```
 

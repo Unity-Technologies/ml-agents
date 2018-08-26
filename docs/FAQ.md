@@ -5,7 +5,7 @@
 If you haven't switched your scripting runtime version from .NET 3.5 to .NET 4.6
 or .NET 4.x, you will see such error message:
 
-```
+```console
 error CS1061: Type `System.Text.StringBuilder' does not contain a definition for `Clear' and no extension method `Clear' of type `System.Text.StringBuilder' could be found. Are you missing an assembly reference?
 ```
 
@@ -19,7 +19,7 @@ If you have already imported the TensorFlowSharp plugin, but havn't set
 ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
 following error message:
 
-```
+```console
 You need to install and enable the TensorFlowSharp plugin in order to use the internal brain.
 ```
 
@@ -32,7 +32,7 @@ Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 If you have a graph placeholder set in the internal Brain inspector that is not
 present in the TensorFlow graph, you will see some error like this:
 
-```
+```console
 UnityAgentsException: One of the Tensorflow placeholder could not be found. In brain <some_brain_name>, there are no FloatingPoint placeholder named <some_placeholder_name>.
 ```
 
@@ -42,7 +42,7 @@ its `size` to 0 to remove the `epsilon` placeholder.
 Similarly, if you have a graph scope set in the internal Brain inspector that is
 not correctly set, you will see some error like this:
 
-```
+```console
 UnityAgentsException: The node <Wrong_Graph_Scope>/action could not be found. Please make sure the graphScope <Wrong_Graph_Scope>/ is correct
 ```
 
@@ -56,13 +56,13 @@ editor, you might need to give it additional permissions to execute it.
 
 If you receive such a permission error on macOS, run:
 
-```shell
+```sh
 chmod -R 755 *.app
 ```
 
 or on Linux:
 
-```shell
+```sh
 chmod -R 755 *.x86_64
 ```
 

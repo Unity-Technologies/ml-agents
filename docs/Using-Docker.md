@@ -66,7 +66,7 @@ First, make sure the Docker engine is running on your machine. Then build the
 Docker container by calling the following command at the top-level of the
 repository:
 
-```shell
+```sh
 docker build -t <image-name> .
 ```
 
@@ -78,7 +78,7 @@ Replace `<image-name>` with a name for the Docker image, e.g.
 Run the Docker container by calling the following command at the top-level of
 the repository:
 
-```shell
+```sh
 docker run --name <container-name> \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            -p 5005:5005 \
@@ -116,7 +116,7 @@ Notes on argument values:
 
 To train with a `3DBall` environment executable, the command would be:
 
-```shell
+```sh
 docker run --name 3DBallContainer.first.trial \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            -p 5005:5005 \
@@ -136,7 +136,7 @@ If you are satisfied with the training progress, you can stop the Docker
 container while saving state by either using `Ctrl+C` or `⌘+C` (Mac) or by using
 the following command:
 
-```shell
+```sh
 docker kill --signal=SIGINT <container-name>
 ```
 

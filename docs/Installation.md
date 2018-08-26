@@ -1,19 +1,19 @@
 # Installation
 
-To install and use ML-Agents, you need install Unity, clone this repository
-and install Python with additional dependencies. Each of the subsections
-below overviews each step, in addition to a Docker set-up.
+To install and use ML-Agents, you need install Unity, clone this repository and
+install Python with additional dependencies. Each of the subsections below
+overviews each step, in addition to a Docker set-up.
 
 ## Install **Unity 2017.1** or Later
 
 [Download](https://store.unity.com/download) and install Unity. If you would
-like to use our Docker set-up (introduced later), make sure to select the 
-_Linux Build Support_ component when installing Unity.
+like to use our Docker set-up (introduced later), make sure to select the _Linux
+Build Support_ component when installing Unity.
 
 <p align="center">
-    <img src="images/unity_linux_build_support.png"
-        alt="Linux Build Support"
-        width="500" border="10" />
+  <img src="images/unity_linux_build_support.png"
+       alt="Linux Build Support"
+       width="500" border="10" />
 </p>
 
 ## Clone the Ml-Agents Repository
@@ -22,15 +22,15 @@ Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
     git clone https://github.com/Unity-Technologies/ml-agents.git
 
-The `MLAgentsSDK` directory in this repository contains the Unity Assets
-to add to your projects. The `python` directory contains python packages
-which provide trainers, a python API to interface with Unity, and a package
-to interface with OpenAI Gym.
+The `MLAgentsSDK` directory in this repository contains the Unity Assets to add
+to your projects. The `python` directory contains python packages which provide
+trainers, a python API to interface with Unity, and a package to interface with
+OpenAI Gym.
 
 ## Install Python (with Dependencies)
 
-In order to use ML-Agents toolkit, you need Python 3.6 along with
-the dependencies listed in the [requirements file](../ml-agents/requirements.txt).
+In order to use ML-Agents toolkit, you need Python 3.6 along with the
+dependencies listed in the [requirements file](../ml-agents/requirements.txt).
 Some of the primary dependencies include:
 
 - [TensorFlow](Background-TensorFlow.md)

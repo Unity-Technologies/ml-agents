@@ -5,11 +5,13 @@ documented to be compatabile with
 [Doxygen](http://www.stack.nl/~dimitri/doxygen/) for auto-generating HTML
 documentation.
 
-To generate the API reference, [download
-Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) and run the
-following command within the `docs/` directory:
+To generate the API reference,
+[download Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html)
+and run the following command within the `docs/` directory:
 
-    doxygen dox-ml-agents.conf
+```sh
+doxygen dox-ml-agents.conf
+```
 
 `dox-ml-agents.conf` is a Doxygen configuration file for the ML-Agents toolkit
 that includes the classes that have been properly formatted. The generated HTML

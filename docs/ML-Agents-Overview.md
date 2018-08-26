@@ -124,9 +124,9 @@ components:
   Python API. It lives within the Learning Environment.
 
 <p align="center">
-    <img src="images/learning_environment_basic.png" 
-        alt="Simplified ML-Agents Scene Block Diagram" 
-        width="700" border="10" />
+  <img src="images/learning_environment_basic.png"
+       alt="Simplified ML-Agents Scene Block Diagram"
+       width="700" border="10" />
 </p>
 
 _Simplified block diagram of ML-Agents._
@@ -164,9 +164,9 @@ attached to those characters cannot share a Brain with the Agent linked to the
 medics (medics and drivers have different actions).
 
 <p align="center">
-    <img src="images/learning_environment_example.png"
-        alt="Example ML-Agents Scene Block Diagram"
-        border="10" />
+  <img src="images/learning_environment_example.png"
+       alt="Example ML-Agents Scene Block Diagram"
+       border="10" />
 </p>
 
 _Example block diagram of ML-Agents toolkit for our sample game._
@@ -209,9 +209,9 @@ Communicator (a feature called _broadcasting_). As we will see shortly, this
 enables additional training modes.
 
 <p align="center">
-    <img src="images/learning_environment.png"
-        alt="ML-Agents Scene Block Diagram"
-        border="10" />
+  <img src="images/learning_environment.png"
+       alt="ML-Agents Scene Block Diagram"
+       border="10" />
 </p>
 
 _An example of how a scene containing multiple Agents and Brains might be 
@@ -282,10 +282,10 @@ training on easier tasks can provide a scaffolding for harder tasks in the
 future.
 
 <p align="center">
-    <img src="images/math.png"
-        alt="Example Math Curriculum"
-        width="700"
-        border="10" />
+  <img src="images/math.png"
+       alt="Example Math Curriculum"
+       width="700"
+       border="10" />
 </p>
 
 _Example of a mathematics curriculum. Lessons progress from simpler topics to
