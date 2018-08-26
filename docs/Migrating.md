@@ -30,10 +30,10 @@ in order to ensure a smooth transition.
 * The training script `ppo.py` and `PPO.ipynb` Python notebook have been
   replaced with a single `learn.py` script as the launching point for training
   with ML-Agents. For more information on using `learn.py`, see
-  [here](Training-ML-Agents.md).
+  [here](Training-ML-Agents.md#training-with-mlagents-learn).
 * Hyperparameters for training brains are now stored in the
   `trainer_config.yaml` file. For more information on using this file, see
-  [here](Training-ML-Agents.md).
+  [here](Training-ML-Agents.md#training-config-file).
 
 ### Unity API
 
