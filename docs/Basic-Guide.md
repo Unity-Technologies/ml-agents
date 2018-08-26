@@ -39,8 +39,7 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
 **Plugins** > **Computer**.
 
 **Note**: If you don't see anything under **Assets**, drag the
-`MLAgentsSDK/Assets/ML-Agents` folder under **Assets** within
-Project window.
+`MLAgentsSDK/Assets/ML-Agents` folder under **Assets** within Project window.
 
 ![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
 
@@ -70,7 +69,7 @@ Within `Basics`, be sure to set `env_name` to the name of the Unity executable
 if you want to [use an executable](Learning-Environment-Executable.md) or to
 `None` if you want to interact with the current scene in the Unity Editor.
 
-More information and documentation is provided in the 
+More information and documentation is provided in the
 [Python API](Python-API.md) page.
 
 ## Training the Brain with Reinforcement Learning
@@ -101,7 +100,7 @@ communicate with the external training process when making their decisions.
       training runs
     - And the `--train` tells `mlagents-learn` to run a training session (rather
       than inference)
-5. When the message _"Start training by pressing the Play button in the Unity
+4. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
    in Unity to start training in the Editor.
 
@@ -150,6 +149,6 @@ similar to the steps described
 - For a "Hello World" introduction to creating your own learning environment,
   check out the [Making a New Learning
   Environment](Learning-Environment-Create-New.md) page.
-- For a series of Youtube video tutorials, checkout the [Machine Learning Agents
-  PlayList](https://www.youtube.com/playlist?list=PLX2vGYjWbI0R08eWQkO7nQkGiicHAX7IX)
+- For a series of Youtube video tutorials, checkout the
+  [Machine Learning Agents PlayList](https://www.youtube.com/playlist?list=PLX2vGYjWbI0R08eWQkO7nQkGiicHAX7IX)
   page.
