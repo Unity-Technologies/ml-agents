@@ -1,6 +1,9 @@
 # Unity ml-agents interface and trainers
 
-The `mlagents` package contains two components : The low level API which allows you to interact directly with a Unity Environment and a training component whcih allows you to train agents in Unity Environments using our implementations of reinforcement learning or imitation learning.
+The `mlagents` package contains two components : The low level API which allows
+you to interact directly with a Unity Environment and a training component whcih
+allows you to train agents in Unity Environments using our implementations of
+reinforcement learning or imitation learning.
 
 ## Installation
 
@@ -111,7 +114,8 @@ variable named `env` in this example, can be used in the following way:
     environment. For generic environments, `config` can be ignored. `config` is
     a dictionary of strings to floats where the keys are the names of the
     `resetParameters` and the values are their corresponding float values.
-    Define the reset parameters on the Academy Inspector window in the Unity Editor.
+    Define the reset parameters on the Academy Inspector window in the Unity
+    Editor.
 - **Step : `env.step(action, memory=None, text_action=None)`**  
   Sends a step signal to the environment using the actions. For each brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
