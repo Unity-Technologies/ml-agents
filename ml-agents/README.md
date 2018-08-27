@@ -39,14 +39,7 @@ To communicate with an agent in a Unity environment from a Python program, the
 agent must either use an **External** brain or use a brain that is broadcasting
 (has its **Broadcast** property set to true). Your code is expected to return
 actions for agents with external brains, but can only observe broadcasting
-brains (the information you receive for an agent is the same in both cases). See
-[Using the Broadcast
-Feature](../docs/Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
-
-For a simple example of using the Python API to interact with a Unity
-environment, see the Basic [Jupyter](../docs/Background-Jupyter.md) notebook
-(`notebooks/getting-started.ipynb`), which opens an environment, runs a few
-simulation steps taking random actions, and closes the environment.
+brains (the information you receive for an agent is the same in both cases).
 
 _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
@@ -116,9 +109,7 @@ variable named `env` in this example, can be used in the following way:
     environment. For generic environments, `config` can be ignored. `config` is
     a dictionary of strings to floats where the keys are the names of the
     `resetParameters` and the values are their corresponding float values.
-    Define the reset parameters on the [Academy
-    Inspector](../docs/Learning-Environment-Design-Academy.md#academy-properties) window
-    in the Unity Editor.
+    Define the reset parameters on the Academy Inspector window in the Unity Editor.
 - **Step : `env.step(action, memory=None, text_action=None)`**  
   Sends a step signal to the environment using the actions. For each brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
@@ -176,7 +167,7 @@ mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train <environm
     - `<environment-name>` __(Optional)__ is the path to the Unity executable you want		to train. __Note:__ If this argument is not passed, the training will be 
        made through the editor.
        
-For more information on how to create and train a Unity Environment, you can follow the [Basic Guide](../docs/Basic-Guide.md)
+For more detailled documentation, check out the [ML-Agents toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
 
 
 
