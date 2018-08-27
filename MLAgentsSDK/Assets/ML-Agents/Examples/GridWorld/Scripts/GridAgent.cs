@@ -49,7 +49,6 @@ public class GridAgent : Agent
         AddReward(-0.01f);
         int action = Mathf.FloorToInt(vectorAction[0]);
 
-        // 0 - Forward, 1 - Backward, 2 - Left, 3 - Right
         Vector3 targetPos = transform.position;
         if (action == right)
         {
