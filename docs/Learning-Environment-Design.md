@@ -65,7 +65,7 @@ whether you need to implement them or not depends on your specific scenario.
 **Note:** The API used by the Python PPO training process to communicate with
 and control the Academy during training can be used for other purposes as well.
 For example, you could use the API to use Unity as the simulation engine for
-your own machine learning algorithms. See [Python API](Python-API.md) for more
+your own machine learning algorithms. See [Python API](../ml-agents/README.md) for more
 information.
 
 ## Organizing the Unity Scene
