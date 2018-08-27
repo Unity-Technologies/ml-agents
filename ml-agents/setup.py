@@ -37,7 +37,7 @@ setup(
         'docopt',
         'pyyaml',
         'protobuf>=3.6,<3.7',
-        'grpcio>=1.11.0'],
+        'grpcio>=1.11.0,<1.12.0'],
 
     entry_points={
         'console_scripts': [
