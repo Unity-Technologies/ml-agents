@@ -37,10 +37,10 @@ different brains to follow different curriculums within the same environment.
 
 ### Specifying a Metacurriculum
 
-We first create a folder inside `python/curricula/` for the environment we want
+We first create a folder inside `config/curricula/` for the environment we want
 to use curriculum learning with. For example, if we were creating a
 metacurriculum for Wall Jump, we would create the folder
-`python/curricula/wall-jump/`. We will place our curriculums inside this folder.
+`config/curricula/wall-jump/`. We will place our curriculums inside this folder.
 
 ### Specifying a Curriculum
 
@@ -70,23 +70,22 @@ the BigWallBrain in the Wall Jump environment.
 ```
 
 * `measure` - What to measure learning progress, and advancement in lessons by.
-    * `reward` - Uses a measure received reward.
-    * `progress` - Uses ratio of steps/max_steps.
+  * `reward` - Uses a measure received reward.
+  * `progress` - Uses ratio of steps/max_steps.
 * `thresholds` (float array) - Points in value of `measure` where lesson should
   be increased.
 * `min_lesson_length` (int) - How many times the progress measure should be
   reported before incrementing the lesson.
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
-    * If `true`, weighting will be 0.75 (new) 0.25 (old).
+  * If `true`, weighting will be 0.75 (new) 0.25 (old).
 * `parameters` (dictionary of key:string, value:float array) - Corresponds to
   academy reset parameters to control. Length of each array should be one
   greater than number of thresholds.
 
-
 Once our curriculum is defined, we have to use the reset parameters we defined
 and modify the environment from the agent's `AgentReset()` function. See
-[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/unity-environment/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
+[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/MLAgentsSDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example. Note that if the Academy's __Max Steps__ is not set to some
 positive number the environment will never be reset. The Academy must reset
 for the environment to reset.
@@ -95,13 +94,18 @@ We will save this file into our metacurriculum folder with the name of its
 corresponding Brain. For example, in the Wall Jump environment, there are two
 brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
 the BigWallBrain, we will save `BigWallBrain.json` into
-`python/curricula/wall-jump/`.
+`curricula/wall-jump/`.
 
 ### Training with a Curriculum
 
 Once we have specified our metacurriculum and curriculums, we can launch
-`learn.py` using the `–curriculum` flag to point to the metacurriculum folder
-and PPO will train using Curriculum Learning. For example, to train agents in
-the Wall Jump environment with curriculum learning, we can run `python learn.py
---curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train`. We can
-then keep track of the current lessons and progresses via TensorBoard.
+`mlagents-learn` using the `–curriculum` flag to point to the metacurriculum
+folder and PPO will train using Curriculum Learning. For example, to train
+agents in the Wall Jump environment with curriculum learning, we can run
+
+```sh
+mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train
+```
+
+We can then keep track of the current
+lessons and progresses via TensorBoard.
