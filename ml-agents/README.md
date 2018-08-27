@@ -16,7 +16,7 @@ or by running the following from the `ml-agents` directory of the repository:
 pip install .
 ```
 
-## Low level API
+## `mlagents.envs`
 The ML-Agents toolkit provides a Python API for controlling the agent simulation
 loop of a environment or game built with Unity. This API is used by the ML-Agent
 training algorithms (run with `mlagents-learn`), but you can also write your
@@ -156,7 +156,7 @@ variable named `env` in this example, can be used in the following way:
 
 
 
-## Training the environment
+## `mlagents.trainers`
 
 1. Open a command or terminal window.
 2. Run 
