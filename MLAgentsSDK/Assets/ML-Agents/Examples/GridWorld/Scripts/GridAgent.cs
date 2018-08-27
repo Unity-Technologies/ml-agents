@@ -9,6 +9,11 @@ public class GridAgent : Agent
     public float timeBetweenDecisionsAtInference;
     private float timeSinceDecision;
 
+    static int up = 1;
+    static int down = 2;
+    static int left = 3;
+    static int right = 4;
+
     public override void InitializeAgent()
     {
         academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
@@ -22,19 +27,19 @@ public class GridAgent : Agent
         var maxPosition = academy.gridSize - 1;
         if (positionX == 0)
         {
-            SetActionMask(3);
+            SetActionMask(left);
         }
         if (positionX == maxPosition)
         {
-            SetActionMask(4);
+            SetActionMask(right);
         }
         if (positionZ == 0)
         {
-            SetActionMask(2);
+            SetActionMask(down);
         }
         if (positionZ == maxPosition)
         {
-            SetActionMask(1);
+            SetActionMask(up);
         }
     }
 
@@ -46,22 +51,22 @@ public class GridAgent : Agent
 
         // 0 - Forward, 1 - Backward, 2 - Left, 3 - Right
         Vector3 targetPos = transform.position;
-        if (action == 4)
+        if (action == right)
         {
             targetPos = transform.position + new Vector3(1f, 0, 0f);
         }
 
-        if (action == 3)
+        if (action == left)
         {
             targetPos = transform.position + new Vector3(-1f, 0, 0f);
         }
 
-        if (action == 1)
+        if (action == up)
         {
             targetPos = transform.position + new Vector3(0f, 0, 1f);
         }
 
-        if (action == 2)
+        if (action == down)
         {
             targetPos = transform.position + new Vector3(0f, 0, -1f);
         }
