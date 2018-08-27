@@ -70,7 +70,7 @@ def main():
 
         ''')
     except:
-        print('Unity Technologies')
+        print('\n\n\tUnity Technologies\n')
 
     logger = logging.getLogger('mlagents.learn')
     _USAGE = '''
