@@ -69,9 +69,8 @@ def main():
                         ¬`▀▀▀█▓
 
         ''')
-    # TODO: figure this out
     except:
-        print('UNITY!!!')
+        print('\n\n\tUnity Technologies\n')
 
     logger = logging.getLogger('mlagents.learn')
     _USAGE = '''
