@@ -6,17 +6,18 @@ The `mlagents` package contains two components : The low level API which allows 
 
 The `ml-agents` package can be installed using:
 
-```
+```sh
 pip install mlagents
 ```
 
 or by running the following from the `ml-agents` directory of the repository:
 
-```
+```sh
 pip install .
 ```
 
 ## `mlagents.envs`
+
 The ML-Agents toolkit provides a Python API for controlling the agent simulation
 loop of a environment or game built with Unity. This API is used by the ML-Agent
 training algorithms (run with `mlagents-learn`), but you can also write your
@@ -45,6 +46,7 @@ _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
 where training takes place is secure. This will be addressed in a future
 release._
+
 ### Loading a Unity Environment
 
 Python-side communication happens through `UnityEnvironment` which is located in
@@ -123,7 +125,7 @@ variable named `env` in this example, can be used in the following way:
 
     For example, to access the BrainInfo belonging to a brain called
     'brain_name', and the BrainInfo field 'vector_observations':
-    
+
     ```python
     info = env.step()
     brainInfo = info['brain_name']
@@ -135,7 +137,7 @@ variable named `env` in this example, can be used in the following way:
     and `value`. For example: If you have two external brains named `brain1` and
     `brain2` each with one agent taking two continuous actions, then you can
     have:
-    
+
     ```python
     action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
     ```
@@ -145,29 +147,27 @@ variable named `env` in this example, can be used in the following way:
   Sends a shutdown signal to the environment and closes the communication
   socket.
 
-
-
 ## `mlagents.trainers`
 
 1. Open a command or terminal window.
-2. Run 
+2. Run
 
-```
+```sh
 mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train <environment-name>
 ```
 
-   Where:
-    - `<trainer-config-path>` is the relative or absolute filepath of the
-      trainer configuration. The defaults used by environments in the ML-Agents
-      SDK can be found in `config/trainer_config.yaml`.
-    - `<run-identifier>` is a string used to separate the results of different
-      training runs
-    - The `--train` flag tells `mlagents-learn` to run a training session (rather
-      than inference)
-    - `<environment-name>` __(Optional)__ is the path to the Unity executable you want		to train. __Note:__ If this argument is not passed, the training will be 
-       made through the editor.
-       
-For more detailled documentation, check out the [ML-Agents toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
+Where:
 
+- `<trainer-config-path>` is the relative or absolute filepath of the trainer
+  configuration. The defaults used by environments in the ML-Agents SDK can be
+  found in `config/trainer_config.yaml`.
+- `<run-identifier>` is a string used to separate the results of different
+  training runs
+- The `--train` flag tells `mlagents-learn` to run a training session (rather
+  than inference)
+- `<environment-name>` __(Optional)__ is the path to the Unity executable you
+  want to train. __Note:__ If this argument is not passed, the training
+  will be made through the editor.
 
-
+For more detailled documentation, check out the
+[ML-Agents toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
