@@ -356,8 +356,7 @@ class TrainerController(object):
                         if self.train_model \
                            and trainer.get_step <= trainer.get_max_steps:
                             trainer.increment_step_and_update_last_reward()
-                    if self.train_model:
-                        global_step += 1
+                    global_step += 1
                     if global_step % self.save_freq == 0 and global_step != 0 \
                        and self.train_model:
                         # Save Tensorflow model
