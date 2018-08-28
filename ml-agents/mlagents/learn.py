@@ -100,15 +100,16 @@ def main():
     num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
 
-    if options['--env'] != 'None' and num_runs > 1:
+    if options['--env'] == 'None' and num_runs > 1:
         raise TrainerError('It is not possible to launch more than one concurrent training session '
                            'when training from the editor.')
 
     jobs = []
+    run_seed = seed
     for i in range(num_runs):
         if seed == -1:
-            seed = np.random.randint(0, 9999)
-        p = multiprocessing.Process(target=run_training, args=(i, seed, options))
+            run_seed = np.random.randint(0, 10000)
+        p = multiprocessing.Process(target=run_training, args=(i, run_seed, options))
         jobs.append(p)
         p.start()
 
