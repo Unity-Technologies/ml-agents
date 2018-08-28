@@ -167,6 +167,7 @@ MotorCrawlerBrain:
 
 VisionCrawlerBrain:
     max_steps: 1e6
+    summary_freq: 2000
 
 CognitiveCrawlerBrain:
     max_steps: 1.0e6

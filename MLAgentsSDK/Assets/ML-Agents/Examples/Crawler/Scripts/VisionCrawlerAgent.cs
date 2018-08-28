@@ -28,7 +28,7 @@ public class VisionCrawlerAgent : Agent
     RayPerception rayPer;
 
     public Transform obstacleWall;
-    
+
     [Header("Target To Walk Towards")] [Space(10)]
     public Transform target;
 
@@ -57,7 +57,7 @@ public class VisionCrawlerAgent : Agent
             AddVectorObs(rayPer.Perceive(rayDistance, rayAnglesUp, detectableObjects, 1.5f, -3f));
         }
     }
-    
+
     /// <summary>
     /// Agent touched the target
     /// </summary>
@@ -105,10 +105,10 @@ public class VisionCrawlerAgent : Agent
             Debug.DrawRay(transform.position,
                 goalDirection, Color.green, 0.01f, true);
         }
-        
+
         motorAgent.dirToTarget = goalDirection;
     }
-    
+
     /// <summary>
     /// Moves target to a random position within specified radius.
     /// </summary>
@@ -132,7 +132,7 @@ public class VisionCrawlerAgent : Agent
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / agentParameters.maxStep);
-        
+
         foreach (var bodyPart in motorAgent.jdController.bodyPartsDict.Values)
         {
             if (bodyPart.targetContact && !IsDone() && bodyPart.targetContact.touchingTarget)
@@ -144,7 +144,7 @@ public class VisionCrawlerAgent : Agent
     }
 
     /// <summary>
-    /// In the editor, if "Reset On Done" is checked then AgentReset() will be 
+    /// In the editor, if "Reset On Done" is checked then AgentReset() will be
     /// called automatically anytime we mark done = true in an agent script.
     /// </summary>
 	public override void AgentReset()
