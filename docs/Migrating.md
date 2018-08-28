@@ -2,11 +2,12 @@
 
 ## Migrating from ML-Agents toolkit v0.4 to v0.5
 
-### Unity API
+### Important
+ * We reorganized the entire repository
  * `unity-environment` has been renamed `MLAgentsSDK`.
+ *  The `python` folder has been reorganized. We removed the `python` folder and replaced it with `ml-agents`. The folder `ml-agents` now contains the packages `mlagents.env` to interact directly with Unity environments and `mlagents.trainers` to train environments.
 
 ### Python API
- * The `python` folder has been reorganized. We removed the `python` folder and replaced it with `ml-agents`. The folder `ml-agents` now contains the packages `mlagents.env` to interact directly with Unity environments and `mlagents.trainers` to train environments.
  * The command `python3 learn.py` has been replaced with `mlagents-learn`.
  * It is now required to specify the path to the `trainer-config.yaml` file when running `mlagents-learn`.
  * Curriculum files must now be placed into a folder and be named appropriately. Refer to the [Curriculum training documentation](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Curriculum-Learning.md) for more information.
