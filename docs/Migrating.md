@@ -6,6 +6,9 @@
  * The Unity project `unity-environment` has been renamed `MLAgentsSDK`.
  *  The `python` folder has been renamed to `ml-agents`. It not contains two packages, `mlagents.env` and `mlagents.trainers`. `mlagents.env` can be used to interact directly with a Unity environment, while `mlagents.trainers` contains the classes for training agents.
 
+### Unity API
+ * Discrete Actions now have branches. You can now specify concurrent discrete actions. You will need to update the Brain Parameters in the Brain Inspector in all your environments.
+
 ### Python API
  * In order to run a training session, you must now use the command `mlagents-learn` instead of `python3 learn.py` after installing the `mlagents` packages.
  * It is now required to specify the path to the yaml trainer configuration file when running `mlagents-learn`. We made an example file in 
