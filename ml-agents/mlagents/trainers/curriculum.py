@@ -1,5 +1,6 @@
 import os
 import json
+import math
 
 from .exception import CurriculumError
 
@@ -16,7 +17,6 @@ class Curriculum(object):
         :param default_reset_parameters: Set of reset parameters for
                environment.
         """
-        self.lesson_length = 0
         self.max_lesson_num = 0
         self.measure = None
         self._lesson_num = 0
@@ -42,6 +42,7 @@ class Curriculum(object):
                                       .format(location, key))
         self.smoothing_value = 0
         self.measure = self.data['measure']
+        self.min_lesson_length = self.data['min_lesson_length']
         self.max_lesson_num = len(self.data['thresholds'])
 
         parameters = self.data['parameters']
@@ -63,24 +64,23 @@ class Curriculum(object):
 
     @lesson_num.setter
     def lesson_num(self, lesson_num):
-        self.lesson_length = 0
         self._lesson_num = max(0, min(lesson_num, self.max_lesson_num))
 
-    def increment_lesson(self, progress):
+    def increment_lesson(self, measure_val):
         """
         Increments the lesson number depending on the progress given.
-        :param progress: Measure of progress (either reward or percentage
+        :param measure_val: Measure of progress (either reward or percentage
                steps completed).
+        :return Whether the lesson was incremented.
         """
-        if self.data is None or progress is None:
-            return
+        if self.data is None or measure_val is None or math.isnan(measure_val):
+            return False
         if self.data['signal_smoothing']:
-            progress = self.smoothing_value * 0.25 + 0.75 * progress
+            progress = self.smoothing_value * 0.25 + 0.75 * measure_val
             self.smoothing_value = progress
-        self.lesson_length += 1
         if self.lesson_num < self.max_lesson_num:
-            if ((progress > self.data['thresholds'][self.lesson_num]) and
-                    (self.lesson_length > self.data['min_lesson_length'])):
+            if progress > self.data['thresholds'][self.lesson_num]:
+                print(progress, 'is above the threshold, successfully incrementing lesson')
                 self.lesson_length = 0
                 self.lesson_num += 1
                 config = {}
@@ -92,6 +92,8 @@ class Curriculum(object):
                                     self.lesson_num,
                                     ', '.join([str(x) + ' -> ' + str(config[x])
                                         for x in config])))
+                return True
+        return False
 
     def get_config(self, lesson=None):
         """

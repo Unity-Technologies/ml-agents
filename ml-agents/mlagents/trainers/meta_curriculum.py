@@ -71,15 +71,52 @@ class MetaCurriculum(object):
         for brain_name, lesson in lesson_nums.items():
             self.brains_to_curriculums[brain_name].lesson_num = lesson
 
-    def increment_lessons(self, progresses):
-        """Increments all the lessons of all the curriculums in this
-        MetaCurriculum.
+    def _lesson_ready_to_increment(self, brain_name, reward_buff_size):
+        """Determines whether the curriculum of a specified brain is ready
+        to attempt an increment.
 
         Args:
-            progresses (dict): A dict of brain name to progress.
+            brain_name (str): The name of the brain whose curriculum will be
+                checked for readiness.
+            reward_buff_size (int): The size of the reward buffer of the trainer
+                that corresponds to the specified brain.
+
+        Returns:
+            Whether the curriculum of the specified brain should attempt to
+            increment its lesson.
         """
-        for brain_name, progress in progresses.items():
-            self.brains_to_curriculums[brain_name].increment_lesson(progress)
+        return reward_buff_size >= (self.brains_to_curriculums[brain_name]
+                                        .min_lesson_length)
+
+    def increment_lessons(self, measure_vals, reward_buff_sizes=None):
+        """Attempts to increments all the lessons of all the curriculums in this
+        MetaCurriculum. Note that calling this method does not guarantee the
+        lesson of a curriculum will increment. The lesson of a curriculum will
+        only increment if the specified measure threshold defined in the
+        curriculum has been reached and the minimum number of episodes in the
+        lesson have been completed.
+
+        Args:
+            measure_vals (dict): A dict of brain name to measure value.
+            reward_buff_sizes (dict): A dict of brain names to the size of their
+                corresponding reward buffers.
+
+        Returns:
+            A dict from brain name to whether that brain's lesson number was
+            incremented.
+        """
+        ret = {}
+        if reward_buff_sizes:
+            for brain_name, buff_size in reward_buff_sizes.items():
+                if self._lesson_ready_to_increment(brain_name, buff_size):
+                    progress = measure_vals[brain_name]
+                    ret[brain_name] = (self.brains_to_curriculums[brain_name]
+                                           .increment_lesson(progress))
+        else:
+            for brain_name, progress in measure_vals.items():
+                ret[brain_name] = (self.brains_to_curriculums[brain_name]
+                                       .increment_lesson(progress))
+        return ret
 
 
     def set_all_curriculums_to_lesson_num(self, lesson_num):

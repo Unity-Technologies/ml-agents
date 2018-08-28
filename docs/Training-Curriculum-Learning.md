@@ -59,7 +59,7 @@ the BigWallBrain in the Wall Jump environment.
 {
     "measure" : "progress",
     "thresholds" : [0.1, 0.3, 0.5],
-    "min_lesson_length" : 2,
+    "min_lesson_length" : 40,
     "signal_smoothing" : true,
     "parameters" :
     {
@@ -74,8 +74,8 @@ the BigWallBrain in the Wall Jump environment.
   * `progress` - Uses ratio of steps/max_steps.
 * `thresholds` (float array) - Points in value of `measure` where lesson should
   be increased.
-* `min_lesson_length` (int) - How many times the progress measure should be
-  reported before incrementing the lesson.
+* `min_lesson_length` (int) - The minimum number of episodes that should be
+  completed before the lesson can change.
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
@@ -107,5 +107,4 @@ agents in the Wall Jump environment with curriculum learning, we can run
 mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train
 ```
 
-We can then keep track of the current
-lessons and progresses via TensorBoard.
+We can then keep track of the current lessons and progresses via TensorBoard.
