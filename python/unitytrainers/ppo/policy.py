@@ -82,9 +82,7 @@ class PPOPolicy(Policy):
             feed_dict[self.model.vector_in] = brain_info.vector_observations
         if not self.use_continuous_act:
             feed_dict[self.model.action_masks] = brain_info.action_masks
-
-        network_output = self.sess.run(list(self.inference_dict.values()), feed_dict=feed_dict)
-        run_out = dict(zip(list(self.inference_dict.keys()), network_output))
+        run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
     def update(self, mini_batch, num_sequences):
@@ -139,8 +137,7 @@ class PPOPolicy(Policy):
             mem_in = mini_batch['memory'][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
         self.has_updated = True
-        network_out = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)
-        run_out = dict(zip(list(self.update_dict.keys()), network_out))
+        run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
     def get_intrinsic_rewards(self, curr_info, next_info):

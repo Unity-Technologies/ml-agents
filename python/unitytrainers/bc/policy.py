@@ -56,8 +56,7 @@ class BCPolicy(Policy):
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = np.zeros((len(brain_info.agents), self.m_size))
             feed_dict[self.model.memory_in] = brain_info.memories
-        network_output = self.sess.run(list(self.inference_dict.values()), feed_dict)
-        run_out = dict(zip(list(self.inference_dict.keys()), network_output))
+        run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
     def update(self, mini_batch, num_sequences):
@@ -89,6 +88,5 @@ class BCPolicy(Policy):
             feed_dict[self.model.visual_in[i]] = visual_obs
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = np.zeros([num_sequences, self.m_size])
-        network_output = self.sess.run(list(self.update_dict.values()), feed_dict=feed_dict)
-        run_out = dict(zip(list(self.update_dict.keys()), network_output))
+        run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
