@@ -264,7 +264,7 @@ for both training and inferences phases and the behaviors of all the Agents in
 the scene will be controlled within Python.
 
 We do not currently have a tutorial highlighting this mode, but you can
-learn more about the Python API [here](Python-API.md).
+learn more about the Python API [here](../ml-agents/README.md).
 
 ### Curriculum Learning
 

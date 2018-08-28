@@ -1,4 +1,25 @@
-# Python API
+# Unity ml-agents interface and trainers
+
+The `mlagents` package contains two components : The low level API which allows
+you to interact directly with a Unity Environment and a training component whcih
+allows you to train agents in Unity Environments using our implementations of
+reinforcement learning or imitation learning.
+
+## Installation
+
+The `ml-agents` package can be installed using:
+
+```sh
+pip install mlagents
+```
+
+or by running the following from the `ml-agents` directory of the repository:
+
+```sh
+pip install .
+```
+
+## `mlagents.envs`
 
 The ML-Agents toolkit provides a Python API for controlling the agent simulation
 loop of a environment or game built with Unity. This API is used by the ML-Agent
@@ -22,21 +43,14 @@ To communicate with an agent in a Unity environment from a Python program, the
 agent must either use an **External** brain or use a brain that is broadcasting
 (has its **Broadcast** property set to true). Your code is expected to return
 actions for agents with external brains, but can only observe broadcasting
-brains (the information you receive for an agent is the same in both cases). See
-[Using the Broadcast
-Feature](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
-
-For a simple example of using the Python API to interact with a Unity
-environment, see the Basic [Jupyter](Background-Jupyter.md) notebook
-(`notebooks/getting-started.ipynb`), which opens an environment, runs a few
-simulation steps taking random actions, and closes the environment.
+brains (the information you receive for an agent is the same in both cases).
 
 _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
 where training takes place is secure. This will be addressed in a future
 release._
 
-## Loading a Unity Environment
+### Loading a Unity Environment
 
 Python-side communication happens through `UnityEnvironment` which is located in
 `ml-agents/mlagents/envs`. To load a Unity environment from a built binary
@@ -62,7 +76,7 @@ If you want to directly interact with the Editor, you need to use
 message _"Start training by pressing the Play button in the Unity Editor"_ is
 displayed on the screen
 
-## Interacting with a Unity Environment
+### Interacting with a Unity Environment
 
 A BrainInfo object contains the following fields:
 
@@ -100,9 +114,8 @@ variable named `env` in this example, can be used in the following way:
     environment. For generic environments, `config` can be ignored. `config` is
     a dictionary of strings to floats where the keys are the names of the
     `resetParameters` and the values are their corresponding float values.
-    Define the reset parameters on the [Academy
-    Inspector](Learning-Environment-Design-Academy.md#academy-properties) window
-    in the Unity Editor.
+    Define the reset parameters on the Academy Inspector window in the Unity
+    Editor.
 - **Step : `env.step(action, memory=None, text_action=None)`**  
   Sends a step signal to the environment using the actions. For each brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
@@ -116,6 +129,7 @@ variable named `env` in this example, can be used in the following way:
 
     For example, to access the BrainInfo belonging to a brain called
     'brain_name', and the BrainInfo field 'vector_observations':
+
     ```python
     info = env.step()
     brainInfo = info['brain_name']
@@ -127,6 +141,7 @@ variable named `env` in this example, can be used in the following way:
     and `value`. For example: If you have two external brains named `brain1` and
     `brain2` each with one agent taking two continuous actions, then you can
     have:
+
     ```python
     action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
     ```
@@ -135,3 +150,28 @@ variable named `env` in this example, can be used in the following way:
 - **Close : `env.close()`**
   Sends a shutdown signal to the environment and closes the communication
   socket.
+
+## `mlagents.trainers`
+
+1. Open a command or terminal window.
+2. Run
+
+```sh
+mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train <environment-name>
+```
+
+Where:
+
+- `<trainer-config-path>` is the relative or absolute filepath of the trainer
+  configuration. The defaults used by environments in the ML-Agents SDK can be
+  found in `config/trainer_config.yaml`.
+- `<run-identifier>` is a string used to separate the results of different
+  training runs
+- The `--train` flag tells `mlagents-learn` to run a training session (rather
+  than inference)
+- `<environment-name>` __(Optional)__ is the path to the Unity executable you
+  want to train. __Note:__ If this argument is not passed, the training
+  will be made through the editor.
+
+For more detailled documentation, check out the
+[ML-Agents toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)

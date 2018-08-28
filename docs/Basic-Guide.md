@@ -70,7 +70,7 @@ if you want to [use an executable](Learning-Environment-Executable.md) or to
 `None` if you want to interact with the current scene in the Unity Editor.
 
 More information and documentation is provided in the
-[Python API](Python-API.md) page.
+[Python API](../ml-agents/README.md) page.
 
 ## Training the Brain with Reinforcement Learning
 
