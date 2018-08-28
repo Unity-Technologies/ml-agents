@@ -105,11 +105,11 @@ def main():
                            'when training from the editor.')
 
     jobs = []
-    tmp_seed = seed
+    run_seed = seed
     for i in range(num_runs):
         if seed == -1:
-            tmp_seed = np.random.randint(0, 9999)
-        p = multiprocessing.Process(target=run_training, args=(i, tmp_seed, options))
+            run_seed = np.random.randint(0, 10000)
+        p = multiprocessing.Process(target=run_training, args=(i, run_seed, options))
         jobs.append(p)
         p.start()
 
