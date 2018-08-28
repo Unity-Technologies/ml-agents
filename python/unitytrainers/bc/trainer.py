@@ -148,10 +148,10 @@ class BehavioralCloningTrainer(Trainer):
                 if info_teacher_record == "true" and next_info_teacher_record == "true":
                     if not stored_info_teacher.local_done[idx]:
                         for i in range(self.policy.vis_obs_size):
-                            self.training_buffer[agent_id]['visual_observations%d' % i]\
+                            self.training_buffer[agent_id]['visual_obs%d' % i]\
                                 .append(stored_info_teacher.visual_observations[i][idx])
                         if self.policy.use_vec_obs:
-                            self.training_buffer[agent_id]['vector_observations']\
+                            self.training_buffer[agent_id]['vector_obs']\
                                 .append(stored_info_teacher.vector_observations[idx])
                         if self.policy.use_recurrent:
                             if stored_info_teacher.memories.shape[1] == 0:
@@ -189,13 +189,13 @@ class BehavioralCloningTrainer(Trainer):
         """
         info_teacher = next_info[self.brain_to_imitate]
         for l in range(len(info_teacher.agents)):
-            if ((info_teacher.local_done[l] or
-                 len(self.training_buffer[info_teacher.agents[l]]['actions']) > self.trainer_parameters[
-                 'time_horizon'])
-                    and len(self.training_buffer[info_teacher.agents[l]]['actions']) > 0):
+            teacher_action_list = len(self.training_buffer[info_teacher.agents[l]]['actions'])
+            horizon_reached = teacher_action_list > self.trainer_parameters['time_horizon']
+            teacher_filled = len(self.training_buffer[info_teacher.agents[l]]['actions']) > 0
+            if ((info_teacher.local_done[l] or horizon_reached) and teacher_filled):
                 agent_id = info_teacher.agents[l]
-                self.training_buffer.append_update_buffer(agent_id, batch_size=None,
-                                                          training_length=self.policy.sequence_length)
+                self.training_buffer.append_update_buffer(
+                    agent_id, batch_size=None, training_length=self.policy.sequence_length)
                 self.training_buffer[agent_id].reset_agent()
 
         info_student = next_info[self.brain_name]

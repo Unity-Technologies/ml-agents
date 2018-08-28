@@ -35,13 +35,17 @@ class BCPolicy(Policy):
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
 
+        self.evaluate_rate = 1.0
+        self.update_rate = 0.5
+
     def evaluate(self, brain_info):
         """
         Evaluates policy based on brain_info.
         :param brain_info: BrainInfo input to network.
         :return: Results of evaluation.
         """
-        feed_dict = {self.model.dropout_rate: 1.0, self.model.sequence_length: 1}
+        feed_dict = {self.model.dropout_rate: self.evaluate_rate,
+                     self.model.sequence_length: 1}
 
         for i, _ in enumerate(brain_info.visual_observations):
             feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
@@ -65,7 +69,7 @@ class BCPolicy(Policy):
         :return: Results of update.
         """
 
-        feed_dict = {self.model.dropout_rate: 0.5,
+        feed_dict = {self.model.dropout_rate: self.update_rate,
                      self.model.batch_size: num_sequences,
                      self.model.sequence_length: self.sequence_length}
         if self.use_continuous_act:
@@ -79,10 +83,10 @@ class BCPolicy(Policy):
         if self.use_vec_obs:
             apparent_obs_size = self.brain.vector_observation_space_size * \
                                 self.brain.num_stacked_vector_observations
-            feed_dict[self.model.vector_in] = mini_batch['vector_observations'] \
+            feed_dict[self.model.vector_in] = mini_batch['vector_obs'] \
                 .reshape([-1,apparent_obs_size])
         for i, _ in enumerate(self.model.visual_in):
-            visual_obs = mini_batch['visual_observations%d' % i]
+            visual_obs = mini_batch['visual_obs%d' % i]
             feed_dict[self.model.visual_in[i]] = visual_obs
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = np.zeros([num_sequences, self.m_size])

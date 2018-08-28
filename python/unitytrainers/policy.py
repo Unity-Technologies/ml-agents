@@ -15,8 +15,8 @@ class UnityPolicyException(UnityException):
 
 class Policy(object):
     """
-    Contains a TensorFlow model, and the necessary
-    functions to interact with it to perform inference and updating
+    Contains a learning model, and the necessary
+    functions to interact with it to perform evaluate and updating.
     """
 
     def __init__(self, seed, brain, trainer_parameters, sess):

@@ -42,7 +42,7 @@ def dummy_config():
 
 @mock.patch('unityagents.UnityEnvironment.executable_launcher')
 @mock.patch('unityagents.UnityEnvironment.get_communicator')
-def test_bc_policy(mock_communicator, mock_launcher):
+def test_ppo_policy_evaluate(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
         mock_communicator.return_value = MockCommunicator(
@@ -57,7 +57,8 @@ def test_bc_policy(mock_communicator, mock_launcher):
         policy = PPOPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, sess, False)
         init = tf.global_variables_initializer()
         sess.run(init)
-        policy.evaluate(brain_info)
+        run_out = policy.evaluate(brain_info)
+        assert run_out['action'].shape == (3, 2)
         env.close()
 
 
