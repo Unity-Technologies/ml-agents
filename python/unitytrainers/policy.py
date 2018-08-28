@@ -53,7 +53,7 @@ class Policy(object):
 
     def evaluate(self, brain_info):
         """
-        Evaluates policy.
+        Evaluates policy for the agent experiences provided.
         :param brain_info: BrainInfo input to network.
         :return: Output from policy based on self.inference_dict.
         """

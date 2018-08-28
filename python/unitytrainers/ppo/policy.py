@@ -55,7 +55,7 @@ class PPOPolicy(Policy):
 
     def evaluate(self, brain_info):
         """
-        Evaluates policy based on brain_info.
+        Evaluates policy for the agent experiences provided.
         :param brain_info: BrainInfo object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
