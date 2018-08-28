@@ -46,15 +46,10 @@ class BCPolicy(Policy):
         feed_dict = {self.model.dropout_rate: self.evaluate_rate,
                      self.model.sequence_length: 1}
 
-        for i, _ in enumerate(brain_info.visual_observations):
-            feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
-        if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = brain_info.vector_observations
-        if not self.use_continuous_act:
-            feed_dict[self.model.action_masks] = brain_info.action_masks
+        feed_dict = self._fill_eval_dict(feed_dict, brain_info)
         if self.use_recurrent:
             if brain_info.memories.shape[1] == 0:
-                brain_info.memories = np.zeros((len(brain_info.agents), self.m_size))
+                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out

@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 from unityagents import UnityException
 from unitytrainers.models import LearningModel
@@ -77,6 +78,23 @@ class Policy(object):
         network_out = self.sess.run(list(out_dict.values()), feed_dict=feed_dict)
         run_out = dict(zip(list(out_dict.keys()), network_out))
         return run_out
+
+    def _fill_eval_dict(self, feed_dict, brain_info):
+        for i, _ in enumerate(brain_info.visual_observations):
+            feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
+        if self.use_vec_obs:
+            feed_dict[self.model.vector_in] = brain_info.vector_observations
+        if not self.use_continuous_act:
+            feed_dict[self.model.action_masks] = brain_info.action_masks
+        return feed_dict
+
+    def make_empty_memory(self, num_agents):
+        """
+        Creates empty memory for use with RNNs
+        :param num_agents: Number of agents.
+        :return: Numpy array of zeros.
+        """
+        return np.zeros((num_agents, self.m_size))
 
     @property
     def graph_scope(self):

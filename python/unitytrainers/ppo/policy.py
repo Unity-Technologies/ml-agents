@@ -53,14 +53,6 @@ class PPOPolicy(Policy):
             self.update_dict['forward_loss'] = self.model.forward_loss
             self.update_dict['inverse_loss'] = self.model.inverse_loss
 
-    def make_empty_memory(self, num_agents):
-        """
-        Creates empty memory for use with RNNs
-        :param num_agents: Number of agents.
-        :return: Numpy array of zeros.
-        """
-        return np.zeros((num_agents, self.m_size))
-
     def evaluate(self, brain_info):
         """
         Evaluates policy based on brain_info.
@@ -76,12 +68,7 @@ class PPOPolicy(Policy):
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
-        for i, _ in enumerate(brain_info.visual_observations):
-            feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
-        if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = brain_info.vector_observations
-        if not self.use_continuous_act:
-            feed_dict[self.model.action_masks] = brain_info.action_masks
+        feed_dict = self._fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
@@ -157,7 +144,6 @@ class PPOPolicy(Policy):
                 feed_dict[self.model.output] = next_info.previous_vector_actions
             else:
                 feed_dict[self.model.action_holder] = next_info.previous_vector_actions
-
             for i in range(self.model.vis_obs_size):
                 feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
                 feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
@@ -188,8 +174,7 @@ class PPOPolicy(Policy):
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
         if self.use_recurrent:
             if brain_info.memories.shape[1] == 0:
-                brain_info.memories = np.zeros(
-                    (len(brain_info.vector_observations), self.m_size))
+                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
         if not self.use_continuous_act and self.use_recurrent:
             feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape(
