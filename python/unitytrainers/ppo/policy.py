@@ -1,7 +1,6 @@
 import logging
 
 import numpy as np
-import tensorflow as tf
 from unitytrainers.ppo.models import PPOModel
 from unitytrainers.policy import Policy
 
@@ -21,21 +20,20 @@ class PPOPolicy(Policy):
         super().__init__(seed, brain, trainer_params, sess)
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
-        with tf.variable_scope(self.variable_scope):
-            tf.set_random_seed(seed)
-            self.model = PPOModel(brain,
-                                  lr=float(trainer_params['learning_rate']),
-                                  h_size=int(trainer_params['hidden_units']),
-                                  epsilon=float(trainer_params['epsilon']),
-                                  beta=float(trainer_params['beta']),
-                                  max_step=float(trainer_params['max_steps']),
-                                  normalize=trainer_params['normalize'],
-                                  use_recurrent=trainer_params['use_recurrent'],
-                                  num_layers=int(trainer_params['num_layers']),
-                                  m_size=self.m_size,
-                                  use_curiosity=bool(trainer_params['use_curiosity']),
-                                  curiosity_strength=float(trainer_params['curiosity_strength']),
-                                  curiosity_enc_size=float(trainer_params['curiosity_enc_size']))
+        self.model = PPOModel(brain,
+                              lr=float(trainer_params['learning_rate']),
+                              h_size=int(trainer_params['hidden_units']),
+                              epsilon=float(trainer_params['epsilon']),
+                              beta=float(trainer_params['beta']),
+                              max_step=float(trainer_params['max_steps']),
+                              normalize=trainer_params['normalize'],
+                              use_recurrent=trainer_params['use_recurrent'],
+                              num_layers=int(trainer_params['num_layers']),
+                              m_size=self.m_size,
+                              use_curiosity=bool(trainer_params['use_curiosity']),
+                              curiosity_strength=float(trainer_params['curiosity_strength']),
+                              curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
+                              scope=self.variable_scope, seed=seed)
 
         self.inference_dict = {'action': self.model.output, 'log_probs': self.model.all_log_probs,
                                'value': self.model.value, 'entropy': self.model.entropy,

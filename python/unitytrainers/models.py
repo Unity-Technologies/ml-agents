@@ -8,22 +8,24 @@ logger = logging.getLogger("unityagents")
 
 
 class LearningModel(object):
-    def __init__(self, m_size, normalize, use_recurrent, brain):
-        self.brain = brain
-        self.vector_in = None
-        self.global_step, self.increment_step = self.create_global_steps()
-        self.visual_in = []
-        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
-        self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
-        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
-        self.mask = tf.cast(self.mask_input, tf.int32)
-        self.m_size = m_size
-        self.normalize = normalize
-        self.use_recurrent = use_recurrent
-        self.act_size = brain.vector_action_space_size
-        self.vec_obs_size = brain.vector_observation_space_size * \
-                            brain.num_stacked_vector_observations
-        self.vis_obs_size = brain.number_visual_observations
+    def __init__(self, m_size, normalize, use_recurrent, brain, scope, seed):
+        tf.set_random_seed(seed)
+        with tf.variable_scope(scope):
+            self.brain = brain
+            self.vector_in = None
+            self.global_step, self.increment_step = self.create_global_steps()
+            self.visual_in = []
+            self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
+            self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
+            self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
+            self.mask = tf.cast(self.mask_input, tf.int32)
+            self.m_size = m_size
+            self.normalize = normalize
+            self.use_recurrent = use_recurrent
+            self.act_size = brain.vector_action_space_size
+            self.vec_obs_size = brain.vector_observation_space_size * \
+                                brain.num_stacked_vector_observations
+            self.vis_obs_size = brain.number_visual_observations
 
     @staticmethod
     def create_global_steps():

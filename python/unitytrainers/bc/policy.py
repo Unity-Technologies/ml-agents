@@ -1,7 +1,6 @@
 import logging
 
 import numpy as np
-import tensorflow as tf
 from unitytrainers.bc.models import BehavioralCloningModel
 from unitytrainers.policy import Policy
 
@@ -18,16 +17,16 @@ class BCPolicy(Policy):
         """
         super().__init__(seed, brain, trainer_parameters, sess)
 
-        with tf.variable_scope(self.variable_scope):
-            tf.set_random_seed(seed)
-            self.model = BehavioralCloningModel(
-                h_size=int(trainer_parameters['hidden_units']),
-                lr=float(trainer_parameters['learning_rate']),
-                n_layers=int(trainer_parameters['num_layers']),
-                m_size=self.m_size,
-                normalize=False,
-                use_recurrent=trainer_parameters['use_recurrent'],
-                brain=brain)
+        self.model = BehavioralCloningModel(
+            h_size=int(trainer_parameters['hidden_units']),
+            lr=float(trainer_parameters['learning_rate']),
+            n_layers=int(trainer_parameters['num_layers']),
+            m_size=self.m_size,
+            normalize=False,
+            use_recurrent=trainer_parameters['use_recurrent'],
+            brain=brain,
+            scope=self.variable_scope,
+            seed=seed)
 
         self.inference_dict = {'action': self.model.sample_action}
         self.update_dict = {'policy_loss': self.model.loss,
