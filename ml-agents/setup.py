@@ -39,6 +39,8 @@ setup(
         'protobuf>=3.6,<3.7',
         'grpcio>=1.11.0,<1.12.0'],
 
+    python_requires=">=3.5,<3.7",
+
     entry_points={
         'console_scripts': [
             'mlagents-learn=mlagents.learn:main',
