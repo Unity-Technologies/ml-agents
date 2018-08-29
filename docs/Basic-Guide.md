@@ -90,7 +90,7 @@ communicate with the external training process when making their decisions.
 ### Training the environment
 
 1. Open a command or terminal window.
-2. Nagivate to the folder where you installed the ML-Agents toolkit.
+2. Navigate to the folder where you installed the ML-Agents toolkit.
 3. Run `mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train`
    Where:
     - `<trainer-config-path>` is the relative or absolute filepath of the

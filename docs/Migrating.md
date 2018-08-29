@@ -39,9 +39,9 @@
 
 ### Python API
 
-* We've changed some of the python packages dependencies in requirement.txt
+* We've changed some of the Python packages dependencies in requirement.txt
   file. Make sure to run `pip install .` within your `ml-agents/python` folder
-  to update your python packages.
+  to update your Python packages.
 
 ## Migrating from ML-Agents toolkit v0.2 to v0.3
 

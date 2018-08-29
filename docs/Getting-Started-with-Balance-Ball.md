@@ -193,7 +193,7 @@ has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it.
 
 To train the agents within the Ball Balance environment, we will be using the
-python package. We have provided a convenient script called `mlagents-learn`
+Python package. We have provided a convenient script called `mlagents-learn`
 which accepts arguments used to configure both training and inference phases.
 
 We can use `run_id` to identify the experiment and create a folder where the

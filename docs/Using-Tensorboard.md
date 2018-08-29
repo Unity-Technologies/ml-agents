@@ -34,7 +34,7 @@ When you run the training program, `mlagents-learn`, you can use the
 
 ## The ML-Agents toolkit training statistics
 
-The ML-agents training program saves the following statistics:
+The ML-Agents training program saves the following statistics:
 
 ![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 

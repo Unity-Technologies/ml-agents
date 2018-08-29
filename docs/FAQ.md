@@ -27,13 +27,13 @@ This error message occurs because the TensorFlowSharp plugin won't be usage
 without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit
 Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
-## Tensorflow epsilon placeholder error
+## TensorFlow epsilon placeholder error
 
 If you have a graph placeholder set in the internal Brain inspector that is not
 present in the TensorFlow graph, you will see some error like this:
 
 ```console
-UnityAgentsException: One of the Tensorflow placeholder could not be found. In brain <some_brain_name>, there are no FloatingPoint placeholder named <some_placeholder_name>.
+UnityAgentsException: One of the TensorFlow placeholder could not be found. In brain <some_brain_name>, there are no FloatingPoint placeholder named <some_placeholder_name>.
 ```
 
 Solution: Go to all of your Brain object, find `Graph placeholders` and change
@@ -47,7 +47,7 @@ UnityAgentsException: The node <Wrong_Graph_Scope>/action could not be found. Pl
 ```
 
 Solution: Make sure your Graph Scope field matches the corresponding brain
-object name in your Hierachy Inspector when there is multiple brain.
+object name in your Hierarchy Inspector when there is multiple brain.
 
 ## Environment Permission Error
 
