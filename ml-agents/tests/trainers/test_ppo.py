@@ -8,8 +8,8 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from unityagents import UnityEnvironment
-from .mock_communicator import MockCommunicator
+from mlagents.envs import UnityEnvironment
+from tests.mock_communicator import MockCommunicator
 
 
 @pytest.fixture
@@ -40,8 +40,8 @@ def dummy_config():
         ''')
 
 
-@mock.patch('unityagents.UnityEnvironment.executable_launcher')
-@mock.patch('unityagents.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
 def test_ppo_policy_evaluate(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -62,8 +62,8 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher):
         env.close()
 
 
-@mock.patch('unityagents.UnityEnvironment.executable_launcher')
-@mock.patch('unityagents.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
 def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:

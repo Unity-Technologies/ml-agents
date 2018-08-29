@@ -1,8 +1,8 @@
 import logging
 import numpy as np
 
-from unityagents import UnityException
-from unitytrainers.models import LearningModel
+from mlagents.trainers import UnityException
+from mlagents.trainers.models import LearningModel
 
 logger = logging.getLogger("unityagents")
 

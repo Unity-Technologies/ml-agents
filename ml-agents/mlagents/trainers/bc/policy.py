@@ -1,8 +1,8 @@
 import logging
 
 import numpy as np
-from unitytrainers.bc.models import BehavioralCloningModel
-from unitytrainers.policy import Policy
+from mlagents.trainers.bc.models import BehavioralCloningModel
+from mlagents.trainers.policy import Policy
 
 logger = logging.getLogger("unityagents")
 

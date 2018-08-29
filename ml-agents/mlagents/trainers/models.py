@@ -153,7 +153,6 @@ class LearningModel(object):
         """
         action_idx = [0] + list(np.cumsum(action_size))
         branches_logits = [all_logits[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
-
         branch_masks = [action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
         raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k]) + (1-branch_masks[k])*1.0e-10
                      for k in range(len(action_size))]
@@ -328,9 +327,9 @@ class LearningModel(object):
 
         self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
 
-        self.action_masks = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name="action_masks")
+        self.action_masks = tf.placeholder(shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks")
         output, normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_log_probs, self.action_masks, self.a_size)
+            self.all_log_probs, self.action_masks, self.act_size)
 
         self.output = tf.identity(output, name="action")
 
@@ -340,14 +339,14 @@ class LearningModel(object):
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
-            tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
+            tf.one_hot(self.action_holder[:, i], self.act_size[i]) for i in range(len(self.act_size))], axis=1)
 
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
+            shape=[None, sum(self.act_size)], dtype=tf.float32, name='old_probabilities')
         _, old_normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_old_log_probs, self.action_masks, self.a_size)
+            self.all_old_log_probs, self.action_masks, self.act_size)
 
-        action_idx = [0] + list(np.cumsum(self.a_size))
+        action_idx = [0] + list(np.cumsum(self.act_size))
 
         self.entropy = tf.reduce_sum((tf.stack([
             tf.nn.softmax_cross_entropy_with_logits_v2(

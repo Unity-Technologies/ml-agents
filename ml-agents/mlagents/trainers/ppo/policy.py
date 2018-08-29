@@ -1,8 +1,8 @@
 import logging
 
 import numpy as np
-from unitytrainers.ppo.models import PPOModel
-from unitytrainers.policy import Policy
+from mlagents.trainers.ppo.models import PPOModel
+from mlagents.trainers.policy import Policy
 
 logger = logging.getLogger("unityagents")
 
