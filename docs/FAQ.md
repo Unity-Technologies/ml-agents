@@ -47,7 +47,7 @@ UnityAgentsException: The node <Wrong_Graph_Scope>/action could not be found. Pl
 ```
 
 Solution: Make sure your Graph Scope field matches the corresponding Brain
-object name in your Hierarchy Inspector when there is multiple Brains.
+object name in your Hierarchy Inspector when there are multiple Brains.
 
 ## Environment Permission Error
 
