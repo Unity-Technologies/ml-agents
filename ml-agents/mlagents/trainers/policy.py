@@ -4,7 +4,7 @@ import numpy as np
 from mlagents.trainers import UnityException
 from mlagents.trainers.models import LearningModel
 
-logger = logging.getLogger("unityagents")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class UnityPolicyException(UnityException):
