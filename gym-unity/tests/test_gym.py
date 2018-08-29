@@ -5,8 +5,8 @@ import numpy as np
 from gym_unity.envs import UnityEnv, UnityGymException
 from tests.mock_communicator import MockCommunicator
 
-@mock.patch('unityagents.UnityEnvironment.executable_launcher')
-@mock.patch('unityagents.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
 def test_gym_wrapper(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0, stack=False, num_agents=1)
@@ -26,8 +26,8 @@ def test_gym_wrapper(mock_communicator, mock_launcher):
     assert isinstance(done, bool)
     assert isinstance(info, dict)
 
-@mock.patch('unityagents.UnityEnvironment.executable_launcher')
-@mock.patch('unityagents.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
 def test_multi_agent(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0, stack=False, num_agents=2)
