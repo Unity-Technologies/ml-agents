@@ -58,7 +58,7 @@ If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install dependencies, enter the `ml-agents/` directory and run from
+To install dependencies, enter the `ml-agents/` sub-directory and run from
 the command line:
 
     pip3 install .

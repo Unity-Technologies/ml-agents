@@ -63,7 +63,7 @@ contains agents ready to train. To perform the training:
 1. [Build the project](Learning-Environment-Executable.md), making sure that you
    only include the training scene.
 2. Open a terminal or console window.
-3. Navigate to the ml-agents `python` folder.
+3. Navigate to the directory where you installed the ML-Agents Toolkit.
 4. Run the following to launch the training process using the path to the Unity
    environment you built in step 1:
 
@@ -75,8 +75,7 @@ During a training session, the training program prints out and saves updates at
 regular intervals (specified by the `summary_freq` option). The saved statistics
 are grouped by the `run-id` value so you should assign a unique id to each
 training run if you plan to view the statistics. You can view these statistics
-using TensorBoard during or after training by running the following command
-(from the ML-Agents python directory):
+using TensorBoard during or after training by running the following command:
 
 ```sh
 tensorboard --logdir=summaries

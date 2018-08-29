@@ -83,9 +83,8 @@ env = UnityEnvironment(file_name=<env_name>)
 ## Training the Environment
 
 1. Open a command or terminal window.
-2. Navigate to the folder where you installed ML-Agents.
-3. Change to the python directory.
-4. Run
+2. Navigate to the folder where you installed the ML-Agents Toolkit.
+3. Run
    `mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier> --train`
    Where:
    * `<trainer-config-file>` is the file path of the trainer configuration yaml.
@@ -97,7 +96,7 @@ env = UnityEnvironment(file_name=<env_name>)
      than inference)
 
 For example, if you are training with a 3DBall executable you exported to the
-ml-agents/python directory, run:
+the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
 mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=firstRun --train

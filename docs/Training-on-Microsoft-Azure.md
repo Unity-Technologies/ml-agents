@@ -66,8 +66,8 @@ To run your training on the VM:
 
 1. [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp)
     your built Unity application to your Virtual Machine.
-2. Set the `ml-agents` sub-folder of the ml-agents repo to your working
-   directory.
+2. Set the the directory where the ML-Agents Toolkit was installed to your
+   working directory.
 3. Run the following command:
 
 ```sh
@@ -102,10 +102,9 @@ training](Using-Tensorboard.md).
 
 2. Unless you started the training as a background process, connect to your VM
    from another terminal instance.
-3. Set the `python` folder in ml-agents to your current working directory.
-4. Run the following command from your `tensorboard --logdir=summaries --host
-   0.0.0.0`
-5. You should now be able to open a browser and navigate to
+3. Run the following command from your terminal
+   `tensorboard --logdir=summaries --host 0.0.0.0`
+4. You should now be able to open a browser and navigate to
    `<Your_VM_IP_Address>:6060` to view the TensorBoard report.
 
 ## Running on Azure Container Instances
