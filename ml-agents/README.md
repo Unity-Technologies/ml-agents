@@ -1,8 +1,8 @@
 # Unity ML-Agents Interface and Trainers
 
-The `mlagents` package contains two components : The low level API which allows
+The `mlagents` Python package contains two components : The low level API which allows
 you to interact directly with a Unity Environment and a training component which
-allows you to train agents in Unity Environments using our implementations of
+allows you to train Agents in Unity Environments using our implementations of
 reinforcement learning or imitation learning.
 
 ## Installation
@@ -31,7 +31,7 @@ The key objects in the Python API include:
 - **UnityEnvironment** — the main interface between the Unity application and
   your code. Use UnityEnvironment to start and control a simulation or training
   session.
-- **BrainInfo** — contains all the data from agents in the simulation, such as
+- **BrainInfo** — contains all the data from Agents in the simulation, such as
   observations and rewards.
 - **BrainParameters** — describes the data elements in a BrainInfo object. For
   example, provides the array length of an observation in BrainInfo.
@@ -42,7 +42,7 @@ the ML-Agents SDK.
 To communicate with an Agent in a Unity environment from a Python program, the
 Agent must either use an **External** Brain or use a Brain that is broadcasting
 (has its **Broadcast** property set to true). Your code is expected to return
-actions for agents with external Brains, but can only observe broadcasting
+actions for Agents with external Brains, but can only observe broadcasting
 Brains (the information you receive for an Agent is the same in both cases).
 
 _Notice: Currently communication between Unity and Python takes place over an
@@ -84,17 +84,17 @@ A BrainInfo object contains the following fields:
   the list corresponds to the n<sup>th</sup> observation of the Brain.
 - **`vector_observations`** : A two dimensional numpy array of dimension `(batch
   size, vector observation size)`.
-- **`text_observations`** : A list of string corresponding to the agents text
+- **`text_observations`** : A list of string corresponding to the Agents text
   observations.
 - **`memories`** : A two dimensional numpy array of dimension `(batch size,
   memory size)` which corresponds to the memories sent at the previous step.
-- **`rewards`** : A list as long as the number of agents using the Brain
+- **`rewards`** : A list as long as the number of Agents using the Brain
   containing the rewards they each obtained at the previous step.
-- **`local_done`** : A list as long as the number of agents using the Brain
+- **`local_done`** : A list as long as the number of Agents using the Brain
   containing  `done` flags (whether or not the Agent is done).
-- **`max_reached`** : A list as long as the number of agents using the Brain
-  containing true if the agents reached their max steps.
-- **`agents`** : A list of the unique ids of the agents using the Brain.
+- **`max_reached`** : A list as long as the number of Agents using the Brain
+  containing true if the Agents reached their max steps.
+- **`agents`** : A list of the unique ids of the Agents using the Brain.
 - **`previous_actions`** : A two dimensional numpy array of dimension `(batch
   size, vector action size)` if the vector action space is continuous and
   `(batch size, number of branches)` if the vector action space is discrete.
@@ -119,9 +119,9 @@ variable named `env` in this example, can be used in the following way:
 - **Step : `env.step(action, memory=None, text_action=None)`**  
   Sends a step signal to the environment using the actions. For each Brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
-    multiple agents per Brain.
+    multiple Agents per Brain.
   - `memory` is an optional input that can be used to send a list of floats per
-    agents to be retrieved at the next step.
+    Agents to be retrieved at the next step.
   - `text_action` is an optional input that be used to send a single string per
     Agent.
 

@@ -41,7 +41,7 @@ env = UnityEnv(environment_filename, worker_id, default_visual, multiagent)
   observations (False) as the default observation provided by the `reset` and
   `step` functions. Defaults to `False`.
 * `multiagent` refers to whether you intent to launch an environment which
-  contains more than one agent. Defaults to `False`.
+  contains more than one Agent. Defaults to `False`.
 
 The returned environment `env` will function as a gym.
 
@@ -70,7 +70,7 @@ slightly modifications to the ones provided for Atari and Mujoco environments.
 
 ### Example - DQN Baseline
 
-In order to train an agent to play the `GridWorld` environment using the
+In order to train an Agent to play the `GridWorld` environment using the
 Baselines DQN algorithm, create a file called `train_unity.py` within the
 `baselines/deepq/experiments` subfolder of the baselines repository. This file
 will be a modification of the `run_atari.py` file within the same folder. Then

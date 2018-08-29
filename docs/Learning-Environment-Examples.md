@@ -21,10 +21,10 @@ If you would like to contribute environments, please see our
 
 ![Basic](images/basic.png)
 
-* Set-up: A linear movement task where the agent must move left or right to
+* Set-up: A linear movement task where the Agent must move left or right to
   rewarding states.
 * Goal: Move to the most reward state.
-* Agents: The environment contains one agent linked to a single Brain.
+* Agents: The environment contains one Agent linked to a single Brain.
 * Agent Reward Function:
   * +0.1 for arriving at suboptimal state.
   * +1.0 for arriving at optimal state.
@@ -40,10 +40,10 @@ If you would like to contribute environments, please see our
 
 ![3D Balance Ball](images/balance.png)
 
-* Set-up: A balance-ball task, where the agent controls the platform.
-* Goal: The agent must balance the platform in order to keep the ball on it for
+* Set-up: A balance-ball task, where the Agent controls the platform.
+* Goal: The Agent must balance the platform in order to keep the ball on it for
   as long as possible.
-* Agents: The environment contains 12 agents of the same kind, all linked to a
+* Agents: The environment contains 12 Agents of the same kind, all linked to a
   single Brain.
 * Agent Reward Function:
   * +0.1 for every step the ball remains on the platform.
@@ -63,15 +63,15 @@ If you would like to contribute environments, please see our
 
 ![GridWorld](images/gridworld.png)
 
-* Set-up: A version of the classic grid-world task. Scene contains agent, goal,
+* Set-up: A version of the classic grid-world task. Scene contains Agent, goal,
   and obstacles.
-* Goal: The agent must navigate the grid to the goal while avoiding the
+* Goal: The Agent must navigate the grid to the goal while avoiding the
   obstacles.
-* Agents: The environment contains one agent linked to a single Brain.
+* Agents: The environment contains one Agent linked to a single Brain.
 * Agent Reward Function:
   * -0.01 for every step.
-  * +1.0 if the agent navigates to the goal position of the grid (episode ends).
-  * -1.0 if the agent navigates to an obstacle (episode ends).
+  * +1.0 if the Agent navigates to the goal position of the grid (episode ends).
+  * -1.0 if the Agent navigates to an obstacle (episode ends).
 * Brains: One Brain with the following observation/action space.
   * Vector Observation space: None
   * Vector Action space: (Discrete) Size of 4, corresponding to movement in
@@ -85,16 +85,16 @@ If you would like to contribute environments, please see our
 
 ![Tennis](images/tennis.png)
 
-* Set-up: Two-player game where agents control rackets to bounce ball over a
+* Set-up: Two-player game where Agents control rackets to bounce ball over a
   net.
-* Goal: The agents must bounce ball between one another while not dropping or
+* Goal: The Agents must bounce ball between one another while not dropping or
   sending ball out of bounds.
-* Agents: The environment contains two agent linked to a single Brain named
+* Agents: The environment contains two Agent linked to a single Brain named
   TennisBrain. After training you can attach another Brain named MyBrain to one
-  of the agent to play against your trained model.
+  of the Agent to play against your trained model.
 * Agent Reward Function (independent):
-  * +0.1 To agent when hitting ball over net.
-  * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
+  * +0.1 To Agent when hitting ball over net.
+  * -0.1 To Agent who let ball hit their ground, or hit ball out of bounds.
 * Brains: One Brain with the following observation/action space.
   * Vector Observation space: 8 variables corresponding to position and velocity
     of ball and racket.
@@ -109,9 +109,9 @@ If you would like to contribute environments, please see our
 
 ![Push](images/push.png)
 
-* Set-up: A platforming environment where the agent can push a block around.
-* Goal: The agent must push the block to the goal.
-* Agents: The environment contains one agent linked to a single Brain.
+* Set-up: A platforming environment where the Agent can push a block around.
+* Goal: The Agent must push the block to the goal.
+* Agents: The environment contains one Agent linked to a single Brain.
 * Agent Reward Function:
   * -0.0025 for every step.
   * +1.0 if the block touches the goal.
@@ -131,18 +131,18 @@ If you would like to contribute environments, please see our
 
 ![Wall](images/wall.png)
 
-* Set-up: A platforming environment where the agent can jump over a wall.
-* Goal: The agent must use the block to scale the wall and reach the goal.
-* Agents: The environment contains one agent linked to two different Brains. The
-  Brain the agent is linked to changes depending on the height of the wall.
+* Set-up: A platforming environment where the Agent can jump over a wall.
+* Goal: The Agent must use the block to scale the wall and reach the goal.
+* Agents: The environment contains one Agent linked to two different Brains. The
+  Brain the Agent is linked to changes depending on the height of the wall.
 * Agent Reward Function:
   * -0.0005 for every step.
-  * +1.0 if the agent touches the goal.
-  * -1.0 if the agent falls off the platform.
+  * +1.0 if the Agent touches the goal.
+  * -1.0 if the Agent falls off the platform.
 * Brains: Two Brains, each with the following observation/action space.
   * Vector Observation space: Size of 74, corresponding to 14 ray casts each
-    detecting 4 possible objects. plus the global position of the agent and
-    whether or not the agent is grounded.
+    detecting 4 possible objects. plus the global position of the Agent and
+    whether or not the Agent is grounded.
   * Vector Action space: (Discrete) 4 Branches:
     * Forward Motion (3 possible actions: Forward, Backwards, No Action)
     * Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
@@ -157,10 +157,10 @@ If you would like to contribute environments, please see our
 ![Reacher](images/reacher.png)
 
 * Set-up: Double-jointed arm which can move to target locations.
-* Goal: The agents must move it's hand to the goal location, and keep it there.
-* Agents: The environment contains 10 agent linked to a single Brain.
+* Goal: The Agents must move it's hand to the goal location, and keep it there.
+* Agents: The environment contains 10 Agent linked to a single Brain.
 * Agent Reward Function (independent):
-  * +0.1 Each step agent's hand is in goal location.
+  * +0.1 Each step Agent's hand is in goal location.
 * Brains: One Brain with the following observation/action space.
   * Vector Observation space: 26 variables corresponding to position, rotation,
     velocity, and angular velocities of the two arm Rigidbodies.
@@ -175,10 +175,10 @@ If you would like to contribute environments, please see our
 ![Crawler](images/crawler.png)
 
 * Set-up: A creature with 4 arms and 4 forearms.
-* Goal: The agents must move its body toward the goal direction without falling.
+* Goal: The Agents must move its body toward the goal direction without falling.
   * `CrawlerStaticTarget` - Goal direction is always forward.
   * `CrawlerDynamicTarget`- Goal direction is randomized.
-* Agents: The environment contains 3 agent linked to a single Brain.
+* Agents: The environment contains 3 Agent linked to a single Brain.
 * Agent Reward Function (independent):
   * +0.03 times body velocity in the goal direction.
   * +0.01 times body direction alignment with goal direction.
@@ -196,17 +196,17 @@ If you would like to contribute environments, please see our
 
 ![Banana](images/banana.png)
 
-* Set-up: A multi-agent environment where agents compete to collect bananas.
-* Goal: The agents must learn to move to as many yellow bananas as possible
+* Set-up: A multi-agent environment where Agents compete to collect bananas.
+* Goal: The Agents must learn to move to as many yellow bananas as possible
   while avoiding blue bananas.
-* Agents: The environment contains 5 agents linked to a single Brain.
+* Agents: The environment contains 5 Agents linked to a single Brain.
 * Agent Reward Function (independent):
   * +1 for interaction with yellow banana
   * -1 for interaction with blue banana.
 * Brains: One Brain with the following observation/action space.
-  * Vector Observation space: 53 corresponding to velocity of agent (2), whether
-    agent is frozen and/or shot its laser (2), plus ray-based perception of
-    objects around agent's forward direction (49; 7 raycast angles with 7
+  * Vector Observation space: 53 corresponding to velocity of Agent (2), whether
+    Agent is frozen and/or shot its laser (2), plus ray-based perception of
+    objects around Agent's forward direction (49; 7 raycast angles with 7
     measurements for each).
   * Vector Action space: (Discrete) 4 Branches:
     * Forward Motion (3 possible actions: Forward, Backwards, No Action)
@@ -223,11 +223,11 @@ If you would like to contribute environments, please see our
 
 ![Hallway](images/hallway.png)
 
-* Set-up: Environment where the agent needs to find information in a room,
+* Set-up: Environment where the Agent needs to find information in a room,
   remember it, and use it to move to the correct goal.
 * Goal: Move to the goal which corresponds to the color of the block in the
   room.
-* Agents: The environment contains one agent linked to a single Brain.
+* Agents: The environment contains one Agent linked to a single Brain.
 * Agent Reward Function (independent):
   * +1 For moving to correct goal.
   * -0.1 For moving to incorrect goal.
@@ -235,9 +235,9 @@ If you would like to contribute environments, please see our
 * Brains: One Brain with the following observation/action space:
   * Vector Observation space: 30 corresponding to local ray-casts detecting
     objects, goals, and walls.
-  * Vector Action space: (Discrete) 1 Branch, 4 actions corresponding to agent
+  * Vector Action space: (Discrete) 1 Branch, 4 actions corresponding to Agent
     rotation and forward/backward movement.
-  * Visual Observations (Optional): First-person view for the agent. Use
+  * Visual Observations (Optional): First-person view for the Agent. Use
     `VisualHallway` scene.
 * Reset Parameters: None.
 * Benchmark Mean Reward: 0.7
@@ -247,18 +247,18 @@ If you would like to contribute environments, please see our
 
 ![Bouncer](images/bouncer.png)
 
-* Set-up: Environment where the agent needs on-demand decision making. The agent
+* Set-up: Environment where the Agent needs on-demand decision making. The Agent
   must decide how perform its next bounce only when it touches the ground.
 * Goal: Catch the floating banana. Only has a limited number of jumps.
-* Agents: The environment contains one agent linked to a single Brain.
+* Agents: The environment contains one Agent linked to a single Brain.
 * Agent Reward Function (independent):
   * +1 For catching the banana.
   * -1 For bouncing out of bounds.
   * -0.05 Times the action squared. Energy expenditure penalty.
 * Brains: One Brain with the following observation/action space:
-  * Vector Observation space: 6 corresponding to local position of agent and
+  * Vector Observation space: 6 corresponding to local position of Agent and
     banana.
-  * Vector Action space: (Continuous) 3 corresponding to agent force applied for
+  * Vector Action space: (Continuous) 3 corresponding to Agent force applied for
     the jump.
   * Visual Observations: None.
 * Reset Parameters: None.
@@ -268,11 +268,11 @@ If you would like to contribute environments, please see our
 
 ![SoccerTwos](images/soccer.png)
 
-* Set-up: Environment where four agents compete in a 2 vs 2 toy soccer game.
+* Set-up: Environment where four Agents compete in a 2 vs 2 toy soccer game.
 * Goal:
   * Striker: Get the ball into the opponent's goal.
   * Goalie: Prevent the ball from entering its own goal.
-* Agents: The environment contains four agents, with two linked to one Brain
+* Agents: The environment contains four Agents, with two linked to one Brain
   (strikers) and two linked to another (goalies).
 * Agent Reward Function (dependent):
   * Striker:
@@ -286,7 +286,7 @@ If you would like to contribute environments, please see our
 * Brains: Two Brain with the following observation/action space:
   * Vector Observation space: 112 corresponding to local 14 ray casts, each
     detecting 7 possible object types, along with the object's distance.
-    Perception is in 180 degree view from front of agent.
+    Perception is in 180 degree view from front of Agent.
   * Vector Action space: (Discrete) One Branch
     * Striker: 6 actions corresponding to forward, backward, sideways movement,
       as well as rotation.
@@ -300,12 +300,12 @@ If you would like to contribute environments, please see our
 
 ![Walker](images/walker.png)
 
-* Set-up: Physics-based Humanoids agents with 26 degrees of freedom. These DOFs
+* Set-up: Physics-based Humanoids Agents with 26 degrees of freedom. These DOFs
   correspond to articulation of the following body-parts: hips, chest, spine,
   head, thighs, shins, feet, arms, forearms and hands.
-* Goal: The agents must move its body toward the goal direction as quickly as
+* Goal: The Agents must move its body toward the goal direction as quickly as
   possible without falling.
-* Agents: The environment contains 11 independent agent linked to a single
+* Agents: The environment contains 11 independent Agent linked to a single
   Brain.
 * Agent Reward Function (independent):
   * +0.03 times body velocity in the goal direction.
@@ -325,18 +325,18 @@ If you would like to contribute environments, please see our
 
 ![Pyramids](images/pyramids.png)
 
-* Set-up: Environment where the agent needs to press a button to spawn a
+* Set-up: Environment where the Agent needs to press a button to spawn a
   pyramid, then navigate to the pyramid, knock it over, and move to the gold
   brick at the top.
 * Goal: Move to the golden brick on top of the spawned pyramid.
-* Agents: The environment contains one agent linked to a single Brain.
+* Agents: The environment contains one Agent linked to a single Brain.
 * Agent Reward Function (independent):
   * +2 For moving to golden brick (minus 0.001 per step).
 * Brains: One Brain with the following observation/action space:
   * Vector Observation space: 148 corresponding to local ray-casts detecting
     switch, bricks, golden brick, and walls, plus variable indicating switch
     state.
-  * Vector Action space: (Discrete) 4 corresponding to agent rotation and
+  * Vector Action space: (Discrete) 4 corresponding to Agent rotation and
     forward/backward movement.
   * Visual Observations (Optional): First-person camera per-agent. Us
     `VisualPyramids` scene.

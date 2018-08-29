@@ -52,7 +52,7 @@ Rather than adjusting it by hand, we will create a JSON file which
 describes the structure of the curriculum. Within it, we can specify which
 points in the training process our wall height will change, either based on the
 percentage of training steps which have taken place, or what the average reward
-the agent has received in the recent past is. Below is an example curriculum for
+the Agent has received in the recent past is. Below is an example curriculum for
 the BigWallBrain in the Wall Jump environment.
 
 ```json
@@ -84,7 +84,7 @@ the BigWallBrain in the Wall Jump environment.
   greater than number of thresholds.
 
 Once our curriculum is defined, we have to use the reset parameters we defined
-and modify the environment from the agent's `AgentReset()` function. See
+and modify the environment from the Agent's `AgentReset()` function. See
 [WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/MLAgentsSDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example. Note that if the Academy's __Max Steps__ is not set to some
 positive number the environment will never be reset. The Academy must reset

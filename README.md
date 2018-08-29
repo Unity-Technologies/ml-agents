@@ -6,11 +6,11 @@
 
 **The Unity Machine Learning Agents Toolkit** (ML-Agents) is an open-source
 Unity plugin that enables games and simulations to serve as environments for
-training intelligent Agents. Agents can be trained using reinforcement learning,
+training intelligent agents. Agents can be trained using reinforcement learning,
 imitation learning, neuroevolution, or other machine learning methods through a
 simple-to-use Python API. We also provide implementations (based on TensorFlow)
 of state-of-the-art algorithms to enable game developers and hobbyists to easily
-train intelligent Agents for 2D, 3D and VR/AR games. These trained Agents can be
+train intelligent agents for 2D, 3D and VR/AR games. These trained agents can be
 used for multiple purposes, including controlling NPC behavior (in a variety of
 settings such as multi-agent and adversarial), automated testing of game builds
 and evaluating different game design decisions pre-release. The ML-Agents
@@ -24,11 +24,11 @@ developer communities.
 * Unity environment control from Python
 * 10+ sample Unity environments
 * Support for multiple environment configurations and training scenarios
-* Train memory-enhanced Agents using deep reinforcement learning
+* Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning scenarios
-* Broadcasting of Agent behavior for supervised learning
+* Broadcasting of agent behavior for supervised learning
 * Built-in support for Imitation Learning
-* Flexible Agent control with On Demand Decision Making
+* Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
 * Simplified set-up with Docker
 
