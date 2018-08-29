@@ -28,7 +28,7 @@ certain model attributes (called _hyperparameters_). Finding the right values of
 these hyperparameters can require a few iterations. Consequently, we leverage a
 visualization tool within TensorFlow called
 [TensorBoard](https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard).
-It allows the visualization of certain Agent attributes (e.g. reward) throughout
+It allows the visualization of certain agent attributes (e.g. reward) throughout
 training which can be helpful in both building intuitions for the different
 hyperparameters and setting the optimal values for your Unity environment. We
 provide more details on setting the hyperparameters in later parts of the

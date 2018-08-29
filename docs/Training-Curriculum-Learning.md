@@ -2,14 +2,14 @@
 
 ## Sample Environment
 
-Imagine a task in which an Agent needs to scale a wall to arrive at a goal. The
-starting point when training an Agent to accomplish this task will be a random
-policy. That starting policy will have the Agent running in circles, and will
+Imagine a task in which an agent needs to scale a wall to arrive at a goal. The
+starting point when training an agent to accomplish this task will be a random
+policy. That starting policy will have the agent running in circles, and will
 likely never, or very rarely scale the wall properly to the achieve the reward.
 If we start with a simpler task, such as moving toward an unobstructed goal,
-then the Agent can easily learn to accomplish the task. From there, we can
+then the agent can easily learn to accomplish the task. From there, we can
 slowly add to the difficulty of the task by increasing the size of the wall,
-until the Agent can complete the initially near-impossible task of scaling the
+until the agent can complete the initially near-impossible task of scaling the
 wall. We are including just such an environment with the ML-Agents toolkit 0.2,
 called __Wall Jump__.
 
@@ -19,12 +19,12 @@ _Demonstration of a curriculum training scenario in which a progressively taller
 wall obstructs the path to the goal._
 
 To see this in action, observe the two learning curves below. Each displays the
-reward over time for an Agent trained using PPO with the same set of training
-hyperparameters. The difference is that one Agent was trained using the
-full-height wall version of the task, and the other Agent was trained using the
+reward over time for an agent trained using PPO with the same set of training
+hyperparameters. The difference is that one agent was trained using the
+full-height wall version of the task, and the other agent was trained using the
 curriculum version of the task. As you can see, without using curriculum
-learning the Agent has a lot of difficulty. We think that by using well-crafted
-curricula, Agents trained using reinforcement learning will be able to
+learning the agent has a lot of difficulty. We think that by using well-crafted
+curricula, agents trained using reinforcement learning will be able to
 accomplish tasks otherwise much more difficult.
 
 ![Log](images/curriculum_progress.png)
@@ -52,7 +52,7 @@ Rather than adjusting it by hand, we will create a JSON file which
 describes the structure of the curriculum. Within it, we can specify which
 points in the training process our wall height will change, either based on the
 percentage of training steps which have taken place, or what the average reward
-the Agent has received in the recent past is. Below is an example curriculum for
+the agent has received in the recent past is. Below is an example curriculum for
 the BigWallBrain in the Wall Jump environment.
 
 ```json
@@ -84,8 +84,8 @@ the BigWallBrain in the Wall Jump environment.
   greater than number of thresholds.
 
 Once our curriculum is defined, we have to use the reset parameters we defined
-and modify the environment from the Agent's `AgentReset()` function. See
-[WallJumpagent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/MLAgentsSDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpagent.cs)
+and modify the environment from the agent's `AgentReset()` function. See
+[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/MLAgentsSDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example. Note that if the Academy's __Max Steps__ is not set to some
 positive number the environment will never be reset. The Academy must reset
 for the environment to reset.
@@ -101,7 +101,7 @@ the BigWallBrain, we will save `BigWallBrain.json` into
 Once we have specified our metacurriculum and curriculums, we can launch
 `mlagents-learn` using the `–curriculum` flag to point to the metacurriculum
 folder and PPO will train using Curriculum Learning. For example, to train
-Agents in the Wall Jump environment with curriculum learning, we can run
+agents in the Wall Jump environment with curriculum learning, we can run
 
 ```sh
 mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train

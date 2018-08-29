@@ -77,7 +77,7 @@ More information and documentation is provided in the
 ### Setting the Brain to External
 
 Since we are going to build this environment to conduct training, we need to set
-the Brain used by the Agents to **External**. This allows the Agents to
+the Brain used by the agents to **External**. This allows the agents to
 communicate with the external training process when making their decisions.
 
 1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy

@@ -2,8 +2,8 @@
 
 ML-Agents uses a reinforcement learning technique called
 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
-PPO uses a neural network to approximate the ideal function that maps an Agent's
-observations to the best action an Agent can take in a given state. The
+PPO uses a neural network to approximate the ideal function that maps an agent's
+observations to the best action an agent can take in a given state. The
 ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
 Python process (communicating with the running Unity application over a socket).
 
@@ -15,7 +15,7 @@ If you are using the recurrent neural network (RNN) to utilize memory, see
 details.
 
 If you are using curriculum training to pace the difficulty of the learning task
-presented to an Agent, see [Training with Curriculum
+presented to an agent, see [Training with Curriculum
 Learning](Training-Curriculum-Learning.md).
 
 For information about imitation learning, which uses a different training
@@ -34,8 +34,8 @@ of performance you would like.
 ### Gamma
 
 `gamma` corresponds to the discount factor for future rewards. This can be
-thought of as how far into the future the Agent should care about possible
-rewards. In situations when the Agent should be acting in the present in order
+thought of as how far into the future the agent should care about possible
+rewards. In situations when the agent should be acting in the present in order
 to prepare for rewards in the distant future, this value should be large. In
 cases when rewards are more immediate, it can be smaller.
 
@@ -45,7 +45,7 @@ Typical Range: `0.8` - `0.995`
 
 `lambd` corresponds to the `lambda` parameter used when calculating the
 Generalized Advantage Estimate ([GAE](https://arxiv.org/abs/1506.02438)). This
-can be thought of as how much the Agent relies on its current value estimate
+can be thought of as how much the agent relies on its current value estimate
 when calculating an updated value estimate. Low values correspond to relying
 more on the current value estimate (which can be high bias), and high values
 correspond to relying more on the actual rewards received in the environment
@@ -97,12 +97,12 @@ Typical Range: `1e-5` - `1e-3`
 `time_horizon` corresponds to how many steps of experience to collect per-agent
 before adding it to the experience buffer. When this limit is reached before the
 end of an episode, a value estimate is used to predict the overall expected
-reward from the Agent's current state. As such, this parameter trades off
+reward from the agent's current state. As such, this parameter trades off
 between a less biased, but higher variance estimate (long time horizon) and more
 biased, but less varied estimate (short time horizon). In cases where there are
 frequent rewards within an episode, or episodes are prohibitively large, a
 smaller number can be more ideal. This number should be large enough to capture
-all the important behavior within a sequence of an Agent's actions.
+all the important behavior within a sequence of an agent's actions.
 
 Typical Range: `32` - `2048`
 
@@ -117,7 +117,7 @@ Typical Range: `5e5` - `1e7`
 ### Beta
 
 `beta` corresponds to the strength of the entropy regularization, which makes
-the policy "more random." This ensures that Agents properly explore the action
+the policy "more random." This ensures that agents properly explore the action
 space during training. Increasing this will ensure more random actions are
 taken. This should be adjusted such that the entropy (measurable from
 TensorBoard) slowly decreases alongside increases in reward. If entropy drops
@@ -168,9 +168,9 @@ The below hyperparameters are only used when `use_recurrent` is set to true.
 
 `sequence_length` corresponds to the length of the sequences of experience
 passed through the network during training. This should be long enough to
-capture whatever information your Agent might need to remember over time. For
-example, if your Agent needs to remember the velocity of objects, then this can
-be a small value. If your Agent needs to remember a piece of information given
+capture whatever information your agent might need to remember over time. For
+example, if your agent needs to remember the velocity of objects, then this can
+be a small value. If your agent needs to remember a piece of information given
 only once at the beginning of an episode, then this should be a larger value.
 
 Typical Range: `4` - `128`
@@ -180,7 +180,7 @@ Typical Range: `4` - `128`
 `memory_size` corresponds to the size of the array of floating point numbers
 used to store the hidden state of the recurrent neural network. This value must
 be a multiple of 4, and should scale with the amount of information you expect
-the Agent will need to remember in order to successfully complete the task.
+the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `64` - `512`
 
@@ -239,7 +239,7 @@ These values will oscillate during training. Generally they should be less than
 ### Value Estimate
 
 These values should increase as the cumulative reward increases. They correspond
-to how much future reward the Agent predicts itself receiving at any given
+to how much future reward the agent predicts itself receiving at any given
 point.
 
 ### Value Loss

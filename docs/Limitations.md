@@ -5,7 +5,7 @@
 ### Headless Mode
 
 If you enable Headless mode, you will not be able to collect visual observations
-from your Agents.
+from your agents.
 
 ### Rendering Speed and Synchronization
 

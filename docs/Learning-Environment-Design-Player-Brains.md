@@ -1,9 +1,9 @@
 # Player Brain
 
-The **Player** Brain type allows you to control an Agent using keyboard
-commands. You can use Player Brains to control a "teacher" Agent that trains
-other Agents during [imitation learning](Training-Imitation-Learning.md). You
-can also use Player Brains to test your Agents and environment before changing
+The **Player** Brain type allows you to control an agent using keyboard
+commands. You can use Player Brains to control a "teacher" agent that trains
+other agents during [imitation learning](Training-Imitation-Learning.md). You
+can also use Player Brains to test your agents and environment before changing
 their Brain types to **External** and running the training process.
 
 ## Player Brain properties
@@ -28,10 +28,10 @@ Size** setting).
   action. (If you press both keys at the same time, deterministic results are not guaranteed.)|
 ||**Element 0–N**| The mapping of keys to action values. |
 || **Key** | The key on the keyboard. |
-|| **Index** | The element of the Agent's action vector to set when this key is
+|| **Index** | The element of the agent's action vector to set when this key is
   pressed. The index value cannot exceed the size of the Action Space (minus 1,
   since it is an array index).|
-|| **Value** | The value to send to the Agent as its action for the specified
+|| **Value** | The value to send to the agent as its action for the specified
   index when the mapped key is pressed. All other members of the action vector
   are set to 0. |
 |**Discrete Player Actions**|| The mapping for the discrete vector action space.
@@ -39,10 +39,10 @@ Size** setting).
 || **Size** | The number of key commands defined. |
 ||**Element 0–N**| The mapping of keys to action values. |
 || **Key** | The key on the keyboard. |
-|| **Branch Index** |The element of the Agent's action vector to set when this
+|| **Branch Index** |The element of the agent's action vector to set when this
   key is pressed. The index value cannot exceed the size of the Action Space
   (minus 1, since it is an array index).|
-|| **Value** | The value to send to the Agent as its action when the mapped key
+|| **Value** | The value to send to the agent as its action when the mapped key
   is pressed. Cannot exceed the max value for the associated branch (minus 1,
   since it is an array index).|
 

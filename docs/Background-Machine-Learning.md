@@ -163,7 +163,7 @@ unseen, data. More specifically:
   inference phase predicts whether a new player will churn or not based on that
   learned mapping.
 * For our reinforcement learning example, the training phase learns the optimal
-  policy through guided trials, and in the inference phase, the Agent observes
+  policy through guided trials, and in the inference phase, the agent observes
   and tales actions in the wild using its learned policy.
 
 To briefly summarize: all three classes of algorithms involve training and
@@ -191,7 +191,7 @@ choice for reinforcement learning tasks when a large amount of data can be
 generated, say through the use of a simulator or engine such as Unity. By
 generating hundreds of thousands of simulations of the environment within Unity,
 we can learn policies for very complex environments (a complex environment is
-one where the number of observations an Agent perceives and the number of
+one where the number of observations an agent perceives and the number of
 actions they can take are large). Many of the algorithms we provide in ML-Agents
 use some form of deep learning, built on top of the open-source library,
 [TensorFlow](Background-TensorFlow.md).
