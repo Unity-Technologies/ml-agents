@@ -126,7 +126,7 @@ action space is a vector of numbers that can vary continuously. What each
 element of the vector means is defined by the agent logic (the PPO training
 process just learns what values are better given particular state observations
 based on the rewards received when it tries different values). For example, an
-element might represent a force or torque applied to a `RigidBody` in the agent.
+element might represent a force or torque applied to a `Rigidbody` in the agent.
 The **Discrete** action vector space defines its actions as tables. An action
 given to the agent is an array of indices into tables.
 
