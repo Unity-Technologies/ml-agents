@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='mlagents',
-    version='0.4.0',
+    version='0.5.0',
     description='Unity Machine Learning Agents',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -39,7 +39,7 @@ setup(
         'protobuf>=3.6,<3.7',
         'grpcio>=1.11.0,<1.12.0'],
 
-    python_requires=">=3.5,<3.7",
+    python_requires=">=3.6,<3.7",
 
     entry_points={
         'console_scripts': [
