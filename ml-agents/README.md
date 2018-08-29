@@ -1,4 +1,4 @@
-# Unity ml-agents interface and trainers
+# Unity Ml-Agents Interface and Trainers
 
 The `mlagents` package contains two components : The low level API which allows
 you to interact directly with a Unity Environment and a training component which
@@ -19,10 +19,10 @@ or by running the following from the `ml-agents` directory of the repository:
 pip install .
 ```
 
-## `mlagents.envs`
+## mlagents.envs
 
-The ML-Agents toolkit provides a Python API for controlling the Agent simulation
-loop of a environment or game built with Unity. This API is used by the ML-Agent
+The ML-Agents Toolkit provides a Python API for controlling the Agent simulation
+loop of an environment or game built with Unity. This API is used by the ML-Agent
 training algorithms (run with `mlagents-learn`), but you can also write your
 Python programs using this API.
 
@@ -151,7 +151,7 @@ variable named `env` in this example, can be used in the following way:
   Sends a shutdown signal to the environment and closes the communication
   socket.
 
-## `mlagents.trainers`
+## mlagents.trainers
 
 1. Open a command or terminal window.
 2. Run
@@ -174,4 +174,4 @@ Where:
   will be made through the editor.
 
 For more detailed documentation, check out the
-[ML-Agents toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
+[ML-Agents Toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
