@@ -1,21 +1,21 @@
 # Player Brain
 
-The **Player** brain type allows you to control an agent using keyboard
-commands. You can use Player brains to control a "teacher" agent that trains
+The **Player** Brain type allows you to control an agent using keyboard
+commands. You can use Player Brains to control a "teacher" agent that trains
 other agents during [imitation learning](Training-Imitation-Learning.md). You
-can also use Player brains to test your agents and environment before changing
-their brain types to **External** and running the training process.
+can also use Player Brains to test your agents and environment before changing
+their Brain types to **External** and running the training process.
 
 ## Player Brain properties
 
-The **Player** brain properties allow you to assign one or more keyboard keys to
+The **Player** Brain properties allow you to assign one or more keyboard keys to
 each action and a unique value to send when a key is pressed.
 
 ![Player Brain Inspector](images/player_brain.png)
 
 Note the differences between the discrete and continuous action spaces. When a
-brain uses the discrete action space, you can send one integer value as the
-action per step. In contrast, when a brain uses the continuous action space you
+Brain uses the discrete action space, you can send one integer value as the
+action per step. In contrast, when a Brain uses the continuous action space you
 can send any number of floating point values (up to the **Vector Action Space
 Size** setting).
 

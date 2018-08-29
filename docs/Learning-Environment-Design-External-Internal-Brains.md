@@ -1,18 +1,18 @@
 # External and Internal Brains
 
 The **External** and **Internal** types of Brains work in different phases of
-training. When training your agents, set their brain types to **External**; when
-using the trained models, set their brain types to **Internal**.
+training. When training your agents, set their Brain types to **External**; when
+using the trained models, set their Brain types to **Internal**.
 
 ## External Brain
 
 When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least
 one Brain object in a scene must be set to **External**. This allows the
-training process to collect the observations of agents using that brain and give
+training process to collect the observations of agents using that Brain and give
 the agents their actions.
 
-In addition to using an External brain for training using the ML-Agents learning
-algorithms, you can use an External brain to control agents in a Unity
+In addition to using an External Brain for training using the ML-Agents learning
+algorithms, you can use an External Brain to control agents in a Unity
 environment using an external Python program. See [Python API](../ml-agents/README.md)
 for more information.
 
@@ -84,11 +84,11 @@ TensorFlow model and are not using an ML-Agents model:
 * `Graph Scope` : If you set a scope while training your TensorFlow model, all
   your placeholder name will have a prefix. You must specify that prefix here.
   Note that if more than one Brain were set to external during training, you
-  must give a `Graph Scope` to the internal Brain corresponding to the name of
+  must give a `Graph Scope` to the Internal Brain corresponding to the name of
   the Brain GameObject.
 * `Batch Size Node Name` : If the batch size is one of the inputs of your
-  graph, you must specify the name if the placeholder here. The brain will make
-  the batch size equal to the number of agents connected to the brain
+  graph, you must specify the name if the placeholder here. The Brain will make
+  the batch size equal to the number of agents connected to the Brain
   automatically.
 * `State Node Name` : If your graph uses the state as an input, you must specify
   the name of the placeholder here.
@@ -100,9 +100,9 @@ TensorFlow model and are not using an ML-Agents model:
   if the output placeholder here.
 * `Observation Placeholder Name` : If your graph uses observations as input, you
   must specify it here. Note that the number of observations is equal to the
-  length of `Camera Resolutions` in the brain parameters.
+  length of `Camera Resolutions` in the Brain parameters.
 * `Action Node Name` : Specify the name of the placeholder corresponding to the
-  actions of the brain in your graph. If the action space type is continuous,
+  actions of the Brain in your graph. If the action space type is continuous,
   the output must be a one dimensional tensor of float of length `Action Space
   Size`, if the action space type is discrete, the output must be a one
   dimensional tensor of int of the same length as the `Branches` array.

@@ -1,7 +1,7 @@
 # Heuristic Brain
 
-The **Heuristic** brain type allows you to hand code an agent's decision making
-process. A Heuristic brain requires an implementation of the Decision interface
+The **Heuristic** Brain type allows you to hand code an agent's decision making
+process. A Heuristic Brain requires an implementation of the Decision interface
 to which it delegates the decision making process.
 
 When you set the **Brain Type** property of a Brain to **Heuristic**, you must

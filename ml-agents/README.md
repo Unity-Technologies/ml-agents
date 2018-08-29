@@ -40,10 +40,10 @@ These classes are all defined in the `ml-agents/mlagents/envs` folder of
 the ML-Agents SDK.
 
 To communicate with an agent in a Unity environment from a Python program, the
-agent must either use an **External** brain or use a brain that is broadcasting
+agent must either use an **External** Brain or use a Brain that is broadcasting
 (has its **Broadcast** property set to true). Your code is expected to return
-actions for agents with external brains, but can only observe broadcasting
-brains (the information you receive for an agent is the same in both cases).
+actions for agents with external Brains, but can only observe broadcasting
+Brains (the information you receive for an agent is the same in both cases).
 
 _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
@@ -81,20 +81,20 @@ displayed on the screen
 A BrainInfo object contains the following fields:
 
 - **`visual_observations`** : A list of 4 dimensional numpy arrays. Matrix n of
-  the list corresponds to the n<sup>th</sup> observation of the brain.
+  the list corresponds to the n<sup>th</sup> observation of the Brain.
 - **`vector_observations`** : A two dimensional numpy array of dimension `(batch
   size, vector observation size)`.
 - **`text_observations`** : A list of string corresponding to the agents text
   observations.
 - **`memories`** : A two dimensional numpy array of dimension `(batch size,
   memory size)` which corresponds to the memories sent at the previous step.
-- **`rewards`** : A list as long as the number of agents using the brain
+- **`rewards`** : A list as long as the number of agents using the Brain
   containing the rewards they each obtained at the previous step.
-- **`local_done`** : A list as long as the number of agents using the brain
+- **`local_done`** : A list as long as the number of agents using the Brain
   containing  `done` flags (whether or not the agent is done).
-- **`max_reached`** : A list as long as the number of agents using the brain
+- **`max_reached`** : A list as long as the number of agents using the Brain
   containing true if the agents reached their max steps.
-- **`agents`** : A list of the unique ids of the agents using the brain.
+- **`agents`** : A list of the unique ids of the agents using the Brain.
 - **`previous_actions`** : A two dimensional numpy array of dimension `(batch
   size, vector action size)` if the vector action space is continuous and
   `(batch size, number of branches)` if the vector action space is discrete.
@@ -104,10 +104,10 @@ variable named `env` in this example, can be used in the following way:
 
 - **Print : `print(str(env))`**  
   Prints all parameters relevant to the loaded environment and the external
-  brains.  
+  Brains.  
 - **Reset : `env.reset(train_model=True, config=None)`**  
   Send a reset signal to the environment, and provides a dictionary mapping
-  brain names to BrainInfo objects.  
+  Brain names to BrainInfo objects.  
   - `train_model` indicates whether to run the environment in train (`True`) or
     test (`False`) mode.
   - `config` is an optional dictionary of configuration flags specific to the
@@ -117,17 +117,17 @@ variable named `env` in this example, can be used in the following way:
     Define the reset parameters on the Academy Inspector window in the Unity
     Editor.
 - **Step : `env.step(action, memory=None, text_action=None)`**  
-  Sends a step signal to the environment using the actions. For each brain :
+  Sends a step signal to the environment using the actions. For each Brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
-    multiple agents per brains.
+    multiple agents per Brain.
   - `memory` is an optional input that can be used to send a list of floats per
     agents to be retrieved at the next step.
   - `text_action` is an optional input that be used to send a single string per
     agent.
 
-    Returns a dictionary mapping brain names to BrainInfo objects.
+    Returns a dictionary mapping Brain names to BrainInfo objects.
 
-    For example, to access the BrainInfo belonging to a brain called
+    For example, to access the BrainInfo belonging to a Brain called
     'brain_name', and the BrainInfo field 'vector_observations':
 
     ```python
@@ -136,9 +136,9 @@ variable named `env` in this example, can be used in the following way:
     observations = brainInfo.vector_observations
     ```
 
-    Note that if you have more than one external brain in the environment, you
-    must provide dictionaries from brain names to arrays for `action`, `memory`
-    and `value`. For example: If you have two external brains named `brain1` and
+    Note that if you have more than one external Brain in the environment, you
+    must provide dictionaries from Brain names to arrays for `action`, `memory`
+    and `value`. For example: If you have two external Brains named `brain1` and
     `brain2` each with one agent taking two continuous actions, then you can
     have:
 
@@ -146,7 +146,7 @@ variable named `env` in this example, can be used in the following way:
     action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
     ```
 
-    Returns a dictionary mapping brain names to BrainInfo objects.  
+    Returns a dictionary mapping Brain names to BrainInfo objects.  
 - **Close : `env.close()`**
   Sends a shutdown signal to the environment and closes the communication
   socket.
@@ -162,7 +162,7 @@ mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train <environm
 
 Where:
 
-- `<trainer-config-path>` is the relative or absolute filepath of the trainer
+- `<trainer-config-path>` is the relative or absolute file path of the trainer
   configuration. The defaults used by environments in the ML-Agents SDK can be
   found in `config/trainer_config.yaml`.
 - `<run-identifier>` is a string used to separate the results of different

@@ -346,7 +346,7 @@ The decision of the Brain comes in the form of an action array passed to the
 `AgentAction()` function. The number of elements in this array is determined by
 the `Vector Action Space Type` and `Vector Action Space Size` settings of the
 agent's Brain. The RollerAgent uses the continuous vector action space and needs
-two continuous control signals from the brain. Thus, we will set the Brain
+two continuous control signals from the Brain. Thus, we will set the Brain
 `Vector Action Size` to 2. The first element,`action[0]` determines the force
 applied along the x axis; `action[1]` determines the force applied along the z
 axis. (If we allowed the agent to move in three dimensions, then we would need

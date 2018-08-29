@@ -77,7 +77,7 @@ More information and documentation is provided in the
 ### Setting the Brain to External
 
 Since we are going to build this environment to conduct training, we need to set
-the brain used by the agents to **External**. This allows the agents to
+the Brain used by the agents to **External**. This allows the agents to
 communicate with the external training process when making their decisions.
 
 1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
@@ -125,7 +125,7 @@ You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/editor_<academy_name>_<run-identifier>.bytes` where
 `<academy_name>` is the name of the Academy GameObject in the current scene.
 This file corresponds to your model's latest checkpoint. You can now embed this
-trained model into your internal brain by following the steps below, which is
+trained model into your Internal Brain by following the steps below, which is
 similar to the steps described
 [above](#play-an-example-environment-using-pretrained-model).
 

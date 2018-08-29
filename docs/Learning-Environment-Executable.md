@@ -29,7 +29,7 @@ environment:
 
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to set the
-corresponding brain to **External**.
+corresponding Brain to **External**.
 
 1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
    object.
@@ -116,7 +116,7 @@ like this:
 You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds
 to your model's latest checkpoint. You can now embed this trained model into
-your internal brain by following the steps below:
+your Internal Brain by following the steps below:
 
 1. Move your model file into
    `MLAgentsSDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.

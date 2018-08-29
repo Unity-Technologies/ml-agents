@@ -7,7 +7,7 @@ successfully learn are the observations the agent collects and, for
 reinforcement learning, the reward you assign to estimate the value of the
 agent's current state toward accomplishing its tasks.
 
-An agent passes its observations to its brain. The brain, then, makes a decision
+An agent passes its observations to its Brain. The Brain, then, makes a decision
 and passes the chosen action back to the agent. Your agent code must execute the
 action, for example, move the agent in one direction or another. In order to
 [train an agent using reinforcement learning](Learning-Environment-Design.md),
@@ -16,12 +16,12 @@ discover the optimal decision-making policy. (A reward is not used by already
 trained agents or for imitation learning.)
 
 The Brain class abstracts out the decision making logic from the agent itself so
-that you can use the same brain in multiple agents. How a brain makes its
-decisions depends on the type of brain it is. An **External** brain simply
+that you can use the same Brain in multiple agents. How a Brain makes its
+decisions depends on the type of Brain it is. An **External** Brain simply
 passes the observations from its agents to an external process and then passes
-the decisions made externally back to the agents. An **Internal** brain uses the
+the decisions made externally back to the agents. An **Internal** Brain uses the
 trained policy parameters to make decisions (and no longer adjusts the
-parameters in search of a better decision). The other types of brains do not
+parameters in search of a better decision). The other types of Brains do not
 directly involve training, but you might find them useful as part of a training
 project. See [Brains](Learning-Environment-Design-Brains.md).
   
@@ -46,7 +46,7 @@ chosen by the previous decision.
 
 ### On Demand Decision Making
 
-On demand decision making allows agents to request decisions from their brains
+On demand decision making allows agents to request decisions from their Brains
 only when needed instead of receiving decisions at a fixed frequency. This is
 useful when the agents commit to an action for a variable number of steps or
 when the agents cannot make decisions at the same time. This typically the case
@@ -123,7 +123,7 @@ with zeros for any missing entities in a specific observation or you can limit
 an agent's observations to a fixed subset. For example, instead of observing
 every enemy agent in an environment, you could only observe the closest five.
 
-When you set up an Agent's brain in the Unity Editor, set the following
+When you set up an Agent's Brain in the Unity Editor, set the following
 properties to use a continuous vector observation:
 
 * **Space Size** — The state size must match the length of your feature vector.
@@ -201,7 +201,7 @@ used in your normalization formula.
 ### Multiple Visual Observations
 
 Camera observations use rendered textures from one or more cameras in a scene.
-The brain vectorizes the textures into a 3D Tensor which can be fed into a
+The Brain vectorizes the textures into a 3D Tensor which can be fed into a
 convolutional neural network (CNN). For more information on CNNs, see [this
 guide](http://cs231n.github.io/convolutional-networks/). You can use camera
 observations along side vector observations.
@@ -226,7 +226,7 @@ is checked).
 
 ## Vector Actions
 
-An action is an instruction from the brain that the agent carries out. The
+An action is an instruction from the Brain that the agent carries out. The
 action is passed to the agent as a parameter when the Academy invokes the
 agent's `AgentAction()` function. When you specify that the vector action space
 is **Continuous**, the action parameter passed to the agent is an array of
@@ -253,16 +253,16 @@ then apply the received values appropriately (and consistently) in
 For example, if you designed an agent to move in two dimensions, you could use
 either continuous or the discrete vector actions. In the continuous case, you
 would set the vector action size to two (one for each dimension), and the
-agent's brain would create an action with two floating point values. In the
+agent's Brain would create an action with two floating point values. In the
 discrete case, you would use one Branch with a size of four (one for each
-direction), and the brain would create an action array containing a single
+direction), and the Brain would create an action array containing a single
 element with a value ranging from zero to three. Alternatively, you could create
 two branches of size two (one for horizontal movement and one for vertical
-movement), and the brain would create an action array containing two elements
+movement), and the Brain would create an action array containing two elements
 with values ranging from zero to one.
 
 Note that when you are programming actions for an agent, it is often helpful to
-test your action logic using a **Player** brain, which lets you map keyboard
+test your action logic using a **Player** Brain, which lets you map keyboard
 commands to actions. See [Brains](Learning-Environment-Design-Brains.md).
 
 The [3DBall](Learning-Environment-Examples.md#3dball-3d-balance-ball) and
@@ -271,7 +271,7 @@ up to use either the continuous or the discrete vector action spaces.
 
 ### Continuous Action Space
 
-When an agent uses a brain set to the **Continuous** vector action space, the
+When an agent uses a Brain set to the **Continuous** vector action space, the
 action parameter passed to the agent's `AgentAction()` function is an array with
 length equal to the Brain object's `Vector Action Space Size` property value.
 The individual values in the array have whatever meanings that you ascribe to
@@ -306,7 +306,7 @@ As shown above, you can scale the control values as needed after clamping them.
 
 ### Discrete Action Space
 
-When an agent uses a brain set to the **Discrete** vector action space, the
+When an agent uses a Brain set to the **Discrete** vector action space, the
 action parameter passed to the agent's `AgentAction()` function is an array
 containing indices. With the discrete vector action space, `Branches` is an
 array of integers, each value corresponds to the number of possibilities for
@@ -388,14 +388,14 @@ the choices an agent makes such that the agent earns the highest cumulative
 reward over time. The better your reward mechanism, the better your agent will
 learn.
 
-**Note:** Rewards are not used during inference by a brain using an already
+**Note:** Rewards are not used during inference by a Brain using an already
 trained policy and is also not used during imitation learning.
 
 Perhaps the best advice is to start simple and only add complexity as needed. In
 general, you should reward results rather than actions you think will lead to
 the desired results. To help develop your rewards, you can use the Monitor class
 to display the cumulative reward received by an agent. You can even use a Player
-brain to control the agent while watching how it accumulates rewards.
+Brain to control the agent while watching how it accumulates rewards.
 
 Allocate rewards to an agent by calling the `AddReward()` method in the
 `AgentAction()` function. The reward assigned in any step should be in the range
@@ -482,7 +482,7 @@ platform.
 
 ![Agent Inspector](images/agent.png)
 
-* `Brain` - The brain to register this agent to. Can be dragged into the
+* `Brain` - The Brain to register this agent to. Can be dragged into the
   inspector using the Editor.
 * `Visual Observations` - A list of `Cameras` which will be used to generate
   observations.

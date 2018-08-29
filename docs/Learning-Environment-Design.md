@@ -35,10 +35,10 @@ finished.
 During training, the external Python training process communicates with the
 Academy to run a series of episodes while it collects data and optimizes its
 neural network model. The type of Brain assigned to an agent determines whether
-it participates in training or not. The **External** brain communicates with the
+it participates in training or not. The **External** Brain communicates with the
 external process to train the TensorFlow model. When training is completed
 successfully, you can add the trained model file to your Unity project for use
-with an **Internal** brain.
+with an **Internal** Brain.
 
 The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 
@@ -48,7 +48,7 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 4. Uses each agent's Brain class to decide on the agent's next action.
 5. Calls your subclass's `AcademyStep()` function.
 6. Calls the `AgentAction()` function for each agent in the scene, passing in
-   the action chosen by the agent's brain. (This function is not called if the
+   the action chosen by the agent's Brain. (This function is not called if the
    agent is done.)
 7. Calls the agent's `AgentOnDone()` function if the agent has reached its `Max
    Step` count or has otherwise marked itself as `done`. Optionally, you can set
@@ -78,10 +78,10 @@ should be attached to the GameObject representing that agent.
 
 ![Scene Hierarchy](images/scene-hierarchy.png)
 
-You must assign a brain to every agent, but you can share brains between
+You must assign a Brain to every agent, but you can share Brains between
 multiple agents. Each agent will make its own observations and act
 independently, but will use the same decision-making logic and, for **Internal**
-brains, the same trained TensorFlow model.
+Brains, the same trained TensorFlow model.
 
 ### Academy
 
@@ -119,16 +119,16 @@ children of the Academy in the Unity scene hierarchy. Every Agent must be
 assigned a Brain, but you can use the same Brain with more than one Agent.
 
 Use the Brain class directly, rather than a subclass. Brain behavior is
-determined by the brain type. During training, set your agent's brain type to
+determined by the Brain type. During training, set your agent's Brain type to
 **External**. To use the trained model, import the model file into the Unity
-project and change the brain type to **Internal**. See
+project and change the Brain type to **Internal**. See
 [Brains](Learning-Environment-Design-Brains.md) for details on using the
-different types of brains. You can extend the CoreBrain class to create
-different brain types if the four built-in types don't do what you need.
+different types of Brains. You can extend the CoreBrain class to create
+different Brain types if the four built-in types don't do what you need.
 
 The Brain class has several important properties that you can set using the
 Inspector window. These properties must be appropriate for the agents using the
-brain. For example, the `Vector Observation Space Size` property must match the
+Brain. For example, the `Vector Observation Space Size` property must match the
 length of the feature vector created by an agent exactly. See
 [Agents](Learning-Environment-Design-Agents.md) for information about creating
 agents and setting up a Brain instance correctly.
@@ -148,7 +148,7 @@ To create an agent, extend the Agent class and implement the essential
 `CollectObservations()` and `AgentAction()` methods:
 
 * `CollectObservations()` — Collects the agent's observation of its environment.
-* `AgentAction()` — Carries out the action chosen by the agent's brain and
+* `AgentAction()` — Carries out the action chosen by the agent's Brain and
   assigns a reward to the current state.
 
 Your implementations of these functions determine how the properties of the
@@ -195,7 +195,7 @@ include:
 
 * The training scene must start automatically when your Unity application is
   launched by the training process.
-* The scene must include at least one **External** brain.
+* The scene must include at least one **External** Brain.
 * The Academy must reset the scene to a valid starting point for each episode of
   training.
 * A training episode must have a definite end — either using `Max Steps` or by

@@ -45,7 +45,7 @@ window. The Inspector shows every component on a GameObject.
 
 The first thing you may notice after opening the 3D Balance Ball scene is that
 it contains not one, but several platforms.  Each platform in the scene is an
-independent agent, but they all share the same brain. 3D Balance Ball does this
+independent agent, but they all share the same Brain. 3D Balance Ball does this
 to speed up training since all twelve agents contribute to training in parallel.
 
 ### Academy
@@ -89,16 +89,16 @@ the Academy.) All the agents in the 3D Balance Ball environment use the same
 Brain instance. A Brain doesn't store any information about an agent, it just
 routes the agent's collected observations to the decision making process and
 returns the chosen action to the agent. Thus, all agents can share the same
-brain, but act independently. The Brain settings tell you quite a bit about how
+Brain, but act independently. The Brain settings tell you quite a bit about how
 an agent works.
 
 The **Brain Type** determines how an agent makes its decisions. The **External**
 and **Internal** types work together — use **External** when training your
-agents; use **Internal** when using the trained model. The **Heuristic** brain
+agents; use **Internal** when using the trained model. The **Heuristic** Brain
 allows you to hand-code the agent's logic by extending the Decision class.
-Finally, the **Player** brain lets you map keyboard commands to actions, which
+Finally, the **Player** Brain lets you map keyboard commands to actions, which
 can be useful when testing your agents and environment. If none of these types
-of brains do what you need, you can implement your own CoreBrain to create your
+of Brains do what you need, you can implement your own CoreBrain to create your
 own type.
 
 In this tutorial, you will set the **Brain Type** to **External** for training;
@@ -120,7 +120,7 @@ defined in the agent's `CollectObservations()` function.)
 
 #### Vector Action Space
 
-An agent is given instructions from the brain in the form of *actions*.
+An agent is given instructions from the Brain in the form of *actions*.
 ML-Agents toolkit classifies actions into two types: the **Continuous** vector
 action space is a vector of numbers that can vary continuously. What each
 element of the vector means is defined by the agent logic (the PPO training
@@ -142,9 +142,9 @@ the 3D Balance Ball environment, the Agent components are placed on the twelve
 Platform GameObjects. The base Agent object has a few properties that affect its
 behavior:
 
-* **Brain** — Every agent must have a Brain. The brain determines how an agent
+* **Brain** — Every agent must have a Brain. The Brain determines how an agent
   makes decisions. All the agents in the 3D Balance Ball scene share the same
-  brain.
+  Brain.
 * **Visual Observations** — Defines any Camera objects used by the agent to
   observe its environment. 3D Balance Ball does not use camera observations.
 * **Max Step** — Defines how many simulation steps can occur before the agent
@@ -168,7 +168,7 @@ The Ball3DAgent subclass defines the following methods:
   space with a state size of 8, the `CollectObservations()` must call
   `AddVectorObs` 8 times.
 * Agent.AgentAction() — Called every simulation step. Receives the action chosen
-  by the brain. The Ball3DAgent example handles both the continuous and the
+  by the Brain. The Ball3DAgent example handles both the continuous and the
   discrete action space types. There isn't actually much difference between the
   two state types in this environment — both vector action spaces result in a
   small change in platform rotation at each step. The `AgentAction()` function
@@ -264,7 +264,7 @@ From TensorBoard, you will see the summary statistics:
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with agents having an **Internal** brain type. **Note:** Do not just
+use it with agents having an **Internal** Brain type. **Note:** Do not just
 close the Unity Window once the `Saved Model` message appears. Either wait for
 the training process to close the window or press Ctrl+C at the command-line
 prompt. If you simply close the window manually, the .bytes file containing the
