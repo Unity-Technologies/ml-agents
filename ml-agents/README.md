@@ -21,7 +21,7 @@ pip install .
 
 ## `mlagents.envs`
 
-The ML-Agents toolkit provides a Python API for controlling the agent simulation
+The ML-Agents toolkit provides a Python API for controlling the Agent simulation
 loop of a environment or game built with Unity. This API is used by the ML-Agent
 training algorithms (run with `mlagents-learn`), but you can also write your
 Python programs using this API.
@@ -39,11 +39,11 @@ The key objects in the Python API include:
 These classes are all defined in the `ml-agents/mlagents/envs` folder of
 the ML-Agents SDK.
 
-To communicate with an agent in a Unity environment from a Python program, the
-agent must either use an **External** Brain or use a Brain that is broadcasting
+To communicate with an Agent in a Unity environment from a Python program, the
+Agent must either use an **External** Brain or use a Brain that is broadcasting
 (has its **Broadcast** property set to true). Your code is expected to return
 actions for agents with external Brains, but can only observe broadcasting
-Brains (the information you receive for an agent is the same in both cases).
+Brains (the information you receive for an Agent is the same in both cases).
 
 _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
@@ -91,7 +91,7 @@ A BrainInfo object contains the following fields:
 - **`rewards`** : A list as long as the number of agents using the Brain
   containing the rewards they each obtained at the previous step.
 - **`local_done`** : A list as long as the number of agents using the Brain
-  containing  `done` flags (whether or not the agent is done).
+  containing  `done` flags (whether or not the Agent is done).
 - **`max_reached`** : A list as long as the number of agents using the Brain
   containing true if the agents reached their max steps.
 - **`agents`** : A list of the unique ids of the agents using the Brain.
@@ -123,7 +123,7 @@ variable named `env` in this example, can be used in the following way:
   - `memory` is an optional input that can be used to send a list of floats per
     agents to be retrieved at the next step.
   - `text_action` is an optional input that be used to send a single string per
-    agent.
+    Agent.
 
     Returns a dictionary mapping Brain names to BrainInfo objects.
 
@@ -139,7 +139,7 @@ variable named `env` in this example, can be used in the following way:
     Note that if you have more than one external Brain in the environment, you
     must provide dictionaries from Brain names to arrays for `action`, `memory`
     and `value`. For example: If you have two external Brains named `brain1` and
-    `brain2` each with one agent taking two continuous actions, then you can
+    `brain2` each with one Agent taking two continuous actions, then you can
     have:
 
     ```python
