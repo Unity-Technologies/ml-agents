@@ -171,9 +171,12 @@ about programing your own agents.
 An _environment_ in the ML-Agents toolkit can be any scene built in Unity. The
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Unity scene provides the environment in which Agents observe, act, and learn.
 How you set up the Unity scene to serve as a Learning Environment really depends
 =======
+=======
+>>>>>>> parent of bf47b49... agents capitalization
 =======
 >>>>>>> parent of bf47b49... agents capitalization
 Unity scene provides the environment in which agents observe, act, and learn.
