@@ -41,7 +41,7 @@ The ML-Agents training program saves the following statistics:
 * Lesson - Plots the progress from lesson to lesson. Only interesting when
   performing [curriculum training](Training-Curriculum-Learning.md).
 
-* Cumulative Reward - The mean cumulative episode reward over all agents. Should
+* Cumulative Reward - The mean cumulative episode reward over all Agents. Should
   increase during a successful training session.
 
 * Entropy - How random the decisions of the model are. Should slowly decrease
@@ -49,7 +49,7 @@ The ML-Agents training program saves the following statistics:
   hyperparameter should be increased.
 
 * Episode Length - The mean length of each episode in the environment for all
-  agents.
+  Agents.
 
 * Learning Rate - How large a step the training algorithm takes as it searches
   for the optimal policy. Should decrease over time.
@@ -58,12 +58,12 @@ The ML-Agents training program saves the following statistics:
   much the policy (process for deciding actions) is changing. The magnitude of
   this should decrease during a successful training session.
 
-* Value Estimate - The mean value estimate for all states visited by the agent.
+* Value Estimate - The mean value estimate for all states visited by the Agent.
   Should increase during a successful training session.
 
 * Value Loss - The mean loss of the value function update. Correlates to how
   well the model is able to predict the value of each state. This should
-  increase while the agent is learning, and then decrease once the reward
+  increase while the Agent is learning, and then decrease once the reward
   stabilizes.
 
 * _(Curiosity-Specific)_ Intrinsic Reward - This corresponds to the mean

@@ -2,12 +2,12 @@
 
 **The Unity Machine Learning Agents Toolkit** (ML-Agents Toolkit) is an
 open-source Unity plugin that enables games and simulations to serve as
-environments for training intelligent agents. Agents can be trained using
+environments for training intelligent Agents. Agents can be trained using
 reinforcement learning, imitation learning, neuroevolution, or other machine
 learning methods through a simple-to-use Python API. We also provide
 implementations (based on TensorFlow) of state-of-the-art algorithms to enable
-game developers and hobbyists to easily train intelligent agents for 2D, 3D and
-VR/AR games. These trained agents can be used for multiple purposes, including
+game developers and hobbyists to easily train intelligent Agents for 2D, 3D and
+VR/AR games. These trained Agents can be used for multiple purposes, including
 controlling NPC behavior (in a variety of settings such as multi-agent and
 adversarial), automated testing of game builds and evaluating different game
 design decisions pre-release. The ML-Agents toolkit is mutually beneficial for
@@ -61,21 +61,21 @@ to define three entities at every moment of the game (called **environment**):
 
 - **Observations** - what the medic perceives about the environment.
   Observations can be numeric and/or visual. Numeric observations measure
-  attributes of the environment from the point of view of the agent. For our
+  attributes of the environment from the point of view of the Agent. For our
   medic this would be attributes of the battlefield that are visible to it. For
-  most interesting environments, an agent will require several continuous
+  most interesting environments, an Agent will require several continuous
   numeric observations. Visual observations, on the other hand, are images
-  generated from the cameras attached to the agent and represent what the agent
-  is seeing at that point in time. It is common to confuse an agent's
+  generated from the cameras attached to the Agent and represent what the Agent
+  is seeing at that point in time. It is common to confuse an Agent's
   observation with the environment (or game) **state**. The environment state
   represents information about the entire scene containing all the game
-  characters. The agents observation, however, only contains information that
-  the agent is aware of and is typically a subset of the environment state. For
+  characters. The Agents observation, however, only contains information that
+  the Agent is aware of and is typically a subset of the environment state. For
   example, the medic observation cannot include information about an enemy in
   hiding that the medic is unaware of.
 - **Actions** - what actions the medic can take. Similar to observations,
   actions can either be continuous or discrete depending on the complexity of
-  the environment and agent. In the case of the medic, if the environment is a
+  the environment and Agent. In the case of the medic, if the environment is a
   simple grid world where only their location matters, then a discrete action
   taking on one of four values (north, south, east, west) suffices. However, if
   the environment is more complex and the medic can move freely then using two
@@ -87,7 +87,7 @@ to define three entities at every moment of the game (called **environment**):
   receive a large negative reward if it dies, a modest positive reward whenever
   it revives a wounded team member, and a modest negative reward when a wounded
   team member dies due to lack of assistance. Note that the reward signal is how
-  the objectives of the task are communicated to the agent, so they need to be
+  the objectives of the task are communicated to the Agent, so they need to be
   set up in a manner where maximizing reward generates the desired optimal
   behavior.
 
@@ -225,7 +225,7 @@ inference can proceed.
 ### Built-in Training and Inference
 
 As mentioned previously, the ML-Agents toolkit ships with several
-implementations of state-of-the-art algorithms for training intelligent agents.
+implementations of state-of-the-art algorithms for training intelligent Agents.
 In this mode, the Brain type is set to External during training and Internal
 during inference. More specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
@@ -293,10 +293,10 @@ more complex ones, with each building on the last._
 
 When we think about how reinforcement learning actually works, the learning
 signal is reward received occasionally throughout training. The starting point
-when training an agent to accomplish this task will be a random policy. That
-starting policy will have the agent running in circles, and will likely never,
+when training an Agent to accomplish this task will be a random policy. That
+starting policy will have the Agent running in circles, and will likely never,
 or very rarely achieve the reward for complex environments. Thus by simplifying
-the environment at the beginning of training, we allow the agent to quickly
+the environment at the beginning of training, we allow the Agent to quickly
 update the random policy to a more meaningful one that is successively improved
 as the environment gradually increases in complexity. In our example, we can
 imagine first training the medic when each team only contains one player, and
@@ -311,13 +311,13 @@ tutorial covers this training mode with the **Wall Area** sample environment.
 
 ### Imitation Learning
 
-It is often more intuitive to simply demonstrate the behavior we want an agent
+It is often more intuitive to simply demonstrate the behavior we want an Agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
 For example, instead of training the medic by setting up its reward function,
 this mode allows providing real examples from a game controller on how the medic
 should behave. More specifically, in this mode, the Brain type during training
 is set to Player and all the actions performed with the controller (in addition
-to the agent observations) will be recorded and sent to the Python API. The
+to the Agent observations) will be recorded and sent to the Python API. The
 imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
@@ -327,14 +327,14 @@ covers this training mode with the **Banana Collector** sample environment.
 
 ## Flexible Training Scenarios
 
-While the discussion so-far has mostly focused on training a single agent, with
+While the discussion so-far has mostly focused on training a single Agent, with
 ML-Agents, several training scenarios are possible. We are excited to see what
 kinds of novel and fun environments the community creates. For those new to
-training intelligent agents, below are a few examples that can serve as
+training intelligent Agents, below are a few examples that can serve as
 inspiration:
 
 - Single-Agent. A single Agent linked to a single Brain, with its own reward
-  signal. The traditional way of training an agent. An example is any
+  signal. The traditional way of training an Agent. An example is any
   single-player game, such as Chicken. [Video
   Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
 - Simultaneous Single-Agent. Multiple independent Agents with independent reward
@@ -346,19 +346,19 @@ inspiration:
   Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
 - Adversarial Self-Play. Two interacting Agents with inverse reward signals
   linked to a single Brain. In two-player games, adversarial self-play can allow
-  an agent to become increasingly more skilled, while always having the
+  an Agent to become increasingly more skilled, while always having the
   perfectly matched opponent: itself. This was the strategy employed when
   training AlphaGo, and more recently used by OpenAI to train a human-beating
-  1-vs-1 Dota 2 agent.
+  1-vs-1 Dota 2 Agent.
 - Cooperative Multi-Agent. Multiple interacting Agents with a shared reward
   signal linked to either a single or multiple different Brains. In this
-  scenario, all agents must work together to accomplish a task that cannot be
-  done alone. Examples include environments where each agent only has access to
+  scenario, all Agents must work together to accomplish a task that cannot be
+  done alone. Examples include environments where each Agent only has access to
   partial information, which needs to be shared in order to accomplish the task
   or collaboratively solve a puzzle.
 - Competitive Multi-Agent. Multiple interacting Agents with inverse reward
   signals linked to either a single or multiple different Brains. In this
-  scenario, agents must compete with one another to either win a competition, or
+  scenario, Agents must compete with one another to either win a competition, or
   obtain some limited set of resources. All team sports fall into this scenario.
 - Ecosystem. Multiple interacting Agents with independent reward signals linked
   to either a single or multiple different Brains. This scenario can be thought
@@ -373,39 +373,39 @@ additional features which improve the flexibility and interpretability of the
 training process.
 
 - **On Demand Decision Making** - With the ML-Agents toolkit it is possible to
-  have agents request decisions only when needed as opposed to requesting
+  have Agents request decisions only when needed as opposed to requesting
   decisions at every step of the environment. This enables training of turn
-  based games, games where agents must react to events or games where agents can
+  based games, games where Agents must react to events or games where Agents can
   take actions of variable duration. Switching between decision taking at every
   step and on-demand-decision is one button click away. You can learn more about
   the on-demand-decision feature
   [here](Learning-Environment-Design-Agents.md#on-demand-decision-making).
 
-- **Memory-enhanced Agents** - In some scenarios, agents must learn to remember
-  the past in order to take the best decision. When an agent only has partial
+- **Memory-enhanced Agents** - In some scenarios, Agents must learn to remember
+  the past in order to take the best decision. When an Agent only has partial
   observability of the environment, keeping track of past observations can help
-  the agent learn. We provide an implementation of _Long Short-term Memory_
+  the Agent learn. We provide an implementation of _Long Short-term Memory_
   ([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory)) in our trainers
-  that enable the agent to store memories to be used in future steps. You can
+  that enable the Agent to store memories to be used in future steps. You can
   learn more about enabling LSTM during training [here](Feature-Memory.md).
 
 - **Monitoring Agent’s Decision Making** - Since communication in ML-Agents is a
-  two-way street, we provide an agent Monitor class in Unity which can display
-  aspects of the trained agent, such as the agents perception on how well it is
+  two-way street, we provide an Agent Monitor class in Unity which can display
+  aspects of the trained Agent, such as the Agents perception on how well it is
   doing (called **value estimates**) within the Unity environment itself. By
   leveraging Unity as a visualization tool and providing these outputs in
-  real-time, researchers and developers can more easily debug an agent’s
+  real-time, researchers and developers can more easily debug an Agent’s
   behavior. You can learn more about using the Monitor class
   [here](Feature-Monitor.md).
 
-- **Complex Visual Observations** - Unlike other platforms, where the agent’s
+- **Complex Visual Observations** - Unlike other platforms, where the Agent’s
   observation might be limited to a single vector or image, the ML-Agents
-  toolkit allows multiple cameras to be used for observations per agent. This
-  enables agents to learn to integrate information from multiple visual streams.
+  toolkit allows multiple cameras to be used for observations per Agent. This
+  enables Agents to learn to integrate information from multiple visual streams.
   This can be helpful in several scenarios such as training a self-driving car
   which requires multiple cameras with different viewpoints, or a navigational
-  agent which might need to integrate aerial and first-person visuals. You can
-  learn more about adding visual observations to an agent
+  Agent which might need to integrate aerial and first-person visuals. You can
+  learn more about adding visual observations to an Agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
 - **Broadcasting** - As discussed earlier, an External Brain sends the
@@ -415,9 +415,9 @@ training process.
   observations and actions are also sent to the Python API (despite the fact
   that the Agent is **not** controlled by the Python API). This feature is
   leveraged by Imitation Learning, where the observations and actions for a
-  Player Brain are used to learn the policies of an agent through demonstration.
+  Player Brain are used to learn the policies of an Agent through demonstration.
   However, this could also be helpful for the Heuristic and Internal Brains,
-  particularly when debugging agent behaviors. You can learn more about using
+  particularly when debugging Agent behaviors. You can learn more about using
   the broadcasting feature
   [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
 
@@ -438,7 +438,7 @@ training process.
 ## Summary and Next Steps
 
 To briefly summarize: The ML-Agents toolkit enables games and simulations built
-in Unity to serve as the platform for training intelligent agents. It is
+in Unity to serve as the platform for training intelligent Agents. It is
 designed to enable a large variety of training modes and scenarios and comes
 packed with several features to enable researchers and developers to leverage
 (and enhance) machine learning within Unity.

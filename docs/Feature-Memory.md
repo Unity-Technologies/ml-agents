@@ -3,15 +3,15 @@
 ## What are memories for
 
 Have you ever entered a room to get something and immediately forgot what you
-were looking for? Don't let that happen to your agents.  
+were looking for? Don't let that happen to your Agents.  
 
-It is now possible to give memories to your agents. When training, the agents
+It is now possible to give memories to your Agents. When training, the Agents
 will be able to store a vector of floats to be used next time they need to make
 a decision.
 
 ![Brain Inspector](images/ml-agents-LSTM.png)
 
-Deciding what the agents should remember in order to solve a task is not easy to
+Deciding what the Agents should remember in order to solve a task is not easy to
 do by hand, but our training algorithms can learn to keep track of what is
 important to remember with
 [LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory).
@@ -32,8 +32,8 @@ memory_size: 256
 * `sequence_length` defines how long the sequences of experiences must be while
   training. In order to use a LSTM, training requires a sequence of experiences
   instead of single experiences.
-* `memory_size` corresponds to the size of the memory the agent must keep. Note
-  that if this number is too small, the agent will not be able to remember a lot
+* `memory_size` corresponds to the size of the memory the Agent must keep. Note
+  that if this number is too small, the Agent will not be able to remember a lot
   of things. If this number is too large, the neural network will take longer to
   train.
 

@@ -17,7 +17,7 @@ This walk-through uses the **3D Balance Ball** environment. 3D Balance Ball
 contains a number of platforms and balls (which are all copies of each other).
 Each platform tries to keep its ball from falling by rotating either
 horizontally or vertically. In this environment, a platform is an **agent** that
-receives a reward for every step that it balances the ball. An agent is also
+receives a reward for every step that it balances the ball. An Agent is also
 penalized with a negative reward for dropping the ball. The goal of the training
 process is to have the platforms learn to never drop the ball.
 
@@ -30,10 +30,10 @@ and Unity, see the [installation instructions](Installation.md).
 
 ## Understanding a Unity Environment (3D Balance Ball)
 
-An agent is an autonomous actor that observes and interacts with an
+An Agent is an autonomous actor that observes and interacts with an
 _environment_. In the context of Unity, an environment is a scene containing an
 Academy and one or more Brain and Agent objects, and, of course, the other
-entities that an agent interacts with.  
+entities that an Agent interacts with.  
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
@@ -45,8 +45,8 @@ window. The Inspector shows every component on a GameObject.
 
 The first thing you may notice after opening the 3D Balance Ball scene is that
 it contains not one, but several platforms.  Each platform in the scene is an
-independent agent, but they all share the same Brain. 3D Balance Ball does this
-to speed up training since all twelve agents contribute to training in parallel.
+independent Agent, but they all share the same Brain. 3D Balance Ball does this
+to speed up training since all twelve Agents contribute to training in parallel.
 
 ### Academy
 
@@ -56,7 +56,7 @@ properties that control how the environment works. For example, the **Training**
 and **Inference Configuration**  properties set the graphics and timescale
 properties for the Unity application. The Academy uses the **Training
 Configuration**  during training and the **Inference Configuration** when not
-training. (*Inference* means that the agent is using a trained model or
+training. (*Inference* means that the Agent is using a trained model or
 heuristics or direct control — in other words, whenever **not** training.)
 Typically, you set low graphics quality and a high time scale for the **Training
 configuration** and a high graphics quality and the timescale to `1.0` for the
@@ -73,31 +73,31 @@ three functions you can implement, though they are all optional:
 
 * Academy.InitializeAcademy() — Called once when the environment is launched.
 * Academy.AcademyStep() — Called at every simulation step before
-  Agent.AgentAction() (and after the agents collect their observations).
+  agent.AgentAction() (and after the Agents collect their observations).
 * Academy.AcademyReset() — Called when the Academy starts or restarts the
   simulation (including the first time).
 
-The 3D Balance Ball environment does not use these functions — each agent resets
+The 3D Balance Ball environment does not use these functions — each Agent resets
 itself when needed — but many environments do use these functions to control the
-environment around the agents.
+environment around the Agents.
 
 ### Brain
 
 The Ball3DBrain GameObject in the scene, which contains a Brain component, is a
 child of the Academy object. (All Brain objects in a scene must be children of
-the Academy.) All the agents in the 3D Balance Ball environment use the same
-Brain instance. A Brain doesn't store any information about an agent, it just
-routes the agent's collected observations to the decision making process and
-returns the chosen action to the agent. Thus, all agents can share the same
+the Academy.) All the Agents in the 3D Balance Ball environment use the same
+Brain instance. A Brain doesn't store any information about an Agent, it just
+routes the Agent's collected observations to the decision making process and
+returns the chosen action to the Agent. Thus, all Agents can share the same
 Brain, but act independently. The Brain settings tell you quite a bit about how
-an agent works.
+an Agent works.
 
-The **Brain Type** determines how an agent makes its decisions. The **External**
+The **Brain Type** determines how an Agent makes its decisions. The **External**
 and **Internal** types work together — use **External** when training your
 agents; use **Internal** when using the trained model. The **Heuristic** Brain
-allows you to hand-code the agent's logic by extending the Decision class.
+allows you to hand-code the Agent's logic by extending the Decision class.
 Finally, the **Player** Brain lets you map keyboard commands to actions, which
-can be useful when testing your agents and environment. If none of these types
+can be useful when testing your Agents and environment. If none of these types
 of Brains do what you need, you can implement your own CoreBrain to create your
 own type.
 
@@ -107,28 +107,28 @@ when you embed the trained model in the Unity application, you will change the
 
 #### Vector Observation Space
 
-Before making a decision, an agent collects its observation about its state in
+Before making a decision, an Agent collects its observation about its state in
 the world. The vector observation is a vector of floating point numbers which
-contain relevant information for the agent to make decisions.
+contain relevant information for the Agent to make decisions.
 
 The Brain instance used in the 3D Balance Ball example uses the **Continuous**
 vector observation space with a **State Size** of 8. This means that the feature
-vector containing the agent's observations contains eight elements: the `x` and
+vector containing the Agent's observations contains eight elements: the `x` and
 `z` components of the platform's rotation and the `x`, `y`, and `z` components
 of the ball's relative position and velocity. (The observation values are
-defined in the agent's `CollectObservations()` function.)
+defined in the Agent's `CollectObservations()` function.)
 
 #### Vector Action Space
 
-An agent is given instructions from the Brain in the form of *actions*.
+An Agent is given instructions from the Brain in the form of *actions*.
 ML-Agents toolkit classifies actions into two types: the **Continuous** vector
 action space is a vector of numbers that can vary continuously. What each
-element of the vector means is defined by the agent logic (the PPO training
+element of the vector means is defined by the Agent logic (the PPO training
 process just learns what values are better given particular state observations
 based on the rewards received when it tries different values). For example, an
-element might represent a force or torque applied to a `Rigidbody` in the agent.
+element might represent a force or torque applied to a `Rigidbody` in the Agent.
 The **Discrete** action vector space defines its actions as tables. An action
-given to the agent is an array of indices into tables.
+given to the Agent is an array of indices into tables.
 
 The 3D Balance Ball example is programmed to use both types of vector action
 space. You can try training with both settings to observe whether there is a
@@ -142,39 +142,39 @@ the 3D Balance Ball environment, the Agent components are placed on the twelve
 Platform GameObjects. The base Agent object has a few properties that affect its
 behavior:
 
-* **Brain** — Every agent must have a Brain. The Brain determines how an agent
-  makes decisions. All the agents in the 3D Balance Ball scene share the same
+* **Brain** — Every Agent must have a Brain. The Brain determines how an Agent
+  makes decisions. All the Agents in the 3D Balance Ball scene share the same
   Brain.
-* **Visual Observations** — Defines any Camera objects used by the agent to
+* **Visual Observations** — Defines any Camera objects used by the Agent to
   observe its environment. 3D Balance Ball does not use camera observations.
-* **Max Step** — Defines how many simulation steps can occur before the agent
-  decides it is done. In 3D Balance Ball, an agent restarts after 5000 steps.
-* **Reset On Done** — Defines whether an agent starts over when it is finished.
-  3D Balance Ball sets this true so that the agent restarts after reaching the
+* **Max Step** — Defines how many simulation steps can occur before the Agent
+  decides it is done. In 3D Balance Ball, an Agent restarts after 5000 steps.
+* **Reset On Done** — Defines whether an Agent starts over when it is finished.
+  3D Balance Ball sets this true so that the Agent restarts after reaching the
   **Max Step** count or after dropping the ball.
 
-Perhaps the more interesting aspect of an agent is the Agent subclass
-implementation. When you create an agent, you must extend the base Agent class.
+Perhaps the more interesting aspect of an Agent is the Agent subclass
+implementation. When you create an Agent, you must extend the base Agent class.
 The Ball3DAgent subclass defines the following methods:
 
-* Agent.AgentReset() — Called when the Agent resets, including at the beginning
+* agent.AgentReset() — Called when the Agent resets, including at the beginning
   of a session. The Ball3DAgent class uses the reset function to reset the
   platform and ball. The function randomizes the reset values so that the
   training generalizes to more than a specific starting position and platform
   attitude.
-* Agent.CollectObservations() — Called every simulation step. Responsible for
-  collecting the agent's observations of the environment. Since the Brain
-  instance assigned to the agent is set to the continuous vector observation
+* agent.CollectObservations() — Called every simulation step. Responsible for
+  collecting the Agent's observations of the environment. Since the Brain
+  instance assigned to the Agent is set to the continuous vector observation
   space with a state size of 8, the `CollectObservations()` must call
   `AddVectorObs` 8 times.
-* Agent.AgentAction() — Called every simulation step. Receives the action chosen
+* agent.AgentAction() — Called every simulation step. Receives the action chosen
   by the Brain. The Ball3DAgent example handles both the continuous and the
   discrete action space types. There isn't actually much difference between the
   two state types in this environment — both vector action spaces result in a
   small change in platform rotation at each step. The `AgentAction()` function
-  assigns a reward to the agent; in this example, an agent receives a small
+  assigns a reward to the Agent; in this example, an Agent receives a small
   positive reward for each step it keeps the ball on the platform and a larger,
-  negative reward for dropping the ball. An agent is also marked as done when it
+  negative reward for dropping the ball. An Agent is also marked as done when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
 
@@ -184,7 +184,7 @@ Now that we have an environment, we can perform the training.
 
 ### Training with PPO
 
-In order to train an agent to correctly balance the ball, we will use a
+In order to train an Agent to correctly balance the ball, we will use a
 Reinforcement Learning algorithm called Proximal Policy Optimization (PPO). This
 is a method that has been shown to be safe, efficient, and more general purpose
 than many other RL algorithms, as such we have chosen it as the example
@@ -192,7 +192,7 @@ algorithm for use with ML-Agents toolkit. For more information on PPO, OpenAI
 has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it.
 
-To train the agents within the Ball Balance environment, we will be using the
+To train the Agents within the Ball Balance environment, we will be using the
 Python package. We have provided a convenient script called `mlagents-learn`
 which accepts arguments used to configure both training and inference phases.
 
@@ -240,13 +240,13 @@ From TensorBoard, you will see the summary statistics:
 * Lesson - only interesting when performing [curriculum
   training](Training-Curriculum-Learning.md). This is not used in the 3D Balance
   Ball environment.
-* Cumulative Reward - The mean cumulative episode reward over all agents. Should
+* Cumulative Reward - The mean cumulative episode reward over all Agents. Should
   increase during a successful training session.
 * Entropy - How random the decisions of the model are. Should slowly decrease
   during a successful training process. If it decreases too quickly, the `beta`
   hyperparameter should be increased.
 * Episode Length - The mean length of each episode in the environment for all
-  agents.
+  Agents.
 * Learning Rate - How large a step the training algorithm takes as it searches
   for the optimal policy. Should decrease over time.
 * Policy Loss - The mean loss of the policy function update. Correlates to how
@@ -264,7 +264,7 @@ From TensorBoard, you will see the summary statistics:
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with agents having an **Internal** Brain type. **Note:** Do not just
+use it with Agents having an **Internal** Brain type. **Note:** Do not just
 close the Unity Window once the `Saved Model` message appears. Either wait for
 the training process to close the window or press Ctrl+C at the command-line
 prompt. If you simply close the window manually, the .bytes file containing the

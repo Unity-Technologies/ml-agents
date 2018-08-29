@@ -1,13 +1,13 @@
 # ML-Agents 概述
 
-**Unity Machine Learning Agents** (ML-Agents) 是一款开源的 Unity 插件，使我们得以在游戏和其它模拟环境中训练智能的 agent。您可以使用 reinforcement learning（强化学习）、
+**Unity Machine Learning Agents** (ML-Agents) 是一款开源的 Unity 插件，使我们得以在游戏和其它模拟环境中训练智能的 Agent。您可以使用 reinforcement learning（强化学习）、
 imitation learning（模仿学习）、neuroevolution（神经进化）或其他机器学习方法
 通过简单易用的 Python API 对 Agent 进行训练。我们还提供最先进算法的实现方式（基于 
 TensorFlow），让游戏开发者和业余爱好者能够轻松地
-训练用于 2D、3D 和 VR/AR 游戏的智能 agent。
-这些经过训练的 agent 可用于多种目的，
+训练用于 2D、3D 和 VR/AR 游戏的智能 Agent。
+这些经过训练的 Agent 可用于多种目的，
 包括控制 NPC 行为（采用各种设置，
-例如多个 agent 和对抗）、对游戏内部版本进行自动化测试
+例如多个 Agent 和对抗）、对游戏内部版本进行自动化测试
 以及评估不同游戏设计决策的预发布版本。ML-Agents 对于游戏开发者和 AI 研究人员双方
 都有利，因为它提供了一个集中的平台，
 可以在 Unity 的丰富环境中评估 AI 的进步情况，
@@ -58,23 +58,23 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 我们需要在游戏（称为**环境**）的每个时刻定义
 三个实体：
 - **观测** - 军医对环境的感知。
-观测可以是数字和/或视觉形式。数字观测会从 agent 的角度
+观测可以是数字和/或视觉形式。数字观测会从 Agent 的角度
 测量环境的属性。对于
 我们的军医来说，这将是军医可以看到的战场属性。
-根据游戏和 agent 的不同，数字观测的数据可以是_离散_的
+根据游戏和 Agent 的不同，数字观测的数据可以是_离散_的
 或_连续_的形式。对于大多数有趣的环境，agent 将需要若干连续的
 数字观测，而对于具有少量独特配置的简单环境，
 离散观测就足够了。
-另一方面，视觉观测是附加到 agent 的摄像头
-所生成的图像，代表着 agent 在该时间点看到的
-内容。我们通常会将 agent 的观测与环境（或游戏）的
+另一方面，视觉观测是附加到 Agent 的摄像头
+所生成的图像，代表着 Agent 在该时间点看到的
+内容。我们通常会将 Agent 的观测与环境（或游戏）的
 **状态**混淆。环境状态表示包含所有游戏角色的
 整个场景的相关信息。但是，agent 观测
-仅包含 agent 了解的信息，通常是
+仅包含 Agent 了解的信息，通常是
 环境状态的一个子集。例如，军医观测不能包括
 军医不知道的隐身敌人的信息。
 - **动作** - 军医可采取的动作。与观测
-类似，根据环境和 agent 的复杂性，
+类似，根据环境和 Agent 的复杂性，
 动作可以是连续的或离散的。就军医而言，
 如果环境是一个只是基于位置的简单网格世界，
 那么采用四个值（东、西、南、北）之一的离散动作
@@ -88,7 +88,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 每当恢复受伤的队员时会得到适度的正奖励，
 而在受伤队员因缺乏救助而死亡时
 会得到适度的负奖励。请注意，奖励信号表示如何将任务的目标
-传达给 agent，所以采用的设置方式需要确保当获得的奖励达到最大值时，agent能够产生我们最期望的行为。
+传达给 Agent，所以采用的设置方式需要确保当获得的奖励达到最大值时，agent能够产生我们最期望的行为。
 
 在定义这三个实体（**reinforcement learning（强化学习）任务**
 的模块）之后，我们现在可以
@@ -140,7 +140,7 @@ _ML-Agents 的简化框图。_
 决定了 Agent 在每种情况下应采取的动作。更具体地说，
 它是从 Agent 接收观测结果和奖励并返回动作的
 组件。
-* **Academy** - 它指挥 agent 的观测和决策过程。
+* **Academy** - 它指挥 Agent 的观测和决策过程。
 在 Academy 内，可以指定若干环境参数，
 例如渲染质量和环境运行速度参数。
 External Communicator 位于 Academy 内。
@@ -214,7 +214,7 @@ _一个包含多个 Agent 和 Brain 的场景的
 
 ### 内置的训练和预测
 
-如前所述，ML-Agents 附带了多种用于训练智能 agent 的
+如前所述，ML-Agents 附带了多种用于训练智能 Agent 的
 最先进算法的实现。在此模式下，
 Brain 类型在训练期间设置为 External，在预测期间设置为 Internal。
 更具体地说，在训练期间，场景中的所有军医
@@ -282,11 +282,11 @@ _数学课程的示例。从简单主题到复杂主题的课程进度安排，
 
 当我们考虑 reinforcement learning（强化学习）的实际原理时，
 学习信号是在整个训练过程中偶尔收到的奖励。
-训练 agent 完成此任务时的起点将是一个
-随机 policy。该起始 policy 将使 agent 随意转圈，
+训练 Agent 完成此任务时的起点将是一个
+随机 policy。该起始 policy 将使 Agent 随意转圈，
 这样的行为在复杂环境中可能永远不会获得奖励或极少
 获得奖励。因此，通过在训练开始时简化环境，
-我们可让 agent 将随机 policy 快速更新为更有意义的 policy，
+我们可让 Agent 将随机 policy 快速更新为更有意义的 policy，
 即，随着环境逐渐复杂化，policy 也会不断
 改进。在我们的示例中，我们可以考虑当每个队只包含一个
 玩家时，首先训练军医，然后再反复增加玩家人数
@@ -300,13 +300,13 @@ Academy 内设置自定义环境参数。因此，
 
 ### Imitation Learning（模仿学习）
 
-简单地展示我们希望 agent 执行的行为，
+简单地展示我们希望 Agent 执行的行为，
 而不是试图通过试错法来让它学习，这种方式
 通常会更直观。例如，这种模式不是通过
 设置奖励功能来训练军医，而是通过游戏控制器提供军医
 应该如何表现的示例。更具体地说，
 在这种模式下，训练期间的 Brain 类型设置为 Player，
-并且所有使用控制器执行的动作（不仅包括 agent 观测）
+并且所有使用控制器执行的动作（不仅包括 Agent 观测）
 都将被记录并发送到 Python API。imitation learning（模仿学习）
 算法随后将会使用这些来自人类玩家的观测结果以及他们对应的动作来
 学习 policy。
@@ -316,13 +316,13 @@ Academy 内设置自定义环境参数。因此，
 
 ## 灵活的训练方案
 
-虽然迄今为止的讨论都主要集中在使用 ML-Agents 对单个 agent 进行训练
+虽然迄今为止的讨论都主要集中在使用 ML-Agents 对单个 Agent 进行训练
 方面，但同时实现多种训练方案也是可能的。
 我们很高兴看到社区创建了许多新奇而有趣的
-环境。刚开始训练智能 agent 的新用户可以参考以下一些示例
+环境。刚开始训练智能 Agent 的新用户可以参考以下一些示例
 来获得灵感：
 * 单 Agent。与单个 Brain 相连的单个 Agent，拥有自己的奖励
-信号。这是传统的 agent 训练方式。一个示例是
+信号。这是传统的 Agent 训练方式。一个示例是
 任何单人游戏，比如 Chicken。
 [视频链接](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be)。
 * 同步单 Agent。与单个 Brain 相连的多个独立 Agent，
@@ -334,10 +334,10 @@ Academy 内设置自定义环境参数。因此，
 [视频链接](https://www.youtube.com/watch?v=fq0JBaiCYNA)。
 * 对抗性自我模拟。与单个 Brain 相连的两个相互作用的 Agent，
 具有反向奖励信号。在双人游戏中，对抗性自我模拟
-可以让 agent 变得越来越熟练，同时始终拥有完美匹配的
+可以让 Agent 变得越来越熟练，同时始终拥有完美匹配的
 对手：自身。这是训练 AlphaGo 时采用的策略，
-最近被 OpenAI 用于训练一种人类对战的 1 比 1 Dota 2 agent。
-* 协作性多 Agent。与单个或多个不同 Brain 相连的多个相互作用的 Agent，具有共享的奖励信号。在此方案中，所有 agent 必须共同完成一项不能单独完成的任务。示例包括这样的环境：每个 agent 只能访问部分信息，并且需要共享这些信息才能完成任务或协作解决难题。
+最近被 OpenAI 用于训练一种人类对战的 1 比 1 Dota 2 Agent。
+* 协作性多 Agent。与单个或多个不同 Brain 相连的多个相互作用的 Agent，具有共享的奖励信号。在此方案中，所有 Agent 必须共同完成一项不能单独完成的任务。示例包括这样的环境：每个 Agent 只能访问部分信息，并且需要共享这些信息才能完成任务或协作解决难题。
 * 竞争性多 Agent。与单个或多个不同 Brain 相连的多个
 相互作用的 Agent，具有反向奖励信号。在此
 方案中，agent 必须相互竞争才能赢得比赛，
@@ -355,11 +355,11 @@ Academy 内设置自定义环境参数。因此，
 包含其他功能，可用于提高训练过程的灵活性和
 解释能力。
 
-* **按需决策** - 使用 ML-Agents 可以让 agent 仅在需要时
+* **按需决策** - 使用 ML-Agents 可以让 Agent 仅在需要时
 才请求决策，而不是在环境的每一步都
 请求决策。这种方案可用于训练基于回合的游戏、
 agent 必须对事件作出反应的游戏，
-或 agent 可以采取持续时间不同的动作
+或 Agent 可以采取持续时间不同的动作
 的游戏。在每一步决策与按需决策之间切换
 只需点击一下按钮即可实现。您可以在
 [此处](/docs/Learning-Environment-Design-Agents.md#on-demand-decision-making)了解更多关于按需决策功能的
@@ -367,31 +367,31 @@ agent 必须对事件作出反应的游戏，
 
 * **记忆增强 Agent** - 在某些情况下，
 agent 必须学会记住过去才能做出
-最好的决策。当 agent 只能部分观测环境时，
-跟踪过去的观测结果可以帮助 agent 学习。我们在
+最好的决策。当 Agent 只能部分观测环境时，
+跟踪过去的观测结果可以帮助 Agent 学习。我们在
 教练中提供了一种_长短期记忆_ 
 ([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory))
- 的实现，使 agent 能够存储要在未来步骤中
+ 的实现，使 Agent 能够存储要在未来步骤中
 使用的记忆。您可以在
 [此处](/docs/Feature-Memory.md)了解有关在训练中启用 LSTM 的更多信息。
 
 * **监控 Agent 的决策过程** - 由于 ML-Agents 中的通信
-是双向通道通信，因此我们在 Unity 中提供了一个 agent Monitor 类，
-这个类可以显示经过训练的 agent 的各个方面，
-例如 agent 对自己在 Unity 环境中的表现（称为**价值估算**）
+是双向通道通信，因此我们在 Unity 中提供了一个 Agent Monitor 类，
+这个类可以显示经过训练的 Agent 的各个方面，
+例如 Agent 对自己在 Unity 环境中的表现（称为**价值估算**）
 的感知。通过利用作为可视化工具的 Unity 并实时提供
 这些输出，研究人员和开发人员可以更轻松地
-调试 agent 的行为。您可以在
+调试 Agent 的行为。您可以在
 [此处](/docs/Feature-Monitor.md)了解更多关于使用 Monitor 类的信息。
 
 * **复杂的视觉观测** - 在其他平台中，agent 的观测可能
 仅限于单个向量或图像，与之不同的是，ML-Agents 允许
-每个 agent 使用多个摄像机进行观测。因此，agent 可以
+每个 Agent 使用多个摄像机进行观测。因此，agent 可以
 学习整合来自多个视觉流的信息。这在多种情况下
 都会很有用，例如训练需要多个摄像头且摄像头具有
 不同视角的自动驾驶车辆，或可能需要整合空中视觉和
-第一人称视觉的导航 agent。您可以在
-[此处](/docs/Learning-Environment-Design-Agents.md#multiple-visual-observations)了解更多关于向 agent 添加视觉观测的
+第一人称视觉的导航 Agent。您可以在
+[此处](/docs/Learning-Environment-Design-Agents.md#multiple-visual-observations)了解更多关于向 Agent 添加视觉观测的
 信息。
         
 * **Broadcasting** - 如前所述，默认情况下，External Brain 会将
@@ -401,9 +401,9 @@ agent 必须学会记住过去才能做出
 这种情况下的 Agent 观测和动作也会发送到 Python API
 （尽管 Agent **不**受 Python API 控制）。Imitation Learning（模仿学习）
 会利用这一功能，此情况下会使用 Player Brain 的观测和动作
-来通过示范的方式学习 agent 的 policy。
+来通过示范的方式学习 Agent 的 policy。
 不过，这对 Heuristic 和 Internal Brain 也有帮助，
-特别是在调试 agent 行为时。您可以在
+特别是在调试 Agent 行为时。您可以在
 [此处](/docs/Learning-Environment-Design-Brains.md#using-the-broadcast-feature)了解更多关于使用 broadcasting 功能的
 信息。
 
@@ -432,7 +432,7 @@ on how to set-up virtual machine instances in addition to a pre-configured data 
 ## 总结和后续步骤
 
 简要总结一下：ML-Agents 使 Unity 中构建的游戏和模拟环境
-可以成为训练智能 agent 的平台。它旨在
+可以成为训练智能 Agent 的平台。它旨在
 使研究人员和开发人员可以在 Unity 中采用多种训练模式和方案，应用
 机器学习技术，推动机器学习技术的发展。
 

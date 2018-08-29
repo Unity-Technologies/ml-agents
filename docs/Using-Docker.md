@@ -9,7 +9,7 @@ computations. Consequently, our Docker simulation does not use a GPU and uses
 utility that enables `ML-Agents` (or any other application) to do rendering
 virtually i.e. it does not assume that the machine running `ML-Agents` has a GPU
 or a display attached to it. This means that rich environments which involve
-agents using camera-based visual observations might be slower.
+Agents using camera-based visual observations might be slower.
 
 ## Requirements
 

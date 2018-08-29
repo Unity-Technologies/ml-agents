@@ -103,7 +103,7 @@ See
 [Internal Brain](Learning-Environment-Design-External-Internal-Brains.md#internal-brain)
 for more information about using Internal Brains.
 
-If you followed these instructions well, the agents in your environment that use
+If you followed these instructions well, the Agents in your environment that use
 this Brain will use your fully trained network to make decisions.
 
 ## iOS additional instructions for building
@@ -121,7 +121,7 @@ this Brain will use your fully trained network to make decisions.
 
 ## Using TensorFlowSharp without ML-Agents
 
-Beyond controlling an in-game agent, you can also use TensorFlowSharp for more
+Beyond controlling an in-game Agent, you can also use TensorFlowSharp for more
 general computation. The following instructions describe how to generally embed
 TensorFlow models without using the ML-Agents framework.
 
