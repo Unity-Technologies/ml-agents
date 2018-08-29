@@ -15,7 +15,7 @@ into your Azure subscription.  Once your VM is deployed, SSH into it and run the
 following command to complete dependency installation:
 
 ```sh
-pip install docopt
+pip3 install docopt
 ```
 
 Note that, if you choose to deploy the image to an

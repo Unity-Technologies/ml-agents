@@ -54,14 +54,14 @@ guide](Installation-Windows.md) to set up your Python environment.
 [Download](https://www.python.org/downloads/) and install Python 3 if you do not
 already have it.
 
-If your Python environment doesn't include `pip`, see these
+If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
 To install dependencies, enter the `ml-agents/` directory and run from
 the command line:
 
-    pip install .
+    pip3 install .
 
 ## Docker-based Installation
 

@@ -40,7 +40,7 @@ Unity Assets。`python` 目录包含训练代码。
 
 ### Mac 和 Unix 用户
 
-如果您的 Python 环境不包括 `pip`，请参阅这些
+如果您的 Python 环境不包括 `pip3`，请参阅这些
 [说明](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 以了解其安装方法。
 

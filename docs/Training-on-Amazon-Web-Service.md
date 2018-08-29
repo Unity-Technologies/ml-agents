@@ -206,5 +206,5 @@ linux executables which use visual observations.
     ```console
     //cd into your ml-agents/python folder
     chmod +x <your_env>.x86_64
-    python learn.py <your_env> --train
+    python3 learn.py <your_env> --train
     ```
