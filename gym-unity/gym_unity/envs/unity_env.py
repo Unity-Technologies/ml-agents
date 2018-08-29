@@ -1,6 +1,6 @@
 import gym
 import numpy as np
-from unityagents import UnityEnvironment
+from mlagents.envs import UnityEnvironment
 from gym import error, spaces, logger
 
 
