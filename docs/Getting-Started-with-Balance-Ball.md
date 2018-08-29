@@ -128,7 +128,7 @@ process just learns what values are better given particular state observations
 based on the rewards received when it tries different values). For example, an
 element might represent a force or torque applied to a `RigidBody` in the agent.
 The **Discrete** action vector space defines its actions as tables. An action
-given to the agent is an array of indeces into tables.
+given to the agent is an array of indices into tables.
 
 The 3D Balance Ball example is programmed to use both types of vector action
 space. You can try training with both settings to observe whether there is a
@@ -219,7 +219,7 @@ environment first.
 The `--train` flag tells the ML-Agents toolkit to run in training mode.
 
 **Note**: You can train using an executable rather than the Editor. To do so,
-follow the intructions in [Using an
+follow the instructions in [Using an
 Execuatble](Learning-Environment-Executable.md).
 
 ### Observing Training Progress
@@ -285,4 +285,4 @@ Basic Guide page.
 To embed the trained model into Unity, follow the later part of [Training the
 Brain with Reinforcement
 Learning](Basic-Guide.md#training-the-brain-with-reinforcement-learning) section
-of the Basic Buides page.
+of the Basic Guide page.

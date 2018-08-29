@@ -140,13 +140,13 @@ If you would like to contribute environments, please see our
   * +1.0 if the agent touches the goal.
   * -1.0 if the agent falls off the platform.
 * Brains: Two brains, each with the following observation/action space.
-  * Vector Observation space: Size of 74, corresponding to 14 raycasts each
+  * Vector Observation space: Size of 74, corresponding to 14 ray casts each
     detecting 4 possible objects. plus the global position of the agent and
     whether or not the agent is grounded.
   * Vector Action space: (Discrete) 4 Branches:
     * Forward Motion (3 possible actions: Forward, Backwards, No Action)
-    * Rotation (3 possible acions: Rotate Left, Rotate Right, No Action)
-    * Side Motion (3 possible acions: Left, Right, No Action)
+    * Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
+    * Side Motion (3 possible actions: Left, Right, No Action)
     * Jump (2 possible actions: Jump, No Action)
   * Visual Observations: None.
 * Reset Parameters: 4, corresponding to the height of the possible walls.
@@ -163,7 +163,7 @@ If you would like to contribute environments, please see our
   * +0.1 Each step agent's hand is in goal location.
 * Brains: One brain with the following observation/action space.
   * Vector Observation space: 26 variables corresponding to position, rotation,
-    velocity, and angular velocities of the two arm Rigidbodies.
+    velocity, and angular velocities of the two arm Rigid Bodies.
   * Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   * Visual Observations: None.
@@ -210,8 +210,8 @@ If you would like to contribute environments, please see our
     measurements for each).
   * Vector Action space: (Discrete) 4 Branches:
     * Forward Motion (3 possible actions: Forward, Backwards, No Action)
-    * Side Motion (3 possible acions: Left, Right, No Action)
-    * Rotation (3 possible acions: Rotate Left, Rotate Right, No Action)
+    * Side Motion (3 possible actions: Left, Right, No Action)
+    * Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
     * Laser (2 possible actions: Laser, No Action)
   * Visual Observations (Optional): First-person camera per-agent. Use
     `VisualBanana` scene.

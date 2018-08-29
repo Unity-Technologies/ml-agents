@@ -116,6 +116,6 @@ then be shut down.  This ensures you aren't leaving a billable VM running when
 it isn't needed.  You can read more about
 [The ML-Agents toolkit support for Docker containers here](Using-Docker.md).
 Using ACI enables you to offload training of your models without needing to
-install Python and Tensorflow on your own computer.  You can find instructions,
+install Python and TensorFlow on your own computer.  You can find instructions,
 including a pre-deployed image in DockerHub for you to use, available
 [here](https://github.com/druttka/unity-ml-on-azure).

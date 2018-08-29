@@ -1,7 +1,7 @@
 # API Reference
 
 Our developer-facing C# classes (Academy, Agent, Decision and Monitor) have been
-documented to be compatabile with
+documented to be compatible with
 [Doxygen](http://www.stack.nl/~dimitri/doxygen/) for auto-generating HTML
 documentation.
 

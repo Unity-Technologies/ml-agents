@@ -1,6 +1,6 @@
 # Basic Guide
 
-This guide will show you how to use a pretrained model in an example Unity
+This guide will show you how to use a pre-trained model in an example Unity
 environment, and show you how to train the model yourself.
 
 If you are not familiar with the [Unity Engine](https://unity3d.com/unity), we
@@ -13,7 +13,7 @@ the basic concepts of Unity.
 In order to use the ML-Agents toolkit within Unity, you need to change some
 Unity settings first. Also [TensorFlowSharp
 plugin](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage)
-is needed for you to use pretrained model within Unity, which is based on the
+is needed for you to use pre-trained model within Unity, which is based on the
 [TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp).
 
 1. Launch Unity

@@ -22,7 +22,7 @@ for more information.
 
 As of version 0.3, we no longer support Python 2.
 
-### Tensorflow support
+### TensorFlow support
 
 Currently the Ml-Agents toolkit uses TensorFlow 1.7.1 due to the version of the
 TensorFlowSharp plugin we are using.

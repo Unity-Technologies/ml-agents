@@ -314,7 +314,7 @@ each branch.
 
 For example, if we wanted an agent that can move in an plane and jump, we could
 define two branches (one for motion and one for jumping) because we want our
-agent be able to move __and__ jump concurently. We define the first branch to
+agent be able to move __and__ jump concurrently. We define the first branch to
 have 5 possible actions (don't move, go left, go right, go backward, go forward)
 and the second one to have 2 possible actions (don't jump, jump). The
 AgentAction method would look something like:
@@ -361,7 +361,7 @@ Where:
 * `branch` is the index (starting at 0) of the branch on which you want to mask
   the action
 * `actionIndices` is a list of `int` or a single `int` corresponding to the
-  index of theaction that the agent cannot perform.
+  index of the action that the agent cannot perform.
 
 For example, if you have an agent with 2 branches and on the first branch
 (branch 0) there are 4 possible actions : _"do nothing"_, _"jump"_, _"shoot"_
