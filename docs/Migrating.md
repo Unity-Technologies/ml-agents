@@ -18,7 +18,7 @@
 
 ### Python API
 
-* In order to run a training session, you must now use the command
+* In order to run a training session, you can now use the command
   `mlagents-learn` instead of `python3 learn.py` after installing the `mlagents`
   packages. This change is documented [here](Training-ML-Agents.md#training-with-mlagents-learn).
 * It is now required to specify the path to the yaml trainer configuration file
