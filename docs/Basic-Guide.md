@@ -110,7 +110,7 @@ page](Learning-Environment-Executable.md) for instructions on how to build and
 use an executable.
 
 ```console
-dericp@Unity3d:~/workspace/ml-agents$ mlagents-learn config/trainer_config.yaml --run-id=first-run --train
+ml-agents$ mlagents-learn config/trainer_config.yaml --run-id=first-run --train
 
 
                         ▄▄▄▓▓▓▓

@@ -106,7 +106,7 @@ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first-run --trai
 And you should see something like
 
 ```console
-dericp@Unity3d:~/workspace/ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first-run --train
+ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first-run --train
 
 
                         ▄▄▄▓▓▓▓
