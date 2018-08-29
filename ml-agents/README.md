@@ -1,4 +1,4 @@
-# Unity Ml-Agents Interface and Trainers
+# Unity ML-Agents Interface and Trainers
 
 The `mlagents` package contains two components : The low level API which allows
 you to interact directly with a Unity Environment and a training component which
