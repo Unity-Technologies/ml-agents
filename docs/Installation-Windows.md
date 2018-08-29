@@ -105,7 +105,7 @@ TensorFlow won't work, so you will need to make sure that you install version
 you are connected to the internet)_:
 
 ```sh
-pip3 install tensorflow==1.7.1
+pip install tensorflow==1.7.1
 ```
 
 ## Step 3: Install Required Python Packages
@@ -138,7 +138,7 @@ Make sure you are connected to the internet and then type in the Anaconda
 Prompt:
 
 ```sh
-pip3 install .
+pip install .
 ```
 
 This will complete the installation of all the required Python packages to run
@@ -272,8 +272,8 @@ following command to uninstall TensorFlow for cpu and install TensorFlow
 for gpu _(make sure you are connected to the internet)_:
 
 ```sh
-pip3 uninstall tensorflow
-pip3 install tensorflow-gpu==1.7.1
+pip uninstall tensorflow
+pip install tensorflow-gpu==1.7.1
 ```
 
 Lastly, you should test to see if everything installed properly and that
