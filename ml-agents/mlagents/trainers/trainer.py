@@ -19,20 +19,18 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the abstract class for the mlagents.trainers"""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, run_id):
+    def __init__(self, sess, brain_name, trainer_parameters, training, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
         :param sess: Tensorflow session.
-        :param env: The UnityEnvironment.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
+        self.sess = sess
         self.brain_name = brain_name
         self.run_id = run_id
-        self.brain = env.brains[self.brain_name]
         self.trainer_parameters = trainer_parameters
         self.is_training = training
-        self.sess = sess
         self.stats = {}
         self.summary_writer = None
 
@@ -81,7 +79,8 @@ class Trainer(object):
         """
         Increment the step count of the trainer and updates the last reward
         """
-        raise UnityTrainerException("The increment_step_and_update_last_reward method was not implemented.")
+        raise UnityTrainerException(
+            "The increment_step_and_update_last_reward method was not implemented.")
 
     def take_action(self, all_brain_info: AllBrainInfo):
         """
@@ -92,7 +91,8 @@ class Trainer(object):
         """
         raise UnityTrainerException("The take_action method was not implemented.")
 
-    def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
+    def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
+                        take_action_outputs):
         """
         Adds experiences to each agent's experience history.
         :param curr_info: Current AllBrainInfo.
@@ -124,7 +124,7 @@ class Trainer(object):
         """
         raise UnityTrainerException("The is_ready_update method was not implemented.")
 
-    def update_model(self):
+    def update_policy(self):
         """
         Uses training_buffer to update model.
         """
@@ -133,16 +133,18 @@ class Trainer(object):
     def write_summary(self, global_step, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
+        :param lesson_num: Current lesson number in curriculum.
         :param global_step: The number of steps the simulation has been going for
-        :param lesson_number: The lesson the trainer is at.
         """
         if global_step % self.trainer_parameters['summary_freq'] == 0 and global_step != 0:
             is_training = "Training." if self.is_training and self.get_step <= self.get_max_steps else "Not Training."
             if len(self.stats['cumulative_reward']) > 0:
                 mean_reward = np.mean(self.stats['cumulative_reward'])
                 logger.info(" {}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}. {}"
-                            .format(self.run_id, self.brain_name, min(self.get_step, self.get_max_steps),
-                                    mean_reward, np.std(self.stats['cumulative_reward']), is_training))
+                            .format(self.run_id, self.brain_name,
+                                    min(self.get_step, self.get_max_steps),
+                                    mean_reward, np.std(self.stats['cumulative_reward']),
+                                    is_training))
             else:
                 logger.info(" {}: {}: Step: {}. No episode was completed since last summary. {}"
                             .format(self.run_id, self.brain_name, self.get_step, is_training))
@@ -164,9 +166,11 @@ class Trainer(object):
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
         try:
-            s_op = tf.summary.text(key, tf.convert_to_tensor(([[str(x), str(input_dict[x])] for x in input_dict])))
+            s_op = tf.summary.text(key, tf.convert_to_tensor(
+                ([[str(x), str(input_dict[x])] for x in input_dict])))
             s = self.sess.run(s_op)
             self.summary_writer.add_summary(s, self.get_step)
         except:
-            logger.info("Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
+            logger.info(
+                "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")
             pass

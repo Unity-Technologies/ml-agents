@@ -3,13 +3,14 @@
 --- !u!310 &1
 UnityConnectSettings:
   m_ObjectHideFlags: 0
-  m_Enabled: 0
+  m_Enabled: 1
   m_TestMode: 0
   m_TestEventUrl: 
   m_TestConfigUrl: 
   m_TestInitMode: 0
   CrashReportingSettings:
     m_EventUrl: https://perf-events.cloud.unity3d.com/api/events/crashes
+    m_NativeEventUrl: https://perf-events.cloud.unity3d.com/symbolicate
     m_Enabled: 0
     m_CaptureEditorExceptions: 1
   UnityPurchasingSettings:
@@ -25,7 +26,6 @@ UnityConnectSettings:
     m_Enabled: 0
     m_InitializeOnStartup: 1
     m_TestMode: 0
-    m_EnabledPlatforms: 4294967295
     m_IosGameId: 
     m_AndroidGameId: 
     m_GameIds: {}

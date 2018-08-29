@@ -8,23 +8,24 @@ logger = logging.getLogger("mlagents.envs")
 
 
 class LearningModel(object):
-    def __init__(self, m_size, normalize, use_recurrent, brain):
-        self.brain = brain
-        self.vector_in = None
-        self.normalize = False
-        self.use_recurrent = False
-        self.global_step, self.increment_step = self.create_global_steps()
-        self.visual_in = []
-        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
-        self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
-        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
-        self.mask = tf.cast(self.mask_input, tf.int32)
-        self.m_size = m_size
-        self.normalize = normalize
-        self.use_recurrent = use_recurrent
-        self.a_size = brain.vector_action_space_size
-        self.o_size = brain.vector_observation_space_size * brain.num_stacked_vector_observations
-        self.v_size = brain.number_visual_observations
+    def __init__(self, m_size, normalize, use_recurrent, brain, scope, seed):
+        tf.set_random_seed(seed)
+        with tf.variable_scope(scope):
+            self.brain = brain
+            self.vector_in = None
+            self.global_step, self.increment_step = self.create_global_steps()
+            self.visual_in = []
+            self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
+            self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
+            self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
+            self.mask = tf.cast(self.mask_input, tf.int32)
+            self.m_size = m_size
+            self.normalize = normalize
+            self.use_recurrent = use_recurrent
+            self.act_size = brain.vector_action_space_size
+            self.vec_obs_size = brain.vector_observation_space_size * \
+                                brain.num_stacked_vector_observations
+            self.vis_obs_size = brain.number_visual_observations
 
     @staticmethod
     def create_global_steps():
@@ -55,22 +56,27 @@ class LearningModel(object):
         else:
             c_channels = 3
 
-        visual_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name)
+        visual_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32,
+                                   name=name)
         return visual_in
 
     def create_vector_input(self, name='vector_observation'):
         """
         Creates ops for vector observation input.
         :param name: Name of the placeholder op.
-        :param o_size: Size of stacked vector observation.
+        :param vec_obs_size: Size of stacked vector observation.
         :return:
         """
-        self.vector_in = tf.placeholder(shape=[None, self.o_size], dtype=tf.float32, name=name)
+        self.vector_in = tf.placeholder(shape=[None, self.vec_obs_size], dtype=tf.float32,
+                                        name=name)
         if self.normalize:
-            self.running_mean = tf.get_variable("running_mean", [self.o_size], trainable=False, dtype=tf.float32,
+            self.running_mean = tf.get_variable("running_mean", [self.vec_obs_size],
+                                                trainable=False, dtype=tf.float32,
                                                 initializer=tf.zeros_initializer())
-            self.running_variance = tf.get_variable("running_variance", [self.o_size], trainable=False,
-                                                    dtype=tf.float32, initializer=tf.ones_initializer())
+            self.running_variance = tf.get_variable("running_variance", [self.vec_obs_size],
+                                                    trainable=False,
+                                                    dtype=tf.float32,
+                                                    initializer=tf.ones_initializer())
             self.update_mean, self.update_variance = self.create_normalizer_update(self.vector_in)
 
             self.normalized_state = tf.clip_by_value((self.vector_in - self.running_mean) / tf.sqrt(
@@ -83,7 +89,7 @@ class LearningModel(object):
     def create_normalizer_update(self, vector_input):
         mean_current_observation = tf.reduce_mean(vector_input, axis=0)
         new_mean = self.running_mean + (mean_current_observation - self.running_mean) / \
-                   tf.cast(self.global_step + 1, tf.float32)
+                   tf.cast(tf.add(self.global_step, 1), tf.float32)
         new_variance = self.running_variance + (mean_current_observation - new_mean) * \
                        (mean_current_observation - self.running_mean)
         update_mean = tf.assign(self.running_mean, new_mean)
@@ -91,7 +97,8 @@ class LearningModel(object):
         return update_mean, update_variance
 
     @staticmethod
-    def create_vector_observation_encoder(observation_input, h_size, activation, num_layers, scope, reuse):
+    def create_vector_observation_encoder(observation_input, h_size, activation, num_layers, scope,
+                                          reuse):
         """
         Builds a set of hidden state encoders.
         :param reuse: Whether to re-use the weights within the same scope.
@@ -105,11 +112,14 @@ class LearningModel(object):
         with tf.variable_scope(scope):
             hidden = observation_input
             for i in range(num_layers):
-                hidden = tf.layers.dense(hidden, h_size, activation=activation, reuse=reuse, name="hidden_{}".format(i),
-                                         kernel_initializer=c_layers.variance_scaling_initializer(1.0))
+                hidden = tf.layers.dense(hidden, h_size, activation=activation, reuse=reuse,
+                                         name="hidden_{}".format(i),
+                                         kernel_initializer=c_layers.variance_scaling_initializer(
+                                             1.0))
         return hidden
 
-    def create_visual_observation_encoder(self, image_input, h_size, activation, num_layers, scope, reuse):
+    def create_visual_observation_encoder(self, image_input, h_size, activation, num_layers, scope,
+                                          reuse):
         """
         Builds a set of visual (CNN) encoders.
         :param reuse: Whether to re-use the weights within the same scope.
@@ -127,7 +137,7 @@ class LearningModel(object):
                                      activation=tf.nn.elu, reuse=reuse, name="conv_2")
             hidden = c_layers.flatten(conv2)
 
-        with tf.variable_scope(scope+'/'+'flat_encoding'):
+        with tf.variable_scope(scope + '/' + 'flat_encoding'):
             hidden_flat = self.create_vector_observation_encoder(hidden, h_size, activation,
                                                                  num_layers, scope, reuse)
         return hidden_flat
@@ -143,7 +153,6 @@ class LearningModel(object):
         """
         action_idx = [0] + list(np.cumsum(action_size))
         branches_logits = [all_logits[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
-
         branch_masks = [action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
         raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k]) + (1-branch_masks[k])*1.0e-10
                      for k in range(len(action_size))]
@@ -165,7 +174,8 @@ class LearningModel(object):
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):
-            visual_input = self.create_visual_input(brain.camera_resolutions[i], name="visual_observation_" + str(i))
+            visual_input = self.create_visual_input(brain.camera_resolutions[i],
+                                                    name="visual_observation_" + str(i))
             self.visual_in.append(visual_input)
         vector_observation_input = self.create_vector_input()
 
@@ -173,18 +183,22 @@ class LearningModel(object):
         for i in range(num_streams):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
-            if self.v_size > 0:
+            if self.vis_obs_size > 0:
                 for j in range(brain.number_visual_observations):
-                    encoded_visual = self.create_visual_observation_encoder(self.visual_in[j], h_size,
-                                                                            activation_fn, num_layers,
+                    encoded_visual = self.create_visual_observation_encoder(self.visual_in[j],
+                                                                            h_size,
+                                                                            activation_fn,
+                                                                            num_layers,
                                                                             "main_graph_{}_encoder{}"
                                                                             .format(i, j), False)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
                 hidden_state = self.create_vector_observation_encoder(vector_observation_input,
-                                                                      h_size, activation_fn, num_layers,
-                                                                          "main_graph_{}".format(i), False)
+                                                                      h_size, activation_fn,
+                                                                      num_layers,
+                                                                      "main_graph_{}".format(i),
+                                                                      False)
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
             elif hidden_state is None and hidden_visual is not None:
@@ -213,7 +227,8 @@ class LearningModel(object):
         _half_point = int(m_size / 2)
         with tf.variable_scope(name):
             rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
-            lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :_half_point], memory_in[:, _half_point:])
+            lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :_half_point],
+                                                           memory_in[:, _half_point:])
             recurrent_output, lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, lstm_input_state,
                                                                  initial_state=lstm_vector_in)
 
@@ -230,22 +245,26 @@ class LearningModel(object):
 
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
-            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
+            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32,
+                                            name='recurrent_in')
             _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = self.create_recurrent_encoder(
-                hidden_streams[0], self.memory_in[:, :_half_point], self.sequence_length, name='lstm_policy')
+                hidden_streams[0], self.memory_in[:, :_half_point], self.sequence_length,
+                name='lstm_policy')
 
             hidden_value, memory_value_out = self.create_recurrent_encoder(
-                hidden_streams[1], self.memory_in[:, _half_point:], self.sequence_length, name='lstm_value')
-            self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1, name='recurrent_out')
+                hidden_streams[1], self.memory_in[:, _half_point:], self.sequence_length,
+                name='lstm_value')
+            self.memory_out = tf.concat([memory_policy_out, memory_value_out], axis=1,
+                                        name='recurrent_out')
         else:
             hidden_policy = hidden_streams[0]
             hidden_value = hidden_streams[1]
 
-        mu = tf.layers.dense(hidden_policy, self.a_size[0], activation=None,
+        mu = tf.layers.dense(hidden_policy, self.act_size[0], activation=None,
                              kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
 
-        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.a_size[0]], dtype=tf.float32,
+        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.act_size[0]], dtype=tf.float32,
                                        initializer=tf.zeros_initializer())
 
         sigma_sq = tf.exp(log_sigma_sq)
@@ -269,12 +288,13 @@ class LearningModel(object):
         value = tf.layers.dense(hidden_value, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
-        self.all_old_log_probs = tf.placeholder(shape=[None, self.a_size[0]], dtype=tf.float32,
+        self.all_old_log_probs = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32,
                                                 name='old_probabilities')
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.log_probs = tf.reduce_sum((tf.identity(self.all_log_probs)), axis=1, keepdims=True)
-        self.old_log_probs = tf.reduce_sum((tf.identity(self.all_old_log_probs)), axis=1, keepdims=True)
+        self.old_log_probs = tf.reduce_sum((tf.identity(self.all_old_log_probs)), axis=1,
+                                           keepdims=True)
 
     def create_dc_actor_critic(self, h_size, num_layers):
         """
@@ -287,25 +307,29 @@ class LearningModel(object):
 
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
-            self.prev_action = tf.placeholder(shape=[None, len(self.a_size)], dtype=tf.int32, name='prev_action')
+            self.prev_action = tf.placeholder(shape=[None, len(self.act_size)], dtype=tf.int32,
+                                              name='prev_action')
             prev_action_oh = tf.concat([
-                tf.one_hot(self.prev_action[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
+                tf.one_hot(self.prev_action[:, i], self.act_size[i]) for i in
+                range(len(self.act_size))], axis=1)
             hidden = tf.concat([hidden, prev_action_oh], axis=1)
 
-            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32, name='recurrent_in')
-            hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in, self.sequence_length)
+            self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32,
+                                            name='recurrent_in')
+            hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in,
+                                                               self.sequence_length)
             self.memory_out = tf.identity(memory_out, name='recurrent_out')
 
         policy_branches = []
-        for size in self.a_size:
+        for size in self.act_size:
             policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
 
         self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
 
-        self.action_masks = tf.placeholder(shape=[None, sum(self.a_size)], dtype=tf.float32, name="action_masks")
+        self.action_masks = tf.placeholder(shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks")
         output, normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_log_probs, self.action_masks, self.a_size)
+            self.all_log_probs, self.action_masks, self.act_size)
 
         self.output = tf.identity(output, name="action")
 
@@ -315,31 +339,30 @@ class LearningModel(object):
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
-            tf.one_hot(self.action_holder[:, i], self.a_size[i]) for i in range(len(self.a_size))], axis=1)
+            tf.one_hot(self.action_holder[:, i], self.act_size[i]) for i in range(len(self.act_size))], axis=1)
 
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, sum(self.a_size)], dtype=tf.float32, name='old_probabilities')
+            shape=[None, sum(self.act_size)], dtype=tf.float32, name='old_probabilities')
         _, old_normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_old_log_probs, self.action_masks, self.a_size)
+            self.all_old_log_probs, self.action_masks, self.act_size)
 
-        action_idx = [0] + list(np.cumsum(self.a_size))
+        action_idx = [0] + list(np.cumsum(self.act_size))
 
         self.entropy = tf.reduce_sum((tf.stack([
             tf.nn.softmax_cross_entropy_with_logits_v2(
-            labels=tf.nn.softmax(self.all_log_probs[:, action_idx[i]:action_idx[i + 1]]),
-            logits=self.all_log_probs[:, action_idx[i]:action_idx[i + 1]])
-            for i in range(len(self.a_size))], axis=1)), axis=1)
+                labels=tf.nn.softmax(self.all_log_probs[:, action_idx[i]:action_idx[i + 1]]),
+                logits=self.all_log_probs[:, action_idx[i]:action_idx[i + 1]])
+            for i in range(len(self.act_size))], axis=1)), axis=1)
 
         self.log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
                 labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
                 logits=normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
-            for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
+            for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)
         self.old_log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
                 labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
                 logits=old_normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
-            for i in range(len(self.a_size))], axis=1)), axis=1, keepdims=True)
-
+            for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)

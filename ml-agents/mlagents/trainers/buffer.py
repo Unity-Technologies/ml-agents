@@ -157,6 +157,7 @@ class Buffer(dict):
         def shuffle(self, key_list=None):
             """
             Shuffles the fields in key_list in a consistent way: The reordering will
+            Shuffles the fields in key_list in a consistent way: The reordering will
             be the same across fields.
             :param key_list: The fields that must be shuffled.
             """
@@ -168,6 +169,18 @@ class Buffer(dict):
             np.random.shuffle(s)
             for key in key_list:
                 self[key][:] = [self[key][i] for i in s]
+
+        def make_mini_batch(self, start, end):
+            """
+            Creates a mini-batch from buffer.
+            :param start: Starting index of buffer.
+            :param end: Ending index of buffer.
+            :return: Dict of mini batch.
+            """
+            mini_batch = {}
+            for key in self:
+                mini_batch[key] = np.array(self[key][start:end])
+            return mini_batch
 
     def __init__(self):
         self.update_buffer = self.AgentBuffer()

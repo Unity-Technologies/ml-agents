@@ -3,11 +3,63 @@ import pytest
 
 import numpy as np
 import tensorflow as tf
+import yaml
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import discount_rewards
+from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.envs import UnityEnvironment
 from tests.mock_communicator import MockCommunicator
+
+
+@pytest.fixture
+def dummy_config():
+    return yaml.load(
+        '''
+        trainer: ppo
+        batch_size: 32
+        beta: 5.0e-3
+        buffer_size: 512
+        epsilon: 0.2
+        gamma: 0.99
+        hidden_units: 128
+        lambd: 0.95
+        learning_rate: 3.0e-4
+        max_steps: 5.0e4
+        normalize: true
+        num_epoch: 5
+        num_layers: 2
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 1000
+        use_recurrent: false
+        memory_size: 8
+        use_curiosity: false
+        curiosity_strength: 0.0
+        curiosity_enc_size: 1
+        ''')
+
+
+@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+def test_ppo_policy_evaluate(mock_communicator, mock_launcher):
+    tf.reset_default_graph()
+    with tf.Session() as sess:
+        mock_communicator.return_value = MockCommunicator(
+            discrete_action=False, visual_inputs=0)
+        env = UnityEnvironment(' ')
+        brain_infos = env.reset()
+        brain_info = brain_infos[env.brain_names[0]]
+
+        trainer_parameters = dummy_config()
+        graph_scope = env.brain_names[0]
+        trainer_parameters['graph_scope'] = graph_scope
+        policy = PPOPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, sess, False)
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        run_out = policy.evaluate(brain_info)
+        assert run_out['action'].shape == (3, 2)
+        env.close()
 
 
 @mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
