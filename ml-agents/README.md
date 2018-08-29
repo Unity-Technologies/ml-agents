@@ -1,6 +1,6 @@
 # Unity ML-Agents Interface and Trainers
 
-The `mlagents` package contains two components : The low level API which allows
+The `mlagents` Python package contains two components : The low level API which allows
 you to interact directly with a Unity Environment and a training component which
 allows you to train Agents in Unity Environments using our implementations of
 reinforcement learning or imitation learning.
