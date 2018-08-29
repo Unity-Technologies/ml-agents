@@ -8,7 +8,7 @@ over using the Editor:
   entire repository.
 * You can put your executable on a remote machine for faster training.
 * You can use `Headless` mode for faster training.
-* You can keep using the Unity Editor for other tasks while the agents are
+* You can keep using the Unity Editor for other tasks while the Agents are
   training.
 
 ## Building the 3DBall environment
@@ -28,7 +28,7 @@ environment:
 ![3DBall Scene](images/mlagents-Open3DBall.png)
 
 Make sure the Brains in the scene have the right type. For example, if you want
-to be able to control your agents from Python, you will need to set the
+to be able to control your Agents from Python, you will need to set the
 corresponding Brain to **External**.
 
 1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy

@@ -31,7 +31,7 @@ env = UnityEnv(environment_filename, worker_id, default_visual, multiagent)
 * `environment_filename` refers to the path to the Unity environment.
 * `worker_id` refers to the port to use for communication with the environment. Defaults to `0`.
 * `use_visual` refers to whether to use visual observations (True) or vector observations (False) as the default observation provided by the `reset` and `step` functions. Defaults to `False`.
-* `multiagent` refers to whether you intent to launch an environment which contains more than one agent. Defaults to `False`.
+* `multiagent` refers to whether you intent to launch an environment which contains more than one Agent. Defaults to `False`.
 
 The returned environment `env` will function as a gym.
 
@@ -55,7 +55,7 @@ Using the provided Gym wrapper, it is possible to train ML-Agents environments u
 
 ### Example - DQN Baseline
 
-In order to train an agent to play the `GridWorld` environment using the Baselines DQN algorithm, create a file called `train_unity.py` within the `baselines/deepq/experiments` subfolder of the baselines repository. This file will be a modification of the `run_atari.py` file within the same folder. Then create and `/envs/` directory within the repository, and build the GridWorld environment to that directory. For more information on building Unity environments, see [here](../docs/Learning-Environment-Executable.md). Add the following code to the `train_unity.py` file:
+In order to train an Agent to play the `GridWorld` environment using the Baselines DQN algorithm, create a file called `train_unity.py` within the `baselines/deepq/experiments` subfolder of the baselines repository. This file will be a modification of the `run_atari.py` file within the same folder. Then create and `/envs/` directory within the repository, and build the GridWorld environment to that directory. For more information on building Unity environments, see [here](../docs/Learning-Environment-Executable.md). Add the following code to the `train_unity.py` file:
 
 ```
 import gym

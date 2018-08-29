@@ -1,18 +1,18 @@
 # External and Internal Brains
 
 The **External** and **Internal** types of Brains work in different phases of
-training. When training your agents, set their Brain types to **External**; when
+training. When training your Agents, set their Brain types to **External**; when
 using the trained models, set their Brain types to **Internal**.
 
 ## External Brain
 
 When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least
 one Brain object in a scene must be set to **External**. This allows the
-training process to collect the observations of agents using that Brain and give
-the agents their actions.
+training process to collect the observations of Agents using that Brain and give
+the Agents their actions.
 
 In addition to using an External Brain for training using the ML-Agents learning
-algorithms, you can use an External Brain to control agents in a Unity
+algorithms, you can use an External Brain to control Agents in a Unity
 environment using an external Python program. See [Python API](../ml-agents/README.md)
 for more information.
 
@@ -27,10 +27,10 @@ to make decisions. The Proximal Policy Optimization (PPO) and Behavioral Cloning
 algorithms included with the ML-Agents SDK produce trained TensorFlow models
 that you can use with the Internal Brain type.
 
-A __model__ is a mathematical relationship mapping an agent's observations to
+A __model__ is a mathematical relationship mapping an Agent's observations to
 its actions. TensorFlow is a software library for performing numerical
 computation through data flow graphs. A TensorFlow model, then, defines the
-mathematical relationship between your agent's observations and its actions
+mathematical relationship between your Agent's observations and its actions
 using a TensorFlow data flow graph.
 
 ### Creating a graph model
@@ -88,7 +88,7 @@ TensorFlow model and are not using an ML-Agents model:
   the Brain GameObject.
 * `Batch Size Node Name` : If the batch size is one of the inputs of your
   graph, you must specify the name if the placeholder here. The Brain will make
-  the batch size equal to the number of agents connected to the Brain
+  the batch size equal to the number of Agents connected to the Brain
   automatically.
 * `State Node Name` : If your graph uses the state as an input, you must specify
   the name of the placeholder here.

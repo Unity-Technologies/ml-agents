@@ -103,7 +103,7 @@ See
 [Internal Brain](Learning-Environment-Design-External-Internal-Brains.md#internal-brain)
 for more information about using Internal Brains.
 
-If you followed these instructions well, the agents in your environment that use
+If you followed these instructions well, the Agents in your environment that use
 this Brain will use your fully trained network to make decisions.
 
 ## iOS additional instructions for building
