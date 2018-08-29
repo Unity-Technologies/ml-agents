@@ -14,6 +14,7 @@ public class GridAgent : Agent
              "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
 
+    private const int NoAction = 0;  // do nothing!
     private const int Up = 1;
     private const int Down = 2;
     private const int Left = 3;
@@ -76,6 +77,9 @@ public class GridAgent : Agent
         Vector3 targetPos = transform.position;
         switch (action)
         {
+            case NoAction:
+                // do nothing
+                break;
             case Right:
                 targetPos = transform.position + new Vector3(1f, 0, 0f);
                 break;
