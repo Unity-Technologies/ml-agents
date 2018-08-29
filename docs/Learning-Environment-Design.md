@@ -170,7 +170,7 @@ about programing your own Agents.
 
 An _environment_ in the ML-Agents toolkit can be any scene built in Unity. The
 Unity scene provides the environment in which Agents observe, act, and learn.
-How you set up the Unity scene to serve as a learning environment really depends
+How you set up the Unity scene to serve as a Learning Environment really depends
 on your goal. You may be trying to solve a specific reinforcement learning
 problem of limited scope, in which case you can use the same scene for both
 training and for testing trained Agents. Or, you may be training Agents to

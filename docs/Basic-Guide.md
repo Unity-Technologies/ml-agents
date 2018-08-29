@@ -146,7 +146,7 @@ similar to the steps described
   page.
 - For a more detailed walk-through of our 3D Balance Ball environment, check out
   the [Getting Started](Getting-Started-with-Balance-Ball.md) page.
-- For a "Hello World" introduction to creating your own learning environment,
+- For a "Hello World" introduction to creating your own Learning Environment,
   check out the [Making a New Learning
   Environment](Learning-Environment-Create-New.md) page.
 - For a series of Youtube video tutorials, checkout the
