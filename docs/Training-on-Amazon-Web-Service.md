@@ -194,7 +194,7 @@ linux executables which use visual observations.
 7. Test the instance setup from Python using:
 
     ```python
-    from unityagents import UnityEnvironment
+    from mlagents.envs import UnityEnvironment
 
     env = UnityEnvironment(<your_env>)
     ```
