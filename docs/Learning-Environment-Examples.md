@@ -75,7 +75,11 @@ If you would like to contribute environments, please see our
 * Brains: One brain with the following observation/action space.
   * Vector Observation space: None
   * Vector Action space: (Discrete) Size of 4, corresponding to movement in
-    cardinal directions.
+    cardinal directions. Note that for this environment, 
+    [action masking](Learning-Environment-Design-Agents.md#masking-discrete-actions)
+    is turned on by default (this option can be toggled
+    using the `Mask Actions` checkbox within the `trueAgent` GameObject).
+    The trained model file provided was generated with action masking turned on.
   * Visual Observations: One corresponding to top-down view of GridWorld.
 * Reset Parameters: Three, corresponding to grid size, number of obstacles, and
   number of goals.
