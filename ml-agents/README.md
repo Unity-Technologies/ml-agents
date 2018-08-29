@@ -1,7 +1,7 @@
 # Unity ml-agents interface and trainers
 
 The `mlagents` package contains two components : The low level API which allows
-you to interact directly with a Unity Environment and a training component whcih
+you to interact directly with a Unity Environment and a training component which
 allows you to train agents in Unity Environments using our implementations of
 reinforcement learning or imitation learning.
 
@@ -173,5 +173,5 @@ Where:
   want to train. __Note:__ If this argument is not passed, the training
   will be made through the editor.
 
-For more detailled documentation, check out the
+For more detailed documentation, check out the
 [ML-Agents toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
