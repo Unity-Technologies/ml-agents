@@ -16,7 +16,7 @@ Build Support_ component when installing Unity.
        width="500" border="10" />
 </p>
 
-## Clone the Ml-Agents Repository
+## Clone the ML-Agents Repository
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
