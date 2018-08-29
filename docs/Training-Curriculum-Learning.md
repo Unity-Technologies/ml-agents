@@ -80,7 +80,7 @@ the BigWallBrain in the Wall Jump environment.
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
 * `parameters` (dictionary of key:string, value:float array) - Corresponds to
-  academy reset parameters to control. Length of each array should be one
+  Academy reset parameters to control. Length of each array should be one
   greater than number of thresholds.
 
 Once our curriculum is defined, we have to use the reset parameters we defined
