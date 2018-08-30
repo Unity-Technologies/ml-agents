@@ -13,7 +13,7 @@ the Agents their actions.
 
 In addition to using an External Brain for training using the ML-Agents learning
 algorithms, you can use an External Brain to control Agents in a Unity
-environment using an external Python program. See [Python API](../ml-agents/README.md)
+environment using an external Python program. See [Python API](Python-API.md)
 for more information.
 
 Unlike the other types, the External Brain has no properties to set in the Unity
