@@ -21,10 +21,25 @@
 * In order to run a training session, you can now use the command
   `mlagents-learn` instead of `python3 learn.py` after installing the `mlagents`
   packages. This change is documented
-  [here](Training-ML-Agents.md#training-with-mlagents-learn).
+  [here](Training-ML-Agents.md#training-with-mlagents-learn). For example,
+  if we previously ran
+
+  ```sh
+  python3 learn.py 3DBall --train
+  ```
+
+  from the `python/` directory, we now run
+
+  ```sh
+  mlagents-learn config/trainer_config.yaml --env=3DBall --train
+  ```
+
+  from the directory where we installed the ML-Agents Toolkit.
+
 * It is now required to specify the path to the yaml trainer configuration file
-  when running `mlagents-learn`. For example, see
-  [trainer_config.yaml](../config/trainer_config.yaml).
+  when running `mlagents-learn`. For an example trainer configuration file, see
+  [trainer_config.yaml](../config/trainer_config.yaml). An example of passing
+  a trainer configuration to `mlagents-learn` is shown above.
 * The environment name is now passed through the `--env` option.
 * Curriculum files must now be placed into a folder and be named appropriately.
   Refer to the
