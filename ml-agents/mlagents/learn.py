@@ -75,8 +75,8 @@ def main():
     logger = logging.getLogger('mlagents.learn')
     _USAGE = '''
     Usage:
-      learn <trainer-config-path> [options]
-      learn --help
+      mlagents-learn <trainer-config-path> [options]
+      mlagents-learn --help
 
     Options:
       --env=<file>               Name of the Unity executable [default: None].
