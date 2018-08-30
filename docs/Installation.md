@@ -65,6 +65,8 @@ the command line:
 
     pip3 install .
 
+If you installed this correctly, you should be able to run `mlagents-learn --help`
+
 ## Docker-based Installation
 
 If you'd like to use Docker for ML-Agents, please follow
