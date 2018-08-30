@@ -5,16 +5,16 @@
 ### Important
 
 * The Unity project `unity-environment` has been renamed `MLAgentsSDK`.
-* The `python` folder has been renamed to `ml-agents`. It not contains two
+* The `python` folder has been renamed to `ml-agents`. It now contains two
   packages, `mlagents.env` and `mlagents.trainers`. `mlagents.env` can be used
   to interact directly with a Unity environment, while `mlagents.trainers`
   contains the classes for training agents.
 
 ### Unity API
 
-* Discrete Actions now have branches. You can now specify concurrent discrete
+* Discrete Actions now use [branches](https://arxiv.org/abs/1711.08946). You can now specify concurrent discrete
   actions. You will need to update the Brain Parameters in the Brain Inspector
-  in all your environments.
+  in all your environments that use discrete actions. Refer to the [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space) for more information. 
 
 ### Python API
 
