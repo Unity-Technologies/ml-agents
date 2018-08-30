@@ -90,17 +90,19 @@ communicate with the external training process when making their decisions.
 ### Training the environment
 
 1. Open a command or terminal window.
-2. Navigate to the folder where you installed the ML-Agents toolkit.
-3. Run `mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train`
+2. Navigate to the folder where you installed the ML-Agents toolkit.  If you followed the default [installation
+](Installation.md), then navigate to the `ml-agents/` folder.
+3. From a command line prompt, run `mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train`
    Where:
     - `<trainer-config-path>` is the relative or absolute filepath of the
       trainer configuration. The defaults used by environments in the ML-Agents
       SDK can be found in `config/trainer_config.yaml`.
-    - `<run-identifier>` is a string used to separate the results of different
+    - `<run-identifier>` is an optional string used to separate the results of different
       training runs
     - And the `--train` tells `mlagents-learn` to run a training session (rather
       than inference)
-4. When the message _"Start training by pressing the Play button in the Unity
+4. If you cloned the ML-Agents repo, then you can simply run `mlagents-learn ../config/trainer_config.yaml --train` if you do not want to specify an optional run identifier.
+5. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
    in Unity to start training in the Editor.
 
