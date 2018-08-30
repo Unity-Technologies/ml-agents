@@ -65,7 +65,7 @@ After launching your EC2 instance using the ami and ssh into it:
 
     ```sh
     git clone https://github.com/Unity-Technologies/ml-agents.git
-    cd ml-agents/python
+    cd ml-agents/ml-agents/
     pip3 install .
     ```
 
@@ -204,7 +204,6 @@ linux executables which use visual observations.
 8. Train the executable
 
     ```console
-    //cd into your ml-agents/python folder
     chmod +x <your_env>.x86_64
-    python learn.py <your_env> --train
+    mlagents-learn <trainer-config-file> --env=<your_env> --train
     ```
