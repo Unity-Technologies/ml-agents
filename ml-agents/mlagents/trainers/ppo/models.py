@@ -26,8 +26,8 @@ class PPOModel(LearningModel):
         :param num_layers Number of hidden layers between encoded input and policy & value layers
         :param m_size: Size of brain memory.
         """
-        LearningModel.__init__(self, m_size, normalize, use_recurrent, brain, scope, seed)
         with tf.variable_scope(scope):
+            LearningModel.__init__(self, m_size, normalize, use_recurrent, brain, seed)
             self.use_curiosity = use_curiosity
             if num_layers < 1:
                 num_layers = 1
