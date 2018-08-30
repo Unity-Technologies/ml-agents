@@ -75,12 +75,12 @@ def main():
     logger = logging.getLogger('mlagents.learn')
     _USAGE = '''
     Usage:
-      learn <trainer-config-path> [options]
-      learn --help
+      mlagents-learn <trainer-config-path> [options]
+      mlagents-learn --help
 
     Options:
       --env=<file>               Name of the Unity executable [default: None].
-      --curriculum=<file>        Curriculum json file for environment [default: None].
+      --curriculum=<directory>   Curriculum json directory for environment [default: None].
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].

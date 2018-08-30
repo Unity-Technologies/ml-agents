@@ -241,8 +241,7 @@ class TrainerController(object):
                 return trainer_config
         except IOError:
             raise UnityEnvironmentException('Parameter file could not be found '
-                                            'here {}. Will use default Hyper '
-                                            'parameters.'
+                                            'at {}.'
                                             .format(self.trainer_config_path))
         except UnicodeDecodeError:
             raise UnityEnvironmentException('There was an error decoding '
