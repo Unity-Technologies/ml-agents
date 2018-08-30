@@ -26,10 +26,11 @@ agents using camera-based visual observations might be slower.
 
 - Since Docker runs a container in an environment that is isolated from the host
   machine, a mounted directory in your host machine is used to share data, e.g.
-  the Unity executable, curriculum files and TensorFlow graph. For convenience,
-  we created an empty `unity-volume` directory at the root of the repository for
-  this purpose, but feel free to use any other directory. The remainder of this
-  guide assumes that the `unity-volume` directory is the one used.
+  the trainer configuration file, Unity executable, curriculum files and
+  TensorFlow graph. For convenience, we created an empty `unity-volume`
+  directory at the root of the repository for this purpose, but feel free to use
+  any other directory. The remainder of this guide assumes that the
+  `unity-volume` directory is the one used.
 
 ## Usage
 
@@ -84,7 +85,7 @@ docker run --name <container-name> \
            -p 5005:5005 \
            <image-name>:latest \
            --docker-target-name=unity-volume \
-           <trainer-config-path> \
+           /unity-volume/<trainer-config-file> \
            --env=<environment-name> \
            --train \
            --run-id=<run-id>
@@ -108,8 +109,8 @@ Notes on argument values:
 - `docker-target-name`: Tells the ML-Agents Python package what the name of the
   disk where it can read the Unity executable and store the graph. **This should
   therefore be identical to `target`.**
-- `trainer-config-path`, `train`, `run-id`: ML-Agents arguments passed to
-  `mlagents-learn`. `trainer-config-path` is the filepath of the trainer config
+- `trainer-config-file`, `train`, `run-id`: ML-Agents arguments passed to
+  `mlagents-learn`. `trainer-config-file` is the filename of the trainer config
   file, `train` trains the algorithm, and `run-id` is used to tag each
   experiment with a unique identifier. We recommend placing the trainer-config
   file inside `unity-volume` so that the container has access to the file.
@@ -122,7 +123,8 @@ docker run --name 3DBallContainer.first.trial \
            -p 5005:5005 \
            balance.ball.v0.1:latest 3DBall \
            --docker-target-name=unity-volume \
-           <trainer-config-path> \
+           trainer_config.yaml \
+           --env=3DBall
            --train \
            --run-id=3dball_first_trial
 ```
