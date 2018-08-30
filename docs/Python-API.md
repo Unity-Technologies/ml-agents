@@ -1,16 +1,15 @@
 # Unity ML-Agents Python Interface and Trainers
 
-The `mlagents` Python package is part of the
-[ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
-`mlagents` provides a Python API that allows direct interaction with the Unity
-game engine as well as a collection of trainers and algorithms to train agents
-in Unity environments.
+The `mlagents` Python package is part of the [ML-Agents
+Toolkit](https://github.com/Unity-Technologies/ml-agents). `mlagents` provides a
+Python API that allows direct interaction with the Unity game engine as well as
+a collection of trainers and algorithms to train agents in Unity environments.
 
-The `mlagents` Python package contains two components: The low level API which allows
-you to interact directly with a Unity Environment (`mlagents.envs`) and an entry point to train (`mlagents-learn`) which
-allows you to train agents in Unity Environments using our implementations of
-reinforcement learning or imitation learning.
-
+The `mlagents` Python package contains two components: a low level API which
+allows you to interact directly with a Unity Environment (`mlagents.envs`) and
+an entry point to train (`mlagents-learn`) which allows you to train agents in
+Unity Environments using our implementations of reinforcement learning or
+imitation learning.
 
 ## mlagents.envs
 
