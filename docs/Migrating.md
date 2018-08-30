@@ -12,9 +12,9 @@
 
 ### Unity API
 
-* Discrete Actions now have branches. You can now specify concurrent discrete
+* Discrete Actions now have [branches](https://arxiv.org/abs/1711.08946). You can now specify concurrent discrete
   actions. You will need to update the Brain Parameters in the Brain Inspector
-  in all your environments that uses discrete actions. Refer to the [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space) for more information. 
+  in all your environments that use discrete actions. Refer to the [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space) for more information. 
 
 ### Python API
 
