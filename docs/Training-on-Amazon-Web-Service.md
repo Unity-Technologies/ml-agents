@@ -204,7 +204,6 @@ linux executables which use visual observations.
 8. Train the executable
 
     ```console
-    //cd into your ml-agents/ folder
     chmod +x <your_env>.x86_64
     mlagents-learn <trainer-config-file> --env=<your_env> --train
     ```
