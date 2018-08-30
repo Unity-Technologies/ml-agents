@@ -29,7 +29,7 @@ class Policy(object):
         :param sess: The current TensorFlow session.
         """
         self.m_size = None
-        self.model = LearningModel(0, False, False, brain, scope='Model', seed=0)
+        self.model = None
         self.inference_dict = {}
         self.update_dict = {}
         self.sequence_length = 1
