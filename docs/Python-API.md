@@ -1,8 +1,8 @@
-# Unity ML-Agents Interface and Trainers
+# Unity ML-Agents Python Interface and Trainers
 
-The `mlagents` Python package contains two components : The low level API which allows
-you to interact directly with a Unity Environment and a training component which
-allows you to train Agents in Unity Environments using our implementations of
+The `mlagents` Python package contains two components: The low level API which allows
+you to interact directly with a Unity Environment (`mlagents.envs`) and an entry point to train (`mlagents-learn`) which
+allows you to train agents in Unity Environments using our implementations of
 reinforcement learning or imitation learning.
 
 ## Installation
@@ -22,8 +22,8 @@ pip install .
 ## mlagents.envs
 
 The ML-Agents Toolkit provides a Python API for controlling the Agent simulation
-loop of an environment or game built with Unity. This API is used by the ML-Agent
-training algorithms (run with `mlagents-learn`), but you can also write your
+loop of an environment or game built with Unity. This API is used by the
+training algorithms inside the ML-Agent Toolkit, but you can also write your own
 Python programs using this API.
 
 The key objects in the Python API include:
@@ -151,27 +151,6 @@ variable named `env` in this example, can be used in the following way:
   Sends a shutdown signal to the environment and closes the communication
   socket.
 
-## mlagents.trainers
-
-1. Open a command or terminal window.
-2. Run
-
-```sh
-mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train <environment-name>
-```
-
-Where:
-
-- `<trainer-config-path>` is the relative or absolute file path of the trainer
-  configuration. The defaults used by environments in the ML-Agents SDK can be
-  found in `config/trainer_config.yaml`.
-- `<run-identifier>` is a string used to separate the results of different
-  training runs
-- The `--train` flag tells `mlagents-learn` to run a training session (rather
-  than inference)
-- `<environment-name>` __(Optional)__ is the path to the Unity executable you
-  want to train. __Note:__ If this argument is not passed, the training
-  will be made through the editor.
-
-For more detailed documentation, check out the
-[ML-Agents Toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
+## mlagents-learn
+For more detailed documentation on using `mlagents-learn`, check out
+[Training ML-Agents](Training-ML-Agents.md)
