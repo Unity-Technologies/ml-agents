@@ -28,11 +28,13 @@
   python3 learn.py 3DBall --train
   ```
 
-  we now run
+  from the `python/` directory, we now run
 
   ```sh
   mlagents-learn config/trainer_config.yaml --env=3DBall --train
   ```
+
+  from the directory where we installed the ML-Agents Toolkit.
 
 * It is now required to specify the path to the yaml trainer configuration file
   when running `mlagents-learn`. For an example trainer configuration file, see
