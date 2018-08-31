@@ -85,7 +85,7 @@ docker run --name <container-name> \
            -p 5005:5005 \
            <image-name>:latest \
            --docker-target-name=unity-volume \
-           /unity-volume/<trainer-config-file> \
+           <trainer-config-file> \
            --env=<environment-name> \
            --train \
            --run-id=<run-id>
