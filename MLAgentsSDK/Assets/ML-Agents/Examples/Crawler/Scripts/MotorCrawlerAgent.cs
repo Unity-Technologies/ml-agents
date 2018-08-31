@@ -242,13 +242,9 @@ public class MotorCrawlerAgent : Agent
         isNewDecisionStep = true;
         currentDecisionStep = 1;
 
-        /*wall.transform.localScale = new Vector3(
-            wall.transform.localScale.x,
-            academy.resetParameters["wall_height"],
-            wall.transform.localScale.z);*/
-        if (academy.resetParameters["spawn_wall"] - 1.0 < -0.5)
-            wall.SetActive(false);
-        else
+        if (Random.value < academy.resetParameters["spawn_wall"])
             wall.SetActive(true);
+        else
+            wall.SetActive(false);
     }
 }
