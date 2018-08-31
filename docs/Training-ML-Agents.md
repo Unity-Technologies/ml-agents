@@ -158,8 +158,8 @@ after the GameObject containing the Brain component that should use these
 settings. (This GameObject will be a child of the Academy in your scene.)
 Sections for the example environments are included in the provided config file.
 
-| ** Setting ** | **Description** | **Applies To Trainer**|
-| :--           | :--             | :--                   |
+| **Setting** | **Description** | **Applies To Trainer**|
+| :--         | :--             | :--                   |
 | batch_size | The number of experiences in each iteration of gradient descent.| PPO, BC |
 | batches_per_epoch | In imitation learning, the number of batches of training examples to collect before training the model.| BC |
 | beta | The strength of entropy regularization.| PPO, BC |

@@ -144,5 +144,6 @@ variable named `env` in this example, can be used in the following way:
   socket.
 
 ## mlagents-learn
+
 For more detailed documentation on using `mlagents-learn`, check out
 [Training ML-Agents](Training-ML-Agents.md)

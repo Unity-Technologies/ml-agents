@@ -90,22 +90,22 @@ communicate with the external training process when making their decisions.
 ### Training the environment
 
 1. Open a command or terminal window.
-2. Navigate to the folder where you cloned the ML-Agents toolkit repository.  
-**Note**: If you followed the default [installation
-](Installation.md), then you should be able to run `mlagents-learn` from any directory.
+2. Navigate to the folder where you cloned the ML-Agents toolkit repository.
+   **Note**: If you followed the default [installation](Installation.md), then
+   you should be able to run `mlagents-learn` from any directory.
 3. Run `mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train`
    where:
     - `<trainer-config-path>` is the relative or absolute filepath of the
-      trainer configuration. The defaults used by example environments included in `MLAgentsSDK`
-      can be found in `config/trainer_config.yaml`.
+      trainer configuration. The defaults used by example environments included
+      in `MLAgentsSDK` can be found in `config/trainer_config.yaml`.
     - `<run-identifier>` is a string used to separate the results of different
       training runs
     - `--train` tells `mlagents-learn` to run a training session (rather
       than inference)
 4. If you cloned the ML-Agents repo, then you can simply run
-```sh
-mlagents-learn config/trainer_config.yaml --run-id=firstRun --train
-``` 
+      ```sh
+      mlagents-learn config/trainer_config.yaml --run-id=firstRun --train
+      ```
 5. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
    in Unity to start training in the Editor.
@@ -149,6 +149,7 @@ INFO:mlagents.learn:{'--curriculum': 'None',
  '--train': True,
  '--worker-id': '0',
  '<trainer-config-path>': 'config/trainer_config.yaml'}
+INFO:mlagents.envs:Start training by pressing the Play button in the Unity Editor.
  ```
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
@@ -158,7 +159,6 @@ If `mlagents-learn` runs correctly and starts training, you should see something
 like this:
 
 ```console
-INFO:mlagents.envs:Start training by pressing the Play button in the Unity Editor.
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy

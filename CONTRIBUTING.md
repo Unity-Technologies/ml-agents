@@ -1,9 +1,9 @@
 # Contribution Guidelines
 
-Thank you for your interest in contributing to the ML-Agents toolkit! We are incredibly
-excited to see how members of our community will use and extend the ML-Agents toolkit.
-To facilitate your contributions, we've outlined a brief set of guidelines
-to ensure that your extensions can be easily integrated.
+Thank you for your interest in contributing to the ML-Agents toolkit! We are
+incredibly excited to see how members of our community will use and extend the
+ML-Agents toolkit. To facilitate your contributions, we've outlined a brief set
+of guidelines to ensure that your extensions can be easily integrated.
 
 ## Communication
 

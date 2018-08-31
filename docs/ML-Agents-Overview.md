@@ -214,7 +214,7 @@ enables additional training modes.
        border="10" />
 </p>
 
-_An example of how a scene containing multiple Agents and Brains might be 
+_An example of how a scene containing multiple Agents and Brains might be
 configured._
 
 ## Training Modes
