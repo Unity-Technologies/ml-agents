@@ -110,7 +110,8 @@ if __name__ == '__main__':
     main()
 ```
 
-To start the training process, run the following from the root of the baselines repository:
+To start the training process, run the following from the root of the baselines
+repository:
 
 ```sh
 python -m baselines.deepq.experiments.train_unity
