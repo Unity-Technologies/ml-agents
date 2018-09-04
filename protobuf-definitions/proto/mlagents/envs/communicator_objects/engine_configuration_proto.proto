@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message EngineConfigurationProto {
+    int32 width = 1;
+    int32 height = 2;
+    int32 quality_level = 3;
+    float time_scale = 4;
+    int32 target_frame_rate = 5;
+    bool show_monitor = 6;
+}
