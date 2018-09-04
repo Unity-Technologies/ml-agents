@@ -73,7 +73,7 @@ class Curriculum(object):
                steps completed).
         :return Whether the lesson was incremented.
         """
-        if self.data is None or measure_val is None or math.isnan(measure_val):
+        if not self.data or not measure_val or math.isnan(measure_val):
             return False
         if self.data['signal_smoothing']:
             progress = self.smoothing_value * 0.25 + 0.75 * measure_val
@@ -101,9 +101,9 @@ class Curriculum(object):
                current lesson is returned.
         :return: The configuration of the reset parameters.
         """
-        if self.data is None:
+        if not self.data:
             return {}
-        if lesson is None:
+        if not lesson:
             lesson = self.lesson_num
         lesson = max(0, min(lesson, self.max_lesson_num))
         config = {}
