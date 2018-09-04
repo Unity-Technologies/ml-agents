@@ -80,7 +80,6 @@ class Curriculum(object):
             self.smoothing_value = progress
         if self.lesson_num < self.max_lesson_num:
             if progress > self.data['thresholds'][self.lesson_num]:
-                print(progress, 'is above the threshold, successfully incrementing lesson')
                 self.lesson_length = 0
                 self.lesson_num += 1
                 config = {}

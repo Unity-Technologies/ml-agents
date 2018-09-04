@@ -334,7 +334,6 @@ class TrainerController(object):
                     if (self.meta_curriculum
                             and any(lessons_incremented.values())
                         or self.env.global_done):
-                        print('resetting environment, global done is', self.env.global_done)
                         curr_info = self._reset_env()
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
