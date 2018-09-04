@@ -76,11 +76,10 @@ class Curriculum(object):
         if not self.data or not measure_val or math.isnan(measure_val):
             return False
         if self.data['signal_smoothing']:
-            progress = self.smoothing_value * 0.25 + 0.75 * measure_val
-            self.smoothing_value = progress
+            measure_val = self.smoothing_value * 0.25 + 0.75 * measure_val
+            self.smoothing_value = measure_val
         if self.lesson_num < self.max_lesson_num:
-            if progress > self.data['thresholds'][self.lesson_num]:
-                self.lesson_length = 0
+            if measure_val > self.data['thresholds'][self.lesson_num]:
                 self.lesson_num += 1
                 config = {}
                 parameters = self.data['parameters']
@@ -103,7 +102,7 @@ class Curriculum(object):
         """
         if not self.data:
             return {}
-        if not lesson:
+        if lesson is None:
             lesson = self.lesson_num
         lesson = max(0, min(lesson, self.max_lesson_num))
         config = {}
