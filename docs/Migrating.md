@@ -41,10 +41,16 @@
   [trainer_config.yaml](../config/trainer_config.yaml). An example of passing
   a trainer configuration to `mlagents-learn` is shown above.
 * The environment name is now passed through the `--env` option.
-* Curriculum files must now be placed into a folder and be named appropriately.
-  Refer to the
-  [Curriculum training documentation](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Curriculum-Learning.md)
-  for more information.
+* Curriculum learning has been changed. Refer to the
+    [curriculum learning documentation](Training-Curriculum-Learning.md)
+    for detailed information. In summary:
+  * Curriculum files for the same environment must now be placed into a folder.
+    Each curriculum file should be named after the brain whose curriculum it
+    specifies.
+  * `min_lesson_length` now specifies the minimum number of episodes in a lesson
+    and affects reward thresholding.
+  * It is no longer necessary to specify the `Max Steps` of the Academy to use
+    curriculum learning.
 
 ## Migrating from ML-Agents toolkit v0.3 to v0.4
 
