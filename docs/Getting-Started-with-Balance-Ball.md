@@ -220,7 +220,7 @@ The `--train` flag tells the ML-Agents toolkit to run in training mode.
 
 **Note**: You can train using an executable rather than the Editor. To do so,
 follow the intructions in [Using an
-Execuatble](Learning-Environment-Executable.md).
+Executable](Learning-Environment-Executable.md).
 
 ### Observing Training Progress
 
