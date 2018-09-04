@@ -19,7 +19,7 @@ project to decide the best course of action for an Agent.
 
 Use the command `mlagents-learn` to train your Agents. This command is installed
 with the `mlagents` package and its implementation can be found at
-`ml-agents/learn.py`. The [configuration file](#training-config-file),
+`ml-agents/mlagents/trainers/learn.py`. The [configuration file](#training-config-file),
 `config/trainer_config.yaml` specifies the hyperparameters used during training.
 You can edit this file with a text editor to add a specific configuration for
 each Brain.

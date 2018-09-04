@@ -48,7 +48,7 @@ importing the ML-Agents assets into it:
 1. Launch the Unity Editor and create a new project named "RollerBall".
 2. In a file system window, navigate to the folder containing your cloned
    ML-Agents repository.
-3. Drag the `ML-Agents` folder from `MLAgentsSDK/Assets` to the Unity Editor
+3. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity Editor
    Project window.
 
 Your Unity **Project** window should contain the following assets:

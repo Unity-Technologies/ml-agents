@@ -7,8 +7,8 @@ import multiprocessing
 import numpy as np
 from docopt import docopt
 
-from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.exception import TrainerError
+from .trainer_controller import TrainerController
+from .exception import TrainerError
 
 
 def run_training(sub_id, run_seed, run_options):
@@ -19,24 +19,20 @@ def run_training(sub_id, run_seed, run_options):
     :param run_options: Command line arguments for training.
     """
     # Docker Parameters
-    if run_options['--docker-target-name'] == 'Empty':
-        docker_target_name = ''
-    else:
-        docker_target_name = run_options['--docker-target-name']
+    docker_target_name = (run_options['--docker-target-name']
+        if run_options['--docker-target-name'] != 'None' else None)
 
     # General parameters
-    env_path = run_options['--env']
-    if env_path == 'None':
-        env_path = None
+    env_path = (run_options['--env']
+        if run_options['--env'] != 'None' else None)
     run_id = run_options['--run-id']
     load_model = run_options['--load']
     train_model = run_options['--train']
     save_freq = int(run_options['--save-freq'])
     keep_checkpoints = int(run_options['--keep-checkpoints'])
     worker_id = int(run_options['--worker-id'])
-    curriculum_file = str(run_options['--curriculum'])
-    if curriculum_file == 'None':
-        curriculum_file = None
+    curriculum_file = (run_options['--curriculum']
+        if run_options['--curriculum'] != 'None' else None)
     lesson = int(run_options['--lesson'])
     fast_simulation = not bool(run_options['--slow'])
     no_graphics = run_options['--no-graphics']
@@ -72,15 +68,15 @@ def main():
     except:
         print('\n\n\tUnity Technologies\n')
 
-    logger = logging.getLogger('mlagents.learn')
+    logger = logging.getLogger('mlagents.trainers')
     _USAGE = '''
     Usage:
-      learn <trainer-config-path> [options]
-      learn --help
+      mlagents-learn <trainer-config-path> [options]
+      mlagents-learn --help
 
     Options:
       --env=<file>               Name of the Unity executable [default: None].
-      --curriculum=<file>        Curriculum json file for environment [default: None].
+      --curriculum=<directory>   Curriculum json directory for environment [default: None].
       --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
@@ -91,7 +87,7 @@ def main():
       --slow                     Whether to run the game at training speed [default: False].
       --train                    Whether to train model, or only run inference [default: False].
       --worker-id=<n>            Number to add to communication port (5005) [default: 0].
-      --docker-target-name=<dt>  Docker volume to store training-specific files [default: Empty].
+      --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
       --no-graphics              Whether to run the environment in no-graphics mode [default: False].
     '''
 
@@ -112,7 +108,3 @@ def main():
         p = multiprocessing.Process(target=run_training, args=(i, run_seed, options))
         jobs.append(p)
         p.start()
-
-
-if __name__ == '__main__':
-    main()

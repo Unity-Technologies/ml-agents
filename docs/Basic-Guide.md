@@ -18,7 +18,7 @@ is needed for you to use pre-trained model within Unity, which is based on the
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `MLAgentsSDK` folder
+3. Using the file dialog that opens, locate the `UnitySDK` folder
    within the the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target (**PC, Mac and Linux Standalone**,
@@ -39,7 +39,7 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
 **Plugins** > **Computer**.
 
 **Note**: If you don't see anything under **Assets**, drag the
-`MLAgentsSDK/Assets/ML-Agents` folder under **Assets** within Project window.
+`UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
 
 ![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
 
@@ -219,7 +219,7 @@ similar to the steps described
 [above](#play-an-example-environment-using-pretrained-model).
 
 1. Move your model file into
-   `MLAgentsSDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+   `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the **Ball3DBrain** object from the Scene hierarchy.
 4. Change the **Type of Brain** to **Internal**.

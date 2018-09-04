@@ -45,8 +45,6 @@ class TrainerController(object):
         :param no_graphics: Whether to run the Unity simulator in no-graphics
                             mode.
         """
-        self.trainer_config_path = trainer_config_path
-
         if env_path is not None:
             # Strip out executable extensions if passed
             env_path = (env_path.strip()
@@ -56,13 +54,18 @@ class TrainerController(object):
                         .replace('.x86', ''))
 
         # Recognize and use docker volume if one is passed as an argument
-        if docker_target_name == '':
+        if not docker_target_name:
             self.docker_training = False
+            self.trainer_config_path = trainer_config_path
             self.model_path = './models/{run_id}'.format(run_id=run_id)
             self.curriculum_folder = curriculum_folder
             self.summaries_dir = './summaries'
         else:
             self.docker_training = True
+            self.trainer_config_path = \
+                '/{docker_target_name}/{trainer_config_path}'.format(
+                    docker_target_name=docker_target_name,
+                    trainer_config_path = trainer_config_path)
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
@@ -241,8 +244,7 @@ class TrainerController(object):
                 return trainer_config
         except IOError:
             raise UnityEnvironmentException('Parameter file could not be found '
-                                            'here {}. Will use default Hyper '
-                                            'parameters.'
+                                            'at {}.'
                                             .format(self.trainer_config_path))
         except UnicodeDecodeError:
             raise UnityEnvironmentException('There was an error decoding '

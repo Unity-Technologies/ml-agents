@@ -18,7 +18,7 @@ environment:
 
 1. Launch Unity.
 2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `MLAgentsSDK` folder within the
+3. Using the file dialog that opens, locate the `UnitySDK` folder within the
    ML-Agents project and click **Open**.
 4. In the **Project** window, navigate to the folder
    `Assets/ML-Agents/Examples/3DBall/`.
@@ -208,7 +208,7 @@ to your model's latest checkpoint. You can now embed this trained model into
 your Internal Brain by following the steps below:
 
 1. Move your model file into
-   `MLAgentsSDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+   `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the **Ball3DBrain** object from the Scene hierarchy.
 4. Change the **Type of Brain** to **Internal**.
