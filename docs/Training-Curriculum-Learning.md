@@ -59,7 +59,7 @@ the BigWallBrain in the Wall Jump environment.
 {
     "measure" : "progress",
     "thresholds" : [0.1, 0.3, 0.5],
-    "min_lesson_length" : 40,
+    "min_lesson_length" : 100,
     "signal_smoothing" : true,
     "parameters" :
     {
@@ -75,7 +75,12 @@ the BigWallBrain in the Wall Jump environment.
 * `thresholds` (float array) - Points in value of `measure` where lesson should
   be increased.
 * `min_lesson_length` (int) - The minimum number of episodes that should be
-  completed before the lesson can change.
+  completed before the lesson can change. If `measure` is set to `reward`, the
+  average cumulative reward of the last `min_lesson_length` episodes will be
+  used to determine if the lesson should change.
+
+  __Important__: the average reward that is compared to the threshold is
+  different than the mean reward that is logged to the console.
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
