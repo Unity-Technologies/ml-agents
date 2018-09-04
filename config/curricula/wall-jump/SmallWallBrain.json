@@ -1,7 +1,7 @@
 {
-    "measure" : "reward",
+    "measure" : "progress",
     "thresholds" : [0.1, 0.3, 0.5],
-    "min_lesson_length": 10,
+    "min_lesson_length": 40,
     "signal_smoothing" : true, 
     "parameters" : 
     {
