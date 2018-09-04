@@ -77,10 +77,15 @@ the BigWallBrain in the Wall Jump environment.
 * `min_lesson_length` (int) - The minimum number of episodes that should be
   completed before the lesson can change. If `measure` is set to `reward`, the
   average cumulative reward of the last `min_lesson_length` episodes will be
-  used to determine if the lesson should change.
+  used to determine if the lesson should change. Must be nonnegative.
 
-  __Important__: the average reward that is compared to the threshold is
-  different than the mean reward that is logged to the console.
+  __Important__: the average reward that is compared to the thresholds is
+  different than the mean reward that is logged to the console. For example,
+  if `min_lesson_length` is `100`, the lesson will increment after the average
+  cumulative reward of the last `100` episodes exceeds the current threshold.
+  The mean reward logged to the console is dictated by the `summary_freq`
+  parameter in the
+  [trainer configuration file](Training-ML-Agents.md#training-config-file).
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
