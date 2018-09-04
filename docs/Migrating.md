@@ -4,7 +4,7 @@
 
 ### Important
 
-* The Unity project `unity-environment` has been renamed `MLAgentsSDK`.
+* The Unity project `unity-environment` has been renamed `UnitySDK`.
 * The `python` folder has been renamed to `ml-agents`. It now contains two
   packages, `mlagents.env` and `mlagents.trainers`. `mlagents.env` can be used
   to interact directly with a Unity environment, while `mlagents.trainers`
