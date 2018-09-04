@@ -22,7 +22,9 @@ Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
     git clone https://github.com/Unity-Technologies/ml-agents.git
 
-The `UnitySDK` subdirectory contains the Unity Assets to add to your projects. It also contains many [example environments ](Learning-Environment-Examples.md) that can be used to help get you familiar with Unity.
+The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
+It also contains many [example environments](Learning-Environment-Examples.md)
+that can be used to help get you familiar with Unity.
 
 The `ml-agents` subdirectory contains Python packages which provide
 trainers and a Python API to interface with Unity.
@@ -60,12 +62,13 @@ If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install the dependencies and `mlagents` Python package, enter the `ml-agents/` subdirectory and run from
-the command line:
+To install the dependencies and `mlagents` Python package, enter the
+`ml-agents/` subdirectory and run from the command line:
 
     pip3 install .
 
-If you installed this correctly, you should be able to run `mlagents-learn --help`
+If you installed this correctly, you should be able to run
+`mlagents-learn --help`
 
 ## Docker-based Installation
 
