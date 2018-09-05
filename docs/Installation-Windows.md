@@ -184,11 +184,12 @@ Nvidia Developer Program.
 </p>
 
 Once you've signed up, go back to the cuDNN
-[downloads page](https://developer.nvidia.com/cudnn). You may or may not be asked to fill
-out a short survey. When you get to the list cuDNN releases, __make sure you are
-downloading the right version for the CUDA toolkit you installed in Step 1.__
-In this guide, we are using version 7.0.5 for CUDA toolkit version 9.0 ([direct
-link](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v7.0.5/prod/9.0_20171129/cudnn-9.0-windows10-x64-v7)).
+[downloads page](https://developer.nvidia.com/cudnn).
+You may or may not be asked to fill out a short survey. When you get to the list
+cuDNN releases, __make sure you are downloading the right version for the CUDA
+toolkit you installed in Step 1.__ In this guide, we are using version 7.0.5 for
+CUDA toolkit version 9.0
+([direct link](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v7.0.5/prod/9.0_20171129/cudnn-9.0-windows10-x64-v7)).
 
 After you have downloaded the cuDNN files, you will need to extract the files
 into the CUDA toolkit directory. In the cuDNN zip file, there are three folders
