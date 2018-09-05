@@ -26,7 +26,7 @@ know._
 
 ## Requirements
 
-* Unity 2017.1 or above
+* Unity 2017.4 or above
 * Unity TensorFlow Plugin ([Download here](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage))
 
 ## Using TensorFlowSharp with ML-Agents

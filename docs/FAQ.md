@@ -27,7 +27,24 @@ This error message occurs because the TensorFlowSharp plugin won't be usage
 without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit
 Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
-## TensorFlow epsilon placeholder error
+## Instance of CoreBrainInternal couldn't be created
+
+If you try to use ML-Agents in Unity versions 2017.1 - 2017.3, you might
+encounter an error that looks like this:
+
+```console 
+Instance of CoreBrainInternal couldn't be created. The the script
+class needs to derive from ScriptableObject.
+UnityEngine.ScriptableObject:CreateInstance(String)
+```
+
+You can fix the error by removing `CoreBrain` from CoreBrainInternal.cs:16,
+clicking on your Brain Gameobject to let the scene recompile all the changed
+C# scripts, then adding the `CoreBrain` back. Make sure your brain is in
+Internal mode, your TensorFlowSharp plugin is imported and the
+ENABLE_TENSORFLOW flag is set. This fix is only valid locally and unstable.
+
+## Tensorflow epsilon placeholder error
 
 If you have a graph placeholder set in the Internal Brain inspector that is not
 present in the TensorFlow graph, you will see some error like this:
