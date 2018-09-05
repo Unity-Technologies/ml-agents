@@ -320,7 +320,7 @@ python3 python/learn.py <env_name> --run-id=<run-identifier> --train
 
 1. 确保 TensorFlowSharp 插件位于 `Assets` 文件夹中。
 可在
-[此处](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage)下载一个包含 TF# 的 Plugins 文件夹。
+[此处](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)下载一个包含 TF# 的 Plugins 文件夹。
 下载后，双击并将其导入。您可以在 Project 选项卡中
 （位于 `Assets` > `ML-Agents` > `Plugins` > `Computer` 下）
 检查 TensorFlow 的相关文件来查看是否安装成功
