@@ -108,6 +108,8 @@ this Brain will use your fully trained network to make decisions.
 
 ## iOS additional instructions for building
 
+* Before build your game against iOS platform, make sure you've set the
+  flag `ENABLE_TENSORFLOW` for it. 
 * Once you build the project for iOS in the editor, open the .xcodeproj file
   within the project folder using Xcode.
 * Set up your ios account following the
@@ -129,7 +131,7 @@ You must have a TensorFlow graph, such as `your_name_graph.bytes`, made using
 TensorFlow's `freeze_graph.py`. The process to create such graph is explained in
 the [Using your own trained graphs](#using-your-own-trained-graphs) section.
 
-## Inside of Unity
+### Inside of Unity
 
 To load and use a TensorFlow data graph in Unity:
 
@@ -145,7 +147,7 @@ To load and use a TensorFlow data graph in Unity:
    your code :
 
    ```csharp
-   #if UNITY_ANDROID
+   #if UNITY_ANDROID && !UNITY_EDITOR
    TensorFlowSharp.Android.NativeBinding.Init();
    #endif
    ```
