@@ -29,8 +29,8 @@ Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
 ## Instance of CoreBrainInternal couldn't be created
 
-If you try to use ML-Agents in Unity version 2017.1 - 2017.3, you might
-encounter error that looks like this:
+If you try to use ML-Agents in Unity versions 2017.1 - 2017.3, you might
+encounter an error that looks like this:
 
 ```console 
 Instance of CoreBrainInternal couldn't be created. The the script
@@ -43,7 +43,6 @@ clicking on your Brain Gameobject to let the scene recompile all the changed
 C# scripts, then adding the `CoreBrain` back. Make sure your brain is in
 Internal mode, your TensorFlowSharp plugin is imported and the
 ENABLE_TENSORFLOW flag is set. This fix is only valid locally and unstable.
-
 
 ## Tensorflow epsilon placeholder error
 
