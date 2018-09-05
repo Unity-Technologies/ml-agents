@@ -32,8 +32,7 @@ is needed for you to use pre-trained model within Unity, which is based on the
 
 ![Project Settings](images/project-settings.png)
 
-[Download]
-(https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
+[Download](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
 the TensorFlowSharp plugin. Then import it into Unity by double clicking the
 downloaded file.  You can check if it was successfully imported by checking the
 TensorFlow files in the Project window under **Assets** > **ML-Agents** >
