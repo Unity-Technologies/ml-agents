@@ -92,7 +92,7 @@ namespace MLAgents
              "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        private const string kApiVersion = "API-4";
+        private const string kApiVersion = "API-5";
 
         // Fields provided in the Inspector
 
