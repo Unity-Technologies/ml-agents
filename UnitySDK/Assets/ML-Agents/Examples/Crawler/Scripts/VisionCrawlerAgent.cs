@@ -17,25 +17,25 @@ public class VisionCrawlerAgent : Agent
 
     public MotorCrawlerAgent motorAgent;
 
-    CrawlerAcademy academy;
-
     public Transform ground;
 
     public bool respawnTargetWhenTouched;
-
-    public float targetSpawnRadius;
-
-    RayPerception rayPer;
 
     public Transform obstacleWall;
 
     [Header("Target To Walk Towards")] [Space(10)]
     public Transform target;
 
+    [Header("Testing")] [Space(10)] public bool printAverageReward;
+
     /// <summary>
     /// We will be changing the ground material based on success/failue
     /// </summary>
     Renderer groundRenderer;
+    CrawlerAcademy academy;
+    RayPerception rayPer;
+    float totalAverageReward;
+    int numRewards;
 
     public override void InitializeAgent()
     {
@@ -149,7 +149,12 @@ public class VisionCrawlerAgent : Agent
     /// </summary>
 	public override void AgentReset()
     {
+        if (printAverageReward && IsDone())
+        {
+            numRewards += 1;
+            totalAverageReward = totalAverageReward + (GetCumulativeReward() - totalAverageReward) / numRewards;
+            Debug.Log("VisionCrawlerAgent :: " + numRewards + " Episodes; Total Average Reward: " + totalAverageReward);
+        }
         GetRandomTargetPos();
-        motorAgent.AgentReset();
     }
 }
