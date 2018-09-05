@@ -6,11 +6,9 @@ using MLAgents;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class MotorCrawlerAgent : Agent
 {
-
     public Transform ground;
-    public bool detectTargets;
-    public bool respawnTargetWhenTouched;
-    public float targetSpawnRadius;
+
+    public GameObject obstacleWall;
 
     public VisionCrawlerAgent visionAgent;
 
@@ -47,8 +45,12 @@ public class MotorCrawlerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
+    [Header("Testing")] [Space(10)] public bool printAverageReward;
+
     CrawlerAcademy academy;
-    public GameObject wall;
+
+    float totalAverageReward;
+    int numRewards;
 
     public override void InitializeAgent()
     {
@@ -66,6 +68,12 @@ public class MotorCrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
+
+        if (printAverageReward)
+        {
+            totalAverageReward = 0f;
+            numRewards = 0;
+        }
     }
 
     /// <summary>
@@ -227,6 +235,13 @@ public class MotorCrawlerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
+        if (printAverageReward && IsDone())
+        {
+            numRewards += 1;
+            totalAverageReward = totalAverageReward + (GetCumulativeReward() - totalAverageReward) / numRewards;
+            Debug.Log("MotorCrawlerAgent :: " + numRewards + " Episodes; Total Average Reward: " + totalAverageReward);
+        }
+
         if (dirToTarget != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);
@@ -243,8 +258,8 @@ public class MotorCrawlerAgent : Agent
         currentDecisionStep = 1;
 
         if (Random.value < academy.resetParameters["spawn_wall"])
-            wall.SetActive(true);
+            obstacleWall.SetActive(true);
         else
-            wall.SetActive(false);
+            obstacleWall.SetActive(false);
     }
 }

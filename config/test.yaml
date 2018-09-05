@@ -1,0 +1,4 @@
+default:
+    trainer: ppo
+    max_steps: 10000
+    summary_freq: 10000
