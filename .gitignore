@@ -13,6 +13,9 @@
 /models
 /summaries
 
+# Training environments
+/envs
+
 # Environemnt logfile
 *UnitySDK.log
 
