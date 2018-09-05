@@ -12,7 +12,7 @@
 * The supported Unity version has changed from `2017.1 or later` to `2017.4
   or later`. 2017.4 is a LTS(Long Term Support) version that helps us
   maintain good quality and support. The lower
-  versions might still work, but you may encounter [error]() listed here. 
+  versions might still work, but you may encounter [error](FAQ.md#instance-of-corebraininternal-couldnt-be-created) listed here. 
 
 ### Unity API
 

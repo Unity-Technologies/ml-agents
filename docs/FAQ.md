@@ -27,7 +27,7 @@ This error message occurs because the TensorFlowSharp plugin won't be usage
 without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit
 Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
-## Instance of CoreBrainInternal couldn't be created.
+## Instance of CoreBrainInternal couldn't be created
 
 If you try to use ML-Agents in Unity version 2017.1 - 2017.3, you might
 encounter error that looks like this:
