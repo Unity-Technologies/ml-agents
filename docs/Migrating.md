@@ -9,18 +9,29 @@
   packages, `mlagents.env` and `mlagents.trainers`. `mlagents.env` can be used
   to interact directly with a Unity environment, while `mlagents.trainers`
   contains the classes for training agents.
-* The supported Unity version has changed from `2017.1 or later` to `2017.4.10f1 or later`. The lower versions might still work, but you may encounter error that looks like this:
+* The supported Unity version has changed from `2017.1 or later` to `2017.4.10f1
+  or later`. The lower versions might still work, but you may encounter error
+  that looks like this:
+
 ```console
 Instance of CoreBrainInternal couldn't be created. The the script class needs to derive from ScriptableObject.
 UnityEngine.ScriptableObject:CreateInstance(String)
 ```
-You can fix the error by removing `CoreBrain` from the CoreBrainInternal.cs:16, click on your Brain Gameobject to let the scene recompile all the changed C# scripts, then add the `CoreBrain` back. (Make sure your brain is in Internal mode, and your TensorFlowSharp plugin is imported and ENABLE_TENSORFLOW flag is set), but this fix is only valid locally and unstable. 
+
+You can fix the error by removing `CoreBrain` from the CoreBrainInternal.cs:16,
+click on your Brain Gameobject to let the scene recompile all the changed C#
+scripts, then add the `CoreBrain` back. Make sure your brain is in Internal
+mode and your TensorFlowSharp plugin is imported and ENABLE_TENSORFLOW flag is
+set. This fix is only valid locally and unstable.
 
 ### Unity API
 
-* Discrete Actions now use [branches](https://arxiv.org/abs/1711.08946). You can now specify concurrent discrete
-  actions. You will need to update the Brain Parameters in the Brain Inspector
-  in all your environments that use discrete actions. Refer to the [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space) for more information. 
+* Discrete Actions now use [branches](https://arxiv.org/abs/1711.08946). You can
+  now specify concurrent discrete actions. You will need to update the Brain
+  Parameters in the Brain Inspector in all your environments that use discrete
+  actions. Refer to the
+  [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space)
+  for more information.
 
 ### Python API
 
