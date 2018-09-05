@@ -105,7 +105,7 @@ namespace MLAgents
         public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
         {
 #if ENABLE_TENSORFLOW
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
 // This needs to ba called only once and will raise an exception if 
 // there are multiple internal brains
         try{
