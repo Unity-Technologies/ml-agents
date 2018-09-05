@@ -1,21 +1,21 @@
 # Player Brain
 
-The **Player** brain type allows you to control an agent using keyboard
-commands. You can use Player brains to control a "teacher" agent that trains
-other agents during [imitation learning](Training-Imitation-Learning.md). You
-can also use Player brains to test your agents and environment before changing
-their brain types to **External** and running the training process.
+The **Player** Brain type allows you to control an Agent using keyboard
+commands. You can use Player Brains to control a "teacher" Agent that trains
+other Agents during [imitation learning](Training-Imitation-Learning.md). You
+can also use Player Brains to test your Agents and environment before changing
+their Brain types to **External** and running the training process.
 
 ## Player Brain properties
 
-The **Player** brain properties allow you to assign one or more keyboard keys to
+The **Player** Brain properties allow you to assign one or more keyboard keys to
 each action and a unique value to send when a key is pressed.
 
 ![Player Brain Inspector](images/player_brain.png)
 
 Note the differences between the discrete and continuous action spaces. When a
-brain uses the discrete action space, you can send one integer value as the
-action per step. In contrast, when a brain uses the continuous action space you
+Brain uses the discrete action space, you can send one integer value as the
+action per step. In contrast, when a Brain uses the continuous action space you
 can send any number of floating point values (up to the **Vector Action Space
 Size** setting).
 
@@ -28,10 +28,10 @@ Size** setting).
   action. (If you press both keys at the same time, deterministic results are not guaranteed.)|
 ||**Element 0–N**| The mapping of keys to action values. |
 || **Key** | The key on the keyboard. |
-|| **Index** | The element of the agent's action vector to set when this key is
+|| **Index** | The element of the Agent's action vector to set when this key is
   pressed. The index value cannot exceed the size of the Action Space (minus 1,
   since it is an array index).|
-|| **Value** | The value to send to the agent as its action for the specified
+|| **Value** | The value to send to the Agent as its action for the specified
   index when the mapped key is pressed. All other members of the action vector
   are set to 0. |
 |**Discrete Player Actions**|| The mapping for the discrete vector action space.
@@ -39,10 +39,10 @@ Size** setting).
 || **Size** | The number of key commands defined. |
 ||**Element 0–N**| The mapping of keys to action values. |
 || **Key** | The key on the keyboard. |
-|| **Branch Index** |The element of the agent's action vector to set when this
+|| **Branch Index** |The element of the Agent's action vector to set when this
   key is pressed. The index value cannot exceed the size of the Action Space
   (minus 1, since it is an array index).|
-|| **Value** | The value to send to the agent as its action when the mapped key
+|| **Value** | The value to send to the Agent as its action when the mapped key
   is pressed. Cannot exceed the max value for the associated branch (minus 1,
   since it is an array index).|
 

@@ -1,4 +1,4 @@
-# Memory-enhanced Agents using Recurrent Neural Networks
+# Memory-enhanced agents using Recurrent Neural Networks
 
 ## What are memories for
 

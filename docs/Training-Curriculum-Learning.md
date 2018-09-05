@@ -33,7 +33,7 @@ accomplish tasks otherwise much more difficult.
 
 Each Brain in an environment can have a corresponding curriculum. These
 curriculums are held in what we call a metacurriculum. A metacurriculum allows
-different brains to follow different curriculums within the same environment.
+different Brains to follow different curriculums within the same environment.
 
 ### Specifying a Metacurriculum
 
@@ -59,7 +59,7 @@ the BigWallBrain in the Wall Jump environment.
 {
     "measure" : "progress",
     "thresholds" : [0.1, 0.3, 0.5],
-    "min_lesson_length" : 2,
+    "min_lesson_length" : 100,
     "signal_smoothing" : true,
     "parameters" :
     {
@@ -74,17 +74,27 @@ the BigWallBrain in the Wall Jump environment.
   * `progress` - Uses ratio of steps/max_steps.
 * `thresholds` (float array) - Points in value of `measure` where lesson should
   be increased.
-* `min_lesson_length` (int) - How many times the progress measure should be
-  reported before incrementing the lesson.
+* `min_lesson_length` (int) - The minimum number of episodes that should be
+  completed before the lesson can change. If `measure` is set to `reward`, the
+  average cumulative reward of the last `min_lesson_length` episodes will be
+  used to determine if the lesson should change. Must be nonnegative.
+
+  __Important__: the average reward that is compared to the thresholds is
+  different than the mean reward that is logged to the console. For example,
+  if `min_lesson_length` is `100`, the lesson will increment after the average
+  cumulative reward of the last `100` episodes exceeds the current threshold.
+  The mean reward logged to the console is dictated by the `summary_freq`
+  parameter in the
+  [trainer configuration file](Training-ML-Agents.md#training-config-file).
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
 * `parameters` (dictionary of key:string, value:float array) - Corresponds to
-  academy reset parameters to control. Length of each array should be one
+  Academy reset parameters to control. Length of each array should be one
   greater than number of thresholds.
 
 Once our curriculum is defined, we have to use the reset parameters we defined
-and modify the environment from the agent's `AgentReset()` function. See
+and modify the environment from the Agent's `AgentReset()` function. See
 [WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/UnitySDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example. Note that if the Academy's __Max Steps__ is not set to some
 positive number the environment will never be reset. The Academy must reset
@@ -92,7 +102,7 @@ for the environment to reset.
 
 We will save this file into our metacurriculum folder with the name of its
 corresponding Brain. For example, in the Wall Jump environment, there are two
-brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
+Brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
 the BigWallBrain, we will save `BigWallBrain.json` into
 `curricula/wall-jump/`.
 
@@ -107,5 +117,4 @@ agents in the Wall Jump environment with curriculum learning, we can run
 mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train
 ```
 
-We can then keep track of the current
-lessons and progresses via TensorBoard.
+We can then keep track of the current lessons and progresses via TensorBoard.

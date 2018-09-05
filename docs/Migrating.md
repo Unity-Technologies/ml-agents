@@ -49,10 +49,16 @@
   [trainer_config.yaml](../config/trainer_config.yaml). An example of passing
   a trainer configuration to `mlagents-learn` is shown above.
 * The environment name is now passed through the `--env` option.
-* Curriculum files must now be placed into a folder and be named appropriately.
-  Refer to the
-  [Curriculum training documentation](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Curriculum-Learning.md)
-  for more information.
+* Curriculum learning has been changed. Refer to the
+    [curriculum learning documentation](Training-Curriculum-Learning.md)
+    for detailed information. In summary:
+  * Curriculum files for the same environment must now be placed into a folder.
+    Each curriculum file should be named after the brain whose curriculum it
+    specifies.
+  * `min_lesson_length` now specifies the minimum number of episodes in a lesson
+    and affects reward thresholding.
+  * It is no longer necessary to specify the `Max Steps` of the Academy to use
+    curriculum learning.
 
 ## Migrating from ML-Agents toolkit v0.3 to v0.4
 
@@ -63,9 +69,9 @@
 
 ### Python API
 
-* We've changed some of the python packages dependencies in requirement.txt
-  file. Make sure to run `pip install .` within your `ml-agents/python` folder
-  to update your python packages.
+* We've changed some of the Python packages dependencies in requirement.txt
+  file. Make sure to run `pip3 install .` within your `ml-agents/python` folder
+  to update your Python packages.
 
 ## Migrating from ML-Agents toolkit v0.2 to v0.3
 
@@ -85,7 +91,7 @@ in order to ensure a smooth transition.
   replaced with a single `learn.py` script as the launching point for training
   with ML-Agents. For more information on using `learn.py`, see
   [here](Training-ML-Agents.md#training-with-mlagents-learn).
-* Hyperparameters for training brains are now stored in the
+* Hyperparameters for training Brains are now stored in the
   `trainer_config.yaml` file. For more information on using this file, see
   [here](Training-ML-Agents.md#training-config-file).
 
@@ -102,7 +108,7 @@ in order to ensure a smooth transition.
 * `AgentStep()` has been replaced by `AgentAction()`.
 * `WaitTime()` has been removed.
 * The `Frame Skip` field of the Academy is replaced by the Agent's `Decision
-  Frequency` field, enabling agent to make decisions at different frequencies.
+  Frequency` field, enabling the Agent to make decisions at different frequencies.
 * The names of the inputs in the Internal Brain have been changed. You must
   replace `state` with `vector_observation` and `observation` with
   `visual_observation`. In addition, you must remove the `epsilon` placeholder.

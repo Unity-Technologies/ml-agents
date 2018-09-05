@@ -70,17 +70,17 @@ def test_increment_lesson(mock_file, location, default_reset_parameters):
     curriculum.lesson_num = 1
     assert curriculum.lesson_num == 1
 
-    curriculum.increment_lesson(10)
+    assert not curriculum.increment_lesson(10)
     assert curriculum.lesson_num == 1
 
-    curriculum.increment_lesson(30)
-    curriculum.increment_lesson(30)
-    assert curriculum.lesson_num == 1
-    assert curriculum.lesson_length == 3
-
-    curriculum.increment_lesson(30)
-    assert curriculum.lesson_length == 0
+    assert curriculum.increment_lesson(30)
     assert curriculum.lesson_num == 2
+
+    assert not curriculum.increment_lesson(30)
+    assert curriculum.lesson_num == 2
+
+    assert curriculum.increment_lesson(10000)
+    assert curriculum.lesson_num == 3
 
 
 @patch('builtins.open', new_callable=mock_open, read_data=dummy_curriculum_json_str)

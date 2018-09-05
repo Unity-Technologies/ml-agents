@@ -15,12 +15,12 @@ Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
 ## TensorFlowSharp flag not turned on
 
-If you have already imported the TensorFlowSharp plugin, but havn't set
+If you have already imported the TensorFlowSharp plugin, but haven't set
 ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
 following error message:
 
 ```console
-You need to install and enable the TensorFlowSharp plugin in order to use the internal brain.
+You need to install and enable the TensorFlowSharp plugin in order to use the Internal Brain.
 ```
 
 This error message occurs because the TensorFlowSharp plugin won't be usage
@@ -46,25 +46,25 @@ ENABLE_TENSORFLOW flag is set. This fix is only valid locally and unstable.
 
 ## Tensorflow epsilon placeholder error
 
-If you have a graph placeholder set in the internal Brain inspector that is not
+If you have a graph placeholder set in the Internal Brain inspector that is not
 present in the TensorFlow graph, you will see some error like this:
 
 ```console
-UnityAgentsException: One of the Tensorflow placeholder could not be found. In brain <some_brain_name>, there are no FloatingPoint placeholder named <some_placeholder_name>.
+UnityAgentsException: One of the TensorFlow placeholder could not be found. In brain <some_brain_name>, there are no FloatingPoint placeholder named <some_placeholder_name>.
 ```
 
 Solution: Go to all of your Brain object, find `Graph placeholders` and change
 its `size` to 0 to remove the `epsilon` placeholder.
 
-Similarly, if you have a graph scope set in the internal Brain inspector that is
+Similarly, if you have a graph scope set in the Internal Brain inspector that is
 not correctly set, you will see some error like this:
 
 ```console
 UnityAgentsException: The node <Wrong_Graph_Scope>/action could not be found. Please make sure the graphScope <Wrong_Graph_Scope>/ is correct
 ```
 
-Solution: Make sure your Graph Scope field matches the corresponding brain
-object name in your Hierachy Inspector when there is multiple brain.
+Solution: Make sure your Graph Scope field matches the corresponding Brain
+object name in your Hierarchy Inspector when there are multiple Brains.
 
 ## Environment Permission Error
 
@@ -118,7 +118,7 @@ UnityEnvironment(file_name=filename, worker_id=X)
 ## Mean reward : nan
 
 If you receive a message `Mean reward : nan` when attempting to train a model
-using PPO, this is due to the episodes of the learning environment not
+using PPO, this is due to the episodes of the Learning Environment not
 terminating. In order to address this, set `Max Steps` for either the Academy or
 Agents within the Scene Inspector to a value greater than 0. Alternatively, it
 is possible to manually set `done` conditions for episodes from within scripts

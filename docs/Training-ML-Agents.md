@@ -22,7 +22,7 @@ with the `mlagents` package and its implementation can be found at
 `ml-agents/mlagents/trainers/learn.py`. The [configuration file](#training-config-file),
 `config/trainer_config.yaml` specifies the hyperparameters used during training.
 You can edit this file with a text editor to add a specific configuration for
-each brain.
+each Brain.
 
 For a broader overview of reinforcement learning, imitation learning and the
 ML-Agents training process, see [ML-Agents Toolkit
@@ -48,7 +48,7 @@ mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier> 
 
 where
 
-* `<trainer-config-file>` is the filepath of the trainer configuration yaml.
+* `<trainer-config-file>` is the file path of the trainer configuration yaml.
 * `<env_name>`__(Optional)__ is the name (including path) of your Unity
   executable containing the agents to be trained. If `<env_name>` is not passed,
   the training will happen in the Editor. Press the :arrow_forward: button in
@@ -63,7 +63,7 @@ contains agents ready to train. To perform the training:
 1. [Build the project](Learning-Environment-Executable.md), making sure that you
    only include the training scene.
 2. Open a terminal or console window.
-3. Navigate to the ml-agents `python` folder.
+3. Navigate to the directory where you installed the ML-Agents Toolkit.
 4. Run the following to launch the training process using the path to the Unity
    environment you built in step 1:
 
@@ -75,8 +75,7 @@ During a training session, the training program prints out and saves updates at
 regular intervals (specified by the `summary_freq` option). The saved statistics
 are grouped by the `run-id` value so you should assign a unique id to each
 training run if you plan to view the statistics. You can view these statistics
-using TensorBoard during or after training by running the following command
-(from the ML-Agents python directory):
+using TensorBoard during or after training by running the following command:
 
 ```sh
 tensorboard --logdir=summaries
@@ -159,8 +158,8 @@ after the GameObject containing the Brain component that should use these
 settings. (This GameObject will be a child of the Academy in your scene.)
 Sections for the example environments are included in the provided config file.
 
-| ** Setting ** | **Description** | **Applies To Trainer**|
-| :--           | :--             | :--                   |
+| **Setting** | **Description** | **Applies To Trainer**|
+| :--         | :--             | :--                   |
 | batch_size | The number of experiences in each iteration of gradient descent.| PPO, BC |
 | batches_per_epoch | In imitation learning, the number of batches of training examples to collect before training the model.| BC |
 | beta | The strength of entropy regularization.| PPO, BC |
