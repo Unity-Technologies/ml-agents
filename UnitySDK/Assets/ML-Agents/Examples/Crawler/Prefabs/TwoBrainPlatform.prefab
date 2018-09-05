@@ -2077,9 +2077,7 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   ground: {fileID: 4181509225360580}
-  detectTargets: 0
-  respawnTargetWhenTouched: 0
-  targetSpawnRadius: 0
+  obstacleWall: {fileID: 1738931337686586}
   visionAgent: {fileID: 114648642487692506}
   body: {fileID: 4974499069775106}
   leg0Upper: {fileID: 4649643398574102}
@@ -2102,7 +2100,7 @@ MonoBehaviour:
   foot3: {fileID: 0}
   groundedMaterial: {fileID: 0}
   unGroundedMaterial: {fileID: 0}
-  wall: {fileID: 1738931337686586}
+  printAverageReward: 0
 --- !u!114 &114526531676239698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2200,9 +2198,9 @@ MonoBehaviour:
   motorAgent: {fileID: 114184410671201102}
   ground: {fileID: 4181509225360580}
   respawnTargetWhenTouched: 0
-  targetSpawnRadius: 40
   obstacleWall: {fileID: 4862113337757134}
   target: {fileID: 4275523447681082}
+  printAverageReward: 0
 --- !u!114 &114668417820653128
 MonoBehaviour:
   m_ObjectHideFlags: 1
