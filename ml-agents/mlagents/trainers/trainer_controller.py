@@ -22,8 +22,8 @@ from mlagents.trainers.exception import MetaCurriculumError
 class TrainerController(object):
     def __init__(self, env_path, run_id, save_freq, curriculum_folder,
                  fast_simulation, load, train, worker_id, keep_checkpoints,
-                 lesson, seed, docker_target_name, trainer_config_path,
-                 no_graphics):
+                 lesson, seed, docker_target_name,
+                 trainer_config_path, no_graphics):
         """
         :param env_path: Location to the environment executable to be loaded.
         :param run_id: The sub-directory name for model and summary statistics
@@ -123,19 +123,20 @@ class TrainerController(object):
                                                                        'name as the Brain '
                                                                        'whose curriculum it defines.')
 
-    def _get_progresses(self):
+    def _get_measure_vals(self):
         if self.meta_curriculum:
-            brain_names_to_progresses = {}
+            brain_names_to_measure_vals = {}
             for brain_name, curriculum \
-                    in self.meta_curriculum.brains_to_curriculums.items():
-                if curriculum.measure == "progress":
-                    progress = (self.trainers[brain_name].get_step /
-                                self.trainers[brain_name].get_max_steps)
-                    brain_names_to_progresses[brain_name] = progress
-                elif curriculum.measure == "reward":
-                    progress = self.trainers[brain_name].get_last_reward
-                    brain_names_to_progresses[brain_name] = progress
-            return brain_names_to_progresses
+                in self.meta_curriculum.brains_to_curriculums.items():
+                if curriculum.measure == 'progress':
+                    measure_val = (self.trainers[brain_name].get_step /
+                        self.trainers[brain_name].get_max_steps)
+                    brain_names_to_measure_vals[brain_name] = measure_val
+                elif curriculum.measure == 'reward':
+                    measure_val = np.mean(self.trainers[brain_name]
+                                          .reward_buffer)
+                    brain_names_to_measure_vals[brain_name] = measure_val
+            return brain_names_to_measure_vals
         else:
             return None
 
@@ -221,14 +222,17 @@ class TrainerController(object):
                     trainer_parameters[k] = trainer_config[_brain_key][k]
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.env.external_brain_names:
-            if trainer_parameters_dict[brain_name]['trainer'] == "imitation":
+            if trainer_parameters_dict[brain_name]['trainer'] == 'imitation':
                 self.trainers[brain_name] = BehavioralCloningTrainer(
                     sess, self.env.brains[brain_name],
                     trainer_parameters_dict[brain_name], self.train_model,
                     self.seed, self.run_id)
-            elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":
+            elif trainer_parameters_dict[brain_name]['trainer'] == 'ppo':
                 self.trainers[brain_name] = PPOTrainer(
                     sess, self.env.brains[brain_name],
+                    self.meta_curriculum
+                        .brains_to_curriculums[brain_name]
+                        .min_lesson_length if self.meta_curriculum else 0,
                     trainer_parameters_dict[brain_name],
                     self.train_model, self.seed, self.run_id)
             else:
@@ -263,16 +267,14 @@ class TrainerController(object):
                                             'permissions are set correctly.'
                                             .format(model_path))
 
-    def _increment_lessons_and_reset_env(self):
-        """Increments the lessons of curriculums if there is a metacurriculum
-        and resets the environment.
+    def _reset_env(self):
+        """Resets the environment.
 
         Returns:
             A Data structure corresponding to the initial reset state of the
             environment.
         """
         if self.meta_curriculum is not None:
-            self.meta_curriculum.increment_lessons(self._get_progresses())
             return self.env.reset(config=self.meta_curriculum.get_config(),
                                   train_mode=self.fast_simulation)
         else:
@@ -307,7 +309,7 @@ class TrainerController(object):
             else:
                 sess.run(init)
             global_step = 0  # This is only for saving the model
-            curr_info = self._increment_lessons_and_reset_env()
+            curr_info = self._reset_env()
             if self.train_model:
                 for brain_name, trainer in self.trainers.items():
                     trainer.write_tensorboard_text('Hyperparameters',
@@ -315,11 +317,30 @@ class TrainerController(object):
             try:
                 while any([t.get_step <= t.get_max_steps \
                            for k, t in self.trainers.items()]) \
-                        or not self.train_model:
-                    if self.env.global_done:
-                        curr_info = self._increment_lessons_and_reset_env()
+                      or not self.train_model:
+                    if self.meta_curriculum:
+                        # Get the sizes of the reward buffers.
+                        reward_buff_sizes = {k:len(t.reward_buffer) \
+                                            for (k,t) in self.trainers.items()}
+                        # Attempt to increment the lessons of the brains who
+                        # were ready.
+                        lessons_incremented = \
+                            self.meta_curriculum.increment_lessons(
+                                self._get_measure_vals(),
+                                reward_buff_sizes=reward_buff_sizes)
+
+                    # If any lessons were incremented or the environment is
+                    # ready to be reset
+                    if (self.meta_curriculum
+                            and any(lessons_incremented.values())
+                        or self.env.global_done):
+                        curr_info = self._reset_env()
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
+                        for brain_name, changed in lessons_incremented.items():
+                            if changed:
+                                self.trainers[brain_name].reward_buffer.clear()
+
                     # Decide and take an action
                     take_action_vector, \
                     take_action_memories, \

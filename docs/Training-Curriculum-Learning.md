@@ -59,7 +59,7 @@ the BigWallBrain in the Wall Jump environment.
 {
     "measure" : "progress",
     "thresholds" : [0.1, 0.3, 0.5],
-    "min_lesson_length" : 2,
+    "min_lesson_length" : 100,
     "signal_smoothing" : true,
     "parameters" :
     {
@@ -74,8 +74,18 @@ the BigWallBrain in the Wall Jump environment.
   * `progress` - Uses ratio of steps/max_steps.
 * `thresholds` (float array) - Points in value of `measure` where lesson should
   be increased.
-* `min_lesson_length` (int) - How many times the progress measure should be
-  reported before incrementing the lesson.
+* `min_lesson_length` (int) - The minimum number of episodes that should be
+  completed before the lesson can change. If `measure` is set to `reward`, the
+  average cumulative reward of the last `min_lesson_length` episodes will be
+  used to determine if the lesson should change. Must be nonnegative.
+
+  __Important__: the average reward that is compared to the thresholds is
+  different than the mean reward that is logged to the console. For example,
+  if `min_lesson_length` is `100`, the lesson will increment after the average
+  cumulative reward of the last `100` episodes exceeds the current threshold.
+  The mean reward logged to the console is dictated by the `summary_freq`
+  parameter in the
+  [trainer configuration file](Training-ML-Agents.md#training-config-file).
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
@@ -107,5 +117,4 @@ agents in the Wall Jump environment with curriculum learning, we can run
 mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train
 ```
 
-We can then keep track of the current
-lessons and progresses via TensorBoard.
+We can then keep track of the current lessons and progresses via TensorBoard.
