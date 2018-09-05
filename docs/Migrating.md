@@ -9,6 +9,12 @@
   packages, `mlagents.env` and `mlagents.trainers`. `mlagents.env` can be used
   to interact directly with a Unity environment, while `mlagents.trainers`
   contains the classes for training agents.
+* The Supported Unity version has changed from `2017.1 or later` to `2017.4.10f1 or later`. The lower versions might still work, but you may encounter error that looks like this:
+```
+Instance of CoreBrainInternal couldn't be created. The the script class needs to derive from ScriptableObject.
+UnityEngine.ScriptableObject:CreateInstance(String)
+```
+You can fix the error by removing CoreBrain from the CoreBrainInternal.cs:16, click on the Brain Gameobject to let it recompile, then add the CoreBrain back. (Make sure your brain is in Internal mode, and your TensorFlowSharp plugin is imported and ENABLE_TENSORFLOW flag is set), but this fix is only valid locally and unstable. 
 
 ### Unity API
 
