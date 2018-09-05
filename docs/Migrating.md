@@ -18,10 +18,10 @@ Instance of CoreBrainInternal couldn't be created. The the script class needs to
 UnityEngine.ScriptableObject:CreateInstance(String)
 ```
 
-You can fix the error by removing `CoreBrain` from the CoreBrainInternal.cs:16,
-click on your Brain Gameobject to let the scene recompile all the changed C#
-scripts, then add the `CoreBrain` back. Make sure your brain is in Internal
-mode and your TensorFlowSharp plugin is imported and ENABLE_TENSORFLOW flag is
+You can fix the error by removing `CoreBrain` from CoreBrainInternal.cs:16,
+clicking on your Brain Gameobject to let the scene recompile all the changed C#
+scripts, then adding the `CoreBrain` back. Make sure your brain is in Internal
+mode, your TensorFlowSharp plugin is imported and the ENABLE_TENSORFLOW flag is
 set. This fix is only valid locally and unstable.
 
 ### Unity API
