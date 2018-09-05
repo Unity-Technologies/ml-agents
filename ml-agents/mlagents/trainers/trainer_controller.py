@@ -81,7 +81,7 @@ class TrainerController(object):
             self.summaries_dir = '/{docker_target_name}/summaries'.format(
                 docker_target_name=docker_target_name)
 
-        self.logger = logging.getLogger("mlagents.envs")
+        self.logger = logging.getLogger('mlagents.envs')
         self.run_id = run_id
         self.save_freq = save_freq
         self.lesson = lesson
@@ -117,11 +117,11 @@ class TrainerController(object):
                     raise MetaCurriculumError('One of the curriculums '
                                               'defined in ' +
                                               self.curriculum_folder + ' '
-                                                                       'does not have a corresponding '
-                                                                       'Brain. Check that the '
-                                                                       'curriculum file has the same '
-                                                                       'name as the Brain '
-                                                                       'whose curriculum it defines.')
+                                              'does not have a corresponding '
+                                              'Brain. Check that the '
+                                              'curriculum file has the same '
+                                              'name as the Brain '
+                                              'whose curriculum it defines.')
 
     def _get_measure_vals(self):
         if self.meta_curriculum:
@@ -149,22 +149,23 @@ class TrainerController(object):
                 if scope == '/':
                     scope = ''
                 scopes += [scope]
-                if self.trainers[brain_name].parameters["trainer"] \
-                        == "imitation":
-                    nodes += [scope + x for x in ["action"]]
+                if self.trainers[brain_name].parameters['trainer'] \
+                        == 'imitation':
+                    nodes += [scope + x for x in ['action']]
                 else:
-                    nodes += [scope + x for x in ["action", "value_estimate",
-                                                  "action_probs", "value_estimate"]]
-                if self.trainers[brain_name].parameters["use_recurrent"]:
-                    nodes += [scope + x for x in ["recurrent_out",
-                                                  "memory_size"]]
+                    nodes += [scope + x for x in ['action', 'value_estimate',
+                                                  'action_probs',
+                                                  'value_estimate']]
+                if self.trainers[brain_name].parameters['use_recurrent']:
+                    nodes += [scope + x for x in ['recurrent_out',
+                                                  'memory_size']]
         if len(scopes) > 1:
-            self.logger.info("List of available scopes :")
+            self.logger.info('List of available scopes :')
             for scope in scopes:
-                self.logger.info("\t" + scope)
-        self.logger.info("List of nodes to export :")
+                self.logger.info('\t' + scope)
+        self.logger.info('List of nodes to export :')
         for n in nodes:
-            self.logger.info("\t" + n)
+            self.logger.info('\t' + n)
         return nodes
 
     def _save_model(self, sess, saver, steps=0):
@@ -178,7 +179,7 @@ class TrainerController(object):
         saver.save(sess, last_checkpoint)
         tf.train.write_graph(sess.graph_def, self.model_path,
                              'raw_graph_def.pb', as_text=False)
-        self.logger.info("Saved Model")
+        self.logger.info('Saved Model')
 
     def _export_graph(self):
         """
@@ -191,11 +192,11 @@ class TrainerController(object):
             input_binary=True,
             input_checkpoint=ckpt.model_checkpoint_path,
             output_node_names=target_nodes,
-            output_graph=(self.model_path + '/' + self.env_name + "_"
+            output_graph=(self.model_path + '/' + self.env_name + '_'
                           + self.run_id + '.bytes'),
-            clear_devices=True, initializer_nodes="", input_saver="",
-            restore_op_name="save/restore_all",
-            filename_tensor_name="save/Const:0")
+            clear_devices=True, initializer_nodes='', input_saver='',
+            restore_op_name='save/restore_all',
+            filename_tensor_name='save/Const:0')
 
     def _initialize_trainers(self, trainer_config, sess):
         trainer_parameters_dict = {}
