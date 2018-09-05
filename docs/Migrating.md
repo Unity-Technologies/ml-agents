@@ -10,7 +10,7 @@
   to interact directly with a Unity environment, while `mlagents.trainers`
   contains the classes for training agents.
 * The supported Unity version has changed from `2017.1 or later` to `2017.4.10f1 or later`. The lower versions might still work, but you may encounter error that looks like this:
-```
+```console
 Instance of CoreBrainInternal couldn't be created. The the script class needs to derive from ScriptableObject.
 UnityEngine.ScriptableObject:CreateInstance(String)
 ```
