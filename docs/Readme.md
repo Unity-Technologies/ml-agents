@@ -52,5 +52,5 @@
 ## API Docs
 
 * [API Reference](API-Reference.md)
-* [How to use the Python API](../ml-agents/README.md)
+* [How to use the Python API](Python-API.md)
 * [Wrapping Learning Environment as a Gym](../gym-unity/Readme.md)

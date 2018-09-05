@@ -29,7 +29,7 @@ environment:
 
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to set the
-corresponding brain to **External**.
+corresponding Brain to **External**.
 
 1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
    object.
@@ -71,7 +71,7 @@ can interact with it.
 
 ## Interacting with the Environment
 
-If you want to use the [Python API](../ml-agents/README.md) to interact with your
+If you want to use the [Python API](Python-API.md) to interact with your
 executable, you can pass the name of the executable with the argument
 'file_name' of the `UnityEnvironment`. For instance:
 
@@ -83,12 +83,13 @@ env = UnityEnvironment(file_name=<env_name>)
 ## Training the Environment
 
 1. Open a command or terminal window.
-2. Nagivate to the folder where you installed ML-Agents.
-3. Change to the python directory.
-4. Run
+2. Navigate to the folder where you installed the ML-Agents Toolkit. If you
+   followed the default [installation](Installation.md), then navigate to the
+   `ml-agents/` folder.
+3. Run
    `mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier> --train`
    Where:
-   * `<trainer-config-file>` is the filepath of the trainer configuration yaml.
+   * `<trainer-config-file>` is the file path of the trainer configuration yaml
    * `<env_name>` is the name and path to the executable you exported from Unity
      (without extension)
    * `<run-identifier>` is a string used to separate the results of different
@@ -97,10 +98,10 @@ env = UnityEnvironment(file_name=<env_name>)
      than inference)
 
 For example, if you are training with a 3DBall executable you exported to the
-ml-agents/python directory, run:
+the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first-run --train
+mlagents-learn ../config/trainer_config.yaml --env=3DBall --run-id=firstRun --train
 ```
 
 And you should see something like
@@ -205,7 +206,7 @@ INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 10000. Mean Reward: 27.2
 You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds
 to your model's latest checkpoint. You can now embed this trained model into
-your internal brain by following the steps below:
+your Internal Brain by following the steps below:
 
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.

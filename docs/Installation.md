@@ -16,18 +16,22 @@ Build Support_ component when installing Unity.
        width="500" border="10" />
 </p>
 
-## Clone the Ml-Agents Repository
+## Clone the ML-Agents Toolkit Repository
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
     git clone https://github.com/Unity-Technologies/ml-agents.git
 
-The `UnitySDK` directory in this repository contains the Unity Assets to add
-to your projects. The `python` directory contains python packages which provide
-trainers, a python API to interface with Unity, and a package to interface with
-OpenAI Gym.
+The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
+It also contains many [example environments](Learning-Environment-Examples.md)
+that can be used to help get you familiar with Unity.
 
-## Install Python (with Dependencies)
+The `ml-agents` subdirectory contains Python packages which provide
+trainers and a Python API to interface with Unity.
+
+The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
+
+## Install Python and mlagents Package
 
 In order to use ML-Agents toolkit, you need Python 3.6 along with the
 dependencies listed in the [requirements file](../ml-agents/requirements.txt).
@@ -51,17 +55,20 @@ guide](Installation-Windows.md) to set up your Python environment.
 
 ### Mac and Unix Users
 
-[Download](https://www.python.org/downloads/) and install Python 3 if you do not
+[Download](https://www.python.org/downloads/) and install Python 3.6 if you do not
 already have it.
 
-If your Python environment doesn't include `pip`, see these
+If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install dependencies, enter the `ml-agents/` directory and run from
-the command line:
+To install the dependencies and `mlagents` Python package, enter the
+`ml-agents/` subdirectory and run from the command line:
 
-    pip install .
+    pip3 install .
+
+If you installed this correctly, you should be able to run
+`mlagents-learn --help`
 
 ## Docker-based Installation
 

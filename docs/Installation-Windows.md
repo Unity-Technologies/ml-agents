@@ -100,7 +100,7 @@ You should see `(ml-agents)` prepended on the last line.
 
 Next, install `tensorflow`. Install this package using `pip` - which is a
 package management system used to install Python packages. Latest versions of
-Tensorflow won't work, so you will need to make sure that you install version
+TensorFlow won't work, so you will need to make sure that you install version
 1.7.1. In the same Anaconda Prompt, type in the following command _(make sure
 you are connected to the internet)_:
 
@@ -268,7 +268,7 @@ installed. _Please note that case sensitivity matters_.
 
 Next, install `tensorflow-gpu` using `pip`. You'll need version 1.7.1. In an
 Anaconda Prompt with the Conda environment ml-agents activated, type in the
-following command to uninstall the tensorflow for cpu and install the tensorflow
+following command to uninstall TensorFlow for cpu and install TensorFlow
 for gpu _(make sure you are connected to the internet)_:
 
 ```sh

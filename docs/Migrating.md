@@ -12,9 +12,12 @@
 
 ### Unity API
 
-* Discrete Actions now use [branches](https://arxiv.org/abs/1711.08946). You can now specify concurrent discrete
-  actions. You will need to update the Brain Parameters in the Brain Inspector
-  in all your environments that use discrete actions. Refer to the [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space) for more information. 
+* Discrete Actions now use [branches](https://arxiv.org/abs/1711.08946). You can
+  now specify concurrent discrete actions. You will need to update the Brain
+  Parameters in the Brain Inspector in all your environments that use discrete
+  actions. Refer to the
+  [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space)
+  for more information.
 
 ### Python API
 
@@ -61,9 +64,9 @@
 
 ### Python API
 
-* We've changed some of the python packages dependencies in requirement.txt
-  file. Make sure to run `pip install .` within your `ml-agents/python` folder
-  to update your python packages.
+* We've changed some of the Python packages dependencies in requirement.txt
+  file. Make sure to run `pip3 install .` within your `ml-agents/python` folder
+  to update your Python packages.
 
 ## Migrating from ML-Agents toolkit v0.2 to v0.3
 
@@ -83,7 +86,7 @@ in order to ensure a smooth transition.
   replaced with a single `learn.py` script as the launching point for training
   with ML-Agents. For more information on using `learn.py`, see
   [here](Training-ML-Agents.md#training-with-mlagents-learn).
-* Hyperparameters for training brains are now stored in the
+* Hyperparameters for training Brains are now stored in the
   `trainer_config.yaml` file. For more information on using this file, see
   [here](Training-ML-Agents.md#training-config-file).
 
@@ -100,7 +103,7 @@ in order to ensure a smooth transition.
 * `AgentStep()` has been replaced by `AgentAction()`.
 * `WaitTime()` has been removed.
 * The `Frame Skip` field of the Academy is replaced by the Agent's `Decision
-  Frequency` field, enabling agent to make decisions at different frequencies.
+  Frequency` field, enabling the Agent to make decisions at different frequencies.
 * The names of the inputs in the Internal Brain have been changed. You must
   replace `state` with `vector_observation` and `observation` with
   `visual_observation`. In addition, you must remove the `epsilon` placeholder.

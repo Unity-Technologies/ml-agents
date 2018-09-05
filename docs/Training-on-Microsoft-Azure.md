@@ -15,7 +15,7 @@ into your Azure subscription.  Once your VM is deployed, SSH into it and run the
 following command to complete dependency installation:
 
 ```sh
-pip install docopt
+pip3 install docopt
 ```
 
 Note that, if you choose to deploy the image to an
@@ -66,8 +66,8 @@ To run your training on the VM:
 
 1. [Move](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/copy-files-to-linux-vm-using-scp)
     your built Unity application to your Virtual Machine.
-2. Set the `ml-agents` sub-folder of the ml-agents repo to your working
-   directory.
+2. Set the the directory where the ML-Agents Toolkit was installed to your
+   working directory.
 3. Run the following command:
 
 ```sh
@@ -102,10 +102,9 @@ training](Using-Tensorboard.md).
 
 2. Unless you started the training as a background process, connect to your VM
    from another terminal instance.
-3. Set the `python` folder in ml-agents to your current working directory.
-4. Run the following command from your `tensorboard --logdir=summaries --host
-   0.0.0.0`
-5. You should now be able to open a browser and navigate to
+3. Run the following command from your terminal
+   `tensorboard --logdir=summaries --host 0.0.0.0`
+4. You should now be able to open a browser and navigate to
    `<Your_VM_IP_Address>:6060` to view the TensorBoard report.
 
 ## Running on Azure Container Instances
@@ -116,6 +115,6 @@ then be shut down.  This ensures you aren't leaving a billable VM running when
 it isn't needed.  You can read more about
 [The ML-Agents toolkit support for Docker containers here](Using-Docker.md).
 Using ACI enables you to offload training of your models without needing to
-install Python and Tensorflow on your own computer.  You can find instructions,
+install Python and TensorFlow on your own computer.  You can find instructions,
 including a pre-deployed image in DockerHub for you to use, available
 [here](https://github.com/druttka/unity-ml-on-azure).

@@ -33,7 +33,7 @@ accomplish tasks otherwise much more difficult.
 
 Each Brain in an environment can have a corresponding curriculum. These
 curriculums are held in what we call a metacurriculum. A metacurriculum allows
-different brains to follow different curriculums within the same environment.
+different Brains to follow different curriculums within the same environment.
 
 ### Specifying a Metacurriculum
 
@@ -90,11 +90,11 @@ the BigWallBrain in the Wall Jump environment.
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
 * `parameters` (dictionary of key:string, value:float array) - Corresponds to
-  academy reset parameters to control. Length of each array should be one
+  Academy reset parameters to control. Length of each array should be one
   greater than number of thresholds.
 
 Once our curriculum is defined, we have to use the reset parameters we defined
-and modify the environment from the agent's `AgentReset()` function. See
+and modify the environment from the Agent's `AgentReset()` function. See
 [WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/UnitySDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example. Note that if the Academy's __Max Steps__ is not set to some
 positive number the environment will never be reset. The Academy must reset
@@ -102,7 +102,7 @@ for the environment to reset.
 
 We will save this file into our metacurriculum folder with the name of its
 corresponding Brain. For example, in the Wall Jump environment, there are two
-brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
+Brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
 the BigWallBrain, we will save `BigWallBrain.json` into
 `curricula/wall-jump/`.
 

@@ -1,6 +1,6 @@
 # Basic Guide
 
-This guide will show you how to use a pretrained model in an example Unity
+This guide will show you how to use a pre-trained model in an example Unity
 environment, and show you how to train the model yourself.
 
 If you are not familiar with the [Unity Engine](https://unity3d.com/unity), we
@@ -13,7 +13,7 @@ the basic concepts of Unity.
 In order to use the ML-Agents toolkit within Unity, you need to change some
 Unity settings first. Also [TensorFlowSharp
 plugin](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage)
-is needed for you to use pretrained model within Unity, which is based on the
+is needed for you to use pre-trained model within Unity, which is based on the
 [TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp).
 
 1. Launch Unity
@@ -70,14 +70,14 @@ if you want to [use an executable](Learning-Environment-Executable.md) or to
 `None` if you want to interact with the current scene in the Unity Editor.
 
 More information and documentation is provided in the
-[Python API](../ml-agents/README.md) page.
+[Python API](Python-API.md) page.
 
 ## Training the Brain with Reinforcement Learning
 
 ### Setting the Brain to External
 
 Since we are going to build this environment to conduct training, we need to set
-the brain used by the agents to **External**. This allows the agents to
+the Brain used by the Agents to **External**. This allows the Agents to
 communicate with the external training process when making their decisions.
 
 1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
@@ -90,17 +90,23 @@ communicate with the external training process when making their decisions.
 ### Training the environment
 
 1. Open a command or terminal window.
-2. Nagivate to the folder where you installed the ML-Agents toolkit.
+2. Navigate to the folder where you cloned the ML-Agents toolkit repository.
+   **Note**: If you followed the default [installation](Installation.md), then
+   you should be able to run `mlagents-learn` from any directory.
 3. Run `mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train`
-   Where:
+   where:
     - `<trainer-config-path>` is the relative or absolute filepath of the
-      trainer configuration. The defaults used by environments in the ML-Agents
-      SDK can be found in `config/trainer_config.yaml`.
+      trainer configuration. The defaults used by example environments included
+      in `MLAgentsSDK` can be found in `config/trainer_config.yaml`.
     - `<run-identifier>` is a string used to separate the results of different
       training runs
-    - And the `--train` tells `mlagents-learn` to run a training session (rather
+    - `--train` tells `mlagents-learn` to run a training session (rather
       than inference)
-4. When the message _"Start training by pressing the Play button in the Unity
+4. If you cloned the ML-Agents repo, then you can simply run
+      ```sh
+      mlagents-learn config/trainer_config.yaml --run-id=firstRun --train
+      ```
+5. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
    in Unity to start training in the Editor.
 
@@ -143,6 +149,7 @@ INFO:mlagents.learn:{'--curriculum': 'None',
  '--train': True,
  '--worker-id': '0',
  '<trainer-config-path>': 'config/trainer_config.yaml'}
+INFO:mlagents.envs:Start training by pressing the Play button in the Unity Editor.
  ```
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
@@ -152,7 +159,6 @@ If `mlagents-learn` runs correctly and starts training, you should see something
 like this:
 
 ```console
-INFO:mlagents.envs:Start training by pressing the Play button in the Unity Editor.
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
@@ -208,7 +214,7 @@ You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/editor_<academy_name>_<run-identifier>.bytes` where
 `<academy_name>` is the name of the Academy GameObject in the current scene.
 This file corresponds to your model's latest checkpoint. You can now embed this
-trained model into your internal brain by following the steps below, which is
+trained model into your Internal Brain by following the steps below, which is
 similar to the steps described
 [above](#play-an-example-environment-using-pretrained-model).
 
@@ -229,7 +235,7 @@ similar to the steps described
   page.
 - For a more detailed walk-through of our 3D Balance Ball environment, check out
   the [Getting Started](Getting-Started-with-Balance-Ball.md) page.
-- For a "Hello World" introduction to creating your own learning environment,
+- For a "Hello World" introduction to creating your own Learning Environment,
   check out the [Making a New Learning
   Environment](Learning-Environment-Create-New.md) page.
 - For a series of Youtube video tutorials, checkout the
