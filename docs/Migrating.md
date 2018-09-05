@@ -10,9 +10,10 @@
   to interact directly with a Unity environment, while `mlagents.trainers`
   contains the classes for training agents.
 * The supported Unity version has changed from `2017.1 or later` to `2017.4
-  or later`. 2017.4 is a LTS(Long Term Support) version that helps us
-  maintain good quality and support. The lower
-  versions might still work, but you may encounter [error](FAQ.md#instance-of-corebraininternal-couldnt-be-created) listed here. 
+  or later`. 2017.4 is an LTS (Long Term Support) version that helps us
+  maintain good quality and support. Earlier versions of Unity might still work,
+  but you may encounter an
+  [error](FAQ.md#instance-of-corebraininternal-couldnt-be-created) listed here. 
 
 ### Unity API
 
