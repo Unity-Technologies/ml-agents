@@ -8,7 +8,7 @@
 * The `python` folder has been renamed to `ml-agents`. It now contains two
   packages, `mlagents.env` and `mlagents.trainers`. `mlagents.env` can be used
   to interact directly with a Unity environment, while `mlagents.trainers`
-  contains the classes for training Agents.
+  contains the classes for training agents.
 
 ### Unity API
 
@@ -97,7 +97,7 @@ in order to ensure a smooth transition.
 * `AgentStep()` has been replaced by `AgentAction()`.
 * `WaitTime()` has been removed.
 * The `Frame Skip` field of the Academy is replaced by the Agent's `Decision
-  Frequency` field, enabling Agent to make decisions at different frequencies.
+  Frequency` field, enabling the Agent to make decisions at different frequencies.
 * The names of the inputs in the Internal Brain have been changed. You must
   replace `state` with `vector_observation` and `observation` with
   `visual_observation`. In addition, you must remove the `epsilon` placeholder.

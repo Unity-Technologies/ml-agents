@@ -1,19 +1,19 @@
 # Agents
 
-An Agent is an actor that can observe its environment and decide on the best
+An agent is an actor that can observe its environment and decide on the best
 course of action using those observations. Create Agents in Unity by extending
-the Agent class. The most important aspects of creating Agents that can
-successfully learn are the observations the Agent collects and, for
-reinforcement learning, the reward you assign to estimate the value of the
+the Agent class. The most important aspects of creating agents that can
+successfully learn are the observations the agent collects for
+reinforcement learning and the reward you assign to estimate the value of the
 agent's current state toward accomplishing its tasks.
 
 An Agent passes its observations to its Brain. The Brain, then, makes a decision
-and passes the chosen action back to the Agent. Your Agent code must execute the
-action, for example, move the Agent in one direction or another. In order to
-[train an Agent using reinforcement learning](Learning-Environment-Design.md),
-your Agent must calculate a reward value at each action. The reward is used to
+and passes the chosen action back to the agent. Your agent code must execute the
+action, for example, move the agent in one direction or another. In order to
+[train an agent using reinforcement learning](Learning-Environment-Design.md),
+your agent must calculate a reward value at each action. The reward is used to
 discover the optimal decision-making policy. (A reward is not used by already
-trained Agents or for imitation learning.)
+trained agents or for imitation learning.)
 
 The Brain class abstracts out the decision making logic from the Agent itself so
 that you can use the same Brain in multiple Agents. How a Brain makes its
@@ -48,12 +48,12 @@ chosen by the previous decision.
 
 On demand decision making allows Agents to request decisions from their Brains
 only when needed instead of receiving decisions at a fixed frequency. This is
-useful when the Agents commit to an action for a variable number of steps or
-when the Agents cannot make decisions at the same time. This typically the case
-for turn based games, games where Agents must react to events or games where
+useful when the agents commit to an action for a variable number of steps or
+when the agents cannot make decisions at the same time. This typically the case
+for turn based games, games where agents must react to events or games where
 agents can take actions of variable duration.
 
-When you turn on **On Demand Decisions** for an Agent, your Agent code must call
+When you turn on **On Demand Decisions** for an Agent, your agent code must call
 the `Agent.RequestDecision()` function. This function call starts one iteration
 of the observation-decision-action-reward cycle. The Brain invokes the Agent's
 `CollectObservations()` method, makes a decision and returns it by calling the
@@ -62,7 +62,7 @@ decision before starting another iteration.
 
 ## Observations
 
-To make decisions, an Agent must observe its environment in order to infer the
+To make decisions, an agent must observe its environment in order to infer the
 state of the world. A state observation can take the following forms:
 
 * **Vector Observation** — a feature vector consisting of an array of floating
@@ -78,14 +78,14 @@ observations (unless it also uses vector observations).
 
 ### Vector Observation Space: Feature Vectors
 
-For Agents using a continuous state space, you create a feature vector to
-represent the Agent's observation at each step of the simulation. The Brain
+For agents using a continuous state space, you create a feature vector to
+represent the agent's observation at each step of the simulation. The Brain
 class calls the `CollectObservations()` method of each of its Agents. Your
 implementation of this function must call `AddVectorObs` to add vector
 observations.
 
-The observation must include all the information an Agent needs to accomplish
-its task. Without sufficient and relevant information, an Agent may learn poorly
+The observation must include all the information an agents needs to accomplish
+its task. Without sufficient and relevant information, an agent may learn poorly
 or may not learn at all. A reasonable approach for determining what information
 should be included is to consider what you would need to calculate an analytical
 solution to the problem.
@@ -95,8 +95,8 @@ For examples of various state observation functions, you can look at the
 ML-Agents SDK.  For instance, the 3DBall example uses the rotation of the
 platform, the relative position of the ball, and the velocity of the ball as its
 state observation. As an experiment, you can remove the velocity components from
-the observation and retrain the 3DBall Agent. While it will learn to balance the
-ball reasonably well, the performance of the Agent without using velocity is
+the observation and retrain the 3DBall agent. While it will learn to balance the
+ball reasonably well, the performance of the agent without using velocity is
 noticeably worse.
 
 ```csharp
@@ -120,8 +120,8 @@ The feature vector must always contain the same number of elements and
 observations must always be in the same position within the list. If the number
 of observed entities in an environment can vary you can pad the feature vector
 with zeros for any missing entities in a specific observation or you can limit
-an Agent's observations to a fixed subset. For example, instead of observing
-every enemy Agent in an environment, you could only observe the closest five.
+an agent's observations to a fixed subset. For example, instead of observing
+every enemy agent in an environment, you could only observe the closest five.
 
 When you set up an Agent's Brain in the Unity Editor, set the following
 properties to use a continuous vector observation:
@@ -153,7 +153,7 @@ AddVectorObs(speed.z);
 Type enumerations should be encoded in the _one-hot_ style. That is, add an
 element to the feature vector for each element of enumeration, setting the
 element representing the observed member to one and set the rest to zero. For
-example, if your enumeration contains \[Sword, Shield, Bow\] and the Agent
+example, if your enumeration contains \[Sword, Shield, Bow\] and the agent
 observes that the current item is a Bow, you would add the elements: 0, 0, 1 to
 the feature vector. The following code example illustrates how to add.
 
@@ -226,7 +226,7 @@ is checked).
 
 ## Vector Actions
 
-An action is an instruction from the Brain that the Agent carries out. The
+An action is an instruction from the Brain that the agent carries out. The
 action is passed to the Agent as a parameter when the Academy invokes the
 agent's `AgentAction()` function. When you specify that the vector action space
 is **Continuous**, the action parameter passed to the Agent is an array of
@@ -250,7 +250,7 @@ space, and, for the continuous vector action space, the number of values, and
 then apply the received values appropriately (and consistently) in
 `ActionAct()`.
 
-For example, if you designed an Agent to move in two dimensions, you could use
+For example, if you designed an agent to move in two dimensions, you could use
 either continuous or the discrete vector actions. In the continuous case, you
 would set the vector action size to two (one for each dimension), and the
 agent's Brain would create an action with two floating point values. In the
@@ -261,7 +261,7 @@ two branches of size two (one for horizontal movement and one for vertical
 movement), and the Brain would create an action array containing two elements
 with values ranging from zero to one.
 
-Note that when you are programming actions for an Agent, it is often helpful to
+Note that when you are programming actions for an agent, it is often helpful to
 test your action logic using a **Player** Brain, which lets you map keyboard
 commands to actions. See [Brains](Learning-Environment-Design-Brains.md).
 
@@ -382,10 +382,10 @@ Notes:
 
 ## Rewards
 
-In reinforcement learning, the reward is a signal that the Agent has done
+In reinforcement learning, the reward is a signal that the agent has done
 something right. The PPO reinforcement learning algorithm works by optimizing
-the choices an Agent makes such that the Agent earns the highest cumulative
-reward over time. The better your reward mechanism, the better your Agent will
+the choices an agent makes such that the agent earns the highest cumulative
+reward over time. The better your reward mechanism, the better your agent will
 learn.
 
 **Note:** Rewards are not used during inference by a Brain using an already
@@ -427,14 +427,14 @@ if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
 }
 ```
 
-The Agent receives a positive reward when it reaches the goal and a negative
+The agent receives a positive reward when it reaches the goal and a negative
 reward when it falls into the pit. Otherwise, it gets no rewards. This is an
-example of a _sparse_ reward system. The Agent must explore a lot to find the
+example of a _sparse_ reward system. The agent must explore a lot to find the
 infrequent reward.
 
 In contrast, the `AreaAgent` in the [Area
 example](Learning-Environment-Examples.md#push-block) gets a small negative
-reward every step. In order to get the maximum reward, the Agent must finish its
+reward every step. In order to get the maximum reward, the agent must finish its
 task of reaching the goal square as quickly as possible:
 
 ```csharp
@@ -450,13 +450,13 @@ if (gameObject.transform.position.y < 0.0f ||
 }
 ```
 
-The Agent also gets a larger negative penalty if it falls off the playing
+The agent also gets a larger negative penalty if it falls off the playing
 surface.
 
 The `Ball3DAgent` in the
 [3DBall](Learning-Environment-Examples.md#3dball-3d-balance-ball) takes a
-similar approach, but allocates a small positive reward as long as the Agent
-balances the ball. The Agent can maximize its rewards by keeping the ball on the
+similar approach, but allocates a small positive reward as long as the agent
+balances the ball. The agent can maximize its rewards by keeping the ball on the
 platform:
 
 ```csharp
@@ -513,7 +513,7 @@ platform.
 ## Monitoring Agents
 
 We created a helpful `Monitor` class that enables visualizing variables within a
-Unity environment. While this was built for monitoring an Agent's value function
+Unity environment. While this was built for monitoring an agent's value function
 throughout the training process, we imagine it can be more broadly useful. You
 can learn more [here](Feature-Monitor.md).
 

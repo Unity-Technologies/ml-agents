@@ -35,8 +35,8 @@ Academy `Max Steps` count is reached.
 
 When you reset an environment, consider the factors that should change so that
 training is generalizable to different conditions. For example, if you were
-training a maze-solving Agent, you would probably want to change the maze itself
-for each training episode. Otherwise, the Agent would probably on learn to solve
+training a maze-solving agent, you would probably want to change the maze itself
+for each training episode. Otherwise, the agent would probably on learn to solve
 one, particular maze, not mazes in general.
 
 ## Controlling an Environment

@@ -65,11 +65,11 @@ to the Teacher Agent.
 This utility enables you to use keyboard shortcuts to do the following:
 
 1. To start and stop recording experiences. This is useful in case you'd like to
-   interact with the game _but not have the Agents learn from these
+   interact with the game _but not have the agents learn from these
    interactions_. The default command to toggle this is to press `R` on the
    keyboard.
 
-2. Reset the training buffer. This enables you to instruct the Agents to forget
+2. Reset the training buffer. This enables you to instruct the agents to forget
    their buffer of recent experiences. This is useful if you'd like to get them
    to quickly learn a new behavior. The default command to reset the buffer is
    to press `C` on the keyboard.

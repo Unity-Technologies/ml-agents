@@ -2,22 +2,22 @@
 
 The ML-Agents toolkit conducts training using an external Python training
 process. During training, this external process communicates with the Academy
-object in the Unity scene to generate a block of Agent experiences. These
+object in the Unity scene to generate a block of agent experiences. These
 experiences become the training set for a neural network used to optimize the
 agent's policy (which is essentially a mathematical function mapping
 observations to actions). In reinforcement learning, the neural network
 optimizes the policy by maximizing the expected rewards. In imitation learning,
 the neural network optimizes the policy to achieve the smallest difference
-between the actions chosen by the Agent trainee and the actions chosen by the
+between the actions chosen by the agent trainee and the actions chosen by the
 expert in the same situation.
 
 The output of the training process is a model file containing the optimized
 policy. This model file is a TensorFlow data graph containing the mathematical
 operations and the optimized weights selected during the training process. You
 can use the generated model file with the Internal Brain type in your Unity
-project to decide the best course of action for an Agent.
+project to decide the best course of action for an agent.
 
-Use the command `mlagents-learn` to train your Agents. This command is installed
+Use the command `mlagents-learn` to train your agents. This command is installed
 with the `mlagents` package and its implementation can be found at
 `ml-agents/mlagents/trainers/learn.py`. The [configuration file](#training-config-file),
 `config/trainer_config.yaml` specifies the hyperparameters used during training.
@@ -30,7 +30,7 @@ Overview](ML-Agents-Overview.md).
 
 ## Training with mlagents-learn
 
-Use the `mlagents-learn` command to train Agents. `mlagents-learn` supports
+Use the `mlagents-learn` command to train agents. `mlagents-learn` supports
 training with
 [reinforcement learning](Background-Machine-Learning.md#reinforcement-learning),
 [curriculum learning](Training-Curriculum-Learning.md),
@@ -50,7 +50,7 @@ where
 
 * `<trainer-config-file>` is the file path of the trainer configuration yaml.
 * `<env_name>`__(Optional)__ is the name (including path) of your Unity
-  executable containing the Agents to be trained. If `<env_name>` is not passed,
+  executable containing the agents to be trained. If `<env_name>` is not passed,
   the training will happen in the Editor. Press the :arrow_forward: button in
   Unity when the message _"Start training by pressing the Play button in the
   Unity Editor"_ is displayed on the screen.
@@ -58,7 +58,7 @@ where
   results of individual training runs.
 
 For example, suppose you have a project in Unity named "CatsOnBicycles" which
-contains Agents ready to train. To perform the training:
+contains agents ready to train. To perform the training:
 
 1. [Build the project](Learning-Environment-Executable.md), making sure that you
    only include the training scene.
@@ -173,7 +173,7 @@ Sections for the example environments are included in the provided config file.
 | lambd | The regularization parameter. | PPO  |
 | learning_rate | The initial learning rate for gradient descent. | PPO,  BC |
 | max_steps | The maximum number of simulation steps to run during a training session. | PPO, BC |
-| memory_size | The size of the memory an Agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, BC |
+| memory_size | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, BC |
 | normalize | Whether to automatically normalize observations. | PPO, BC |
 | num_epoch | The number of passes to make through the experience buffer when performing gradient descent optimization. | PPO, BC |
 | num_layers | The number of hidden layers in the neural network. | PPO, BC |

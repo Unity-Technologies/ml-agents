@@ -17,7 +17,7 @@ This walk-through uses the **3D Balance Ball** environment. 3D Balance Ball
 contains a number of platforms and balls (which are all copies of each other).
 Each platform tries to keep its ball from falling by rotating either
 horizontally or vertically. In this environment, a platform is an **Agent** that
-receives a reward for every step that it balances the ball. An Agent is also
+receives a reward for every step that it balances the ball. An agent is also
 penalized with a negative reward for dropping the ball. The goal of the training
 process is to have the platforms learn to never drop the ball.
 
@@ -30,10 +30,10 @@ and Unity, see the [installation instructions](Installation.md).
 
 ## Understanding a Unity Environment (3D Balance Ball)
 
-An Agent is an autonomous actor that observes and interacts with an
+An agent is an autonomous actor that observes and interacts with an
 _environment_. In the context of Unity, an environment is a scene containing an
 Academy and one or more Brain and Agent objects, and, of course, the other
-entities that an Agent interacts with.  
+entities that an agent interacts with.  
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
@@ -45,8 +45,8 @@ window. The Inspector shows every component on a GameObject.
 
 The first thing you may notice after opening the 3D Balance Ball scene is that
 it contains not one, but several platforms.  Each platform in the scene is an
-independent Agent, but they all share the same Brain. 3D Balance Ball does this
-to speed up training since all twelve Agents contribute to training in parallel.
+independent agent, but they all share the same Brain. 3D Balance Ball does this
+to speed up training since all twelve agents contribute to training in parallel.
 
 ### Academy
 
@@ -97,7 +97,7 @@ and **Internal** types work together — use **External** when training your
 Agents; use **Internal** when using the trained model. The **Heuristic** Brain
 allows you to hand-code the Agent's logic by extending the Decision class.
 Finally, the **Player** Brain lets you map keyboard commands to actions, which
-can be useful when testing your Agents and environment. If none of these types
+can be useful when testing your agents and environment. If none of these types
 of Brains do what you need, you can implement your own CoreBrain to create your
 own type.
 
@@ -107,9 +107,9 @@ when you embed the trained model in the Unity application, you will change the
 
 #### Vector Observation Space
 
-Before making a decision, an Agent collects its observation about its state in
+Before making a decision, an agent collects its observation about its state in
 the world. The vector observation is a vector of floating point numbers which
-contain relevant information for the Agent to make decisions.
+contain relevant information for the agent to make decisions.
 
 The Brain instance used in the 3D Balance Ball example uses the **Continuous**
 vector observation space with a **State Size** of 8. This means that the feature
@@ -153,7 +153,7 @@ behavior:
   3D Balance Ball sets this true so that the Agent restarts after reaching the
   **Max Step** count or after dropping the ball.
 
-Perhaps the more interesting aspect of an Agent is the Agent subclass
+Perhaps the more interesting aspect of an agents is the Agent subclass
 implementation. When you create an Agent, you must extend the base Agent class.
 The Ball3DAgent subclass defines the following methods:
 
@@ -184,7 +184,7 @@ Now that we have an environment, we can perform the training.
 
 ### Training with PPO
 
-In order to train an Agent to correctly balance the ball, we will use a
+In order to train an agent to correctly balance the ball, we will use a
 Reinforcement Learning algorithm called Proximal Policy Optimization (PPO). This
 is a method that has been shown to be safe, efficient, and more general purpose
 than many other RL algorithms, as such we have chosen it as the example
@@ -192,7 +192,7 @@ algorithm for use with ML-Agents toolkit. For more information on PPO, OpenAI
 has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it.
 
-To train the Agents within the Ball Balance environment, we will be using the
+To train the agents within the Ball Balance environment, we will be using the
 Python package. We have provided a convenient script called `mlagents-learn`
 which accepts arguments used to configure both training and inference phases.
 
@@ -240,19 +240,19 @@ From TensorBoard, you will see the summary statistics:
 * Lesson - only interesting when performing [curriculum
   training](Training-Curriculum-Learning.md). This is not used in the 3D Balance
   Ball environment.
-* Cumulative Reward - The mean cumulative episode reward over all Agents. Should
+* Cumulative Reward - The mean cumulative episode reward over all agents. Should
   increase during a successful training session.
 * Entropy - How random the decisions of the model are. Should slowly decrease
   during a successful training process. If it decreases too quickly, the `beta`
   hyperparameter should be increased.
 * Episode Length - The mean length of each episode in the environment for all
-  Agents.
+  agents.
 * Learning Rate - How large a step the training algorithm takes as it searches
   for the optimal policy. Should decrease over time.
 * Policy Loss - The mean loss of the policy function update. Correlates to how
   much the policy (process for deciding actions) is changing. The magnitude of
   this should decrease during a successful training session.
-* Value Estimate - The mean value estimate for all states visited by the Agent.
+* Value Estimate - The mean value estimate for all states visited by the agent.
   Should increase during a successful training session.
 * Value Loss - The mean loss of the value function update. Correlates to how
   well the model is able to predict the value of each state. This should

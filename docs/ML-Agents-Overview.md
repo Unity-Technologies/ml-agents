@@ -61,21 +61,21 @@ to define three entities at every moment of the game (called **environment**):
 
 - **Observations** - what the medic perceives about the environment.
   Observations can be numeric and/or visual. Numeric observations measure
-  attributes of the environment from the point of view of the Agent. For our
+  attributes of the environment from the point of view of the agent. For our
   medic this would be attributes of the battlefield that are visible to it. For
-  most interesting environments, an Agent will require several continuous
+  most interesting environments, an agent will require several continuous
   numeric observations. Visual observations, on the other hand, are images
-  generated from the cameras attached to the Agent and represent what the Agent
-  is seeing at that point in time. It is common to confuse an Agent's
+  generated from the cameras attached to the agent and represent what the agent
+  is seeing at that point in time. It is common to confuse an agent's
   observation with the environment (or game) **state**. The environment state
   represents information about the entire scene containing all the game
-  characters. The Agents observation, however, only contains information that
-  the Agent is aware of and is typically a subset of the environment state. For
+  characters. The agents observation, however, only contains information that
+  the agent is aware of and is typically a subset of the environment state. For
   example, the medic observation cannot include information about an enemy in
   hiding that the medic is unaware of.
 - **Actions** - what actions the medic can take. Similar to observations,
   actions can either be continuous or discrete depending on the complexity of
-  the environment and Agent. In the case of the medic, if the environment is a
+  the environment and agent. In the case of the medic, if the environment is a
   simple grid world where only their location matters, then a discrete action
   taking on one of four values (north, south, east, west) suffices. However, if
   the environment is more complex and the medic can move freely then using two
@@ -87,7 +87,7 @@ to define three entities at every moment of the game (called **environment**):
   receive a large negative reward if it dies, a modest positive reward whenever
   it revives a wounded team member, and a modest negative reward when a wounded
   team member dies due to lack of assistance. Note that the reward signal is how
-  the objectives of the task are communicated to the Agent, so they need to be
+  the objectives of the task are communicated to the agent, so they need to be
   set up in a manner where maximizing reward generates the desired optimal
   behavior.
 
@@ -333,34 +333,34 @@ kinds of novel and fun environments the community creates. For those new to
 training intelligent agents, below are a few examples that can serve as
 inspiration:
 
-- Single-Agent. A single Agent linked to a single Brain, with its own reward
-  signal. The traditional way of training an Agent. An example is any
+- Single-Agent. A single agent linked to a single Brain, with its own reward
+  signal. The traditional way of training an agent. An example is any
   single-player game, such as Chicken. [Video
   Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
-- Simultaneous Single-Agent. Multiple independent Agents with independent reward
+- Simultaneous Single-Agent. Multiple independent agents with independent reward
   signals linked to a single Brain. A parallelized version of the traditional
   training scenario, which can speed-up and stabilize the training process.
   Helpful when you have multiple versions of the same character in an
   environment who should learn similar behaviors. An example might be training a
   dozen robot-arms to each open a door simultaneously. [Video
   Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
-- Adversarial Self-Play. Two interacting Agents with inverse reward signals
+- Adversarial Self-Play. Two interacting agents with inverse reward signals
   linked to a single Brain. In two-player games, adversarial self-play can allow
-  an Agent to become increasingly more skilled, while always having the
+  an agent to become increasingly more skilled, while always having the
   perfectly matched opponent: itself. This was the strategy employed when
   training AlphaGo, and more recently used by OpenAI to train a human-beating
-  1-vs-1 Dota 2 Agent.
-- Cooperative Multi-Agent. Multiple interacting Agents with a shared reward
+  1-vs-1 Dota 2 agent.
+- Cooperative Multi-Agent. Multiple interacting agents with a shared reward
   signal linked to either a single or multiple different Brains. In this
-  scenario, all Agents must work together to accomplish a task that cannot be
-  done alone. Examples include environments where each Agent only has access to
+  scenario, all agents must work together to accomplish a task that cannot be
+  done alone. Examples include environments where each agent only has access to
   partial information, which needs to be shared in order to accomplish the task
   or collaboratively solve a puzzle.
-- Competitive Multi-Agent. Multiple interacting Agents with inverse reward
+- Competitive Multi-Agent. Multiple interacting s with inverse reward
   signals linked to either a single or multiple different Brains. In this
-  scenario, Agents must compete with one another to either win a competition, or
+  scenario, s must compete with one another to either win a competition, or
   obtain some limited set of resources. All team sports fall into this scenario.
-- Ecosystem. Multiple interacting Agents with independent reward signals linked
+- Ecosystem. Multiple interacting s with independent reward signals linked
   to either a single or multiple different Brains. This scenario can be thought
   of as creating a small world in which animals with different goals all
   interact, such as a savanna in which there might be zebras, elephants and

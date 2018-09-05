@@ -52,7 +52,7 @@ Rather than adjusting it by hand, we will create a JSON file which
 describes the structure of the curriculum. Within it, we can specify which
 points in the training process our wall height will change, either based on the
 percentage of training steps which have taken place, or what the average reward
-the Agent has received in the recent past is. Below is an example curriculum for
+the agent has received in the recent past is. Below is an example curriculum for
 the BigWallBrain in the Wall Jump environment.
 
 ```json

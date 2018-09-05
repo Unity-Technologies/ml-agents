@@ -14,14 +14,14 @@ ball also learns to avoid falling off the platform.
 Using the ML-Agents toolkit in a Unity project involves the following basic
 steps:
 
-1. Create an environment for your Agents to live in. An environment can range
+1. Create an environment for your agents to live in. An environment can range
    from a simple physical simulation containing a few objects to an entire game
    or ecosystem.
 2. Implement an Academy subclass and add it to a GameObject in the Unity scene
    containing the environment. This GameObject will serve as the parent for any
    Brain objects in the scene. Your Academy class can implement a few optional
-   methods to update the scene independently of any Agents. For example, you can
-   add, move, or delete Agents and other entities in the environment.
+   methods to update the scene independently of any agents. For example, you can
+   add, move, or delete agents and other entities in the environment.
 3. Add one or more Brain objects to the scene as children of the Academy.
 4. Implement your Agent subclasses. An Agent subclass defines the code an Agent
    uses to observe its environment, to carry out assigned actions, and to
@@ -199,7 +199,7 @@ to the cube using reinforcement learning.
 
 In this simple scenario, we don't use the Academy object to control the
 environment. If we wanted to change the environment, for example change the size
-of the floor or add or remove Agents or other objects before or during the
+of the floor or add or remove agents or other objects before or during the
 simulation, we could implement the appropriate methods in the Academy. Instead,
 we will have the Agent do all the work of resetting itself and the target when
 it succeeds or falls trying.

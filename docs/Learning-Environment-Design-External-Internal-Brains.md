@@ -27,7 +27,7 @@ to make decisions. The Proximal Policy Optimization (PPO) and Behavioral Cloning
 algorithms included with the ML-Agents SDK produce trained TensorFlow models
 that you can use with the Internal Brain type.
 
-A __model__ is a mathematical relationship mapping an Agent's observations to
+A __model__ is a mathematical relationship mapping an agent's observations to
 its actions. TensorFlow is a software library for performing numerical
 computation through data flow graphs. A TensorFlow model, then, defines the
 mathematical relationship between your Agent's observations and its actions

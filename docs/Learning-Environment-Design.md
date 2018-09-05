@@ -2,25 +2,25 @@
 
 Reinforcement learning is an artificial intelligence technique that trains
 _agents_ to perform tasks by rewarding desirable behavior. During reinforcement
-learning, an Agent explores its environment, observes the state of things, and,
+learning, an agent explores its environment, observes the state of things, and,
 based on those observations, takes an action. If the action leads to a better
-state, the Agent receives a positive reward. If it leads to a less desirable
-state, then the Agent receives no reward or a negative reward (punishment). As
-the Agent learns during training, it optimizes its decision making so that it
+state, the agent receives a positive reward. If it leads to a less desirable
+state, then the agent receives no reward or a negative reward (punishment). As
+the agent learns during training, it optimizes its decision making so that it
 receives the maximum reward over time.
 
 The ML-Agents toolkit uses a reinforcement learning technique called
 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
-PPO uses a neural network to approximate the ideal function that maps an Agent's
-observations to the best action an Agent can take in a given state. The
+PPO uses a neural network to approximate the ideal function that maps an agent's
+observations to the best action an agent can take in a given state. The
 ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
 Python process (communicating with the running Unity application over a socket).
 
 **Note:** if you aren't studying machine and reinforcement learning as a subject
-and just want to train Agents to accomplish tasks, you can treat PPO training as
+and just want to train agents to accomplish tasks, you can treat PPO training as
 a _black box_. There are a few training-related parameters to adjust inside
 Unity as well as on the Python training side, but you do not need in-depth
-knowledge of the algorithm itself to successfully create and train Agents.
+knowledge of the algorithm itself to successfully create and train agents.
 Step-by-step procedures for running the training process are provided in the
 [Training section](Training-ML-Agents.md).
 
@@ -40,7 +40,7 @@ external process to train the TensorFlow model. When training is completed
 successfully, you can add the trained model file to your Unity project for use
 with an **Internal** Brain.
 
-The ML-Agents Academy class orchestrates the Agent simulation loop as follows:
+The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 
 1. Calls your Academy subclass's `AcademyReset()` function.
 2. Calls the `AgentReset()` function for each Agent in the scene.
@@ -169,22 +169,22 @@ about programing your own Agents.
 ## Environments
 
 An _environment_ in the ML-Agents toolkit can be any scene built in Unity. The
-Unity scene provides the environment in which Agents observe, act, and learn.
+Unity scene provides the environment in which agents observe, act, and learn.
 How you set up the Unity scene to serve as a learning environment really depends
 on your goal. You may be trying to solve a specific reinforcement learning
 problem of limited scope, in which case you can use the same scene for both
-training and for testing trained Agents. Or, you may be training Agents to
+training and for testing trained agents. Or, you may be training agents to
 operate in a complex game or simulation. In this case, it might be more
 efficient and practical to create a purpose-built training scene.
 
 Both training and testing (or normal game) scenes must contain an Academy object
-to control the Agent decision making process. The Academy defines several
+to control the agent decision making process. The Academy defines several
 properties that can be set differently for a training scene versus a regular
 scene. The Academy's **Configuration** properties control rendering and time
 scale. You can set the **Training Configuration** to minimize the time Unity
 spends rendering graphics in order to speed up training. You may need to adjust
 the other functional, Academy settings as well. For example, `Max Steps` should
-be as short as possible for training — just long enough for the Agent to
+be as short as possible for training — just long enough for the agent to
 accomplish its task, with some extra time for "wandering" while it learns. In
 regular scenes, you often do not want the Academy to reset the scene at all; if
 so, `Max Steps` should be set to zero.
