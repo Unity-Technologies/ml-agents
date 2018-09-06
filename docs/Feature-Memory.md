@@ -1,6 +1,6 @@
 # Memory-enhanced agents using Recurrent Neural Networks
 
-## What are memories for
+## What are memories used for?
 
 Have you ever entered a room to get something and immediately forgot what you
 were looking for? Don't let that happen to your agents.  

@@ -158,7 +158,7 @@ after the GameObject containing the Brain component that should use these
 settings. (This GameObject will be a child of the Academy in your scene.)
 Sections for the example environments are included in the provided config file.
 
-| **Setting** | **Description** | **Applies To Trainer**|
+| **Setting** | **Description** | **Applies To Trainer\***|
 | :--         | :--             | :--                   |
 | batch_size | The number of experiences in each iteration of gradient descent.| PPO, BC |
 | batches_per_epoch | In imitation learning, the number of batches of training examples to collect before training the model.| BC |
@@ -183,7 +183,8 @@ Sections for the example environments are included in the provided config file.
 | trainer | The type of training to perform: "ppo" or "imitation".| PPO, BC |
 | use_curiosity | Train using an additional intrinsic reward signal generated from Intrinsic Curiosity Module. | PPO |
 | use_recurrent | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).| PPO, BC |
-|| PPO = Proximal Policy Optimization, BC = Behavioral Cloning (Imitation)) ||
+
+\*PPO = Proximal Policy Optimization, BC = Behavioral Cloning (Imitation)
 
 For specific advice on setting hyperparameters based on the type of training you
 are conducting, see:
