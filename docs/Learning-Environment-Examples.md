@@ -115,18 +115,16 @@ If you would like to contribute environments, please see our
 
 * Set-up: A platforming environment where the agent can push a block around.
 * Goal: The agent must push the block to the goal.
-* Agents: The environment contains one agent linked to a single Brain.
-* Agent Reward Function:
-  * -0.0025 for every step.
-  * +1.0 if the block touches the goal.
-* Brains: One Brain with the following observation/action space.
-  * Vector Observation space: (Continuous) 70 variables corresponding to 14
-    ray-casts each detecting one of three possible objects (wall, goal, or
-    block).
-  * Vector Action space: (Continuous) Size of 2, corresponding to movement in X
-    and Z directions.
-  * Visual Observations (Optional): One first-person camera. Use
-    `VisualPushBlock` scene.
+* Agents: The environment contains one agent linked to a single brain.
+* Agent Reward Function: 
+    * -0.0025 for every step.
+    * +1.0 if the block touches the goal.
+* Brains: One brain with the following observation/action space.
+    * Vector Observation space: (Continuous) 70 variables corresponding to 14 
+      ray-casts each detecting one of three possible objects (wall, goal, or block).
+    * Vector Action space: (Discrete) Size of 6, corresponding to turn clockwise 
+      and counterclockwise and move along four different face directions.
+    * Visual Observations (Optional): One first-person camera. Use `VisualPushBlock` scene.
 * Reset Parameters: None.
 * Benchmark Mean Reward: 4.5
 * Optional Imitation Learning scene: `PushBlockIL`.
