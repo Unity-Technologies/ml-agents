@@ -256,7 +256,7 @@ Agent 代码的最后一部分是 Agent.AgentAction() 函数，此函数接收 B
 
 **动作**
 
-Brain 的决策以动作数组的形式传递给 `AgentAction()` 函数。此数组中的元素数量由 agent 的 Brain 的 `Vector Action Space Type` 和 `Vector Action Space Size` 设置确定。RollerAgent 使用连续向量运动空间，并需要 brain 提供的两个连续控制信号。因此，我们要将 Brain `Vector Action Size` 设置为 2。第一个元素 `action[0]` 确定沿 x 轴施加的力；`action[1]` 确定沿 z 轴施加的力。（如果我们允许 agent 以三维方式移动，那么我们需要将 `Vector Action Size` 设置为 3。）注意，Brain 并不知道动作数组中的值是什么意思。训练过程只是根据观测输入来调整动作值，然后看看会得到什么样的奖励。
+Brain 的决策以动作数组的形式传递给 `AgentAction()` 函数。此数组中的元素数量由 agent 的 Brain 的 `Vector Action Space Type` 和 `Vector Action Space Size` 设置确定。RollerAgent 使用连续向量运动空间，并需要 Brain 提供的两个连续控制信号。因此，我们要将 Brain `Vector Action Size` 设置为 2。第一个元素 `action[0]` 确定沿 x 轴施加的力；`action[1]` 确定沿 z 轴施加的力。（如果我们允许 agent 以三维方式移动，那么我们需要将 `Vector Action Size` 设置为 3。）注意，Brain 并不知道动作数组中的值是什么意思。训练过程只是根据观测输入来调整动作值，然后看看会得到什么样的奖励。
 
 RollerAgent 使用 `Rigidbody.AddForce` 函数将 action[] 数组中的值应用到其 Rigidbody 组件 `rBody`：
 
@@ -392,7 +392,7 @@ public override void AgentAction(float[] vectorAction, string textAction)
 
 1. 选择 Brain 游戏对象以便在 Inspector 中查看该对象的属性。
 2. 将 **Brain Type** 设置为 **Player**。
-3. 展开 **Continuous Player Actions**（仅在使用 **Player* brain 时可见）。
+3. 展开 **Continuous Player Actions**（仅在使用 **Player* Brain 时可见）。
 4. 将 **Size** 设置为 4。
 5. 设置以下映射：
 

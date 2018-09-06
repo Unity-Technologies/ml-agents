@@ -40,7 +40,7 @@ Unity Assets。`python` 目录包含训练代码。
 
 ### Mac 和 Unix 用户
 
-如果您的 Python 环境不包括 `pip`，请参阅这些
+如果您的 Python 环境不包括 `pip3`，请参阅这些
 [说明](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 以了解其安装方法。
 
@@ -56,7 +56,7 @@ Unity Assets。`python` 目录包含训练代码。
 
 ## Unity 包
 
-您可以通过 Unity 包的形式下载TensorFlowSharp 插件（[AWS S3链接](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)，[百度盘链接](https://pan.baidu.com/s/1s0mJN8lvuxTcYbs2kL2FqA)）
+您可以通过 Unity 包的形式下载TensorFlowSharp 插件 ([AWS S3链接](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)，[百度盘链接](https://pan.baidu.com/s/1s0mJN8lvuxTcYbs2kL2FqA))
 
 ## 帮助
 
