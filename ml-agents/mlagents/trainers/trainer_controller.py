@@ -291,7 +291,10 @@ class TrainerController(object):
 
         tf.reset_default_graph()
 
-        with tf.Session() as sess:
+        # Prevent a single session from taking all GPU memory.
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        with tf.Session(config=config) as sess:
             self._initialize_trainers(trainer_config, sess)
             for _, t in self.trainers.items():
                 self.logger.info(t)
