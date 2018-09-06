@@ -103,7 +103,7 @@ PyramidBrain:
     hidden_units: 512
     num_layers: 2
     beta: 1.0e-2
-    max_steps: 2.0e5
+    max_steps: 5.0e5
     num_epoch: 3
 
 VisualPyramidBrain:
