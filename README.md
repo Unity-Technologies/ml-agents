@@ -31,6 +31,7 @@ developer communities.
 * Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
 * Simplified set-up with Docker
+* Wrap learning environments as a gym
 
 ## Documentation
 
