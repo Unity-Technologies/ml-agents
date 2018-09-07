@@ -61,7 +61,7 @@ To create a training environment, extend the Academy and Agent classes to
 implement the above methods. The `Agent.CollectObservations()` and
 `Agent.AgentAction()` functions are required; the other methods are optional —
 whether you need to implement them or not depends on your specific scenario.
-  
+
 **Note:** The API used by the Python PPO training process to communicate with
 and control the Academy during training can be used for other purposes as well.
 For example, you could use the API to use Unity as the simulation engine for
@@ -108,9 +108,9 @@ set in the Unity Editor Inspector. For training, the most important of these
 properties is `Max Steps`, which determines how long each training episode
 lasts. Once the Academy's step counter reaches this value, it calls the
 `AcademyReset()` function to start the next episode.
-  
+
 See [Academy](Learning-Environment-Design-Academy.md) for a complete list of
-the Academy properties and their uses.  
+the Academy properties and their uses.
 
 ### Brain
 
@@ -142,7 +142,7 @@ The Agent class represents an actor in the scene that collects observations and
 carries out actions. The Agent class is typically attached to the GameObject in
 the scene that otherwise represents the actor — for example, to a player object
 in a football game or a car object in a vehicle simulation. Every Agent must be
-assigned a Brain.  
+assigned a Brain.
 
 To create an Agent, extend the Agent class and implement the essential
 `CollectObservations()` and `AgentAction()` methods:

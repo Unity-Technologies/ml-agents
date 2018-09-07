@@ -109,7 +109,7 @@ this Brain will use your fully trained network to make decisions.
 ## iOS additional instructions for building
 
 * Before build your game against iOS platform, make sure you've set the
-  flag `ENABLE_TENSORFLOW` for it. 
+  flag `ENABLE_TENSORFLOW` for it.
 * Once you build the project for iOS in the editor, open the .xcodeproj file
   within the project folder using Xcode.
 * Set up your ios account following the

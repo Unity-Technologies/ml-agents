@@ -32,7 +32,7 @@ Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 If you try to use ML-Agents in Unity versions 2017.1 - 2017.3, you might
 encounter an error that looks like this:
 
-```console 
+```console
 Instance of CoreBrainInternal couldn't be created. The the script
 class needs to derive from ScriptableObject.
 UnityEngine.ScriptableObject:CreateInstance(String)

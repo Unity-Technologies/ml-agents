@@ -49,7 +49,7 @@ To use a graph model:
    a Brain component.)
 2. Set the **Brain Type** to **Internal**.
     **Note:** In order to see the **Internal** Brain Type option, you must
-    [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).  
+    [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).
 3. Import the `environment_run-id.bytes` file produced by the PPO training
    program. (Where `environment_run-id` is the name of the model file, which is
    constructed from the name of your Unity environment executable and the run-id

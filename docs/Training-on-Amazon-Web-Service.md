@@ -198,6 +198,7 @@ linux executables which use visual observations.
 
     env = UnityEnvironment(<your_env>)
     ```
+
     Where `<your_env>` corresponds to the path to your environment executable.
 
     You should receive a message confirming that the environment was loaded successfully.

@@ -103,9 +103,11 @@ communicate with the external training process when making their decisions.
     - `--train` tells `mlagents-learn` to run a training session (rather
       than inference)
 4. If you cloned the ML-Agents repo, then you can simply run
+
       ```sh
       mlagents-learn config/trainer_config.yaml --run-id=firstRun --train
       ```
+
 5. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
    in Unity to start training in the Editor.

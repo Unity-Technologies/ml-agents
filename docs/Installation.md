@@ -20,7 +20,9 @@ Build Support_ component when installing Unity.
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
-    git clone https://github.com/Unity-Technologies/ml-agents.git
+```sh
+git clone https://github.com/Unity-Technologies/ml-agents.git
+```
 
 The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)
@@ -65,7 +67,9 @@ on installing it.
 To install the dependencies and `mlagents` Python package, enter the
 `ml-agents/` subdirectory and run from the command line:
 
-    pip3 install .
+```sh
+pip3 install .
+```
 
 If you installed this correctly, you should be able to run
 `mlagents-learn --help`
