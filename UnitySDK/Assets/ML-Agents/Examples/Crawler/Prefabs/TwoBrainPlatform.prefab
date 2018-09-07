@@ -457,6 +457,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1862908876948842
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4057297204971480}
+  - component: {fileID: 20846211320067284}
+  - component: {fileID: 124818055229064268}
+  - component: {fileID: 81744795976918058}
+  m_Layer: 0
+  m_Name: Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1944152091811462
 GameObject:
   m_ObjectHideFlags: 1
@@ -520,6 +538,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4638690929818598}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4057297204971480
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1862908876948842}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4974499069775106}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4091172985355536
 Transform:
@@ -855,9 +886,46 @@ Transform:
   m_Children:
   - {fileID: 4311298731469910}
   - {fileID: 4623911231853814}
+  - {fileID: 4057297204971480}
   m_Father: {fileID: 4091172985355536}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
+--- !u!20 &20846211320067284
+Camera:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1862908876948842}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
 --- !u!23 &23049501297146930
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -2006,6 +2074,13 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!81 &81744795976918058
+AudioListener:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1862908876948842}
+  m_Enabled: 0
 --- !u!108 &108993347245635058
 Light:
   m_ObjectHideFlags: 1
@@ -2100,7 +2175,7 @@ MonoBehaviour:
   foot3: {fileID: 0}
   groundedMaterial: {fileID: 0}
   unGroundedMaterial: {fileID: 0}
-  printAverageReward: 0
+  printAverageReward: 1
 --- !u!114 &114526531676239698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2188,19 +2263,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 0}
   agentParameters:
-    agentCameras: []
+    agentCameras:
+    - {fileID: 20846211320067284}
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 10
   goalDetect: {fileID: 0}
-  useVectorObs: 1
+  useVectorObs: 0
   motorAgent: {fileID: 114184410671201102}
   ground: {fileID: 4181509225360580}
   respawnTargetWhenTouched: 0
   obstacleWall: {fileID: 4862113337757134}
   target: {fileID: 4275523447681082}
-  printAverageReward: 0
+  printAverageReward: 1
 --- !u!114 &114668417820653128
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2281,6 +2357,13 @@ MonoBehaviour:
   penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
+--- !u!124 &124818055229064268
+Behaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1862908876948842}
+  m_Enabled: 1
 --- !u!135 &135371173589163260
 SphereCollider:
   m_ObjectHideFlags: 1
