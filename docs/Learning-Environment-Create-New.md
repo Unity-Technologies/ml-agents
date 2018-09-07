@@ -31,7 +31,7 @@ steps:
    in the scene that represents the Agent in the simulation. Each Agent object
    must be assigned a Brain object.
 6. If training, set the Brain type to External and
-   [run the training process](Training-ML-Agents.md).  
+   [run the training process](Training-ML-Agents.md).
 
 **Note:** If you are unfamiliar with Unity, refer to
 [Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
@@ -243,7 +243,7 @@ public class RollerAgent : Agent
     public override void AgentReset()
     {
         if (this.transform.position.y < -1.0)
-        {  
+        {
             // The Agent fell
             this.transform.position = Vector3.zero;
             this.rBody.angularVelocity = Vector3.zero;
@@ -550,9 +550,9 @@ your Unity environment.
 There are three kinds of game objects you need to include in your scene in order
 to use Unity ML-Agents:
 
-* Academy  
-* Brain  
-* Agents  
+* Academy
+* Brain
+* Agents
 
 Keep in mind:
 

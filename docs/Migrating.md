@@ -13,7 +13,7 @@
   or later`. 2017.4 is an LTS (Long Term Support) version that helps us
   maintain good quality and support. Earlier versions of Unity might still work,
   but you may encounter an
-  [error](FAQ.md#instance-of-corebraininternal-couldnt-be-created) listed here. 
+  [error](FAQ.md#instance-of-corebraininternal-couldnt-be-created) listed here.
 
 ### Unity API
 

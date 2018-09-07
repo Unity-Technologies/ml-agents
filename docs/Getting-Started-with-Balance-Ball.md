@@ -33,7 +33,7 @@ and Unity, see the [installation instructions](Installation.md).
 An agent is an autonomous actor that observes and interacts with an
 _environment_. In the context of Unity, an environment is a scene containing an
 Academy and one or more Brain and Agent objects, and, of course, the other
-entities that an agent interacts with.  
+entities that an agent interacts with.
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
