@@ -9,10 +9,13 @@ in Unity environments.
 The `mlagents` Python package contains two sub packages: 
 
 * `mlagents.envs`: A low level API which
-allows you to interact directly with a Unity Environment 
-*  `mlagents.trainers`: A set of Reinforcement Learning 
+allows you to interact directly with a Unity Environment. 
+See [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md) for more information on using this package.
+
+* `mlagents.trainers`: A set of Reinforcement Learning 
 algorithms designed to be used with Unity environments. Access them using the 
-`mlagents-learn` access point.
+`mlagents-learn` access point. See [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md) for more information on using 
+this package.
 
 ## Installation
 
