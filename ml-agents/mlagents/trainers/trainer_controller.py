@@ -336,14 +336,17 @@ class TrainerController(object):
                     # If any lessons were incremented or the environment is
                     # ready to be reset
                     if (self.meta_curriculum
-                            and any(lessons_incremented.values())
-                        or self.env.global_done):
+                            and any(lessons_incremented.values())):
                         curr_info = self._reset_env()
                         for brain_name, trainer in self.trainers.items():
                             trainer.end_episode()
                         for brain_name, changed in lessons_incremented.items():
                             if changed:
                                 self.trainers[brain_name].reward_buffer.clear()
+                    elif self.env.global_done:
+                        curr_info = self._reset_env()
+                        for brain_name, trainer in self.trainers.items():
+                            trainer.end_episode()
 
                     # Decide and take an action
                     take_action_vector, \
