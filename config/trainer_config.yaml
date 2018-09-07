@@ -45,7 +45,7 @@ PushBlockBrain:
     num_layers: 2
 
 SmallWallBrain: 
-    max_steps: 2.0e5
+    max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
@@ -56,7 +56,7 @@ SmallWallBrain:
     normalize: false
 
 BigWallBrain: 
-    max_steps: 2.0e5
+    max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
