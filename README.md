@@ -37,10 +37,11 @@ developer communities.
 
 * For more information, in addition to installation and usage instructions, see
   our [documentation home](docs/Readme.md).
-* If you have used a version of the ML-Agents toolkit prior to v0.4, we strongly
+* If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print of our [reference paper on ML-Agents]. Also, see below for instructions on citing this paper.
+* If you have used a version of the ML-Agents toolkit prior to v0.5, we strongly
   recommend our [guide on migrating from earlier versions](docs/Migrating.md).
 
-## References
+## Additional Resources
 
 We have published a series of blog posts that are relevant for ML-Agents:
 
@@ -98,3 +99,9 @@ we welcome any enhancements and improvements from the community.
 ## License
 
 [Apache License 2.0](LICENSE)
+
+## Citation
+
+If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you cite the following paper as a reference:
+
+Juliani, A., Berges, V., Vckay, E., Gao, Y., Henry, H., Mattar, M., Lange, D. (2018). Unity: A General Platform for Intelligent Agents. arxivlink. https://github.com/Unity-Technologies/ml-agents.
