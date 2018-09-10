@@ -237,7 +237,7 @@ public class MotorCrawlerAgent : Agent
     {
         if (printAverageReward && IsDone())
         {
-            numRewards += 1;
+            numRewards++;
             totalAverageReward = totalAverageReward + (GetCumulativeReward() - totalAverageReward) / numRewards;
             Debug.Log("MotorCrawlerAgent :: " + numRewards + " Episodes; Total Average Reward: " + totalAverageReward);
         }

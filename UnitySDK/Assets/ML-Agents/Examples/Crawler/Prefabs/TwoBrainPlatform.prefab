@@ -2175,7 +2175,7 @@ MonoBehaviour:
   foot3: {fileID: 0}
   groundedMaterial: {fileID: 0}
   unGroundedMaterial: {fileID: 0}
-  printAverageReward: 1
+  printAverageReward: 0
 --- !u!114 &114526531676239698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2276,7 +2276,7 @@ MonoBehaviour:
   respawnTargetWhenTouched: 0
   obstacleWall: {fileID: 4862113337757134}
   target: {fileID: 4275523447681082}
-  printAverageReward: 1
+  printAverageReward: 0
 --- !u!114 &114668417820653128
 MonoBehaviour:
   m_ObjectHideFlags: 1
