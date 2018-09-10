@@ -151,10 +151,13 @@ public class VisionCrawlerAgent : Agent
     {
         if (printAverageReward && IsDone())
         {
-            numRewards += 1;
+            numRewards++;
             totalAverageReward = totalAverageReward + (GetCumulativeReward() - totalAverageReward) / numRewards;
             Debug.Log("VisionCrawlerAgent :: " + numRewards + " Episodes; Total Average Reward: " + totalAverageReward);
         }
+
         GetRandomTargetPos();
+
+        agentParameters.numberOfActionsBetweenDecisions = (int)academy.resetParameters["vision_decision_freq"];
     }
 }

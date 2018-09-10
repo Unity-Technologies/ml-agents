@@ -379,7 +379,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1807862628737958, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
@@ -1140,7 +1140,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1807862628737958, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
@@ -1265,7 +1265,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1807862628737958, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114184410671201102, guid: 88073c154e8ed45c7899368f372ee7e3,
         type: 2}
@@ -1967,7 +1967,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1807862628737958, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114184410671201102, guid: 88073c154e8ed45c7899368f372ee7e3,
         type: 2}
@@ -2640,7 +2640,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1807862628737958, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 88073c154e8ed45c7899368f372ee7e3, type: 2}
@@ -2693,7 +2693,7 @@ MonoBehaviour:
     width: 80
     height: 80
     qualityLevel: 0
-    timeScale: 100
+    timeScale: 1
     targetFrameRate: -1
   inferenceConfiguration:
     width: 1280
@@ -2709,6 +2709,8 @@ MonoBehaviour:
       value: 0
     - key: target_spawn_radius
       value: 17
+    - key: vision_decision_freq
+      value: 10
 --- !u!114 &2095421681
 MonoBehaviour:
   m_ObjectHideFlags: 0
