@@ -173,7 +173,7 @@ class Policy(object):
                 input_binary=True,
                 input_checkpoint=ckpt.model_checkpoint_path,
                 output_node_names=target_nodes,
-                output_graph=(self.model_path + '/' + self.brain.brain_name + '.bytes'),
+                output_graph=(self.model_path + '.bytes'),
                 clear_devices=True, initializer_nodes='', input_saver='',
                 restore_op_name='save/restore_all',
                 filename_tensor_name='save/Const:0')

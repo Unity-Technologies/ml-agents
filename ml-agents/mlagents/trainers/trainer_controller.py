@@ -148,32 +148,16 @@ class TrainerController(object):
         :param steps: Current number of steps in training process.
         :param saver: Tensorflow saver for session.
         """
-        # last_checkpoint = self.model_path + '/model-' + str(steps) + '.cptk'
-        # saver.save(sess, last_checkpoint)
-        # tf.train.write_graph(sess.graph_def, self.model_path,
-        #                      'raw_graph_def.pb', as_text=False)
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].save_model(steps)
         self.logger.info('Saved Model')
 
     def _export_graph(self):
+        """
+        Exports latest saved models to .bytes format for Unity embedding.
+        """
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
-        # """
-        # Exports latest saved model to .bytes format for Unity embedding.
-        # """
-        # target_nodes = ','.join(self._process_graph())
-        # ckpt = tf.train.get_checkpoint_state(self.model_path)
-        # freeze_graph.freeze_graph(
-        #     input_graph=self.model_path + '/raw_graph_def.pb',
-        #     input_binary=True,
-        #     input_checkpoint=ckpt.model_checkpoint_path,
-        #     output_node_names=target_nodes,
-        #     output_graph=(self.model_path + '/' + self.env_name + '_'
-        #                   + self.run_id + '.bytes'),
-        #     clear_devices=True, initializer_nodes='', input_saver='',
-        #     restore_op_name='save/restore_all',
-        #     filename_tensor_name='save/Const:0')
 
     def _initialize_trainers(self, trainer_config):
         """
