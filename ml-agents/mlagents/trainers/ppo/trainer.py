@@ -27,7 +27,7 @@ class PPOTrainer(Trainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded
         """
-        super(PPOTrainer, self).__init__(brain.brain_name, trainer_parameters, training, load, run_id)
+        super(PPOTrainer, self).__init__(brain.brain_name, trainer_parameters, training, run_id)
 
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
@@ -353,12 +353,6 @@ class PPOTrainer(Trainer):
             self.stats['forward_loss'].append(np.mean(forward_total))
             self.stats['inverse_loss'].append(np.mean(inverse_total))
         self.training_buffer.reset_update_buffer()
-
-    def save_model(self, steps):
-        self.policy.save_model(steps)
-
-    def export_model(self):
-        self.policy.export_model()
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):

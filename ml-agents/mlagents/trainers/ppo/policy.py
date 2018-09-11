@@ -1,7 +1,5 @@
 import logging
 
-import numpy as np
-import tensorflow as tf
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 
@@ -22,8 +20,7 @@ class PPOPolicy(Policy):
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
 
-        g = tf.Graph()
-        with g.as_default():
+        with self.graph.as_default():
             self.model = PPOModel(brain,
                                   lr=float(trainer_params['learning_rate']),
                                   h_size=int(trainer_params['hidden_units']),
@@ -39,23 +36,10 @@ class PPOPolicy(Policy):
                                   curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
                                   seed=seed)
 
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
-        self.sess = tf.Session(config=config, graph=g)
-        with g.as_default():
-            self.saver = tf.train.Saver(max_to_keep=trainer_params['keep_checkpoints'])
-            init = tf.global_variables_initializer()
         if load:
-            logger.info('Loading Model for brain {}'.format(self.brain.brain_name))
-            ckpt = tf.train.get_checkpoint_state(self.model_path)
-            if ckpt is None:
-                logger.info('The model {0} could not be found. Make '
-                                 'sure you specified the right '
-                                 '--run-id'
-                                 .format(self.model_path))
-                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+            self._load_graph(trainer_params['keep_checkpoints'])
         else:
-            self.sess.run(init)
+            self._initialize_graph(trainer_params['keep_checkpoints'])
 
         self.inference_dict = {'action': self.model.output, 'log_probs': self.model.all_log_probs,
                                'value': self.model.value, 'entropy': self.model.entropy,

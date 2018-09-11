@@ -22,6 +22,8 @@ class Policy(object):
     Contains a learning model, and the necessary
     functions to interact with it to perform evaluate and updating.
     """
+    possible_output_nodes = ['action', 'value_estimate',
+                       'action_probs', 'recurrent_out', 'memory_size']
 
     def __init__(self, seed, brain, trainer_parameters):
         """
@@ -41,9 +43,10 @@ class Policy(object):
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_continuous_act = (brain.vector_action_space_type == "continuous")
         self.model_path = trainer_parameters["model_path"]
+        self.graph = tf.Graph()
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
-        self.sess = tf.Session(config=config)
+        self.sess = tf.Session(config=config, graph=self.graph)
         self.saver = None
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
@@ -56,6 +59,24 @@ class Policy(object):
                 raise UnityPolicyException("The memory size for brain {0} is {1} "
                                            "but it must be divisible by 4."
                                            .format(brain.brain_name, self.m_size))
+
+    def _initialize_graph(self, keep_checkpoints):
+        with self.graph.as_default():
+            self.saver = tf.train.Saver(max_to_keep=keep_checkpoints)
+            init = tf.global_variables_initializer()
+            self.sess.run(init)
+
+    def _load_graph(self, keep_checkpoints):
+        with self.graph.as_default():
+            self.saver = tf.train.Saver(max_to_keep=keep_checkpoints)
+            logger.info('Loading Model for brain {}'.format(self.brain.brain_name))
+            ckpt = tf.train.get_checkpoint_state(self.model_path)
+            if ckpt is None:
+                logger.info('The model {0} could not be found. Make '
+                            'sure you specified the right '
+                            '--run-id'
+                            .format(self.model_path))
+                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
     def evaluate(self, brain_info):
         """
@@ -129,35 +150,44 @@ class Policy(object):
         return list(self.update_dict.keys())
 
     def save_model(self, steps):
-        last_checkpoint = self.model_path + '/model-' + str(steps) + '.cptk'
-        self.saver.save(self.sess, last_checkpoint)
-        tf.train.write_graph(self.sess.graph_def, self.model_path,
-                             'raw_graph_def.pb', as_text=False)
+        """
+        Saves the model
+        :param steps: The number of steps the model was trained for
+        :return:
+        """
+        with self.graph.as_default():
+            last_checkpoint = self.model_path + '/model-' + str(steps) + '.cptk'
+            self.saver.save(self.sess, last_checkpoint)
+            tf.train.write_graph(self.graph, self.model_path,
+                                 'raw_graph_def.pb', as_text=False)
 
     def export_model(self):
         """
         Exports latest saved model to .bytes format for Unity embedding.
         """
-        target_nodes = ','.join(self._process_graph())
-        ckpt = tf.train.get_checkpoint_state(self.model_path)
-        freeze_graph.freeze_graph(
-            input_graph=self.model_path + '/raw_graph_def.pb',
-            input_binary=True,
-            input_checkpoint=ckpt.model_checkpoint_path,
-            output_node_names=target_nodes,
-            output_graph=(self.model_path + '/' + self.brain.brain_name + '.bytes'),
-            clear_devices=True, initializer_nodes='', input_saver='',
-            restore_op_name='save/restore_all',
-            filename_tensor_name='save/Const:0')
+        with self.graph.as_default():
+            target_nodes = ','.join(self._process_graph())
+            ckpt = tf.train.get_checkpoint_state(self.model_path)
+            freeze_graph.freeze_graph(
+                input_graph=self.model_path + '/raw_graph_def.pb',
+                input_binary=True,
+                input_checkpoint=ckpt.model_checkpoint_path,
+                output_node_names=target_nodes,
+                output_graph=(self.model_path + '/' + self.brain.brain_name + '.bytes'),
+                clear_devices=True, initializer_nodes='', input_saver='',
+                restore_op_name='save/restore_all',
+                filename_tensor_name='save/Const:0')
 
     def _process_graph(self):
-        desired_outputs = ['action', 'value_estimate',
-                           'action_probs', 'recurrent_out', 'memory_size']
-        all_outputs = [x.name[:-2] for x in self.inference_dict.values()]
-        nodes = [x for x in all_outputs if x in desired_outputs]
+        """
+        Gets the list of the output nodes present in the graph for inference
+        :return: list of node names
+        """
+        all_nodes = [x.name for x in self.graph.as_graph_def().node]
+        nodes = [x for x in all_nodes if x in self.possible_output_nodes]
         logger.info('List of nodes to export for brain :' + self.brain.brain_name)
         for n in nodes:
-            logger.info('\t' +n)
+            logger.info('\t' + n)
         return nodes
 
     @property

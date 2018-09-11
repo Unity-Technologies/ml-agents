@@ -19,7 +19,7 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the abstract class for the mlagents.trainers"""
 
-    def __init__(self, brain_name, trainer_parameters, training, load, run_id):
+    def __init__(self, brain_name, trainer_parameters, training, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
         :param sess: Tensorflow session.
@@ -32,6 +32,7 @@ class Trainer(object):
         self.is_training = training
         self.stats = {}
         self.summary_writer = None
+        self.policy = None
 
     def __str__(self):
         return '''Empty Trainer'''
@@ -132,16 +133,15 @@ class Trainer(object):
     def save_model(self, steps):
         """
         Saves the model
-        :return:
+        :param steps: The number of steps of training
         """
-        raise UnityTrainerException("The save_model method was not implemented.")
+        self.policy.save_model(steps)
 
     def export_model(self):
         """
         Exports the model
-        :return:
         """
-        raise UnityTrainerException("The export_model method was not implemented.")
+        self.policy.export_model()
 
     def write_summary(self, global_step, lesson_num=0):
         """
