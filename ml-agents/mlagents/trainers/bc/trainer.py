@@ -19,14 +19,14 @@ logger = logging.getLogger("mlagents.envs")
 class BehavioralCloningTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
-    def __init__(self, sess, brain, trainer_parameters, training, seed, run_id):
+    def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param sess: Tensorflow session.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
+        :param load: Whether the model should be loaded
         """
-        super(BehavioralCloningTrainer, self).__init__(sess, brain, trainer_parameters, training, run_id)
+        super(BehavioralCloningTrainer, self).__init__(brain, trainer_parameters, training, load, run_id)
 
         self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon',
                            'graph_scope', 'summary_freq', 'max_steps',
@@ -39,7 +39,7 @@ class BehavioralCloningTrainer(Trainer):
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain.brain_name))
 
-        self.policy = BCPolicy(seed, brain, trainer_parameters, sess)
+        self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.brain_name = brain.brain_name
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
@@ -249,3 +249,9 @@ class BehavioralCloningTrainer(Trainer):
             self.stats['losses'].append(np.mean(batch_losses))
         else:
             self.stats['losses'].append(0)
+
+    def save_model(self, steps):
+        self.policy.save_model(steps)
+
+    def export_model(self):
+        self.policy.export_model()

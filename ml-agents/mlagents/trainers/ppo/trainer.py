@@ -20,19 +20,19 @@ logger = logging.getLogger("mlagents.envs")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, brain, reward_buff_cap, trainer_parameters, training, seed, run_id):
+    def __init__(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param sess: Tensorflow session.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
+        :param load: Whether the model should be loaded
         """
-        super(PPOTrainer, self).__init__(sess, brain.brain_name, trainer_parameters, training, run_id)
+        super(PPOTrainer, self).__init__(brain.brain_name, trainer_parameters, training, load, run_id)
 
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
-                           'graph_scope', 'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
+                           'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
                            'curiosity_enc_size']
 
         for k in self.param_keys:
@@ -45,7 +45,7 @@ class PPOTrainer(Trainer):
         self.step = 0
 
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
-                                sess, self.is_training)
+                                self.is_training, load)
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
@@ -353,6 +353,12 @@ class PPOTrainer(Trainer):
             self.stats['forward_loss'].append(np.mean(forward_total))
             self.stats['inverse_loss'].append(np.mean(inverse_total))
         self.training_buffer.reset_update_buffer()
+
+    def save_model(self, steps):
+        self.policy.save_model(steps)
+
+    def export_model(self):
+        self.policy.export_model()
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):

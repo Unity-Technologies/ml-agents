@@ -1,6 +1,7 @@
 import logging
 
 import numpy as np
+import tensorflow as tf
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 
@@ -8,7 +9,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(Policy):
-    def __init__(self, seed, brain, trainer_params, sess, is_training):
+    def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
@@ -17,23 +18,44 @@ class PPOPolicy(Policy):
         :param sess: TensorFlow session.
         :param is_training: Whether the model should be trained.
         """
-        super().__init__(seed, brain, trainer_params, sess)
+        super().__init__(seed, brain, trainer_params)
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
-        self.model = PPOModel(brain,
-                              lr=float(trainer_params['learning_rate']),
-                              h_size=int(trainer_params['hidden_units']),
-                              epsilon=float(trainer_params['epsilon']),
-                              beta=float(trainer_params['beta']),
-                              max_step=float(trainer_params['max_steps']),
-                              normalize=trainer_params['normalize'],
-                              use_recurrent=trainer_params['use_recurrent'],
-                              num_layers=int(trainer_params['num_layers']),
-                              m_size=self.m_size,
-                              use_curiosity=bool(trainer_params['use_curiosity']),
-                              curiosity_strength=float(trainer_params['curiosity_strength']),
-                              curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
-                              scope=self.variable_scope, seed=seed)
+
+        g = tf.Graph()
+        with g.as_default():
+            self.model = PPOModel(brain,
+                                  lr=float(trainer_params['learning_rate']),
+                                  h_size=int(trainer_params['hidden_units']),
+                                  epsilon=float(trainer_params['epsilon']),
+                                  beta=float(trainer_params['beta']),
+                                  max_step=float(trainer_params['max_steps']),
+                                  normalize=trainer_params['normalize'],
+                                  use_recurrent=trainer_params['use_recurrent'],
+                                  num_layers=int(trainer_params['num_layers']),
+                                  m_size=self.m_size,
+                                  use_curiosity=bool(trainer_params['use_curiosity']),
+                                  curiosity_strength=float(trainer_params['curiosity_strength']),
+                                  curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
+                                  seed=seed)
+
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        self.sess = tf.Session(config=config, graph=g)
+        with g.as_default():
+            self.saver = tf.train.Saver(max_to_keep=trainer_params['keep_checkpoints'])
+            init = tf.global_variables_initializer()
+        if load:
+            logger.info('Loading Model for brain {}'.format(self.brain.brain_name))
+            ckpt = tf.train.get_checkpoint_state(self.model_path)
+            if ckpt is None:
+                logger.info('The model {0} could not be found. Make '
+                                 'sure you specified the right '
+                                 '--run-id'
+                                 .format(self.model_path))
+                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+        else:
+            self.sess.run(init)
 
         self.inference_dict = {'action': self.model.output, 'log_probs': self.model.all_log_probs,
                                'value': self.model.value, 'entropy': self.model.entropy,

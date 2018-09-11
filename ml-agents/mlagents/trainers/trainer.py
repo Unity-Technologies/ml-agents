@@ -19,14 +19,13 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the abstract class for the mlagents.trainers"""
 
-    def __init__(self, sess, brain_name, trainer_parameters, training, run_id):
+    def __init__(self, brain_name, trainer_parameters, training, load, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
         :param sess: Tensorflow session.
         :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
-        self.sess = sess
         self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
@@ -130,6 +129,20 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
+    def save_model(self, steps):
+        """
+        Saves the model
+        :return:
+        """
+        raise UnityTrainerException("The save_model method was not implemented.")
+
+    def export_model(self):
+        """
+        Exports the model
+        :return:
+        """
+        raise UnityTrainerException("The export_model method was not implemented.")
+
     def write_summary(self, global_step, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
@@ -166,10 +179,11 @@ class Trainer(object):
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
         try:
-            s_op = tf.summary.text(key, tf.convert_to_tensor(
-                ([[str(x), str(input_dict[x])] for x in input_dict])))
-            s = self.sess.run(s_op)
-            self.summary_writer.add_summary(s, self.get_step)
+            with tf.Session() as sess:
+                s_op = tf.summary.text(key, tf.convert_to_tensor(
+                    ([[str(x), str(input_dict[x])] for x in input_dict])))
+                s = sess.run(s_op)
+                self.summary_writer.add_summary(s, self.get_step)
         except:
             logger.info(
                 "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above.")

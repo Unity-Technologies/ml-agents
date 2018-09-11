@@ -8,14 +8,14 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class BCPolicy(Policy):
-    def __init__(self, seed, brain, trainer_parameters, sess):
+    def __init__(self, seed, brain, trainer_parameters, load):
         """
         :param seed: Random seed.
         :param brain: Assigned Brain object.
         :param trainer_parameters: Defined training parameters.
         :param sess: TensorFlow session.
         """
-        super().__init__(seed, brain, trainer_parameters, sess)
+        super().__init__(seed, brain, trainer_parameters, load)
 
         self.model = BehavioralCloningModel(
             h_size=int(trainer_parameters['hidden_units']),
