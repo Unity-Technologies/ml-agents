@@ -45,7 +45,7 @@ PushBlockBrain:
     num_layers: 2
 
 SmallWallBrain: 
-    max_steps: 2.0e5
+    max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
@@ -56,7 +56,7 @@ SmallWallBrain:
     normalize: false
 
 BigWallBrain: 
-    max_steps: 2.0e5
+    max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
@@ -67,10 +67,12 @@ BigWallBrain:
     normalize: false
 
 StrikerBrain:
-    max_steps: 1.0e5
+    max_steps: 5.0e5
+    learning_rate: 1e-3
     batch_size: 128
-    buffer_size: 2048
-    beta: 5.0e-3
+    num_epoch: 3
+    buffer_size: 2000
+    beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
@@ -78,10 +80,12 @@ StrikerBrain:
     normalize: false
 
 GoalieBrain:
-    max_steps: 1.0e5
-    batch_size: 128
-    buffer_size: 2048
-    beta: 5.0e-3
+    max_steps: 5.0e5
+    learning_rate: 1e-3
+    batch_size: 320
+    num_epoch: 3
+    buffer_size: 2000
+    beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
@@ -99,7 +103,7 @@ PyramidBrain:
     hidden_units: 512
     num_layers: 2
     beta: 1.0e-2
-    max_steps: 2.0e5
+    max_steps: 5.0e5
     num_epoch: 3
 
 VisualPyramidBrain:

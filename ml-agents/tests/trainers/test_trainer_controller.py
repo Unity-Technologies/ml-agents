@@ -22,7 +22,7 @@ def dummy_start():
               "brainNames": ["RealFakeBrain"],
               "externalBrainNames": ["RealFakeBrain"],
               "logPath":"RealFakePath",
-              "apiNumber":"API-3",
+              "apiNumber":"API-5",
               "brainParameters": [{
                   "vectorObservationSize": 3,
                   "numStackedVectorObservations" : 2,
