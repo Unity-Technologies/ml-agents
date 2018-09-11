@@ -33,7 +33,7 @@ class PPOTrainer(Trainer):
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
                            'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
-                           'curiosity_enc_size']
+                           'curiosity_enc_size', 'keep_checkpoints']
 
         for k in self.param_keys:
             if k not in trainer_parameters:

@@ -18,15 +18,16 @@ class BCPolicy(Policy):
         super().__init__(seed, brain, trainer_parameters)
 
         with self.graph.as_default():
-            self.model = BehavioralCloningModel(
-                h_size=int(trainer_parameters['hidden_units']),
-                lr=float(trainer_parameters['learning_rate']),
-                n_layers=int(trainer_parameters['num_layers']),
-                m_size=self.m_size,
-                normalize=False,
-                use_recurrent=trainer_parameters['use_recurrent'],
-                brain=brain,
-                seed=seed)
+            with self.graph.as_default():
+                self.model = BehavioralCloningModel(
+                    h_size=int(trainer_parameters['hidden_units']),
+                    lr=float(trainer_parameters['learning_rate']),
+                    n_layers=int(trainer_parameters['num_layers']),
+                    m_size=self.m_size,
+                    normalize=False,
+                    use_recurrent=trainer_parameters['use_recurrent'],
+                    brain=brain,
+                    seed=seed)
 
         if load:
             self._load_graph(trainer_parameters['keep_checkpoints'])
