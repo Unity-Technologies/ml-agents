@@ -31,7 +31,7 @@ class BCPolicy(Policy):
         if load:
             self._load_graph(trainer_parameters['keep_checkpoints'])
         else:
-            self._initialize_graph()
+            self._initialize_graph(trainer_parameters['keep_checkpoints'])
 
         self.inference_dict = {'action': self.model.sample_action}
         self.update_dict = {'policy_loss': self.model.loss,

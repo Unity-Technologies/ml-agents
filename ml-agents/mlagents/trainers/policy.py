@@ -76,7 +76,7 @@ class Policy(object):
                             'sure you specified the right '
                             '--run-id'
                             .format(self.model_path))
-                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+            self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
     def evaluate(self, brain_info):
         """
