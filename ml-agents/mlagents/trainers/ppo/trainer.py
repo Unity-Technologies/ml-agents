@@ -4,7 +4,6 @@
 
 import logging
 import os
-from collections import deque
 
 import numpy as np
 import tensorflow as tf
@@ -20,7 +19,7 @@ logger = logging.getLogger("mlagents.envs")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, brain, reward_buff_cap, trainer_parameters, training, seed, run_id):
+    def __init__(self, sess, brain, trainer_parameters, training, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param sess: Tensorflow session.
@@ -58,7 +57,6 @@ class PPOTrainer(Trainer):
 
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
-        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
@@ -92,16 +90,6 @@ class PPOTrainer(Trainer):
         :return: the step count of the trainer
         """
         return self.step
-
-    @property
-    def reward_buffer(self):
-        """
-        Returns the reward buffer. The reward buffer contains the cumulative
-        rewards of the most recent episodes completed by agents using this
-        trainer.
-        :return: the reward buffer.
-        """
-        return self._reward_buffer
 
     def increment_step_and_update_last_reward(self):
         """
@@ -293,7 +281,6 @@ class PPOTrainer(Trainer):
                 if info.local_done[l]:
                     self.stats['cumulative_reward'].append(
                         self.cumulative_rewards.get(agent_id, 0))
-                    self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
                     self.stats['episode_length'].append(
                         self.episode_steps.get(agent_id, 0))
                     self.cumulative_rewards[agent_id] = 0

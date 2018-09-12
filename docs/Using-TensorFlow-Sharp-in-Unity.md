@@ -26,8 +26,8 @@ know._
 
 ## Requirements
 
-* Unity 2017.4 or above
-* Unity TensorFlow Plugin ([Download here](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage))
+* Unity 2017.1 or above
+* Unity TensorFlow Plugin ([Download here](https://s3.amazonaws.com/unity-ml-agents/0.4/TFSharpPlugin.unitypackage))
 
 ## Using TensorFlowSharp with ML-Agents
 
@@ -64,7 +64,7 @@ You can have additional placeholders for float or integers but they must be
 placed in placeholders of dimension 1 and size 1. (Be sure to name them.)
 
 It is important that the inputs and outputs of the graph are exactly the ones
-you receive and return when training your model with an `External` Brain. This
+you receive and return when training your model with an `External` brain. This
 means you cannot have any operations such as reshaping outside of the graph. The
 object you get by calling `step` or `reset` has fields `vector_observations`,
 `visual_observations` and `memories` which must correspond to the placeholders
@@ -94,7 +94,7 @@ both the graph and associated weights. Note that you must save your graph as a
 .bytes file so Unity can load it.
 
 In the Unity Editor, you must specify the names of the nodes used by your graph
-in the **Internal** Brain Inspector window. If you used a scope when defining
+in the **Internal** brain Inspector window. If you used a scope when defining
 your graph, specify it in the `Graph Scope` field.
 
 ![Internal Brain Inspector](images/internal_brain.png)
@@ -103,13 +103,11 @@ See
 [Internal Brain](Learning-Environment-Design-External-Internal-Brains.md#internal-brain)
 for more information about using Internal Brains.
 
-If you followed these instructions well, the Agents in your environment that use
-this Brain will use your fully trained network to make decisions.
+If you followed these instructions well, the agents in your environment that use
+this brain will use your fully trained network to make decisions.
 
 ## iOS additional instructions for building
 
-* Before build your game against iOS platform, make sure you've set the
-  flag `ENABLE_TENSORFLOW` for it.
 * Once you build the project for iOS in the editor, open the .xcodeproj file
   within the project folder using Xcode.
 * Set up your ios account following the
@@ -131,7 +129,7 @@ You must have a TensorFlow graph, such as `your_name_graph.bytes`, made using
 TensorFlow's `freeze_graph.py`. The process to create such graph is explained in
 the [Using your own trained graphs](#using-your-own-trained-graphs) section.
 
-### Inside of Unity
+## Inside of Unity
 
 To load and use a TensorFlow data graph in Unity:
 
@@ -147,7 +145,7 @@ To load and use a TensorFlow data graph in Unity:
    your code :
 
    ```csharp
-   #if UNITY_ANDROID && !UNITY_EDITOR
+   #if UNITY_ANDROID
    TensorFlowSharp.Android.NativeBinding.Init();
    #endif
    ```

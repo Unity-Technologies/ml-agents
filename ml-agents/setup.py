@@ -43,7 +43,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'mlagents-learn=mlagents.trainers.learn:main',
+            'mlagents-learn=mlagents.learn:main',
         ],
     },
 )

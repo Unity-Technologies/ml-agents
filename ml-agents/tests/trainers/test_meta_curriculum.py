@@ -24,13 +24,8 @@ def more_reset_parameters():
 
 
 @pytest.fixture
-def measure_vals():
+def progresses():
     return {'Brain1' : 0.2, 'Brain2' : 0.3}
-
-
-@pytest.fixture
-def reward_buff_sizes():
-    return {'Brain1' : 7, 'Brain2' : 8}
 
 
 @patch('mlagents.trainers.Curriculum.get_config', return_value={})
@@ -73,31 +68,14 @@ def test_set_lesson_nums(curriculum_a, curriculum_b):
 
 @patch('mlagents.trainers.Curriculum')
 @patch('mlagents.trainers.Curriculum')
-def test_increment_lessons(curriculum_a, curriculum_b, measure_vals):
+def test_increment_lessons(curriculum_a, curriculum_b, progresses):
     meta_curriculum = MetaCurriculumTest({'Brain1' : curriculum_a,
                                           'Brain2' : curriculum_b})
 
-    meta_curriculum.increment_lessons(measure_vals)
+    meta_curriculum.increment_lessons(progresses)
 
     curriculum_a.increment_lesson.assert_called_with(0.2)
     curriculum_b.increment_lesson.assert_called_with(0.3)
-
-
-@patch('mlagents.trainers.Curriculum')
-@patch('mlagents.trainers.Curriculum')
-def test_increment_lessons_with_reward_buff_sizes(curriculum_a, curriculum_b,
-                                                  measure_vals,
-                                                  reward_buff_sizes):
-    curriculum_a.min_lesson_length = 5
-    curriculum_b.min_lesson_length = 10
-    meta_curriculum = MetaCurriculumTest({'Brain1' : curriculum_a,
-                                          'Brain2' : curriculum_b})
-
-    meta_curriculum.increment_lessons(measure_vals,
-                                      reward_buff_sizes=reward_buff_sizes)
-
-    curriculum_a.increment_lesson.assert_called_with(0.2)
-    curriculum_b.increment_lesson.assert_not_called()
 
 
 @patch('mlagents.trainers.Curriculum')

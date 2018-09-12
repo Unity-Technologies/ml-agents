@@ -4,61 +4,31 @@
 
 ### Important
 
-* The Unity project `unity-environment` has been renamed `UnitySDK`.
-* The `python` folder has been renamed to `ml-agents`. It now contains two
+* The Unity project `unity-environment` has been renamed `MLAgentsSDK`.
+* The `python` folder has been renamed to `ml-agents`. It not contains two
   packages, `mlagents.env` and `mlagents.trainers`. `mlagents.env` can be used
   to interact directly with a Unity environment, while `mlagents.trainers`
   contains the classes for training agents.
-* The supported Unity version has changed from `2017.1 or later` to `2017.4
-  or later`. 2017.4 is an LTS (Long Term Support) version that helps us
-  maintain good quality and support. Earlier versions of Unity might still work,
-  but you may encounter an
-  [error](FAQ.md#instance-of-corebraininternal-couldnt-be-created) listed here.
 
 ### Unity API
 
-* Discrete Actions now use [branches](https://arxiv.org/abs/1711.08946). You can
-  now specify concurrent discrete actions. You will need to update the Brain
-  Parameters in the Brain Inspector in all your environments that use discrete
-  actions. Refer to the
-  [discrete action documentation](Learning-Environment-Design-Agents.md#discrete-action-space)
-  for more information.
+* Discrete Actions now have branches. You can now specify concurrent discrete
+  actions. You will need to update the Brain Parameters in the Brain Inspector
+  in all your environments.
 
 ### Python API
 
 * In order to run a training session, you can now use the command
   `mlagents-learn` instead of `python3 learn.py` after installing the `mlagents`
-  packages. This change is documented
-  [here](Training-ML-Agents.md#training-with-mlagents-learn). For example,
-  if we previously ran
-
-  ```sh
-  python3 learn.py 3DBall --train
-  ```
-
-  from the `python/` directory, we now run
-
-  ```sh
-  mlagents-learn config/trainer_config.yaml --env=3DBall --train
-  ```
-
-  from the directory where we installed the ML-Agents Toolkit.
-
+  packages. This change is documented [here](Training-ML-Agents.md#training-with-mlagents-learn).
 * It is now required to specify the path to the yaml trainer configuration file
-  when running `mlagents-learn`. For an example trainer configuration file, see
-  [trainer_config.yaml](../config/trainer_config.yaml). An example of passing
-  a trainer configuration to `mlagents-learn` is shown above.
+  when running `mlagents-learn`. For example, see
+  [trainer_config.yaml](../config/trainer_config.yaml).
 * The environment name is now passed through the `--env` option.
-* Curriculum learning has been changed. Refer to the
-    [curriculum learning documentation](Training-Curriculum-Learning.md)
-    for detailed information. In summary:
-  * Curriculum files for the same environment must now be placed into a folder.
-    Each curriculum file should be named after the brain whose curriculum it
-    specifies.
-  * `min_lesson_length` now specifies the minimum number of episodes in a lesson
-    and affects reward thresholding.
-  * It is no longer necessary to specify the `Max Steps` of the Academy to use
-    curriculum learning.
+* Curriculum files must now be placed into a folder and be named appropriately.
+  Refer to the
+  [Curriculum training documentation](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Curriculum-Learning.md)
+  for more information.
 
 ## Migrating from ML-Agents toolkit v0.3 to v0.4
 
@@ -69,9 +39,9 @@
 
 ### Python API
 
-* We've changed some of the Python packages dependencies in requirement.txt
-  file. Make sure to run `pip3 install .` within your `ml-agents/python` folder
-  to update your Python packages.
+* We've changed some of the python packages dependencies in requirement.txt
+  file. Make sure to run `pip install .` within your `ml-agents/python` folder
+  to update your python packages.
 
 ## Migrating from ML-Agents toolkit v0.2 to v0.3
 
@@ -91,7 +61,7 @@ in order to ensure a smooth transition.
   replaced with a single `learn.py` script as the launching point for training
   with ML-Agents. For more information on using `learn.py`, see
   [here](Training-ML-Agents.md#training-with-mlagents-learn).
-* Hyperparameters for training Brains are now stored in the
+* Hyperparameters for training brains are now stored in the
   `trainer_config.yaml` file. For more information on using this file, see
   [here](Training-ML-Agents.md#training-config-file).
 
@@ -108,7 +78,7 @@ in order to ensure a smooth transition.
 * `AgentStep()` has been replaced by `AgentAction()`.
 * `WaitTime()` has been removed.
 * The `Frame Skip` field of the Academy is replaced by the Agent's `Decision
-  Frequency` field, enabling the Agent to make decisions at different frequencies.
+  Frequency` field, enabling agent to make decisions at different frequencies.
 * The names of the inputs in the Internal Brain have been changed. You must
   replace `state` with `vector_observation` and `observation` with
   `visual_observation`. In addition, you must remove the `epsilon` placeholder.

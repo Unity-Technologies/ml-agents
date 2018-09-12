@@ -1,6 +1,5 @@
 import os
 import json
-import math
 
 from .exception import CurriculumError
 
@@ -14,9 +13,9 @@ class Curriculum(object):
         """
         Initializes a Curriculum object.
         :param location: Path to JSON defining curriculum.
-        :param default_reset_parameters: Set of reset parameters for
-               environment.
+        :param default_reset_parameters: Set of reset parameters for environment.
         """
+        self.lesson_length = 0
         self.max_lesson_num = 0
         self.measure = None
         self._lesson_num = 0
@@ -31,18 +30,15 @@ class Curriculum(object):
             raise CurriculumError(
                 'The file {0} could not be found.'.format(location))
         except UnicodeDecodeError:
-            raise CurriculumError('There was an error decoding {}'
-                                  .format(location))
+            raise CurriculumError('There was an error decoding {}'.format(location))
         self.smoothing_value = 0
         for key in ['parameters', 'measure', 'thresholds',
                     'min_lesson_length', 'signal_smoothing']:
             if key not in self.data:
                 raise CurriculumError("{0} does not contain a "
-                                      "{1} field."
-                                      .format(location, key))
+                                                "{1} field.".format(location, key))
         self.smoothing_value = 0
         self.measure = self.data['measure']
-        self.min_lesson_length = self.data['min_lesson_length']
         self.max_lesson_num = len(self.data['thresholds'])
 
         parameters = self.data['parameters']
@@ -55,8 +51,7 @@ class Curriculum(object):
                 raise CurriculumError(
                     'The parameter {0} in Curriculum {1} must have {2} values '
                     'but {3} were found'.format(key, location,
-                                                self.max_lesson_num + 1,
-                                                len(parameters[key])))
+                                                self.max_lesson_num + 1, len(parameters[key])))
 
     @property
     def lesson_num(self):
@@ -64,22 +59,24 @@ class Curriculum(object):
 
     @lesson_num.setter
     def lesson_num(self, lesson_num):
+        self.lesson_length = 0
         self._lesson_num = max(0, min(lesson_num, self.max_lesson_num))
 
-    def increment_lesson(self, measure_val):
+    def increment_lesson(self, progress):
         """
         Increments the lesson number depending on the progress given.
-        :param measure_val: Measure of progress (either reward or percentage
-               steps completed).
-        :return Whether the lesson was incremented.
+        :param progress: Measure of progress (either reward or percentage steps completed).
         """
-        if not self.data or not measure_val or math.isnan(measure_val):
-            return False
+        if self.data is None or progress is None:
+            return
         if self.data['signal_smoothing']:
-            measure_val = self.smoothing_value * 0.25 + 0.75 * measure_val
-            self.smoothing_value = measure_val
+            progress = self.smoothing_value * 0.25 + 0.75 * progress
+            self.smoothing_value = progress
+        self.lesson_length += 1
         if self.lesson_num < self.max_lesson_num:
-            if measure_val > self.data['thresholds'][self.lesson_num]:
+            if ((progress > self.data['thresholds'][self.lesson_num]) and
+                    (self.lesson_length > self.data['min_lesson_length'])):
+                self.lesson_length = 0
                 self.lesson_num += 1
                 config = {}
                 parameters = self.data['parameters']
@@ -88,19 +85,15 @@ class Curriculum(object):
                 logger.info('{0} lesson changed. Now in lesson {1}: {2}'
                             .format(self._brain_name,
                                     self.lesson_num,
-                                    ', '.join([str(x) + ' -> ' + str(config[x])
-                                        for x in config])))
-                return True
-        return False
+                                    ', '.join([str(x) + ' -> ' + str(config[x]) for x in config])))
 
     def get_config(self, lesson=None):
         """
         Returns reset parameters which correspond to the lesson.
-        :param lesson: The lesson you want to get the config of. If None, the
-               current lesson is returned.
+        :param lesson: The lesson you want to get the config of. If None, the current lesson is returned.
         :return: The configuration of the reset parameters.
         """
-        if not self.data:
+        if self.data is None:
             return {}
         if lesson is None:
             lesson = self.lesson_num
