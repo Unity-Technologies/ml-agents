@@ -42,9 +42,13 @@ namespace MLAgents
         /// <summary>
         /// Reset body part to initial configuration.
         /// </summary>
-        public void Reset(BodyPart bp)
+        public void Reset(BodyPart bp) {
+            Reset(bp, new Vector3(0.0f, 0.0f, 0.0f));
+        }
+
+        public void Reset(BodyPart bp, Vector3 offset)
         {
-            bp.rb.transform.position = bp.startingPos;
+            bp.rb.transform.position = bp.startingPos + offset;
             bp.rb.transform.rotation = bp.startingRot;
             bp.rb.velocity = Vector3.zero;
             bp.rb.angularVelocity = Vector3.zero;
