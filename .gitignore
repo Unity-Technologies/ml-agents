@@ -68,7 +68,6 @@
 *.idea/misc.xml
 *.idea/modules.xml
 *.iml
-*.xml
 *.cache
 */build/
 */dist/
