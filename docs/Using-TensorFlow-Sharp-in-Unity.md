@@ -93,10 +93,6 @@ Your model will be saved with the name `your_name_graph.bytes` and will contain
 both the graph and associated weights. Note that you must save your graph as a
 .bytes file so Unity can load it.
 
-In the Unity Editor, you must specify the names of the nodes used by your graph
-in the **Internal** Brain Inspector window. If you used a scope when defining
-your graph, specify it in the `Graph Scope` field.
-
 ![Internal Brain Inspector](images/internal_brain.png)
 
 See

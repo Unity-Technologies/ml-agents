@@ -44,28 +44,6 @@ C# scripts, then adding the `CoreBrain` back. Make sure your brain is in
 Internal mode, your TensorFlowSharp plugin is imported and the
 ENABLE_TENSORFLOW flag is set. This fix is only valid locally and unstable.
 
-## Tensorflow epsilon placeholder error
-
-If you have a graph placeholder set in the Internal Brain inspector that is not
-present in the TensorFlow graph, you will see some error like this:
-
-```console
-UnityAgentsException: One of the TensorFlow placeholder could not be found. In brain <some_brain_name>, there are no FloatingPoint placeholder named <some_placeholder_name>.
-```
-
-Solution: Go to all of your Brain object, find `Graph placeholders` and change
-its `size` to 0 to remove the `epsilon` placeholder.
-
-Similarly, if you have a graph scope set in the Internal Brain inspector that is
-not correctly set, you will see some error like this:
-
-```console
-UnityAgentsException: The node <Wrong_Graph_Scope>/action could not be found. Please make sure the graphScope <Wrong_Graph_Scope>/ is correct
-```
-
-Solution: Make sure your Graph Scope field matches the corresponding Brain
-object name in your Hierarchy Inspector when there are multiple Brains.
-
 ## Environment Permission Error
 
 If you directly import your Unity environment without building it in the
