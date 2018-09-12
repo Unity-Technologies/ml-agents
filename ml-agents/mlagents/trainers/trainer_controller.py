@@ -140,8 +140,6 @@ class TrainerController(object):
         else:
             return None
 
-
-    # Move to policy
     def _save_model(self,steps=0):
         """
         Saves current model to checkpoint folder.
@@ -251,25 +249,9 @@ class TrainerController(object):
         tf.reset_default_graph()
 
         # Prevent a single session from taking all GPU memory.
-        # config = tf.ConfigProto()
-        # config.gpu_options.allow_growth = True
         self._initialize_trainers(trainer_config)
         for _, t in self.trainers.items():
             self.logger.info(t)
-        # init = tf.global_variables_initializer()
-        # saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-        # # Instantiate model parameters
-        # if self.load_model:
-        #     self.logger.info('Loading Model...')
-        #     ckpt = tf.train.get_checkpoint_state(self.model_path)
-        #     if ckpt is None:
-        #         self.logger.info('The model {0} could not be found. Make '
-        #                          'sure you specified the right '
-        #                          '--run-id'
-        #                          .format(self.model_path))
-        #     saver.restore(sess, ckpt.model_checkpoint_path)
-        # else:
-        #     sess.run(init)
         global_step = 0  # This is only for saving the model
         curr_info = self._reset_env()
         if self.train_model:
