@@ -26,18 +26,21 @@ class BehavioralCloningTrainer(Trainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded
         """
-        super(BehavioralCloningTrainer, self).__init__(brain, trainer_parameters, training, run_id)
-
         self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon',
                            'summary_freq', 'max_steps',
                            'batches_per_epoch', 'use_recurrent',
                            'hidden_units', 'learning_rate', 'num_layers',
-                           'sequence_length', 'memory_size', 'keep_checkpoints']
+                           'sequence_length', 'memory_size', 'keep_checkpoints',
+                           'model_path']
 
         for k in self.param_keys:
+            print(k)
+            print(k not in trainer_parameters)
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain.brain_name))
+
+        super(BehavioralCloningTrainer, self).__init__(brain, trainer_parameters, training, run_id)
 
         self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.brain_name = brain.brain_name
