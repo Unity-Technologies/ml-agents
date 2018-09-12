@@ -44,6 +44,6 @@ class UnityTimeOutException(UnityException):
                         "You can check the logfile for more information at {}".format(log_file_path))
             except:
                 logger.error("An error might have occured in the environment. "
-               "No MLAgentsSDK.log file could be found.") 
+               "No UnitySDK.log file could be found.") 
         super(UnityTimeOutException, self).__init__(message)
 

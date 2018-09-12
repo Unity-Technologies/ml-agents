@@ -39,7 +39,7 @@ class MockCommunicator(Communicator):
         )
         rl_init = UnityRLInitializationOutput(
             name="RealFakeAcademy",
-            version="API-4",
+            version="API-5",
             log_path="",
             brain_parameters=[bp]
         )

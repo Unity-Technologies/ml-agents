@@ -4,7 +4,7 @@ import numpy as np
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 
-logger = logging.getLogger("unityagents")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(Policy):

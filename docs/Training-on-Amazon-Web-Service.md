@@ -61,11 +61,11 @@ After launching your EC2 instance using the ami and ssh into it:
     source activate python3
     ```
 
-2. Clone the ML-Agents repo and install the required python packages
+2. Clone the ML-Agents repo and install the required Python packages
 
     ```sh
     git clone https://github.com/Unity-Technologies/ml-agents.git
-    cd ml-agents/python
+    cd ml-agents/ml-agents/
     pip3 install .
     ```
 
@@ -194,17 +194,17 @@ linux executables which use visual observations.
 7. Test the instance setup from Python using:
 
     ```python
-    from unityagents import UnityEnvironment
+    from mlagents.envs import UnityEnvironment
 
     env = UnityEnvironment(<your_env>)
     ```
+
     Where `<your_env>` corresponds to the path to your environment executable.
 
     You should receive a message confirming that the environment was loaded successfully.
 8. Train the executable
 
     ```console
-    //cd into your ml-agents/python folder
     chmod +x <your_env>.x86_64
-    python learn.py <your_env> --train
+    mlagents-learn <trainer-config-file> --env=<your_env> --train
     ```

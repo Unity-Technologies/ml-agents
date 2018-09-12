@@ -1,19 +1,19 @@
 # External and Internal Brains
 
 The **External** and **Internal** types of Brains work in different phases of
-training. When training your agents, set their brain types to **External**; when
-using the trained models, set their brain types to **Internal**.
+training. When training your Agents, set their Brain types to **External**; when
+using the trained models, set their Brain types to **Internal**.
 
 ## External Brain
 
 When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least
 one Brain object in a scene must be set to **External**. This allows the
-training process to collect the observations of agents using that brain and give
-the agents their actions.
+training process to collect the observations of Agents using that Brain and give
+the Agents their actions.
 
-In addition to using an External brain for training using the ML-Agents learning
-algorithms, you can use an External brain to control agents in a Unity
-environment using an external Python program. See [Python API](../ml-agents/README.md)
+In addition to using an External Brain for training using the ML-Agents learning
+algorithms, you can use an External Brain to control Agents in a Unity
+environment using an external Python program. See [Python API](Python-API.md)
 for more information.
 
 Unlike the other types, the External Brain has no properties to set in the Unity
@@ -30,7 +30,7 @@ that you can use with the Internal Brain type.
 A __model__ is a mathematical relationship mapping an agent's observations to
 its actions. TensorFlow is a software library for performing numerical
 computation through data flow graphs. A TensorFlow model, then, defines the
-mathematical relationship between your agent's observations and its actions
+mathematical relationship between your Agent's observations and its actions
 using a TensorFlow data flow graph.
 
 ### Creating a graph model
@@ -49,7 +49,7 @@ To use a graph model:
    a Brain component.)
 2. Set the **Brain Type** to **Internal**.
     **Note:** In order to see the **Internal** Brain Type option, you must
-    [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).  
+    [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).
 3. Import the `environment_run-id.bytes` file produced by the PPO training
    program. (Where `environment_run-id` is the name of the model file, which is
    constructed from the name of your Unity environment executable and the run-id
@@ -84,11 +84,11 @@ TensorFlow model and are not using an ML-Agents model:
 * `Graph Scope` : If you set a scope while training your TensorFlow model, all
   your placeholder name will have a prefix. You must specify that prefix here.
   Note that if more than one Brain were set to external during training, you
-  must give a `Graph Scope` to the internal Brain corresponding to the name of
+  must give a `Graph Scope` to the Internal Brain corresponding to the name of
   the Brain GameObject.
 * `Batch Size Node Name` : If the batch size is one of the inputs of your
-  graph, you must specify the name if the placeholder here. The brain will make
-  the batch size equal to the number of agents connected to the brain
+  graph, you must specify the name if the placeholder here. The Brain will make
+  the batch size equal to the number of Agents connected to the Brain
   automatically.
 * `State Node Name` : If your graph uses the state as an input, you must specify
   the name of the placeholder here.
@@ -100,9 +100,9 @@ TensorFlow model and are not using an ML-Agents model:
   if the output placeholder here.
 * `Observation Placeholder Name` : If your graph uses observations as input, you
   must specify it here. Note that the number of observations is equal to the
-  length of `Camera Resolutions` in the brain parameters.
+  length of `Camera Resolutions` in the Brain parameters.
 * `Action Node Name` : Specify the name of the placeholder corresponding to the
-  actions of the brain in your graph. If the action space type is continuous,
+  actions of the Brain in your graph. If the action space type is continuous,
   the output must be a one dimensional tensor of float of length `Action Space
   Size`, if the action space type is discrete, the output must be a one
   dimensional tensor of int of the same length as the `Branches` array.
