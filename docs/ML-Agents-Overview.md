@@ -214,7 +214,7 @@ enables additional training modes.
        border="10" />
 </p>
 
-_An example of how a scene containing multiple Agents and Brains might be
+_An example of how a scene containing multiple Agents and Brains might be 
 configured._
 
 ## Training Modes
@@ -264,7 +264,7 @@ for both training and inferences phases and the behaviors of all the Agents in
 the scene will be controlled within Python.
 
 We do not currently have a tutorial highlighting this mode, but you can
-learn more about the Python API [here](Python-API.md).
+learn more about the Python API [here](../ml-agents/README.md).
 
 ### Curriculum Learning
 
@@ -333,34 +333,34 @@ kinds of novel and fun environments the community creates. For those new to
 training intelligent agents, below are a few examples that can serve as
 inspiration:
 
-- Single-Agent. A single agent linked to a single Brain, with its own reward
+- Single-Agent. A single Agent linked to a single Brain, with its own reward
   signal. The traditional way of training an agent. An example is any
   single-player game, such as Chicken. [Video
   Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
-- Simultaneous Single-Agent. Multiple independent agents with independent reward
+- Simultaneous Single-Agent. Multiple independent Agents with independent reward
   signals linked to a single Brain. A parallelized version of the traditional
   training scenario, which can speed-up and stabilize the training process.
   Helpful when you have multiple versions of the same character in an
   environment who should learn similar behaviors. An example might be training a
   dozen robot-arms to each open a door simultaneously. [Video
   Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
-- Adversarial Self-Play. Two interacting agents with inverse reward signals
+- Adversarial Self-Play. Two interacting Agents with inverse reward signals
   linked to a single Brain. In two-player games, adversarial self-play can allow
   an agent to become increasingly more skilled, while always having the
   perfectly matched opponent: itself. This was the strategy employed when
   training AlphaGo, and more recently used by OpenAI to train a human-beating
   1-vs-1 Dota 2 agent.
-- Cooperative Multi-Agent. Multiple interacting agents with a shared reward
+- Cooperative Multi-Agent. Multiple interacting Agents with a shared reward
   signal linked to either a single or multiple different Brains. In this
   scenario, all agents must work together to accomplish a task that cannot be
   done alone. Examples include environments where each agent only has access to
   partial information, which needs to be shared in order to accomplish the task
   or collaboratively solve a puzzle.
-- Competitive Multi-Agent. Multiple interacting s with inverse reward
+- Competitive Multi-Agent. Multiple interacting Agents with inverse reward
   signals linked to either a single or multiple different Brains. In this
-  scenario, s must compete with one another to either win a competition, or
+  scenario, agents must compete with one another to either win a competition, or
   obtain some limited set of resources. All team sports fall into this scenario.
-- Ecosystem. Multiple interacting s with independent reward signals linked
+- Ecosystem. Multiple interacting Agents with independent reward signals linked
   to either a single or multiple different Brains. This scenario can be thought
   of as creating a small world in which animals with different goals all
   interact, such as a savanna in which there might be zebras, elephants and
@@ -390,11 +390,11 @@ training process.
   learn more about enabling LSTM during training [here](Feature-Memory.md).
 
 - **Monitoring Agent’s Decision Making** - Since communication in ML-Agents is a
-  two-way street, we provide an Agent Monitor class in Unity which can display
-  aspects of the trained Agent, such as the Agents perception on how well it is
+  two-way street, we provide an agent Monitor class in Unity which can display
+  aspects of the trained agent, such as the agents perception on how well it is
   doing (called **value estimates**) within the Unity environment itself. By
   leveraging Unity as a visualization tool and providing these outputs in
-  real-time, researchers and developers can more easily debug an Agent’s
+  real-time, researchers and developers can more easily debug an agent’s
   behavior. You can learn more about using the Monitor class
   [here](Feature-Monitor.md).
 

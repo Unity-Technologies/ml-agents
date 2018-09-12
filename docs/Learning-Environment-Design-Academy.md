@@ -1,7 +1,7 @@
 # Creating an Academy
 
 An Academy orchestrates all the Agent and Brain objects in a Unity scene. Every
-scene containing Agents must contain a single Academy. To use an Academy, you
+scene containing agents must contain a single Academy. To use an Academy, you
 must create your own subclass. However, all the methods you can override are
 optional.
 
@@ -29,7 +29,7 @@ in your Academy subclass.
 ## Resetting an Environment
 
 Implement an `AcademyReset()` function to alter the environment at the start of
-each episode. For example, you might want to reset an Agent to its starting
+each episode. For example, you might want to reset an agent to its starting
 position or move a goal to a random position. An environment resets when the
 Academy `Max Steps` count is reached.
 
@@ -42,7 +42,7 @@ one, particular maze, not mazes in general.
 ## Controlling an Environment
 
 The `AcademyStep()` function is called at every step in the simulation before
-any Agents are updated. Use this function to update objects in the environment
+any agents are updated. Use this function to update objects in the environment
 at every step or during the episode between environment resets. For example, if
 you want to add elements to the environment at random intervals, you can put the
 logic for creating them in the `AcademyStep()` function.

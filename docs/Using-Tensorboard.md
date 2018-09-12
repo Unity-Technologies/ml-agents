@@ -11,12 +11,10 @@ In order to observe the training process, either during training or afterward,
 start TensorBoard:
 
 1. Open a terminal or console window:
-2. Navigate to the directory where the ML-Agents Toolkit is installed.
+2. Navigate to the ml-agents/python folder.
 3. From the command line run :
 
-      ```sh
-      tensorboard --logdir=summaries
-      ```
+        tensorboard --logdir=summaries
 
 4. Open a browser window and navigate to [localhost:6006](http://localhost:6006).
 
@@ -36,7 +34,7 @@ When you run the training program, `mlagents-learn`, you can use the
 
 ## The ML-Agents toolkit training statistics
 
-The ML-Agents training program saves the following statistics:
+The ML-agents training program saves the following statistics:
 
 ![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 

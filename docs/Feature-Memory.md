@@ -1,9 +1,9 @@
-# Memory-enhanced agents using Recurrent Neural Networks
+# Memory-enhanced Agents using Recurrent Neural Networks
 
-## What are memories used for?
+## What are memories for
 
 Have you ever entered a room to get something and immediately forgot what you
-were looking for? Don't let that happen to your agents.
+were looking for? Don't let that happen to your agents.  
 
 It is now possible to give memories to your agents. When training, the agents
 will be able to store a vector of floats to be used next time they need to make

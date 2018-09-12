@@ -2,7 +2,7 @@
 
 This tutorial walks through the process of creating a Unity Environment. A Unity
 Environment is an application built using the Unity Engine which can be used to
-train Reinforcement Learning Agents.
+train Reinforcement Learning agents.
 
 ![A simple ML-Agents environment](images/mlagents-NewTutSplash.png)
 
@@ -23,15 +23,15 @@ steps:
    methods to update the scene independently of any agents. For example, you can
    add, move, or delete agents and other entities in the environment.
 3. Add one or more Brain objects to the scene as children of the Academy.
-4. Implement your Agent subclasses. An Agent subclass defines the code an Agent
+4. Implement your Agent subclasses. An Agent subclass defines the code an agent
    uses to observe its environment, to carry out assigned actions, and to
    calculate the rewards used for reinforcement training. You can also implement
-   optional methods to reset the Agent when it has finished or failed its task.
+   optional methods to reset the agent when it has finished or failed its task.
 5. Add your Agent subclasses to appropriate GameObjects, typically, the object
-   in the scene that represents the Agent in the simulation. Each Agent object
+   in the scene that represents the agent in the simulation. Each Agent object
    must be assigned a Brain object.
 6. If training, set the Brain type to External and
-   [run the training process](Training-ML-Agents.md).
+   [run the training process](Training-ML-Agents.md).  
 
 **Note:** If you are unfamiliar with Unity, refer to
 [Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
@@ -48,7 +48,7 @@ importing the ML-Agents assets into it:
 1. Launch the Unity Editor and create a new project named "RollerBall".
 2. In a file system window, navigate to the folder containing your cloned
    ML-Agents repository.
-3. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity Editor
+3. Drag the `ML-Agents` folder from `MLAgentsSDK/Assets` to the Unity Editor
    Project window.
 
 Your Unity **Project** window should contain the following assets:
@@ -59,8 +59,8 @@ Your Unity **Project** window should contain the following assets:
 
 Next, we will create a very simple scene to act as our ML-Agents environment.
 The "physical" components of the environment include a Plane to act as the floor
-for the Agent to move around on, a Cube to act as the goal or target for the
-agent to seek, and a Sphere to represent the Agent itself.
+for the agent to move around on, a Cube to act as the goal or target for the
+agent to seek, and a Sphere to represent the agent itself.
 
 ### Create the floor plane
 
@@ -194,7 +194,7 @@ Then, edit the new `RollerAgent` script:
    leave it alone for now.
 
 So far, these are the basic steps that you would use to add ML-Agents to any
-Unity project. Next, we will add the logic that will let our Agent learn to roll
+Unity project. Next, we will add the logic that will let our agent learn to roll
 to the cube using reinforcement learning.
 
 In this simple scenario, we don't use the Academy object to control the
@@ -206,8 +206,8 @@ it succeeds or falls trying.
 
 ### Initialization and Resetting the Agent
 
-When the Agent reaches its target, it marks itself done and its Agent reset
-function moves the target to a random location. In addition, if the Agent rolls
+When the agent reaches its target, it marks itself done and its agent reset
+function moves the target to a random location. In addition, if the agent rolls
 off the platform, the reset function puts it back onto the floor.
 
 To move the target GameObject, we need a reference to its Transform (which
@@ -215,7 +215,7 @@ stores a GameObject's position, orientation and scale in the 3D world). To get
 this reference, add a public field of type `Transform` to the RollerAgent class.
 Public fields of a component in Unity get displayed in the Inspector window,
 allowing you to choose which GameObject to use as the target in the Unity
-Editor. To reset the Agent's velocity (and later to apply force to move the
+Editor. To reset the agent's velocity (and later to apply force to move the
 agent) we need a reference to the Rigidbody component. A
 [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's
 primary element for physics simulation. (See
@@ -243,8 +243,8 @@ public class RollerAgent : Agent
     public override void AgentReset()
     {
         if (this.transform.position.y < -1.0)
-        {
-            // The Agent fell
+        {  
+            // The agent fell
             this.transform.position = Vector3.zero;
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
@@ -265,17 +265,17 @@ Next, let's implement the Agent.CollectObservations() function.
 ### Observing the Environment
 
 The Agent sends the information we collect to the Brain, which uses it to make a
-decision. When you train the Agent (or use a trained model), the data is fed
-into a neural network as a feature vector. For an Agent to successfully learn a
+decision. When you train the agent (or use a trained model), the data is fed
+into a neural network as a feature vector. For an agent to successfully learn a
 task, we need to provide the correct information. A good rule of thumb for
 deciding what information to collect is to consider what you would need to
 calculate an analytical solution to the problem.
 
-In our case, the information our Agent collects includes:
+In our case, the information our agent collects includes:
 
 * Position of the target. In general, it is better to use the relative position
   of other objects rather than the absolute position for more generalizable
-  training. Note that the Agent only collects the x and z coordinates since the
+  training. Note that the agent only collects the x and z coordinates since the
   floor is aligned with the x-z plane and the y component of the target's
   position never changes.
 
@@ -288,8 +288,8 @@ AddVectorObs(relativePosition.x / 5);
 AddVectorObs(relativePosition.z / 5);
 ```
 
-* Position of the Agent itself within the confines of the floor. This data is
-  collected as the Agent's distance from each edge of the floor.
+* Position of the agent itself within the confines of the floor. This data is
+  collected as the agent's distance from each edge of the floor.
 
 ```csharp
 // Distance to edges of platform
@@ -299,7 +299,7 @@ AddVectorObs((this.transform.position.z + 5) / 5);
 AddVectorObs((this.transform.position.z - 5) / 5);
 ```
 
-* The velocity of the Agent. This helps the Agent learn to control its speed so
+* The velocity of the agent. This helps the agent learn to control its speed so
   it doesn't overshoot the target and roll off the platform.
 
 ```csharp
@@ -346,10 +346,10 @@ The decision of the Brain comes in the form of an action array passed to the
 `AgentAction()` function. The number of elements in this array is determined by
 the `Vector Action Space Type` and `Vector Action Space Size` settings of the
 agent's Brain. The RollerAgent uses the continuous vector action space and needs
-two continuous control signals from the Brain. Thus, we will set the Brain
+two continuous control signals from the brain. Thus, we will set the Brain
 `Vector Action Size` to 2. The first element,`action[0]` determines the force
 applied along the x axis; `action[1]` determines the force applied along the z
-axis. (If we allowed the Agent to move in three dimensions, then we would need
+axis. (If we allowed the agent to move in three dimensions, then we would need
 to set `Vector Action Size` to 3. Each of these values returned by the network
 are between `-1` and `1.` Note the Brain really has no idea what the values in
 the action array mean. The training process just adjusts the action values in
@@ -369,19 +369,19 @@ rBody.AddForce(controlSignal * speed);
 ### Rewards
 
 Reinforcement learning requires rewards. Assign rewards in the `AgentAction()`
-function. The learning algorithm uses the rewards assigned to the Agent at each
+function. The learning algorithm uses the rewards assigned to the agent at each
 step in the simulation and learning process to determine whether it is giving
-the Agent the optimal actions. You want to reward an Agent for completing the
-assigned task (reaching the Target cube, in this case) and punish the Agent if
+the agent the optimal actions. You want to reward an agent for completing the
+assigned task (reaching the Target cube, in this case) and punish the agent if
 it irrevocably fails (falls off the platform). You can sometimes speed up
-training with sub-rewards that encourage behavior that helps the Agent complete
+training with sub-rewards that encourage behavior that helps the agent complete
 the task. For example, the RollerAgent reward system provides a small reward if
-the Agent moves closer to the target in a step and a small negative reward at
-each step which encourages the Agent to complete its task quickly.
+the agent moves closer to the target in a step and a small negative reward at
+each step which encourages the agent to complete its task quickly.
 
 The RollerAgent calculates the distance to detect when it reaches the target.
 When it does, the code increments the Agent.reward variable by 1.0 and marks the
-agent as finished by setting the Agent to done.
+agent as finished by setting the agent to done.
 
 ```csharp
 float distanceToTarget = Vector3.Distance(this.transform.position,
@@ -394,14 +394,14 @@ if (distanceToTarget < 1.42f)
 }
 ```
 
-**Note:** When you mark an Agent as done, it stops its activity until it is
-reset. You can have the Agent reset immediately, by setting the
+**Note:** When you mark an agent as done, it stops its activity until it is
+reset. You can have the agent reset immediately, by setting the
 Agent.ResetOnDone property to true in the inspector or you can wait for the
 Academy to reset the environment. This RollerBall environment relies on the
 `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so
 it never resets the environment).
 
-It can also encourage an Agent to finish a task more quickly to assign a
+It can also encourage an agent to finish a task more quickly to assign a
 negative reward at each step:
 
 ```csharp
@@ -409,8 +409,8 @@ negative reward at each step:
 AddReward(-0.05f);
 ```
 
-Finally, to punish the Agent for falling off the platform, assign a large
-negative reward and, of course, set the Agent to done so that it resets itself
+Finally, to punish the agent for falling off the platform, assign a large
+negative reward and, of course, set the agent to done so that it resets itself
 in the next step:
 
 ```csharp
@@ -471,7 +471,7 @@ window.
 Now, that all the GameObjects and ML-Agent components are in place, it is time
 to connect everything together in the Unity Editor. This involves assigning the
 Brain object to the Agent, changing some of the Agent Components properties, and
-setting the Brain properties so that they are compatible with our Agent code.
+setting the Brain properties so that they are compatible with our agent code.
 
 1. Expand the Academy GameObject in the Hierarchy window, so that the Brain
    object is visible.
@@ -501,7 +501,7 @@ Now you are ready to test the environment before training.
 
 It is always a good idea to test your environment manually before embarking on
 an extended training run. The reason we have left the Brain set to the
-**Player** type is so that we can control the Agent using direct keyboard
+**Player** type is so that we can control the agent using direct keyboard
 control. But first, you need to define the keyboard to action mapping. Although
 the RollerAgent only has an `Action Size` of two, we will use one key to specify
 positive values and one to specify negative values for each action, for a total
@@ -525,11 +525,11 @@ The **Index** value corresponds to the index of the action array passed to
 `AgentAction()` function. **Value** is assigned to action[Index] when **Key** is
 pressed.
 
-Press **Play** to run the scene and use the WASD keys to move the Agent around
+Press **Play** to run the scene and use the WASD keys to move the agent around
 the platform. Make sure that there are no errors displayed in the Unity editor
-Console window and that the Agent resets when it reaches its target or falls
+Console window and that the agent resets when it reaches its target or falls
 from the platform. Note that for more involved debugging, the ML-Agents SDK
-includes a convenient Monitor class that you can use to easily display Agent
+includes a convenient Monitor class that you can use to easily display agent
 status information in the Game window.
 
 One additional test you can perform is to first ensure that your environment and
@@ -550,15 +550,14 @@ your Unity environment.
 There are three kinds of game objects you need to include in your scene in order
 to use Unity ML-Agents:
 
-* Academy
-* Brain
-* Agents
+* Academy  
+* Brain  
+* Agents  
 
 Keep in mind:
 
 * There can only be one Academy game object in a scene.
-* You can have multiple Brain game objects but they must be child of the Academy
-  game object.
+* You can have multiple Brain game objects but they must be child of the Academy game object.  
 
 Here is an example of what your scene hierarchy should look like:
 

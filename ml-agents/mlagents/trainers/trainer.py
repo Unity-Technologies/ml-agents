@@ -23,7 +23,7 @@ class Trainer(object):
         """
         Responsible for collecting experiences and training a neural network model.
         :param sess: Tensorflow session.
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         """
         self.sess = sess

@@ -28,11 +28,9 @@ class BehavioralCloningTrainer(Trainer):
         """
         super(BehavioralCloningTrainer, self).__init__(sess, brain, trainer_parameters, training, run_id)
 
-        self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon',
-                           'graph_scope', 'summary_freq', 'max_steps',
-                           'batches_per_epoch', 'use_recurrent',
-                           'hidden_units','learning_rate', 'num_layers',
-                           'sequence_length', 'memory_size']
+        self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
+                           'summary_freq', 'max_steps', 'batches_per_epoch', 'use_recurrent', 'hidden_units',
+                           'num_layers', 'sequence_length', 'memory_size']
 
         for k in self.param_keys:
             if k not in trainer_parameters:

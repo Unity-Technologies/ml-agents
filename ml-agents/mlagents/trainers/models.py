@@ -8,23 +8,24 @@ logger = logging.getLogger("mlagents.envs")
 
 
 class LearningModel(object):
-    def __init__(self, m_size, normalize, use_recurrent, brain, seed):
+    def __init__(self, m_size, normalize, use_recurrent, brain, scope, seed):
         tf.set_random_seed(seed)
-        self.brain = brain
-        self.vector_in = None
-        self.global_step, self.increment_step = self.create_global_steps()
-        self.visual_in = []
-        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
-        self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
-        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
-        self.mask = tf.cast(self.mask_input, tf.int32)
-        self.m_size = m_size
-        self.normalize = normalize
-        self.use_recurrent = use_recurrent
-        self.act_size = brain.vector_action_space_size
-        self.vec_obs_size = brain.vector_observation_space_size * \
-                            brain.num_stacked_vector_observations
-        self.vis_obs_size = brain.number_visual_observations
+        with tf.variable_scope(scope):
+            self.brain = brain
+            self.vector_in = None
+            self.global_step, self.increment_step = self.create_global_steps()
+            self.visual_in = []
+            self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
+            self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
+            self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
+            self.mask = tf.cast(self.mask_input, tf.int32)
+            self.m_size = m_size
+            self.normalize = normalize
+            self.use_recurrent = use_recurrent
+            self.act_size = brain.vector_action_space_size
+            self.vec_obs_size = brain.vector_observation_space_size * \
+                                brain.num_stacked_vector_observations
+            self.vis_obs_size = brain.number_visual_observations
 
     @staticmethod
     def create_global_steps():
@@ -153,10 +154,9 @@ class LearningModel(object):
         action_idx = [0] + list(np.cumsum(action_size))
         branches_logits = [all_logits[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
         branch_masks = [action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
-        raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k]) + 1.0e-10
+        raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k]) + (1-branch_masks[k])*1.0e-10
                      for k in range(len(action_size))]
-        normalized_probs = [
-            tf.divide(raw_probs[k], tf.reduce_sum(raw_probs[k] + 1.0e-10, axis=1, keepdims=True))
+        normalized_probs = [tf.divide(raw_probs[k], tf.reduce_sum(raw_probs[k], axis=1, keepdims=True))
                             for k in range(len(action_size))]
         output = tf.concat([tf.multinomial(tf.log(normalized_probs[k]), 1) for k in range(len(action_size))], axis=1)
         return output, tf.concat([tf.log(normalized_probs[k]) for k in range(len(action_size))], axis=1)
