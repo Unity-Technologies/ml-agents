@@ -228,7 +228,7 @@ Brain 类型在训练期间设置为 External，在预测期间设置为 Interna
 我们将 Brain 类型切换为 Internal，并加入从训练阶段
 生成的 TensorFlow 模型。现在，在预测阶段，军医
 仍然继续生成他们的观测结果，但不再将结果发送到 
-Python API，而是送入他们的嵌入了的 Tensorflow 模型，
+Python API，而是送入他们的嵌入了的 TensorFlow 模型，
 以便生成每个军医在每个时间点上要采取的_最佳_动作。
 
 总结一下：我们的实现是基于 TensorFlow 的，因此，
