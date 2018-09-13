@@ -61,7 +61,8 @@ namespace MLAgents.Tests
     // It is left empty because we are not testing any brain behavior
     public class TestBrain : Brain
     {
-
+        protected override void Initialize(){ }
+        protected override void DecideAction(){ }
     }
 
 
@@ -130,7 +131,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
             brain.brainParameters = new BrainParameters();
             brain.brainParameters.vectorObservationSize = 0;
@@ -218,7 +219,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -356,7 +357,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -538,7 +539,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -673,7 +674,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 
@@ -761,7 +762,7 @@ namespace MLAgents.Tests
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
             GameObject brainGO = new GameObject("TestBrain");
             brainGO.transform.parent = acaGO.transform;
-            brainGO.AddComponent<TestBrain>();
+//            brainGO.AddComponent<TestBrain>();
             TestBrain brain = brainGO.GetComponent<TestBrain>();
 
 

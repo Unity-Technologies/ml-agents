@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
 using UnityEditor;
-using System.Linq;
 
 namespace MLAgents
 {
@@ -21,21 +17,7 @@ namespace MLAgents
             Brain myBrain = (Brain) target;
             SerializedObject serializedBrain = serializedObject;
 
-            if (myBrain.transform.parent == null)
-            {
-                EditorGUILayout.HelpBox(
-                    "A Brain GameObject must be a child of an Academy GameObject!",
-                    MessageType.Error);
-            }
-            else if (myBrain.transform.parent.GetComponent<Academy>() == null)
-            {
-                EditorGUILayout.HelpBox(
-                    "The Parent of a Brain must have an Academy Component attached to it!",
-                    MessageType.Error);
-            }
-
             serializedBrain.Update();
-
 
             _Foldout = EditorGUILayout.Foldout(_Foldout, "Brain Parameters");
             int indentLevel = EditorGUI.indentLevel;
@@ -147,18 +129,8 @@ namespace MLAgents
             }
 
             EditorGUI.indentLevel = indentLevel;
-            SerializedProperty bt = serializedBrain.FindProperty("brainType");
-            EditorGUILayout.PropertyField(bt);
-
-            if (bt.enumValueIndex < 0)
-            {
-                bt.enumValueIndex = (int) BrainType.Player;
-            }
-
+            
             serializedBrain.ApplyModifiedProperties();
-
-            myBrain.UpdateCoreBrains();
-            myBrain.coreBrain.OnInspector();
 
 #if !NET_4_6 && ENABLE_TENSORFLOW
         EditorGUILayout.HelpBox ("You cannot have ENABLE_TENSORFLOW without NET_4_6", MessageType.Error);
