@@ -31,7 +31,6 @@ class Policy(object):
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
         :param trainer_parameters: The trainer parameters.
-        :param sess: The current TensorFlow session.
         """
         self.m_size = None
         self.model = None
@@ -43,6 +42,7 @@ class Policy(object):
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_continuous_act = (brain.vector_action_space_type == "continuous")
         self.model_path = trainer_parameters["model_path"]
+        self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
@@ -60,15 +60,15 @@ class Policy(object):
                                            "but it must be divisible by 4."
                                            .format(brain.brain_name, self.m_size))
 
-    def _initialize_graph(self, keep_checkpoints):
+    def _initialize_graph(self):
         with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=keep_checkpoints)
+            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             init = tf.global_variables_initializer()
             self.sess.run(init)
 
-    def _load_graph(self, keep_checkpoints):
+    def _load_graph(self):
         with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=keep_checkpoints)
+            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             logger.info('Loading Model for brain {}'.format(self.brain.brain_name))
             ckpt = tf.train.get_checkpoint_state(self.model_path)
             if ckpt is None:

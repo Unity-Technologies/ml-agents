@@ -24,14 +24,15 @@ class BehavioralCloningTrainer(Trainer):
         Responsible for collecting experiences and training PPO model.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
-        :param load: Whether the model should be loaded
+        :param load: Whether the model should be loaded.
+        :param seed: The seed the model will be initialized with
+        :param run_id: The The identifier of the current run
         """
         self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon',
                            'summary_freq', 'max_steps',
                            'batches_per_epoch', 'use_recurrent',
                            'hidden_units', 'learning_rate', 'num_layers',
-                           'sequence_length', 'memory_size', 'keep_checkpoints',
-                           'model_path']
+                           'sequence_length', 'memory_size', 'model_path']
 
         for k in self.param_keys:
             print(k)

@@ -23,15 +23,17 @@ class PPOTrainer(Trainer):
     def __init__(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param  trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
-        :param load: Whether the model should be loaded
+        :param load: Whether the model should be loaded.
+        :param seed: The seed the model will be initialized with
+        :param run_id: The The identifier of the current run
         """
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
                            'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
-                           'curiosity_enc_size', 'keep_checkpoints', 'model_path']
+                           'curiosity_enc_size', 'model_path']
 
         for k in self.param_keys:
             if k not in trainer_parameters:

@@ -13,8 +13,8 @@ class PPOPolicy(Policy):
         :param seed: Random seed.
         :param brain: Assigned Brain object.
         :param trainer_params: Defined training parameters.
-        :param sess: TensorFlow session.
         :param is_training: Whether the model should be trained.
+        :param load: Whether a pre-trained model will be loaded or a new one created.
         """
         super().__init__(seed, brain, trainer_params)
         self.has_updated = False
@@ -37,9 +37,9 @@ class PPOPolicy(Policy):
                                   seed=seed)
 
         if load:
-            self._load_graph(trainer_params['keep_checkpoints'])
+            self._load_graph()
         else:
-            self._initialize_graph(trainer_params['keep_checkpoints'])
+            self._initialize_graph()
 
         self.inference_dict = {'action': self.model.output, 'log_probs': self.model.all_log_probs,
                                'value': self.model.value, 'entropy': self.model.entropy,

@@ -13,7 +13,7 @@ class BCPolicy(Policy):
         :param seed: Random seed.
         :param brain: Assigned Brain object.
         :param trainer_parameters: Defined training parameters.
-        :param sess: TensorFlow session.
+        :param load: Whether a pre-trained model will be loaded or a new one created.
         """
         super().__init__(seed, brain, trainer_parameters)
 
@@ -30,9 +30,9 @@ class BCPolicy(Policy):
                     seed=seed)
 
         if load:
-            self._load_graph(trainer_parameters['keep_checkpoints'])
+            self._load_graph()
         else:
-            self._initialize_graph(trainer_parameters['keep_checkpoints'])
+            self._initialize_graph()
 
         self.inference_dict = {'action': self.model.sample_action}
         self.update_dict = {'policy_loss': self.model.loss,

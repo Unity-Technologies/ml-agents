@@ -22,9 +22,9 @@ class Trainer(object):
     def __init__(self, brain_name, trainer_parameters, training, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
-        :param sess: Tensorflow session.
         :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
+        :param run_id: The identifier of the current run
         """
         self.brain_name = brain_name
         self.run_id = run_id
