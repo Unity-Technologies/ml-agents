@@ -263,6 +263,11 @@ namespace MLAgents
         /// transforming into float tensor.
         Texture2D[] textureArray;
         
+        /// <summary>
+        /// Demonstration recorder.
+        /// </summary>
+        private DemonstrationRecorder recorder;
+        
         /// Monobehavior function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -275,6 +280,8 @@ namespace MLAgents
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             OnEnableHelper(academy);
+
+            recorder = GetComponent<DemonstrationRecorder>();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
@@ -570,6 +577,12 @@ namespace MLAgents
             info.id = id;
 
             brain.SendState(this, info);
+
+            if (recorder != null)
+            {
+                recorder.WriteExperience(info);
+            }
+            
             info.textObservation = "";
         }
 
