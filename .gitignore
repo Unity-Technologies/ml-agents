@@ -8,6 +8,7 @@
 /UnitySDK/Assets/AssetStoreTools*
 /UnitySDK/Assets/Plugins*
 /UnitySDK/Assets/Gizmos*
+/UnitySDK/Assets/Demonstrations*
 
 # Tensorflow Model Info
 /models
