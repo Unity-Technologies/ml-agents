@@ -15,7 +15,8 @@ namespace MLAgents
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             CheckInitialize(property, label);
-            return (hub.brainsToTrain.Count + 3) * lineHeight;
+            var addOne = (hub.brainsToTrain.Count > 0) ? 1 : 0;
+            return (hub.brainsToTrain.Count + 2 + addOne) * lineHeight + 10f;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -27,19 +28,60 @@ namespace MLAgents
             EditorGUI.LabelField(position, label);
 
             EditorGUI.BeginProperty(position, label, property);
+            // This is the rectangle for the Add button
+            position.y += lineHeight;
+            var addButtonRect = position;
+            addButtonRect.x += 20;
+            if (hub.brainsToTrain.Count > 0)
+            {
+                addButtonRect.width /= 2;
+                addButtonRect.width -= 24;
+                if (GUI.Button(addButtonRect, new GUIContent("Add New",
+                    "Add a new item to the default reset paramters"), EditorStyles.miniButton))
+                {
+                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    AddNewItem();
+                }
+
+                // This is the rectangle for the Remove button
+                var RemoveButtonRect = position;
+                RemoveButtonRect.x = position.width / 2 + 15;
+                RemoveButtonRect.width = addButtonRect.width - 18;
+                if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
+                        "Remove the last item to the default reset paramters"),
+                    EditorStyles.miniButton))
+                {
+                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    RemoveLastItem();
+                }
+            }
+            else
+            {
+                addButtonRect.width -= 50;
+                if (GUI.Button(addButtonRect, new GUIContent("Add Brain to Training Session",
+                    "Add a new item to the default reset paramters"), EditorStyles.miniButton))
+                {
+                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    AddNewItem();
+                }
+            }
             
-            
+            // This is the labels for each columns
             position.y += lineHeight;
             var labelRect = position;
-            labelRect.x += 40;
-            labelRect.width -= 104;
-            EditorGUI.LabelField(labelRect, "Brains");
-            labelRect = position;
-            labelRect.x = position.width - 54;
-            labelRect.width = 40;
-            EditorGUI.LabelField(labelRect, "Train");
+            if (hub.brainsToTrain.Count > 0)
+            {
+                labelRect.x += 40;
+                labelRect.width -= 104;
+                EditorGUI.LabelField(labelRect, "Brains");
+                labelRect = position;
+                labelRect.x = position.width - 54;
+                labelRect.width = 40;
+                EditorGUI.LabelField(labelRect, "Train");
+            }
 
             
+            // Iterate over the elements
             for (var index = 0; index < hub.brainsToTrain.Count; index+=1)
             {
                 var item = hub.brainsToTrain[index];
@@ -82,53 +124,19 @@ namespace MLAgents
                 EditorGUI.BeginChangeCheck();
                 if (item != null)
                 {
-                    item.isExternal = EditorGUI.Toggle(valueRect, item.isExternal);
+                    if (item is InternalBrain)
+                    {
+                        item.isExternal = EditorGUI.Toggle(valueRect, item.isExternal);
+                    }
+                    else
+                    {
+                        item.isExternal = false;
+                    }
                 }
-                else
-                {
-                    EditorGUI.Toggle(valueRect, false);
-                }
 
-//                if (EditorGUI.EndChangeCheck())
-//                {
-//                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-//                    for (var i = 0; i < hub.brainsToTrain.Count; i++)
-//                    {
-//                        if (hub.brainsToTrain[i].brain == brain)
-//                        {
-//                            hub.brainsToTrain[i].train = external;
-//                        }
-//                    }
-//
-//                    hub.brainsToTrain
-////                    _Dictionary[key] = value;
-//                    break;
-//                }
             }
 
-            // This is the rectangle for the Add button
-            position.y += lineHeight;
-            var AddButtonRect = position;
-            AddButtonRect.x += 20;
-            AddButtonRect.width /= 2;
-            AddButtonRect.width -= 24;
-            if (GUI.Button(AddButtonRect, new GUIContent("Add New",
-                "Add a new item to the default reset paramters"), EditorStyles.miniButton))
-            {
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                AddNewItem();
-            }
 
-            // This is the rectangle for the Remove button
-            var RemoveButtonRect = position;
-            RemoveButtonRect.x = position.width / 2 + 15;
-            RemoveButtonRect.width = AddButtonRect.width - 18;
-            if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
-                "Remove the last item to the default reset paramters"), EditorStyles.miniButton))
-            {
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                RemoveLastItem();
-            }
 
 
             EditorGUI.EndProperty();
