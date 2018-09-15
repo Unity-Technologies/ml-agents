@@ -13,23 +13,27 @@ namespace MLAgents
  inspector accordingly.
 */
     [CustomEditor(typeof(PlayerBrain))]
-    public class HumanBrainEditor : BrainEditor
+    public class PlayerBrainEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             PlayerBrain brain = (PlayerBrain) target;
-            base.OnInspectorGUI();
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             var serializedBrain = serializedObject;
+            serializedBrain.Update(); 
+            EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
+            serializedBrain.ApplyModifiedProperties();
+            
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            serializedBrain.Update();
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
                 var keyActionsProp = serializedBrain.FindProperty("keyContinuousPlayerActions");
                 var axisActionsProp = serializedBrain.FindProperty("axisContinuousPlayerActions");
-                serializedBrain.Update();
+                
                 EditorGUILayout.PropertyField(keyActionsProp , true);
                 EditorGUILayout.PropertyField(axisActionsProp, true);
-                serializedBrain.ApplyModifiedProperties();
+                
                 PlayerBrain.KeyContinuousPlayerAction[] keyContinuous =
                     brain.keyContinuousPlayerActions;
                 PlayerBrain.AxisContinuousPlayerAction[] axisContinuous =
@@ -57,7 +61,7 @@ namespace MLAgents
                 }
                 foreach (PlayerBrain.AxisContinuousPlayerAction action in axisContinuous)
                 {
-                    if (action .index >= brain.brainParameters.vectorActionSize[0])
+                    if (action.index >= brain.brainParameters.vectorActionSize[0])
                     {
                         EditorGUILayout.HelpBox(
                             string.Format(
@@ -77,8 +81,8 @@ namespace MLAgents
                 var dhas = serializedBrain.FindProperty("discretePlayerActions");
                 serializedBrain.Update();
                 EditorGUILayout.PropertyField(dhas, true);
-                serializedBrain.ApplyModifiedProperties();
             }
+            serializedBrain.ApplyModifiedProperties();
         }
     }
 }
