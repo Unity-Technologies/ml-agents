@@ -2,6 +2,7 @@
 using UnityEditor;
 using System;
 using System.Linq;
+using System.Net;
 using UnityEditor.SceneManagement;
 
 namespace MLAgents
@@ -25,6 +26,31 @@ namespace MLAgents
             CheckInitialize(property, label);
             position.height = lineHeight;
             EditorGUI.LabelField(position, label);
+            
+            // This is the rectangle for the Add button
+            position.y += lineHeight;
+            var addButtonRect = position;
+            addButtonRect.x += 20;
+            addButtonRect.width /= 2;
+            addButtonRect.width -= 24;
+            if (GUI.Button(addButtonRect, new GUIContent("Add New",
+                "Add a new item to the default reset paramters"), EditorStyles.miniButton))
+            {
+                MarkSceneAsDirty();
+                AddNewItem();
+            }
+
+            // This is the rectangle for the Remove button
+            var RemoveButtonRect = position;
+            RemoveButtonRect.x = position.width / 2 + 15;
+            RemoveButtonRect.width = addButtonRect.width - 18;
+            if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
+                "Remove the last item to the default reset paramters"), EditorStyles.miniButton))
+            {
+                MarkSceneAsDirty();
+                RemoveLastItem();
+            }
+            
 
             EditorGUI.BeginProperty(position, label, property);
             foreach (var item in _Dictionary)
@@ -42,7 +68,7 @@ namespace MLAgents
                 var newKey = EditorGUI.TextField(keyRect, key);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    MarkSceneAsDirty();
                     try
                     {
                         _Dictionary.Remove(key);
@@ -52,7 +78,6 @@ namespace MLAgents
                     {
                         Debug.Log(e.Message);
                     }
-
                     break;
                 }
 
@@ -64,39 +89,25 @@ namespace MLAgents
                 value = EditorGUI.FloatField(valueRect, value);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    MarkSceneAsDirty();
                     _Dictionary[key] = value;
                     break;
                 }
             }
-
-            // This is the rectangle for the Add button
-            position.y += lineHeight;
-            var AddButtonRect = position;
-            AddButtonRect.x += 20;
-            AddButtonRect.width /= 2;
-            AddButtonRect.width -= 24;
-            if (GUI.Button(AddButtonRect, new GUIContent("Add New",
-                "Add a new item to the default reset paramters"), EditorStyles.miniButton))
-            {
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                AddNewItem();
-            }
-
-            // This is the rectangle for the Remove button
-            var RemoveButtonRect = position;
-            RemoveButtonRect.x = position.width / 2 + 15;
-            RemoveButtonRect.width = AddButtonRect.width - 18;
-            if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
-                "Remove the last item to the default reset paramters"), EditorStyles.miniButton))
-            {
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                RemoveLastItem();
-            }
-
-
             EditorGUI.EndProperty();
 
+        }
+
+        private static void MarkSceneAsDirty()
+        {
+            try
+            {
+                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
 
         private void CheckInitialize(SerializedProperty property, GUIContent label)

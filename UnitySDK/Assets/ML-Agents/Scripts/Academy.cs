@@ -254,6 +254,7 @@ namespace MLAgents
             InitializeAcademy();
             Communicator communicator = null;
 
+            var brains = trainingHub.brainsToTrain.Where(x => x != null);
             // Try to launch the communicator by usig the arguments passed at launch
             try
             {
@@ -270,8 +271,7 @@ namespace MLAgents
             catch
             {
                 communicator = null;
-// TODO : Check if training is activated
-                var externalBrain =  trainingHub.brainsToTrain.FirstOrDefault(b => b.isExternal);
+                var externalBrain = brains.FirstOrDefault(b => b.isExternal);
                 if (externalBrain != null)
                 {
                     communicator = new RPCCommunicator(
@@ -284,7 +284,7 @@ namespace MLAgents
 
             brainBatcher = new Batcher(communicator);
 
-            foreach (var trainingBrain in trainingHub.brainsToTrain.Where(x => x!= null))
+            foreach (var trainingBrain in brains)
             {
                 trainingBrain.InitializeBrain(brainBatcher);
             }

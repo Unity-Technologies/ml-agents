@@ -39,7 +39,7 @@ namespace MLAgents
                 if (GUI.Button(addButtonRect, new GUIContent("Add New",
                     "Add a new item to the default reset paramters"), EditorStyles.miniButton))
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    MarkSceneAsDirty();
                     AddNewItem();
                 }
 
@@ -51,7 +51,7 @@ namespace MLAgents
                         "Remove the last item to the default reset paramters"),
                     EditorStyles.miniButton))
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    MarkSceneAsDirty();
                     RemoveLastItem();
                 }
             }
@@ -61,7 +61,7 @@ namespace MLAgents
                 if (GUI.Button(addButtonRect, new GUIContent("Add Brain to Training Session",
                     "Add a new item to the default reset paramters"), EditorStyles.miniButton))
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    MarkSceneAsDirty();
                     AddNewItem();
                 }
             }
@@ -96,7 +96,7 @@ namespace MLAgents
                     keyRect, item, typeof(Brain), true) as Brain;
                 if (EditorGUI.EndChangeCheck())
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    MarkSceneAsDirty();
                     try
                     {
                         hub.brainsToTrain.RemoveAt(index);
@@ -155,8 +155,20 @@ namespace MLAgents
                 }
             }
         }
+        
+        private static void MarkSceneAsDirty()
+        {
+            try
+            {
+                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            }
+            catch (Exception e)
+            {
+                
+            }
+        }
 
-        private void ClearResetParamters()
+        private void ClearAllBrains()
         {
             hub.brainsToTrain.Clear();
         }
