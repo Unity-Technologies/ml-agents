@@ -15,7 +15,6 @@ namespace MLAgents
 	{
 		public bool record;
 		public string demonstrationName;
-		public int maxLength;
 		private Agent recordingAgent;
 		private string filePath;
 		private DemonstrationMetaData metaData;
