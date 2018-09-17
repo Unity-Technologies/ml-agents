@@ -3,6 +3,13 @@ using System.IO;
 
 namespace MLAgents
 {
+	[System.Serializable]
+	public struct DemonstrationMetaData
+	{
+		public int numberExperiences;
+		public int numberEpisodes;
+	}
+	
 	[RequireComponent(typeof(Agent))]
 	public class DemonstrationRecorder : MonoBehaviour
 	{
@@ -11,20 +18,24 @@ namespace MLAgents
 		public int maxLength;
 		private Agent recordingAgent;
 		private string filePath;
+		private DemonstrationMetaData metaData;
 
 		private void Start ()
 		{
-			if (Application.isEditor)
+			if (Application.isEditor && record)
 			{
 				recordingAgent = GetComponent<Agent>();
-				if (record)
+				if (!Directory.Exists("Assets/Demonstrations"))
 				{
-					if (!Directory.Exists("Assets/Demonstrations"))
-					{
-						Directory.CreateDirectory("Assets/Demonstrations");
-					}
-					CreateDemonstrationFile();
+					Directory.CreateDirectory("Assets/Demonstrations");
 				}
+
+				metaData = new DemonstrationMetaData
+				{
+					numberEpisodes = 0,
+					numberExperiences = 0
+				};
+				CreateDemonstrationFile();
 			}
 		}
 
@@ -34,25 +45,41 @@ namespace MLAgents
 
 			var literalName = demonstrationName;
 			filePath = "Assets/Demonstrations/" + literalName + ".demo";
-			int counter = 0;
+			var uniqueNameCounter = 0;
 			while (File.Exists(filePath))
 			{
-				literalName = demonstrationName + "_" + counter;
+				literalName = demonstrationName + "_" + uniqueNameCounter;
 				filePath = "Assets/Demonstrations/" + literalName + ".demo";
-				counter++;
+				uniqueNameCounter++;
 			}
 		
-			StreamWriter writer = File.CreateText(filePath);
+			var writer = File.CreateText(filePath);
 			writer.Write(jsonParameters + '\n');
 			writer.Close();
 		}
 
 		public void WriteExperience(AgentInfo info)
 		{
+			metaData.numberExperiences++;
+			if (info.done)
+			{
+				metaData.numberEpisodes++;
+			}
 			var jsonInfo = JsonUtility.ToJson(info);
-			StreamWriter writer = new StreamWriter(filePath, true);
+			var writer = new StreamWriter(filePath, true);
 			writer.WriteLine(jsonInfo);
 			writer.Close();
+		}
+
+		private void OnApplicationQuit()
+		{
+			if (Application.isEditor && record)
+			{
+				var jsonInfo = JsonUtility.ToJson(metaData);
+				var writer = new StreamWriter(filePath, true);
+				writer.WriteLine(jsonInfo);
+				writer.Close();
+			}
 		}
 	}
 }
