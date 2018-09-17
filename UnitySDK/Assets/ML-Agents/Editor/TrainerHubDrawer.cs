@@ -25,7 +25,8 @@ namespace MLAgents
             
             CheckInitialize(property, label);
             position.height = lineHeight;
-            EditorGUI.LabelField(position, label);
+            EditorGUI.LabelField(position, new GUIContent(label.text, 
+                "The Training Hub helps you define which Brains you want to train"));
 
             EditorGUI.BeginProperty(position, label, property);
             // This is the rectangle for the Add button
@@ -37,7 +38,7 @@ namespace MLAgents
                 addButtonRect.width /= 2;
                 addButtonRect.width -= 24;
                 if (GUI.Button(addButtonRect, new GUIContent("Add New",
-                    "Add a new item to the default reset paramters"), EditorStyles.miniButton))
+                    "Add a new Brain to the Training Hub"), EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
                     AddNewItem();
@@ -48,7 +49,7 @@ namespace MLAgents
                 RemoveButtonRect.x = position.width / 2 + 15;
                 RemoveButtonRect.width = addButtonRect.width - 18;
                 if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
-                        "Remove the last item to the default reset paramters"),
+                        "Remove the last Brain from the Training Hub"),
                     EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
@@ -59,7 +60,7 @@ namespace MLAgents
             {
                 addButtonRect.width -= 50;
                 if (GUI.Button(addButtonRect, new GUIContent("Add Brain to Training Session",
-                    "Add a new item to the default reset paramters"), EditorStyles.miniButton))
+                    "Add a new Brain to the Training Hub"), EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
                     AddNewItem();

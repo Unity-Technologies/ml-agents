@@ -34,7 +34,7 @@ namespace MLAgents
             addButtonRect.width /= 2;
             addButtonRect.width -= 24;
             if (GUI.Button(addButtonRect, new GUIContent("Add New",
-                "Add a new item to the default reset paramters"), EditorStyles.miniButton))
+                "Add a new item to the default reset parameters"), EditorStyles.miniButton))
             {
                 MarkSceneAsDirty();
                 AddNewItem();
@@ -45,7 +45,7 @@ namespace MLAgents
             RemoveButtonRect.x = position.width / 2 + 15;
             RemoveButtonRect.width = addButtonRect.width - 18;
             if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
-                "Remove the last item to the default reset paramters"), EditorStyles.miniButton))
+                "Remove the last item from the default reset parameters"), EditorStyles.miniButton))
             {
                 MarkSceneAsDirty();
                 RemoveLastItem();
