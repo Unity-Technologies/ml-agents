@@ -3,82 +3,83 @@ using System.IO;
 
 namespace MLAgents
 {
-	[System.Serializable]
-	public struct DemonstrationMetaData
-	{
-		public int numberExperiences;
-		public int numberEpisodes;
-	}
-	
-	[RequireComponent(typeof(Agent))]
-	public class DemonstrationRecorder : MonoBehaviour
-	{
-		public bool record;
-		public string demonstrationName;
-		private Agent recordingAgent;
-		private string filePath;
-		private DemonstrationMetaData metaData;
+    [System.Serializable]
+    public struct DemonstrationMetaData
+    {
+        public int numberExperiences;
+        public int numberEpisodes;
+    }
 
-		private void Start ()
-		{
-			if (Application.isEditor && record)
-			{
-				recordingAgent = GetComponent<Agent>();
-				if (!Directory.Exists("Assets/Demonstrations"))
-				{
-					Directory.CreateDirectory("Assets/Demonstrations");
-				}
+    [RequireComponent(typeof(Agent))]
+    public class DemonstrationRecorder : MonoBehaviour
+    {
+        public bool record;
+        public string demonstrationName;
+        private Agent recordingAgent;
+        private string filePath;
+        private DemonstrationMetaData metaData;
 
-				metaData = new DemonstrationMetaData
-				{
-					numberEpisodes = 0,
-					numberExperiences = 0
-				};
-				CreateDemonstrationFile();
-			}
-		}
+        private void Start()
+        {
+            if (Application.isEditor && record)
+            {
+                recordingAgent = GetComponent<Agent>();
+                if (!Directory.Exists("Assets/Demonstrations"))
+                {
+                    Directory.CreateDirectory("Assets/Demonstrations");
+                }
 
-		private void CreateDemonstrationFile()
-		{
-			var jsonParameters = JsonUtility.ToJson(recordingAgent.brain.brainParameters);
+                metaData = new DemonstrationMetaData
+                {
+                    numberEpisodes = 0,
+                    numberExperiences = 0
+                };
+                CreateDemonstrationFile();
+            }
+        }
 
-			var literalName = demonstrationName;
-			filePath = "Assets/Demonstrations/" + literalName + ".demo";
-			var uniqueNameCounter = 0;
-			while (File.Exists(filePath))
-			{
-				literalName = demonstrationName + "_" + uniqueNameCounter;
-				filePath = "Assets/Demonstrations/" + literalName + ".demo";
-				uniqueNameCounter++;
-			}
-		
-			var writer = File.CreateText(filePath);
-			writer.Write(jsonParameters + '\n');
-			writer.Close();
-		}
+        private void CreateDemonstrationFile()
+        {
+            var jsonParameters = JsonUtility.ToJson(recordingAgent.brain.brainParameters);
 
-		public void WriteExperience(AgentInfo info)
-		{
-			metaData.numberExperiences++;
-			if (info.done)
-			{
-				metaData.numberEpisodes++;
-			}
-			var jsonInfo = JsonUtility.ToJson(info);
-			var writer = new StreamWriter(filePath, true);
-			writer.WriteLine(jsonInfo);
-			writer.Close();
-		}
+            var literalName = demonstrationName;
+            filePath = "Assets/Demonstrations/" + literalName + ".demo";
+            var uniqueNameCounter = 0;
+            while (File.Exists(filePath))
+            {
+                literalName = demonstrationName + "_" + uniqueNameCounter;
+                filePath = "Assets/Demonstrations/" + literalName + ".demo";
+                uniqueNameCounter++;
+            }
 
-		private void OnApplicationQuit()
-		{
-			if (Application.isEditor && record)
-			{
-				var jsonInfo = JsonUtility.ToJson(metaData);
-				var writer = new StreamWriter(filePath, true);
-				writer.WriteLine(jsonInfo);
-				writer.Close();
-			}
-		}
-	}
+            var writer = File.CreateText(filePath);
+            writer.Write(jsonParameters + '\n');
+            writer.Close();
+        }
+
+        public void WriteExperience(AgentInfo info)
+        {
+            metaData.numberExperiences++;
+            if (info.done)
+            {
+                metaData.numberEpisodes++;
+            }
+
+            var jsonInfo = JsonUtility.ToJson(info);
+            var writer = new StreamWriter(filePath, true);
+            writer.WriteLine(jsonInfo);
+            writer.Close();
+        }
+
+        private void OnApplicationQuit()
+        {
+            if (Application.isEditor && record)
+            {
+                var jsonInfo = JsonUtility.ToJson(metaData);
+                var writer = new StreamWriter(filePath, true);
+                writer.WriteLine(jsonInfo);
+                writer.Close();
+            }
+        }
+    }
 }
