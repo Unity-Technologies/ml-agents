@@ -12,7 +12,7 @@ default:
     summary_freq: 1000
     use_recurrent: false
     sequence_length: 32
-    demo_path: ./UnitySDK/Assets/Demonstrations/Ball_Test.demo
+    demo_path: ./UnitySDK/Assets/Demonstrations/Test_2.demo
 
 HallwayBrain:
     trainer: offline_bc

@@ -9,6 +9,7 @@ class DemonstrationLoader(object):
     def load(file_path, brain_name, sequence_length):
         """
         Loads and parses a demonstration file.
+        :param sequence_length: Desired sequence length for buffer.
         :param file_path: Location of demonstration file (.demo).
         :param brain_name: Name of the brain this file corresponds to.
         :return: BrainParameter and Buffer objects containing demonstration data.
@@ -24,7 +25,10 @@ class DemonstrationLoader(object):
                 if idx == 0:
                     brain_params_dict = json.loads(line)
                 else:
-                    experiences.append(json.loads(line))
+                    json_obj = json.loads(line)
+                    if 'action' in json_obj.keys():
+                        experiences.append(json_obj)
+
         brain_params = BrainParameters(brain_name, brain_params_dict)
         demo_buffer = Buffer()
 
