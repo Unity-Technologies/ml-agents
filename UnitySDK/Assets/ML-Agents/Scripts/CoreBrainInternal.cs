@@ -215,10 +215,22 @@ namespace MLAgents
         {
             // TODO : When the method is called, the engine and the brainParameters must be up to date
             inferenceInputs = GetInputTensors();
-            return TestInputTensorShape(
-                inferenceInputs, 
+            inferenceOutputs = GetOutputTensors();
+
+            var errors = new List<string>();
+            errors.AddRange(TestInputTensorShape(
+                inferenceInputs,
                 brain.brainParameters,
-                _nodeNames);
+                _nodeNames));
+            errors.AddRange(TestInputTensorPresence(
+                inferenceInputs,
+                brain.brainParameters,
+                _nodeNames));
+            errors.AddRange(TestOutputTensorPresence(
+                inferenceOutputs,
+                brain.brainParameters,
+                _nodeNames));
+            return errors;
         }
 
         private Tensor[] GetInputTensors()
@@ -283,26 +295,94 @@ namespace MLAgents
                 },
             };
         }
-        
-        private static List<string> TestInputTensorShape(
-            Tensor[] tensors, 
+
+        private static List<string> TestInputTensorPresence(
+            IEnumerable<Tensor> tensors,
             BrainParameters brainParams,
             NodeNames nodeNames)
         {
-            List<string> result = new List<string>();
+            var result = new List<string>();
+            var tensorsNames = tensors.Select(x => x.Name);
+
+            // If there is no Vector Observation Input but the Brain Parameters expect one.
+            if ((brainParams.vectorObservationSize != 0) &&
+                (!tensorsNames.Contains(nodeNames.VectorObservationPlacholder)))
+            {
+                result.Add("The model does not contain a Vector Observation Placeholder Input.");
+            }
+
+            for (var visObsIndex = 0;
+                visObsIndex < brainParams.cameraResolutions.Length;
+                visObsIndex++)
+            {
+                if (!tensorsNames.Contains(
+                    nodeNames.VisualObservationPlaceholderPrefix + visObsIndex))
+                {
+                    result.Add("The model does not contain a Visual Observation Placeholder" +
+                               " Input for visual observation "+visObsIndex+".");
+                }
+            }
+            return result;
+        }
+        
+        private static List<string> TestOutputTensorPresence(
+            IEnumerable<Tensor> tensors,
+            BrainParameters brainParams,
+            NodeNames nodeNames)
+        {
+            var result = new List<string>();
+            var tensorsNames = tensors.Select(x => x.Name);
+
+            // If there is no Action Output.
+            if (!tensorsNames.Contains(nodeNames.ActionOutput))
+            {
+                result.Add("The model does not contain an Action Output Node.");
+            }
+
+            return result;
+        }
+
+        private static List<string> TestInputTensorShape(
+            IEnumerable<Tensor> tensors, 
+            BrainParameters brainParams,
+            NodeNames nodeNames)
+        {
+            var result = new List<string>();
+ 
+            var tensorTester =
+                new Dictionary<string, Func<Tensor, BrainParameters, string>>()
+                {
+                    {nodeNames.VectorObservationPlacholder, TestVectorObsShape},
+                    {nodeNames.PreviousActionPlaceholder, TestPreviousActionShape},
+                    {nodeNames.RandomNormalEpsilonPlaceholder, ((tensor, parameters) => null)},
+                };
+
+            for (var visObsIndex = 0;
+                visObsIndex < brainParams.cameraResolutions.Length; 
+                visObsIndex++)
+            {
+                var index = visObsIndex;
+                tensorTester[nodeNames.VisualObservationPlaceholderPrefix + visObsIndex] =
+                    (tensor, bp) => TestVisualObsShape(tensor, bp, index);
+            }
+            
             foreach (var tensor in tensors)
             {
-                if (tensor.Name == nodeNames.VectorObservationPlacholder)
+                if (!tensorTester.ContainsKey(tensor.Name))
                 {
-                    result.Add(TestVectorObsShape(tensor, brainParams));
+                    result.Add("No placeholder for input : " + tensor.Name);
                 }
-                else if (tensor.Name == nodeNames.PreviousActionPlaceholder)
+                else
                 {
-                    result.Add(TestPreviousActionShape(tensor, brainParams));
+                    var tester = tensorTester[tensor.Name];
+                    var error = tester.Invoke(tensor, brainParams);
+                    if (error != null)
+                    {
+                        result.Add(error);
+                    }
                 }
-                
             }
-            return result.Where(x => x!=null).ToList();
+            return result;
         }
 
         private static string TestVectorObsShape(
@@ -337,7 +417,75 @@ namespace MLAgents
             }
             return null;
         }
+        
+        private static string TestVisualObsShape(
+            Tensor tensor,
+            BrainParameters brainParams,
+            int visObsIndex)
+        {
+            
+            var resolutionBP = brainParams.cameraResolutions[visObsIndex];
+            var widthBP = resolutionBP.width;
+            var heightBP = resolutionBP.height;
+            var pixelBP = resolutionBP.blackAndWhite ? 1 : 3;
+            var widthT = tensor.Shape[1];
+            var heightT = tensor.Shape[2];
+            var pixelT = tensor.Shape[3];
+            if  ((widthBP != widthT) || (heightBP != heightT) || (pixelBP != pixelT))
+            {
+                return string.Format(
+                    "The visual Observation {0} of the model does not match. " +
+                    "Received Tensor of shape [?x{1}x{2}x{3}] but was expecting [?x{4}x{5}x{6}].",
+                    visObsIndex, widthBP, heightBP, pixelBP, widthT, heightT, pixelT);
+            }
+            return null;
+        }
+        
+        
 
+        /// Uses the stored information to run the tensorflow graph and generate 
+        /// the actions.
+        public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
+        {
+            if (brainBatcher != null)
+            {
+                brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
+            }
+
+            var currentBatchSize = agentInfo.Count();
+            if (currentBatchSize == 0)
+            {
+                return;
+            }
+
+            // Generating the Input tensors
+            for (var tensorIndex = 0; tensorIndex<inferenceInputs.Length; tensorIndex++)
+            {
+                var tensor = inferenceInputs[tensorIndex];
+                if (!_inputTensorGenerators.ContainsKey(tensor.Name))
+                {
+                    throw new UnityAgentsException("Error to implement.");
+                }
+                _inputTensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
+
+            }
+            
+            // Execute the Model
+            m_engine.ExecuteGraph(inferenceInputs, inferenceOutputs);
+
+            // Update the outputs
+            for (var tensorIndex = 0; tensorIndex<inferenceOutputs.Length; tensorIndex++)
+            {
+                var tensor = inferenceOutputs[tensorIndex];
+                if (!_outputTensorAppliers.ContainsKey(tensor.Name))
+                {
+                    throw new UnityAgentsException("Error to implement.");
+                }
+                _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfo);
+                
+            }
+        }
+        
         private static void GenerateBatchSize(
                 Tensor tensor,
                 int batchSize,
@@ -508,68 +656,6 @@ namespace MLAgents
             }
         }
 
-        /// Uses the stored information to run the tensorflow graph and generate 
-        /// the actions.
-        public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            if (brainBatcher != null)
-            {
-                brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
-            }
-
-            var currentBatchSize = agentInfo.Count();
-            if (currentBatchSize == 0)
-            {
-                return;
-            }
-
-            // Generating the Input tensors
-            for (var tensorIndex = 0; tensorIndex<inferenceInputs.Length; tensorIndex++)
-            {
-                var tensor = inferenceInputs[tensorIndex];
-                if (!_inputTensorGenerators.ContainsKey(tensor.Name))
-                {
-                    throw new UnityAgentsException("Error to implement.");
-                }
-                _inputTensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
-
-            }
-            
-            // Execute the Model
-            m_engine.ExecuteGraph(inferenceInputs, inferenceOutputs);
-
-            // Update the outputs
-            for (var tensorIndex = 0; tensorIndex<inferenceOutputs.Length; tensorIndex++)
-            {
-                var tensor = inferenceOutputs[tensorIndex];
-//                var isContinuous = brain.brainParameters.vectorActionSpaceType ==
-//                                   SpaceType.continuous;
-//                if (tensor.Name == _nodeNames.ActionOutput)
-//                {
-//                    // TODO : DiscreteCase
-//                    ApplyContinuousActionOutput(tensor, agentInfo);
-//                }
-//                else if (tensor.Name == _nodeNames.RecurrentOutOutput)
-//                {
-//                    ApplyMemoryOutput(tensor, agentInfo);
-//                }
-//                else if (tensor.Name == _nodeNames.ValueEstimateOutput)
-//                {
-//                    ApplyValueEstimate(tensor, agentInfo);
-//                }
-//                    else
-//                {
-//                    // TODO : Implement
-//                    throw new UnityAgentsException("Error to implement");
-//                }
-                if (!_outputTensorAppliers.ContainsKey(tensor.Name))
-                {
-                    throw new UnityAgentsException("Error to implement.");
-                }
-                _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfo);
-                
-            }
-        }
 
         /// Displays the parameters of the CoreBrainInternal in the Inspector 
         public void OnInspector()
