@@ -14,7 +14,7 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import UnityTrainerException, Trainer
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOTrainer(Trainer):

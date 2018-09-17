@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.IO;
-using MLAgents;
 
 namespace MLAgents
 {
@@ -16,14 +14,17 @@ namespace MLAgents
 
 		private void Start ()
 		{
-			recordingAgent = GetComponent<Agent>();
-			if (record)
+			if (Application.isEditor)
 			{
-				if (!Directory.Exists("Assets/Demonstrations"))
+				recordingAgent = GetComponent<Agent>();
+				if (record)
 				{
-					Directory.CreateDirectory("Assets/Demonstrations");
+					if (!Directory.Exists("Assets/Demonstrations"))
+					{
+						Directory.CreateDirectory("Assets/Demonstrations");
+					}
+					CreateDemonstrationFile();
 				}
-				CreateDemonstrationFile();
 			}
 		}
 
@@ -42,7 +43,7 @@ namespace MLAgents
 			}
 		
 			StreamWriter writer = File.CreateText(filePath);
-			writer.Write(jsonParameters);
+			writer.Write(jsonParameters + '\n');
 			writer.Close();
 		}
 

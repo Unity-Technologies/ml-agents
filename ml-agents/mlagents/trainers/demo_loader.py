@@ -6,7 +6,7 @@ from mlagents.envs.brain import BrainParameters, BrainInfo
 
 class DemonstrationLoader(object):
     @staticmethod
-    def load(file_path, brain_name):
+    def load(file_path, brain_name, sequence_length):
         """
         Loads and parses a demonstration file.
         :param file_path: Location of demonstration file (.demo).
@@ -31,8 +31,8 @@ class DemonstrationLoader(object):
         for idx, experience in enumerate(experiences):
             if idx > len(experiences) - 2:
                 break
-            current_brain_info = DemonstrationLoader.make_brain_info(experiences[idx])
-            next_brain_info = DemonstrationLoader.make_brain_info(experiences[idx + 1])
+            current_brain_info = DemonstrationLoader._make_brain_info(experiences[idx])
+            next_brain_info = DemonstrationLoader._make_brain_info(experiences[idx + 1])
             demo_buffer[0].last_brain_info = current_brain_info
             for i in range(brain_params.number_visual_observations):
                 demo_buffer[0]['visual_obs%d' % i] \
@@ -41,10 +41,15 @@ class DemonstrationLoader(object):
                 demo_buffer[0]['vector_obs'] \
                     .append(current_brain_info.vector_observations[0])
             demo_buffer[0]['actions'].append(next_brain_info.previous_vector_actions[0])
+            if next_brain_info.local_done[0]:
+                demo_buffer.append_update_buffer(0, batch_size=None,
+                                                 training_length=sequence_length)
+        demo_buffer.append_update_buffer(0, batch_size=None,
+                                         training_length=sequence_length)
         return brain_params, demo_buffer
 
     @staticmethod
-    def make_brain_info(experience):
+    def _make_brain_info(experience):
         """
         Helper function which creates a BrainInfo object from an experience dictionary.
         :param experience: Experience dictionary.

@@ -13,10 +13,10 @@ from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import UnityTrainerException, Trainer
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.trainers")
 
 
-class BehavioralCloningTrainer(Trainer):
+class OnlineBCTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
     def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
@@ -41,7 +41,7 @@ class BehavioralCloningTrainer(Trainer):
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain.brain_name))
 
-        super(BehavioralCloningTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super(OnlineBCTrainer, self).__init__(brain, trainer_parameters, training, run_id)
 
         self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.brain_name = brain.brain_name

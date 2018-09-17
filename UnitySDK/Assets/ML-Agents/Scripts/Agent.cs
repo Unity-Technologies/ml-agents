@@ -578,7 +578,7 @@ namespace MLAgents
 
             brain.SendState(this, info);
 
-            if (recorder != null && recorder.record)
+            if (recorder != null && recorder.record && Application.isEditor)
             {
                 recorder.WriteExperience(info);
             }
