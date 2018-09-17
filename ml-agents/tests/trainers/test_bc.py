@@ -28,21 +28,19 @@ def dummy_config():
 @mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
 def test_bc_policy_evaluate(mock_communicator, mock_launcher):
     tf.reset_default_graph()
-    with tf.Session() as sess:
-        mock_communicator.return_value = MockCommunicator(
-            discrete_action=False, visual_inputs=0)
-        env = UnityEnvironment(' ')
-        brain_infos = env.reset()
-        brain_info = brain_infos[env.brain_names[0]]
+    mock_communicator.return_value = MockCommunicator(
+        discrete_action=False, visual_inputs=0)
+    env = UnityEnvironment(' ')
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
 
-        trainer_parameters = dummy_config()
-        graph_scope = env.brain_names[0]
-        trainer_parameters['graph_scope'] = graph_scope
-        policy = BCPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, sess)
-        init = tf.global_variables_initializer()
-        sess.run(init)
-        run_out = policy.evaluate(brain_info)
-        assert run_out['action'].shape == (3, 2)
+    trainer_parameters = dummy_config()
+    model_path = env.brain_names[0]
+    trainer_parameters['model_path'] = model_path
+    trainer_parameters['keep_checkpoints'] = 3
+    policy = BCPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, False)
+    run_out = policy.evaluate(brain_info)
+    assert run_out['action'].shape == (3, 2)
 
     env.close()
 

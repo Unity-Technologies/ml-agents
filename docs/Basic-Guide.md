@@ -192,12 +192,12 @@ INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain Ball3DBrain:
         sequence_length:     64
         summary_freq:        1000
         use_recurrent:       False
-        graph_scope:
         summary_path:        ./summaries/first-run-0
         memory_size:         256
         use_curiosity:       False
         curiosity_strength:  0.01
         curiosity_enc_size:  128
+        model_path:	./models/first-run-0/Ball3DBrain
 INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
 INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
 INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
