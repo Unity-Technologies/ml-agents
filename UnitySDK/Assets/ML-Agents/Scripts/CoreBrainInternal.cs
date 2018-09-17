@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System.Security.Principal;
-using MLAgents.CoreInternalBrain;
 using NUnit.Framework;
-using UnityEditorInternal;
 using UnityEngine.MachineLearning.InferenceEngine;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
-using UnityEngine.Rendering;
 // TODO : Remove
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,27 +15,55 @@ namespace MLAgents
     /// CoreBrain which decides actions using internally embedded TensorFlow model.
     public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
+        
+        private class NodeNames
+        {
+            public string BatchSizePlaceholder = "batch_size";
+            public string SequenceLengthPlaceholder = "sequence_length";
+            public string VectorObservationPlacholder = "vector_observation";
+            public string RecurrentInPlaceholder = "recurrent_in";
+            public string VisualObservationPlaceholderPrefix = "visual_observation_";
+            public string PreviousActionPlaceholder = "prev_action";
+            public string ActionMaskPlaceholder = "action_masks";
+            public string RandomNormalEpsilonPlaceholder = "random_normal_epsilon";
+
+            public string ValueEstimateOutput = "value_estimate";
+            public string RecurrentOutOutput = "recurrent_out";
+            public string MemorySize = "memory_size";
+            public string kApiVersion = "api_version";
+            public string ActionOutput = "action";
+        }
+        
         [SerializeField] [Tooltip("If checked, the brain will broadcast states and actions to Python.")]
 #pragma warning disable
         private bool broadcast = true;
 #pragma warning restore
 
 
+        private List<string> tmp_editor_errors;
+        
         Batcher brainBatcher;
 
         NodeNames _nodeNames = new NodeNames();
-
-//        private Dictionary<string, Func<Tensor>> actions;
+        
 
         private long _memorySize = 0;
-        private int _actionSize = 0;
+
+        private Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>
+            _inputTensorGenerators;
+
+        private Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>
+            _outputTensorAppliers;
+        
+        
         private RandomNormal _randomNormal = new RandomNormal(0);
 
         public Model m_model;
 
         InferenceEngine m_engine;
-        private Tensor[] inputs;
-        private Tensor[] outputs;
+        private Tensor[] inferenceInputs;
+        private Tensor[] inferenceOutputs;
+        private Tensor[] allOutputs;
 
         public Brain brain;
 
@@ -50,19 +74,11 @@ namespace MLAgents
         }
 
         /// Loads the tensorflow graph model to generate a TFGraph object
-        public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
+        public void InitializeCoreBrain(Batcher brainBatcher)
         {
-
-#if UNITY_ANDROID && !UNITY_EDITOR
-// This needs to ba called only once and will raise an exception if 
-// there are multiple internal brains
-        try{
-            TensorFlowSharp.Android.NativeBinding.Init();
-        }
-        catch{
             
-        }
-#endif
+            Debug.Log(TensorFlow.TFCore.Version);
+
             if ((brainBatcher == null)
                 || (!broadcast))
             {
@@ -75,7 +91,51 @@ namespace MLAgents
             }
 
             InitializeModel(m_model);
+            UpdateInputGenerator();
+            UpdateOutputAppliers();
 
+        }
+
+        private void UpdateInputGenerator()
+        {
+            _inputTensorGenerators = new Dictionary<string, 
+                Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
+            _inputTensorGenerators[_nodeNames.BatchSizePlaceholder] = GenerateBatchSize;
+            _inputTensorGenerators[_nodeNames.SequenceLengthPlaceholder] = GenerateSequenceLength;
+            _inputTensorGenerators[_nodeNames.VectorObservationPlacholder] = GenerateVectorObservation;
+            _inputTensorGenerators[_nodeNames.RecurrentInPlaceholder] = GenerateRecurrentInput;
+            _inputTensorGenerators[_nodeNames.PreviousActionPlaceholder] = GeneratePreviousActionInput;
+            _inputTensorGenerators[_nodeNames.ActionMaskPlaceholder] = GenerateActionMaskInput;
+            _inputTensorGenerators[_nodeNames.RandomNormalEpsilonPlaceholder] = 
+                (tensor, batchSize, agentInfo) => _randomNormal.FillTensor(tensor);
+            for (var visIndex = 0;
+                visIndex < brain.brainParameters.cameraResolutions.Length;
+                visIndex++)
+            {
+                var bw = brain.brainParameters.cameraResolutions[visIndex].blackAndWhite;
+                _inputTensorGenerators[_nodeNames.VisualObservationPlaceholderPrefix + visIndex] =
+                    (tensor, batchSize, agentInfo) =>
+                        GenerateVisualObservationInput(tensor, agentInfo, visIndex, bw);
+            }
+        }
+        
+        private void UpdateOutputAppliers()
+        {
+            _outputTensorAppliers = new Dictionary<string, 
+                Action<Tensor, Dictionary<Agent, AgentInfo>>>();
+            
+            _outputTensorAppliers[_nodeNames.ValueEstimateOutput] = ApplyValueEstimate;
+            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            {
+                _outputTensorAppliers[_nodeNames.ActionOutput] = ApplyContinuousActionOutput;
+            }
+            else
+            {
+                throw new UnityAgentsException("Error to implement.");
+            }
+            _outputTensorAppliers[_nodeNames.RecurrentOutOutput] = ApplyMemoryOutput;
+            
+            
         }
 
         private void InitializeModel(Model model)
@@ -87,33 +147,38 @@ namespace MLAgents
                 m_engine = InferenceAPI.LoadModel(model, config);
 
                 // Generate the Input tensors
-                inputs = /*m_engine.InputFeatures();*/ TMP_GetInputTensors();
+                inferenceInputs = GetInputTensors();
                 
-                foreach (var message in GetModelErrors())
-                {
-                    throw new UnityAgentsException(message);
-                }
-                
+//                foreach (var message in GetModelErrors())
+//                {
+//                    throw new UnityAgentsException(message);
+//                }
+//                
                 // TODO : Generate the visual_observations prefix
                 // TODO : Put all the shape tests here
                 // TODO : Generate output Tensors
                 // TODO : Get some of the outputs out like the API #
                
                 
-                // Generate the Output tensors
-                var AllOutputs =/*m_engine.OutputFeatures();*/ TMP_GetOutputTensors();
-                List<Tensor> inferenceOutputs = new List<Tensor>();
-                foreach (var tensor in AllOutputs)
-                {
-                    if ((tensor.Name == _nodeNames.ValueEstimateOutput) ||
-                        (tensor.Name == _nodeNames.RecurrentOutOutput) ||
-                        (tensor.Name == _nodeNames.ActionOutput))
-                    {
-                        inferenceOutputs.Add(tensor);
-                    }
-                }
-                outputs = inferenceOutputs.ToArray();
+                // Generate the Output tensors 
+//                var AllOutputs = GetOutputTensors();
+//                List<Tensor> inferenceOutputs = new List<Tensor>();
+//                foreach (var tensor in AllOutputs)
+//                {
+//                    if ((tensor.Name == _nodeNames.ValueEstimateOutput) ||
+//                        (tensor.Name == _nodeNames.RecurrentOutOutput) ||
+//                        (tensor.Name == _nodeNames.ActionOutput))
+//                    {
+//                        inferenceOutputs.Add(tensor);
+//                    }
+//                }
+//                outputs = inferenceOutputs.ToArray();
+                inferenceOutputs = GetOutputTensors();
+                // TODO : Make a subset of outputs for the inference pass only (no API# or memory size)
+                
                 // TODO : Compare with real value;
+                
+                // TODO : Get the memory size
 
                 if ( /*memory_size is part of the outputs*/ false)
                 {
@@ -149,16 +214,16 @@ namespace MLAgents
         public List<string> GetModelErrors()
         {
             // TODO : When the method is called, the engine and the brainParameters must be up to date
-            inputs = /*m_engine.InputFeatures();*/ TMP_GetInputTensors();
+            inferenceInputs = GetInputTensors();
             return TestInputTensorShape(
-                inputs, 
+                inferenceInputs, 
                 brain.brainParameters,
                 _nodeNames);
         }
 
-        private Tensor[] TMP_GetInputTensors()
+        private Tensor[] GetInputTensors()
         {
-            return new Tensor[2]
+            return new Tensor[]
             {
                 new Tensor()
                   {
@@ -179,12 +244,22 @@ namespace MLAgents
                     ValueType = Tensor.TensorType.FloatingPoint,
                     Data = new float[12, 2]
                 },
+//                new Tensor()
+//                {
+//                    Name = _nodeNames.VisualObservationPlaceholderPrefix + "0",
+//                    Shape = new long[4]
+//                    {
+//                        12, 84, 84, 3
+//                    },
+//                    ValueType = Tensor.TensorType.FloatingPoint,
+//                    Data = new float[12, 84, 84, 3]
+//                },
             };
         }
         
-        private Tensor[] TMP_GetOutputTensors()
+        private Tensor[] GetOutputTensors()
         {
-            return new Tensor[1]
+            return new Tensor[]
             {
                 new Tensor()
                 {
@@ -195,7 +270,17 @@ namespace MLAgents
                     },
                     ValueType = Tensor.TensorType.FloatingPoint,
                     Data = new float[12, brain.brainParameters.vectorActionSize[0]]
-                }
+                },
+                new Tensor()
+                {
+                    Name = _nodeNames.ValueEstimateOutput,
+                    Shape = new long[2]
+                    {
+                        12, 1
+                    },
+                    ValueType = Tensor.TensorType.FloatingPoint,
+                    Data = new float[12, 1]
+                },
             };
         }
         
@@ -253,8 +338,22 @@ namespace MLAgents
             return null;
         }
 
-
-
+        private static void GenerateBatchSize(
+                Tensor tensor,
+                int batchSize,
+                Dictionary<Agent, AgentInfo> agentInfo)
+        {
+            tensor.Data = new long[1] {batchSize};
+        }
+        
+        private static void GenerateSequenceLength(
+            Tensor tensor,
+            int batchSize,
+            Dictionary<Agent, AgentInfo> agentInfo)
+        {
+            tensor.Data = new long[1] {1};
+        }
+            
         private static void GenerateVectorObservation(
             Tensor tensor,
             int batchSize,
@@ -342,32 +441,36 @@ namespace MLAgents
             }
         }
 
-        private static void ApplyActionOutput(
+        private static void GenerateVisualObservationInput(
             Tensor tensor,
-            bool isContinuous,
+            Dictionary<Agent, AgentInfo> agentInfo,
+            int visIndex,
+            bool bw)
+        {
+            //TODO : More efficient ?
+            var textures = agentInfo.Keys.Select(
+                agent => agentInfo[agent].visualObservations[visIndex]).ToList();
+            tensor.Data = BatchVisualObservations(textures, bw);
+
+        }
+
+        private static void ApplyContinuousActionOutput(
+            Tensor tensor,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
-            if (isContinuous)
+            var tensorDataAction = tensor.Data as float[,];
+            var actionSize = tensor.Shape[1];
+            var agentIndex = 0;
+            foreach (var agent in agentInfo.Keys)
             {
-                var tensorDataAction = tensor.Data as float[,];
-                var actionSize = tensor.Shape[1];
-                var agentIndex = 0;
-                foreach (var agent in agentInfo.Keys)
+                var a = new float[actionSize];
+                for (var j = 0; j < actionSize; j++)
                 {
-                    var a = new float[actionSize];
-                    for (var j = 0; j < actionSize; j++)
-                    {
-                        a[j] = tensorDataAction[agentIndex, j];
-                    }
-
-                    agent.UpdateVectorAction(a);
-                    agentIndex++;
+                    a[j] = tensorDataAction[agentIndex, j];
                 }
-            }
-            else
-            {
-                // TODO : Implement
-                throw new UnityAgentsException("Error to Implement");
+
+                agent.UpdateVectorAction(a);
+                agentIndex++;
             }
         }
 
@@ -415,81 +518,56 @@ namespace MLAgents
             }
 
             var currentBatchSize = agentInfo.Count();
-            var agentList = agentInfo.Keys.ToList();
             if (currentBatchSize == 0)
             {
                 return;
             }
 
             // Generating the Input tensors
-            for (var tensorIndex = 0; tensorIndex<inputs.Length; tensorIndex++)
+            for (var tensorIndex = 0; tensorIndex<inferenceInputs.Length; tensorIndex++)
             {
-                var tensor = inputs[tensorIndex];
-                
-                if (tensor.Name == _nodeNames.BatchSizePlaceholder)
+                var tensor = inferenceInputs[tensorIndex];
+                if (!_inputTensorGenerators.ContainsKey(tensor.Name))
                 {
-                    tensor.Data = new long[1] {currentBatchSize};
+                    throw new UnityAgentsException("Error to implement.");
                 }
-                else if (tensor.Name == _nodeNames.SequenceLengthPlaceholder)
-                {
-                    tensor.Data = new long[1] {1};
-                }
-                else if (tensor.Name == _nodeNames.VectorObservationPlacholder)
-                {
-                    GenerateVectorObservation(tensor, currentBatchSize, agentInfo);
-                }
-                else if (tensor.Name == _nodeNames.RecurrentInPlaceholder)
-                {
-                    GenerateRecurrentInput(tensor, currentBatchSize, agentInfo);
-                }
-                else if (tensor.Name == _nodeNames.PreviousActionPlaceholder)
-                {
-                    GeneratePreviousActionInput(tensor, currentBatchSize, agentInfo);
-                }
-                else if (tensor.Name == _nodeNames.ActionMaskPlaceholder)
-                {
-                    GenerateActionMaskInput(tensor, currentBatchSize, agentInfo);
-                }
-                else if (tensor.Name == _nodeNames.RandomNormalEpsilonPlaceholder)
-                {
-                    _randomNormal.FillTensor(tensor);
-                }
+                _inputTensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
 
-                    //TODO : The Visual Observations 
-                    
-                 else
-                {
-                    // TODO : Implement
-                    throw new UnityAgentsException("Error to implement");
-                }
             }
             
             // Execute the Model
-            m_engine.ExecuteGraph(inputs, outputs);
+            m_engine.ExecuteGraph(inferenceInputs, inferenceOutputs);
 
             // Update the outputs
-            for (var tensorIndex = 0; tensorIndex<outputs.Length; tensorIndex++)
+            for (var tensorIndex = 0; tensorIndex<inferenceOutputs.Length; tensorIndex++)
             {
-                var tensor = outputs[tensorIndex];
-                var isContinuous = brain.brainParameters.vectorActionSpaceType ==
-                                   SpaceType.continuous;
-                if (tensor.Name == _nodeNames.ActionOutput)
+                var tensor = inferenceOutputs[tensorIndex];
+//                var isContinuous = brain.brainParameters.vectorActionSpaceType ==
+//                                   SpaceType.continuous;
+//                if (tensor.Name == _nodeNames.ActionOutput)
+//                {
+//                    // TODO : DiscreteCase
+//                    ApplyContinuousActionOutput(tensor, agentInfo);
+//                }
+//                else if (tensor.Name == _nodeNames.RecurrentOutOutput)
+//                {
+//                    ApplyMemoryOutput(tensor, agentInfo);
+//                }
+//                else if (tensor.Name == _nodeNames.ValueEstimateOutput)
+//                {
+//                    ApplyValueEstimate(tensor, agentInfo);
+//                }
+//                    else
+//                {
+//                    // TODO : Implement
+//                    throw new UnityAgentsException("Error to implement");
+//                }
+                if (!_outputTensorAppliers.ContainsKey(tensor.Name))
                 {
-                    ApplyActionOutput(tensor, isContinuous, agentInfo);
+                    throw new UnityAgentsException("Error to implement.");
                 }
-                else if (tensor.Name == _nodeNames.RecurrentOutOutput)
-                {
-                    ApplyMemoryOutput(tensor, agentInfo);
-                }
-                else if (tensor.Name == _nodeNames.ValueEstimateOutput)
-                {
-                    ApplyValueEstimate(tensor, agentInfo);
-                }
-                    else
-                {
-                    // TODO : Implement
-                    throw new UnityAgentsException("Error to implement");
-                }
+                _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfo);
+                
             }
         }
 
@@ -505,10 +583,20 @@ namespace MLAgents
             GUILayout.Label("Edit the Tensorflow graph parameters here");
             var tfGraphModel = serializedBrain.FindProperty("m_model");
             serializedBrain.Update();
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.ObjectField(tfGraphModel);
+            
             serializedBrain.ApplyModifiedProperties();
             
-            foreach (var error in GetModelErrors())
+            if (EditorGUI.EndChangeCheck())
+            {
+                tmp_editor_errors = GetModelErrors();
+            }
+            
+            // TODO : Remove :
+            tmp_editor_errors = GetModelErrors();
+            
+            foreach (var error in tmp_editor_errors)
             {
                 if (error != null)
                     EditorGUILayout.HelpBox(error, MessageType.Error);
