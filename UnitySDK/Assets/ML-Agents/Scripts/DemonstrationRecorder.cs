@@ -52,6 +52,7 @@ namespace MLAgents
         /// </summary>
         private void CreateDemonstrationFile()
         {
+            // Creates demonstration file.
             var literalName = demonstrationName;
             filePath = "Assets/Demonstrations/" + literalName + ".demo";
             var uniqueNameCounter = 0;
@@ -62,6 +63,7 @@ namespace MLAgents
                 uniqueNameCounter++;
             }
 
+            // Writes BrainParameters to file.
             var jsonParameters = JsonUtility.ToJson(recordingAgent.brain.brainParameters);
             var writer = File.CreateText(filePath);
             writer.Write(jsonParameters + '\n');
@@ -74,12 +76,14 @@ namespace MLAgents
         /// <param name="info">AgentInfo of current experience</param>
         public void WriteExperience(AgentInfo info)
         {
+            // Increment meta-data counters.
             metaData.numberExperiences++;
             if (info.done)
             {
                 metaData.numberEpisodes++;
             }
 
+            // Write AgentInfo to file.
             var jsonInfo = JsonUtility.ToJson(info);
             var writer = new StreamWriter(filePath, true);
             writer.WriteLine(jsonInfo);
@@ -93,6 +97,7 @@ namespace MLAgents
         {
             if (Application.isEditor && record)
             {
+                // Write meta-data to file.
                 var jsonInfo = JsonUtility.ToJson(metaData);
                 var writer = new StreamWriter(filePath, true);
                 writer.WriteLine(jsonInfo);
