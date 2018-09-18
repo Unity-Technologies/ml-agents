@@ -6,6 +6,9 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Asset Importer used to parse demonstration files.
+    /// </summary>
     [ScriptedImporter(1, new[] {"demo"})]
     public class DemonstrationImporter : ScriptedImporter
     {
