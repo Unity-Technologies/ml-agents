@@ -18,6 +18,8 @@ class DemonstrationLoader(object):
         if file_extension != '.demo':
             raise ValueError("The file is not a '.demo' file. Please provide a file with the "
                              "correct extension.")
+
+        # Parse demonstration file.
         experiences = []
         brain_params_dict = {}
         with open(file_path, "r") as read_file:
@@ -30,8 +32,9 @@ class DemonstrationLoader(object):
                         experiences.append(json_obj)
 
         brain_params = BrainParameters(brain_name, brain_params_dict)
-        demo_buffer = Buffer()
 
+        # Create and populate buffer using experiences
+        demo_buffer = Buffer()
         for idx, experience in enumerate(experiences):
             if idx > len(experiences) - 2:
                 break
