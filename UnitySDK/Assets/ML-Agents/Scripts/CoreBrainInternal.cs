@@ -25,7 +25,7 @@ namespace MLAgents
             public string VisualObservationPlaceholderPrefix = "visual_observation_";
             public string PreviousActionPlaceholder = "prev_action";
             public string ActionMaskPlaceholder = "action_masks";
-            public string RandomNormalEpsilonPlaceholder = "random_normal_epsilon";
+            public string RandomNormalEpsilonPlaceholder = "epsilon";
 
             public string ValueEstimateOutput = "value_estimate";
             public string RecurrentOutOutput = "recurrent_out";
@@ -112,10 +112,11 @@ namespace MLAgents
                 visIndex < brain.brainParameters.cameraResolutions.Length;
                 visIndex++)
             {
+                var index = visIndex;
                 var bw = brain.brainParameters.cameraResolutions[visIndex].blackAndWhite;
                 _inputTensorGenerators[_nodeNames.VisualObservationPlaceholderPrefix + visIndex] =
                     (tensor, batchSize, agentInfo) =>
-                        GenerateVisualObservationInput(tensor, agentInfo, visIndex, bw);
+                        GenerateVisualObservationInput(tensor, agentInfo, index, bw);
             }
         }
         
@@ -213,6 +214,11 @@ namespace MLAgents
 
         public List<string> GetModelErrors()
         {
+            if (m_engine == null)
+            {
+                return new List<string>();
+            }
+            
             // TODO : When the method is called, the engine and the brainParameters must be up to date
             inferenceInputs = GetInputTensors();
             inferenceOutputs = GetOutputTensors();
@@ -308,7 +314,8 @@ namespace MLAgents
             if ((brainParams.vectorObservationSize != 0) &&
                 (!tensorsNames.Contains(nodeNames.VectorObservationPlacholder)))
             {
-                result.Add("The model does not contain a Vector Observation Placeholder Input.");
+                result.Add("The model does not contain a Vector Observation Placeholder Input. " +
+                           "You must set the Vector Observation Space Size to 0.");
             }
 
             for (var visObsIndex = 0;
@@ -676,6 +683,7 @@ namespace MLAgents
             
             if (EditorGUI.EndChangeCheck())
             {
+                InitializeModel(m_model);
                 tmp_editor_errors = GetModelErrors();
             }
             
