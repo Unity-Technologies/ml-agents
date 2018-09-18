@@ -1,5 +1,5 @@
 # # Unity ML-Agents Toolkit
-# ## ML-Agent Learning (Imitation)
+# ## ML-Agent Learning (Behavioral Cloning)
 # Contains an implementation of Behavioral Cloning Algorithm
 
 import logging
@@ -17,7 +17,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class OnlineBCTrainer(Trainer):
-    """The ImitationTrainer is an implementation of the imitation learning."""
+    """The OnlineBCTrainer is an implemntation of Online Behavioral Cloning."""
 
     def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
         """

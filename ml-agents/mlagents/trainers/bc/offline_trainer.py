@@ -1,5 +1,5 @@
 # # Unity ML-Agents Toolkit
-# ## ML-Agent Learning (Imitation)
+# ## ML-Agent Learning (Behavioral Cloning)
 # Contains an implementation of Behavioral Cloning Algorithm
 
 import logging
@@ -18,7 +18,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class OfflineBCTrainer(Trainer):
-    """The ImitationTrainer is an implementation of the imitation learning."""
+    """The OfflineBCTrainer is an implemntation of Offline Behavioral Cloning."""
 
     def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
         """
@@ -134,8 +134,8 @@ class OfflineBCTrainer(Trainer):
                         take_action_outputs):
         """
         Adds experiences to each agent's experience history.
-        :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
-        :param next_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
+        :param curr_info: Current AllBrainInfo (Dictionary of current brains and BrainInfos).
+        :param next_info: Next AllBrainInfo (Dictionary of current brains and BrainInfos).
         :param take_action_outputs: The outputs of the take action method.
         """
         info_student = curr_info[self.brain_name]
