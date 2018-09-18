@@ -1,39 +1,45 @@
 import logging
 
-import numpy as np
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 
-logger = logging.getLogger("unityagents")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(Policy):
-    def __init__(self, seed, brain, trainer_params, sess, is_training):
+    def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
         :param brain: Assigned Brain object.
         :param trainer_params: Defined training parameters.
-        :param sess: TensorFlow session.
         :param is_training: Whether the model should be trained.
+        :param load: Whether a pre-trained model will be loaded or a new one created.
         """
-        super().__init__(seed, brain, trainer_params, sess)
+        super().__init__(seed, brain, trainer_params)
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
-        self.model = PPOModel(brain,
-                              lr=float(trainer_params['learning_rate']),
-                              h_size=int(trainer_params['hidden_units']),
-                              epsilon=float(trainer_params['epsilon']),
-                              beta=float(trainer_params['beta']),
-                              max_step=float(trainer_params['max_steps']),
-                              normalize=trainer_params['normalize'],
-                              use_recurrent=trainer_params['use_recurrent'],
-                              num_layers=int(trainer_params['num_layers']),
-                              m_size=self.m_size,
-                              use_curiosity=bool(trainer_params['use_curiosity']),
-                              curiosity_strength=float(trainer_params['curiosity_strength']),
-                              curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
-                              scope=self.variable_scope, seed=seed)
+
+        with self.graph.as_default():
+            self.model = PPOModel(brain,
+                                  lr=float(trainer_params['learning_rate']),
+                                  h_size=int(trainer_params['hidden_units']),
+                                  epsilon=float(trainer_params['epsilon']),
+                                  beta=float(trainer_params['beta']),
+                                  max_step=float(trainer_params['max_steps']),
+                                  normalize=trainer_params['normalize'],
+                                  use_recurrent=trainer_params['use_recurrent'],
+                                  num_layers=int(trainer_params['num_layers']),
+                                  m_size=self.m_size,
+                                  use_curiosity=bool(trainer_params['use_curiosity']),
+                                  curiosity_strength=float(trainer_params['curiosity_strength']),
+                                  curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
+                                  seed=seed)
+
+        if load:
+            self._load_graph()
+        else:
+            self._initialize_graph()
 
         self.inference_dict = {'action': self.model.output, 'log_probs': self.model.all_log_probs,
                                'value': self.model.value, 'entropy': self.model.entropy,

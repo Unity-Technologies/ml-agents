@@ -42,7 +42,7 @@ Inspector 窗口。Inspector 会显示游戏对象上的每个组件。
  
 在打开 3D Balance Ball 场景后，您可能会首先注意到它包含的
 不是一个平台，而是多个平台。场景中的每个平台都是
-独立的 agent，但它们全部共享同一个 brain。3D Balance Ball 通过
+独立的 agent，但它们全部共享同一个 Brain。3D Balance Ball 通过
 这种方式可以加快训练速度，因为所有 12 个 agent 可以并行参与训练任务。
 
 ### Academy
@@ -86,16 +86,16 @@ Academy 的子级。）3D Balance Ball 环境中的所有 agent 使用
 Brain 不存储关于 agent 的任何信息，
 只是将 agent 收集的观测结果发送到决策过程，
 然后将所选的动作返回给 agent。因此，所有 agent 可共享
-同一个 brain，但会独立行动。Brain 设置可以提供很多
+同一个 Brain，但会独立行动。Brain 设置可以提供很多
 关于 agent 工作方式的信息。
 
 **Brain Type** 决定了 agent 如何决策。
 **External** 和 **Internal** 类型需要协同使用：训练 agent 时使用 **External**，
 而在采用经过训练的模型时使用 **Internal**。
-**Heuristic** brain 允许您通过扩展 Decision 类来对 agent 的逻辑进行
-手动编码。最后，**Player** brain 可让您将键盘命令
+**Heuristic** Brain 允许您通过扩展 Decision 类来对 agent 的逻辑进行
+手动编码。最后，**Player** Brain 可让您将键盘命令
 映射到动作，这样在测试 agent 和环境时
-会非常有用。如果这些类型的 brain 都不能满足您的需求，您可以
+会非常有用。如果这些类型的 Brain 都不能满足您的需求，您可以
 实现自己的 CoreBrain 来创建自有的类型。
 
 在本教程中，进行训练时，需要将 **Brain Type** 设置为 **External**；
@@ -120,12 +120,12 @@ Brain 不存储关于 agent 的任何信息，
 
 **向量运动空间**
 
-brain 以*动作*的形式向 agent 提供指令。与状态
+Brain 以*动作*的形式向 agent 提供指令。与状态
 一样，ML-Agents 将动作分为两种类型：**Continuous** 
 向量运动空间是一个可以连续变化的数字向量。向量
 每个元素的含义都是由 agent 逻辑定义的（PPO 训练过程是一个了解agent的哪种状态更好的过程，这个过程是通过学习不同agent的不同状态会对应多少奖励来实现的）。
 例如，一个元素可能表示施加到 agent 某个 
-`RigidBody` 上的力或扭矩。**Discrete** 向量运动空间将其动作
+`Rigidbody` 上的力或扭矩。**Discrete** 向量运动空间将其动作
 定义为一个表。提供给 agent 的具体动作是这个表的
 索引。
 
@@ -142,9 +142,9 @@ Agent 是在环境中进行观测并采取动作的参与者。
 平台游戏对象上。基础 Agent 对象有一些影响其行为的
 属性：
 
-* **Brain** — 每个 Agent 必须有一个 Brain。brain 决定了 agent 如何
+* **Brain** — 每个 Agent 必须有一个 Brain。Brain 决定了 agent 如何
 决策。3D Balance Ball 场景中的所有 agent 共享同一个 
-brain。
+Brain。
 * **Visual Observations** — 定义 agent 用来观测其环境的
 任何 Camera 对象。3D Balance Ball 不使用摄像机观测。
 * **Max Step** — 定义在 agent 决定自己完成之前可以发生多少个
@@ -167,7 +167,7 @@ Ball3DAgent 子类定义了以下方法：
 agent 的 Brain 实例设置为状态大小为 8 的连续向量观测空间，
 因此 `CollectObservations()` 必须调用 8 次 
 `AddVectorObs`。
-* Agent.AgentAction() — 在每个模拟步骤调用。接收 brain 选择的
+* Agent.AgentAction() — 在每个模拟步骤调用。接收 Brain 选择的
 动作。Ball3DAgent 示例可以处理连续和离散
 运动空间类型。在此环境中，两种状态类型之间实际上
 没有太大的差别：这两种向量运动空间在每一步都会
@@ -195,7 +195,7 @@ Unity 场景：
 ![3DBall 场景](images/mlagents-Open3DBall.png)
 
 由于我们要建立此环境来进行训练，因此我们需要
-将 agent 使用的 brain 设置为 **External**。这样 agent 在
+将 agent 使用的 Brain 设置为 **External**。这样 agent 在
 进行决策时能够与外部训练过程进行通信。
 
 1. 在 **Scene** 窗口中，单击 Ball3DAcademy 对象旁边的三角形
@@ -310,7 +310,7 @@ python3 python/learn.py <env_name> --run-id=<run-identifier> --train
 
 一旦训练过程完成，并且训练过程保存了模型
 （通过 `Saved Model` 消息可看出），您便可以将该模型添加到 Unity 项目中，
-然后将其用于 brain 类型为 **Internal** 的 agent。
+然后将其用于 Brain 类型为 **Internal** 的 agent。
 
 ### 设置 TensorFlowSharp 支持
 
@@ -320,7 +320,7 @@ python3 python/learn.py <env_name> --run-id=<run-identifier> --train
 
 1. 确保 TensorFlowSharp 插件位于 `Assets` 文件夹中。
 可在
-[此处](https://s3.amazonaws.com/unity-ml-agents/0.3/TFSharpPlugin.unitypackage)下载一个包含 TF# 的 Plugins 文件夹。
+[此处](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)下载一个包含 TF# 的 Plugins 文件夹。
 下载后，双击并将其导入。您可以在 Project 选项卡中
 （位于 `Assets` > `ML-Agents` > `Plugins` > `Computer` 下）
 检查 TensorFlow 的相关文件来查看是否安装成功

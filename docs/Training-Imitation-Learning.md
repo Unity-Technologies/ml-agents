@@ -23,33 +23,33 @@ Machine Learning tasks work.
 
 1. In order to use imitation learning in a scene, the first thing you will need
    is to create two Brains, one which will be the "Teacher," and the other which
-   will be the "Student." We will assume that the names of the brain
+   will be the "Student." We will assume that the names of the Brain
    `GameObject`s are "Teacher" and "Student" respectively.
-2. Set the "Teacher" brain to Player mode, and properly configure the inputs to
+2. Set the "Teacher" Brain to Player mode, and properly configure the inputs to
    map to the corresponding actions. **Ensure that "Broadcast" is checked within
    the Brain inspector window.**
-3. Set the "Student" brain to External mode.
-4. Link the brains to the desired agents (one agent as the teacher and at least
-   one agent as a student).
-5. In `config/trainer_config.yaml`, add an entry for the "Student" brain. Set
+3. Set the "Student" Brain to External mode.
+4. Link the Brains to the desired Agents (one Agent as the teacher and at least
+   one Agent as a student).
+5. In `config/trainer_config.yaml`, add an entry for the "Student" Brain. Set
    the `trainer` parameter of this entry to `imitation`, and the
-   `brain_to_imitate` parameter to the name of the teacher brain: "Teacher".
+   `brain_to_imitate` parameter to the name of the teacher Brain: "Teacher".
    Additionally, set `batches_per_epoch`, which controls how much training to do
    each moment. Increase the `max_steps` option if you'd like to keep training
-   the agents for a longer period of time.
+   the Agents for a longer period of time.
 6. Launch the training process with `mlagents-learn config/trainer_config.yaml
    --train --slow`, and press the :arrow_forward: button in Unity when the
    message _"Start training by pressing the Play button in the Unity Editor"_ is
    displayed on the screen
-7. From the Unity window, control the agent with the Teacher brain by providing
+7. From the Unity window, control the Agent with the Teacher Brain by providing
    "teacher demonstrations" of the behavior you would like to see.
-8. Watch as the agent(s) with the student brain attached begin to behave
+8. Watch as the Agent(s) with the student Brain attached begin to behave
    similarly to the demonstrations.
-9. Once the Student agents are exhibiting the desired behavior, end the training
+9. Once the Student Agents are exhibiting the desired behavior, end the training
    process with `CTL+C` from the command line.
 10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
-    with `Internal` brain.
+    with `Internal` Brain.
 
 ### BC Teacher Helper
 

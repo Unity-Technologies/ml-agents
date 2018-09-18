@@ -10,7 +10,7 @@ ML-Agents 使用一种称为 [Proximal Policy Optimization (PPO)](https://blog.o
 
 训练和模拟过程以 ML-Agents Academy 类编排的步骤进行。Academy 与场景中的 Agent 和 Brain 对象一起协作逐步完成模拟。当 Academy 已达到其最大步数或场景中的所有 agent 均_完成_时，一个训练场景即完成。
 
-在训练期间，处于外部的 Python 进程会在训练过程中与 Academy 不断进行通信以便运行一系列场景，同时会收集数据并优化其神经网络模型。分配给 agent 的 Brain 类型决定了我们是否进行训练。**External** brain 会与外部过程进行通信以训练 TensorFlow 模型。成功完成训练后，您可以将经过训练的模型文件添加到您的 Unity 项目中，以便提供给 **Internal** brain 来控制agent的行为。
+在训练期间，处于外部的 Python 进程会在训练过程中与 Academy 不断进行通信以便运行一系列场景，同时会收集数据并优化其神经网络模型。分配给 agent 的 Brain 类型决定了我们是否进行训练。**External** Brain 会与外部过程进行通信以训练 TensorFlow 模型。成功完成训练后，您可以将经过训练的模型文件添加到您的 Unity 项目中，以便提供给 **Internal** Brain 来控制agent的行为。
 
 ML-Agents Academy 类按如下方式编排 agent 模拟循环：
 
@@ -19,7 +19,7 @@ ML-Agents Academy 类按如下方式编排 agent 模拟循环：
 3. 对场景中的每个 agent 调用 `CollectObservations()` 函数。
 4. 使用每个 agent 的 Brain 类来决定 agent 的下一动作。
 5. 调用您的子类的 `AcademyAct()` 函数。
-6. 对场景中的每个 agent 调用 `AgentAction()` 函数，传入由 agent 的 brain 选择的动作。（如果 agent 已完成，则不调用此函数。）
+6. 对场景中的每个 agent 调用 `AgentAction()` 函数，传入由 agent 的 Brain 选择的动作。（如果 agent 已完成，则不调用此函数。）
 7. 如果 agent 已达到其 `Max Step` 计数或者已将其自身标记为 `done`，则调用 agent 的 `AgentOnDone()` 函数。或者，如果某个 agent 在场景结束之前已完成，您可以将其设置为重新开始。在这种情况下，Academy 会调用 `AgentReset()` 函数。
 8. 当 Academy 达到其自身的 `Max Step` 计数时，它会通过调用您的 Academy 子类的 `AcademyReset()` 函数来再次开始下一场景。
 
@@ -33,7 +33,7 @@ ML-Agents Academy 类按如下方式编排 agent 模拟循环：
 
 [Screenshot of scene hierarchy]
 
-您必须为每个 agent 分配一个 brain，但可以在多个 agent 之间共享 brain。每个 agent 都将进行自己的观测并独立行动，但会使用相同的决策逻辑，而对于 **Internal** brain，则会使用相同的经过训练的 TensorFlow 模型。
+您必须为每个 agent 分配一个 Brain，但可以在多个 agent 之间共享 Brain。每个 agent 都将进行自己的观测并独立行动，但会使用相同的决策逻辑，而对于 **Internal** Brain，则会使用相同的经过训练的 TensorFlow 模型。
 
 ### Academy
 
@@ -53,9 +53,9 @@ Academy 基类还定义了若干可以在 Unity Editor Inspector 中设置的重
  
 Brain 内部封装了决策过程。Brain 对象必须放在 Hierarchy 视图中的 Academy 的子级。我们必须为每个 Agent 分配一个 Brain，但可以在多个 Agent 之间共享同一个 Brain。
 
-当我们使用 Brain 类的时候不需要使用其子类，而应该直接使用 Brain 这个类。Brain 的行为取决于 brain 的类型。在训练期间，应将 agent 上连接的 Brain 的 Brain Type 设置为 **External**。要使用经过训练的模型，请将模型文件导入 Unity 项目，并将对应 Brain 的 Brain  Type 更改为 **Internal**。请参阅 [Brain](/docs/Learning-Environment-Design-Brains.md) 以了解有关使用不同类型的 Brain 的详细信息。如果四种内置的类型不能满足您的需求，您可以扩展 CoreBrain 类以创建其它的 Brain 类型。
+当我们使用 Brain 类的时候不需要使用其子类，而应该直接使用 Brain 这个类。Brain 的行为取决于 Brain 的类型。在训练期间，应将 agent 上连接的 Brain 的 Brain Type 设置为 **External**。要使用经过训练的模型，请将模型文件导入 Unity 项目，并将对应 Brain 的 Brain  Type 更改为 **Internal**。请参阅 [Brain](/docs/Learning-Environment-Design-Brains.md) 以了解有关使用不同类型的 Brain 的详细信息。如果四种内置的类型不能满足您的需求，您可以扩展 CoreBrain 类以创建其它的 Brain 类型。
 
-Brain 类有若干可以使用 Inspector 窗口进行设置的重要属性。对于使用 brain 的 agent，这些属性必须恰当。例如，`Vector Observation Space Size` 属性必须与 agent 创建的特征向量的长度完全匹配。请参阅 [Agent](/docs/Learning-Environment-Design-Agents.md) 以获取有关创建 agent 和正确设置 Brain 实例的信息。
+Brain 类有若干可以使用 Inspector 窗口进行设置的重要属性。对于使用 Brain 的 agent，这些属性必须恰当。例如，`Vector Observation Space Size` 属性必须与 agent 创建的特征向量的长度完全匹配。请参阅 [Agent](/docs/Learning-Environment-Design-Agents.md) 以获取有关创建 agent 和正确设置 Brain 实例的信息。
 
 请参阅 [Brain](/docs/Learning-Environment-Design-Brains.md) 以查看 Brain 属性的完整列表。
 
@@ -66,7 +66,7 @@ Agent 类代表场景中负责收集观测结果并采取动作的一个参与�
 要创建 agent，请扩展 Agent 类并实现基本的 `CollectObservations()` 和 `AgentAction()` 方法：
 
 * `CollectObservations()` — 收集 agent 对其环境的观测结果。
-* `AgentAction()` — 执行由 agent 的 brain 选择的动作，并为当前状态分配奖励。
+* `AgentAction()` — 执行由 agent 的 Brain 选择的动作，并为当前状态分配奖励。
 
 这些函数的实现决定了分配给此 agent 的 Brain 的属性要如何设置。
  
@@ -83,7 +83,7 @@ ML-Agents 中的_环境_可以是 Unity 中构建的任何场景。Unity 场景�
 在 Unity 中创建训练环境时，必须设置场景以便可以通过外部训练过程来控制场景。注意以下几点：
 
 * 在训练程序启动后，Unity 可执行文件会被自动打开，然后训练场景会自动开始训练。
-* 场景中至少须包括一个 **External** brain。
+* 场景中至少须包括一个 **External** Brain。
 * Academy 必须在每一轮训练后将场景重置为有效的初始状态。
 * 训练场景必须有明确的结束状态，为此需要使用 `Max Steps`，或让每个 agent 将自身设置为 `done`。
 

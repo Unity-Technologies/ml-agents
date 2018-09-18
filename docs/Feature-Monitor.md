@@ -7,7 +7,7 @@ process within a Unity scene.
 
 You can track many different things both related and unrelated to the agents
 themselves. By default, the Monitor is only active in the *inference* phase, so
-not during training. To change this behaviour, you can activate or deactivate it
+not during training. To change this behavior, you can activate or deactivate it
 by calling `SetActive(boolean)`. For example to also show the monitor during
 training, you can call it in the `InitializeAcademy()` method of your `Academy`:
 

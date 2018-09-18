@@ -19,25 +19,31 @@ logger = logging.getLogger("mlagents.envs")
 class BehavioralCloningTrainer(Trainer):
     """The ImitationTrainer is an implementation of the imitation learning."""
 
-    def __init__(self, sess, brain, trainer_parameters, training, seed, run_id):
+    def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param sess: Tensorflow session.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
+        :param load: Whether the model should be loaded.
+        :param seed: The seed the model will be initialized with
+        :param run_id: The The identifier of the current run
         """
-        super(BehavioralCloningTrainer, self).__init__(sess, brain, trainer_parameters, training, run_id)
-
-        self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon', 'graph_scope',
-                           'summary_freq', 'max_steps', 'batches_per_epoch', 'use_recurrent', 'hidden_units',
-                           'num_layers', 'sequence_length', 'memory_size']
+        self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon',
+                           'summary_freq', 'max_steps',
+                           'batches_per_epoch', 'use_recurrent',
+                           'hidden_units', 'learning_rate', 'num_layers',
+                           'sequence_length', 'memory_size', 'model_path']
 
         for k in self.param_keys:
+            print(k)
+            print(k not in trainer_parameters)
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the Imitation trainer of "
                                             "brain {1}.".format(k, brain.brain_name))
 
-        self.policy = BCPolicy(seed, brain, trainer_parameters, sess)
+        super(BehavioralCloningTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+
+        self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.brain_name = brain.brain_name
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']

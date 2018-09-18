@@ -22,8 +22,8 @@ from mlagents.trainers.exception import MetaCurriculumError
 class TrainerController(object):
     def __init__(self, env_path, run_id, save_freq, curriculum_folder,
                  fast_simulation, load, train, worker_id, keep_checkpoints,
-                 lesson, seed, docker_target_name, trainer_config_path,
-                 no_graphics):
+                 lesson, seed, docker_target_name,
+                 trainer_config_path, no_graphics):
         """
         :param env_path: Location to the environment executable to be loaded.
         :param run_id: The sub-directory name for model and summary statistics
@@ -45,8 +45,6 @@ class TrainerController(object):
         :param no_graphics: Whether to run the Unity simulator in no-graphics
                             mode.
         """
-        self.trainer_config_path = trainer_config_path
-
         if env_path is not None:
             # Strip out executable extensions if passed
             env_path = (env_path.strip()
@@ -56,13 +54,18 @@ class TrainerController(object):
                         .replace('.x86', ''))
 
         # Recognize and use docker volume if one is passed as an argument
-        if docker_target_name == '':
+        if not docker_target_name:
             self.docker_training = False
+            self.trainer_config_path = trainer_config_path
             self.model_path = './models/{run_id}'.format(run_id=run_id)
             self.curriculum_folder = curriculum_folder
             self.summaries_dir = './summaries'
         else:
             self.docker_training = True
+            self.trainer_config_path = \
+                '/{docker_target_name}/{trainer_config_path}'.format(
+                    docker_target_name=docker_target_name,
+                    trainer_config_path = trainer_config_path)
             self.model_path = '/{docker_target_name}/models/{run_id}'.format(
                 docker_target_name=docker_target_name,
                 run_id=run_id)
@@ -78,7 +81,7 @@ class TrainerController(object):
             self.summaries_dir = '/{docker_target_name}/summaries'.format(
                 docker_target_name=docker_target_name)
 
-        self.logger = logging.getLogger("mlagents.envs")
+        self.logger = logging.getLogger('mlagents.envs')
         self.run_id = run_id
         self.save_freq = save_freq
         self.lesson = lesson
@@ -114,102 +117,61 @@ class TrainerController(object):
                     raise MetaCurriculumError('One of the curriculums '
                                               'defined in ' +
                                               self.curriculum_folder + ' '
-                                                                       'does not have a corresponding '
-                                                                       'Brain. Check that the '
-                                                                       'curriculum file has the same '
-                                                                       'name as the Brain '
-                                                                       'whose curriculum it defines.')
+                                              'does not have a corresponding '
+                                              'Brain. Check that the '
+                                              'curriculum file has the same '
+                                              'name as the Brain '
+                                              'whose curriculum it defines.')
 
-    def _get_progresses(self):
+    def _get_measure_vals(self):
         if self.meta_curriculum:
-            brain_names_to_progresses = {}
+            brain_names_to_measure_vals = {}
             for brain_name, curriculum \
-                    in self.meta_curriculum.brains_to_curriculums.items():
-                if curriculum.measure == "progress":
-                    progress = (self.trainers[brain_name].get_step /
-                                self.trainers[brain_name].get_max_steps)
-                    brain_names_to_progresses[brain_name] = progress
-                elif curriculum.measure == "reward":
-                    progress = self.trainers[brain_name].get_last_reward
-                    brain_names_to_progresses[brain_name] = progress
-            return brain_names_to_progresses
+                in self.meta_curriculum.brains_to_curriculums.items():
+                if curriculum.measure == 'progress':
+                    measure_val = (self.trainers[brain_name].get_step /
+                        self.trainers[brain_name].get_max_steps)
+                    brain_names_to_measure_vals[brain_name] = measure_val
+                elif curriculum.measure == 'reward':
+                    measure_val = np.mean(self.trainers[brain_name]
+                                          .reward_buffer)
+                    brain_names_to_measure_vals[brain_name] = measure_val
+            return brain_names_to_measure_vals
         else:
             return None
 
-    def _process_graph(self):
-        nodes = []
-        scopes = []
-        for brain_name in self.trainers.keys():
-            if self.trainers[brain_name].policy.graph_scope is not None:
-                scope = self.trainers[brain_name].policy.graph_scope + '/'
-                if scope == '/':
-                    scope = ''
-                scopes += [scope]
-                if self.trainers[brain_name].parameters["trainer"] \
-                        == "imitation":
-                    nodes += [scope + x for x in ["action"]]
-                else:
-                    nodes += [scope + x for x in ["action", "value_estimate",
-                                                  "action_probs", "value_estimate"]]
-                if self.trainers[brain_name].parameters["use_recurrent"]:
-                    nodes += [scope + x for x in ["recurrent_out",
-                                                  "memory_size"]]
-        if len(scopes) > 1:
-            self.logger.info("List of available scopes :")
-            for scope in scopes:
-                self.logger.info("\t" + scope)
-        self.logger.info("List of nodes to export :")
-        for n in nodes:
-            self.logger.info("\t" + n)
-        return nodes
-
-    def _save_model(self, sess, saver, steps=0):
+    def _save_model(self,steps=0):
         """
         Saves current model to checkpoint folder.
-        :param sess: Current Tensorflow session.
         :param steps: Current number of steps in training process.
         :param saver: Tensorflow saver for session.
         """
-        last_checkpoint = self.model_path + '/model-' + str(steps) + '.cptk'
-        saver.save(sess, last_checkpoint)
-        tf.train.write_graph(sess.graph_def, self.model_path,
-                             'raw_graph_def.pb', as_text=False)
-        self.logger.info("Saved Model")
+        for brain_name in self.trainers.keys():
+            self.trainers[brain_name].save_model(steps)
+        self.logger.info('Saved Model')
 
     def _export_graph(self):
         """
-        Exports latest saved model to .bytes format for Unity embedding.
+        Exports latest saved models to .bytes format for Unity embedding.
         """
-        target_nodes = ','.join(self._process_graph())
-        ckpt = tf.train.get_checkpoint_state(self.model_path)
-        freeze_graph.freeze_graph(
-            input_graph=self.model_path + '/raw_graph_def.pb',
-            input_binary=True,
-            input_checkpoint=ckpt.model_checkpoint_path,
-            output_node_names=target_nodes,
-            output_graph=(self.model_path + '/' + self.env_name + "_"
-                          + self.run_id + '.bytes'),
-            clear_devices=True, initializer_nodes="", input_saver="",
-            restore_op_name="save/restore_all",
-            filename_tensor_name="save/Const:0")
+        for brain_name in self.trainers.keys():
+            self.trainers[brain_name].export_model()
 
-    def _initialize_trainers(self, trainer_config, sess):
+    def _initialize_trainers(self, trainer_config):
+        """
+        Initialization of the trainers
+        :param trainer_config: The configurations of the trainers
+        """
         trainer_parameters_dict = {}
-        # TODO: This probably doesn't need to be reinitialized.
-        self.trainers = {}
         for brain_name in self.env.external_brain_names:
             trainer_parameters = trainer_config['default'].copy()
-            if len(self.env.external_brain_names) > 1:
-                graph_scope = re.sub('[^0-9a-zA-Z]+', '-', brain_name)
-                trainer_parameters['graph_scope'] = graph_scope
-                trainer_parameters['summary_path'] = '{basedir}/{name}'.format(
-                    basedir=self.summaries_dir,
-                    name=str(self.run_id) + '_' + graph_scope)
-            else:
-                trainer_parameters['graph_scope'] = ''
-                trainer_parameters['summary_path'] = '{basedir}/{name}'.format(
-                    basedir=self.summaries_dir,
-                    name=str(self.run_id))
+            trainer_parameters['summary_path'] = '{basedir}/{name}'.format(
+                basedir=self.summaries_dir,
+                name=str(self.run_id) + '_' + brain_name)
+            trainer_parameters['model_path'] = '{basedir}/{name}'.format(
+                basedir=self.model_path,
+                name=brain_name)
+            trainer_parameters['keep_checkpoints'] = self.keep_checkpoints
             if brain_name in trainer_config:
                 _brain_key = brain_name
                 while not isinstance(trainer_config[_brain_key], dict):
@@ -218,16 +180,19 @@ class TrainerController(object):
                     trainer_parameters[k] = trainer_config[_brain_key][k]
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.env.external_brain_names:
-            if trainer_parameters_dict[brain_name]['trainer'] == "imitation":
+            if trainer_parameters_dict[brain_name]['trainer'] == 'imitation':
                 self.trainers[brain_name] = BehavioralCloningTrainer(
-                    sess, self.env.brains[brain_name],
+                    self.env.brains[brain_name],
                     trainer_parameters_dict[brain_name], self.train_model,
-                    self.seed, self.run_id)
-            elif trainer_parameters_dict[brain_name]['trainer'] == "ppo":
+                    self.load_model, self.seed, self.run_id)
+            elif trainer_parameters_dict[brain_name]['trainer'] == 'ppo':
                 self.trainers[brain_name] = PPOTrainer(
-                    sess, self.env.brains[brain_name],
+                    self.env.brains[brain_name],
+                    self.meta_curriculum
+                        .brains_to_curriculums[brain_name]
+                        .min_lesson_length if self.meta_curriculum else 0,
                     trainer_parameters_dict[brain_name],
-                    self.train_model, self.seed, self.run_id)
+                    self.train_model, self.load_model, self.seed, self.run_id)
             else:
                 raise UnityEnvironmentException('The trainer config contains '
                                                 'an unknown trainer type for '
@@ -241,8 +206,7 @@ class TrainerController(object):
                 return trainer_config
         except IOError:
             raise UnityEnvironmentException('Parameter file could not be found '
-                                            'here {}. Will use default Hyper '
-                                            'parameters.'
+                                            'at {}.'
                                             .format(self.trainer_config_path))
         except UnicodeDecodeError:
             raise UnityEnvironmentException('There was an error decoding '
@@ -261,16 +225,14 @@ class TrainerController(object):
                                             'permissions are set correctly.'
                                             .format(model_path))
 
-    def _increment_lessons_and_reset_env(self):
-        """Increments the lessons of curriculums if there is a metacurriculum
-        and resets the environment.
+    def _reset_env(self):
+        """Resets the environment.
 
         Returns:
             A Data structure corresponding to the initial reset state of the
             environment.
         """
         if self.meta_curriculum is not None:
-            self.meta_curriculum.increment_lessons(self._get_progresses())
             return self.env.reset(config=self.meta_curriculum.get_config(),
                                   train_mode=self.fast_simulation)
         else:
@@ -286,93 +248,101 @@ class TrainerController(object):
 
         tf.reset_default_graph()
 
-        with tf.Session() as sess:
-            self._initialize_trainers(trainer_config, sess)
-            for _, t in self.trainers.items():
-                self.logger.info(t)
-            init = tf.global_variables_initializer()
-            saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-            # Instantiate model parameters
-            if self.load_model:
-                self.logger.info('Loading Model...')
-                ckpt = tf.train.get_checkpoint_state(self.model_path)
-                if ckpt is None:
-                    self.logger.info('The model {0} could not be found. Make '
-                                     'sure you specified the right '
-                                     '--run-id'
-                                     .format(self.model_path))
-                saver.restore(sess, ckpt.model_checkpoint_path)
-            else:
-                sess.run(init)
-            global_step = 0  # This is only for saving the model
-            curr_info = self._increment_lessons_and_reset_env()
-            if self.train_model:
+        # Prevent a single session from taking all GPU memory.
+        self._initialize_trainers(trainer_config)
+        for _, t in self.trainers.items():
+            self.logger.info(t)
+        global_step = 0  # This is only for saving the model
+        curr_info = self._reset_env()
+        if self.train_model:
+            for brain_name, trainer in self.trainers.items():
+                trainer.write_tensorboard_text('Hyperparameters',
+                                               trainer.parameters)
+        try:
+            while any([t.get_step <= t.get_max_steps \
+                       for k, t in self.trainers.items()]) \
+                  or not self.train_model:
+                if self.meta_curriculum:
+                    # Get the sizes of the reward buffers.
+                    reward_buff_sizes = {k:len(t.reward_buffer) \
+                                        for (k,t) in self.trainers.items()}
+                    # Attempt to increment the lessons of the brains who
+                    # were ready.
+                    lessons_incremented = \
+                        self.meta_curriculum.increment_lessons(
+                            self._get_measure_vals(),
+                            reward_buff_sizes=reward_buff_sizes)
+
+                # If any lessons were incremented or the environment is
+                # ready to be reset
+                if (self.meta_curriculum
+                        and any(lessons_incremented.values())):
+                    curr_info = self._reset_env()
+                    for brain_name, trainer in self.trainers.items():
+                        trainer.end_episode()
+                    for brain_name, changed in lessons_incremented.items():
+                        if changed:
+                            self.trainers[brain_name].reward_buffer.clear()
+                elif self.env.global_done:
+                    curr_info = self._reset_env()
+                    for brain_name, trainer in self.trainers.items():
+                        trainer.end_episode()
+
+                # Decide and take an action
+                take_action_vector, \
+                take_action_memories, \
+                take_action_text, \
+                take_action_value, \
+                take_action_outputs \
+                    = {}, {}, {}, {}, {}
                 for brain_name, trainer in self.trainers.items():
-                    trainer.write_tensorboard_text('Hyperparameters',
-                                                   trainer.parameters)
-            try:
-                while any([t.get_step <= t.get_max_steps \
-                           for k, t in self.trainers.items()]) \
-                        or not self.train_model:
-                    if self.env.global_done:
-                        curr_info = self._increment_lessons_and_reset_env()
-                        for brain_name, trainer in self.trainers.items():
-                            trainer.end_episode()
-                    # Decide and take an action
-                    take_action_vector, \
-                    take_action_memories, \
-                    take_action_text, \
-                    take_action_value, \
-                    take_action_outputs \
-                        = {}, {}, {}, {}, {}
-                    for brain_name, trainer in self.trainers.items():
-                        (take_action_vector[brain_name],
-                         take_action_memories[brain_name],
-                         take_action_text[brain_name],
-                         take_action_value[brain_name],
-                         take_action_outputs[brain_name]) = \
-                            trainer.take_action(curr_info)
-                    new_info = self.env.step(vector_action=take_action_vector,
-                                             memory=take_action_memories,
-                                             text_action=take_action_text,
-                                             value=take_action_value)
-                    for brain_name, trainer in self.trainers.items():
-                        trainer.add_experiences(curr_info, new_info,
-                                                take_action_outputs[brain_name])
-                        trainer.process_experiences(curr_info, new_info)
-                        if trainer.is_ready_update() and self.train_model \
-                                and trainer.get_step <= trainer.get_max_steps:
-                            # Perform gradient descent with experience buffer
-                            trainer.update_policy()
-                        # Write training statistics to Tensorboard.
-                        if self.meta_curriculum is not None:
-                            trainer.write_summary(
-                                global_step,
-                                lesson_num=self.meta_curriculum
-                                    .brains_to_curriculums[brain_name]
-                                    .lesson_num)
-                        else:
-                            trainer.write_summary(global_step)
-                        if self.train_model \
-                                and trainer.get_step <= trainer.get_max_steps:
-                            trainer.increment_step_and_update_last_reward()
-                    global_step += 1
-                    if global_step % self.save_freq == 0 and global_step != 0 \
-                            and self.train_model:
-                        # Save Tensorflow model
-                        self._save_model(sess, steps=global_step, saver=saver)
-                    curr_info = new_info
-                # Final save Tensorflow model
-                if global_step != 0 and self.train_model:
-                    self._save_model(sess, steps=global_step, saver=saver)
-            except KeyboardInterrupt:
-                print('--------------------------Now saving model--------------'
-                      '-----------')
-                if self.train_model:
-                    self.logger.info('Learning was interrupted. Please wait '
-                                     'while the graph is generated.')
-                    self._save_model(sess, steps=global_step, saver=saver)
-                pass
+                    (take_action_vector[brain_name],
+                     take_action_memories[brain_name],
+                     take_action_text[brain_name],
+                     take_action_value[brain_name],
+                     take_action_outputs[brain_name]) = \
+                        trainer.take_action(curr_info)
+                new_info = self.env.step(vector_action=take_action_vector,
+                                         memory=take_action_memories,
+                                         text_action=take_action_text,
+                                         value=take_action_value)
+                for brain_name, trainer in self.trainers.items():
+                    trainer.add_experiences(curr_info, new_info,
+                                            take_action_outputs[brain_name])
+                    trainer.process_experiences(curr_info, new_info)
+                    if trainer.is_ready_update() and self.train_model \
+                            and trainer.get_step <= trainer.get_max_steps:
+                        # Perform gradient descent with experience buffer
+                        trainer.update_policy()
+                    # Write training statistics to Tensorboard.
+                    if self.meta_curriculum is not None:
+                        trainer.write_summary(
+                            global_step,
+                            lesson_num=self.meta_curriculum
+                                .brains_to_curriculums[brain_name]
+                                .lesson_num)
+                    else:
+                        trainer.write_summary(global_step)
+                    if self.train_model \
+                            and trainer.get_step <= trainer.get_max_steps:
+                        trainer.increment_step_and_update_last_reward()
+                global_step += 1
+                if global_step % self.save_freq == 0 and global_step != 0 \
+                        and self.train_model:
+                    # Save Tensorflow model
+                    self._save_model(steps=global_step)
+                curr_info = new_info
+            # Final save Tensorflow model
+            if global_step != 0 and self.train_model:
+                self._save_model(steps=global_step)
+        except KeyboardInterrupt:
+            print('--------------------------Now saving model--------------'
+                  '-----------')
+            if self.train_model:
+                self.logger.info('Learning was interrupted. Please wait '
+                                 'while the graph is generated.')
+                self._save_model(steps=global_step)
+            pass
         self.env.close()
         if self.train_model:
             self._export_graph()

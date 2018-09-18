@@ -4,6 +4,7 @@
 
 import logging
 import os
+from collections import deque
 
 import numpy as np
 import tensorflow as tf
@@ -19,32 +20,33 @@ logger = logging.getLogger("mlagents.envs")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, brain, trainer_parameters, training, seed, run_id):
+    def __init__(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param sess: Tensorflow session.
-        :param  trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
+        :param load: Whether the model should be loaded.
+        :param seed: The seed the model will be initialized with
+        :param run_id: The The identifier of the current run
         """
-        super(PPOTrainer, self).__init__(sess, brain.brain_name, trainer_parameters, training, run_id)
-
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
-                           'graph_scope', 'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
-                           'curiosity_enc_size']
+                           'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
+                           'curiosity_enc_size', 'model_path']
 
         for k in self.param_keys:
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
                                             "brain {1}.".format(k, brain.brain_name))
+        super(PPOTrainer, self).__init__(brain.brain_name, trainer_parameters, training, run_id)
 
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
 
         self.step = 0
 
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
-                                sess, self.is_training)
+                                self.is_training, load)
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
@@ -57,6 +59,7 @@ class PPOTrainer(Trainer):
 
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
+        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
@@ -90,6 +93,16 @@ class PPOTrainer(Trainer):
         :return: the step count of the trainer
         """
         return self.step
+
+    @property
+    def reward_buffer(self):
+        """
+        Returns the reward buffer. The reward buffer contains the cumulative
+        rewards of the most recent episodes completed by agents using this
+        trainer.
+        :return: the reward buffer.
+        """
+        return self._reward_buffer
 
     def increment_step_and_update_last_reward(self):
         """
@@ -281,6 +294,7 @@ class PPOTrainer(Trainer):
                 if info.local_done[l]:
                     self.stats['cumulative_reward'].append(
                         self.cumulative_rewards.get(agent_id, 0))
+                    self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
                     self.stats['episode_length'].append(
                         self.episode_steps.get(agent_id, 0))
                     self.cumulative_rewards[agent_id] = 0

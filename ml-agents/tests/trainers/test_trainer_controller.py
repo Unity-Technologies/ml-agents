@@ -22,7 +22,7 @@ def dummy_start():
               "brainNames": ["RealFakeBrain"],
               "externalBrainNames": ["RealFakeBrain"],
               "logPath":"RealFakePath",
-              "apiNumber":"API-3",
+              "apiNumber":"API-5",
               "brainParameters": [{
                   "vectorObservationSize": 3,
                   "numStackedVectorObservations" : 2,
@@ -158,7 +158,7 @@ def test_initialize_trainers(mock_communicator, mock_launcher, dummy_config,
         with mock.patch(open_name, create=True) as _:
             mock_communicator.return_value = MockCommunicator(
                 discrete_action=True, visual_inputs=1)
-            tc = TrainerController(' ', ' ', 1, None, True, True, False, 1, 1,
+            tc = TrainerController(' ', ' ', 1, None, True, False, False, 1, 1,
                                    1, 1, '', "tests/test_mlagents.trainers.py",
                                    False)
 
@@ -166,23 +166,20 @@ def test_initialize_trainers(mock_communicator, mock_launcher, dummy_config,
             mock_load.return_value = dummy_config
             config = tc._load_config()
             tf.reset_default_graph()
-            with tf.Session() as sess:
-                tc._initialize_trainers(config, sess)
-                assert(len(tc.trainers) == 1)
-                assert(isinstance(tc.trainers['RealFakeBrain'], PPOTrainer))
+            tc._initialize_trainers(config)
+            assert(len(tc.trainers) == 1)
+            assert(isinstance(tc.trainers['RealFakeBrain'], PPOTrainer))
 
             # Test for Behavior Cloning Trainer
             mock_load.return_value = dummy_bc_config
             config = tc._load_config()
             tf.reset_default_graph()
-            with tf.Session() as sess:
-                tc._initialize_trainers(config, sess)
-                assert(isinstance(tc.trainers['RealFakeBrain'], BehavioralCloningTrainer))
+            tc._initialize_trainers(config)
+            assert(isinstance(tc.trainers['RealFakeBrain'], BehavioralCloningTrainer))
 
             # Test for proper exception when trainer name is incorrect
             mock_load.return_value = dummy_bad_config
             config = tc._load_config()
             tf.reset_default_graph()
-            with tf.Session() as sess:
-                with pytest.raises(UnityEnvironmentException):
-                    tc._initialize_trainers(config, sess)
+            with pytest.raises(UnityEnvironmentException):
+                tc._initialize_trainers(config)
