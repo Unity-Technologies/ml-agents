@@ -269,7 +269,7 @@ class LearningModel(object):
 
         sigma_sq = tf.exp(log_sigma_sq)
 
-        self.epsilon = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32, name='random_normal_epsilon')
+        self.epsilon = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32, name='epsilon')
         epsilon = tf.identity(self.epsilon)
         # Clip and scale output to ensure actions are always within [-1, 1] range.
         self.output_pre = mu + tf.sqrt(sigma_sq) * epsilon
