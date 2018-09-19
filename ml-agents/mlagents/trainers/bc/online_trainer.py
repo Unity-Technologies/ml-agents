@@ -39,7 +39,6 @@ class OnlineBCTrainer(BCTrainer):
                            'sequence_length', 'memory_size', 'model_path']
 
         self.check_param_keys(self.TRAINER_NAME, self.param_keys)
-        self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
@@ -127,19 +126,4 @@ class OnlineBCTrainer(BCTrainer):
         """
         Updates the policy.
         """
-        self.training_buffer.update_buffer.shuffle()
-        batch_losses = []
-        num_batches = min(len(self.training_buffer.update_buffer['actions']) //
-                          self.n_sequences, self.batches_per_epoch)
-        for i in range(num_batches):
-            buffer = self.training_buffer.update_buffer
-            start = i * self.n_sequences
-            end = (i + 1) * self.n_sequences
-            mini_batch = buffer.make_mini_batch(start, end)
-            run_out = self.policy.update(mini_batch, self.n_sequences)
-            loss = run_out['policy_loss']
-            batch_losses.append(loss)
-        if len(batch_losses) > 0:
-            self.stats['losses'].append(np.mean(batch_losses))
-        else:
-            self.stats['losses'].append(0)
+        self.bc_update_loop(self.training_buffer)

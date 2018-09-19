@@ -40,7 +40,6 @@ class OfflineBCTrainer(BCTrainer):
                            'demo_path']
 
         self.check_param_keys(self.TRAINER_NAME, self.param_keys)
-        self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length),
                                1)
@@ -49,7 +48,6 @@ class OfflineBCTrainer(BCTrainer):
                                                                   self.brain_name,
                                                                   self.policy.sequence_length)
 
-        print(len(self.demo_buffer.update_buffer['actions']), self.n_sequences)
         if brain.__dict__ != brain_params.__dict__:
             raise UnityTrainerException("The provided demonstration is not compatible with the "
                                         "brain being used for performance evaluation.")
@@ -70,19 +68,4 @@ class OfflineBCTrainer(BCTrainer):
         """
         Updates the policy.
         """
-        self.demo_buffer.update_buffer.shuffle()
-        batch_losses = []
-        num_batches = min(len(self.demo_buffer.update_buffer['actions']) //
-                          self.n_sequences, self.batches_per_epoch)
-        for i in range(num_batches):
-            buffer = self.demo_buffer.update_buffer
-            start = i * self.n_sequences
-            end = (i + 1) * self.n_sequences
-            mini_batch = buffer.make_mini_batch(start, end)
-            run_out = self.policy.update(mini_batch, self.n_sequences)
-            loss = run_out['policy_loss']
-            batch_losses.append(loss)
-        if len(batch_losses) > 0:
-            self.stats['losses'].append(np.mean(batch_losses))
-        else:
-            self.stats['losses'].append(0)
+        self.bc_update_loop(self.demo_buffer)

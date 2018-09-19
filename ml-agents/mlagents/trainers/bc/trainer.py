@@ -17,7 +17,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class BCTrainer(Trainer):
-    """The OnlineBCTrainer is an implementation of Online Behavioral Cloning."""
+    """The BCTrainer is an implementation of Behavioral Cloning."""
 
     def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
         """
@@ -29,7 +29,8 @@ class BCTrainer(Trainer):
         :param run_id: The The identifier of the current run
         """
         super(BCTrainer, self).__init__(brain, trainer_parameters, training, run_id)
-
+        self.policy = BCPolicy(seed, brain, trainer_parameters, load)
+        self.n_sequences = 1
         self.cumulative_rewards = {}
         self.episode_steps = {}
         self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
@@ -164,19 +165,20 @@ class BCTrainer(Trainer):
         """
         return len(self.training_buffer.update_buffer['actions']) > self.n_sequences
 
-    def update_policy(self):
+    def bc_update_loop(self, buffer):
         """
-        Updates the policy.
+        Performs the update loop for a policy using a defined buffer.
+        :param buffer: Buffer to use for updates.
         """
-        self.training_buffer.update_buffer.shuffle()
+        buffer.update_buffer.shuffle()
         batch_losses = []
-        num_batches = min(len(self.training_buffer.update_buffer['actions']) //
+        num_batches = min(len(buffer.update_buffer['actions']) //
                           self.n_sequences, self.batches_per_epoch)
         for i in range(num_batches):
-            buffer = self.training_buffer.update_buffer
+            update_buffer = buffer.update_buffer
             start = i * self.n_sequences
             end = (i + 1) * self.n_sequences
-            mini_batch = buffer.make_mini_batch(start, end)
+            mini_batch = update_buffer.make_mini_batch(start, end)
             run_out = self.policy.update(mini_batch, self.n_sequences)
             loss = run_out['policy_loss']
             batch_losses.append(loss)
@@ -184,3 +186,9 @@ class BCTrainer(Trainer):
             self.stats['losses'].append(np.mean(batch_losses))
         else:
             self.stats['losses'].append(0)
+
+    def update_policy(self):
+        """
+        Updates the policy.
+        """
+        raise UnityTrainerException("The update_model method was not implemented.")
