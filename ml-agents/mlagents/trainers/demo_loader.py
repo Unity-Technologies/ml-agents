@@ -28,7 +28,7 @@ class DemonstrationLoader(object):
                     brain_params_dict = json.loads(line)
                 else:
                     json_obj = json.loads(line)
-                    if 'action' in json_obj.keys():
+                    if 'storedVectorActions' in json_obj.keys():
                         experiences.append(json_obj)
 
         brain_params = BrainParameters(brain_name, brain_params_dict)
