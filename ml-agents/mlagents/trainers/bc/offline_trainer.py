@@ -5,7 +5,7 @@
 import logging
 
 from mlagents.trainers.bc.trainer import BCTrainer
-from mlagents.trainers.demo_loader import DemonstrationLoader
+from mlagents.trainers.demo_loader import load_demonstration
 from mlagents.trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -37,7 +37,7 @@ class OfflineBCTrainer(BCTrainer):
         self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length),
                                1)
 
-        brain_params, self.demonstration_buffer = DemonstrationLoader.load(
+        brain_params, self.demonstration_buffer = load_demonstration(
             trainer_parameters['demo_path'],
             self.brain_name,
             self.policy.sequence_length)
