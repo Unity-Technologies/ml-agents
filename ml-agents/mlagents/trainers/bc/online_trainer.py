@@ -3,16 +3,10 @@
 # Contains an implementation of Behavioral Cloning Algorithm
 
 import logging
-import os
-
 import numpy as np
-import tensorflow as tf
 
 from mlagents.envs import AllBrainInfo
-from mlagents.trainers.bc.policy import BCPolicy
-from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.bc.trainer import BCTrainer
-from mlagents.trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("mlagents.trainers")
 
