@@ -20,6 +20,11 @@ namespace MLAgents
         private string filePath;
         private DemonstrationMetaData metaData;
         
+        
+        /// <summary>
+        /// Checks for the existence of the Demonstrations directory
+        /// and creates it if it does not exist.
+        /// </summary>
         public void CreateDirectory()
         {
             if (!Directory.Exists("Assets/Demonstrations"))
