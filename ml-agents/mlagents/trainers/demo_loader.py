@@ -53,6 +53,7 @@ def load_demonstration(file_path, brain_name, sequence_length):
                                      training_length=sequence_length)
     return brain_params, demo_buffer
 
+
 def make_brain_info(experience):
     """
     Helper function which creates a BrainInfo object from an experience dictionary.

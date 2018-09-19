@@ -12,6 +12,7 @@ namespace MLAgents
     {
         public int numberExperiences;
         public int numberEpisodes;
+        public int API;
     }
     
     public class DemonstrationStore
@@ -46,7 +47,8 @@ namespace MLAgents
             metaData = new DemonstrationMetaData
             {
                 numberEpisodes = 0,
-                numberExperiences = 0
+                numberExperiences = 0,
+                API = 1
             };
         }
 
