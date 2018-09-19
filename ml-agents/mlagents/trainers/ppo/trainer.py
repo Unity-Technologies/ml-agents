@@ -35,13 +35,10 @@ class PPOTrainer(Trainer):
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
                            'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
                            'curiosity_enc_size', 'model_path']
-        self.TRAINER_NAME = "Proximal Policy Optimization"
-        self.check_param_keys(self.TRAINER_NAME, self.param_keys)
 
+        self.check_param_keys()
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
-
         self.step = 0
-
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
                                 self.is_training, load)
 

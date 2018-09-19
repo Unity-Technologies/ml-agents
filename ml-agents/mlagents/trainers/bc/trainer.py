@@ -51,9 +51,6 @@ class BCTrainer(Trainer):
         """
         return self.trainer_parameters
     
-    def check_param_keys(self, trainer_name, param_keys):
-        super(BCTrainer, self).check_param_keys(trainer_name, param_keys)
-
     @property
     def get_max_steps(self):
         """

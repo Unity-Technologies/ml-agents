@@ -17,7 +17,7 @@ class UnityTrainerException(UnityException):
 
 
 class Trainer(object):
-    """This class is the abstract class for the mlagents.trainers"""
+    """This class is the base class for the mlagents.trainers"""
 
     def __init__(self, brain, trainer_parameters, training, run_id):
         """
@@ -26,7 +26,7 @@ class Trainer(object):
         :param training: Whether the trainer is set for training.
         :param run_id: The identifier of the current run
         """
-        self.TRAINER_NAME = 'Base'
+        self.param_keys = []
         self.brain_name = brain.brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
@@ -36,14 +36,14 @@ class Trainer(object):
         self.policy = None
 
     def __str__(self):
-        return '''{} Trainer'''.format(self.TRAINER_NAME)
+        return '''{} Trainer'''.format(self.__class__)
 
-    def check_param_keys(self, trainer_name, param_keys):
-        for k in param_keys:
+    def check_param_keys(self):
+        for k in self.param_keys:
             if k not in self.trainer_parameters:
                 raise UnityTrainerException(
                     "The hyper-parameter {0} could not be found for the {1} trainer of "
-                    "brain {2}.".format(k, trainer_name, self.brain_name))
+                    "brain {2}.".format(k, self.__class__, self.brain_name))
 
     @property
     def parameters(self):

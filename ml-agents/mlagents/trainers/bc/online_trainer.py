@@ -25,7 +25,6 @@ class OnlineBCTrainer(BCTrainer):
         """
         super(OnlineBCTrainer, self).__init__(brain, trainer_parameters, training, load, seed,
                                               run_id)
-        self.TRAINER_NAME = "Online Behavioral Cloning"
 
         self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon',
                            'summary_freq', 'max_steps',
@@ -33,7 +32,7 @@ class OnlineBCTrainer(BCTrainer):
                            'hidden_units', 'learning_rate', 'num_layers',
                            'sequence_length', 'memory_size', 'model_path']
 
-        self.check_param_keys(self.TRAINER_NAME, self.param_keys)
+        self.check_param_keys()
         self.brain_to_imitate = trainer_parameters['brain_to_imitate']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length),

@@ -25,7 +25,6 @@ class OfflineBCTrainer(BCTrainer):
         """
         super(OfflineBCTrainer, self).__init__(brain, trainer_parameters, training, load, seed,
                                                run_id)
-        self.TRAINER_NAME = "Offline Behavioral Cloning"
 
         self.param_keys = ['batch_size', 'summary_freq', 'max_steps',
                            'batches_per_epoch', 'use_recurrent',
@@ -33,7 +32,7 @@ class OfflineBCTrainer(BCTrainer):
                            'sequence_length', 'memory_size', 'model_path',
                            'demo_path']
 
-        self.check_param_keys(self.TRAINER_NAME, self.param_keys)
+        self.check_param_keys()
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
         self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length),
                                1)
