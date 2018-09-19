@@ -30,7 +30,8 @@ namespace MLAgents
             public string ValueEstimateOutput = "value_estimate";
             public string RecurrentOutOutput = "recurrent_out";
             public string MemorySize = "memory_size";
-            public string kApiVersion = "api_version";
+            public string VersionNumber = "version_number";
+            public string IsContinuousControl = "is_continuous_control";
             public string ActionOutput = "action";
         }
         
@@ -47,7 +48,9 @@ namespace MLAgents
         NodeNames _nodeNames = new NodeNames();
         
 
-        private long _memorySize = 0;
+        private long _memorySize;
+        private long _versionNumber;
+        private long _isContinuous;
 
         private Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>
             _inputTensorGenerators;
@@ -63,7 +66,7 @@ namespace MLAgents
         InferenceEngine m_engine;
         private Tensor[] inferenceInputs;
         private Tensor[] inferenceOutputs;
-        private Tensor[] allOutputs;
+//        private Tensor[] allOutputs;
 
         public Brain brain;
 
@@ -174,12 +177,14 @@ namespace MLAgents
 //                    }
 //                }
 //                outputs = inferenceOutputs.ToArray();
-                inferenceOutputs = GetOutputTensors();
+//                inferenceOutputs = GetOutputTensors();
                 // TODO : Make a subset of outputs for the inference pass only (no API# or memory size)
                 
                 // TODO : Compare with real value;
                 
                 // TODO : Get the memory size
+
+                ExtractModelConstants(GetOutputTensors().ToList());
 
                 if ( /*memory_size is part of the outputs*/ false)
                 {
@@ -212,6 +217,15 @@ namespace MLAgents
             }
         }
 
+        private void ExtractModelConstants(List<Tensor> tensors)
+        {
+//            var tmp_i
+            for (int i = tensors.Count - 1; i >= 0; i--)
+            {
+                
+            }
+        }
+
         public List<string> GetModelErrors()
         {
             if (m_engine == null)
@@ -221,7 +235,7 @@ namespace MLAgents
             
             // TODO : When the method is called, the engine and the brainParameters must be up to date
             inferenceInputs = GetInputTensors();
-            inferenceOutputs = GetOutputTensors();
+            inferenceOutputs = GetOutputTensors().ToArray();
 
             var errors = new List<string>();
             errors.AddRange(TestInputTensorShape(
@@ -275,7 +289,7 @@ namespace MLAgents
             };
         }
         
-        private Tensor[] GetOutputTensors()
+        private List<Tensor> GetOutputTensors()
         {
             return new Tensor[]
             {
@@ -299,7 +313,18 @@ namespace MLAgents
                     ValueType = Tensor.TensorType.FloatingPoint,
                     Data = new float[12, 1]
                 },
-            };
+                new Tensor()
+                {
+                    Name = _nodeNames.VersionNumber,
+                    Shape = new long[1]
+                    {
+                        1
+                    },
+                    ValueType = Tensor.TensorType.Integer,
+                    Data = new float[]{0}
+                },
+                
+            }.ToList();
         }
 
         private static List<string> TestInputTensorPresence(
@@ -431,19 +456,19 @@ namespace MLAgents
             int visObsIndex)
         {
             
-            var resolutionBP = brainParams.cameraResolutions[visObsIndex];
-            var widthBP = resolutionBP.width;
-            var heightBP = resolutionBP.height;
-            var pixelBP = resolutionBP.blackAndWhite ? 1 : 3;
+            var resolutionBp = brainParams.cameraResolutions[visObsIndex];
+            var widthBp = resolutionBp.width;
+            var heightBp = resolutionBp.height;
+            var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;
             var widthT = tensor.Shape[1];
             var heightT = tensor.Shape[2];
             var pixelT = tensor.Shape[3];
-            if  ((widthBP != widthT) || (heightBP != heightT) || (pixelBP != pixelT))
+            if  ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
                 return string.Format(
                     "The visual Observation {0} of the model does not match. " +
                     "Received Tensor of shape [?x{1}x{2}x{3}] but was expecting [?x{4}x{5}x{6}].",
-                    visObsIndex, widthBP, heightBP, pixelBP, widthT, heightT, pixelT);
+                    visObsIndex, widthBp, heightBp, pixelBp, widthT, heightT, pixelT);
             }
             return null;
         }
