@@ -23,7 +23,8 @@ class OfflineBCTrainer(BCTrainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super(OfflineBCTrainer, self).__init__(brain, trainer_parameters, training, load, seed, run_id)
+        super(OfflineBCTrainer, self).__init__(brain, trainer_parameters, training, load, seed,
+                                               run_id)
         self.TRAINER_NAME = "Offline Behavioral Cloning"
 
         self.param_keys = ['batch_size', 'summary_freq', 'max_steps',
@@ -37,9 +38,10 @@ class OfflineBCTrainer(BCTrainer):
         self.n_sequences = max(int(trainer_parameters['batch_size'] / self.policy.sequence_length),
                                1)
 
-        brain_params, self.demo_buffer = DemonstrationLoader.load(trainer_parameters['demo_path'],
-                                                                  self.brain_name,
-                                                                  self.policy.sequence_length)
+        brain_params, self.demonstration_buffer = DemonstrationLoader.load(
+            trainer_parameters['demo_path'],
+            self.brain_name,
+            self.policy.sequence_length)
 
         if brain.__dict__ != brain_params.__dict__:
             raise UnityTrainerException("The provided demonstration is not compatible with the "
@@ -49,16 +51,3 @@ class OfflineBCTrainer(BCTrainer):
         return '''Hyperparameters for the Imitation Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(
                 ['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
-
-    def is_ready_update(self):
-        """
-        Returns whether or not the trainer has enough elements to run update model
-        :return: A boolean corresponding to whether or not update_model() can be run
-        """
-        return len(self.demo_buffer.update_buffer['actions']) > self.n_sequences
-
-    def update_policy(self):
-        """
-        Updates the policy.
-        """
-        self.bc_update_loop(self.demo_buffer)

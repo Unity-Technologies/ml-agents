@@ -134,7 +134,7 @@ class Trainer(object):
 
     def update_policy(self):
         """
-        Uses training_buffer to update model.
+        Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 

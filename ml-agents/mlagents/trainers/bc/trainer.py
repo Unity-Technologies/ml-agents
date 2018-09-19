@@ -40,7 +40,8 @@ class BCTrainer(Trainer):
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
 
-        self.training_buffer = Buffer()
+        self.demonstration_buffer = Buffer()
+        self.evaluation_buffer = Buffer()
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
     @property
@@ -49,6 +50,9 @@ class BCTrainer(Trainer):
         Returns the trainer parameters of the trainer.
         """
         return self.trainer_parameters
+    
+    def check_param_keys(self, trainer_name, param_keys):
+        super(BCTrainer, self).check_param_keys(trainer_name, param_keys)
 
     @property
     def get_max_steps(self):
@@ -113,10 +117,10 @@ class BCTrainer(Trainer):
         info_student = curr_info[self.brain_name]
         next_info_student = next_info[self.brain_name]
         for agent_id in info_student.agents:
-            self.training_buffer[agent_id].last_brain_info = info_student
+            self.evaluation_buffer[agent_id].last_brain_info = info_student
 
         for agent_id in next_info_student.agents:
-            stored_info_student = self.training_buffer[agent_id].last_brain_info
+            stored_info_student = self.evaluation_buffer[agent_id].last_brain_info
             if stored_info_student is None:
                 continue
             else:
@@ -152,7 +156,7 @@ class BCTrainer(Trainer):
         A signal that the Episode has ended. The buffer must be reset. 
         Get only called when the academy resets.
         """
-        self.training_buffer.reset_all()
+        self.evaluation_buffer.reset_all()
         for agent_id in self.cumulative_rewards:
             self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
@@ -163,19 +167,18 @@ class BCTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return len(self.training_buffer.update_buffer['actions']) > self.n_sequences
+        return len(self.demonstration_buffer.update_buffer['actions']) > self.n_sequences
 
-    def bc_update_loop(self, buffer):
+    def update_policy(self):
         """
-        Performs the update loop for a policy using a defined buffer.
-        :param buffer: Buffer to use for updates.
+        Updates the policy.
         """
-        buffer.update_buffer.shuffle()
+        self.demonstration_buffer.update_buffer.shuffle()
         batch_losses = []
-        num_batches = min(len(buffer.update_buffer['actions']) //
+        num_batches = min(len(self.demonstration_buffer.update_buffer['actions']) //
                           self.n_sequences, self.batches_per_epoch)
         for i in range(num_batches):
-            update_buffer = buffer.update_buffer
+            update_buffer = self.demonstration_buffer.update_buffer
             start = i * self.n_sequences
             end = (i + 1) * self.n_sequences
             mini_batch = update_buffer.make_mini_batch(start, end)
@@ -186,9 +189,3 @@ class BCTrainer(Trainer):
             self.stats['losses'].append(np.mean(batch_losses))
         else:
             self.stats['losses'].append(0)
-
-    def update_policy(self):
-        """
-        Updates the policy.
-        """
-        raise UnityTrainerException("The update_model method was not implemented.")

@@ -325,7 +325,7 @@ class PPOTrainer(Trainer):
 
     def update_policy(self):
         """
-        Uses training_buffer to update the policy.
+        Uses demonstration_buffer to update the policy.
         """
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
