@@ -16,7 +16,7 @@ namespace MLAgents
         private DemonstrationStore demoStore;
 
         /// <summary>
-        /// Creates demonstraion file if in Editor mode, and set to record.
+        /// Initializes Demonstration store.
         /// </summary>
         private void Start()
         {
@@ -24,10 +24,7 @@ namespace MLAgents
             {
                 recordingAgent = GetComponent<Agent>();
                 demoStore = new DemonstrationStore();
-                demoStore.CreateDirectory();                
-
-                demoStore.CreateDemonstrationFile(demonstrationName);
-                demoStore.WriteBrainParameters(recordingAgent.brain.brainParameters);
+                demoStore.Initialize(demonstrationName, recordingAgent.brain.brainParameters);               
             }
         }
 
@@ -36,17 +33,17 @@ namespace MLAgents
         /// </summary>
         public void WriteExperience(AgentInfo info)
         {
-            demoStore.WriteExperience(info);
+            demoStore.Record(info);
         }
 
         /// <summary>
-        /// Adds meta-data to demonstration file on exit.
+        /// Closes Demonstration store.
         /// </summary>
         private void OnApplicationQuit()
         {
             if (Application.isEditor && record)
             {
-                demoStore.WriteMetadata();
+                demoStore.Close();
             }
         }
     }

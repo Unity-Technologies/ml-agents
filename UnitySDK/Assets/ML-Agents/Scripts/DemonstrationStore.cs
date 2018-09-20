@@ -12,40 +12,47 @@ namespace MLAgents
     {
         public int numberExperiences;
         public int numberEpisodes;
-        public int API;
+        public const int API_VERSION = 1;
     }
     
     public class DemonstrationStore
     {
         private string filePath;
         private DemonstrationMetaData metaData;
-        
+        private const string DemoDirecory = "Assets/Demonstrations";
+
+        public void Initialize(string demonstrationName, BrainParameters brainParameters)
+        {
+            CreateDirectory();
+            CreateDemonstrationFile(demonstrationName);
+            WriteBrainParameters(brainParameters);
+        }
         
         /// <summary>
         /// Checks for the existence of the Demonstrations directory
         /// and creates it if it does not exist.
         /// </summary>
-        public void CreateDirectory()
+        private void CreateDirectory()
         {
-            if (!Directory.Exists("Assets/Demonstrations"))
+            if (!Directory.Exists(DemoDirecory))
             {
-                Directory.CreateDirectory("Assets/Demonstrations");
+                Directory.CreateDirectory(DemoDirecory);
             }
         }
         
         /// <summary>
         /// Creates demonstration file, and writes brainParameters as json to file.
         /// </summary>
-        public void CreateDemonstrationFile(string demonstrationName)
+        private void CreateDemonstrationFile(string demonstrationName)
         {
             // Creates demonstration file.
             var literalName = demonstrationName;
-            filePath = "Assets/Demonstrations/" + literalName + ".demo";
+            filePath = DemoDirecory + literalName + ".demo";
             var uniqueNameCounter = 0;
             while (File.Exists(filePath))
             {
                 literalName = demonstrationName + "_" + uniqueNameCounter;
-                filePath = "Assets/Demonstrations/" + literalName + ".demo";
+                filePath = DemoDirecory + literalName + ".demo";
                 uniqueNameCounter++;
             }
             
@@ -53,14 +60,13 @@ namespace MLAgents
             {
                 numberEpisodes = 0,
                 numberExperiences = 0,
-                API = 1
             };
         }
 
         /// <summary>
         /// Writes brain parameters as json to file.
         /// </summary>
-        public void WriteBrainParameters(BrainParameters brainParameters)
+        private void WriteBrainParameters(BrainParameters brainParameters)
         {
             // Writes BrainParameters to file.
             var jsonParameters = JsonUtility.ToJson(brainParameters);
@@ -72,7 +78,7 @@ namespace MLAgents
         /// <summary>
         /// Write AgentInfo experience to file as json.
         /// </summary>
-        public void WriteExperience(AgentInfo info)
+        public void Record(AgentInfo info)
         {
             // Increment meta-data counters.
             metaData.numberExperiences++;
@@ -89,9 +95,17 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Performs all clean-up necessary
+        /// </summary>
+        public void Close()
+        {
+            WriteMetadata();
+        }
+
+        /// <summary>
         /// Writes meta-data as json to file.
         /// </summary>
-        public void WriteMetadata()
+        private void WriteMetadata()
         {
             // Write meta-data to file.
             var jsonInfo = JsonUtility.ToJson(metaData);
