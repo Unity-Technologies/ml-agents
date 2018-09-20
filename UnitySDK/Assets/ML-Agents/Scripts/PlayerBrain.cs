@@ -54,15 +54,7 @@ namespace MLAgents
         /// decide action
         protected override void DecideAction()
         {
-            if (brainBatcher != null)
-            {
-                brainBatcher.SendBrainInfo(name, agentInfos);
-            }
-            if (isExternal)
-            {
-                agentInfos.Clear();
-                return;
-            }
+            base.DecideAction();
 
             if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {

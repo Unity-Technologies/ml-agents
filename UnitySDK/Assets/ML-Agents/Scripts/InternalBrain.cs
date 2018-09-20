@@ -160,15 +160,7 @@ namespace MLAgents
         protected override void DecideAction()
         {
 #if ENABLE_TENSORFLOW
-            if (brainBatcher != null)
-            {
-                brainBatcher.SendBrainInfo(name, agentInfos);
-            }
-            if (isExternal)
-            {
-                agentInfos.Clear();
-                return;
-            }
+            base.DecideAction();
 
             int currentBatchSize = agentInfos.Count();
             List<Agent> agentList = agentInfos.Keys.ToList();

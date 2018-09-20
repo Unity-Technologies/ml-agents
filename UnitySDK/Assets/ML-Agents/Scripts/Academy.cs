@@ -286,7 +286,7 @@ namespace MLAgents
 
             foreach (var trainingBrain in brains)
             {
-                trainingBrain.InitializeBrain(brainBatcher);
+                trainingBrain.SetBatcher(brainBatcher);
             }
 
             if (communicator != null)

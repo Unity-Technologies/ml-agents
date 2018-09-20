@@ -50,16 +50,7 @@ namespace MLAgents
         /// Uses the Decision Component to decide that action to take
         protected override void DecideAction()
         {
-            if (brainBatcher != null)
-            {
-                brainBatcher.SendBrainInfo(name, agentInfos);
-            }
-            
-            if (isExternal)
-            {
-                agentInfos.Clear();
-                return;
-            }
+            base.DecideAction();
             
             if (decision == null)
             {

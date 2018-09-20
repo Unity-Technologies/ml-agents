@@ -85,7 +85,7 @@ namespace MLAgents
         [System.NonSerialized]
         private bool _isInitialized;
 
-        public void InitializeBrain(Batcher batcher)
+        public void SetBatcher(Batcher batcher)
         {
             if (batcher == null)
             {
@@ -113,7 +113,14 @@ namespace MLAgents
         }
 
         protected abstract void Initialize();
-        
-        protected abstract void DecideAction();
+
+        protected virtual void DecideAction()
+        {
+            brainBatcher?.SendBrainInfo(name, agentInfos);
+            if (isExternal)
+            {
+                agentInfos.Clear();
+            }
+        }
     }
 }
