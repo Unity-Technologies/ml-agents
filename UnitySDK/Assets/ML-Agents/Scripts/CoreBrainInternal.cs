@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
 using UnityEngine.MachineLearning.InferenceEngine;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
-using UnityEngine.Playables;
 // TODO : Remove
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,7 +16,7 @@ namespace MLAgents
     {
         private const long version = 1; 
         
-        private class NodeNames
+        public class NodeNames
         {
             public string BatchSizePlaceholder = "batch_size";
             public string SequenceLengthPlaceholder = "sequence_length";
@@ -55,22 +52,15 @@ namespace MLAgents
         private long _modelVersionNumber;
         private long _isContinuous;
 
-        private Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>
-            _inputTensorGenerators;
+        private InternalBrainTensorGenerator _inputTensorGenerators;
 
-        private Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>
-            _outputTensorAppliers;
-        
-        
-        private RandomNormal _randomNormal = new RandomNormal(0);
-        private Multinomial _multinomial = new Multinomial(0);
+        private InternalBrainTensorApplier  _outputTensorAppliers;
 
         public Model m_model;
 
         InferenceEngine m_engine;
         private Tensor[] inferenceInputs;
         private Tensor[] inferenceOutputs;
-//        private Tensor[] allOutputs;
 
         public Brain brain;
 
@@ -98,55 +88,14 @@ namespace MLAgents
             }
 
             InitializeModel(m_model);
-            UpdateInputGenerator();
-            UpdateOutputAppliers();
 
-        }
+            
+            _inputTensorGenerators = new InternalBrainTensorGenerator(
+                _nodeNames, brain.brainParameters, new RandomNormal(0));
+            
+            _outputTensorAppliers = new InternalBrainTensorApplier(
+                _nodeNames, brain.brainParameters, new Multinomial(0));
 
-        private void UpdateInputGenerator()
-        {
-            _inputTensorGenerators = new Dictionary<string, 
-                Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
-            _inputTensorGenerators[_nodeNames.BatchSizePlaceholder] = GenerateBatchSize;
-            _inputTensorGenerators[_nodeNames.SequenceLengthPlaceholder] = GenerateSequenceLength;
-            _inputTensorGenerators[_nodeNames.VectorObservationPlacholder] = GenerateVectorObservation;
-            _inputTensorGenerators[_nodeNames.RecurrentInPlaceholder] = GenerateRecurrentInput;
-            _inputTensorGenerators[_nodeNames.PreviousActionPlaceholder] = GeneratePreviousActionInput;
-            _inputTensorGenerators[_nodeNames.ActionMaskPlaceholder] = GenerateActionMaskInput;
-            _inputTensorGenerators[_nodeNames.RandomNormalEpsilonPlaceholder] =
-                (tensor, batchSize, agentInfo) =>
-                    GenerateRandomNormalInput(tensor, batchSize, agentInfo, _randomNormal);
-            for (var visIndex = 0;
-                visIndex < brain.brainParameters.cameraResolutions.Length;
-                visIndex++)
-            {
-                var index = visIndex;
-                var bw = brain.brainParameters.cameraResolutions[visIndex].blackAndWhite;
-                _inputTensorGenerators[_nodeNames.VisualObservationPlaceholderPrefix + visIndex] =
-                    (tensor, batchSize, agentInfo) =>
-                        GenerateVisualObservationInput(tensor, agentInfo, index, bw);
-            }
-        }
-        
-        private void UpdateOutputAppliers()
-        {
-            _outputTensorAppliers = new Dictionary<string, 
-                Action<Tensor, Dictionary<Agent, AgentInfo>>>();
-            
-            _outputTensorAppliers[_nodeNames.ValueEstimateOutput] = ApplyValueEstimate;
-            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
-            {
-                _outputTensorAppliers[_nodeNames.ActionOutput] = ApplyContinuousActionOutput;
-            }
-            else
-            {
-                _outputTensorAppliers[_nodeNames.ActionOutput] = (tensor, agentInfo) =>
-                    ApplyDiscreteActionOutput(tensor, agentInfo, _multinomial,
-                        brain.brainParameters.vectorActionSize);
-            }
-            _outputTensorAppliers[_nodeNames.RecurrentOutOutput] = ApplyMemoryOutput;
-            
-            
         }
 
         private void InitializeModel(Model model)
@@ -199,7 +148,7 @@ namespace MLAgents
             }
         }
 
-        public List<string> GetModelErrors()
+        public List<string> GetModelChecks()
         {
             if (m_engine == null)
             {
@@ -210,11 +159,11 @@ namespace MLAgents
             inferenceInputs = GetInputTensors();
             inferenceOutputs = GetOutputTensors().ToArray();
 
-            var errors = new List<string>();
+            var failedChecks = new List<string>();
             if (_modelVersionNumber != version)
             {
                 // TODO : Make better
-                errors.Add("Model has not been trained using the same version as the " +
+                failedChecks.Add("Model has not been trained using the same version as the " +
                            "Internal Brain");
             }
 
@@ -224,19 +173,19 @@ namespace MLAgents
                 // TODO : Implement
 //                errors.Add("Error to implement");
             }
-            errors.AddRange(TestInputTensorShape(
+            failedChecks.AddRange(CheckInputTensorShape(
                 inferenceInputs,
                 brain.brainParameters,
                 _nodeNames));
-            errors.AddRange(TestInputTensorPresence(
+            failedChecks.AddRange(CheckInputTensorPresence(
                 inferenceInputs,
                 brain.brainParameters,
                 _nodeNames));
-            errors.AddRange(TestOutputTensorPresence(
+            failedChecks.AddRange(CheckOutputTensorPresence(
                 inferenceOutputs,
                 brain.brainParameters,
                 _nodeNames));
-            return errors;
+            return failedChecks;
         }
 
         private Tensor[] GetInputTensors()
@@ -381,7 +330,7 @@ namespace MLAgents
 
         }
 
-        private static List<string> TestInputTensorPresence(
+        private static List<string> CheckInputTensorPresence(
             IEnumerable<Tensor> tensors,
             BrainParameters brainParams,
             NodeNames nodeNames)
@@ -411,7 +360,7 @@ namespace MLAgents
             return result;
         }
         
-        private static List<string> TestOutputTensorPresence(
+        private static List<string> CheckOutputTensorPresence(
             IEnumerable<Tensor> tensors,
             BrainParameters brainParams,
             NodeNames nodeNames)
@@ -428,7 +377,7 @@ namespace MLAgents
             return result;
         }
 
-        private static List<string> TestInputTensorShape(
+        private static List<string> CheckInputTensorShape(
             IEnumerable<Tensor> tensors, 
             BrainParameters brainParams,
             NodeNames nodeNames)
@@ -438,10 +387,10 @@ namespace MLAgents
             var tensorTester =
                 new Dictionary<string, Func<Tensor, BrainParameters, string>>()
                 {
-                    {nodeNames.VectorObservationPlacholder, TestVectorObsShape},
-                    {nodeNames.PreviousActionPlaceholder, TestPreviousActionShape},
+                    {nodeNames.VectorObservationPlacholder, CheckVectorObsShape},
+                    {nodeNames.PreviousActionPlaceholder, CheckPreviousActionShape},
                     {nodeNames.RandomNormalEpsilonPlaceholder, ((tensor, parameters) => null)},
-                    // TODO : Need a tester for some of those
+                    // TODO : Need a checker for some of those
                     {nodeNames.ActionMaskPlaceholder, ((tensor, parameters) => null)},
                     {nodeNames.SequenceLengthPlaceholder, ((tensor, parameters) => null)},
                     {nodeNames.RecurrentInPlaceholder, ((tensor, parameters) => null)},
@@ -453,7 +402,7 @@ namespace MLAgents
             {
                 var index = visObsIndex;
                 tensorTester[nodeNames.VisualObservationPlaceholderPrefix + visObsIndex] =
-                    (tensor, bp) => TestVisualObsShape(tensor, bp, index);
+                    (tensor, bp) => CheckVisualObsShape(tensor, bp, index);
             }
             
             foreach (var tensor in tensors)
@@ -475,7 +424,7 @@ namespace MLAgents
             return result;
         }
         
-        private static string TestActionMaskShape(
+        private static string CheckActionMaskShape(
             Tensor tensor,
             BrainParameters brainParams)
         {
@@ -483,7 +432,8 @@ namespace MLAgents
             return null;
         }
 
-        private static string TestVectorObsShape(
+        // TODO : Rename these check
+        private static string CheckVectorObsShape(
             Tensor tensor,
             BrainParameters brainParams)
         {
@@ -500,7 +450,7 @@ namespace MLAgents
             return null;
         }
         
-        private static string TestPreviousActionShape(
+        private static string CheckPreviousActionShape(
             Tensor tensor,
             BrainParameters brainParams)
         {
@@ -516,7 +466,7 @@ namespace MLAgents
             return null;
         }
         
-        private static string TestVisualObsShape(
+        private static string CheckVisualObsShape(
             Tensor tensor,
             BrainParameters brainParams,
             int visObsIndex)
@@ -584,271 +534,9 @@ namespace MLAgents
                 _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfo);
                 
             }
-            Debug.Log("Execute Graph "+Time.timeScale);
         }
         
-        private static void GenerateBatchSize(
-                Tensor tensor,
-                int batchSize,
-                Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            tensor.Data = new int[] {batchSize};
-        }
         
-        private static void GenerateSequenceLength(
-            Tensor tensor,
-            int batchSize,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            tensor.Data = new int[] {1};
-        }
-            
-        private static void GenerateVectorObservation(
-            Tensor tensor,
-            int batchSize,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var vecObsSizeT = tensor.Shape[1];
-            tensor.Data = new float[batchSize, vecObsSizeT];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var vectorObs = agentInfo[agent].stackedVectorObservation;
-                for (var j = 0; j < vecObsSizeT; j++)
-                {
-                    tensor.Data.SetValue(vectorObs[j], new int[2] {agentIndex, j});
-                }
-                agentIndex++;
-            }
-        }
-        
-        private static void GenerateRecurrentInput(
-            Tensor tensor,
-            int batchSize,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var memorySize = tensor.Shape[1];
-            tensor.Data = new float[batchSize, memorySize];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var memory = agentInfo[agent].memories;
-                for (var j = 0; j < memorySize; j++)
-                {
-                    if (j >= memory.Count)
-                    {
-                        break;
-                    }
-                    tensor.Data.SetValue(memory[j], new int[2] {agentIndex, j});
-                }
-                agentIndex++;
-            }
-        }
-        
-        private static void GeneratePreviousActionInput(
-            Tensor tensor,
-            int batchSize,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var actionSize = tensor.Shape[1];
-            tensor.Data = new int[batchSize, actionSize];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var pastAction = agentInfo[agent].storedVectorActions;
-                for (var j = 0; j < actionSize; j++)
-                {
-                    tensor.Data.SetValue((int)pastAction[j], new int[2] {agentIndex, j});
-                }
-                agentIndex++;
-            }
-        }
-        
-        private static void GenerateActionMaskInput(
-            Tensor tensor,
-            int batchSize,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var maskSize = tensor.Shape[1];
-            tensor.Data = new float[batchSize, maskSize];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var maskList = agentInfo[agent].actionMasks;
-                for (var j = 0; j < maskSize; j++)
-                {
-                    if (maskList != null)
-                    {
-                        tensor.Data.SetValue(
-                            maskList[j] ? 0.0f : 1.0f,
-                            new int[2] {agentIndex, j});
-                    }
-                    else
-                    {
-                        tensor.Data.SetValue(
-                            1.0f,
-                            new int[2] {agentIndex, j});
-                    }
-                }
-                agentIndex++;
-            }
-        }
-
-        private static void GenerateRandomNormalInput(
-            Tensor tensor,
-            int batchSize,
-            Dictionary<Agent, AgentInfo> agentInfo,
-            RandomNormal randomNormal)
-        {
-            tensor.Shape[0] = batchSize;
-            var actionSize = tensor.Shape[1];
-            tensor.Data = new float[batchSize, actionSize];
-            randomNormal.FillTensor(tensor);
-        }
-
-        private static void GenerateVisualObservationInput(
-            Tensor tensor,
-            Dictionary<Agent, AgentInfo> agentInfo,
-            int visIndex,
-            bool bw)
-        {
-            //TODO : More efficient ?
-            var textures = agentInfo.Keys.Select(
-                agent => agentInfo[agent].visualObservations[visIndex]).ToList();
-            tensor.Data = BatchVisualObservations(textures, bw);
-
-        }
-
-        private static void ApplyContinuousActionOutput(
-            Tensor tensor,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var tensorDataAction = tensor.Data as float[,];
-            var actionSize = tensor.Shape[1];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var a = new float[actionSize];
-                for (var j = 0; j < actionSize; j++)
-                {
-                    a[j] = tensorDataAction[agentIndex, j];
-                }
-
-                agent.UpdateVectorAction(a);
-                agentIndex++;
-            }
-        }
-
-        /// <summary>
-        /// Generates an array containing the starting indicies of each branch in the vector action
-        /// Makes a cumulative sum.
-        /// </summary>
-        /// <returns></returns>
-        private static int[] CreateActionStartinIndices(int[] vectorActionSize)
-        {
-            var runningSum = 0;
-            var result = new int[vectorActionSize.Length + 1];
-            for (var actionIndex = 0;
-                actionIndex < vectorActionSize.Length; actionIndex++)
-            {
-                runningSum += vectorActionSize[actionIndex];
-                result[actionIndex + 1] = runningSum;
-            }
-            return result;
-        }
-        
-        private static void ApplyDiscreteActionOutput(
-            Tensor tensor,
-            Dictionary<Agent, AgentInfo> agentInfo,
-            Multinomial multinomial,
-            int[] actionSize)
-        {
-            var tensorDataProbabilities = tensor.Data as float[,];
-            var batchSize = agentInfo.Keys.Count;
-            var actions = new float[batchSize, actionSize.Length];
-            var startActionIndices = CreateActionStartinIndices(actionSize);
-            
-            for (var actionIndex=0; actionIndex < actionSize.Length; actionIndex++)
-            {
-                var nBranchAction = startActionIndices[actionIndex + 1] -
-                                    startActionIndices[actionIndex];
-                var actionProbs = new float[batchSize, nBranchAction];
-                for (var ii = 0; ii < batchSize; ii++)
-                {
-                    for (var jj = 0; jj < nBranchAction; jj++)
-                    {
-                        
-                        actionProbs[ii, jj] = 
-                            tensorDataProbabilities[ii, startActionIndices[actionIndex] + jj];
-                    }
-                }
-                var inputTensor = new Tensor()
-                {
-                    ValueType= Tensor.TensorType.FloatingPoint,
-                    Shape = new long[]{batchSize, actionSize[actionIndex]},
-                    Data = actionProbs
-                };
-                var outputTensor = new Tensor()
-                {
-                    ValueType= Tensor.TensorType.FloatingPoint,
-                    Shape = new long[]{batchSize, 1},
-                    Data = new float[batchSize, 1]
-                };
-                multinomial.Eval(inputTensor, outputTensor);
-                var outTensor = outputTensor.Data as float[,];
-                for (var ii = 0; ii < batchSize; ii++)
-                {
-                    actions[ii, actionIndex] = outTensor[ii, 0];
-                }
-            }
-            
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var a = new float[actionSize.Length];
-                for (var j = 0; j < actionSize.Length; j++)
-                {
-                    a[j] = actions[agentIndex, j];
-                }
-    
-                agent.UpdateVectorAction(a);
-                agentIndex++;
-            }
-        }
-
-        private static void ApplyMemoryOutput(
-            Tensor tensor,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var tensorDataMemory = tensor.Data as float[,];
-            var agentIndex = 0;
-            var memorySize = tensor.Shape[1];
-            foreach (var agent in agentInfo.Keys)
-            {
-                var a = new List<float>();
-                for (var j = 0; j < memorySize; j++)
-                {
-                    a.Add(tensorDataMemory[agentIndex, j]);
-                }
-
-                // TODO Make better
-                agent.UpdateMemoriesAction(a);
-                agentIndex++;
-            }
-        }
-
-        private static void ApplyValueEstimate(
-            Tensor tensor,
-            Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var tensorDataValue = tensor.Data as float[,];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                agent.UpdateValueAction(tensorDataValue[agentIndex, 0]);
-                agentIndex++;
-            }
-        }
 
 
         /// Displays the parameters of the CoreBrainInternal in the Inspector 
@@ -871,11 +559,11 @@ namespace MLAgents
             if (EditorGUI.EndChangeCheck())
             {
                 InitializeModel(m_model);
-                tmp_editor_errors = GetModelErrors();
+                tmp_editor_errors = GetModelChecks();
             }
             
             // TODO : Remove :
-            tmp_editor_errors = GetModelErrors();
+            tmp_editor_errors = GetModelChecks();
 //            Debug.Log(GetModelErrors().Count);
             
             foreach (var error in tmp_editor_errors)
@@ -886,73 +574,5 @@ namespace MLAgents
 #endif
         }
 
-
-        /// <summary>
-        /// Converts a list of Texture2D into a Tensor.
-        /// </summary>
-        /// <returns>
-        /// A 4 dimensional float Tensor of dimension
-        /// [batch_size, height, width, channel].
-        /// Where batch_size is the number of input textures,
-        /// height corresponds to the height of the texture,
-        /// width corresponds to the width of the texture,
-        /// channel corresponds to the number of channels extracted from the
-        /// input textures (based on the input blackAndWhite flag
-        /// (3 if the flag is false, 1 otherwise).
-        /// The values of the Tensor are between 0 and 1.
-        /// </returns>
-        /// <param name="textures">
-        /// The list of textures to be put into the tensor.
-        /// Note that the textures must have same width and height.
-        /// </param>
-        /// <param name="blackAndWhite">
-        /// If set to <c>true</c> the textures
-        /// will be converted to grayscale before being stored in the tensor.
-        /// </param>
-        public static float[,,,] BatchVisualObservations(
-            List<Texture2D> textures, bool blackAndWhite)
-        {
-            int batchSize = textures.Count();
-            int width = textures[0].width;
-            int height = textures[0].height;
-            int pixels = 0;
-            if (blackAndWhite)
-                pixels = 1;
-            else
-                pixels = 3;
-            float[,,,] result = new float[batchSize, height, width, pixels];
-            float[] resultTemp = new float[batchSize * height * width * pixels];
-            int hwp = height * width * pixels;
-            int wp = width * pixels;
-
-            for (int b = 0; b < batchSize; b++)
-            {
-                Color32[] cc = textures[b].GetPixels32();
-                for (int h = height - 1; h >= 0; h--)
-                {
-                    for (int w = 0; w < width; w++)
-                    {
-                        Color32 currentPixel = cc[(height - h - 1) * width + w];
-                        if (!blackAndWhite)
-                        {
-                            // For Color32, the r, g and b values are between
-                            // 0 and 255.
-                            resultTemp[b * hwp + h * wp + w * pixels] = currentPixel.r / 255.0f;
-                            resultTemp[b * hwp + h * wp + w * pixels + 1] = currentPixel.g / 255.0f;
-                            resultTemp[b * hwp + h * wp + w * pixels + 2] = currentPixel.b / 255.0f;
-                        }
-                        else
-                        {
-                            resultTemp[b * hwp + h * wp + w * pixels] =
-                                (currentPixel.r + currentPixel.g + currentPixel.b)
-                                / 3f / 255.0f;
-                        }
-                    }
-                }
-            }
-
-            System.Buffer.BlockCopy(resultTemp, 0, result, 0, batchSize * hwp * sizeof(float));
-            return result;
-        }
     }
 }
