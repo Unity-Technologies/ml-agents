@@ -45,17 +45,19 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
 
 ## Running a Pre-trained Model
 
-1. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall` folder
+1. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Scenes` folder
    and open the `3DBall` scene file.
-2. In the **Hierarchy** window, select the **Ball3DBrain** child under the
-   **Ball3DAcademy** GameObject to view its properties in the Inspector window.
-3. On the **Ball3DBrain** object's **Brain** component, change the **Brain
-   Type** to **Internal**.
-4. In the **Project** window, locate the
-   `Assets/ML-Agents/Examples/3DBall/TFModels` folder.
-5. Drag the `3DBall` model file from the `TFModels` folder to the **Graph
-   Model** field of the **Ball3DBrain** object's **Brain** component.
-6. Click the **Play** button and you will see the platforms balance the balls
+2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder
+   and select the `Game/Platform` prefab.
+3. In the `Ball 3D Agent` Component: Drag the **Ball3DBrain** located into 
+   `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
+   the `Ball 3D Agent`.
+4. Make sure that all of the Agents in the Scene now have **Ball3DBrain** as `Brain`.
+5. In the **Project** window, locate the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+   folder.
+6. Drag the `3DBall` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+   folder to the **Model** field of the **Ball3DBrain**.
+7. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
 ![Running a pretrained model](images/running-a-pretrained-model.gif)
@@ -74,18 +76,18 @@ More information and documentation is provided in the
 
 ## Training the Brain with Reinforcement Learning
 
-### Setting the Brain to External
+### Adding a Brain to the training session
 
-Since we are going to build this environment to conduct training, we need to set
-the Brain used by the Agents to **External**. This allows the Agents to
+Since we are going to build this environment to conduct training, we need to add 
+the Brain to the training session. This allows the Agents to
 communicate with the external training process when making their decisions.
 
-1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
-   object.
-2. Select its child object **Ball3DBrain**.
-3. In the Inspector window, set **Brain Type** to **External**.
+1. Give to the agents you want to train the **Ball3DBrain**. 
+   __Note:__ You can only perform training with an `Internal Brain`.
+2. Select the **Ball3DAcademy** GameObject and add the **Ball3DBrain**
+   to the Training Hub and toggle the train checkbox.
 
-![Set Brain to External](images/mlagents-SetExternalBrain.png)
+![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 
 ### Training the environment
 
