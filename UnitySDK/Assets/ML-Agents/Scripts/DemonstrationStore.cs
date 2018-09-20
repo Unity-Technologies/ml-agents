@@ -5,6 +5,7 @@ namespace MLAgents
 {
     /// <summary>
     /// Demonstration meta-data.
+    /// Kept in a struct for easy serialization and deserialization.
     /// </summary>
     [System.Serializable]
     public struct DemonstrationMetaData
@@ -19,6 +20,7 @@ namespace MLAgents
         private string filePath;
         private DemonstrationMetaData metaData;
         private const string DemoDirecory = "Assets/Demonstrations/";
+        private StreamWriter writer;
 
         public void Initialize(string demonstrationName, BrainParameters brainParameters)
         {
@@ -40,7 +42,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Creates demonstration file, and writes brainParameters as json to file.
+        /// Creates demonstration file.
         /// </summary>
         private void CreateDemonstrationFile(string demonstrationName)
         {
@@ -55,11 +57,8 @@ namespace MLAgents
                 uniqueNameCounter++;
             }
 
-            metaData = new DemonstrationMetaData
-            {
-                numberEpisodes = 0,
-                numberExperiences = 0
-            };
+            writer = File.CreateText(filePath);
+            metaData = new DemonstrationMetaData();
         }
 
         /// <summary>
@@ -69,9 +68,7 @@ namespace MLAgents
         {
             // Writes BrainParameters to file.
             var jsonParameters = JsonUtility.ToJson(brainParameters);
-            var writer = File.CreateText(filePath);
             writer.Write(jsonParameters + '\n');
-            writer.Close();
         }
 
         /// <summary>
@@ -88,9 +85,7 @@ namespace MLAgents
 
             // Write AgentInfo to file.
             var jsonInfo = JsonUtility.ToJson(info);
-            var writer = new StreamWriter(filePath, true);
             writer.WriteLine(jsonInfo);
-            writer.Close();
         }
 
         /// <summary>
@@ -108,7 +103,6 @@ namespace MLAgents
         {
             // Write meta-data to file.
             var jsonInfo = JsonUtility.ToJson(metaData);
-            var writer = new StreamWriter(filePath, true);
             writer.WriteLine(jsonInfo);
             writer.Close();
         }
