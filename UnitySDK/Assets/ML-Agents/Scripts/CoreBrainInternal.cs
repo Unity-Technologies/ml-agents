@@ -160,77 +160,24 @@ namespace MLAgents
 
                 // Generate the Input tensors
                 inferenceInputs = GetInputTensors();
-                
-//                foreach (var message in GetModelErrors())
-//                {
-//                    throw new UnityAgentsException(message);
-//                }
-//                
-                // TODO : Generate the visual_observations prefix
-                // TODO : Put all the shape tests here
-                // TODO : Generate output Tensors
-                // TODO : Get some of the outputs out like the API #
-               
-                
-                // Generate the Output tensors 
-//                var AllOutputs = GetOutputTensors();
-//                List<Tensor> inferenceOutputs = new List<Tensor>();
-//                foreach (var tensor in AllOutputs)
-//                {
-//                    if ((tensor.Name == _nodeNames.ValueEstimateOutput) ||
-//                        (tensor.Name == _nodeNames.RecurrentOutOutput) ||
-//                        (tensor.Name == _nodeNames.ActionOutput))
-//                    {
-//                        inferenceOutputs.Add(tensor);
-//                    }
-//                }
-//                outputs = inferenceOutputs.ToArray();
                 inferenceOutputs = GetOutputTensors().ToArray();
-                // TODO : Make a subset of outputs for the inference pass only (no API# or memory size)
-                
-                // TODO : Compare with real value;
-                
-                // TODO : Get the memory size
 
 //                _modelVersionNumber = GetModelData(m_engine, _nodeNames.VersionNumber);
                 _memorySize = GetModelData(m_engine, _nodeNames.MemorySize);
 //                _isContinuous = GetModelData(m_engine, _nodeNames.IsContinuousControl);
-                
-                if ( /*memory_size is part of the outputs*/ false)
-                {
-                    Tensor memoryTensor = new Tensor
-                    {
-                        Name = _nodeNames.MemorySize,
-                        ValueType = Tensor.TensorType.Integer,
-                        Shape = new long[1] {1}
-                    };
-                    m_engine.ExecuteGraph(new Tensor[0], new Tensor[1] {memoryTensor});
-                    _memorySize = (memoryTensor.Data as long[])[0];
-                    Assert.IsNotNull(_memorySize);
-                }
-
-
-//                if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
-//                {
-//                    _actionSize = brain.brainParameters.vectorActionSize[0];
-//                }
-//                else
-//                {
-//                    _actionSize = brain.brainParameters.vectorActionSize.Length;
-//                }
             }
             else
             {
                 m_engine = null;
                 // TODO : Implement
-                throw new UnityAgentsException("ERROR TO IMPLEMENT");
+                throw new UnityAgentsException("ERROR TO IMPLEMENT : There was no model");
             }
         }
 
         private static long GetModelData(InferenceEngine engine, string name)
         {
-//            try
-//            {
+            try
+            {
                 var outputs = new Tensor[]
                 {
                     new Tensor()
@@ -244,12 +191,12 @@ namespace MLAgents
                 engine.ExecuteGraph(new Tensor[0], outputs);
            
                 return (outputs[0].Data as int[])[0];
-//            }
-//            catch
-//            {
-//                Debug.LogError("Node not in graph " + name);
-//                return -1;
-//            }
+            }
+            catch
+            {
+                Debug.LogError("Node not in graph " + name);
+                return -1;
+            }
         }
 
         public List<string> GetModelErrors()
@@ -266,13 +213,16 @@ namespace MLAgents
             var errors = new List<string>();
             if (_modelVersionNumber != version)
             {
-                errors.Add("Error to implement");
+                // TODO : Make better
+                errors.Add("Model has not been trained using the same version as the " +
+                           "Internal Brain");
             }
 
             if (_isContinuous == 1 &&
                 brain.brainParameters.vectorActionSpaceType != SpaceType.continuous)
             {
-                errors.Add("Error to implement");
+                // TODO : Implement
+//                errors.Add("Error to implement");
             }
             errors.AddRange(TestInputTensorShape(
                 inferenceInputs,
@@ -292,7 +242,6 @@ namespace MLAgents
         private Tensor[] GetInputTensors()
         {
             var n_agents = 2;
-            _memorySize = 256;
             BrainParameters bp = brain.brainParameters;
 
             var tensorList = new List<Tensor>();
@@ -492,6 +441,10 @@ namespace MLAgents
                     {nodeNames.VectorObservationPlacholder, TestVectorObsShape},
                     {nodeNames.PreviousActionPlaceholder, TestPreviousActionShape},
                     {nodeNames.RandomNormalEpsilonPlaceholder, ((tensor, parameters) => null)},
+                    // TODO : Need a tester for some of those
+                    {nodeNames.ActionMaskPlaceholder, ((tensor, parameters) => null)},
+                    {nodeNames.SequenceLengthPlaceholder, ((tensor, parameters) => null)},
+                    {nodeNames.RecurrentInPlaceholder, ((tensor, parameters) => null)},
                 };
 
             for (var visObsIndex = 0;
@@ -615,7 +568,7 @@ namespace MLAgents
 
             }
             
-            
+
             // Execute the Model
             m_engine.ExecuteGraph(inferenceInputs, inferenceOutputs);
 
@@ -631,6 +584,7 @@ namespace MLAgents
                 _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfo);
                 
             }
+            Debug.Log("Execute Graph "+Time.timeScale);
         }
         
         private static void GenerateBatchSize(
