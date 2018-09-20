@@ -32,7 +32,7 @@ namespace MLAgents
             var metaData = JsonUtility.FromJson<DemonstrationMetaData>(enumerable.Last());
             demonstration.brainParameters = brainParams;
             demonstration.metaData = metaData;
-            
+
 
 #if UNITY_2017_3_OR_NEWER
             ctx.AddObjectToAsset(ctx.assetPath, demonstration);

@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using UnityEngine;
 
-
 namespace MLAgents
 {
     /// <summary>
@@ -14,12 +13,12 @@ namespace MLAgents
         public int numberEpisodes;
         public const int API_VERSION = 1;
     }
-    
+
     public class DemonstrationStore
     {
         private string filePath;
         private DemonstrationMetaData metaData;
-        private const string DemoDirecory = "Assets/Demonstrations";
+        private const string DemoDirecory = "Assets/Demonstrations/";
 
         public void Initialize(string demonstrationName, BrainParameters brainParameters)
         {
@@ -27,7 +26,7 @@ namespace MLAgents
             CreateDemonstrationFile(demonstrationName);
             WriteBrainParameters(brainParameters);
         }
-        
+
         /// <summary>
         /// Checks for the existence of the Demonstrations directory
         /// and creates it if it does not exist.
@@ -39,7 +38,7 @@ namespace MLAgents
                 Directory.CreateDirectory(DemoDirecory);
             }
         }
-        
+
         /// <summary>
         /// Creates demonstration file, and writes brainParameters as json to file.
         /// </summary>
@@ -55,11 +54,11 @@ namespace MLAgents
                 filePath = DemoDirecory + literalName + ".demo";
                 uniqueNameCounter++;
             }
-            
+
             metaData = new DemonstrationMetaData
             {
                 numberEpisodes = 0,
-                numberExperiences = 0,
+                numberExperiences = 0
             };
         }
 
@@ -74,7 +73,7 @@ namespace MLAgents
             writer.Write(jsonParameters + '\n');
             writer.Close();
         }
-        
+
         /// <summary>
         /// Write AgentInfo experience to file as json.
         /// </summary>
