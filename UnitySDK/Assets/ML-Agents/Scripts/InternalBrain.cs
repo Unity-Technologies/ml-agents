@@ -13,6 +13,7 @@ using TensorFlow;
 namespace MLAgents
 {
     /// CoreBrain which decides actions using internally embedded TensorFlow model.
+    [CreateAssetMenu(fileName = "NewInternalBrain", menuName = "ML-Agents/Internal Brain")]
     public class InternalBrain : Brain
     {
         [System.Serializable]
