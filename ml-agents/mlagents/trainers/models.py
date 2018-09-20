@@ -18,8 +18,6 @@ class LearningModel(object):
         self.visual_in = []
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name='batch_size')
         self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
-        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
-        self.mask = tf.cast(self.mask_input, tf.int32)
         self.use_recurrent = use_recurrent
         if self.use_recurrent:
             self.m_size = m_size
@@ -32,7 +30,7 @@ class LearningModel(object):
         self.vis_obs_size = brain.number_visual_observations
         tf.Variable(int(brain.vector_action_space_type == 'continuous'),
                     name='is_continuous_control', trainable=False, dtype=tf.int32)
-        tf.Variable(self._version_number_, name='version_number"', trainable=False, dtype=tf.int32)
+        tf.Variable(self._version_number_, name='version_number', trainable=False, dtype=tf.int32)
         tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
 
     @staticmethod
@@ -313,7 +311,6 @@ class LearningModel(object):
         hidden = hidden_streams[0]
 
         if self.use_recurrent:
-            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.prev_action = tf.placeholder(shape=[None, len(self.act_size)], dtype=tf.int32,
                                               name='prev_action')
             prev_action_oh = tf.concat([

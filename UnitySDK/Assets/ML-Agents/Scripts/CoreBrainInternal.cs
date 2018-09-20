@@ -17,6 +17,7 @@ namespace MLAgents
     /// CoreBrain which decides actions using internally embedded TensorFlow model.
     public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
+        private const long version = 1; 
         
         private class NodeNames
         {
@@ -51,7 +52,7 @@ namespace MLAgents
         
 
         private long _memorySize;
-        private long _versionNumber;
+        private long _modelVersionNumber;
         private long _isContinuous;
 
         private Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>
@@ -191,8 +192,10 @@ namespace MLAgents
                 
                 // TODO : Get the memory size
 
-                ExtractModelConstants(GetOutputTensors().ToList());
-
+//                _modelVersionNumber = GetModelData(m_engine, _nodeNames.VersionNumber);
+                _memorySize = GetModelData(m_engine, _nodeNames.MemorySize);
+//                _isContinuous = GetModelData(m_engine, _nodeNames.IsContinuousControl);
+                
                 if ( /*memory_size is part of the outputs*/ false)
                 {
                     Tensor memoryTensor = new Tensor
@@ -224,13 +227,29 @@ namespace MLAgents
             }
         }
 
-        private void ExtractModelConstants(List<Tensor> tensors)
+        private static long GetModelData(InferenceEngine engine, string name)
         {
-//            var tmp_i
-            for (int i = tensors.Count - 1; i >= 0; i--)
-            {
-                
-            }
+//            try
+//            {
+                var outputs = new Tensor[]
+                {
+                    new Tensor()
+                    {
+                        Name = name,
+                        ValueType = Tensor.TensorType.Integer,
+                        Shape = new long[]{},
+                        Data = new long[1]
+                    },
+                };
+                engine.ExecuteGraph(new Tensor[0], outputs);
+           
+                return (outputs[0].Data as int[])[0];
+//            }
+//            catch
+//            {
+//                Debug.LogError("Node not in graph " + name);
+//                return -1;
+//            }
         }
 
         public List<string> GetModelErrors()
@@ -245,6 +264,16 @@ namespace MLAgents
             inferenceOutputs = GetOutputTensors().ToArray();
 
             var errors = new List<string>();
+            if (_modelVersionNumber != version)
+            {
+                errors.Add("Error to implement");
+            }
+
+            if (_isContinuous == 1 &&
+                brain.brainParameters.vectorActionSpaceType != SpaceType.continuous)
+            {
+                errors.Add("Error to implement");
+            }
             errors.AddRange(TestInputTensorShape(
                 inferenceInputs,
                 brain.brainParameters,
@@ -263,7 +292,7 @@ namespace MLAgents
         private Tensor[] GetInputTensors()
         {
             var n_agents = 2;
-            var useRecurrent = false;
+            _memorySize = 256;
             BrainParameters bp = brain.brainParameters;
 
             var tensorList = new List<Tensor>();
@@ -318,17 +347,40 @@ namespace MLAgents
                       ValueType = Tensor.TensorType.FloatingPoint
                   });
             }
-//            tensorList.Add(
-//                new Tensor()
-//                {
-//                    Name = _nodeNames.ActionMaskPlaceholder,
-//                    Shape = new long[]
-//                    {
-//                        n_agents, bp.vectorActionSize[0]
-//                    },
-//                    ValueType = Tensor.TensorType.FloatingPoint,
-//                    Data = new float[n_agents, bp.vectorActionSize[0]]
-//                });
+
+            if (_memorySize > 0)
+            {
+                tensorList.Add(new Tensor()
+                {
+                    Name = _nodeNames.RecurrentInPlaceholder,
+                    Shape = new long[2]
+                    {
+                        n_agents, _memorySize
+                    },
+                    ValueType = Tensor.TensorType.FloatingPoint
+                });
+                tensorList.Add(new Tensor()
+                {
+                    Name = _nodeNames.SequenceLengthPlaceholder,
+                    Shape = new long[]
+                    {
+                        
+                    },
+                    ValueType = Tensor.TensorType.Integer
+                });
+                if (brain.brainParameters.vectorActionSpaceType == SpaceType.discrete)
+                {
+                    tensorList.Add(new Tensor()
+                    {
+                        Name = _nodeNames.PreviousActionPlaceholder,
+                        Shape = new long[2]
+                        {
+                            n_agents, brain.brainParameters.vectorActionSize.Length
+                        },
+                        ValueType = Tensor.TensorType.Integer
+                    });
+                }
+            }
 
             return tensorList.ToArray();
         }
@@ -336,7 +388,6 @@ namespace MLAgents
         private List<Tensor> GetOutputTensors()
         {
             var n_agents = 16;
-            var useRecurrent = false;
             BrainParameters bp = brain.brainParameters;
             var tensorList = new List<Tensor>();
             if (bp.vectorActionSpaceType == SpaceType.continuous)
@@ -362,6 +413,19 @@ namespace MLAgents
                         ValueType = Tensor.TensorType.FloatingPoint,
                         Data = new float[n_agents, bp.vectorActionSize.Sum()]
                     });
+            }
+            if (_memorySize > 0)
+            {
+                tensorList.Add(new Tensor()
+                {
+                    Name = _nodeNames.RecurrentOutOutput,
+                    Shape = new long[2]
+                    {
+                        n_agents, _memorySize
+                    },
+                    ValueType = Tensor.TensorType.FloatingPoint,
+                    Data = new float[n_agents, _memorySize]
+                });
             }
 
             return tensorList;
@@ -574,7 +638,7 @@ namespace MLAgents
                 int batchSize,
                 Dictionary<Agent, AgentInfo> agentInfo)
         {
-            tensor.Data = new long[1] {batchSize};
+            tensor.Data = new int[] {batchSize};
         }
         
         private static void GenerateSequenceLength(
@@ -582,7 +646,7 @@ namespace MLAgents
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
-            tensor.Data = new long[1] {1};
+            tensor.Data = new int[] {1};
         }
             
         private static void GenerateVectorObservation(
@@ -617,6 +681,10 @@ namespace MLAgents
                 var memory = agentInfo[agent].memories;
                 for (var j = 0; j < memorySize; j++)
                 {
+                    if (j >= memory.Count)
+                    {
+                        break;
+                    }
                     tensor.Data.SetValue(memory[j], new int[2] {agentIndex, j});
                 }
                 agentIndex++;
@@ -629,14 +697,14 @@ namespace MLAgents
             Dictionary<Agent, AgentInfo> agentInfo)
         {
             var actionSize = tensor.Shape[1];
-            tensor.Data = new float[batchSize, actionSize];
+            tensor.Data = new int[batchSize, actionSize];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
                 var pastAction = agentInfo[agent].storedVectorActions;
                 for (var j = 0; j < actionSize; j++)
                 {
-                    tensor.Data.SetValue(pastAction[j], new int[2] {agentIndex, j});
+                    tensor.Data.SetValue((int)pastAction[j], new int[2] {agentIndex, j});
                 }
                 agentIndex++;
             }
