@@ -61,8 +61,24 @@ namespace MLAgents.Tests
     // It is left empty because we are not testing any brain behavior
     public class TestBrain : Brain
     {
-        protected override void Initialize(){ }
-        protected override void DecideAction(){ }
+        public int numberOfCallsToInitialize = 0;
+        public int numberOfCallsToDecideAction = 0;
+        public static TestBrain Instanciate()
+        {
+            return CreateInstance<TestBrain>();
+        }
+
+        protected override void Initialize()
+        {
+            numberOfCallsToInitialize++;
+        }
+
+        protected override void DecideAction()
+        {
+            base.DecideAction();
+            numberOfCallsToDecideAction++;
+            agentInfos.Clear();
+        }
     }
 
 
@@ -95,6 +111,11 @@ namespace MLAgents.Tests
     public class EditModeTestInitialization
     {
 
+        private Brain GenerateTestBrain()
+        {
+            return ScriptableObject.CreateInstance<TestBrain>();
+        } 
+        
         [Test]
         public void TestAcademy()
         {
@@ -129,10 +150,7 @@ namespace MLAgents.Tests
             GameObject acaGO = new GameObject("TestAcademy");
             acaGO.AddComponent<TestAcademy>();
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
-            GameObject brainGO = new GameObject("TestBrain");
-            brainGO.transform.parent = acaGO.transform;
-//            brainGO.AddComponent<TestBrain>();
-            TestBrain brain = brainGO.GetComponent<TestBrain>();
+            TestBrain brain = TestBrain.Instanciate();
             brain.brainParameters = new BrainParameters();
             brain.brainParameters.vectorObservationSize = 0;
             agent1.GiveBrain(brain);
@@ -217,10 +235,7 @@ namespace MLAgents.Tests
             GameObject acaGO = new GameObject("TestAcademy");
             acaGO.AddComponent<TestAcademy>();
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
-            GameObject brainGO = new GameObject("TestBrain");
-            brainGO.transform.parent = acaGO.transform;
-//            brainGO.AddComponent<TestBrain>();
-            TestBrain brain = brainGO.GetComponent<TestBrain>();
+            TestBrain brain = TestBrain.Instanciate();
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
@@ -355,10 +370,7 @@ namespace MLAgents.Tests
             GameObject acaGO = new GameObject("TestAcademy");
             acaGO.AddComponent<TestAcademy>();
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
-            GameObject brainGO = new GameObject("TestBrain");
-            brainGO.transform.parent = acaGO.transform;
-//            brainGO.AddComponent<TestBrain>();
-            TestBrain brain = brainGO.GetComponent<TestBrain>();
+            TestBrain brain = TestBrain.Instanciate();
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
@@ -537,10 +549,7 @@ namespace MLAgents.Tests
             GameObject acaGO = new GameObject("TestAcademy");
             acaGO.AddComponent<TestAcademy>();
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
-            GameObject brainGO = new GameObject("TestBrain");
-            brainGO.transform.parent = acaGO.transform;
-//            brainGO.AddComponent<TestBrain>();
-            TestBrain brain = brainGO.GetComponent<TestBrain>();
+            TestBrain brain = TestBrain.Instanciate();
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
@@ -672,10 +681,7 @@ namespace MLAgents.Tests
             GameObject acaGO = new GameObject("TestAcademy");
             acaGO.AddComponent<TestAcademy>();
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
-            GameObject brainGO = new GameObject("TestBrain");
-            brainGO.transform.parent = acaGO.transform;
-//            brainGO.AddComponent<TestBrain>();
-            TestBrain brain = brainGO.GetComponent<TestBrain>();
+            TestBrain brain = TestBrain.Instanciate();
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
@@ -760,10 +766,7 @@ namespace MLAgents.Tests
             GameObject acaGO = new GameObject("TestAcademy");
             acaGO.AddComponent<TestAcademy>();
             TestAcademy aca = acaGO.GetComponent<TestAcademy>();
-            GameObject brainGO = new GameObject("TestBrain");
-            brainGO.transform.parent = acaGO.transform;
-//            brainGO.AddComponent<TestBrain>();
-            TestBrain brain = brainGO.GetComponent<TestBrain>();
+            TestBrain brain = TestBrain.Instanciate();
 
 
             MethodInfo AgentEnableMethod = typeof(Agent).GetMethod(
