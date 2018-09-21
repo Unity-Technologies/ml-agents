@@ -104,7 +104,7 @@ different material from the list of all materials currently in the project.)
 Note that we will create an Agent subclass to add to this GameObject as a
 component later in the tutorial.
 
-### Add Empty GameObjects to Hold the Academy and Brain
+### Add Empty GameObjects to Hold the Academy
 
 1. Right click in Hierarchy window, select Create Empty.
 2. Name the GameObject "Academy"
@@ -560,6 +560,3 @@ Keep in mind:
 * You can only train Learning Brains that have been included into the Academy's  
   Training Hub.
 
-Here is an example of what your scene hierarchy should look like:
-
-![Scene Hierarchy](images/scene-hierarchy.png)

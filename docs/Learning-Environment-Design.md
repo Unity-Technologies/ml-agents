@@ -76,8 +76,6 @@ as you need. The brain assets are present in the project and should be grouped
 together and named according to the type of agents they are compatible with.
 Agent instances should be attached to the GameObject representing that Agent.
 
-![Scene Hierarchy](images/scene-hierarchy.png)
-
 You must assign a Brain to every Agent, but you can share Brains between
 multiple Agents. Each Agent will make its own observations and act
 independently, but will use the same decision-making logic and, for **Learning

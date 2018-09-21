@@ -64,9 +64,9 @@ from your Agents using a Python program without controlling them.
 
 ### How to use: Unity
 
-To turn it on in Unity, Drag the Brain into the Academy's training hub but leave
-the `Train` checkbox unchecked. This will expose the Brain's data without letting the
-external process control it.
+To turn it on in Unity, drag the Brain into the Academy's training hub but leave
+the `Train` checkbox unchecked when present. This will expose the Brain's data 
+without letting the external process control it.
 
 ![Broadcast](images/broadcast.png)
 
