@@ -98,10 +98,10 @@ an Agent works.
 
 There are 3 types of brains, you can create new ones by selecting `Assets -> 
 Create -> ML-Agents -> Brain`.
-The **Internal Brain** is a brain that uses a Neural Network to take decisions.
+The **Learning Brain** is a brain that uses a Neural Network to take decisions.
 When the Brain is checked as `Train` in the Academy **Training Hub**, the 
 Neural Network will be trained by the external process. You can also use the
-**Internal Brain** with a pre-trained model.
+**Learning Brain** with a pre-trained model.
 The **Heuristic** Brain allows you to hand-code the Agent's logic by extending
 the Decision class.
 Finally, the **Player** Brain lets you map keyboard commands to actions, which
@@ -109,7 +109,7 @@ can be useful when testing your agents and environment. If none of these types
 of Brains do what you need, you can implement your own CoreBrain to create your
 own type.
 
-In this tutorial, you will use an **Internal Brain** for training.
+In this tutorial, you will use an **Learning Brain** for training.
 
 #### Vector Observation Space
 
@@ -270,7 +270,7 @@ From TensorBoard, you will see the summary statistics:
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with Agents having an **Internal Brain**.
+use it with Agents having an **Learning Brain**.
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
 Either wait for the training process to close the window or press Ctrl+C at the 
 command-line prompt. If you simply close the window manually, the .bytes file 
@@ -280,7 +280,7 @@ containing the trained model is not exported into the ml-agents folder.
 
 Because TensorFlowSharp support is still experimental, it is disabled by
 default. In order to enable it, you must follow these steps. Please note that
-the `Internal` Brain mode will only be available once completing these steps.
+the `Learning` Brain mode will only be available once completing these steps.
 
 To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
 within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the

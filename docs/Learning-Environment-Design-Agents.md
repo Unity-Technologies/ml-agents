@@ -21,7 +21,7 @@ decisions depends on the type of Brain it is. A Player Brain allows you
 to directly control the agent. A heuristic Brain allows you to create a 
 decision script to control the agent with a set of rules. These two brains
 do not involve neural networks but they can be useful for debugging. The
-Internal Brain allows you to train and use neural network models for
+Learning Brain allows you to train and use neural network models for
 your Agents. See [Brains](Learning-Environment-Design-Brains.md).
   
 ## Decisions
@@ -344,7 +344,7 @@ continuous action spaces.
 
 When using Discrete Actions, it is possible to specify that some actions are
 impossible for the next decision. Then the Agent is controlled by an External or
-Internal Brain, the Agent will be unable to perform the specified action. Note
+Learning Brain, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by a Player or Heuristic Brain, the Agent will
 still be able to decide to perform the masked action. In order to mask an
 action, call the method `SetActionMask` within the `CollectObservation` method :

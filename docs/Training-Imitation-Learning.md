@@ -27,7 +27,7 @@ Machine Learning tasks work.
    `Assets`s are "Teacher" and "Student" respectively.
 2. The "Teacher" Brain must be a **Player Brain**. You must properly 
    configure the inputs to map to the corresponding actions.
-3. The "Student" Brain must be an **Internal Brain**.
+3. The "Student" Brain must be an **Learning Brain**.
 4. The Brain Parameters of both the "Teacher" and "Student" brains must be 
    compatible with the agent.
 5. Drag both the "Teacher" and "Student" brain into the Academy's `Training Hub`
@@ -52,7 +52,7 @@ Machine Learning tasks work.
    process with `CTL+C` from the command line.
 10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
-    with `Internal` Brain.
+    with `Learning` Brain.
 
 ### BC Teacher Helper
 

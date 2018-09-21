@@ -158,17 +158,17 @@ in the Inspector window.
 
 The Brain object encapsulates the decision making process. An Agent sends its
 observations to its Brain and expects a decision in return. The type of the brain
-(Internal, Heuristic or player)  determines how the Brain makes decisions. 
+(Learning, Heuristic or player) determines how the Brain makes decisions. 
 To create the Brain:
 
 1. Go to `Assets -> Create -> ML-Agents` and select the type of brain you want to
-   create. In this tutorial, we will create an **Internal Brain** and 
+   create. In this tutorial, we will create an **Learning Brain** and 
    a **Player Brain**.
 2. Name them `RollerBallBrain` and `RollerBallPlayer` respectively.
 
 We will come back to the Brain properties later, but leave the Model property
 of the `RollerBallBrain` as `None` for now. We will need to first train a 
-model before we can add it to the **Internal Brain**.
+model before we can add it to the **Learning Brain**.
 
 ![The Brain default properties](images/mlagents-NewTutBrain.png)
 
@@ -536,7 +536,7 @@ the Python API work as expected using the `notebooks/getting-started.ipynb`
 environment.
 
 Now you can train the Agent. To get ready for training, you must first to change
-the `Brain` of the agent to be the Internal Brain `RollerBallBrain`.
+the `Brain` of the agent to be the Learning Brain `RollerBallBrain`.
 Then drag the `RollerBallBrain` into the Academy's `Training Hub` and check 
 to `Train` checkbox for that brain. From there, the process is
 the same as described in [Training ML-Agents](Training-ML-Agents.md).
@@ -557,7 +557,7 @@ You also need to have brain assets linked appropriately to Agents and to Academy
 Keep in mind:
 
 * There can only be one Academy game object in a scene.
-* You can only train Internal Brains that have been included into the Academy's  
+* You can only train Learning Brains that have been included into the Academy's  
   Training Hub.
 
 Here is an example of what your scene hierarchy should look like:

@@ -84,7 +84,7 @@ the Brain to the training session. This allows the Agents to
 communicate with the external training process when making their decisions.
 
 1. Give to the agents you want to train the **Ball3DBrain**. 
-   __Note:__ You can only perform training with an `Internal Brain`.
+   __Note:__ You can only perform training with an `Learning Brain`.
 2. Select the **Ball3DAcademy** GameObject and add the **Ball3DBrain**
    to the Training Hub and toggle the train checkbox.
 
@@ -219,15 +219,14 @@ You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/editor_<academy_name>_<run-identifier>.bytes` where
 `<academy_name>` is the name of the Academy GameObject in the current scene.
 This file corresponds to your model's latest checkpoint. You can now embed this
-trained model into your Internal Brain by following the steps below, which is
+trained model into your Learning Brain by following the steps below, which is
 similar to the steps described
 [above](#play-an-example-environment-using-pretrained-model).
 
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
-3. Select the **Ball3DBrain** object from the Scene hierarchy.
-4. Change the **Type of Brain** to **Internal**.
+3. Select the  **Ball3DBrain** Learning Brain from the Scene hierarchy.
 5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of
    the Editor to the **Graph Model** placeholder in the **Ball3DBrain**
    inspector window.

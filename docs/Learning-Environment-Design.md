@@ -35,7 +35,7 @@ finished.
 During training, the external Python training process communicates with the
 Academy to run a series of episodes while it collects data and optimizes its
 neural network model. The type of Brain assigned to an Agent determines whether
-it participates in training or not. The **Internal Brain** can be used to train 
+it participates in training or not. The **Learning Brain** can be used to train 
 or execute a TensorFlow model. When training is completed
 successfully, you can add the trained model file to your Unity project for later
 use.
@@ -80,7 +80,7 @@ Agent instances should be attached to the GameObject representing that Agent.
 
 You must assign a Brain to every Agent, but you can share Brains between
 multiple Agents. Each Agent will make its own observations and act
-independently, but will use the same decision-making logic and, for **Internal
+independently, but will use the same decision-making logic and, for **Learning
 Brains**, the same trained TensorFlow model.
 
 ### Academy
@@ -122,10 +122,10 @@ search bar on top of the Scene Hierarchy window.
 
 To Create a Brain, go to `Assets -> Create -> Ml-Agents` and select the 
 type of brain you want to use. Brain behavior is
-determined by the Brain type. During training, use an **Internal Brain** 
+determined by the Brain type. During training, use an **Learning Brain** 
 and drag it into the Academy's `Training Hub` with the `Train` checkbox checked.
 When you want to use the trained model, import the model file into the Unity
-project, add it to the **Model** property of the **Internal Brain** and uncheck
+project, add it to the **Model** property of the **Learning Brain** and uncheck
 the `Train` checkbox of the `Training Hub`. See
 [Brains](Learning-Environment-Design-Brains.md) for details on using the
 different types of Brains. You can create new types of brains if the three

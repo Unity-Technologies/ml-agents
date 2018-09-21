@@ -29,7 +29,7 @@ environment:
 
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to put the brain
-controlling the Agents to be an **Internal Brain** and drag it into the
+controlling the Agents to be an **Learning Brain** and drag it into the
 Academy's `Training Hub` with the `Train`  checkbox checked.
 
 Next, we want the set up scene to play correctly when the training process
@@ -200,7 +200,7 @@ INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 10000. Mean Reward: 27.2
 You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds
 to your model's latest checkpoint. You can now embed this trained model into
-your Internal Brain by following the steps below:
+your Learning Brain by following the steps below:
 
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.

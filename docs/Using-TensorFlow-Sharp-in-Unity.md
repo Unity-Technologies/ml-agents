@@ -35,8 +35,8 @@ Go to `Edit` -> `Player Settings` and add `ENABLE_TENSORFLOW` to the `Scripting
 Define Symbols` for each type of device you want to use (**`PC, Mac and Linux
 Standalone`**, **`iOS`** or **`Android`**).
 
-Set the Brain you used for training to `Internal`. Drag `your_name_graph.bytes`
-into Unity and then drag it into The `Graph Model` field in the Brain.
+Set the Brain you used for training to `Learning`. Drag `your_name_graph.bytes`
+into Unity and then drag it into The `Model` field in the Brain.
 
 ## Using your own trained graphs
 
@@ -94,14 +94,14 @@ both the graph and associated weights. Note that you must save your graph as a
 .bytes file so Unity can load it.
 
 In the Unity Editor, you must specify the names of the nodes used by your graph
-in the **Internal** Brain Inspector window. If you used a scope when defining
+in the **Learning** Brain Inspector window. If you used a scope when defining
 your graph, specify it in the `Graph Scope` field.
 
-![Internal Brain Inspector](images/internal_brain.png)
+![Learning Brain Inspector](images/learning_brain.png)
 
 See
-[Internal Brain](Learning-Environment-Design-Internal-Brains.md#internal-brain)
-for more information about using Internal Brains.
+[Learning Brain](Learning-Environment-Design-Learning-Brains.md#learning-brain)
+for more information about using Learning Brains.
 
 If you followed these instructions well, the Agents in your environment that use
 this Brain will use your fully trained network to make decisions.

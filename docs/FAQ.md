@@ -20,7 +20,7 @@ ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
 following error message:
 
 ```console
-You need to install and enable the TensorFlowSharp plugin in order to use the Internal Brain.
+You need to install and enable the TensorFlowSharp plugin in order to use the Learning Brain.
 ```
 
 This error message occurs because the TensorFlowSharp plugin won't be usage
