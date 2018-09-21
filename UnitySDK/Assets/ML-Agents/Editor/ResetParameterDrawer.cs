@@ -100,13 +100,9 @@ namespace MLAgents
 
         private static void MarkSceneAsDirty()
         {
-            try
+            if (!EditorApplication.isPlaying)
             {
                 EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-            }
-            catch (Exception e)
-            {
-                
             }
         }
 
@@ -124,7 +120,7 @@ namespace MLAgents
             }
         }
 
-        private void ClearResetParamters()
+        private void ClearResetParamters() 
         {
             _Dictionary.Clear();
         }

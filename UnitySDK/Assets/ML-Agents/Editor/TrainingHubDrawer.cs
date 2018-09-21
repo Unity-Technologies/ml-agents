@@ -137,9 +137,6 @@ namespace MLAgents
 
             }
 
-
-
-
             EditorGUI.EndProperty();
         }
 
@@ -159,13 +156,9 @@ namespace MLAgents
         
         private static void MarkSceneAsDirty()
         {
-            try
+            if (!EditorApplication.isPlaying)
             {
                 EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-            }
-            catch (Exception e)
-            {
-                
             }
         }
 
