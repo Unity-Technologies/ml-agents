@@ -17,8 +17,6 @@ namespace MLAgents
     };
 
 
-
-
 /** Only need to be modified in the brain's inpector.
  * Defines what is the resolution of the camera
 */
@@ -65,11 +63,7 @@ namespace MLAgents
     }
 
 /**
- * Contains all high-level Brain logic. 
- * Add this component to an empty GameObject in your scene and drag this 
- * GameObject into your Academy to make it a child in the hierarchy.
- * Contains a set of CoreBrains, which each correspond to a different method
- * for deciding actions.
+ * Defines the Brain ScriptableObject from which the implemetations of Brains will inherit.
  */
     public abstract class Brain : ScriptableObject
     {

@@ -14,7 +14,7 @@ using TensorFlow;
 
 namespace MLAgents
 {
-    /// CoreBrain which decides actions using internally embedded TensorFlow model.
+    /// Brain which decides actions using internally embedded TensorFlow model.
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {

@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace MLAgents
 {
-    /// CoreBrain which decides actions using developer-provided Decision script.
+    /// Brain which decides actions using developer-provided Decision script.
     [CreateAssetMenu(fileName = "NewHeuristicBrain", menuName = "ML-Agents/Heuristic Brain")]
     public class HeuristicBrain : Brain
     {
