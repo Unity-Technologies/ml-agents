@@ -26,23 +26,31 @@ namespace MLAgents
         /// Keeps track of which brains have data to send on the current step
         Dictionary<string, bool> m_hasData =
             new Dictionary<string, bool>();
+
         /// Keeps track of which brains queried the batcher on the current step
         Dictionary<string, bool> m_hasQueried =
             new Dictionary<string, bool>();
+
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_currentAgents =
             new Dictionary<string, List<Agent>>();
+
         /// The Communicator of the batcher, sends a message at most once per step
         Communicator m_communicator;
+
         /// The current UnityRLOutput to be sent when all the brains queried the batcher
         CommunicatorObjects.UnityRLOutput m_currentUnityRLOutput =
-                               new CommunicatorObjects.UnityRLOutput();
+            new CommunicatorObjects.UnityRLOutput();
+
         /// Keeps track of the done flag of the Academy
         bool m_academyDone;
+
         /// Keeps track of last CommandProto sent by External
         CommunicatorObjects.CommandProto m_command;
+
         /// Keeps track of last EnvironmentParametersProto sent by External
         CommunicatorObjects.EnvironmentParametersProto m_environmentParameters;
+
         /// Keeps track of last training mode sent by External
         bool m_isTraining;
 
@@ -72,11 +80,11 @@ namespace MLAgents
             try
             {
                 initializationInput = m_communicator.Initialize(
-                        new CommunicatorObjects.UnityOutput
-                        {
-                            RlInitializationOutput = academyParameters
-                        },
-                        out input);
+                    new CommunicatorObjects.UnityOutput
+                    {
+                        RlInitializationOutput = academyParameters
+                    },
+                    out input);
             }
             catch
             {
@@ -181,6 +189,7 @@ namespace MLAgents
             {
                 m_currentAgents[brainKey].Add(agent);
             }
+
             // If at least one agent has data to send, then append data to
             // the message and update hasSentState
             if (m_currentAgents[brainKey].Count > 0)
@@ -190,6 +199,7 @@ namespace MLAgents
                     CommunicatorObjects.AgentInfoProto agentInfoProto = agentInfo[agent].ToProto();
                     m_currentUnityRLOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                 }
+
                 m_hasData[brainKey] = true;
             }
 
@@ -202,6 +212,7 @@ namespace MLAgents
                     m_currentUnityRLOutput.GlobalDone = m_academyDone;
                     SendBatchedMessageHelper();
                 }
+
                 // The message was just sent so we must reset hasSentState and
                 // triedSendState
                 foreach (string k in m_currentAgents.Keys)
@@ -219,15 +230,17 @@ namespace MLAgents
         void SendBatchedMessageHelper()
         {
             var input = m_communicator.Exchange(
-                new CommunicatorObjects.UnityOutput{
-                RlOutput = m_currentUnityRLOutput
-            });
+                new CommunicatorObjects.UnityOutput
+                {
+                    RlOutput = m_currentUnityRLOutput
+                });
             m_messagesReceived += 1;
 
             foreach (string k in m_currentUnityRLOutput.AgentInfos.Keys)
             {
                 m_currentUnityRLOutput.AgentInfos[k].Value.Clear();
             }
+
             if (input == null)
             {
                 m_command = CommunicatorObjects.CommandProto.Quit;
@@ -252,34 +265,31 @@ namespace MLAgents
             }
 
             foreach (var brainName in rlInput.AgentActions.Keys)
+            {
+                if (!m_currentAgents[brainName].Any())
                 {
-                    if (!m_currentAgents[brainName].Any())
-                    {
-                        continue;
-                    }
-                    if (!rlInput.AgentActions[brainName].Value.Any())
-                    {
-                        continue;
-                    }
-                    for (var i = 0; i < m_currentAgents[brainName].Count(); i++)
-                    {
-                        var agent = m_currentAgents[brainName][i];
-                        var action = rlInput.AgentActions[brainName].Value[i];
-                        agent.UpdateVectorAction(
-                            action.VectorActions.ToArray());
-                        agent.UpdateMemoriesAction(
-                            action.Memories.ToList());
-                        agent.UpdateTextAction(
-                            action.TextActions);
-                        agent.UpdateValueAction(
-                            action.Value);
-                    }
+                    continue;
                 }
-            
-        }
 
+                if (!rlInput.AgentActions[brainName].Value.Any())
+                {
+                    continue;
+                }
+
+                for (var i = 0; i < m_currentAgents[brainName].Count(); i++)
+                {
+                    var agent = m_currentAgents[brainName][i];
+                    var action = rlInput.AgentActions[brainName].Value[i];
+                    agent.UpdateVectorAction(
+                        action.VectorActions.ToArray());
+                    agent.UpdateMemoriesAction(
+                        action.Memories.ToList());
+                    agent.UpdateTextAction(
+                        action.TextActions);
+                    agent.UpdateValueAction(
+                        action.Value);
+                }
+            }
+        }
     }
 }
-
-
-

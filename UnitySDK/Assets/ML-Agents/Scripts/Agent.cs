@@ -92,11 +92,10 @@ namespace MLAgents
         /// <param name="info">The AgentInfo to convert.</param>
         public CommunicatorObjects.AgentInfoProto ToProto()
         {
-
             var agentInfoProto = new CommunicatorObjects.AgentInfoProto
             {
-                StackedVectorObservation = { stackedVectorObservation },
-                StoredVectorActions = { storedVectorActions },
+                StackedVectorObservation = {stackedVectorObservation},
+                StoredVectorActions = {storedVectorActions},
                 StoredTextActions = storedTextActions,
                 TextObservation = textObservation,
                 Reward = reward,
@@ -108,19 +107,21 @@ namespace MLAgents
             {
                 agentInfoProto.Memories.Add(memories);
             }
+
             if (actionMasks != null)
             {
                 agentInfoProto.ActionMask.AddRange(actionMasks);
             }
+
             foreach (Texture2D obs in visualObservations)
             {
                 agentInfoProto.VisualObservations.Add(
                     ByteString.CopyFrom(obs.EncodeToPNG())
                 );
             }
+
             return agentInfoProto;
         }
-
     }
 
     /// <summary>
@@ -306,12 +307,12 @@ namespace MLAgents
         /// Array of Texture2D used to render to from render buffer before  
         /// transforming into float tensor.
         Texture2D[] textureArray;
-        
+
         /// <summary>
         /// Demonstration recorder.
         /// </summary>
         private DemonstrationRecorder recorder;
-        
+
         /// Monobehavior function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -321,6 +322,7 @@ namespace MLAgents
             {
                 textureArray[i] = new Texture2D(1, 1, TextureFormat.RGB24, false);
             }
+
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             OnEnableHelper(academy);
@@ -557,7 +559,6 @@ namespace MLAgents
         /// </remarks>
         public virtual void InitializeAgent()
         {
-
         }
 
         /// <summary>
@@ -626,7 +627,7 @@ namespace MLAgents
             {
                 recorder.WriteExperience(info);
             }
-            
+
             info.textObservation = "";
         }
 
@@ -662,7 +663,6 @@ namespace MLAgents
         /// </remarks>
         public virtual void CollectObservations()
         {
-
         }
 
         /// <summary>
@@ -676,7 +676,7 @@ namespace MLAgents
         {
             actionMasker.SetActionMask(0, actionIndices);
         }
-        
+
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
         /// able to perform the action passed as argument at the next decision. If no branch is
@@ -686,9 +686,9 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action on branch 0</param>
         protected void SetActionMask(int actionIndex)
         {
-            actionMasker.SetActionMask(0, new int[1]{actionIndex});
+            actionMasker.SetActionMask(0, new int[1] {actionIndex});
         }
-        
+
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
         /// able to perform the action passed as argument at the next decision. If no branch is
@@ -699,7 +699,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action</param>
         protected void SetActionMask(int branch, int actionIndex)
         {
-            actionMasker.SetActionMask(branch, new int[1]{actionIndex});
+            actionMasker.SetActionMask(branch, new int[1] {actionIndex});
         }
 
         /// <summary>
@@ -714,7 +714,7 @@ namespace MLAgents
         {
             actionMasker.SetActionMask(branch, actionIndices);
         }
-        
+
 
         /// <summary>
         /// Adds a float observation to the vector observations of the agent.
@@ -791,7 +791,7 @@ namespace MLAgents
             info.vectorObservation.Add(observation.z);
             info.vectorObservation.Add(observation.w);
         }
-        
+
         /// <summary>
         /// Adds a boolean observation to the vector observation of the agent.
         /// Increases the size of the agent's vector observation by 1.
@@ -829,7 +829,6 @@ namespace MLAgents
         /// <param name="textAction">Text action.</param>
         public virtual void AgentAction(float[] vectorAction, string textAction)
         {
-
         }
 
         /// <summary>
@@ -839,7 +838,6 @@ namespace MLAgents
         /// </summary>
         public virtual void AgentOnDone()
         {
-
         }
 
         /// <summary>
@@ -849,7 +847,6 @@ namespace MLAgents
         /// </summary>
         public virtual void AgentReset()
         {
-
         }
 
         /// <summary>
@@ -889,7 +886,7 @@ namespace MLAgents
         {
             action.textActions = textActions;
         }
-        
+
         /// <summary>
         /// Updates the value of the agent.
         /// </summary>
@@ -1069,7 +1066,7 @@ namespace MLAgents
 
             var tempRT =
                 RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-            
+
             if (width != texture2D.width || height != texture2D.height)
             {
                 texture2D.Resize(width, height);
