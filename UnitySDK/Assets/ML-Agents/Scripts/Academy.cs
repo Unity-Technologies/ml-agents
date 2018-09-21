@@ -304,9 +304,8 @@ namespace MLAgents
                         Batcher.BrainParametersConvertor(
                             bp,
                             brain.name,
-                            brain.isExternal ? 
-                                CommunicatorObjects.BrainTypeProto.External : 
-                                CommunicatorObjects.BrainTypeProto.Player)
+                            brain.isExternal
+                            )
                         );
                 }
                 

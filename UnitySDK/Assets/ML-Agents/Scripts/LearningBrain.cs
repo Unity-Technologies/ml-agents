@@ -13,7 +13,8 @@ using TensorFlow;
 namespace MLAgents
 {
     /// CoreBrain which decides actions using internally embedded TensorFlow model.
-    public class InternalBrain : Brain
+    [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
+    public class LearningBrain : Brain
     {
         [System.Serializable]
         private struct TensorFlowAgentPlaceholder
@@ -33,9 +34,6 @@ namespace MLAgents
         [Tooltip("This must be the bytes file corresponding to the pretrained TensorFlow graph.")]
         /// Modify only in inspector : Reference to the Graph asset
         public TextAsset graphModel;
-
-        /// Modify only in inspector : If a scope was used when training the model, specify it here
-        public string graphScope;
 
         [SerializeField]
         [Tooltip(
@@ -107,42 +105,35 @@ namespace MLAgents
 
                 session = new TFSession(graph);
 
-                // TODO: Make this a loop over a dynamic set of graph inputs
-
-                if ((graphScope.Length > 1) && (graphScope[graphScope.Length - 1] != '/'))
-                {
-                    graphScope = graphScope + '/';
-                }
-
-                if (graph[graphScope + BatchSizePlaceholderName] != null)
+                if (graph[BatchSizePlaceholderName] != null)
                 {
                     hasBatchSize = true;
                 }
 
-                if ((graph[graphScope + RecurrentInPlaceholderName] != null) &&
-                    (graph[graphScope + RecurrentOutPlaceholderName] != null))
+                if ((graph[RecurrentInPlaceholderName] != null) &&
+                    (graph[RecurrentOutPlaceholderName] != null))
                 {
                     hasRecurrent = true;
                     var runner = session.GetRunner();
-                    runner.Fetch(graph[graphScope + "memory_size"][0]);
+                    runner.Fetch(graph["memory_size"][0]);
                     var networkOutput = runner.Run()[0].GetValue();
                     memorySize = (int) networkOutput;
                 }
 
-                if (graph[graphScope + VectorObservationPlacholderName] != null)
+                if (graph[VectorObservationPlacholderName] != null)
                 {
                     hasState = true;
                 }
 
-                if (graph[graphScope + PreviousActionPlaceholderName] != null)
+                if (graph[PreviousActionPlaceholderName] != null)
                 {
                     hasPrevAction = true;
                 }
-                if (graph[graphScope + "value_estimate"] != null)
+                if (graph["value_estimate"] != null)
                 {
                     hasValueEstimate = true;
                 }
-                if (graph[graphScope + ActionMaskPlaceholderName] != null)
+                if (graph[ActionMaskPlaceholderName] != null)
                 {
                     hasMaskedActions = true;
                 }
@@ -274,18 +265,18 @@ namespace MLAgents
             var runner = session.GetRunner();
             try
             {
-                runner.Fetch(graph[graphScope + ActionPlaceholderName][0]);
+                runner.Fetch(graph[ActionPlaceholderName][0]);
             }
             catch
             {
                 throw new UnityAgentsException(string.Format(
-                    @"The node {0} could not be found. Please make sure the graphScope {1} is correct",
-                    graphScope + ActionPlaceholderName, graphScope));
+                    @"The node {0} could not be found. Please make sure the node name is correct",
+                    ActionPlaceholderName));
             }
 
             if (hasBatchSize)
             {
-                runner.AddInput(graph[graphScope + BatchSizePlaceholderName][0], new int[] {currentBatchSize});
+                runner.AddInput(graph[BatchSizePlaceholderName][0], new int[] {currentBatchSize});
             }
 
             foreach (TensorFlowAgentPlaceholder placeholder in graphPlaceholders)
@@ -294,12 +285,12 @@ namespace MLAgents
                 {
                     if (placeholder.valueType == TensorFlowAgentPlaceholder.TensorType.FloatingPoint)
                     {
-                        runner.AddInput(graph[graphScope + placeholder.name][0],
+                        runner.AddInput(graph[placeholder.name][0],
                             new float[] {Random.Range(placeholder.minValue, placeholder.maxValue)});
                     }
                     else if (placeholder.valueType == TensorFlowAgentPlaceholder.TensorType.Integer)
                     {
-                        runner.AddInput(graph[graphScope + placeholder.name][0],
+                        runner.AddInput(graph[placeholder.name][0],
                             new int[] {Random.Range((int) placeholder.minValue, (int) placeholder.maxValue + 1)});
                     }
                 }
@@ -308,26 +299,26 @@ namespace MLAgents
                     throw new UnityAgentsException(string.Format(
                         @"One of the Tensorflow placeholder cound nout be found.
                 In brain {0}, there are no {1} placeholder named {2}.",
-                        name, placeholder.valueType.ToString(), graphScope + placeholder.name));
+                        name, placeholder.valueType.ToString(), placeholder.name));
                 }
             }
 
             // Create the state tensor
             if (hasState)
             {
-                runner.AddInput(graph[graphScope + VectorObservationPlacholderName][0], inputState);
+                runner.AddInput(graph[VectorObservationPlacholderName][0], inputState);
             }
 
             // Create the previous action tensor
             if (hasPrevAction)
             {
-                runner.AddInput(graph[graphScope + PreviousActionPlaceholderName][0], inputPrevAction);
+                runner.AddInput(graph[PreviousActionPlaceholderName][0], inputPrevAction);
             }
 
             // Create the mask action tensor
             if (hasMaskedActions)
             {
-                runner.AddInput(graph[graphScope + ActionMaskPlaceholderName][0], maskedActions);
+                runner.AddInput(graph[ActionMaskPlaceholderName][0], maskedActions);
             }
             
             // Create the observation tensors
@@ -336,20 +327,20 @@ namespace MLAgents
                 obsNumber < brainParameters.cameraResolutions.Length;
                 obsNumber++)
             {
-                runner.AddInput(graph[graphScope + VisualObservationPlaceholderName[obsNumber]][0],
+                runner.AddInput(graph[VisualObservationPlaceholderName[obsNumber]][0],
                     observationMatrixList[obsNumber]);
             }
 
             if (hasRecurrent)
             {
-                runner.AddInput(graph[graphScope + "sequence_length"][0], 1);
-                runner.AddInput(graph[graphScope + RecurrentInPlaceholderName][0], inputOldMemories);
-                runner.Fetch(graph[graphScope + RecurrentOutPlaceholderName][0]);
+                runner.AddInput(graph["sequence_length"][0], 1);
+                runner.AddInput(graph[RecurrentInPlaceholderName][0], inputOldMemories);
+                runner.Fetch(graph[RecurrentOutPlaceholderName][0]);
             }
 
             if (hasValueEstimate)
             {
-                runner.Fetch(graph[graphScope + "value_estimate"][0]);
+                runner.Fetch(graph["value_estimate"][0]);
             }
 
             TFTensor[] networkOutput;
@@ -455,138 +446,6 @@ namespace MLAgents
 #endif
             agentInfos.Clear();
         }
-
-//        /// Displays the parameters of the CoreBrainInternal in the Inspector 
-//        public void OnInspector()
-//        {
-//#if ENABLE_TENSORFLOW && UNITY_EDITOR
-//            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-//            broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
-//                "If checked, the brain will broadcast states and actions to Python."), broadcast);
-//
-//            var serializedBrain = new SerializedObject(this);
-//            GUILayout.Label("Edit the Tensorflow graph parameters here");
-//            var tfGraphModel = serializedBrain.FindProperty("graphModel");
-//            serializedBrain.Update();
-//            EditorGUILayout.ObjectField(tfGraphModel);
-//            serializedBrain.ApplyModifiedProperties();
-//
-//            if (graphModel == null)
-//            {
-//                EditorGUILayout.HelpBox("Please provide a tensorflow graph as a bytes file.", MessageType.Error);
-//            }
-//
-//
-//            graphScope =
-//                EditorGUILayout.TextField(new GUIContent("Graph Scope",
-//                    "If you set a scope while training your tensorflow model, " +
-//                    "all your placeholder name will have a prefix. You must specify that prefix here."), graphScope);
-//
-//            if (BatchSizePlaceholderName == "")
-//            {
-//                BatchSizePlaceholderName = "batch_size";
-//            }
-//
-//            BatchSizePlaceholderName =
-//                EditorGUILayout.TextField(new GUIContent("Batch Size Node Name", "If the batch size is one of " +
-//                                                                                 "the inputs of your graph, you must specify the name if the placeholder here."),
-//                    BatchSizePlaceholderName);
-//            if (VectorObservationPlacholderName == "")
-//            {
-//                VectorObservationPlacholderName = "state";
-//            }
-//
-//            VectorObservationPlacholderName =
-//                EditorGUILayout.TextField(new GUIContent("Vector Observation Node Name",
-//                    "If your graph uses the state as an input, " +
-//                    "you must specify the name if the placeholder here."), VectorObservationPlacholderName);
-//            if (RecurrentInPlaceholderName == "")
-//            {
-//                RecurrentInPlaceholderName = "recurrent_in";
-//            }
-//
-//            RecurrentInPlaceholderName =
-//                EditorGUILayout.TextField(new GUIContent("Recurrent Input Node Name", "If your graph uses a " +
-//                                                                                      "recurrent input / memory as input and outputs new recurrent input / memory, " +
-//                                                                                      "you must specify the name if the input placeholder here."),
-//                    RecurrentInPlaceholderName);
-//            if (RecurrentOutPlaceholderName == "")
-//            {
-//                RecurrentOutPlaceholderName = "recurrent_out";
-//            }
-//
-//            RecurrentOutPlaceholderName =
-//                EditorGUILayout.TextField(new GUIContent("Recurrent Output Node Name", " If your graph uses a " +
-//                                                                                       "recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if " +
-//                                                                                       "the output placeholder here."),
-//                    RecurrentOutPlaceholderName);
-//
-//            if (brain.brainParameters.cameraResolutions != null)
-//            {
-//                if (brain.brainParameters.cameraResolutions.Count() > 0)
-//                {
-//                    if (VisualObservationPlaceholderName == null)
-//                    {
-//                        VisualObservationPlaceholderName =
-//                            new string[brain.brainParameters.cameraResolutions.Count()];
-//                    }
-//
-//                    if (VisualObservationPlaceholderName.Count() != brain.brainParameters.cameraResolutions.Count())
-//                    {
-//                        VisualObservationPlaceholderName =
-//                            new string[brain.brainParameters.cameraResolutions.Count()];
-//                    }
-//
-//                    for (int obs_number =
-//                            0;
-//                        obs_number < brain.brainParameters.cameraResolutions.Count();
-//                        obs_number++)
-//                    {
-//                        if ((VisualObservationPlaceholderName[obs_number] == "") ||
-//                            (VisualObservationPlaceholderName[obs_number] == null))
-//                        {
-//                            VisualObservationPlaceholderName[obs_number] =
-//                                "visual_observation_" + obs_number;
-//                        }
-//                    }
-//
-//                    var opn = serializedBrain.FindProperty("VisualObservationPlaceholderName");
-//                    serializedBrain.Update();
-//                    EditorGUILayout.PropertyField(opn, true);
-//                    serializedBrain.ApplyModifiedProperties();
-//                }
-//            }
-//
-//            if (ActionPlaceholderName == "")
-//            {
-//                ActionPlaceholderName = "action";
-//            }
-//
-//            ActionPlaceholderName =
-//                EditorGUILayout.TextField(new GUIContent("Action Node Name", "Specify the name of the " +
-//                                                                             "placeholder corresponding to the actions of the brain in your graph. If the action space type is " +
-//                                                                             "continuous, the output must be a one dimensional tensor of float of length Action Space Size, " +
-//                                                                             "if the action space type is discrete, the output must be a one dimensional tensor of int " +
-//                                                                             "of length 1."), ActionPlaceholderName);
-//
-//
-//            var tfPlaceholders = serializedBrain.FindProperty("graphPlaceholders");
-//            serializedBrain.Update();
-//            EditorGUILayout.PropertyField(tfPlaceholders, true);
-//            serializedBrain.ApplyModifiedProperties();
-//#endif
-//#if !ENABLE_TENSORFLOW && UNITY_EDITOR
-//            EditorGUILayout.HelpBox(
-//                "You need to install and enable the TensorflowSharp plugin in " +
-//                "order to use the internal brain.", MessageType.Error);
-//            if (GUILayout.Button("Show me how"))
-//            {
-//                Application.OpenURL(
-//                    "https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-" +
-//                    "Balance-Ball.md#embedding-the-trained-brain-into-the-unity-environment-experimental");
-//            }
-//#endif
-//        }
 
         /// <summary>
         /// Converts a list of Texture2D into a Tensor.

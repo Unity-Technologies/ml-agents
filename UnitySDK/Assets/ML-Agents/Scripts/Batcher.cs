@@ -199,7 +199,7 @@ namespace MLAgents
         /// <param name="name">The name of the brain.</param>
         /// <param name="type">The type of brain.</param>
         public static CommunicatorObjects.BrainParametersProto BrainParametersConvertor(
-            BrainParameters brainParameters, string name, CommunicatorObjects.BrainTypeProto type)
+            BrainParameters brainParameters, string name, bool isTraining)
         {
 
             var brainParametersProto = new CommunicatorObjects.BrainParametersProto
@@ -210,7 +210,7 @@ namespace MLAgents
                     VectorActionSpaceType =
                     (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorActionSpaceType,
                     BrainName = name,
-                    BrainType = type
+                    IsTraining = isTraining
                 };
             brainParametersProto.VectorActionDescriptions.AddRange(
                 brainParameters.vectorActionDescriptions);
