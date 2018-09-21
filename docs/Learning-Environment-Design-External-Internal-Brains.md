@@ -81,11 +81,6 @@ which must be set to the .bytes file containing the trained model itself.
 Only change the following Internal Brain properties if you have created your own
 TensorFlow model and are not using an ML-Agents model:
 
-* `Graph Scope` : If you set a scope while training your TensorFlow model, all
-  your placeholder name will have a prefix. You must specify that prefix here.
-  Note that if more than one Brain were set to external during training, you
-  must give a `Graph Scope` to the Internal Brain corresponding to the name of
-  the Brain GameObject.
 * `Batch Size Node Name` : If the batch size is one of the inputs of your
   graph, you must specify the name if the placeholder here. The Brain will make
   the batch size equal to the number of Agents connected to the Brain
