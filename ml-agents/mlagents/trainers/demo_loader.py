@@ -6,26 +6,11 @@ from PIL import Image
 import io
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
+from mlagents.envs.utilities import process_pixels
 from mlagents.envs.communicator_objects import *
 from google.protobuf.internal.decoder import _DecodeVarint32
 
 logger = logging.getLogger("mlagents.trainers")
-
-
-def process_pixels(image_bytes, gray_scale):
-    """
-    Converts byte array observation image into numpy array, re-sizes it,
-    and optionally converts it to grey scale
-    :param image_bytes: input byte array corresponding to image
-    :return: processed numpy array of observation from environment
-    """
-    s = bytearray(image_bytes)
-    image = Image.open(io.BytesIO(s))
-    s = np.array(image) / 255.0
-    if gray_scale:
-        s = np.mean(s, axis=2)
-        s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-    return s
 
 
 def load_demonstration(file_path, brain_name, sequence_length):
