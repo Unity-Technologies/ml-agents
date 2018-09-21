@@ -102,7 +102,7 @@ namespace MLAgents
         {
             if (!_isInitialized)
             {
-                FindObjectsOfType<Academy>()[0].BrainDecideAction += DecideAction;
+                FindObjectOfType<Academy>().BrainDecideAction += DecideAction;
                 Initialize();
                 _isInitialized = true;
             }
