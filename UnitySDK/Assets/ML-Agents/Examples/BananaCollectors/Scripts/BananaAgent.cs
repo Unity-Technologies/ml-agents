@@ -5,8 +5,7 @@ using MLAgents;
 
 public class BananaAgent : Agent
 {
-    public GameObject myAcademyObj;
-    BananaAcademy myAcademy;
+    private BananaAcademy myAcademy;
     public GameObject area;
     BananaArea myArea;
     bool frozen;
@@ -39,7 +38,7 @@ public class BananaAgent : Agent
         Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<BananaArea>();
         rayPer = GetComponent<RayPerception>();
-        myAcademy = myAcademyObj.GetComponent<BananaAcademy>();
+        myAcademy = FindObjectOfType<BananaAcademy>();
     }
 
     public override void CollectObservations()
