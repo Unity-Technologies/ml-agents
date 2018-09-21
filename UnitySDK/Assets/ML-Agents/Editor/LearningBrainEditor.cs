@@ -8,13 +8,13 @@ namespace MLAgents
  Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
 */
     
-    [CustomEditor(typeof(InternalBrain))]
-    public class InternalBrainEditor : Editor
+    [CustomEditor(typeof(LearningBrain))]
+    public class LearningBrainEditor : Editor
     {
 
         public override void OnInspectorGUI()
         {
-            InternalBrain brain = (InternalBrain) target;
+            LearningBrain brain = (LearningBrain) target;
             
             var serializedBrain = serializedObject;
             serializedBrain.Update(); 

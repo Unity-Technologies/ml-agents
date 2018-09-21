@@ -125,7 +125,7 @@ namespace MLAgents
                 EditorGUI.BeginChangeCheck();
                 if (item != null)
                 {
-                    if (item is InternalBrain)
+                    if (item is LearningBrain)
                     {
                         item.isExternal = EditorGUI.Toggle(valueRect, item.isExternal);
                     }
