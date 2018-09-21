@@ -55,7 +55,7 @@ you look at an Academy component in the inspector, you can see several
 properties that control how the environment works. 
 The **Training Hub** keeps track of which brains will send data during training,
 If a brain is added to the hub, his data will be sent to the external training
-process. If the train toogle is checked, the training process will be able to
+process. If the `Train` checkbox is checked, the training process will be able to
 control the agents linked to the brain to train them.
 The **Training** and **Inference Configuration** properties 
 set the graphics and timescale properties for the Unity application. 
@@ -99,7 +99,7 @@ an Agent works.
 There are 3 types of brains, you can create new ones by selecting `Assets -> 
 Create -> ML-Agents -> Brain`.
 The **Internal Brain** is a brain that uses a Neural Network to take decisions.
-When the Brain is toogled as `Train` in the Academy **Training Hub**, the 
+When the Brain is checked as `Train` in the Academy **Training Hub**, the 
 Neural Network will be trained by the external process. You can also use the
 **Internal Brain** with a pre-trained model.
 The **Heuristic** Brain allows you to hand-code the Agent's logic by extending

@@ -32,9 +32,10 @@ These classes are all defined in the `ml-agents/mlagents/envs` folder of
 the ML-Agents SDK.
 
 To communicate with an Agent in a Unity environment from a Python program, the
-Agent must either use an **External** Brain or use a Brain that is broadcasting
-(has its **Broadcast** property set to true). Your code is expected to return
-actions for Agents with external Brains, but can only observe broadcasting
+Agent must either use a Brain present in the Academy's `Training Hub`.
+Your code is expected to return
+actions for Agents with Brains with the `Train` checkbox of the
+Academy's `Training Hub` checked, but can only observe broadcasting
 Brains (the information you receive for an Agent is the same in both cases).
 
 _Notice: Currently communication between Unity and Python takes place over an
@@ -95,7 +96,7 @@ Once loaded, you can use your UnityEnvironment object, which referenced by a
 variable named `env` in this example, can be used in the following way:  
 
 - **Print : `print(str(env))`**  
-  Prints all parameters relevant to the loaded environment and the external
+  Prints all parameters relevant to the loaded environment and the 
   Brains.  
 - **Reset : `env.reset(train_model=True, config=None)`**  
   Send a reset signal to the environment, and provides a dictionary mapping
@@ -128,9 +129,10 @@ variable named `env` in this example, can be used in the following way:
     observations = brainInfo.vector_observations
     ```
 
-    Note that if you have more than one external Brain in the environment, you
+    Note that if you have more than one Brain in the Academy's `Training Hub` with
+    the `Train` checkbox checked, you
     must provide dictionaries from Brain names to arrays for `action`, `memory`
-    and `value`. For example: If you have two external Brains named `brain1` and
+    and `value`. For example: If you have two training Brains named `brain1` and
     `brain2` each with one Agent taking two continuous actions, then you can
     have:
 

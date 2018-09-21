@@ -1,32 +1,26 @@
 # Brains
 
-The Brain encapsulates the decision making process. Brain objects must be
-children of the Academy in the Unity scene hierarchy. Every Agent must be
+The Brain encapsulates the decision making process. Every Agent must be
 assigned a Brain, but you can use the same Brain with more than one Agent. You
 can also create several Brains, attach each of the Brain to one or more than one
 Agent.
 
-Use the Brain class directly, rather than a subclass. Brain behavior is
-determined by the **Brain Type**. The ML-Agents toolkit defines four Brain
-Types:
+There are 3 types of brains you can use:
 
-* [External](Learning-Environment-Design-External-Internal-Brains.md) — The
-  **External** and **Internal** types typically work together; set **External**
-  when training your Agents. You can also use the **External** Brain to
-  communicate with a Python script via the Python `UnityEnvironment` class
-  included in the Python portion of the ML-Agents SDK.
-* [Internal](Learning-Environment-Design-External-Internal-Brains.md) – Set
-  **Internal**  to make use of a trained model.
+* [Internal](Learning-Environment-Internal-Brains.md) – Set
+  **Internal**  to make use of a trained model or train a new model.
 * [Heuristic](Learning-Environment-Design-Heuristic-Brains.md) – Set
   **Heuristic** to hand-code the Agent's logic by extending the Decision class.
 * [Player](Learning-Environment-Design-Player-Brains.md) – Set **Player** to map
   keyboard keys to Agent actions, which can be useful to test your Agent code.
 
-During training, set your Agent's Brain type to **External**. To use the trained
-model, import the model file into the Unity project and change the Brain type to
-**Internal**.
+During training, use an **Internal Brain** 
+and drag it into the Academy's `Training Hub` with the `Train` checkbox checked.
+When you want to use the trained model, import the model file into the Unity
+project, add it to the **Model** property of the **Internal Brain** and uncheck
+the `Train` checkbox of the `Training Hub`.
 
-The Brain class has several important properties that you can set using the
+Brain assets has several important properties that you can set using the
 Inspector window. These properties must be appropriate for the Agents using the
 Brain. For example, the `Vector Observation Space Size` property must match the
 length of the feature vector created by an Agent exactly. See
@@ -59,23 +53,20 @@ to a Brain component:
       number of possible discrete values for each action branch.
     * `Action Descriptions` - A list of strings used to name the available
       actions for the Brain.
-* `Type of Brain` - Describes how the Brain will decide actions.
-  * `External` - Actions are decided by an external process, such as the PPO
-    training process.
-  * `Internal` - Actions are decided using internal TensorFlowSharp model.
-  * `Player` - Actions are decided using keyboard input mappings.
-  * `Heuristic` - Actions are decided using a custom `Decision` script, which
-    must be attached to the Brain game object.
+
+The other properties of the brain depend on the type of Brain you are using.
 
 ## Using the Broadcast Feature
 
-The Player, Heuristic and Internal Brains have been updated to support
-broadcast. The broadcast feature allows you to collect data from your Agents
-using a Python program without controlling them.
+The Player, Heuristic and Internal Brains can support
+broadcast to an external process. The broadcast feature allows you to collect data 
+from your Agents using a Python program without controlling them.
 
 ### How to use: Unity
 
-To turn it on in Unity, simply check the `Broadcast` box as shown bellow:
+To turn it on in Unity, Drag the Brain into the Academy's training hub but leave
+the `Train` checkbox unchecked. This will expose the Brain's data without letting the
+external process control it.
 
 ![Broadcast](images/broadcast.png)
 

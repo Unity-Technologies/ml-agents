@@ -1,0 +1,75 @@
+# Internal Brains
+
+The **Internal Brain** work in different phases of
+training. When training your Agents, drag the **Internal Brain** to the
+Academy's `Training Hub` and check the checkbox `Train`. When using a pretrained 
+model, just drag the Model file into the `Model` property of the **Internal Brain**.
+
+## Training Mode
+
+When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least
+one Brain asset must be in the Academy's `Training Hub` with the checkbox `Train`
+checked. This allows the training process to collect the observations of Agents 
+using that Brain and give the Agents their actions.
+
+In addition to using an **Internal Brain** for training using the ML-Agents learning
+algorithms, you can use an **Internal Brain** to control Agents in a Unity
+environment using an external Python program. See [Python API](Python-API.md)
+for more information.
+
+## Inference Mode
+
+The **Internal Brain** type uses a
+[TensorFlow model](https://www.tensorflow.org/get_started/get_started_for_beginners#models_and_training)
+to make decisions. The Proximal Policy Optimization (PPO) and Behavioral Cloning
+algorithms included with the ML-Agents SDK produce trained TensorFlow models
+that you can use with the Internal Brain type.
+
+A __model__ is a mathematical relationship mapping an agent's observations to
+its actions. TensorFlow is a software library for performing numerical
+computation through data flow graphs. A TensorFlow model, then, defines the
+mathematical relationship between your Agent's observations and its actions
+using a TensorFlow data flow graph.
+
+### Creating a graph model
+
+The training algorithms included in the ML-Agents SDK produce TensorFlow graph
+models as the end result of the training process. See
+[Training ML-Agents](Training-ML-Agents.md) for instructions on how to train a
+model.
+
+### Using a graph model
+
+To use a graph model:
+
+1. Select the **Internal Brain** asset in the **Project** window of the Unity Editor.
+ **Note:** In order to see the **Internal** Brain Type option, you must
+    [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).
+3. Import the `environment_run-id.bytes` file produced by the PPO training
+   program. (Where `environment_run-id` is the name of the model file, which is
+   constructed from the name of your Unity environment executable and the run-id
+   value you assigned when running the training process.)
+
+   You can
+   [import assets into Unity](https://docs.unity3d.com/Manual/ImportingAssets.html)
+   in various ways. The easiest way is to simply drag the file into the
+   **Project** window and drop it into an appropriate folder.
+4. Once the `environment.bytes` file is imported, drag it from the **Project**
+   window to the **Model** field of the Brain component.
+
+If you are using a model produced by the ML-Agents `mlagents-learn` command, use
+the default values for the other Internal Brain parameters.
+
+### Internal Brain properties
+
+The default values of the TensorFlow graph parameters work with the model
+produced by the PPO and BC training code in the ML-Agents SDK. To use a default
+ML-Agents model, the only parameter that you need to set is the `Graph Model`,
+which must be set to the .bytes file containing the trained model itself.
+
+![Internal Brain Inspector](images/internal_brain.png)
+
+* `Model` : This must be the `bytes` file corresponding to the pre-trained
+   TensorFlow graph. (You must first drag this file into your Project window 
+   and then from the Resources folder into the inspector)
+

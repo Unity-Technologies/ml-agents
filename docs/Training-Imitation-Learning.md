@@ -24,11 +24,14 @@ Machine Learning tasks work.
 1. In order to use imitation learning in a scene, the first thing you will need
    is to create two Brains, one which will be the "Teacher," and the other which
    will be the "Student." We will assume that the names of the Brain
-   `GameObject`s are "Teacher" and "Student" respectively.
-2. Set the "Teacher" Brain to Player mode, and properly configure the inputs to
-   map to the corresponding actions. **Ensure that "Broadcast" is checked within
-   the Brain inspector window.**
-3. Set the "Student" Brain to External mode.
+   `Assets`s are "Teacher" and "Student" respectively.
+2. The "Teacher" Brain must be a **Player Brain**. You must properly 
+   configure the inputs to map to the corresponding actions.
+3. The "Student" Brain must be an **Internal Brain**.
+4. The Brain Parameters of both the "Teacher" and "Student" brains must be 
+   compatible with the agent.
+5. Drag both the "Teacher" and "Student" brain into the Academy's `Training Hub`
+   and check the `Train` checkbox on the "Student" brain. 
 4. Link the Brains to the desired Agents (one Agent as the teacher and at least
    one Agent as a student).
 5. In `config/trainer_config.yaml`, add an entry for the "Student" Brain. Set

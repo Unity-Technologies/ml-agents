@@ -182,14 +182,12 @@ settings. So how does the Brain control what the Agent does?
 In practice, we have four different types of Brains, which enable a wide
 range of training and inference scenarios:
 
-- **External** - where decisions are made using the Python API. Here, the
-  observations and rewards collected by the Brain are forwarded to the Python
-  API through the External Communicator. The Python API then returns the
-  corresponding action that needs to be taken by the Agent.
 - **Internal** - where decisions are made using an embedded
   [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
   represents a learned policy and the Brain directly uses this model to
-  determine the action for each Agent.
+  determine the action for each Agent. You can train an **InternalBrain** 
+  by dragging it into the Academy's `Training Hub` with the `Train` 
+  checkbox checked.
 - **Player** - where decisions are made using real input from a keyboard or
   controller. Here, a human player is controlling the Agent and the observations
   and rewards collected by the Brain are not used to control the Agent.
@@ -202,7 +200,7 @@ range of training and inference scenarios:
   hard-coded behaviors. We can then evaluate which medic is more effective.
 
 As currently described, it may seem that the External Communicator and Python
-API are only leveraged by the External Brain. This is not true. It is possible
+API are only leveraged by the Internal Brain. This is not true. It is possible
 to configure the Internal, Player and Heuristic Brains to also send the
 observations, rewards and actions to the Python API through the External
 Communicator (a feature called _broadcasting_). As we will see shortly, this
@@ -226,8 +224,8 @@ inference can proceed.
 
 As mentioned previously, the ML-Agents toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
-In this mode, the Brain type is set to External during training and Internal
-during inference. More specifically, during training, all the medics in the
+In this mode, the only brain used is an **Internal Brain**. More 
+specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
 Communicator (this is the behavior with an External Brain). The Python API
 processes these observations and sends back actions for each medic to take.
@@ -256,10 +254,10 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 
 ### Custom Training and Inference
 
-In the previous mode, the External Brain type was used for training to generate
-a TensorFlow model that the Internal Brain type can understand and use. However,
+In the previous mode, the Internal Brain type was used for training to generate
+a TensorFlow model that the Internal Brain can later use. However,
 any user of the ML-Agents toolkit can leverage their own algorithms for both
-training and inference. In this case, the Brain type would be set to External
+training and inference. In this case, the Brain type would be set to Internal
 for both training and inferences phases and the behaviors of all the Agents in
 the scene will be controlled within Python.
 
@@ -408,10 +406,11 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
-- **Broadcasting** - As discussed earlier, an External Brain sends the
-  observations for all its Agents to the Python API by default. This is helpful
-  for training or inference. Broadcasting is a feature which can be enabled for
-  the other three modes (Player, Internal, Heuristic) where the Agent
+- **Broadcasting** - As discussed earlier, an Internal Brain sends the
+  observations for all its Agents to the Python API when dragged into the
+   Academy's `Training Hub` with the `Train` checkbox checked. This is helpful
+  for training and later inference. Broadcasting is a feature which can be 
+  enabled all types of brains (Player, Internal, Heuristic) where the Agent
   observations and actions are also sent to the Python API (despite the fact
   that the Agent is **not** controlled by the Python API). This feature is
   leveraged by Imitation Learning, where the observations and actions for a

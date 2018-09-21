@@ -538,7 +538,7 @@ environment.
 Now you can train the Agent. To get ready for training, you must first to change
 the `Brain` of the agent to be the Internal Brain `RollerBallBrain`.
 Then drag the `RollerBallBrain` into the Academy's `Training Hub` and check 
-to toogle Train for that brain. From there, the process is
+to `Train` checkbox for that brain. From there, the process is
 the same as described in [Training ML-Agents](Training-ML-Agents.md).
 
 ## Review: Scene Layout

@@ -25,7 +25,7 @@
   * [Brains](Learning-Environment-Design-Brains.md):
     [Player](Learning-Environment-Design-Player-Brains.md),
     [Heuristic](Learning-Environment-Design-Heuristic-Brains.md),
-    [Internal & External](Learning-Environment-Design-External-Internal-Brains.md)
+    [Internal](Learning-Environment-Design-Internal-Brains.md)
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 * [Using the Monitor](Feature-Monitor.md)
 * [Using an Executable Environment](Learning-Environment-Executable.md)

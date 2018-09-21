@@ -1,5 +1,11 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.5 to v0.6
+### Important
+* Brains are now Scriptable Objects instead of Monobehaviors. This will
+  allow you to set Brains into prefabs and use the same brains accross 
+  scenes.
+
 ## Migrating from ML-Agents toolkit v0.4 to v0.5
 
 ### Important

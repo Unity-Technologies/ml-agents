@@ -64,7 +64,7 @@ You can have additional placeholders for float or integers but they must be
 placed in placeholders of dimension 1 and size 1. (Be sure to name them.)
 
 It is important that the inputs and outputs of the graph are exactly the ones
-you receive and return when training your model with an `External` Brain. This
+you receive and return when training your model with an training Brain. This
 means you cannot have any operations such as reshaping outside of the graph. The
 object you get by calling `step` or `reset` has fields `vector_observations`,
 `visual_observations` and `memories` which must correspond to the placeholders
@@ -100,7 +100,7 @@ your graph, specify it in the `Graph Scope` field.
 ![Internal Brain Inspector](images/internal_brain.png)
 
 See
-[Internal Brain](Learning-Environment-Design-External-Internal-Brains.md#internal-brain)
+[Internal Brain](Learning-Environment-Design-Internal-Brains.md#internal-brain)
 for more information about using Internal Brains.
 
 If you followed these instructions well, the Agents in your environment that use

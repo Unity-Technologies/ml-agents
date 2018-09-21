@@ -28,15 +28,9 @@ environment:
 ![3DBall Scene](images/mlagents-Open3DBall.png)
 
 Make sure the Brains in the scene have the right type. For example, if you want
-to be able to control your agents from Python, you will need to set the
-corresponding Brain to **External**.
-
-1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
-   object.
-2. Select its child object **Ball3DBrain**.
-3. In the Inspector window, set **Brain Type** to **External**.
-
-![Set Brain to External](images/mlagents-SetExternalBrain.png)
+to be able to control your agents from Python, you will need to put the brain
+controlling the Agents to be an **Internal Brain** and drag it into the
+Academy's `Training Hub` with the `Train`  checkbox checked.
 
 Next, we want the set up scene to play correctly when the training process
 launches our environment executable. This means:
@@ -211,9 +205,9 @@ your Internal Brain by following the steps below:
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
-3. Select the **Ball3DBrain** object from the Scene hierarchy.
-4. Change the **Type of Brain** to **Internal**.
+3. Select the **Ball3DBrain** object from the Project window.
 5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of
-   the Editor to the **Graph Model** placeholder in the **Ball3DBrain**
+   the Editor to the **Model** placeholder in the **Ball3DBrain**
    inspector window.
-6. Press the Play button at the top of the editor.
+6. Remove the **Ball3DBrain** from the Academy's `Training Hub`
+7. Press the Play button at the top of the editor.

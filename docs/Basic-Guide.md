@@ -53,6 +53,7 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
    `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
    the `Ball 3D Agent`.
 4. Make sure that all of the Agents in the Scene now have **Ball3DBrain** as `Brain`.
+   __Note__ : You can modify multiple game objects in a scene by selecting them all at once using the search bar in the Scene Hierarchy. 
 5. In the **Project** window, locate the `Assets/ML-Agents/Examples/3DBall/TFModels` 
    folder.
 6. Drag the `3DBall` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
