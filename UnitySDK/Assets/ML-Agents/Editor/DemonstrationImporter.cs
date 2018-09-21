@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using MLAgents.CommunicatorObjects;
 using UnityEngine;
 using UnityEditor.Experimental.AssetImporters;
 
@@ -26,12 +27,10 @@ namespace MLAgents
             demonstration.demonstrationName = demonstrationName;
             userData = demonstration.ToString();
 
-            var allLines = File.ReadLines(ctx.assetPath);
-            var enumerable = allLines.ToList();
-            var brainParams = JsonUtility.FromJson<BrainParameters>(enumerable.First());
-            var metaData = JsonUtility.FromJson<DemonstrationMetaData>(enumerable.Last());
-            demonstration.brainParameters = brainParams;
-            demonstration.metaData = metaData;
+            Stream reader = File.OpenRead(ctx.assetPath);
+            var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
+            var brainParameters = new BrainParameters(brainParamsProto);
+            demonstration.brainParameters = brainParameters;
 
 
 #if UNITY_2017_3_OR_NEWER

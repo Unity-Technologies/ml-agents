@@ -429,7 +429,8 @@ class UnityEnvironment(object):
     @staticmethod
     def _process_pixels(image_bytes, gray_scale):
         """
-        Converts byte array observation image into numpy array, re-sizes it, and optionally converts it to grey scale
+        Converts byte array observation image into numpy array, re-sizes it,
+        and optionally converts it to grey scale
         :param image_bytes: input byte array corresponding to image
         :return: processed numpy array of observation from environment
         """

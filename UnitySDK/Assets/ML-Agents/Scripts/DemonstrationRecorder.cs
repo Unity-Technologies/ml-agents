@@ -24,7 +24,8 @@ namespace MLAgents
             {
                 recordingAgent = GetComponent<Agent>();
                 demoStore = new DemonstrationStore();
-                demoStore.Initialize(demonstrationName, recordingAgent.brain.brainParameters);               
+                demoStore.Initialize(demonstrationName, recordingAgent.brain.brainParameters, 
+                    recordingAgent.brain.name);               
             }
         }
 

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Google.Protobuf;
+using MLAgents.CommunicatorObjects;
 using UnityEngine;
 
 
@@ -27,6 +29,11 @@ namespace MLAgents
         /// Most recent agent camera (i.e. texture) observation.
         /// </summary>
         public List<Texture2D> visualObservations;
+
+        /// <summary>
+        /// Array of converted visual observations.
+        /// </summary>
+        public float[] visualObservationsArray;
 
         /// <summary>
         /// Most recent text observation.
@@ -77,6 +84,43 @@ namespace MLAgents
         /// to separate between different agents in the environment.
         /// </summary>
         public int id;
+
+        /// <summary>
+        /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
+        /// </summary>
+        /// <returns>The protobuf verison of the AgentInfo.</returns>
+        /// <param name="info">The AgentInfo to convert.</param>
+        public CommunicatorObjects.AgentInfoProto ToProto()
+        {
+
+            var agentInfoProto = new CommunicatorObjects.AgentInfoProto
+            {
+                StackedVectorObservation = { stackedVectorObservation },
+                StoredVectorActions = { storedVectorActions },
+                StoredTextActions = storedTextActions,
+                TextObservation = textObservation,
+                Reward = reward,
+                MaxStepReached = maxStepReached,
+                Done = done,
+                Id = id,
+            };
+            if (memories != null)
+            {
+                agentInfoProto.Memories.Add(memories);
+            }
+            if (actionMasks != null)
+            {
+                agentInfoProto.ActionMask.AddRange(actionMasks);
+            }
+            foreach (Texture2D obs in visualObservations)
+            {
+                agentInfoProto.VisualObservations.Add(
+                    ByteString.CopyFrom(obs.EncodeToPNG())
+                );
+            }
+            return agentInfoProto;
+        }
+
     }
 
     /// <summary>

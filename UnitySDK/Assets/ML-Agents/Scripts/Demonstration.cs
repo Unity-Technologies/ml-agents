@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MLAgents.CommunicatorObjects;
+using UnityEngine;
 
 namespace MLAgents
 {
@@ -11,6 +12,6 @@ namespace MLAgents
         
         [Header("Properties of demonstration")]
         [SerializeField] public BrainParameters brainParameters;
-        [SerializeField] public DemonstrationMetaData metaData;
+        //[SerializeField] public DemonstrationMetaData metaData;
     }
 }

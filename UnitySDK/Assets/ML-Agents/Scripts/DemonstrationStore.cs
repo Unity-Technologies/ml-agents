@@ -1,4 +1,7 @@
 ﻿using System.IO;
+using System.Linq;
+using Google.Protobuf;
+using MLAgents.CommunicatorObjects;
 using UnityEngine;
 
 namespace MLAgents
@@ -20,13 +23,15 @@ namespace MLAgents
         private string filePath;
         private DemonstrationMetaData metaData;
         private const string DemoDirecory = "Assets/Demonstrations/";
-        private StreamWriter writer;
+        private Stream writer;
+        private BrainParameters cachedBrainParameters;
 
-        public void Initialize(string demonstrationName, BrainParameters brainParameters)
+        public void Initialize(string demonstrationName, BrainParameters brainParameters, string brainName)
         {
+            cachedBrainParameters = brainParameters;
             CreateDirectory();
             CreateDemonstrationFile(demonstrationName);
-            WriteBrainParameters(brainParameters);
+            WriteBrainParameters(brainName);
         }
 
         /// <summary>
@@ -57,22 +62,22 @@ namespace MLAgents
                 uniqueNameCounter++;
             }
 
-            writer = File.CreateText(filePath);
+            writer = File.Create(filePath);
             metaData = new DemonstrationMetaData();
         }
 
         /// <summary>
-        /// Writes brain parameters as json to file.
+        /// Writes brain parameters to file.
         /// </summary>
-        private void WriteBrainParameters(BrainParameters brainParameters)
+        private void WriteBrainParameters(string brainName)
         {
             // Writes BrainParameters to file.
-            var jsonParameters = JsonUtility.ToJson(brainParameters);
-            writer.Write(jsonParameters + '\n');
+            var brainProto = cachedBrainParameters.ToProto(brainName, BrainTypeProto.Player);
+            brainProto.WriteDelimitedTo(writer);
         }
 
         /// <summary>
-        /// Write AgentInfo experience to file as json.
+        /// Write AgentInfo experience to file.
         /// </summary>
         public void Record(AgentInfo info)
         {
@@ -84,8 +89,9 @@ namespace MLAgents
             }
 
             // Write AgentInfo to file.
-            var jsonInfo = JsonUtility.ToJson(info);
-            writer.WriteLine(jsonInfo);
+            var agentProto = info.ToProto();
+            agentProto.WriteDelimitedTo(writer);
+            
         }
 
         /// <summary>
@@ -97,13 +103,11 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Writes meta-data as json to file.
+        /// Writes meta-data and closes session.
         /// </summary>
         private void WriteMetadata()
         {
-            // Write meta-data to file.
-            var jsonInfo = JsonUtility.ToJson(metaData);
-            writer.WriteLine(jsonInfo);
+            // Todo re-implement meta-data
             writer.Close();
         }
     }
