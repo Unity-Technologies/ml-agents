@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
@@ -11,11 +13,39 @@ namespace MLAgents
     /// Kept in a struct for easy serialization and deserialization.
     /// </summary>
     [System.Serializable]
-    public struct DemonstrationMetaData
+    public class DemonstrationMetaData
     {
         public int numberExperiences;
         public int numberEpisodes;
-        public const int API_VERSION = 1;
+        public float meanReward;
+        public const int ApiVersion = 1;
+
+        public DemonstrationMetaData()
+        {
+        }
+
+        public DemonstrationMetaData(DemonstrationMetaProto demoProto)
+        {
+            numberEpisodes = demoProto.NumberEpisodes;
+            numberExperiences = demoProto.NumberSteps;
+            meanReward = demoProto.MeanReward;
+            if (demoProto.ApiVersion != ApiVersion)
+            {
+                throw new Exception("API versions of demonstration are incompatible.");
+            }
+        }
+
+        public DemonstrationMetaProto ToProto()
+        {
+            var demoProto = new DemonstrationMetaProto
+            {
+                ApiVersion = ApiVersion,
+                MeanReward = meanReward,
+                NumberSteps = numberExperiences,
+                NumberEpisodes = numberEpisodes
+            };
+            return demoProto;
+        }
     }
 
     public class DemonstrationStore
@@ -25,6 +55,7 @@ namespace MLAgents
         private const string DemoDirecory = "Assets/Demonstrations/";
         private Stream writer;
         private BrainParameters cachedBrainParameters;
+        public const int InitialLength = 20;
 
         public void Initialize(string demonstrationName, BrainParameters brainParameters, string brainName)
         {
@@ -64,6 +95,8 @@ namespace MLAgents
 
             writer = File.Create(filePath);
             metaData = new DemonstrationMetaData();
+            var metaProto = metaData.ToProto();
+            metaProto.WriteDelimitedTo(writer);
         }
 
         /// <summary>
@@ -72,6 +105,7 @@ namespace MLAgents
         private void WriteBrainParameters(string brainName)
         {
             // Writes BrainParameters to file.
+            writer.Seek(InitialLength + 1, 0);
             var brainProto = cachedBrainParameters.ToProto(brainName, BrainTypeProto.Player);
             brainProto.WriteDelimitedTo(writer);
         }
@@ -91,7 +125,6 @@ namespace MLAgents
             // Write AgentInfo to file.
             var agentProto = info.ToProto();
             agentProto.WriteDelimitedTo(writer);
-            
         }
 
         /// <summary>
@@ -107,7 +140,11 @@ namespace MLAgents
         /// </summary>
         private void WriteMetadata()
         {
-            // Todo re-implement meta-data
+            var metaProto = metaData.ToProto();
+            var metaProtoBytes = metaProto.ToByteArray();
+            writer.Write(metaProtoBytes, 0, metaProtoBytes.Length);
+            writer.Seek(0, 0);
+            metaProto.WriteDelimitedTo(writer);
             writer.Close();
         }
     }

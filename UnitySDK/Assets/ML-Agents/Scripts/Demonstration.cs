@@ -12,6 +12,6 @@ namespace MLAgents
         
         [Header("Properties of demonstration")]
         [SerializeField] public BrainParameters brainParameters;
-        //[SerializeField] public DemonstrationMetaData metaData;
+        [SerializeField] public DemonstrationMetaData metaData;
     }
 }

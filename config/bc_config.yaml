@@ -12,7 +12,7 @@ default:
     summary_freq: 1000
     use_recurrent: false
     sequence_length: 32
-    demo_path: ./UnitySDK/Assets/Demonstrations/Test_4.demo
+    demo_path: ./UnitySDK/Assets/Demonstrations/Crawler_test.demo
 
 HallwayBrain:
     trainer: offline_bc

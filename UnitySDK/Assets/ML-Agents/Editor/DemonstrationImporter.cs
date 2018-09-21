@@ -28,9 +28,18 @@ namespace MLAgents
             userData = demonstration.ToString();
 
             Stream reader = File.OpenRead(ctx.assetPath);
+            
+            var metaDataProto = DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
+            var metaData = new DemonstrationMetaData(metaDataProto);
+
+            reader.Seek(DemonstrationStore.InitialLength + 1, 0);
             var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
             var brainParameters = new BrainParameters(brainParamsProto);
+            
+            reader.Close();
+            
             demonstration.brainParameters = brainParameters;
+            demonstration.metaData = metaData;
 
 
 #if UNITY_2017_3_OR_NEWER
