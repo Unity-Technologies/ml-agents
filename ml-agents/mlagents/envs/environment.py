@@ -98,14 +98,14 @@ class UnityEnvironment(object):
                     "vectorActionDescriptions": brain_param.vector_action_descriptions,
                     "vectorActionSpaceType": brain_param.vector_action_space_type
                 })
-            if brain_param.brain_type == 2:
+            if brain_param.is_training:
                 self._external_brain_names += [brain_param.brain_name]
         self._num_brains = len(self._brain_names)
         self._num_external_brains = len(self._external_brain_names)
         self._resetParameters = dict(aca_params.environment_parameters.float_parameters) # TODO
         logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
         if self._num_external_brains == 0:
-            logger.warning(" No External Brains found in the Unity Environment. "
+            logger.warning(" No Learning Brains set to train found in the Unity Environment. "
                            "You will not be able to pass actions to your agent(s).")
 
     @property
@@ -223,7 +223,7 @@ class UnityEnvironment(object):
     def __str__(self):
         return '''Unity Academy name: {0}
         Number of Brains: {1}
-        Number of External Brains : {2}
+        Number of Training Brains : {2}
         Reset Parameters :\n\t\t{3}'''.format(self._academy_name, str(self._num_brains),
                                  str(self._num_external_brains),
                                  "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
