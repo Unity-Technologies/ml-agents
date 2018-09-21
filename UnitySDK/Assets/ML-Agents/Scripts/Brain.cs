@@ -80,8 +80,6 @@ namespace MLAgents
 
         protected Batcher brainBatcher;
 
-        public bool isExternal;
-
         [System.NonSerialized]
         private bool _isInitialized;
 
@@ -117,10 +115,6 @@ namespace MLAgents
         protected virtual void DecideAction()
         {
             brainBatcher?.SendBrainInfo(name, agentInfos);
-            if (isExternal)
-            {
-                agentInfos.Clear();
-            }
         }
     }
 }

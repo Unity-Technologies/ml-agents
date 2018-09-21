@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using System.Linq;
+using Random = UnityEngine.Random;
 #if ENABLE_TENSORFLOW
 using TensorFlow;
 
@@ -34,6 +36,9 @@ namespace MLAgents
         [Tooltip("This must be the bytes file corresponding to the pretrained TensorFlow graph.")]
         /// Modify only in inspector : Reference to the Graph asset
         public TextAsset graphModel;
+
+        [NonSerialized]
+        private bool isTraining;
 
         [SerializeField]
         [Tooltip(
@@ -82,6 +87,11 @@ namespace MLAgents
         List<Texture2D> texturesHolder;
         int memorySize;
 #endif
+
+        public void SetToTrain()
+        {
+            isTraining = true;
+        }
         
         protected override void Initialize()
         {
@@ -152,6 +162,12 @@ namespace MLAgents
         {
 #if ENABLE_TENSORFLOW
             base.DecideAction();
+            
+            if (isTraining)
+            {
+                agentInfos.Clear();
+                return;
+            }
 
             int currentBatchSize = agentInfos.Count();
             List<Agent> agentList = agentInfos.Keys.ToList();
@@ -159,7 +175,7 @@ namespace MLAgents
             {
                 return;
             }
-
+            
 
             // Create the state tensor
             if (hasState)

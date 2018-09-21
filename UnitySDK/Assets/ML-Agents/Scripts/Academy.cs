@@ -254,7 +254,14 @@ namespace MLAgents
             InitializeAcademy();
             Communicator communicator = null;
 
-            var brains = trainingHub.brainsToTrain.Where(x => x != null);
+            var exposedBrains = trainingHub.exposedBrains.Where(x => x != null).ToList();;
+            var trainingBrains = trainingHub.exposedBrains.Where(
+                x => x != null && x is LearningBrain && trainingHub.IsTraining(x));
+            foreach (LearningBrain brain in trainingBrains)
+            {
+                brain.SetToTrain();
+            }
+            
             // Try to launch the communicator by usig the arguments passed at launch
             try
             {
@@ -271,8 +278,7 @@ namespace MLAgents
             catch
             {
                 communicator = null;
-                var externalBrain = brains.FirstOrDefault(b => b.isExternal);
-                if (externalBrain != null)
+                if (trainingBrains.ToList().Count > 0)
                 {
                     communicator = new RPCCommunicator(
                         new CommunicatorParameters
@@ -284,7 +290,7 @@ namespace MLAgents
 
             brainBatcher = new Batcher(communicator);
 
-            foreach (var trainingBrain in brains)
+            foreach (var trainingBrain in exposedBrains)
             {
                 trainingBrain.SetBatcher(brainBatcher);
             }
@@ -297,14 +303,14 @@ namespace MLAgents
                     new CommunicatorObjects.UnityRLInitializationOutput();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = kApiVersion;
-                foreach (var brain in trainingHub.brainsToTrain.Where(x => x!= null))
+                foreach (var brain in exposedBrains)
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
                         Batcher.BrainParametersConvertor(
                             bp,
                             brain.name,
-                            brain.isExternal
+                            trainingHub.IsTraining(brain)
                             )
                         );
                 }

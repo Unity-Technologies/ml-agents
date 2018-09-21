@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.Linq;
 using UnityEditor.SceneManagement;
 
 namespace MLAgents
@@ -10,13 +11,12 @@ namespace MLAgents
     {
         private TrainingHub hub;
         private const float lineHeight = 17f;
-//        private const float keyValueRatio = 0.8f;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             CheckInitialize(property, label);
-            var addOne = (hub.brainsToTrain.Count > 0) ? 1 : 0;
-            return (hub.brainsToTrain.Count + 2 + addOne) * lineHeight + 10f;
+            var addOne = (hub.Count > 0) ? 1 : 0;
+            return (hub.Count + 2 + addOne) * lineHeight + 10f;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -33,7 +33,7 @@ namespace MLAgents
             position.y += lineHeight;
             var addButtonRect = position;
             addButtonRect.x += 20;
-            if (hub.brainsToTrain.Count > 0)
+            if (hub.Count > 0)
             {
                 addButtonRect.width /= 2;
                 addButtonRect.width -= 24;
@@ -45,10 +45,10 @@ namespace MLAgents
                 }
 
                 // This is the rectangle for the Remove button
-                var RemoveButtonRect = position;
-                RemoveButtonRect.x = position.width / 2 + 15;
-                RemoveButtonRect.width = addButtonRect.width - 18;
-                if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
+                var removeButtonRect = position;
+                removeButtonRect.x = position.width / 2 + 15;
+                removeButtonRect.width = addButtonRect.width - 18;
+                if (GUI.Button(removeButtonRect, new GUIContent("Remove Last",
                         "Remove the last Brain from the Training Hub"),
                     EditorStyles.miniButton))
                 {
@@ -70,7 +70,7 @@ namespace MLAgents
             // This is the labels for each columns
             position.y += lineHeight;
             var labelRect = position;
-            if (hub.brainsToTrain.Count > 0)
+            if (hub.Count > 0)
             {
                 labelRect.x += 40;
                 labelRect.width -= 104;
@@ -83,9 +83,10 @@ namespace MLAgents
 
             
             // Iterate over the elements
-            for (var index = 0; index < hub.brainsToTrain.Count; index+=1)
+            for (var index = 0; index < hub.Count; index++)
             {
-                var item = hub.brainsToTrain[index];
+                var exposedBrains = hub.exposedBrains;
+                var brain = exposedBrains[index];
                 position.y += lineHeight;
 
                 // This is the rectangle for the key
@@ -94,20 +95,20 @@ namespace MLAgents
                 keyRect.width -= 104;
                 EditorGUI.BeginChangeCheck();
                 var newBrain = EditorGUI.ObjectField(
-                    keyRect, item, typeof(Brain), true) as Brain;
+                    keyRect, brain, typeof(Brain), true) as Brain;
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkSceneAsDirty();
                     try
                     {
-                        hub.brainsToTrain.RemoveAt(index);
-                        if (!hub.brainsToTrain.Contains(newBrain))
+                        hub.exposedBrains.RemoveAt(index);
+                        if (!exposedBrains.Contains(newBrain))
                         {
-                            hub.brainsToTrain.Insert(index, newBrain);
+                            exposedBrains.Insert(index, newBrain);
                         }
                         else
                         {
-                            hub.brainsToTrain.Insert(index, null);
+                            exposedBrains.Insert(index, null);
                         }
                     }
                     catch (Exception e)
@@ -123,16 +124,20 @@ namespace MLAgents
                 valueRect.x = position.width - 44;
                 valueRect.width = 40;
                 EditorGUI.BeginChangeCheck();
-                if (item != null)
+                if (brain != null)
                 {
-                    if (item is LearningBrain)
+                    if (brain is LearningBrain)
                     {
-                        item.isExternal = EditorGUI.Toggle(valueRect, item.isExternal);
+                        var isTraining = hub.IsTraining(brain);
+                        isTraining = 
+                            EditorGUI.Toggle(valueRect, isTraining);
+                        hub.SetTraining(brain, isTraining);
                     }
-                    else
-                    {
-                        item.isExternal = false;
-                    }
+                }
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    MarkSceneAsDirty();
                 }
 
             }
@@ -164,14 +169,14 @@ namespace MLAgents
 
         private void ClearAllBrains()
         {
-            hub.brainsToTrain.Clear();
+            hub.Clear();
         }
 
         private void RemoveLastItem()
         {
-            if (hub.brainsToTrain.Count > 0)
+            if (hub.Count > 0)
             {
-                hub.brainsToTrain.RemoveAt(hub.brainsToTrain.Count - 1);
+                hub.exposedBrains.RemoveAt(hub.exposedBrains.Count - 1);
             }
         }
 
@@ -179,7 +184,7 @@ namespace MLAgents
         {
             try
             {
-                hub.brainsToTrain.Add(null);
+                hub.exposedBrains.Add(null);
             }
             catch (Exception e)
             {
