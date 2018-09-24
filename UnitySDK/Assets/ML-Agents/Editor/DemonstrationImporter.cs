@@ -15,18 +15,11 @@ namespace MLAgents
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            string demonstrationName = Path.GetFileName(ctx.assetPath);
-
             var inputType = Path.GetExtension(ctx.assetPath);
             if (inputType == null)
             {
                 throw new Exception("Demonstration import error.");
             }
-
-            var demonstration = ScriptableObject.CreateInstance<Demonstration>();
-            demonstration.demonstrationName = demonstrationName;
-            userData = demonstration.ToString();
-
             
             // Read first two proto objects containing metadata and brain parameters.
             Stream reader = File.OpenRead(ctx.assetPath);
@@ -40,9 +33,9 @@ namespace MLAgents
             
             reader.Close();
             
-            demonstration.brainParameters = brainParameters;
-            demonstration.metaData = metaData;
-
+            var demonstration = ScriptableObject.CreateInstance<Demonstration>();
+            demonstration.Initialize(brainParameters, metaData);
+            userData = demonstration.ToString();
 
 #if UNITY_2017_3_OR_NEWER
             ctx.AddObjectToAsset(ctx.assetPath, demonstration);

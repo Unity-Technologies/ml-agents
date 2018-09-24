@@ -1,59 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
-    /// <summary>
-    /// Demonstration meta-data.
-    /// Kept in a struct for easy serialization and deserialization.
-    /// </summary>
-    [System.Serializable]
-    public class DemonstrationMetaData
-    {
-        public int numberExperiences;
-        public int numberEpisodes;
-        public float meanReward;
-        public const int ApiVersion = 1;
-
-        /// <summary>
-        /// Constructor for initializing metadata to default values.
-        /// </summary>
-        public DemonstrationMetaData()
-        {
-        }
-
-        /// <summary>
-        /// Initialize metadata values based on proto object. 
-        /// </summary>
-        public DemonstrationMetaData(DemonstrationMetaProto demoProto)
-        {
-            numberEpisodes = demoProto.NumberEpisodes;
-            numberExperiences = demoProto.NumberSteps;
-            meanReward = demoProto.MeanReward;
-            if (demoProto.ApiVersion != ApiVersion)
-            {
-                throw new Exception("API versions of demonstration are incompatible.");
-            }
-        }
-
-        /// <summary>
-        /// Convert metadata object to proto object.
-        /// </summary>
-        public DemonstrationMetaProto ToProto()
-        {
-            var demoProto = new DemonstrationMetaProto
-            {
-                ApiVersion = ApiVersion,
-                MeanReward = meanReward,
-                NumberSteps = numberExperiences,
-                NumberEpisodes = numberEpisodes
-            };
-            return demoProto;
-        }
-    }
-
+    
     public class DemonstrationStore
     {
         private string filePath;
@@ -62,7 +13,7 @@ namespace MLAgents
         private Stream writer;
         private BrainParameters cachedBrainParameters;
         private float cumulativeReward;
-        public const int InitialLength = 20;
+        public const int InitialLength = 32;
 
         /// <summary>
         /// Initializes the Demonstration Store, and writes initial data.
@@ -104,7 +55,7 @@ namespace MLAgents
             }
 
             writer = File.Create(filePath);
-            metaData = new DemonstrationMetaData();
+            metaData = new DemonstrationMetaData {demonstrationName = demonstrationName};
             var metaProto = metaData.ToProto();
             metaProto.WriteDelimitedTo(writer);
         }

@@ -106,7 +106,7 @@ def load_demonstration(file_path, sequence_length):
     :param file_path: Location of demonstration file (.demo).
     :return: BrainParameter and Buffer objects containing demonstration data.
     """
-    INITIAL_POS = 21
+    INITIAL_POS = 33
 
     file_extension = pathlib.Path(file_path).suffix
     if file_extension != '.demo':

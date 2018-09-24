@@ -26,14 +26,15 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CkFtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2RlbW9uc3Ry",
             "YXRpb25fbWV0YV9wcm90by5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMi",
-            "cQoWRGVtb25zdHJhdGlvbk1ldGFQcm90bxITCgthcGlfdmVyc2lvbhgBIAEo",
-            "BRIUCgxudW1iZXJfc3RlcHMYAiABKAUSFwoPbnVtYmVyX2VwaXNvZGVzGAMg",
-            "ASgFEhMKC21lYW5fcmV3YXJkGAQgASgCQh+qAhxNTEFnZW50cy5Db21tdW5p",
-            "Y2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "jQEKFkRlbW9uc3RyYXRpb25NZXRhUHJvdG8SEwoLYXBpX3ZlcnNpb24YASAB",
+            "KAUSGgoSZGVtb25zdHJhdGlvbl9uYW1lGAIgASgJEhQKDG51bWJlcl9zdGVw",
+            "cxgDIAEoBRIXCg9udW1iZXJfZXBpc29kZXMYBCABKAUSEwoLbWVhbl9yZXdh",
+            "cmQYBSABKAJCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.DemonstrationMetaProto), global::MLAgents.CommunicatorObjects.DemonstrationMetaProto.Parser, new[]{ "ApiVersion", "NumberSteps", "NumberEpisodes", "MeanReward" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.DemonstrationMetaProto), global::MLAgents.CommunicatorObjects.DemonstrationMetaProto.Parser, new[]{ "ApiVersion", "DemonstrationName", "NumberSteps", "NumberEpisodes", "MeanReward" }, null, null, null)
           }));
     }
     #endregion
@@ -66,6 +67,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public DemonstrationMetaProto(DemonstrationMetaProto other) : this() {
       apiVersion_ = other.apiVersion_;
+      demonstrationName_ = other.demonstrationName_;
       numberSteps_ = other.numberSteps_;
       numberEpisodes_ = other.numberEpisodes_;
       meanReward_ = other.meanReward_;
@@ -88,8 +90,19 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "demonstration_name" field.</summary>
+    public const int DemonstrationNameFieldNumber = 2;
+    private string demonstrationName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string DemonstrationName {
+      get { return demonstrationName_; }
+      set {
+        demonstrationName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "number_steps" field.</summary>
-    public const int NumberStepsFieldNumber = 2;
+    public const int NumberStepsFieldNumber = 3;
     private int numberSteps_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int NumberSteps {
@@ -100,7 +113,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "number_episodes" field.</summary>
-    public const int NumberEpisodesFieldNumber = 3;
+    public const int NumberEpisodesFieldNumber = 4;
     private int numberEpisodes_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int NumberEpisodes {
@@ -111,7 +124,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "mean_reward" field.</summary>
-    public const int MeanRewardFieldNumber = 4;
+    public const int MeanRewardFieldNumber = 5;
     private float meanReward_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public float MeanReward {
@@ -135,6 +148,7 @@ namespace MLAgents.CommunicatorObjects {
         return true;
       }
       if (ApiVersion != other.ApiVersion) return false;
+      if (DemonstrationName != other.DemonstrationName) return false;
       if (NumberSteps != other.NumberSteps) return false;
       if (NumberEpisodes != other.NumberEpisodes) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MeanReward, other.MeanReward)) return false;
@@ -145,6 +159,7 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       if (ApiVersion != 0) hash ^= ApiVersion.GetHashCode();
+      if (DemonstrationName.Length != 0) hash ^= DemonstrationName.GetHashCode();
       if (NumberSteps != 0) hash ^= NumberSteps.GetHashCode();
       if (NumberEpisodes != 0) hash ^= NumberEpisodes.GetHashCode();
       if (MeanReward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MeanReward);
@@ -165,16 +180,20 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(8);
         output.WriteInt32(ApiVersion);
       }
+      if (DemonstrationName.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(DemonstrationName);
+      }
       if (NumberSteps != 0) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteInt32(NumberSteps);
       }
       if (NumberEpisodes != 0) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteInt32(NumberEpisodes);
       }
       if (MeanReward != 0F) {
-        output.WriteRawTag(37);
+        output.WriteRawTag(45);
         output.WriteFloat(MeanReward);
       }
       if (_unknownFields != null) {
@@ -187,6 +206,9 @@ namespace MLAgents.CommunicatorObjects {
       int size = 0;
       if (ApiVersion != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(ApiVersion);
+      }
+      if (DemonstrationName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(DemonstrationName);
       }
       if (NumberSteps != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumberSteps);
@@ -210,6 +232,9 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.ApiVersion != 0) {
         ApiVersion = other.ApiVersion;
+      }
+      if (other.DemonstrationName.Length != 0) {
+        DemonstrationName = other.DemonstrationName;
       }
       if (other.NumberSteps != 0) {
         NumberSteps = other.NumberSteps;
@@ -235,15 +260,19 @@ namespace MLAgents.CommunicatorObjects {
             ApiVersion = input.ReadInt32();
             break;
           }
-          case 16: {
-            NumberSteps = input.ReadInt32();
+          case 18: {
+            DemonstrationName = input.ReadString();
             break;
           }
           case 24: {
+            NumberSteps = input.ReadInt32();
+            break;
+          }
+          case 32: {
             NumberEpisodes = input.ReadInt32();
             break;
           }
-          case 37: {
+          case 45: {
             MeanReward = input.ReadFloat();
             break;
           }

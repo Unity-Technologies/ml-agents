@@ -77,7 +77,6 @@ namespace MLAgents
         /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
-        /// <param name="brainParameters">The BrainParameters.</param>
         /// <param name="name">The name of the brain.</param>
         /// <param name="type">The type of brain.</param>
         public CommunicatorObjects.BrainParametersProto 
