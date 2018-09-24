@@ -17,6 +17,7 @@ namespace MLAgents
     {
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Player Brain", EditorStyles.boldLabel);
             PlayerBrain brain = (PlayerBrain) target;
             var serializedBrain = serializedObject;
             serializedBrain.Update(); 

@@ -21,8 +21,6 @@ namespace MLAgents
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
-            
             CheckInitialize(property, label);
             position.height = lineHeight;
             EditorGUI.LabelField(position, new GUIContent(label.text, 

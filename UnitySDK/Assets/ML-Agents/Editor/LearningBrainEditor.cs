@@ -14,6 +14,8 @@ namespace MLAgents
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Learning Brain", EditorStyles.boldLabel);
+            
             LearningBrain brain = (LearningBrain) target;
             
             var serializedBrain = serializedObject;

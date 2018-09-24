@@ -14,6 +14,7 @@ namespace MLAgents
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Heuristic Brain", EditorStyles.boldLabel);
             HeuristicBrain brain = (HeuristicBrain) target;
             
             var serializedBrain = serializedObject;
