@@ -31,11 +31,6 @@ namespace MLAgents
         public List<Texture2D> visualObservations;
 
         /// <summary>
-        /// Array of converted visual observations.
-        /// </summary>
-        public float[] visualObservationsArray;
-
-        /// <summary>
         /// Most recent text observation.
         /// </summary>
         public string textObservation;

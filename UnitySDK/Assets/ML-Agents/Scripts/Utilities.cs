@@ -28,7 +28,7 @@ namespace MLAgents
         /// If set to <c>true</c> the textures
         /// will be converted to grayscale before being stored in the tensor.
         /// </param>
-        public static float[,,,] BatchVisualObservations(
+        public static float[,,,] TextureToFloatArray(
             List<Texture2D> textures, bool blackAndWhite)
         {
             int batchSize = textures.Count;
