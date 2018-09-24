@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
-using UnityEngine;
 
 namespace MLAgents
 {
@@ -20,10 +17,16 @@ namespace MLAgents
         public float meanReward;
         public const int ApiVersion = 1;
 
+        /// <summary>
+        /// Constructor for initializing metadata to default values.
+        /// </summary>
         public DemonstrationMetaData()
         {
         }
 
+        /// <summary>
+        /// Initialize metadata values based on proto object. 
+        /// </summary>
         public DemonstrationMetaData(DemonstrationMetaProto demoProto)
         {
             numberEpisodes = demoProto.NumberEpisodes;
@@ -35,6 +38,9 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Convert metadata object to proto object.
+        /// </summary>
         public DemonstrationMetaProto ToProto()
         {
             var demoProto = new DemonstrationMetaProto
@@ -55,8 +61,12 @@ namespace MLAgents
         private const string DemoDirecory = "Assets/Demonstrations/";
         private Stream writer;
         private BrainParameters cachedBrainParameters;
+        private float cumulativeReward;
         public const int InitialLength = 20;
 
+        /// <summary>
+        /// Initializes the Demonstration Store, and writes initial data.
+        /// </summary>
         public void Initialize(string demonstrationName, BrainParameters brainParameters, string brainName)
         {
             cachedBrainParameters = brainParameters;
@@ -117,9 +127,10 @@ namespace MLAgents
         {
             // Increment meta-data counters.
             metaData.numberExperiences++;
+            cumulativeReward += info.reward;
             if (info.done)
             {
-                metaData.numberEpisodes++;
+                EndEpisode();
             }
 
             // Write AgentInfo to file.
@@ -132,7 +143,17 @@ namespace MLAgents
         /// </summary>
         public void Close()
         {
+            EndEpisode();
+            metaData.meanReward = cumulativeReward / metaData.numberEpisodes;
             WriteMetadata();
+        }
+
+        /// <summary>
+        /// Peroforms necessary episode-completion steps.
+        /// </summary>
+        private void EndEpisode()
+        {
+            metaData.numberEpisodes += 1;
         }
 
         /// <summary>

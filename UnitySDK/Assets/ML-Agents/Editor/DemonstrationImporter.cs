@@ -27,6 +27,8 @@ namespace MLAgents
             demonstration.demonstrationName = demonstrationName;
             userData = demonstration.ToString();
 
+            
+            // Read first two proto objects containing metadata and brain parameters.
             Stream reader = File.OpenRead(ctx.assetPath);
             
             var metaDataProto = DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
