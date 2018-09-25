@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 8
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -39,7 +39,6 @@ RenderSettings:
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
   m_IndirectSpecularColor: {r: 0.44824862, g: 0.49827534, b: 0.57558274, a: 1}
-  m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -55,10 +54,11 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 10
+    serializedVersion: 9
     m_Resolution: 2
     m_BakeResolution: 40
-    m_AtlasSize: 1024
+    m_TextureWidth: 1024
+    m_TextureHeight: 1024
     m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
@@ -120,6 +120,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brainParameters.vectorActionDescriptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4162486845013972, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_LocalPosition.x
       value: -3.3
@@ -160,7 +165,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 11400000, guid: 3a0cd58e7f0764eea8952cb416295fd0,
+        type: 2}
     - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
         type: 2}
       propertyPath: ball
@@ -220,26 +226,14 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &157026687
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 667765197}
 --- !u!1001 &159612743
 Prefab:
   m_ObjectHideFlags: 0
@@ -287,10 +281,10 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
@@ -307,6 +301,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brainParameters.vectorActionDescriptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4162486845013972, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_LocalPosition.x
       value: 3.7
@@ -347,7 +346,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 11400000, guid: 97d8f9d40dc8c452f932f7caa9549c7d,
+        type: 2}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
       value: 1
@@ -402,10 +402,10 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
@@ -457,10 +457,10 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
@@ -496,7 +496,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: ea4e6e61f90ae46daaf643b945c080ed, type: 2}
   m_StaticBatchInfo:
@@ -550,63 +549,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &548284581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  keyContinuousPlayerActions:
-  - key: 273
-    index: 1
-    value: 1
-  - key: 274
-    index: 1
-    value: -1
-  - key: 275
-    index: 0
-    value: -1
-  - key: 276
-    index: 0
-    value: 1
-  axisContinuousPlayerActions: []
-  discretePlayerActions: []
-  brain: {fileID: 667765197}
---- !u!114 &667765197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114938382745838118, guid: 00a1ebe742cf2394d8c21484e3a02412,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1456409882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c676a8ddf5a5f4f64b35e9ed5028679d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brainParameters:
-    vectorObservationSize: 8
-    numStackedVectorObservations: 1
-    vectorActionSize: 02000000
-    test: 010000000200000003000000
-    cameraResolutions: []
-    vectorActionDescriptions:
-    - 
-    - 
-    vectorActionSpaceType: 1
-  brainType: 0
-  CoreBrains:
-  - {fileID: 548284581}
-  - {fileID: 1806797620}
-  - {fileID: 157026687}
-  - {fileID: 1159453570}
-  instanceID: 98474
 --- !u!1001 &764818074
 Prefab:
   m_ObjectHideFlags: 0
@@ -654,10 +596,10 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
@@ -709,37 +651,14 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1159453570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: 93f91f35982184949a09d9ce97965cd5, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 667765197}
 --- !u!1001 &1318922267
 Prefab:
   m_ObjectHideFlags: 0
@@ -747,6 +666,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brainParameters.vectorActionDescriptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4162486845013972, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_LocalPosition.x
       value: -10.3
@@ -783,10 +707,16 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 11400000, guid: 383c589e8bb76464eadc2525b5b0f2c1,
+        type: 2}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_Name
       value: Game11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brainParameters.numStackedVectorObservations
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
@@ -903,59 +833,14 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1456409882
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 1518777817328868, guid: 00a1ebe742cf2394d8c21484e3a02412,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1456409884}
-  - component: {fileID: 667765197}
-  - component: {fileID: 1456409883}
-  m_Layer: 0
-  m_Name: Ball3DBrain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1456409883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114933696884682882, guid: 00a1ebe742cf2394d8c21484e3a02412,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1456409882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccaa8f43c15264209b137d8dc26a8d63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpeed: 2
---- !u!4 &1456409884
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 4244963715435272, guid: 00a1ebe742cf2394d8c21484e3a02412,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1456409882}
-  m_LocalRotation: {x: -0, y: -0, z: 0.00000000273576, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1583402088}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1583402087
 GameObject:
   m_ObjectHideFlags: 0
@@ -983,8 +868,7 @@ Transform:
   m_LocalRotation: {x: -0.069583125, y: 0.0049145464, z: 0.0702813, w: 0.99508524}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 0.19999993, z: 5}
-  m_Children:
-  - {fileID: 1456409884}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1000,6 +884,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb15e3c3d55e54abaafb74c635b6a458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trainingHub:
+    brainsToTrain:
+    - {fileID: 11400000, guid: 383c589e8bb76464eadc2525b5b0f2c1, type: 2}
   maxSteps: 0
   trainingConfiguration:
     width: 600
@@ -1124,27 +1011,14 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1806797620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 667765197}
 --- !u!1001 &1825513289
 Prefab:
   m_ObjectHideFlags: 0
@@ -1192,10 +1066,10 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 667765197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1665577603478558, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
