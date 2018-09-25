@@ -44,7 +44,7 @@ class UnityEnv(gym.Env):
         if use_visual and brain.number_visual_observations == 0:
             raise UnityGymException("`use_visual` was set to True, however there are no"
                                     " visual observations as part of this environment.")
-        self.use_visual = brain.number_visual_observations == 1 and use_visual
+        self.use_visual = brain.number_visual_observations >= 1 and use_visual 
 
         if brain.num_stacked_vector_observations != 1:
             raise UnityGymException(
