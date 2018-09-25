@@ -116,7 +116,7 @@ namespace MLAgents
                 
                 // Display the labels for the columns
                 var indexRect = position;
-                indexRect.width = position.width/3;
+                indexRect.width = position.width/4;
                 var widthRect = indexRect;
                 widthRect.x += width;
                 var heightRect = widthRect;
@@ -137,7 +137,7 @@ namespace MLAgents
                 for (var i = 0; i < resolutions.arraySize; i++)
                 {
                     indexRect = position;
-                    indexRect.width = position.width/3;
+                    indexRect.width = position.width/4;
                     widthRect = indexRect;
                     widthRect.x += width;
                     heightRect = widthRect;
