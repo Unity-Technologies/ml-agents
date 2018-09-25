@@ -1,11 +1,11 @@
 # Learning Brains
 
-The **Learning Brain** work in different phases of
-training. When training your Agents, drag the **Learning Brain** to the
+The **Learning Brain** works differently if you are training it or not.
+When training your Agents, drag the **Learning Brain** to the
 Academy's `Training Hub` and check the checkbox `Train`. When using a pretrained 
 model, just drag the Model file into the `Model` property of the **Learning Brain**.
 
-## Training Mode
+## Training Mode / External Control
 
 When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least
 one Brain asset must be in the Academy's `Training Hub` with the checkbox `Train`
@@ -17,7 +17,7 @@ algorithms, you can use an **Learning Brain** to control Agents in a Unity
 environment using an external Python program. See [Python API](Python-API.md)
 for more information.
 
-## Inference Mode
+## Inference Mode / Internal Control
 
 The **Learning Brain** type uses a
 [TensorFlow model](https://www.tensorflow.org/get_started/get_started_for_beginners#models_and_training)

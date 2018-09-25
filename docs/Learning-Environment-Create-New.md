@@ -104,7 +104,7 @@ different material from the list of all materials currently in the project.)
 Note that we will create an Agent subclass to add to this GameObject as a
 component later in the tutorial.
 
-### Add Empty GameObjects to Hold the Academy
+### Add an Empty GameObject to Hold the Academy
 
 1. Right click in Hierarchy window, select Create Empty.
 2. Name the GameObject "Academy"

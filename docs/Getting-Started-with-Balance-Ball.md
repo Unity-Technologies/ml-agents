@@ -96,11 +96,12 @@ returns the chosen action to the Agent. Thus, all Agents can share the same
 Brain, but act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
-There are 3 types of brains, you can create new ones by selecting `Assets -> 
-Create -> ML-Agents -> Brain`.
+You can create brain objects by selecting `Assets -> 
+Create -> ML-Agents -> Brain`. There are 3 types of brains :
 The **Learning Brain** is a brain that uses a Neural Network to take decisions.
 When the Brain is checked as `Train` in the Academy **Training Hub**, the 
-Neural Network will be trained by the external process. You can also use the
+external process will be taking decisions for the agents
+and generate a neural network when the training is over. You can also use the
 **Learning Brain** with a pre-trained model.
 The **Heuristic** Brain allows you to hand-code the Agent's logic by extending
 the Decision class.

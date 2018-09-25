@@ -80,10 +80,10 @@ More information and documentation is provided in the
 ### Adding a Brain to the training session
 
 Since we are going to build this environment to conduct training, we need to add 
-the Brain to the training session. This allows the Agents to
-communicate with the external training process when making their decisions.
+the Brain to the training session. This allows the Agents linked to that Brain
+to communicate with the external training process when making their decisions.
 
-1. Give to the agents you want to train the **Ball3DBrain**. 
+1. Assign the **Ball3DBrain** to the agents you would like to train. 
    __Note:__ You can only perform training with an `Learning Brain`.
 2. Select the **Ball3DAcademy** GameObject and add the **Ball3DBrain**
    to the Training Hub and toggle the train checkbox.
