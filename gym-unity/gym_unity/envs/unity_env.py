@@ -1,7 +1,8 @@
+import logging
 import gym
 import numpy as np
 from mlagents.envs import UnityEnvironment
-from gym import error, spaces, logger
+from gym import error, spaces
 
 
 class UnityGymException(error.Error):
@@ -9,6 +10,10 @@ class UnityGymException(error.Error):
     Any error related to the gym wrapper of ml-agents.
     """
     pass
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("gym_unity")
 
 
 class UnityEnv(gym.Env):
@@ -44,7 +49,11 @@ class UnityEnv(gym.Env):
         if use_visual and brain.number_visual_observations == 0:
             raise UnityGymException("`use_visual` was set to True, however there are no"
                                     " visual observations as part of this environment.")
-        self.use_visual = brain.number_visual_observations == 1 and use_visual
+        self.use_visual = brain.number_visual_observations >= 1 and use_visual
+
+        if brain.number_visual_observations > 1:
+            logger.warning("The environment contains more than one visual observation. "
+                           "Please note that only the first will be provided in the observation.")
 
         if brain.num_stacked_vector_observations != 1:
             raise UnityGymException(
@@ -114,7 +123,8 @@ class UnityEnv(gym.Env):
             if not isinstance(action, list):
                 raise UnityGymException("The environment was expecting `action` to be a list.")
             if len(action) != self._n_agents:
-                raise UnityGymException("The environment was expecting a list of {} actions.".format(self._n_agents))
+                raise UnityGymException(
+                    "The environment was expecting a list of {} actions.".format(self._n_agents))
             else:
                 action = np.array(action)
 
@@ -136,8 +146,9 @@ class UnityEnv(gym.Env):
         else:
             default_observation = info.vector_observations[0, :]
 
-        return default_observation, info.rewards[0], info.local_done[0], {"text_observation": info.text_observations[0],
-                                                                          "brain_info": info}
+        return default_observation, info.rewards[0], info.local_done[0], {
+            "text_observation": info.text_observations[0],
+            "brain_info": info}
 
     def _multi_step(self, info):
         if self.use_visual:
@@ -145,8 +156,9 @@ class UnityEnv(gym.Env):
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations
-        return list(default_observation), info.rewards,  info.local_done, {"text_observation": info.text_observations,
-                                                                           "brain_info": info}
+        return list(default_observation), info.rewards, info.local_done, {
+            "text_observation": info.text_observations,
+            "brain_info": info}
 
     def render(self, mode='rgb_array'):
         return self.visual_obs
@@ -170,11 +182,13 @@ class UnityEnv(gym.Env):
 
     def _check_agents(self, n_agents):
         if not self._multiagent and n_agents > 1:
-            raise UnityGymException("The environment was launched as a single-agent environment, however"
-                                    "there is more than one agent in the scene.")
+            raise UnityGymException(
+                "The environment was launched as a single-agent environment, however"
+                "there is more than one agent in the scene.")
         elif self._multiagent and n_agents <= 1:
-            raise UnityGymException("The environment was launched as a mutli-agent environment, however"
-                                    "there is only one agent in the scene.")
+            raise UnityGymException(
+                "The environment was launched as a mutli-agent environment, however"
+                "there is only one agent in the scene.")
         if self._n_agents is None:
             self._n_agents = n_agents
             logger.info("{} agents within environment.".format(n_agents))
