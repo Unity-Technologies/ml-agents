@@ -86,7 +86,7 @@ to communicate with the external training process when making their decisions.
 1. Assign the **Ball3DBrain** to the agents you would like to train. 
    __Note:__ You can only perform training with an `Learning Brain`.
 2. Select the **Ball3DAcademy** GameObject and add the **Ball3DBrain**
-   to the Broadcast Hub and toggle the train checkbox.
+   to the Broadcast Hub and toggle the `Control` checkbox.
 
 ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 
