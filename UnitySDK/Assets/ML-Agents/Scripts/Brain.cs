@@ -1,11 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-
-using System.Linq;
-using UnityEditor;
-
 
 namespace MLAgents
 {
@@ -15,8 +9,6 @@ namespace MLAgents
         discrete,
         continuous
     };
-
-
 
 
 /** Only need to be modified in the brain's inpector.
@@ -65,11 +57,7 @@ namespace MLAgents
     }
 
 /**
- * Contains all high-level Brain logic. 
- * Add this component to an empty GameObject in your scene and drag this 
- * GameObject into your Academy to make it a child in the hierarchy.
- * Contains a set of CoreBrains, which each correspond to a different method
- * for deciding actions.
+ * Defines the Brain ScriptableObject from which the implemetations of Brains will inherit.
  */
     public abstract class Brain : ScriptableObject
     {
@@ -79,8 +67,6 @@ namespace MLAgents
             new Dictionary<Agent, AgentInfo>(1024);
 
         protected Batcher brainBatcher;
-
-        public bool isExternal;
 
         [System.NonSerialized]
         private bool _isInitialized;
@@ -104,7 +90,7 @@ namespace MLAgents
         {
             if (!_isInitialized)
             {
-                FindObjectsOfType<Academy>()[0].BrainDecideAction += DecideAction;
+                FindObjectOfType<Academy>().BrainDecideAction += DecideAction;
                 Initialize();
                 _isInitialized = true;
             }
@@ -117,10 +103,6 @@ namespace MLAgents
         protected virtual void DecideAction()
         {
             brainBatcher?.SendBrainInfo(name, agentInfos);
-            if (isExternal)
-            {
-                agentInfos.Clear();
-            }
         }
     }
 }

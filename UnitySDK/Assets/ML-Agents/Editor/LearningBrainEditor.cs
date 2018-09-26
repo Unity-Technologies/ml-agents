@@ -9,18 +9,17 @@ namespace MLAgents
 */
     
     [CustomEditor(typeof(LearningBrain))]
-    public class LearningBrainEditor : Editor
+    public class LearningBrainEditor : BrainEditor
     {
 
         public override void OnInspectorGUI()
         {
-            LearningBrain brain = (LearningBrain) target;
+            EditorGUILayout.LabelField("Learning Brain", EditorStyles.boldLabel);
+            
+            var brain = (LearningBrain) target;
             
             var serializedBrain = serializedObject;
-            serializedBrain.Update(); 
-            EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
-            serializedBrain.ApplyModifiedProperties();
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            base.OnInspectorGUI();
             
             EditorGUILayout.HelpBox("This is not implemented yet.", MessageType.Error);
             serializedBrain.Update(); 

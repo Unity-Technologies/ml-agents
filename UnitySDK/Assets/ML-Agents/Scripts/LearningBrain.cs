@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using System.Linq;
+using Random = UnityEngine.Random;
 #if ENABLE_TENSORFLOW
 using TensorFlow;
 
@@ -12,7 +14,7 @@ using TensorFlow;
 
 namespace MLAgents
 {
-    /// CoreBrain which decides actions using internally embedded TensorFlow model.
+    /// Brain which decides actions using internally embedded TensorFlow model.
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
@@ -34,6 +36,9 @@ namespace MLAgents
         [Tooltip("This must be the bytes file corresponding to the pretrained TensorFlow graph.")]
         /// Modify only in inspector : Reference to the Graph asset
         public TextAsset graphModel;
+
+        [NonSerialized]
+        private bool isControlled;
 
         [SerializeField]
         [Tooltip(
@@ -82,6 +87,11 @@ namespace MLAgents
         List<Texture2D> texturesHolder;
         int memorySize;
 #endif
+
+        public void SetToControlled()
+        {
+            isControlled = true;
+        }
         
         protected override void Initialize()
         {
@@ -152,6 +162,12 @@ namespace MLAgents
         {
 #if ENABLE_TENSORFLOW
             base.DecideAction();
+            
+            if (isControlled)
+            {
+                agentInfos.Clear();
+                return;
+            }
 
             int currentBatchSize = agentInfos.Count();
             List<Agent> agentList = agentInfos.Keys.ToList();
@@ -159,7 +175,7 @@ namespace MLAgents
             {
                 return;
             }
-
+            
 
             // Create the state tensor
             if (hasState)

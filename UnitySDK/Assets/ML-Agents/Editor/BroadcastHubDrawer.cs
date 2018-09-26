@@ -1,55 +1,54 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.Linq;
 using UnityEditor.SceneManagement;
 
 namespace MLAgents
 {
-    [CustomPropertyDrawer(typeof(TrainingHub))]
-    public class TrainingHubDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(BroadcastHub))]
+    public class BroadcastHubDrawer : PropertyDrawer
     {
-        private TrainingHub hub;
+        private BroadcastHub hub;
         private const float lineHeight = 17f;
-//        private const float keyValueRatio = 0.8f;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             CheckInitialize(property, label);
-            var addOne = (hub.brainsToTrain.Count > 0) ? 1 : 0;
-            return (hub.brainsToTrain.Count + 2 + addOne) * lineHeight + 10f;
+            var addOne = (hub.Count > 0) ? 1 : 0;
+            return (hub.Count + 2 + addOne) * lineHeight + 10f;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
-            
             CheckInitialize(property, label);
             position.height = lineHeight;
             EditorGUI.LabelField(position, new GUIContent(label.text, 
-                "The Training Hub helps you define which Brains you want to train"));
+                "The Broadcast Hub helps you define which Brains you want to expose to " +
+                "the external process"));
 
             EditorGUI.BeginProperty(position, label, property);
             // This is the rectangle for the Add button
             position.y += lineHeight;
             var addButtonRect = position;
             addButtonRect.x += 20;
-            if (hub.brainsToTrain.Count > 0)
+            if (hub.Count > 0)
             {
                 addButtonRect.width /= 2;
                 addButtonRect.width -= 24;
                 if (GUI.Button(addButtonRect, new GUIContent("Add New",
-                    "Add a new Brain to the Training Hub"), EditorStyles.miniButton))
+                    "Add a new Brain to the Broadcast Hub"), EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
                     AddNewItem();
                 }
 
                 // This is the rectangle for the Remove button
-                var RemoveButtonRect = position;
-                RemoveButtonRect.x = position.width / 2 + 15;
-                RemoveButtonRect.width = addButtonRect.width - 18;
-                if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
-                        "Remove the last Brain from the Training Hub"),
+                var removeButtonRect = position;
+                removeButtonRect.x = position.width / 2 + 15;
+                removeButtonRect.width = addButtonRect.width - 18;
+                if (GUI.Button(removeButtonRect, new GUIContent("Remove Last",
+                        "Remove the last Brain from the Broadcast Hub"),
                     EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
@@ -59,8 +58,8 @@ namespace MLAgents
             else
             {
                 addButtonRect.width -= 50;
-                if (GUI.Button(addButtonRect, new GUIContent("Add Brain to Training Session",
-                    "Add a new Brain to the Training Hub"), EditorStyles.miniButton))
+                if (GUI.Button(addButtonRect, new GUIContent("Add Brain to Broadcast Hub",
+                    "Add a new Brain to the Broadcast Hub"), EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
                     AddNewItem();
@@ -70,44 +69,45 @@ namespace MLAgents
             // This is the labels for each columns
             position.y += lineHeight;
             var labelRect = position;
-            if (hub.brainsToTrain.Count > 0)
+            if (hub.Count > 0)
             {
                 labelRect.x += 40;
-                labelRect.width -= 104;
+                labelRect.width -= 144;
                 EditorGUI.LabelField(labelRect, "Brains");
                 labelRect = position;
-                labelRect.x = position.width - 54;
-                labelRect.width = 40;
-                EditorGUI.LabelField(labelRect, "Train");
+                labelRect.x = position.width - 84;
+                labelRect.width = 80;
+                EditorGUI.LabelField(labelRect, "Control");
             }
 
             
             // Iterate over the elements
-            for (var index = 0; index < hub.brainsToTrain.Count; index+=1)
+            for (var index = 0; index < hub.Count; index++)
             {
-                var item = hub.brainsToTrain[index];
+                var exposedBrains = hub.broadcastingBrains;
+                var brain = exposedBrains[index];
                 position.y += lineHeight;
 
                 // This is the rectangle for the key
                 var keyRect = position;
                 keyRect.x += 20;
-                keyRect.width -= 104;
+                keyRect.width -= 144;
                 EditorGUI.BeginChangeCheck();
                 var newBrain = EditorGUI.ObjectField(
-                    keyRect, item, typeof(Brain), true) as Brain;
+                    keyRect, brain, typeof(Brain), true) as Brain;
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkSceneAsDirty();
                     try
                     {
-                        hub.brainsToTrain.RemoveAt(index);
-                        if (!hub.brainsToTrain.Contains(newBrain))
+                        hub.broadcastingBrains.RemoveAt(index);
+                        if (!exposedBrains.Contains(newBrain))
                         {
-                            hub.brainsToTrain.Insert(index, newBrain);
+                            exposedBrains.Insert(index, newBrain);
                         }
                         else
                         {
-                            hub.brainsToTrain.Insert(index, null);
+                            exposedBrains.Insert(index, null);
                         }
                     }
                     catch (Exception e)
@@ -120,25 +120,26 @@ namespace MLAgents
 
                 // This is the Rectangle for the value
                 var valueRect = position;
-                valueRect.x = position.width - 44;
-                valueRect.width = 40;
+                valueRect.x = position.width - 64;
+                valueRect.width = 80;
                 EditorGUI.BeginChangeCheck();
-                if (item != null)
+                if (brain != null)
                 {
-                    if (item is LearningBrain)
+                    if (brain is LearningBrain)
                     {
-                        item.isExternal = EditorGUI.Toggle(valueRect, item.isExternal);
-                    }
-                    else
-                    {
-                        item.isExternal = false;
+                        var isTraining = hub.IsControlled(brain);
+                        isTraining = 
+                            EditorGUI.Toggle(valueRect, isTraining);
+                        hub.SetTraining(brain, isTraining);
                     }
                 }
 
+                if (EditorGUI.EndChangeCheck())
+                {
+                    MarkSceneAsDirty();
+                }
+
             }
-
-
-
 
             EditorGUI.EndProperty();
         }
@@ -148,10 +149,10 @@ namespace MLAgents
             if (hub == null)
             {
                 var target = property.serializedObject.targetObject;
-                hub = fieldInfo.GetValue(target) as TrainingHub;
+                hub = fieldInfo.GetValue(target) as BroadcastHub;
                 if (hub == null)
                 {
-                    hub = new TrainingHub();
+                    hub = new BroadcastHub();
                     fieldInfo.SetValue(target, hub);
                 }
             }
@@ -159,26 +160,22 @@ namespace MLAgents
         
         private static void MarkSceneAsDirty()
         {
-            try
+            if (!EditorApplication.isPlaying)
             {
                 EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-            }
-            catch (Exception e)
-            {
-                
             }
         }
 
         private void ClearAllBrains()
         {
-            hub.brainsToTrain.Clear();
+            hub.Clear();
         }
 
         private void RemoveLastItem()
         {
-            if (hub.brainsToTrain.Count > 0)
+            if (hub.Count > 0)
             {
-                hub.brainsToTrain.RemoveAt(hub.brainsToTrain.Count - 1);
+                hub.broadcastingBrains.RemoveAt(hub.broadcastingBrains.Count - 1);
             }
         }
 
@@ -186,7 +183,7 @@ namespace MLAgents
         {
             try
             {
-                hub.brainsToTrain.Add(null);
+                hub.broadcastingBrains.Add(null);
             }
             catch (Exception e)
             {

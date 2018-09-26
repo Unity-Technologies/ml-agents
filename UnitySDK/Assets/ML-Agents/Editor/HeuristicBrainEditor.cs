@@ -9,19 +9,17 @@ namespace MLAgents
 */
     
     [CustomEditor(typeof(HeuristicBrain))]
-    public class ScriptableBrainEditor : Editor
+    public class ScriptableBrainEditor : BrainEditor
     {
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Heuristic Brain", EditorStyles.boldLabel);
             HeuristicBrain brain = (HeuristicBrain) target;
             
             var serializedBrain = serializedObject;
-            serializedBrain.Update(); 
-            EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
-            serializedBrain.ApplyModifiedProperties();
             
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            base.OnInspectorGUI();
             
             brain.decisionScript = EditorGUILayout.ObjectField(
                 "Decision Script", brain.decisionScript, typeof(MonoScript), true) as MonoScript;

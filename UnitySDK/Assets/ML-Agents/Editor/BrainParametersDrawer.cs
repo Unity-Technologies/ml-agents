@@ -8,9 +8,7 @@ namespace MLAgents
     [CustomPropertyDrawer(typeof(BrainParameters))]
     public class BrainParametersDrawer : PropertyDrawer
     {
-//        private BrainParameters _bp;
         private const float lineHeight = 17f;
-
         private static int defaultWidth = 84;
         private static int defaultHeight = 84;
         private static bool defaultGray = false;
@@ -45,7 +43,6 @@ namespace MLAgents
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
 
-//            CheckInitialize(property, label);
             var indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
             position.height = lineHeight;
@@ -53,7 +50,6 @@ namespace MLAgents
             property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, label);
             position.y += lineHeight;
             
-//            EditorGUI.LabelField(position, label);
 
             if (property.isExpanded)
             {
@@ -120,7 +116,7 @@ namespace MLAgents
                 
                 // Display the labels for the columns
                 var indexRect = position;
-                indexRect.width = position.width/3;
+                indexRect.width = position.width/4;
                 var widthRect = indexRect;
                 widthRect.x += width;
                 var heightRect = widthRect;
@@ -141,7 +137,7 @@ namespace MLAgents
                 for (var i = 0; i < resolutions.arraySize; i++)
                 {
                     indexRect = position;
-                    indexRect.width = position.width/3;
+                    indexRect.width = position.width/4;
                     widthRect = indexRect;
                     widthRect.x += width;
                     heightRect = widthRect;

@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 
 namespace MLAgents
 {
-    /// CoreBrain which decides actions using Player input.
+    /// Brain which decides actions using Player input.
     [CreateAssetMenu(fileName = "NewPlayerBrain", menuName = "ML-Agents/Player Brain")]
     public class PlayerBrain : Brain
     {

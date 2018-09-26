@@ -13,17 +13,16 @@ namespace MLAgents
  inspector accordingly.
 */
     [CustomEditor(typeof(PlayerBrain))]
-    public class PlayerBrainEditor : Editor
+    public class PlayerBrainEditor : BrainEditor
     {
+        
         public override void OnInspectorGUI()
         {
-            PlayerBrain brain = (PlayerBrain) target;
+            EditorGUILayout.LabelField("Player Brain", EditorStyles.boldLabel);
+            var brain = (PlayerBrain) target;
             var serializedBrain = serializedObject;
-            serializedBrain.Update(); 
-            EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
-            serializedBrain.ApplyModifiedProperties();
+            base.OnInspectorGUI();
             
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             serializedBrain.Update();
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
