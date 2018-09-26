@@ -93,7 +93,7 @@ namespace MLAgents
     public abstract class Academy : MonoBehaviour
     {
         [SerializeField] 
-        public TrainingHub trainingHub = new TrainingHub();
+        public BroadcastHub broadcastHub = new BroadcastHub();
         
         private const string kApiVersion = "API-5";
 
@@ -254,12 +254,12 @@ namespace MLAgents
             InitializeAcademy();
             Communicator communicator = null;
 
-            var exposedBrains = trainingHub.exposedBrains.Where(x => x != null).ToList();;
-            var trainingBrains = trainingHub.exposedBrains.Where(
-                x => x != null && x is LearningBrain && trainingHub.IsTraining(x));
-            foreach (LearningBrain brain in trainingBrains)
+            var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();;
+            var controlledBrains = broadcastHub.broadcastingBrains.Where(
+                x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
+            foreach (LearningBrain brain in controlledBrains)
             {
-                brain.SetToTrain();
+                brain.SetToControlled();
             }
             
             // Try to launch the communicator by usig the arguments passed at launch
@@ -278,7 +278,7 @@ namespace MLAgents
             catch
             {
                 communicator = null;
-                if (trainingBrains.ToList().Count > 0)
+                if (controlledBrains.ToList().Count > 0)
                 {
                     communicator = new RPCCommunicator(
                         new CommunicatorParameters
@@ -310,7 +310,7 @@ namespace MLAgents
                         Batcher.BrainParametersConvertor(
                             bp,
                             brain.name,
-                            trainingHub.IsTraining(brain)
+                            broadcastHub.IsControlled(brain)
                             )
                         );
                 }

@@ -38,7 +38,7 @@ namespace MLAgents
         public TextAsset graphModel;
 
         [NonSerialized]
-        private bool isTraining;
+        private bool isControlled;
 
         [SerializeField]
         [Tooltip(
@@ -88,9 +88,9 @@ namespace MLAgents
         int memorySize;
 #endif
 
-        public void SetToTrain()
+        public void SetToControlled()
         {
-            isTraining = true;
+            isControlled = true;
         }
         
         protected override void Initialize()
@@ -163,7 +163,7 @@ namespace MLAgents
 #if ENABLE_TENSORFLOW
             base.DecideAction();
             
-            if (isTraining)
+            if (isControlled)
             {
                 agentInfos.Clear();
                 return;
