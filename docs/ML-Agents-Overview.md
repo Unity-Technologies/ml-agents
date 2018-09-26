@@ -186,7 +186,7 @@ range of training and inference scenarios:
   [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
   represents a learned policy and the Brain directly uses this model to
   determine the action for each Agent. You can train an **Learning Brain** 
-  by dragging it into the Academy's `Training Hub` with the `Train` 
+  by dragging it into the Academy's `Broadcast Hub` with the `Control` 
   checkbox checked.
 - **Player** - where decisions are made using real input from a keyboard or
   controller. Here, a human player is controlling the Agent and the observations
@@ -408,7 +408,7 @@ training process.
 
 - **Broadcasting** - As discussed earlier, an Learning Brain sends the
   observations for all its Agents to the Python API when dragged into the
-  Academy's `Training Hub` with the `Train` checkbox checked. This is helpful
+  Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
   for training and later inference. Broadcasting is a feature which can be 
   enabled all types of brains (Player, Learning, Heuristic) where the Agent
   observations and actions are also sent to the Python API (despite the fact

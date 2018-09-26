@@ -121,10 +121,10 @@ search bar on top of the Scene Hierarchy window.
 To Create a Brain, go to `Assets -> Create -> Ml-Agents` and select the 
 type of brain you want to use. Brain behavior is
 determined by the Brain type. During training, use an **Learning Brain** 
-and drag it into the Academy's `Training Hub` with the `Train` checkbox checked.
+and drag it into the Academy's `Broadcast Hub` with the `Control` checkbox checked.
 When you want to use the trained model, import the model file into the Unity
 project, add it to the **Model** property of the **Learning Brain** and uncheck
-the `Train` checkbox of the `Training Hub`. See
+the `Control` checkbox of the `Broadcast Hub`. See
 [Brains](Learning-Environment-Design-Brains.md) for details on using the
 different types of Brains. You can create new types of brains if the three
 built-in types don't do what you need.
@@ -198,8 +198,8 @@ include:
 
 * The training scene must start automatically when your Unity application is
   launched by the training process.
-* The scene must include an Academy with at least one Brain in the `Training Hub`
-  with the `Train` checkbox checked.
+* The scene must include an Academy with at least one Brain in the `Broadcast Hub`
+  with the `Control` checkbox checked.
 * The Academy must reset the scene to a valid starting point for each episode of
   training.
 * A training episode must have a definite end — either using `Max Steps` or by

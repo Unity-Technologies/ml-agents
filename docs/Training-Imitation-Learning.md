@@ -30,12 +30,12 @@ Machine Learning tasks work.
 3. The "Student" Brain must be an **Learning Brain**.
 4. The Brain Parameters of both the "Teacher" and "Student" brains must be 
    compatible with the agent.
-5. Drag both the "Teacher" and "Student" brain into the Academy's `Training Hub`
-   and check the `Train` checkbox on the "Student" brain. 
+5. Drag both the "Teacher" and "Student" brain into the Academy's `Broadcast Hub`
+   and check the `Control` checkbox on the "Student" brain. 
 4. Link the Brains to the desired Agents (one Agent as the teacher and at least
    one Agent as a student).
 5. In `config/trainer_config.yaml`, add an entry for the "Student" Brain. Set
-   the `trainer` parameter of this entry to `imitation`, and the
+   the `Controler` parameter of this entry to `imitation`, and the
    `brain_to_imitate` parameter to the name of the teacher Brain: "Teacher".
    Additionally, set `batches_per_epoch`, which controls how much training to do
    each moment. Increase the `max_steps` option if you'd like to keep training

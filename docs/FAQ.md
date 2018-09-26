@@ -69,7 +69,7 @@ On Windows, you can find
 If you are able to launch the environment from `UnityEnvironment` but then
 receive a timeout error, there may be a number of possible causes.
 
-* _Cause_: There may be no Brains the `Training Hub` of the Academy. 
+* _Cause_: There may be no Brains the `Broadcast Hub` of the Academy. 
   In this case, the environment will not attempt to communicate
   with python. _Solution_: Set the Brains(s) you wish to externally control
   through the Python API to `External` from the Unity Editor, and rebuild the

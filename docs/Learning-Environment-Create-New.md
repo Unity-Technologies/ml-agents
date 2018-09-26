@@ -471,7 +471,7 @@ Brain asset to the Agent, changing some of the Agent Components properties, and
 setting the Brain properties so that they are compatible with our Agent code.
 
 1. In the Academy Inspector, add the `RollerBallBrain` and `RollerBallPlayer`
-   brains to the **Training Hub**.
+   brains to the **Broadcast Hub**.
 2. Select the RollerAgent GameObject to show its properties in the Inspector
    window.
 3. Drag the Brain `RollerBallPlayer` from the Project window to the 
@@ -537,8 +537,8 @@ environment.
 
 Now you can train the Agent. To get ready for training, you must first to change
 the `Brain` of the agent to be the Learning Brain `RollerBallBrain`.
-Then drag the `RollerBallBrain` into the Academy's `Training Hub` and check 
-to `Train` checkbox for that brain. From there, the process is
+Then drag the `RollerBallBrain` into the Academy's `Broadcast Hub` and check 
+to `Control` checkbox for that brain. From there, the process is
 the same as described in [Training ML-Agents](Training-ML-Agents.md).
 
 ## Review: Scene Layout
@@ -558,5 +558,5 @@ Keep in mind:
 
 * There can only be one Academy game object in a scene.
 * You can only train Learning Brains that have been included into the Academy's  
-  Training Hub.
+  Broadcast Hub.
 

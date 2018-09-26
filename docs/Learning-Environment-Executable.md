@@ -30,7 +30,7 @@ environment:
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to put the brain
 controlling the Agents to be an **Learning Brain** and drag it into the
-Academy's `Training Hub` with the `Train`  checkbox checked.
+Academy's `Broadcast Hub` with the `Control`  checkbox checked.
 
 Next, we want the set up scene to play correctly when the training process
 launches our environment executable. This means:
@@ -209,5 +209,5 @@ your Learning Brain by following the steps below:
 5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of
    the Editor to the **Model** placeholder in the **Ball3DBrain**
    inspector window.
-6. Remove the **Ball3DBrain** from the Academy's `Training Hub`
+6. Remove the **Ball3DBrain** from the Academy's `Broadcast Hub`
 7. Press the Play button at the top of the editor.
