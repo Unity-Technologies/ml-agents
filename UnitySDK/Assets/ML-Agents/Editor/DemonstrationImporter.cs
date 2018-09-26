@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using MLAgents.CommunicatorObjects;
+using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.AssetImporters;
 
@@ -36,9 +37,15 @@ namespace MLAgents
             var demonstration = ScriptableObject.CreateInstance<Demonstration>();
             demonstration.Initialize(brainParameters, metaData);
             userData = demonstration.ToString();
+            
+            Texture2D texture =
+                (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/ML-Agents/Resources/DemoIcon.png",
+                    typeof(Texture2D));
+
+
 
 #if UNITY_2017_3_OR_NEWER
-            ctx.AddObjectToAsset(ctx.assetPath, demonstration);
+            ctx.AddObjectToAsset(ctx.assetPath, demonstration, texture);
             ctx.SetMainObject(demonstration);
 #else
             ctx.SetMainAsset(ctx.assetPath, model);
