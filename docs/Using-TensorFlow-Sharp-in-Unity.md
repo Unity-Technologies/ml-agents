@@ -93,8 +93,6 @@ Your model will be saved with the name `your_name_graph.bytes` and will contain
 both the graph and associated weights. Note that you must save your graph as a
 .bytes file so Unity can load it.
 
-![Learning Brain Inspector](images/learning_brain.png)
-
 See
 [Learning Brain](Learning-Environment-Design-Learning-Brains.md#learning-brain)
 for more information about using Learning Brains.

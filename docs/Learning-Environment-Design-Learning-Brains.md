@@ -67,8 +67,6 @@ produced by the PPO and BC training code in the ML-Agents SDK. To use a default
 ML-Agents model, the only parameter that you need to set is the `Graph Model`,
 which must be set to the .bytes file containing the trained model itself.
 
-![Learning Brain Inspector](images/learning_brain.png)
-
 * `Model` : This must be the `bytes` file corresponding to the pre-trained
    TensorFlow graph. (You must first drag this file into your Project window 
    and then from the Resources folder into the inspector)
