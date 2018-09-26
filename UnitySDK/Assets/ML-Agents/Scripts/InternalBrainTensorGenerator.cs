@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
 using System.Linq;
 using System;
+using System.CodeDom;
 
 namespace MLAgents
 {
@@ -12,12 +13,12 @@ namespace MLAgents
     {
         Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>  dict;
         
-         public InternalBrainTensorGenerator(
+        public InternalBrainTensorGenerator(
             CoreBrainInternal.NodeNames nodeNames, 
             BrainParameters bp,
             RandomNormal randomNormal)
-         {
-             dict = new Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
+        {
+            dict = new Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
             dict[nodeNames.BatchSizePlaceholder] = GenerateBatchSize;
             dict[nodeNames.SequenceLengthPlaceholder] = GenerateSequenceLength;
             dict[nodeNames.VectorObservationPlacholder] = GenerateVectorObservation;
@@ -27,15 +28,18 @@ namespace MLAgents
             dict[nodeNames.RandomNormalEpsilonPlaceholder] =
                 (tensor, batchSize, agentInfo) =>
                     GenerateRandomNormalInput(tensor, batchSize, agentInfo, randomNormal);
-            for (var visIndex = 0;
-                visIndex < bp.cameraResolutions.Length;
-                visIndex++)
+            if (bp.cameraResolutions != null)
             {
-                var index = visIndex;
-                var bw = bp.cameraResolutions[visIndex].blackAndWhite;
-                dict[nodeNames.VisualObservationPlaceholderPrefix + visIndex] =
-                    (tensor, batchSize, agentInfo) =>
-                        GenerateVisualObservationInput(tensor, agentInfo, index, bw);
+                for (var visIndex = 0;
+                    visIndex < bp.cameraResolutions.Length;
+                    visIndex++)
+                {
+                    var index = visIndex;
+                    var bw = bp.cameraResolutions[visIndex].blackAndWhite;
+                    dict[nodeNames.VisualObservationPlaceholderPrefix + visIndex] =
+                        (tensor, batchSize, agentInfo) =>
+                            GenerateVisualObservationInput(tensor, agentInfo, index, bw);
+                }
             }
         }
         
@@ -58,9 +62,9 @@ namespace MLAgents
         }
         
         private static void GenerateBatchSize(
-                Tensor tensor,
-                int batchSize,
-                Dictionary<Agent, AgentInfo> agentInfo)
+            Tensor tensor,
+            int batchSize,
+            Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Data = new int[] {batchSize};
         }
@@ -78,6 +82,7 @@ namespace MLAgents
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
+            tensor.Shape[0] = batchSize;
             var vecObsSizeT = tensor.Shape[1];
             tensor.Data = new float[batchSize, vecObsSizeT];
             var agentIndex = 0;
@@ -97,14 +102,20 @@ namespace MLAgents
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
+            tensor.Shape[0] = batchSize;
             var memorySize = tensor.Shape[1];
             tensor.Data = new float[batchSize, memorySize];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
                 var memory = agentInfo[agent].memories;
+                
                 for (var j = 0; j < memorySize; j++)
                 {
+                    if (memory == null)
+                    {
+                        break;
+                    }
                     if (j >= memory.Count)
                     {
                         break;
@@ -120,6 +131,12 @@ namespace MLAgents
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
+            if (tensor.ValueType != Tensor.TensorType.Integer)
+            {
+                throw new NotImplementedException(
+                    "Previous Action Inputs are only valid for discrete control");
+            }
+            tensor.Shape[0] = batchSize;
             var actionSize = tensor.Shape[1];
             tensor.Data = new int[batchSize, actionSize];
             var agentIndex = 0;
@@ -139,6 +156,7 @@ namespace MLAgents
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
+            tensor.Shape[0] = batchSize;
             var maskSize = tensor.Shape[1];
             tensor.Data = new float[batchSize, maskSize];
             var agentIndex = 0;
