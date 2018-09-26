@@ -141,12 +141,12 @@ class UnityEnv(gym.Env):
 
     def _single_step(self, info):
         if self.use_visual:
-            self.visual_obs = info.visual_observations[0][0, :, :, :]
+            self.visual_obs = info.visual_observations
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
 
-        return default_observation, info.rewards[0], info.local_done[0], {
+        return list(default_observation), info.rewards[0], info.local_done[0], {
             "text_observation": info.text_observations[0],
             "brain_info": info}
 
