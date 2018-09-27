@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MLAgents
 {
@@ -24,10 +24,21 @@ namespace MLAgents
             {
                 recordingAgent = GetComponent<Agent>();
                 demoStore = new DemonstrationStore();
+                demonstrationName = CleanName(demonstrationName);
                 demoStore.Initialize(demonstrationName, recordingAgent.brain.brainParameters, 
                     recordingAgent.brain.name);            
                 Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
             }
+        }
+
+        /// <summary>
+        /// Removes all characters except alphanumerics from demonstration name.
+        /// </summary>
+        private string CleanName(string demoName)
+        {
+            var rgx = new Regex("[^a-zA-Z0-9 -]");
+            demoName = rgx.Replace(demoName, "");
+            return demoName;
         }
 
         /// <summary>
