@@ -456,12 +456,12 @@ namespace MLAgents
 
 
 #else
-            if (agentInfo.Count > 0)
+            if (agentInfos.Count > 0)
             {
                 throw new UnityAgentsException(string.Format(
                     @"The brain {0} was set to Internal but the Tensorflow 
                         library is not present in the Unity project.",
-                    brain.gameObject.name));
+                    name));
             }
 #endif
             agentInfos.Clear();
