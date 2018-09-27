@@ -19,6 +19,7 @@ namespace MLAgents
             RandomNormal randomNormal)
         {
             dict = new Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
+            // Generate Inputs
             dict[nodeNames.BatchSizePlaceholder] = GenerateBatchSize;
             dict[nodeNames.SequenceLengthPlaceholder] = GenerateSequenceLength;
             dict[nodeNames.VectorObservationPlacholder] = GenerateVectorObservation;
@@ -28,6 +29,11 @@ namespace MLAgents
             dict[nodeNames.RandomNormalEpsilonPlaceholder] =
                 (tensor, batchSize, agentInfo) =>
                     GenerateRandomNormalInput(tensor, batchSize, agentInfo, randomNormal);
+            // Generate Outputs
+            dict[nodeNames.ActionOutput] = ReshapeBiDimensionalOutupt;
+            dict[nodeNames.RecurrentOutOutput] = ReshapeBiDimensionalOutupt;
+            dict[nodeNames.ValueEstimateOutput] = ReshapeBiDimensionalOutupt;
+            
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;
@@ -53,6 +59,23 @@ namespace MLAgents
             set
             {
                 dict[index] = value;
+            }
+        }
+
+        private static void ReshapeBiDimensionalOutupt(
+            Tensor tensor,
+            int batchSize,
+            Dictionary<Agent, AgentInfo> agentInfo)
+        {
+            var shapeSecondAxis = tensor.Shape[1];
+            tensor.Shape[0] = batchSize;
+            if (tensor.ValueType == Tensor.TensorType.FloatingPoint)
+            {
+                tensor.Data = new float[batchSize, shapeSecondAxis];
+            }
+            else
+            {
+                tensor.Data = new int[batchSize, shapeSecondAxis];
             }
         }
 

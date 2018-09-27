@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Google.Protobuf.Reflection;
 using UnityEngine.MachineLearning.InferenceEngine;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
 // TODO : Remove
@@ -46,13 +47,16 @@ namespace MLAgents
         Batcher brainBatcher;
 
         NodeNames _nodeNames = new NodeNames();
+
+        private long[] inferenceTimes = new long[1000];
+        private int count;
         
 
         private long _memorySize;
         private long _modelVersionNumber;
         private long _isContinuous;
 
-        private InternalBrainTensorGenerator _inputTensorGenerators;
+        private InternalBrainTensorGenerator _tensorGenerators;
 
         private InternalBrainTensorApplier  _outputTensorAppliers;
 
@@ -90,7 +94,7 @@ namespace MLAgents
             InitializeModel(m_model);
 
             
-            _inputTensorGenerators = new InternalBrainTensorGenerator(
+            _tensorGenerators = new InternalBrainTensorGenerator(
                 _nodeNames, brain.brainParameters, new RandomNormal(0));
             
             _outputTensorAppliers = new InternalBrainTensorApplier(
@@ -328,18 +332,28 @@ namespace MLAgents
             for (var tensorIndex = 0; tensorIndex<inferenceInputs.Length; tensorIndex++)
             {
                 var tensor = inferenceInputs[tensorIndex];
-                if (!_inputTensorGenerators.ContainsKey(tensor.Name))
+                if (!_tensorGenerators.ContainsKey(tensor.Name))
                 {
                     throw new UnityAgentsException("Error to implement.");
                 }
-                _inputTensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
+                _tensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
 
             }
             
+            // Generating the Output tensors
+            for (var tensorIndex = 0; tensorIndex<inferenceOutputs.Length; tensorIndex++)
+            {
+                var tensor = inferenceOutputs[tensorIndex];
+                if (!_tensorGenerators.ContainsKey(tensor.Name))
+                {
+                    throw new UnityAgentsException("Error to implement.");
+                }
+                _tensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
+
+            }
 
             // Execute the Model
             m_engine.ExecuteGraph(inferenceInputs, inferenceOutputs);
-
 
             // Update the outputs
             for (var tensorIndex = 0; tensorIndex<inferenceOutputs.Length; tensorIndex++)
@@ -350,13 +364,9 @@ namespace MLAgents
                     throw new UnityAgentsException("Error to implement.");
                 }
                 _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfo);
-                
             }
         }
         
-        
-
-
         /// Displays the parameters of the CoreBrainInternal in the Inspector 
         public void OnInspector()
         {
