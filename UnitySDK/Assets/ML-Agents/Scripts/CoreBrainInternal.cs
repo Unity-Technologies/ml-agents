@@ -41,7 +41,7 @@ namespace MLAgents
 #pragma warning restore
 
 
-        public List<string> currentFailedModelChecks;
+        public List<string> currentFailedModelChecks = new List<string>();
         
         Batcher brainBatcher;
 
