@@ -343,7 +343,7 @@ continuous action spaces.
 #### Masking Discrete Actions
 
 When using Discrete Actions, it is possible to specify that some actions are
-impossible for the next decision. Then the Agent is controlled by an External or
+impossible for the next decision. Then the Agent is controlled by a
 Learning Brain, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by a Player or Heuristic Brain, the Agent will
 still be able to decide to perform the masked action. In order to mask an
