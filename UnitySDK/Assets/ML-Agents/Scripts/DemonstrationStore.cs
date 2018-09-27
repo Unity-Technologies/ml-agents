@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
+using UnityEditor;
 
 namespace MLAgents
 {
@@ -118,6 +119,7 @@ namespace MLAgents
             writer.Seek(0, 0);
             metaProto.WriteDelimitedTo(writer);
             writer.Close();
+            AssetDatabase.Refresh();
         }
     }
 }
