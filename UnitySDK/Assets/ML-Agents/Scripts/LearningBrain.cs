@@ -92,7 +92,7 @@ namespace MLAgents
         /// When Called, the brain will be controlled externally. It will not use the
         /// model to decide on actions.
         /// </summary>
-        public void SetToControlled()
+        public void SetToControlledExternally()
         {
             isControlled = true;
         }

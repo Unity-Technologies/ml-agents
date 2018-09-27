@@ -259,7 +259,7 @@ namespace MLAgents
                 x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
             foreach (LearningBrain brain in controlledBrains)
             {
-                brain.SetToControlled();
+                brain.SetToControlledExternally();
             }
             
             // Try to launch the communicator by usig the arguments passed at launch
