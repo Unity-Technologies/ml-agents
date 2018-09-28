@@ -48,6 +48,7 @@ namespace MLAgents
             EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
             serializedBrain.ApplyModifiedProperties();
             
+            // Draws an horizontal thick line
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }
     }
