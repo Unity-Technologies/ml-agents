@@ -81,7 +81,7 @@ namespace MLAgents.InferenceBrain
         }
 
         /// <summary>
-        /// Determines if the tensor name has a Generator
+        /// Evaluates whether the tensor name has a Generator
         /// </summary>
         /// <param name="key">The tensor name of the tensor</param>
         /// <returns>true if key is in the TensorGenerators, false otherwise</returns>
@@ -98,8 +98,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="tensor"></param>
         /// <param name="batchSize"></param>
         /// <param name="agentInfo"></param>
-        private static void ReshapeBiDimensionalOutput(
-            Tensor tensor,
+        private static void ReshapeBiDimensionalOutput(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -115,24 +114,49 @@ namespace MLAgents.InferenceBrain
             }
         }
         
-        private static void GenerateBatchSize(
-            Tensor tensor,
+        /// <summary>
+        /// Generates the Tensor corresponding to the BatchSize input : Will be a one dimensional
+        /// integer array of size 1 containing the batch size.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="batchSize"> The number of agents present in the current batch</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void GenerateBatchSize(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Data = new int[] {batchSize};
         }
         
-        private static void GenerateSequenceLength(
-            Tensor tensor,
+        /// <summary>
+        /// Generates the Tensor corresponding to the SequenceLength input : Will be a one
+        /// dimensional integer array of size 1 containing 1.
+        /// Note : the sequence length is always one since recurrent networks only predicts for
+        /// one step at the time.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="batchSize"> The number of agents present in the current batch</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void GenerateSequenceLength(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Data = new int[] {1};
         }
-            
-        private static void GenerateVectorObservation(
-            Tensor tensor,
+        
+        /// <summary>
+        /// Generates the Tensor corresponding to the VectorObservation input : Will be a two
+        /// dimensional float array of dimension [batchSize x vectorObservationSize].
+        /// It will use the Vector Observation data contained in the agentInfo to fill the data
+        /// of the tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="batchSize"> The number of agents present in the current batch</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void GenerateVectorObservation(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -151,8 +175,17 @@ namespace MLAgents.InferenceBrain
             }
         }
         
-        private static void GenerateRecurrentInput(
-            Tensor tensor,
+        /// <summary>
+        /// Generates the Tensor corresponding to the Recurrent input : Will be a two
+        /// dimensional float array of dimension [batchSize x memorySize].
+        /// It will use the Memory data contained in the agentInfo to fill the data
+        /// of the tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="batchSize"> The number of agents present in the current batch</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void GenerateRecurrentInput(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -163,7 +196,6 @@ namespace MLAgents.InferenceBrain
             foreach (var agent in agentInfo.Keys)
             {
                 var memory = agentInfo[agent].memories;
-                
                 for (var j = 0; j < memorySize; j++)
                 {
                     if (memory == null)
@@ -180,8 +212,17 @@ namespace MLAgents.InferenceBrain
             }
         }
         
-        private static void GeneratePreviousActionInput(
-            Tensor tensor,
+        /// <summary>
+        /// Generates the Tensor corresponding to the Previous Action input : Will be a two
+        /// dimensional integer array of dimension [batchSize x actionSize].
+        /// It will use the previous action data contained in the agentInfo to fill the data
+        /// of the tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="batchSize"> The number of agents present in the current batch</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void GeneratePreviousActionInput(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -205,8 +246,17 @@ namespace MLAgents.InferenceBrain
             }
         }
         
-        private static void GenerateActionMaskInput(
-            Tensor tensor,
+        /// <summary>
+        /// Generates the Tensor corresponding to the Action Mask input : Will be a two
+        /// dimensional float array of dimension [batchSize x numActionLogits].
+        /// It will use the Action Mask data contained in the agentInfo to fill the data
+        /// of the tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="batchSize"> The number of agents present in the current batch</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void GenerateActionMaskInput(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -236,8 +286,19 @@ namespace MLAgents.InferenceBrain
             }
         }
 
-        private static void GenerateRandomNormalInput(
-            Tensor tensor,
+        /// <summary>
+        /// Generates the Tensor corresponding to the Epsilon input : Will be a two
+        /// dimensional float array of dimension [batchSize x actionSize].
+        /// It will use the generate random input data using a RandomNormal Distribution.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="batchSize"> The number of agents present in the current batch</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        /// <param name="randomNormal"> The RandomNormal object that will be used to generate the
+        /// input.
+        /// </param>
+        private static void GenerateRandomNormalInput(Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo,
             RandomNormal randomNormal)
@@ -248,17 +309,28 @@ namespace MLAgents.InferenceBrain
             randomNormal.FillTensor(tensor);
         }
 
+        /// <summary>
+        /// Generates the Tensor corresponding to the Visual Observation input : Will be a 4
+        /// dimensional float array of dimension [batchSize x width x heigth x numChannels].
+        /// It will use the Texture input data contained in the agentInfo to fill the data
+        /// of the tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        /// <param name="visIndex"> The index of the Visual Observation in the Agent's data</param>
+        /// <param name="bw"> If true, the Tensor will have only one channel (The observation
+        /// is grayscake), if false, the Tensor will have 3 channels (the Observation hads three
+        /// channels corresponding to RGB).</param>
         private static void GenerateVisualObservationInput(
             Tensor tensor,
             Dictionary<Agent, AgentInfo> agentInfo,
             int visIndex,
             bool bw)
         {
-            //TODO : More efficient ?
             var textures = agentInfo.Keys.Select(
                 agent => agentInfo[agent].visualObservations[visIndex]).ToList();
             tensor.Data = BatchVisualObservations(textures, bw);
-
         }
         
         /// <summary>

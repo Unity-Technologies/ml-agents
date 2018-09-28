@@ -60,7 +60,7 @@ namespace MLAgents.InferenceBrain
         }
 
         /// <summary>
-        /// Determines if the tensor name has an Applier
+        /// Evaluates whether the tensor name has an Applier
         /// </summary>
         /// <param name="key">The tensor name of the tensor</param>
         /// <returns>true if key is in the TensorAppliers, false otherwise</returns>
