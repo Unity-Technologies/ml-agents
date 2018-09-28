@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Google.Protobuf.Reflection;
 using UnityEngine.MachineLearning.InferenceEngine;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
+using MLAgents.InferenceBrain;
 // TODO : Remove
 #if UNITY_EDITOR
 using UnityEditor;
@@ -17,25 +16,6 @@ namespace MLAgents
     {
         private const long version = 1; 
         
-        public class NodeNames
-        {
-            public string BatchSizePlaceholder = "batch_size";
-            public string SequenceLengthPlaceholder = "sequence_length";
-            public string VectorObservationPlacholder = "vector_observation";
-            public string RecurrentInPlaceholder = "recurrent_in";
-            public string VisualObservationPlaceholderPrefix = "visual_observation_";
-            public string PreviousActionPlaceholder = "prev_action";
-            public string ActionMaskPlaceholder = "action_masks";
-            public string RandomNormalEpsilonPlaceholder = "epsilon";
-
-            public string ValueEstimateOutput = "value_estimate";
-            public string RecurrentOutOutput = "recurrent_out";
-            public string MemorySize = "memory_size";
-            public string VersionNumber = "version_number";
-            public string IsContinuousControl = "is_continuous_control";
-            public string ActionOutput = "action";
-        }
-        
         [SerializeField] [Tooltip("If checked, the brain will broadcast states and actions to Python.")]
 #pragma warning disable
         private bool broadcast = true;
@@ -45,20 +25,14 @@ namespace MLAgents
         public List<string> currentFailedModelChecks = new List<string>();
         
         Batcher brainBatcher;
-
-        NodeNames _nodeNames = new NodeNames();
-
-        private long[] inferenceTimes = new long[1000];
-        private int count;
         
-
         private long _memorySize;
         private long _modelVersionNumber;
         private long _isContinuous;
 
-        private InternalBrainTensorGenerator _tensorGenerators;
+        private TensorGenerator _tensorGenerators;
 
-        private InternalBrainTensorApplier  _outputTensorAppliers;
+        private TensorApplier  _outputTensorAppliers;
 
         public Model m_model;
 
@@ -94,11 +68,9 @@ namespace MLAgents
             InitializeModel(m_model);
 
             
-            _tensorGenerators = new InternalBrainTensorGenerator(
-                _nodeNames, brain.brainParameters, new RandomNormal(0));
+            _tensorGenerators = new TensorGenerator(brain.brainParameters, new RandomNormal(0));
             
-            _outputTensorAppliers = new InternalBrainTensorApplier(
-                _nodeNames, brain.brainParameters, new Multinomial(0));
+            _outputTensorAppliers = new TensorApplier(brain.brainParameters, new Multinomial(0));
 
         }
 
@@ -114,9 +86,9 @@ namespace MLAgents
                 inferenceInputs = GetInputTensors();
                 inferenceOutputs = GetOutputTensors().ToArray();
 
-                _modelVersionNumber = GetModelData(m_engine, _nodeNames.VersionNumber);
-                _memorySize = GetModelData(m_engine, _nodeNames.MemorySize);
-                _isContinuous = GetModelData(m_engine, _nodeNames.IsContinuousControl);
+                _modelVersionNumber = GetModelData(m_engine, NodeNames.VersionNumber);
+                _memorySize = GetModelData(m_engine, NodeNames.MemorySize);
+                _isContinuous = GetModelData(m_engine, NodeNames.IsContinuousControl);
 
                 currentFailedModelChecks = new List<string>();
                 if (_modelVersionNumber != version)
@@ -131,9 +103,12 @@ namespace MLAgents
                 {
                     currentFailedModelChecks.Add("Could not infer action space type from model");
                 }
-                currentFailedModelChecks.AddRange(InternalBrainTensorCheck.GetChecks(
-                    m_engine, inferenceInputs, inferenceOutputs, brain.brainParameters,
-                    _isContinuous, _memorySize > 0, _nodeNames));
+                currentFailedModelChecks.AddRange(TensorCheck.GetChecks(m_engine, 
+                    inferenceInputs, 
+                    inferenceOutputs, 
+                    brain.brainParameters,
+                    _isContinuous, 
+                    _memorySize > 0));
             }
             else
             {
@@ -182,7 +157,7 @@ namespace MLAgents
                 tensorList.Add(
                     new Tensor()
                 {
-                    Name = _nodeNames.RandomNormalEpsilonPlaceholder,
+                    Name = NodeNames.RandomNormalEpsilonPlaceholder,
                     Shape = new long[]
                     {
                         n_agents, bp.vectorActionSize[0]
@@ -196,7 +171,7 @@ namespace MLAgents
                 tensorList.Add(
                     new Tensor()
                 {
-                    Name = _nodeNames.ActionMaskPlaceholder,
+                    Name = NodeNames.ActionMaskPlaceholder,
                     Shape = new long[]{n_agents, bp.vectorActionSize.Sum()},
                     ValueType = Tensor.TensorType.FloatingPoint,
                     Data = new float[n_agents, bp.vectorActionSize.Sum()]
@@ -206,7 +181,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = _nodeNames.VisualObservationPlaceholderPrefix + "0",
+                    Name = NodeNames.VisualObservationPlaceholderPrefix + "0",
                     Shape = new long[4]
                     {
                         n_agents, res.width, res.height, res.blackAndWhite ? 1 : 3
@@ -220,7 +195,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                   {
-                      Name = _nodeNames.VectorObservationPlacholder,
+                      Name = NodeNames.VectorObservationPlacholder,
                       Shape = new long[2]
                       {
                           n_agents, bp.vectorObservationSize * bp.numStackedVectorObservations 
@@ -233,7 +208,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = _nodeNames.RecurrentInPlaceholder,
+                    Name = NodeNames.RecurrentInPlaceholder,
                     Shape = new long[2]
                     {
                         n_agents, _memorySize
@@ -242,7 +217,7 @@ namespace MLAgents
                 });
                 tensorList.Add(new Tensor()
                 {
-                    Name = _nodeNames.SequenceLengthPlaceholder,
+                    Name = NodeNames.SequenceLengthPlaceholder,
                     Shape = new long[]
                     {
                         
@@ -253,7 +228,7 @@ namespace MLAgents
                 {
                     tensorList.Add(new Tensor()
                     {
-                        Name = _nodeNames.PreviousActionPlaceholder,
+                        Name = NodeNames.PreviousActionPlaceholder,
                         Shape = new long[2]
                         {
                             n_agents, brain.brainParameters.vectorActionSize.Length
@@ -275,7 +250,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = _nodeNames.ActionOutput,
+                    Name = NodeNames.ActionOutput,
                     Shape = new long[]
                     {
                         n_agents, bp.vectorActionSize[0]
@@ -289,7 +264,7 @@ namespace MLAgents
                 tensorList.Add(
                     new Tensor()
                     {
-                        Name = _nodeNames.ActionOutput,
+                        Name = NodeNames.ActionOutput,
                         Shape = new long[]{n_agents, bp.vectorActionSize.Sum()},
                         ValueType = Tensor.TensorType.FloatingPoint,
                         Data = new float[n_agents, bp.vectorActionSize.Sum()]
@@ -299,7 +274,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = _nodeNames.RecurrentOutOutput,
+                    Name = NodeNames.RecurrentOutOutput,
                     Shape = new long[2]
                     {
                         n_agents, _memorySize

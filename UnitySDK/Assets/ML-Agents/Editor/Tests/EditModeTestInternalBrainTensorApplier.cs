@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.MachineLearning.InferenceEngine;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
 using System.Reflection;
-
+using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
@@ -38,9 +38,7 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var nodeNames = new CoreBrainInternal.NodeNames();
-            var tensorGenerator = new InternalBrainTensorApplier(
-                nodeNames, bp, new Multinomial(0));
+            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
             Assert.IsNotNull(tensorGenerator);
         }
 
@@ -51,9 +49,7 @@ namespace MLAgents.Tests
             {
                 vectorActionSpaceType = SpaceType.continuous
             };
-            var nodeNames = new CoreBrainInternal.NodeNames();
-            var tensorGenerator = new InternalBrainTensorApplier(
-                nodeNames, bp, new Multinomial(0));
+            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {
@@ -62,7 +58,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[nodeNames.ActionOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[NodeNames.ActionOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -84,9 +80,7 @@ namespace MLAgents.Tests
                 vectorActionSpaceType = SpaceType.discrete,
                 vectorActionSize = new int[]{2, 3}
             };
-            var nodeNames = new CoreBrainInternal.NodeNames();
-            var tensorGenerator = new InternalBrainTensorApplier(
-                nodeNames, bp, new Multinomial(0));
+            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {
@@ -96,7 +90,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[nodeNames.ActionOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[NodeNames.ActionOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -112,9 +106,7 @@ namespace MLAgents.Tests
         public void ApplyMemoryOutput()
         {
             var bp = new BrainParameters();
-            var nodeNames = new CoreBrainInternal.NodeNames();
-            var tensorGenerator = new InternalBrainTensorApplier(
-                nodeNames, bp, new Multinomial(0));
+            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {
@@ -124,7 +116,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[nodeNames.RecurrentOutOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[NodeNames.RecurrentOutOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -140,9 +132,7 @@ namespace MLAgents.Tests
         public void ApplyValueEstimate()
         {
             var bp = new BrainParameters();
-            var nodeNames = new CoreBrainInternal.NodeNames();
-            var tensorGenerator = new InternalBrainTensorApplier(
-                nodeNames, bp, new Multinomial(0));
+            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {
@@ -151,7 +141,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[nodeNames.ValueEstimateOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[NodeNames.ValueEstimateOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();

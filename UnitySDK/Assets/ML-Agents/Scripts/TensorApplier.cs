@@ -5,32 +5,31 @@ using UnityEngine.MachineLearning.InferenceEngine.Util;
 using System.Linq;
 using System;
 
-namespace MLAgents
+namespace MLAgents.InferenceBrain
 {
-    public class InternalBrainTensorApplier : 
+    public class TensorApplier : 
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>
     {
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>  dict;
         
-         public InternalBrainTensorApplier(
-            CoreBrainInternal.NodeNames _nodeNames, 
+         public TensorApplier(
             BrainParameters bp,
             Multinomial multinomial)
         {
             dict = new Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>();
             
-            dict[_nodeNames.ValueEstimateOutput] = ApplyValueEstimate;
+            dict[NodeNames.ValueEstimateOutput] = ApplyValueEstimate;
             if (bp.vectorActionSpaceType == SpaceType.continuous)
             {
-                dict[_nodeNames.ActionOutput] = ApplyContinuousActionOutput;
+                dict[NodeNames.ActionOutput] = ApplyContinuousActionOutput;
             }
             else
             {
-                dict[_nodeNames.ActionOutput] = (tensor, agentInfo) =>
+                dict[NodeNames.ActionOutput] = (tensor, agentInfo) =>
                     ApplyDiscreteActionOutput(tensor, agentInfo, multinomial,
                         bp.vectorActionSize);
             }
-            dict[_nodeNames.RecurrentOutOutput] = ApplyMemoryOutput;
+            dict[NodeNames.RecurrentOutOutput] = ApplyMemoryOutput;
 
 
         }
@@ -41,7 +40,6 @@ namespace MLAgents
             {
                 return dict[index];
             }
-
             set
             {
                 dict[index] = value;

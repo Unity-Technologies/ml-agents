@@ -6,33 +6,32 @@ using System.Linq;
 using System;
 using System.CodeDom;
 
-namespace MLAgents
+namespace MLAgents.InferenceBrain
 {
-    public class InternalBrainTensorGenerator : 
+    public class TensorGenerator : 
         Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>> 
     {
         Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>  dict;
         
-        public InternalBrainTensorGenerator(
-            CoreBrainInternal.NodeNames nodeNames, 
+        public TensorGenerator(
             BrainParameters bp,
             RandomNormal randomNormal)
         {
             dict = new Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
             // Generate Inputs
-            dict[nodeNames.BatchSizePlaceholder] = GenerateBatchSize;
-            dict[nodeNames.SequenceLengthPlaceholder] = GenerateSequenceLength;
-            dict[nodeNames.VectorObservationPlacholder] = GenerateVectorObservation;
-            dict[nodeNames.RecurrentInPlaceholder] = GenerateRecurrentInput;
-            dict[nodeNames.PreviousActionPlaceholder] = GeneratePreviousActionInput;
-            dict[nodeNames.ActionMaskPlaceholder] = GenerateActionMaskInput;
-            dict[nodeNames.RandomNormalEpsilonPlaceholder] =
+            dict[NodeNames.BatchSizePlaceholder] = GenerateBatchSize;
+            dict[NodeNames.SequenceLengthPlaceholder] = GenerateSequenceLength;
+            dict[NodeNames.VectorObservationPlacholder] = GenerateVectorObservation;
+            dict[NodeNames.RecurrentInPlaceholder] = GenerateRecurrentInput;
+            dict[NodeNames.PreviousActionPlaceholder] = GeneratePreviousActionInput;
+            dict[NodeNames.ActionMaskPlaceholder] = GenerateActionMaskInput;
+            dict[NodeNames.RandomNormalEpsilonPlaceholder] =
                 (tensor, batchSize, agentInfo) =>
                     GenerateRandomNormalInput(tensor, batchSize, agentInfo, randomNormal);
             // Generate Outputs
-            dict[nodeNames.ActionOutput] = ReshapeBiDimensionalOutupt;
-            dict[nodeNames.RecurrentOutOutput] = ReshapeBiDimensionalOutupt;
-            dict[nodeNames.ValueEstimateOutput] = ReshapeBiDimensionalOutupt;
+            dict[NodeNames.ActionOutput] = ReshapeBiDimensionalOutupt;
+            dict[NodeNames.RecurrentOutOutput] = ReshapeBiDimensionalOutupt;
+            dict[NodeNames.ValueEstimateOutput] = ReshapeBiDimensionalOutupt;
             
             if (bp.cameraResolutions != null)
             {
@@ -42,7 +41,7 @@ namespace MLAgents
                 {
                     var index = visIndex;
                     var bw = bp.cameraResolutions[visIndex].blackAndWhite;
-                    dict[nodeNames.VisualObservationPlaceholderPrefix + visIndex] =
+                    dict[NodeNames.VisualObservationPlaceholderPrefix + visIndex] =
                         (tensor, batchSize, agentInfo) =>
                             GenerateVisualObservationInput(tensor, agentInfo, index, bw);
                 }
