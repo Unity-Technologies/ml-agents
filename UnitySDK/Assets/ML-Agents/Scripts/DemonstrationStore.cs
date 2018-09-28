@@ -5,21 +5,26 @@ using UnityEditor;
 
 namespace MLAgents
 {
-    
+    /// <summary>
+    /// Responsible for writing demonstration data to file.
+    /// </summary>
     public class DemonstrationStore
     {
+        private const string DemoDirecory = "Assets/Demonstrations/";
+        private const string ExtensionType = ".demo";
+        public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
+
         private string filePath;
         private DemonstrationMetaData metaData;
-        private const string DemoDirecory = "Assets/Demonstrations/";
         private Stream writer;
         private BrainParameters cachedBrainParameters;
         private float cumulativeReward;
-        public const int InitialLength = 32;
 
         /// <summary>
         /// Initializes the Demonstration Store, and writes initial data.
         /// </summary>
-        public void Initialize(string demonstrationName, BrainParameters brainParameters, string brainName)
+        public void Initialize(
+            string demonstrationName, BrainParameters brainParameters, string brainName)
         {
             cachedBrainParameters = brainParameters;
             CreateDirectory();
@@ -46,12 +51,12 @@ namespace MLAgents
         {
             // Creates demonstration file.
             var literalName = demonstrationName;
-            filePath = DemoDirecory + literalName + ".demo";
+            filePath = DemoDirecory + literalName + ExtensionType;
             var uniqueNameCounter = 0;
             while (File.Exists(filePath))
             {
                 literalName = demonstrationName + "_" + uniqueNameCounter;
-                filePath = DemoDirecory + literalName + ".demo";
+                filePath = DemoDirecory + literalName + ExtensionType;
                 uniqueNameCounter++;
             }
 
@@ -67,7 +72,7 @@ namespace MLAgents
         private void WriteBrainParameters(string brainName)
         {
             // Writes BrainParameters to file.
-            writer.Seek(InitialLength + 1, 0);
+            writer.Seek(MetaDataBytes + 1, 0);
             var brainProto = cachedBrainParameters.ToProto(brainName, BrainTypeProto.Player);
             brainProto.WriteDelimitedTo(writer);
         }
@@ -98,6 +103,8 @@ namespace MLAgents
             EndEpisode();
             metaData.meanReward = cumulativeReward / metaData.numberEpisodes;
             WriteMetadata();
+            writer.Close();
+            AssetDatabase.Refresh();
         }
 
         /// <summary>
@@ -118,8 +125,6 @@ namespace MLAgents
             writer.Write(metaProtoBytes, 0, metaProtoBytes.Length);
             writer.Seek(0, 0);
             metaProto.WriteDelimitedTo(writer);
-            writer.Close();
-            AssetDatabase.Refresh();
         }
     }
 }

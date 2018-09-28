@@ -50,7 +50,7 @@ class BCTrainer(Trainer):
         Returns the trainer parameters of the trainer.
         """
         return self.trainer_parameters
-    
+
     @property
     def get_max_steps(self):
         """
@@ -102,7 +102,8 @@ class BCTrainer(Trainer):
         else:
             return run_out['action'], None, None, None, None
 
-    def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs):
+    def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
+                        take_action_outputs):
         """
         Adds experiences to each agent's experience history.
         :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).

@@ -276,18 +276,14 @@ namespace MLAgents
                     continue;
                 }
 
-                for (var i = 0; i < m_currentAgents[brainName].Count(); i++)
+                for (var i = 0; i < m_currentAgents[brainName].Count; i++)
                 {
                     var agent = m_currentAgents[brainName][i];
                     var action = rlInput.AgentActions[brainName].Value[i];
-                    agent.UpdateVectorAction(
-                        action.VectorActions.ToArray());
-                    agent.UpdateMemoriesAction(
-                        action.Memories.ToList());
-                    agent.UpdateTextAction(
-                        action.TextActions);
-                    agent.UpdateValueAction(
-                        action.Value);
+                    agent.UpdateVectorAction(action.VectorActions.ToArray());
+                    agent.UpdateMemoriesAction(action.Memories.ToList());
+                    agent.UpdateTextAction(action.TextActions);
+                    agent.UpdateValueAction(action.Value);
                 }
             }
         }

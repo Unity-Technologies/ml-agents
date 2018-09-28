@@ -24,8 +24,10 @@ namespace MLAgents
             {
                 recordingAgent = GetComponent<Agent>();
                 demoStore = new DemonstrationStore();
-                demonstrationName = CleanName(demonstrationName);
-                demoStore.Initialize(demonstrationName, recordingAgent.brain.brainParameters, 
+                demonstrationName = SanitizeName(demonstrationName);
+                demoStore.Initialize(
+                    demonstrationName, 
+                    recordingAgent.brain.brainParameters, 
                     recordingAgent.brain.name);            
                 Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
             }
@@ -34,7 +36,7 @@ namespace MLAgents
         /// <summary>
         /// Removes all characters except alphanumerics from demonstration name.
         /// </summary>
-        private string CleanName(string demoName)
+        private static string SanitizeName(string demoName)
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");

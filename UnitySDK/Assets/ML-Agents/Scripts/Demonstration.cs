@@ -6,6 +6,7 @@ namespace MLAgents
 {
     /// <summary>
     /// Demonstration Object. Contains meta-data regarding demonstration.
+    /// Used for imitation learning, or other forms of learning from data.
     /// </summary>
     [Serializable]
     public class Demonstration : ScriptableObject
@@ -13,10 +14,10 @@ namespace MLAgents
         public DemonstrationMetaData metaData;
         public BrainParameters brainParameters;
 
-        public void Initialize(BrainParameters bp, DemonstrationMetaData dmd)
+        public void Initialize(BrainParameters brainParameters, DemonstrationMetaData demonstrationMetaData)
         {
-            brainParameters = bp;
-            metaData = dmd;
+            this.brainParameters = brainParameters;
+            metaData = demonstrationMetaData;
         }
     }
     

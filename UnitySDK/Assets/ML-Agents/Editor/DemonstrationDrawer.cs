@@ -1,6 +1,9 @@
 ﻿using MLAgents;
 using UnityEditor;
 
+/// <summary>
+/// Renders a custom UI for Demonstration Scriptable Object.
+/// </summary>
 [CustomEditor(typeof(Demonstration))]
 [CanEditMultipleObjects]
 public class DemonstrationEditor : Editor
@@ -14,49 +17,69 @@ public class DemonstrationEditor : Editor
         demoMetaData = serializedObject.FindProperty("metaData");
     }
 
+    /// <summary>
+    /// Renders Inspector UI for Demonstration metadata.
+    /// </summary>
     void MakeMetaDataProperty(SerializedProperty property)
     {
-        var nameString = property.FindPropertyRelative("demonstrationName").displayName + ": " +
-                         property.FindPropertyRelative("demonstrationName").stringValue;
-        
-        var expString = property.FindPropertyRelative("numberExperiences").displayName + ": " +
-                        property.FindPropertyRelative("numberExperiences").intValue;
-        
-        var epiString = property.FindPropertyRelative("numberEpisodes").displayName + ": " +
-                        property.FindPropertyRelative("numberEpisodes").intValue;
-        
-        var rewString = property.FindPropertyRelative("meanReward").displayName + ": " +
-                        property.FindPropertyRelative("meanReward").floatValue;
-        
-        
-        EditorGUILayout.LabelField(nameString);
-        EditorGUILayout.LabelField(expString);
-        EditorGUILayout.LabelField(epiString);
-        EditorGUILayout.LabelField(rewString);
+        var nameProp = property.FindPropertyRelative("demonstrationName");
+        var expProp = property.FindPropertyRelative("numberExperiences");
+        var epiProp = property.FindPropertyRelative("numberEpisodes");
+        var rewProp = property.FindPropertyRelative("meanReward");
+
+        var nameLabel = nameProp.displayName + ": " + nameProp.stringValue;
+        var expLabel = expProp.displayName + ": " + expProp.intValue;
+        var epiLabel = epiProp.displayName + ": " + epiProp.intValue;
+        var rewLabel = rewProp.displayName + ": " + rewProp.floatValue;
+
+        EditorGUILayout.LabelField(nameLabel);
+        EditorGUILayout.LabelField(expLabel);
+        EditorGUILayout.LabelField(epiLabel);
+        EditorGUILayout.LabelField(rewLabel);
     }
 
+    /// <summary>
+    /// Constructs label for action size array.
+    /// </summary>
+    string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
+    {
+        var actionSize = actionSizeProperty.arraySize;
+        var actionLabel = "[ ";
+        for (int i = 0; i < actionSize; i++)
+        {
+            actionLabel += actionSizeProperty.GetArrayElementAtIndex(i).intValue;
+            if (i < actionSize - 1)
+            {
+                actionLabel += ", ";
+            }
+        }
+
+        actionLabel += " ]";
+        return actionLabel;
+    }
+
+    /// <summary>
+    /// Renders Inspextor UI for Brain Parameters of Demonstration.
+    /// </summary>
     void MakeBrainParametersProperty(SerializedProperty property)
     {
-        var vecObsSizeS = property.FindPropertyRelative("vectorObservationSize").displayName + ": " +
-                         property.FindPropertyRelative("vectorObservationSize").intValue;
-        
-        var numStackedS = property.FindPropertyRelative("numStackedVectorObservations").displayName + ": " +
-                          property.FindPropertyRelative("numStackedVectorObservations").intValue;
-        
-        var vecActSizeS = property.FindPropertyRelative("vectorActionSize").displayName + ": " +
-                          property.FindPropertyRelative("vectorActionSize").arraySize;
-        
-        var camResS = property.FindPropertyRelative("cameraResolutions").displayName + ": " +
-                          property.FindPropertyRelative("cameraResolutions").arraySize;
-        
-        var actSpaceTypeS = property.FindPropertyRelative("vectorActionSpaceType").displayName + ": " +
-                      (SpaceType) property.FindPropertyRelative("vectorActionSpaceType").enumValueIndex;
-        
-        EditorGUILayout.LabelField(vecObsSizeS);
-        EditorGUILayout.LabelField(numStackedS);
-        EditorGUILayout.LabelField(vecActSizeS);
-        EditorGUILayout.LabelField(camResS);
-        EditorGUILayout.LabelField(actSpaceTypeS);
+        var vecObsSizeProp = property.FindPropertyRelative("vectorObservationSize");
+        var numStackedProp = property.FindPropertyRelative("numStackedVectorObservations");
+        var actSizeProperty = property.FindPropertyRelative("vectorActionSize");
+        var camResProp = property.FindPropertyRelative("cameraResolutions");
+        var actSpaceTypeProp = property.FindPropertyRelative("vectorActionSpaceType");
+
+        var vecObsSizeLabel = vecObsSizeProp.displayName + ": " + vecObsSizeProp.intValue;
+        var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
+        var vecActSizeLabel = actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
+        var camResLabel = camResProp.displayName + ": " + camResProp.arraySize;
+        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " + (SpaceType) actSpaceTypeProp.enumValueIndex;
+
+        EditorGUILayout.LabelField(vecObsSizeLabel);
+        EditorGUILayout.LabelField(numStackedLabel);
+        EditorGUILayout.LabelField(vecActSizeLabel);
+        EditorGUILayout.LabelField(camResLabel);
+        EditorGUILayout.LabelField(actSpaceTypeLabel);
     }
 
     public override void OnInspectorGUI()

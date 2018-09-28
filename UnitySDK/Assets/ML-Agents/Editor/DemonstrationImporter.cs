@@ -14,6 +14,8 @@ namespace MLAgents
     [ScriptedImporter(1, new[] {"demo"})]
     public class DemonstrationImporter : ScriptedImporter
     {
+        private const string iconPath = "Assets/ML-Agents/Resources/DemoIcon.png";
+
         public override void OnImportAsset(AssetImportContext ctx)
         {
             var inputType = Path.GetExtension(ctx.assetPath);
@@ -21,27 +23,26 @@ namespace MLAgents
             {
                 throw new Exception("Demonstration import error.");
             }
-            
+
             // Read first two proto objects containing metadata and brain parameters.
             Stream reader = File.OpenRead(ctx.assetPath);
-            
+
             var metaDataProto = DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
             var metaData = new DemonstrationMetaData(metaDataProto);
 
-            reader.Seek(DemonstrationStore.InitialLength + 1, 0);
+            reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
             var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
             var brainParameters = new BrainParameters(brainParamsProto);
-            
+
             reader.Close();
-            
+
             var demonstration = ScriptableObject.CreateInstance<Demonstration>();
             demonstration.Initialize(brainParameters, metaData);
             userData = demonstration.ToString();
-            
-            Texture2D texture =
-                (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/ML-Agents/Resources/DemoIcon.png",
-                    typeof(Texture2D));
 
+            Texture2D texture =
+                (Texture2D) AssetDatabase.LoadAssetAtPath(iconPath,
+                    typeof(Texture2D));
 
 
 #if UNITY_2017_3_OR_NEWER
