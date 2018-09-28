@@ -8,17 +8,34 @@ using System.CodeDom;
 
 namespace MLAgents.InferenceBrain
 {
-    public class TensorGenerator : 
+    /// <summary>
+    /// Mapping between Tensor names and generators.
+    /// A TensorGenerator implements a Dictionary of strings (node names) to an Action.
+    /// The Action take as argument the tensor, the current batch size and a Dictionary of
+    /// Agent to AgentInfo corresponding to the current batch.
+    /// Each Generator reshapes and fills the data of the tensor based of the data of the batch.
+    /// When the Tensor is an Input to the model, the shape of the Tensor will be modified
+    /// depending on the current batch size and the data of the Tensor will be filled using the
+    /// Dictionary of Agent to AgentInfo.
+    /// When the Tensor is an Output of the model, only the shape of the Tensor will be modified
+    /// using the current batch size. The data will be prefilled with zeros.
+    /// </summary>
+    public class TensorGenerators : 
         Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>> 
     {
-        Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>  dict;
+        Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>  dict = 
+            new Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
         
-        public TensorGenerator(
-            BrainParameters bp,
-            RandomNormal randomNormal)
+        /// <summary>
+        /// The constructor for the TensorGenerators. Returns a new TensorGenerators object.
+        /// </summary>
+        /// <param name="bp"> The BrainParameters used to determines what Generators will be
+        /// used</param>
+        /// <param name="randomNormal"> The RandomNormal object some of the Generators will
+        /// be initialized with.</param>
+        public TensorGenerators(BrainParameters bp, RandomNormal randomNormal)
         {
-            dict = new Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
-            // Generate Inputs
+            // Generator for Inputs
             dict[NodeNames.BatchSizePlaceholder] = GenerateBatchSize;
             dict[NodeNames.SequenceLengthPlaceholder] = GenerateSequenceLength;
             dict[NodeNames.VectorObservationPlacholder] = GenerateVectorObservation;
@@ -28,11 +45,6 @@ namespace MLAgents.InferenceBrain
             dict[NodeNames.RandomNormalEpsilonPlaceholder] =
                 (tensor, batchSize, agentInfo) =>
                     GenerateRandomNormalInput(tensor, batchSize, agentInfo, randomNormal);
-            // Generate Outputs
-            dict[NodeNames.ActionOutput] = ReshapeBiDimensionalOutupt;
-            dict[NodeNames.RecurrentOutOutput] = ReshapeBiDimensionalOutupt;
-            dict[NodeNames.ValueEstimateOutput] = ReshapeBiDimensionalOutupt;
-            
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;
@@ -46,22 +58,47 @@ namespace MLAgents.InferenceBrain
                             GenerateVisualObservationInput(tensor, agentInfo, index, bw);
                 }
             }
+            // Generators for Outputs
+            dict[NodeNames.ActionOutput] = ReshapeBiDimensionalOutput;
+            dict[NodeNames.RecurrentOutOutput] = ReshapeBiDimensionalOutput;
+            dict[NodeNames.ValueEstimateOutput] = ReshapeBiDimensionalOutput;
         }
         
+        /// <summary>
+        /// Access the Generator corresponding to the key index
+        /// </summary>
+        /// <param name="index">The tensor name of the tensor</param>
         public new Action<Tensor, int, Dictionary<Agent, AgentInfo>> this[string index]
         {
             get
             {
                 return dict[index];
             }
-
             set
             {
                 dict[index] = value;
             }
         }
 
-        private static void ReshapeBiDimensionalOutupt(
+        /// <summary>
+        /// Determines if the tensor name has a Generator
+        /// </summary>
+        /// <param name="key">The tensor name of the tensor</param>
+        /// <returns>true if key is in the TensorGenerators, false otherwise</returns>
+        public new bool ContainsKey(string key)
+        {
+            return dict.ContainsKey(key);
+        }
+        
+        /// <summary>
+        /// Reshapes a Tensor so that his first diemsion becomes equal to the current batch size
+        /// and initializes its content to be zeros. Will only work on 2-dimensional tensors.
+        /// The second dimension of the Tensor will not be modiied.
+        /// </summary>
+        /// <param name="tensor"></param>
+        /// <param name="batchSize"></param>
+        /// <param name="agentInfo"></param>
+        private static void ReshapeBiDimensionalOutput(
             Tensor tensor,
             int batchSize,
             Dictionary<Agent, AgentInfo> agentInfo)
@@ -76,11 +113,6 @@ namespace MLAgents.InferenceBrain
             {
                 tensor.Data = new int[batchSize, shapeSecondAxis];
             }
-        }
-
-        public new bool ContainsKey(string key)
-        {
-            return dict.ContainsKey(key);
         }
         
         private static void GenerateBatchSize(

@@ -30,7 +30,7 @@ namespace MLAgents
         private long _modelVersionNumber;
         private long _isContinuous;
 
-        private TensorGenerator _tensorGenerators;
+        private TensorGenerators _tensorGenerators;
 
         private TensorAppliers  _outputTensorAppliers;
 
@@ -68,7 +68,7 @@ namespace MLAgents
             InitializeModel(m_model);
 
             
-            _tensorGenerators = new TensorGenerator(brain.brainParameters, new RandomNormal(0));
+            _tensorGenerators = new TensorGenerators(brain.brainParameters, new RandomNormal(0));
             
             _outputTensorAppliers = new TensorAppliers(brain.brainParameters, new Multinomial(0));
 

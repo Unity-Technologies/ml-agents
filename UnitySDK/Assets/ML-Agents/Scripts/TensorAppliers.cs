@@ -6,10 +6,10 @@ using System;
 namespace MLAgents.InferenceBrain
 {    
     /// <summary>
-    /// Defines the mapping between the output Tensor names and the method that will use the
-    /// output ensors and the Agents present in the batch to update their action, memories and
+    /// Mapping between the output Tensor names and the method that will use the
+    /// output tensors and the Agents present in the batch to update their action, memories and
     /// value estimates.
-    /// A Tensor Applier implements a Dictionary of strings (node names) to an Action.
+    /// A TensorApplier implements a Dictionary of strings (node names) to an Action.
     /// This action takes as input the Tensor and the Dictionary of Agent to AgentInfo for
     /// the current batch.
     /// </summary>
@@ -18,9 +18,14 @@ namespace MLAgents.InferenceBrain
     {
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>  dict;
         
-         public TensorAppliers(
-            BrainParameters bp,
-            Multinomial multinomial)
+        /// <summary>
+        /// Constructor of TensorAppliers. Returns a new TensorAppliers object.
+        /// </summary>
+        /// <param name="bp"> The BrainParameters used to determines what Appliers will be
+        /// used</param>
+        /// <param name="multinomial"> The Multinomial objects some of the Appliers will
+        /// be initialized with.</param>
+        public TensorAppliers(BrainParameters bp, Multinomial multinomial)
         {
             dict = new Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>();
             
@@ -55,7 +60,7 @@ namespace MLAgents.InferenceBrain
         }
 
         /// <summary>
-        /// Determines if the tensor name has an applier
+        /// Determines if the tensor name has an Applier
         /// </summary>
         /// <param name="key">The tensor name of the tensor</param>
         /// <returns>true if key is in the TensorAppliers, false otherwise</returns>
