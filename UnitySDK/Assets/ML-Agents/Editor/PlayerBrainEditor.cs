@@ -7,15 +7,17 @@ using System.Linq;
 
 namespace MLAgents
 {
-/*
- This code is meant to modify the behavior of the inspector on Brain Components.
- Depending on the type of brain that is used, the available fields will be modified in the 
- inspector accordingly.
-*/
+    /// <summary>
+    /// CustomEditor for the PlayerBrain class. Defines the default Inspector view for a
+    /// PlayerBrain.
+    /// Shows the BrainParameters of the Brain and expose a tool to deep copy BrainParameters
+    /// between brains. Also exposes the key mappings for either continuous or discrete control
+    /// depending on the Vector Action Space Type of the Brain Parameter. These mappings are the
+    /// ones that will be used by the PlayerBrain.
+    /// </summary>
     [CustomEditor(typeof(PlayerBrain))]
     public class PlayerBrainEditor : BrainEditor
     {
-        
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Player Brain", EditorStyles.boldLabel);

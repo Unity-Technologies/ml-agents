@@ -3,11 +3,13 @@ using UnityEditor;
 
 namespace MLAgents
 {
-/*
- This code is meant to modify the behavior of the inspector on Brain Components.
- Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
-*/
-    
+    /// <summary>
+    /// CustomEditor for the Heuristic Brain class. Defines the default Inspector view for a
+    /// HeuristicBrain.
+    /// Shows the BrainParameters of the Brain and expose a tool to deep copy BrainParameters
+    /// between brains. Provides a drag box for a Decision Monoscript that will be used by
+    /// the Heuristic Brain.
+    /// </summary>
     [CustomEditor(typeof(HeuristicBrain))]
     public class ScriptableBrainEditor : BrainEditor
     {
@@ -15,10 +17,7 @@ namespace MLAgents
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Heuristic Brain", EditorStyles.boldLabel);
-            HeuristicBrain brain = (HeuristicBrain) target;
-            
-            var serializedBrain = serializedObject;
-            
+            var brain = (HeuristicBrain) target;
             base.OnInspectorGUI();
             
             brain.decisionScript = EditorGUILayout.ObjectField(
@@ -37,7 +36,6 @@ namespace MLAgents
                         "The the script class needs to derive from ScriptableObject.");
                 }
             }
-
             if (brain.decisionScript == null)
             {
                 EditorGUILayout.HelpBox("You need to add a 'Decision' component to this Object",

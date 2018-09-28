@@ -3,11 +3,13 @@ using UnityEditor;
 
 namespace MLAgents
 {
-/*
- This code is meant to modify the behavior of the inspector on Brain Components.
- Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
-*/
-    
+    /// <summary>
+    /// CustomEditor for the LearningBrain class. Defines the default Inspector view for a
+    /// LearningBrain.
+    /// Shows the BrainParameters of the Brain and expose a tool to deep copy BrainParameters
+    /// between brains. Also exposes a drag box for the Model that will be used by the
+    /// LearningBrain. 
+    /// </summary>
     [CustomEditor(typeof(LearningBrain))]
     public class LearningBrainEditor : BrainEditor
     {

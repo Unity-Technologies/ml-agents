@@ -8,7 +8,12 @@ using UnityEditor;
 
 namespace MLAgents
 {
-    /// Brain which decides actions using developer-provided Decision script.
+    /// <summary>
+    /// The Heuristic Brain type allows you to hand code an Agent's decision making process.
+    /// A Heuristic Brain requires an implementation of the Decision interface to which it
+    /// delegates the decision making process.
+    /// When yusing a Heuristic Brain, you must give it a Monoscript of a Decision implementation.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewHeuristicBrain", menuName = "ML-Agents/Heuristic Brain")]
     public class HeuristicBrain : Brain
     {

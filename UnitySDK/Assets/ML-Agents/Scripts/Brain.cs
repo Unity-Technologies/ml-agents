@@ -56,9 +56,17 @@ namespace MLAgents
         /**< \brief Defines if the action is discrete or continuous */
     }
 
-/**
- * Defines the Brain ScriptableObject from which the implemetations of Brains will inherit.
- */
+    /// <summary>
+    /// Brain receive data from Agents through calls to SendState. The brain then updates the
+    /// actions of the agents at each FixedUpdate.
+    /// The Brain encapsulates the decision making process. Every Agent must be assigned a Brain,
+    /// but you can use the same Brain with more than one Agent. You can also create several
+    /// Brains, attach each of the Brain to one or more than one Agent.
+    /// Brain assets has several important properties that you can set using the Inspector window.
+    /// These properties must be appropriate for the Agents using the Brain. For example, the
+    /// Vector Observation Space Size property must match the length of the feature
+    /// vector created by an Agent exactly.
+    /// </summary>
     public abstract class Brain : ScriptableObject
     {
         [SerializeField] public BrainParameters brainParameters;
@@ -71,6 +79,11 @@ namespace MLAgents
         [System.NonSerialized]
         private bool _isInitialized;
 
+        /// <summary>
+        /// Sets the Batcher of the Brain. The brain will call the batcher at every step and give
+        /// it the agent's data using SendBrainInfo at each DecideAction call.
+        /// </summary>
+        /// <param name="batcher"> The Batcher the brain will use for the current session</param>
         public void SetBatcher(Batcher batcher)
         {
             if (batcher == null)
@@ -83,9 +96,12 @@ namespace MLAgents
                 brainBatcher.SubscribeBrain(name);
             }
         }
-        /*TODO : Rename, split and implement here. Initialization should be done at the first
-         send state call and subscribe batcher should be called by the academy.*/
         
+        /// <summary>
+        /// Adds the data of an agent to the current batch so it will be processed in DecideAction.
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="info"></param>
         public void SendState(Agent agent, AgentInfo info)
         {
             if (!_isInitialized)

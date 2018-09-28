@@ -4,7 +4,14 @@ using UnityEngine.Serialization;
 
 namespace MLAgents
 {
-    /// Brain which decides actions using Player input.
+    /// <summary>
+    /// Implemetation of the Player Brain. Inherits from the base class Brain. Allows the user to
+    /// manually select decisions for linked agents by creating a mapping from keys presses to
+    /// actions.
+    /// You can use Player Brains to control a "teacher" Agent that trains other Agents during
+    /// imitation learning. You can also use Player Brains to test your Agents and environment
+    /// before training agents with reinforcement learning.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewPlayerBrain", menuName = "ML-Agents/Player Brain")]
     public class PlayerBrain : Brain
     {

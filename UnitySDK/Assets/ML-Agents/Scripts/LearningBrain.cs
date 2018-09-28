@@ -14,7 +14,16 @@ using TensorFlow;
 
 namespace MLAgents
 {
-    /// Brain which decides actions using internally embedded TensorFlow model.
+    /// <summary>
+    /// The Learning Brain works differently if you are training it or not.
+    /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
+    /// the checkbox Control. When using a pretrained model, just drag the Model file into the
+    /// Model property of the Learning Brain.
+    /// When the Learning Braom is noe training, it uses a TensorFlow model to make decisions.
+    /// The Proximal Policy Optimization (PPO) and Behavioral Cloning algorithms included with
+    /// the ML-Agents SDK produce trained TensorFlow models that you can use with the
+    /// Learning Brain.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
