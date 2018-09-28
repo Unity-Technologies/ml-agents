@@ -12,14 +12,14 @@ one Brain asset must be in the Academy's `Broadcast Hub` with the checkbox `Cont
 checked. This allows the training process to collect the observations of Agents 
 using that Brain and give the Agents their actions.
 
-In addition to using an **Learning Brain** for training using the ML-Agents learning
-algorithms, you can use an **Learning Brain** to control Agents in a Unity
+In addition to using a **Learning Brain** for training using the ML-Agents learning
+algorithms, you can use a **Learning Brain** to control Agents in a Unity
 environment using an external Python program. See [Python API](Python-API.md)
 for more information.
 
 ## Inference Mode / Internal Control
 
-The **Learning Brain** type uses a
+When not training, the **Learning Brain** uses a
 [TensorFlow model](https://www.tensorflow.org/get_started/get_started_for_beginners#models_and_training)
 to make decisions. The Proximal Policy Optimization (PPO) and Behavioral Cloning
 algorithms included with the ML-Agents SDK produce trained TensorFlow models

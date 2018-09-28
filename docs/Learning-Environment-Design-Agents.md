@@ -17,8 +17,8 @@ trained agents or for imitation learning.)
 
 The Brain class abstracts out the decision making logic from the Agent itself so
 that you can use the same Brain in multiple Agents. How a Brain makes its
-decisions depends on the type of Brain it is. A Player Brain allows you
-to directly control the agent. A heuristic Brain allows you to create a 
+decisions depends on the kind of Brain it is. A Player Brain allows you
+to directly control the agent. A Heuristic Brain allows you to create a 
 decision script to control the agent with a set of rules. These two brains
 do not involve neural networks but they can be useful for debugging. The
 Learning Brain allows you to train and use neural network models for

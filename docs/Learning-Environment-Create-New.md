@@ -30,7 +30,7 @@ steps:
 5. Add your Agent subclasses to appropriate GameObjects, typically, the object
    in the scene that represents the Agent in the simulation. Each Agent object
    must be assigned a Brain object.
-6. If training, set the Brain type to External and
+6. If training, check the `Control` checkbox in the BroadcastHub of the Academy.
    [run the training process](Training-ML-Agents.md).
 
 **Note:** If you are unfamiliar with Unity, refer to
@@ -162,7 +162,7 @@ observations to its Brain and expects a decision in return. The type of the brai
 To create the Brain:
 
 1. Go to `Assets -> Create -> ML-Agents` and select the type of brain you want to
-   create. In this tutorial, we will create an **Learning Brain** and 
+   create. In this tutorial, we will create a **Learning Brain** and 
    a **Player Brain**.
 2. Name them `RollerBallBrain` and `RollerBallPlayer` respectively.
 

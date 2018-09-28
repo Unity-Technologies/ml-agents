@@ -97,7 +97,7 @@ Brain, but act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
 You can create brain objects by selecting `Assets -> 
-Create -> ML-Agents -> Brain`. There are 3 types of brains :
+Create -> ML-Agents -> Brain`. There are 3 kinds of brains :
 The **Learning Brain** is a brain that uses a Neural Network to take decisions.
 When the Brain is checked as `Control` in the Academy **Broadcast Hub**, the 
 external process will be taking decisions for the agents
@@ -107,10 +107,9 @@ The **Heuristic** Brain allows you to hand-code the Agent's logic by extending
 the Decision class.
 Finally, the **Player** Brain lets you map keyboard commands to actions, which
 can be useful when testing your agents and environment. If none of these types
-of Brains do what you need, you can implement your own CoreBrain to create your
-own type.
+of Brains do what you need, you can implement your own Brain.
 
-In this tutorial, you will use an **Learning Brain** for training.
+In this tutorial, you will use a **Learning Brain** for training.
 
 #### Vector Observation Space
 
@@ -271,7 +270,7 @@ From TensorBoard, you will see the summary statistics:
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with Agents having an **Learning Brain**.
+use it with Agents having a **Learning Brain**.
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
 Either wait for the training process to close the window or press Ctrl+C at the 
 command-line prompt. If you simply close the window manually, the .bytes file 

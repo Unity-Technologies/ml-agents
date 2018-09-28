@@ -29,7 +29,7 @@ environment:
 
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to put the brain
-controlling the Agents to be an **Learning Brain** and drag it into the
+controlling the Agents to be a **Learning Brain** and drag it into the
 Academy's `Broadcast Hub` with the `Control`  checkbox checked.
 
 Next, we want the set up scene to play correctly when the training process

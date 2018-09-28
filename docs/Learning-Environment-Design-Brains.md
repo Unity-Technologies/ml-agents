@@ -5,16 +5,17 @@ assigned a Brain, but you can use the same Brain with more than one Agent. You
 can also create several Brains, attach each of the Brain to one or more than one
 Agent.
 
-There are 3 types of brains you can use:
+There are 3 kinds of brains you can use:
 
-* [Learning](Learning-Environment-Learning-Brains.md) – Set
-  **Learning**  to make use of a trained model or train a new model.
-* [Heuristic](Learning-Environment-Design-Heuristic-Brains.md) – Set
-  **Heuristic** to hand-code the Agent's logic by extending the Decision class.
-* [Player](Learning-Environment-Design-Player-Brains.md) – Set **Player** to map
-  keyboard keys to Agent actions, which can be useful to test your Agent code.
+* [Learning](Learning-Environment-Learning-Brains.md) – Use a
+  **LearningBrain**  to make use of a trained model or train a new model.
+* [Heuristic](Learning-Environment-Design-Heuristic-Brains.md) – Use a
+  **HeuristicBrain** to hand-code the Agent's logic by extending the Decision class.
+* [Player](Learning-Environment-Design-Player-Brains.md) – Use a
+   **PlayerBrain** to map keyboard keys to Agent actions, which can be 
+   useful to test your Agent code.
 
-During training, use an **Learning Brain** 
+During training, use a **Learning Brain** 
 and drag it into the Academy's `Broadcast Hub` with the `Control` checkbox checked.
 When you want to use the trained model, import the model file into the Unity
 project, add it to the **Model** property of the **Learning Brain** and uncheck
@@ -79,7 +80,7 @@ When calling `step` or
 `BrainInfo` objects. The  dictionary contains a `BrainInfo` object for each
 Brain in the `Broadcast Hub`.
 
-Just like with an Learning Brain, the `BrainInfo` object contains the fields for
+Just like with a Learning Brain, the `BrainInfo` object contains the fields for
 `visual_observations`, `vector_observations`,  `text_observations`,
 `memories`,`rewards`, `local_done`, `max_reached`, `agents` and
 `previous_actions`. Note that `previous_actions` corresponds to the actions that

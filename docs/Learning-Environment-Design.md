@@ -34,7 +34,7 @@ finished.
 
 During training, the external Python training process communicates with the
 Academy to run a series of episodes while it collects data and optimizes its
-neural network model. The type of Brain assigned to an Agent determines whether
+neural network model. The kind of Brain assigned to an Agent determines whether
 it participates in training or not. The **Learning Brain** can be used to train 
 or execute a TensorFlow model. When training is completed
 successfully, you can add the trained model file to your Unity project for later
@@ -119,15 +119,14 @@ or by selecting all the agents you want to attach the brain to using the
 search bar on top of the Scene Hierarchy window.
 
 To Create a Brain, go to `Assets -> Create -> Ml-Agents` and select the 
-type of brain you want to use. Brain behavior is
-determined by the Brain type. During training, use an **Learning Brain** 
+type of brain you want to use. During training, use a **Learning Brain** 
 and drag it into the Academy's `Broadcast Hub` with the `Control` checkbox checked.
 When you want to use the trained model, import the model file into the Unity
 project, add it to the **Model** property of the **Learning Brain** and uncheck
 the `Control` checkbox of the `Broadcast Hub`. See
 [Brains](Learning-Environment-Design-Brains.md) for details on using the
-different types of Brains. You can create new types of brains if the three
-built-in types don't do what you need.
+different types of Brains. You can create new kinds of brains if the three
+built-in don't do what you need.
 
 The Brain class has several important properties that you can set using the
 Inspector window. These properties must be appropriate for the Agents using the

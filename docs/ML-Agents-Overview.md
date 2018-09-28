@@ -179,13 +179,13 @@ and rewards from the Agent and returns actions. The Academy ensures that all the
 Agents and Brains are in sync in addition to controlling environment-wide
 settings. So how does the Brain control what the Agent does?
 
-In practice, we have four different types of Brains, which enable a wide
+In practice, we have three different categories of Brains, which enable a wide
 range of training and inference scenarios:
 
 - **Learning** - where decisions are made using an embedded
   [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
   represents a learned policy and the Brain directly uses this model to
-  determine the action for each Agent. You can train an **Learning Brain** 
+  determine the action for each Agent. You can train a **Learning Brain** 
   by dragging it into the Academy's `Broadcast Hub` with the `Control` 
   checkbox checked.
 - **Player** - where decisions are made using real input from a keyboard or
@@ -224,7 +224,7 @@ inference can proceed.
 
 As mentioned previously, the ML-Agents toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
-In this mode, the only brain used is an **Learning Brain**. More 
+In this mode, the only brain used is a **Learning Brain**. More 
 specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
 Communicator (this is the behavior with an External Brain). The Python API
@@ -233,7 +233,8 @@ During training these actions are mostly exploratory to help the Python API
 learn the best policy for each medic. Once training concludes, the learned
 policy for each medic can be exported. Given that all our implementations are
 based on TensorFlow, the learned policy is just a TensorFlow model file. Then
-during the inference phase, we switch the Brain type to Learning and include the
+during the inference phase, we use the **Learning Brain** in internal mode
+and include the
 TensorFlow model generated from the training phase. Now during the inference
 phase, the medics still  continue to generate their observations, but instead of
 being sent to the Python API, they will be fed into their (internal, embedded)
@@ -254,12 +255,13 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 
 ### Custom Training and Inference
 
-In the previous mode, the Learning Brain type was used for training to generate
+In the previous mode, the Learning Brain was used for training to generate
 a TensorFlow model that the Learning Brain can later use. However,
-any user of the ML-Agents toolkit can leverage their own algorithms for both
-training and inference. In this case, the Brain type would be set to Learning
-for both training and inferences phases and the behaviors of all the Agents in
-the scene will be controlled within Python.
+any user of the ML-Agents toolkit can leverage their own algorithms for
+training. In this case, the Brain type would be set to Learning and be linked 
+to the BroadcastHub (with checked `Control` checkbox)
+and the behaviors of all the Agents in the scene will be controlled within Python.
+You can even turn your environment into a [gym.](../gym-unity/README.md)
 
 We do not currently have a tutorial highlighting this mode, but you can
 learn more about the Python API [here](Python-API.md).
@@ -406,7 +408,7 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
-- **Broadcasting** - As discussed earlier, an Learning Brain sends the
+- **Broadcasting** - As discussed earlier, a Learning Brain sends the
   observations for all its Agents to the Python API when dragged into the
   Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
   for training and later inference. Broadcasting is a feature which can be 

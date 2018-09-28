@@ -1,6 +1,6 @@
 # Heuristic Brain
 
-The **Heuristic Brain** type allows you to hand code an Agent's decision making
+The **Heuristic Brain** allows you to hand code an Agent's decision making
 process. A Heuristic Brain requires an implementation of the Decision script
 to which it delegates the decision making process.
 
