@@ -10,6 +10,7 @@ namespace MLAgents
     [CustomPropertyDrawer(typeof(BrainParameters))]
     public class BrainParametersDrawer : PropertyDrawer
     {
+        // The height of a line in the Unity Inspectors
         private const float LineHeight = 17f;
         private const int VecObsNumLine = 3;
         private const string CamResPropName = "cameraResolutions";
@@ -25,12 +26,7 @@ namespace MLAgents
         private const int DefaultCameraHeight = 84;
         private const bool DefaultCameraGray = false;
         
-        /// <summary>
-        /// Computes the height of the Drawer depending on the property it is showing
-        /// </summary>
-        /// <param name="property">The property that is being drawn.</param>
-        /// <param name="label">The label of the property being drawn.</param>
-        /// <returns>The vertical space needed to draw the property.</returns>
+        /// <inheritdoc />
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             if (property.isExpanded)
@@ -44,13 +40,7 @@ namespace MLAgents
             return LineHeight;
         }
 
-        /// <summary>
-        /// Draws the Brain Parameter property
-        /// </summary>
-        /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
-        /// <param name="property">The SerializedProperty of the BrainParameters
-        /// to make the custom GUI for.</param>
-        /// <param name="label">The label of this property.</param>
+        /// <inheritdoc />
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var indent = EditorGUI.indentLevel;

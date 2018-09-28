@@ -18,37 +18,37 @@ namespace MLAgents
         /// <summary>
         /// DeepCopy of BrainParameters
         /// </summary>
-        /// <param name="source">The BrainParameters that will be copied</param>
-        /// <param name="target">The BrainParameters that will be overwritten</param>
-        private static void DeepCopyBrainParametersFrom(
-            BrainParameters source, ref BrainParameters target)
+        /// <param name="src">The BrainParameters that will be copied</param>
+        /// <param name="dst">The BrainParameters that will be overwritten</param>
+        private static void DeepCopyBrainParameters(
+            BrainParameters src, ref BrainParameters dst)
         {
-            target = new BrainParameters()
+            dst = new BrainParameters()
             {
-                vectorObservationSize = source.vectorObservationSize,
-                numStackedVectorObservations = source.numStackedVectorObservations,
-                vectorActionSize = (int[]) source.vectorActionSize.Clone(),
-                cameraResolutions = (resolution[])source.cameraResolutions.Clone(),
-                vectorActionDescriptions = (string[])source.vectorActionDescriptions.Clone(),
-                vectorActionSpaceType = source.vectorActionSpaceType
+                vectorObservationSize = src.vectorObservationSize,
+                numStackedVectorObservations = src.numStackedVectorObservations,
+                vectorActionSize = (int[]) src.vectorActionSize.Clone(),
+                cameraResolutions = (resolution[])src.cameraResolutions.Clone(),
+                vectorActionDescriptions = (string[])src.vectorActionDescriptions.Clone(),
+                vectorActionSpaceType = src.vectorActionSpaceType
             };
         }
         
         public override void OnInspectorGUI()
         {
             var brain = (Brain) target;
-            var brainToCopy = EditorGUILayout.ObjectField("Copy Brain Parameters from : ", null,
-                typeof(Brain), false) as Brain;
+            var brainToCopy = EditorGUILayout.ObjectField(
+                "Copy Brain Parameters from : ", null, typeof(Brain), false) as Brain;
             if (brainToCopy != null)
             {
-                DeepCopyBrainParametersFrom(brainToCopy.brainParameters, ref brain.brainParameters);
+                DeepCopyBrainParameters(brainToCopy.brainParameters, ref brain.brainParameters);
             }
             var serializedBrain = serializedObject;
             serializedBrain.Update(); 
             EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
             serializedBrain.ApplyModifiedProperties();
             
-            // Draws an horizontal thick line
+            // Draws a horizontal thick line
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }
     }

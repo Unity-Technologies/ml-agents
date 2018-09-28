@@ -7,14 +7,16 @@ using UnityEditor.SceneManagement;
 namespace MLAgents
 {
     /// <summary>
-    /// PropertyDrawer for BroadcastHub. Defines how BroadcastHub are displayed in the
-    /// Inspector.
+    /// PropertyDrawer for BroadcastHub. Used to display the BroadcastHub in the Inspector.
     /// </summary>
     [CustomPropertyDrawer(typeof(BroadcastHub))]
     public class BroadcastHubDrawer : PropertyDrawer
     {
         private BroadcastHub _hub;
+        // The height of a line in the Unity Inspectors
         private const float LineHeight = 17f;
+        private const float ExtraSpaceBellow = 10f;
+        private const int ControlSize = 80;
 
         /// <summary>
         /// Computes the height of the Drawer depending on the property it is showing
@@ -24,21 +26,15 @@ namespace MLAgents
         /// <returns>The vertical space needed to draw the property.</returns>
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            CheckInitialize(property, label);
-            var addOne = (_hub.Count > 0) ? 1 : 0;
-            return (_hub.Count + 2 + addOne) * LineHeight + 10f;
+            LazyInitializeHub(property, label);
+            var numLines = _hub.Count + 2 + (_hub.Count > 0 ? 1 : 0);
+            return (numLines) * LineHeight + ExtraSpaceBellow;
         }
 
-        /// <summary>
-        /// Draws the BroadcastHub property
-        /// </summary>
-        /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
-        /// <param name="property">The SerializedProperty of the BroadcastHub
-        /// to make the custom GUI for.</param>
-        /// <param name="label">The label of this property.</param>
+        /// <inheritdoc />
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            CheckInitialize(property, label);
+            LazyInitializeHub(property, label);
             position.height = LineHeight;
             EditorGUI.LabelField(position, new GUIContent(label.text, 
                 "The Broadcast Hub helps you define which Brains you want to expose to " +
@@ -47,25 +43,26 @@ namespace MLAgents
 
             EditorGUI.BeginProperty(position, label, property);
 
-            DrawButtons(position);
+            EditorGUI.indentLevel++;
+            DrawAddRemoveButtons(position);
             position.y += LineHeight;
             
             // This is the labels for each columns
+            var brainWidth = position.width - ControlSize;
             var brainRect = new Rect(
-                position.x + 40, position.y, position.width - 145, position.height);
+                position.x, position.y, brainWidth, position.height);
             var controlRect = new Rect(
-                position.x + position.width - 80, position.y, 80, position.height);
+                position.x + brainWidth, position.y, ControlSize, position.height);
             if (_hub.Count > 0)
             {
                 EditorGUI.LabelField(brainRect, "Brains");
                 brainRect.y += LineHeight;
-                brainRect.x -= 20;
                 EditorGUI.LabelField(controlRect, "Control");
                 controlRect.y += LineHeight;
-                controlRect.x += 14;
+                controlRect.x += 15;
             }
             DrawBrains(brainRect, controlRect);
-     
+            EditorGUI.indentLevel--;
             EditorGUI.EndProperty();
         }
         
@@ -73,7 +70,7 @@ namespace MLAgents
         /// Draws the Add and Remove buttons.
         /// </summary>
         /// <param name="position">The position at which to draw.</param>
-        private void DrawButtons(Rect position)
+        private void DrawAddRemoveButtons(Rect position)
         {
             // This is the rectangle for the Add button
             var addButtonRect = position;
@@ -86,7 +83,7 @@ namespace MLAgents
                     "Add a new Brain to the Broadcast Hub"), EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
-                    AddNewItem();
+                    AddBrain();
                 }
                 // This is the rectangle for the Remove button
                 var removeButtonRect = position;
@@ -97,7 +94,7 @@ namespace MLAgents
                     EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
-                    RemoveLastItem();
+                    RemoveLastBrain();
                 }
             }
             else
@@ -107,7 +104,7 @@ namespace MLAgents
                     "Add a new Brain to the Broadcast Hub"), EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
-                    AddNewItem();
+                    AddBrain();
                 }
             }
         }
@@ -153,22 +150,23 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Ensures that the state of the Drawer is synchronized with the property.
+        /// Lazy initializes the Drawer with the property to be drawn.
         /// </summary>
         /// <param name="property">The SerializedProperty of the BroadcastHub
         /// to make the custom GUI for.</param>
         /// <param name="label">The label of this property.</param>
-        private void CheckInitialize(SerializedProperty property, GUIContent label)
+        private void LazyInitializeHub(SerializedProperty property, GUIContent label)
         {
+            if (_hub != null)
+            {
+                return;
+            }
+            var target = property.serializedObject.targetObject;
+            _hub = fieldInfo.GetValue(target) as BroadcastHub;
             if (_hub == null)
             {
-                var target = property.serializedObject.targetObject;
-                _hub = fieldInfo.GetValue(target) as BroadcastHub;
-                if (_hub == null)
-                {
-                    _hub = new BroadcastHub();
-                    fieldInfo.SetValue(target, _hub);
-                }
+                _hub = new BroadcastHub();
+                fieldInfo.SetValue(target, _hub);
             }
         }
         
@@ -185,9 +183,9 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Removes the last Brain from the BroadcastingHub
+        /// Removes the last Brain from the BroadcastHub
         /// </summary>
-        private void RemoveLastItem()
+        private void RemoveLastBrain()
         {
             if (_hub.Count > 0)
             {
@@ -196,18 +194,11 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Adds a new Brain to the BroadcastHub. The value of this brain will be null.
+        /// Adds a new Brain to the BroadcastHub. The value of this brain will not be initialized.
         /// </summary>
-        private void AddNewItem()
+        private void AddBrain()
         {
-            try
-            {
-                _hub.broadcastingBrains.Add(null);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-            }
+            _hub.broadcastingBrains.Add(null);
         }
     }
 }

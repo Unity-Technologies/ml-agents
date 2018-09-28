@@ -13,7 +13,6 @@ namespace MLAgents
     [CustomEditor(typeof(LearningBrain))]
     public class LearningBrainEditor : BrainEditor
     {
-
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Learning Brain", EditorStyles.boldLabel);

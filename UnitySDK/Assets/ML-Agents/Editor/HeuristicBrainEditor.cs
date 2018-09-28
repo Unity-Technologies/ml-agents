@@ -20,11 +20,27 @@ namespace MLAgents
             var brain = (HeuristicBrain) target;
             base.OnInspectorGUI();
             
+            // Expose the Heuristic Brain's Monoscript for decision in a drag and drop box.
             brain.decisionScript = EditorGUILayout.ObjectField(
                 "Decision Script", brain.decisionScript, typeof(MonoScript), true) as MonoScript;
 
-            /*If the monoscript is not a decision then do not validate it*/
+            CheckIsDecision(brain);
+            // Draw an error box if the Decision is not set.
+            if (brain.decisionScript == null)
+            {
+                EditorGUILayout.HelpBox("You need to add a 'Decision' component to this Object",
+                    MessageType.Error);
+            }
+        }
 
+        /// <summary>
+        /// Ensures tht the Monoscript for the decision of the HeuristicBrain is either null or
+        /// an implementation of Decision. If the Monoscript is not an implementation of
+        /// Decision, it will be set to null.
+        /// </summary>
+        /// <param name="brain">The HeuristicBrain with the decision script attached</param>
+        private static void CheckIsDecision(HeuristicBrain brain)
+        {
             if (brain.decisionScript != null)
             {
                 var decisionInstance = (CreateInstance(brain.decisionScript.name) as Decision);
@@ -33,13 +49,8 @@ namespace MLAgents
                     brain.decisionScript = null;
                     Debug.LogError(
                         "Instance of " + brain.decisionScript.name + " couldn't be created. " +
-                        "The the script class needs to derive from ScriptableObject.");
+                        "The the script class needs to derive from Decision.");
                 }
-            }
-            if (brain.decisionScript == null)
-            {
-                EditorGUILayout.HelpBox("You need to add a 'Decision' component to this Object",
-                    MessageType.Error);
             }
         }
     }
