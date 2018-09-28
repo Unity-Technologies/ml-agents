@@ -38,7 +38,7 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
+            var tensorGenerator = new TensorAppliers(bp, new Multinomial(0));
             Assert.IsNotNull(tensorGenerator);
         }
 
@@ -49,7 +49,7 @@ namespace MLAgents.Tests
             {
                 vectorActionSpaceType = SpaceType.continuous
             };
-            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
+            var tensorGenerator = new TensorAppliers(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {
@@ -80,7 +80,7 @@ namespace MLAgents.Tests
                 vectorActionSpaceType = SpaceType.discrete,
                 vectorActionSize = new int[]{2, 3}
             };
-            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
+            var tensorGenerator = new TensorAppliers(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {
@@ -106,7 +106,7 @@ namespace MLAgents.Tests
         public void ApplyMemoryOutput()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
+            var tensorGenerator = new TensorAppliers(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {
@@ -132,7 +132,7 @@ namespace MLAgents.Tests
         public void ApplyValueEstimate()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorApplier(bp, new Multinomial(0));
+            var tensorGenerator = new TensorAppliers(bp, new Multinomial(0));
             
             var inputTensor = new Tensor()
             {

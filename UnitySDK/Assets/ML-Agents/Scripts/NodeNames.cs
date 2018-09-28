@@ -1,5 +1,8 @@
 ﻿namespace MLAgents.InferenceBrain
 {
+    /// <summary>
+    /// Contains the names of the input and output Tensor for the Internal Brain.
+    /// </summary>
     public static class NodeNames
     {
         public const string BatchSizePlaceholder = "batch_size";

@@ -1,18 +1,24 @@
-﻿using UnityEngine;
-using UnityEngine.MachineLearning.InferenceEngine;
+﻿using UnityEngine.MachineLearning.InferenceEngine;
 using System.Collections.Generic;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
-using System.Linq;
 using System;
 
 namespace MLAgents.InferenceBrain
-{
-    public class TensorApplier : 
+{    
+    /// <summary>
+    /// Defines the mapping between the output Tensor names and the method that will use the
+    /// output ensors and the Agents present in the batch to update their action, memories and
+    /// value estimates.
+    /// A Tensor Applier implements a Dictionary of strings (node names) to an Action.
+    /// This action takes as input the Tensor and the Dictionary of Agent to AgentInfo for
+    /// the current batch.
+    /// </summary>
+    public class TensorAppliers : 
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>
     {
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>  dict;
         
-         public TensorApplier(
+         public TensorAppliers(
             BrainParameters bp,
             Multinomial multinomial)
         {
@@ -30,10 +36,12 @@ namespace MLAgents.InferenceBrain
                         bp.vectorActionSize);
             }
             dict[NodeNames.RecurrentOutOutput] = ApplyMemoryOutput;
-
-
         }
         
+        /// <summary>
+        /// Access the Applier corresponding to the key index
+        /// </summary>
+        /// <param name="index">The tensor name of the tensor</param>
         public new Action<Tensor, Dictionary<Agent, AgentInfo>> this[string index]
         {
             get
@@ -46,14 +54,23 @@ namespace MLAgents.InferenceBrain
             }
         }
 
+        /// <summary>
+        /// Determines if the tensor name has an applier
+        /// </summary>
+        /// <param name="key">The tensor name of the tensor</param>
+        /// <returns>true if key is in the TensorAppliers, false otherwise</returns>
         public new bool ContainsKey(string key)
         {
             return dict.ContainsKey(key);
         }
         
-        
-        private static void ApplyContinuousActionOutput(
-            Tensor tensor,
+        /// <summary>
+        /// The Applier for the Continuous Action output tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void ApplyContinuousActionOutput(Tensor tensor,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
             var tensorDataAction = tensor.Data as float[,];
@@ -89,9 +106,19 @@ namespace MLAgents.InferenceBrain
             }
             return result;
         }
-        
-        private static void ApplyDiscreteActionOutput(
-            Tensor tensor,
+       
+        /// <summary>
+        /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
+        /// actions from the logits contained in the tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        /// <param name="multinomial"> The Multinomial object that will be used to sample the
+        /// actions</param>
+        /// <param name="actionSize"> An array of integers corresponding to the number of actions
+        /// possible per branch.</param>
+        private static void ApplyDiscreteActionOutput(Tensor tensor,
             Dictionary<Agent, AgentInfo> agentInfo,
             Multinomial multinomial,
             int[] actionSize)
@@ -100,7 +127,6 @@ namespace MLAgents.InferenceBrain
             var batchSize = agentInfo.Keys.Count;
             var actions = new float[batchSize, actionSize.Length];
             var startActionIndices = CreateActionStartinIndices(actionSize);
-            
             for (var actionIndex=0; actionIndex < actionSize.Length; actionIndex++)
             {
                 var nBranchAction = startActionIndices[actionIndex + 1] -
@@ -110,20 +136,19 @@ namespace MLAgents.InferenceBrain
                 {
                     for (var jj = 0; jj < nBranchAction; jj++)
                     {
-                        
                         actionProbs[ii, jj] = 
                             tensorDataProbabilities[ii, startActionIndices[actionIndex] + jj];
                     }
                 }
                 var inputTensor = new Tensor()
                 {
-                    ValueType= Tensor.TensorType.FloatingPoint,
+                    ValueType = Tensor.TensorType.FloatingPoint,
                     Shape = new long[]{batchSize, actionSize[actionIndex]},
                     Data = actionProbs
                 };
                 var outputTensor = new Tensor()
                 {
-                    ValueType= Tensor.TensorType.FloatingPoint,
+                    ValueType = Tensor.TensorType.FloatingPoint,
                     Shape = new long[]{batchSize, 1},
                     Data = new float[batchSize, 1]
                 };
@@ -134,7 +159,6 @@ namespace MLAgents.InferenceBrain
                     actions[ii, actionIndex] = outTensor[ii, 0];
                 }
             }
-            
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -143,14 +167,18 @@ namespace MLAgents.InferenceBrain
                 {
                     a[j] = actions[agentIndex, j];
                 }
-    
                 agent.UpdateVectorAction(a);
                 agentIndex++;
             }
         }
 
-        private static void ApplyMemoryOutput(
-            Tensor tensor,
+        /// <summary>
+        /// The Applier for the Memory output tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
+        private static void ApplyMemoryOutput(Tensor tensor,
             Dictionary<Agent, AgentInfo> agentInfo)
         {
             var tensorDataMemory = tensor.Data as float[,];
@@ -163,13 +191,17 @@ namespace MLAgents.InferenceBrain
                 {
                     a.Add(tensorDataMemory[agentIndex, j]);
                 }
-
-                // TODO Make better
                 agent.UpdateMemoriesAction(a);
                 agentIndex++;
             }
         }
-
+        
+        /// <summary>
+        /// The Applier for the Value Estimate output tensor.
+        /// </summary>
+        /// <param name="tensor"> The tensor containing the data to be appied to the Agents</param>
+        /// <param name="agentInfo"> The Dictionary of Agent to AgentInfo of the current batch
+        /// </param>
         private static void ApplyValueEstimate(
             Tensor tensor,
             Dictionary<Agent, AgentInfo> agentInfo)

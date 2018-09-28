@@ -32,7 +32,7 @@ namespace MLAgents
 
         private TensorGenerator _tensorGenerators;
 
-        private TensorApplier  _outputTensorAppliers;
+        private TensorAppliers  _outputTensorAppliers;
 
         public Model m_model;
 
@@ -70,10 +70,17 @@ namespace MLAgents
             
             _tensorGenerators = new TensorGenerator(brain.brainParameters, new RandomNormal(0));
             
-            _outputTensorAppliers = new TensorApplier(brain.brainParameters, new Multinomial(0));
+            _outputTensorAppliers = new TensorAppliers(brain.brainParameters, new Multinomial(0));
 
         }
 
+        /// <summary>
+        /// Initializes the Brain with the Model that it will use when selecting actions for
+        /// the agents
+        /// </summary>
+        /// <param name="model">The model the brain will use</param>
+        /// <exception cref="UnityAgentsException">Throws an error when the model is null
+        /// </exception>
         private void InitializeModel(Model model)
         {
             if (model != null)
@@ -121,6 +128,14 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Queries the InferenceEngine for the value of a variable in the graph given its name.
+        /// Only works with int32 Tensors with zero dimensions containing a unique element.
+        /// If the node was not found or could not be retrieved, the value -1 will be returned. 
+        /// </summary>
+        /// <param name="engine">The InferenceEngine to be queried</param>
+        /// <param name="name">The name of the Tensor variable</param>
+        /// <returns></returns>
         private static long GetModelData(InferenceEngine engine, string name)
         {
             try
@@ -146,9 +161,14 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Generates the Tensor inputs that are expected to be present in the Model given the
+        /// BrainParameters. 
+        /// </summary>
+        /// <returns>Tensor Array with the expected Tensor inputs</returns>
         private Tensor[] GetInputTensors()
         {
-            var n_agents = 2;
+            var n_agents = -1;
             BrainParameters bp = brain.brainParameters;
 
             var tensorList = new List<Tensor>();
@@ -241,9 +261,14 @@ namespace MLAgents
             return tensorList.ToArray();
         }
         
+        /// <summary>
+        /// Generates the Tensor outputs that are expected to be present in the Model given the
+        /// BrainParameters. 
+        /// </summary>
+        /// <returns>Tensor Array with the expected Tensor outputs</returns>
         private List<Tensor> GetOutputTensors()
         {
-            var n_agents = 16;
+            var n_agents = -1;
             BrainParameters bp = brain.brainParameters;
             var tensorList = new List<Tensor>();
             if (bp.vectorActionSpaceType == SpaceType.continuous)
