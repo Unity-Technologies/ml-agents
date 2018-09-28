@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 namespace MLAgents
 {
     /// <summary>
-    /// PropertyDrawer for ResetParamters. Defines how ResetParamters are displayed in the
+    /// PropertyDrawer for ResetParameters. Defines how ResetParameters are displayed in the
     /// Inspector.
     /// </summary>
     [CustomPropertyDrawer(typeof(ResetParameters))]
@@ -30,10 +30,10 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Draws the ResetParamters property
+        /// Draws the ResetParameters property
         /// </summary>
         /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
-        /// <param name="property">The SerializedProperty of the ResetParamters
+        /// <param name="property">The SerializedProperty of the ResetParameters
         /// to make the custom GUI for.</param>
         /// <param name="label">The label of this property.</param>
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -159,7 +159,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Adds a new ResetParamter to the ResetParameters with a default name.
+        /// Adds a new ResetParameter to the ResetParameters with a default name.
         /// </summary>
         private void AddNewItem()
         {

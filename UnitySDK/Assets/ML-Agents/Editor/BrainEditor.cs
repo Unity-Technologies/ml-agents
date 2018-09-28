@@ -7,38 +7,42 @@ using System.Linq;
 
 namespace MLAgents
 {
-/*
- This code is meant to modify the behavior of the inspector on Brain Components.
- Depending on the type of brain that is used, the available fields will be modified in the 
- inspector accordingly.
-*/
+    /// <summary>
+    /// CustomEditor for the Brain base class. Defines the default Inspector view for a Brain.
+    /// Shows the BrainParameters of the Brain and expose a tool to deep copy BrainParameters
+    /// between brains.
+    /// </summary>
     [CustomEditor(typeof(Brain))]
     public class BrainEditor : Editor
     {
-
-        private void CopyBrainParametersFrom(Brain originalBrain)
+        /// <summary>
+        /// DeepCopy of BrainParameters
+        /// </summary>
+        /// <param name="source">The BrainParameters that will be copied</param>
+        /// <param name="target">The BrainParameters that will be overwritten</param>
+        private static void DeepCopyBrainParametersFrom(
+            BrainParameters source, ref BrainParameters target)
         {
-            var brainToCopy = EditorGUILayout.ObjectField("Copy Brain Parameters from : ", null,
-                typeof(Brain), false) as Brain;
-            if (brainToCopy!=null)
+            target = new BrainParameters()
             {
-                var newParams = brainToCopy.brainParameters;
-                originalBrain.brainParameters = new BrainParameters()
-                {
-                    vectorObservationSize = newParams.vectorObservationSize,
-                    numStackedVectorObservations = newParams.numStackedVectorObservations,
-                    vectorActionSize = (int[]) newParams.vectorActionSize.Clone(),
-                    cameraResolutions = (resolution[])newParams.cameraResolutions.Clone(),
-                    vectorActionDescriptions = (string[])newParams.vectorActionDescriptions.Clone(),
-                    vectorActionSpaceType = newParams.vectorActionSpaceType
-                };
-            }
+                vectorObservationSize = source.vectorObservationSize,
+                numStackedVectorObservations = source.numStackedVectorObservations,
+                vectorActionSize = (int[]) source.vectorActionSize.Clone(),
+                cameraResolutions = (resolution[])source.cameraResolutions.Clone(),
+                vectorActionDescriptions = (string[])source.vectorActionDescriptions.Clone(),
+                vectorActionSpaceType = source.vectorActionSpaceType
+            };
         }
         
         public override void OnInspectorGUI()
         {
             var brain = (Brain) target;
-            CopyBrainParametersFrom(brain);
+            var brainToCopy = EditorGUILayout.ObjectField("Copy Brain Parameters from : ", null,
+                typeof(Brain), false) as Brain;
+            if (brainToCopy != null)
+            {
+                DeepCopyBrainParametersFrom(brainToCopy.brainParameters, ref brain.brainParameters);
+            }
             var serializedBrain = serializedObject;
             serializedBrain.Update(); 
             EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
