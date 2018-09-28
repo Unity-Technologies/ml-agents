@@ -21,8 +21,7 @@ namespace MLAgents
             
             var serializedBrain = serializedObject;
             base.OnInspectorGUI();
-            
-            EditorGUILayout.HelpBox("This is not implemented yet.", MessageType.Error);
+
             serializedBrain.Update(); 
             EditorGUILayout.PropertyField(serializedBrain.FindProperty("graphModel"), true);
             serializedBrain.ApplyModifiedProperties();

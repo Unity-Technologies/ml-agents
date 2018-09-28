@@ -18,6 +18,10 @@ namespace MLAgents
     [CustomEditor(typeof(PlayerBrain))]
     public class PlayerBrainEditor : BrainEditor
     {
+        private const string KeyContinuousPropName = "keyContinuousPlayerActions";
+        private const string KeyDiscretePropName = "discretePlayerActions";
+        private const string AxisContinuousPropName = "axisContinuousPlayerActions";
+        
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Player Brain", EditorStyles.boldLabel);
@@ -29,16 +33,14 @@ namespace MLAgents
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
-                var keyActionsProp = serializedBrain.FindProperty("keyContinuousPlayerActions");
-                var axisActionsProp = serializedBrain.FindProperty("axisContinuousPlayerActions");
+                var keyActionsProp = serializedBrain.FindProperty(KeyContinuousPropName);
+                var axisActionsProp = serializedBrain.FindProperty(AxisContinuousPropName);
                 
                 EditorGUILayout.PropertyField(keyActionsProp , true);
                 EditorGUILayout.PropertyField(axisActionsProp, true);
                 
-                PlayerBrain.KeyContinuousPlayerAction[] keyContinuous =
-                    brain.keyContinuousPlayerActions;
-                PlayerBrain.AxisContinuousPlayerAction[] axisContinuous =
-                    brain.axisContinuousPlayerActions;
+                var keyContinuous = brain.keyContinuousPlayerActions;
+                var axisContinuous = brain.axisContinuousPlayerActions;
                 if (keyContinuous == null)
                 {
                     keyContinuous = new PlayerBrain.KeyContinuousPlayerAction[0];
@@ -47,7 +49,7 @@ namespace MLAgents
                 {
                     axisContinuous = new PlayerBrain.AxisContinuousPlayerAction[0];
                 }
-                foreach (PlayerBrain.KeyContinuousPlayerAction action in keyContinuous)
+                foreach (var action in keyContinuous)
                 {
                     if (action.index >= brain.brainParameters.vectorActionSize[0])
                     {
@@ -60,7 +62,7 @@ namespace MLAgents
                             MessageType.Error);
                     }
                 }
-                foreach (PlayerBrain.AxisContinuousPlayerAction action in axisContinuous)
+                foreach (var action in axisContinuous)
                 {
                     if (action.index >= brain.brainParameters.vectorActionSize[0])
                     {
@@ -78,8 +80,9 @@ namespace MLAgents
             }
             else
             {
-                GUILayout.Label("Edit the discrete inputs for your actions", EditorStyles.boldLabel);
-                var dhas = serializedBrain.FindProperty("discretePlayerActions");
+                GUILayout.Label("Edit the discrete inputs for your actions", 
+                    EditorStyles.boldLabel);
+                var dhas = serializedBrain.FindProperty(KeyDiscretePropName);
                 serializedBrain.Update();
                 EditorGUILayout.PropertyField(dhas, true);
             }
