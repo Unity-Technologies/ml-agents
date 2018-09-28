@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using MLAgents.CommunicatorObjects;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +13,7 @@ namespace MLAgents
     [ScriptedImporter(1, new[] {"demo"})]
     public class DemonstrationImporter : ScriptedImporter
     {
-        private const string iconPath = "Assets/ML-Agents/Resources/DemoIcon.png";
+        private const string IconPath = "Assets/ML-Agents/Resources/DemoIcon.png";
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -41,7 +40,7 @@ namespace MLAgents
             userData = demonstration.ToString();
 
             Texture2D texture =
-                (Texture2D) AssetDatabase.LoadAssetAtPath(iconPath,
+                (Texture2D) AssetDatabase.LoadAssetAtPath(IconPath,
                     typeof(Texture2D));
 
 
