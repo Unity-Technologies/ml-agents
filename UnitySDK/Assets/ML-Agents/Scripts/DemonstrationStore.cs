@@ -17,7 +17,6 @@ namespace MLAgents
         private string filePath;
         private DemonstrationMetaData metaData;
         private Stream writer;
-        private BrainParameters cachedBrainParameters;
         private float cumulativeReward;
 
         /// <summary>
@@ -26,10 +25,9 @@ namespace MLAgents
         public void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
         {
-            cachedBrainParameters = brainParameters;
             CreateDirectory();
             CreateDemonstrationFile(demonstrationName);
-            WriteBrainParameters(brainName);
+            WriteBrainParameters(brainName, brainParameters);
         }
 
         /// <summary>
@@ -69,11 +67,11 @@ namespace MLAgents
         /// <summary>
         /// Writes brain parameters to file.
         /// </summary>
-        private void WriteBrainParameters(string brainName)
+        private void WriteBrainParameters(string brainName, BrainParameters brainParameters)
         {
             // Writes BrainParameters to file.
             writer.Seek(MetaDataBytes + 1, 0);
-            var brainProto = cachedBrainParameters.ToProto(brainName, BrainTypeProto.Player);
+            var brainProto = brainParameters.ToProto(brainName, BrainTypeProto.Player);
             brainProto.WriteDelimitedTo(writer);
         }
 
