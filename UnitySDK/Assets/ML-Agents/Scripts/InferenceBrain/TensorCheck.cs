@@ -2,13 +2,42 @@
 using UnityEngine.MachineLearning.InferenceEngine;
 using System.Linq;
 using System;
-using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
-    public class TensorCheck
+    /// <summary>
+    /// Checks that the Tensors of an InferenceEngine are compatible with a BrainParameters
+    /// object and a version of the Inference Brain. Is used to retrieve a list of strings
+    /// corresponding to potential compatibility issues. If an empty IEnumerable of strings is
+    /// returned when calling GetChecks, it means eather that no InferenceEngine was passed
+    /// or that all checks passed.
+    /// </summary>
+    public static class TensorCheck
     {   
-        public static List<string> GetChecks(InferenceEngine engine, 
+        /// <summary>
+        /// Generates an IEnumerable of string corresponding to the failed compatibility checks
+        /// between the InferenceEngine and the BrainParameters.
+        /// </summary>
+        /// <param name="engine"> The InferenceEngine going through the checks</param>
+        /// <param name="inputs"> The input tensors of the InferenceEngine. Note: The checks
+        /// ignore the data present in the tensors and only checks for their Name, Shape and
+        /// ValueType</param>
+        /// <param name="outputs">The Output tensors of the InferenceEngine. Note: The checks
+        /// ignore the data present in the tensors and only checks for their Name, Shape and
+        /// ValueType</param>
+        /// <param name="brainParams">The BrainParameters used to evaluate the InferenceEngine
+        /// checks</param>
+        /// <param name="isContinuousModel"> Whether or not the InferenceEngine uses
+        /// continuous control or discrete control. 0 corresponds to discrete control,
+        /// 1 corresponds to continuous control and any other value signifies that the
+        /// type of control could not be assessed from the InferenceEngine.</param>
+        /// <param name="isRecurrentModel">The memory size of the InferenceEngine. If the value
+        /// is less or equal to zero, it means that the InferenceEngine is not using memories.
+        /// </param>
+        /// <returns> A IEnumerable of string corresponding to the failed checks of InferenceEngine
+        /// if empty, there are no compatibility issues betweent the InferenceEngine and the
+        /// BrainParameters</returns>
+        public static IEnumerable<string> GetChecks(InferenceEngine engine, 
             IEnumerable<Tensor> inputs,
             IEnumerable<Tensor> outputs, 
             BrainParameters brainParams, 
@@ -19,7 +48,6 @@ namespace MLAgents.InferenceBrain
             {
                 return new List<string>();
             }
-
             var failedChecks = new List<string>();
 
             if (isContinuousModel == 1 &&
@@ -34,24 +62,19 @@ namespace MLAgents.InferenceBrain
                 failedChecks.Add("Model has been trained using Discrete Control but the " +
                                  "Brain Parameters suggest Continuous Control.");
             }
-            
-            failedChecks.AddRange(CheckInputTensorShape(
-                inputs,
+            failedChecks.AddRange(CheckInputTensorShape(inputs,
                 brainParams));
-            failedChecks.AddRange(CheckInputTensorPresence(
-                inputs,
+            failedChecks.AddRange(CheckInputTensorPresence(inputs,
                 brainParams,
                 isRecurrentModel,
                 isContinuousModel));
-            failedChecks.AddRange(CheckOutputTensorPresence(
-                outputs,
+            failedChecks.AddRange(CheckOutputTensorPresence(outputs,
                 isRecurrentModel));
             return failedChecks;
 
         }
         
-        private static List<string> CheckInputTensorPresence(
-            IEnumerable<Tensor> tensors,
+        private static IEnumerable<string> CheckInputTensorPresence(IEnumerable<Tensor> tensors,
             BrainParameters brainParams,
             bool isRecurrent,
             long isContinuous)
@@ -67,7 +90,7 @@ namespace MLAgents.InferenceBrain
                            "You must set the Vector Observation Space Size to 0.");
             }
 
-            // If there is too little Visual Observation Input compared to what the
+            // If there are not enough Visual Observation Input compared to what the
             // Brain Parameters expect.
             for (var visObsIndex = 0;
                 visObsIndex < brainParams.cameraResolutions.Length;
@@ -81,6 +104,7 @@ namespace MLAgents.InferenceBrain
                 }
             }
 
+            // If the model has a non-negative memory size but requires a recurrent input
             if (isRecurrent)
             {
                 if (!tensorsNames.Contains(NodeNames.RecurrentInPlaceholder))
@@ -89,7 +113,8 @@ namespace MLAgents.InferenceBrain
                                "but has memory_size.");
                 }
             }
-
+            
+            // If the model uses discrete control but does not have an input for action masks
             if (isContinuous == 0)
             {
                 if (!tensorsNames.Contains(NodeNames.ActionMaskPlaceholder))
@@ -98,12 +123,10 @@ namespace MLAgents.InferenceBrain
                                "Control.");
                 }
             }
-            // Epsilon placeholder are optional
-            
             return result;
         }
         
-        private static List<string> CheckOutputTensorPresence(
+        private static IEnumerable<string> CheckOutputTensorPresence(
             IEnumerable<Tensor> tensors,
             bool isRecurrent)
         {
@@ -116,22 +139,19 @@ namespace MLAgents.InferenceBrain
                 result.Add("The model does not contain an Action Output Node.");
             }
             
+            // If there is no Recurrent Output but the model is Recurrent.
             if (isRecurrent)
             {
-                // If there is no Recurrent Output but the model is Recurrent.
                 if (!tensorsNames.Contains(NodeNames.RecurrentOutOutput))
                 {
                     result.Add("The model does not contain a Recurrent Output Node " +
                                "but has memory_size.");
                 }
             }
-            
-            // Value estimates are optional
-
             return result;
         }
 
-        private static List<string> CheckInputTensorShape(
+        private static IEnumerable<string> CheckInputTensorShape(
             IEnumerable<Tensor> tensors, 
             BrainParameters brainParams)
         {
@@ -162,7 +182,7 @@ namespace MLAgents.InferenceBrain
             {
                 if (!tensorTester.ContainsKey(tensor.Name))
                 {
-                    result.Add("No placeholder for input : " + tensor.Name);
+                    result.Add("No placeholder for required input : " + tensor.Name);
                 }
                 else
                 {
