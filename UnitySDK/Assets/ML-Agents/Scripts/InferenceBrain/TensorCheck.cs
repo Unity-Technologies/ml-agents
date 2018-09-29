@@ -8,13 +8,15 @@ namespace MLAgents.InferenceBrain
 {
     public class TensorCheck
     {   
-        public static List<string> GetChecks(InferenceEngine engine, IEnumerable<Tensor> inputs,
-            IEnumerable<Tensor> outputs, BrainParameters brainParams, long isContinuousModel,
+        public static List<string> GetChecks(InferenceEngine engine, 
+            IEnumerable<Tensor> inputs,
+            IEnumerable<Tensor> outputs, 
+            BrainParameters brainParams, 
+            long isContinuousModel,
             bool isRecurrentModel)
         {
             if (engine == null)
             {
-                // TODO : Draw info directly
                 return new List<string>();
             }
 
