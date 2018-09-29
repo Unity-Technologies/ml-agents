@@ -57,7 +57,7 @@ namespace MLAgents.Tests
             var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
             var inputTensor = new Tensor();
             var batchSize = 4;
-            tensorGenerator[NodeNames.BatchSizePlaceholder].Invoke(
+            tensorGenerator[TensorNames.BatchSizePlaceholder].Invoke(
                 inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.Data as int[]);
             Assert.AreEqual((inputTensor.Data as int[])[0], batchSize);
@@ -70,7 +70,7 @@ namespace MLAgents.Tests
             var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
             var inputTensor = new Tensor();
             var batchSize = 4;
-            tensorGenerator[NodeNames.SequenceLengthPlaceholder].Invoke(
+            tensorGenerator[TensorNames.SequenceLengthPlaceholder].Invoke(
                 inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.Data as int[]);
             Assert.AreEqual((inputTensor.Data as int[])[0], 1);
@@ -88,7 +88,7 @@ namespace MLAgents.Tests
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[NodeNames.VectorObservationPlacholder].Invoke(
+            tensorGenerator[TensorNames.VectorObservationPlacholder].Invoke(
                 inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.Data as float[,]);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 1);
@@ -109,7 +109,7 @@ namespace MLAgents.Tests
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[NodeNames.RecurrentInPlaceholder].Invoke(
+            tensorGenerator[TensorNames.RecurrentInPlaceholder].Invoke(
                 inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.Data as float[,]);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 0);
@@ -133,11 +133,11 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
             
             Assert.Catch<NotImplementedException>(
-                () => tensorGenerator[NodeNames.PreviousActionPlaceholder].Invoke(
+                () => tensorGenerator[TensorNames.PreviousActionPlaceholder].Invoke(
                     inputTensor, batchSize, agentInfos));
 
             inputTensor.ValueType = Tensor.TensorType.Integer;
-            tensorGenerator[NodeNames.PreviousActionPlaceholder].Invoke(
+            tensorGenerator[TensorNames.PreviousActionPlaceholder].Invoke(
                 inputTensor, batchSize, agentInfos);
             
             Assert.IsNotNull(inputTensor.Data as int[,]);
@@ -161,7 +161,7 @@ namespace MLAgents.Tests
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
   
-            tensorGenerator[NodeNames.ActionMaskPlaceholder].Invoke(
+            tensorGenerator[TensorNames.ActionMaskPlaceholder].Invoke(
                 inputTensor, batchSize, agentInfos);
             
             Assert.IsNotNull(inputTensor.Data as float[,]);

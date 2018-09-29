@@ -93,9 +93,9 @@ namespace MLAgents
                 inferenceInputs = GetInputTensors();
                 inferenceOutputs = GetOutputTensors().ToArray();
 
-                _modelVersionNumber = GetModelData(m_engine, NodeNames.VersionNumber);
-                _memorySize = GetModelData(m_engine, NodeNames.MemorySize);
-                _isContinuous = GetModelData(m_engine, NodeNames.IsContinuousControl);
+                _modelVersionNumber = GetModelData(m_engine, TensorNames.VersionNumber);
+                _memorySize = GetModelData(m_engine, TensorNames.MemorySize);
+                _isContinuous = GetModelData(m_engine, TensorNames.IsContinuousControl);
 
                 currentFailedModelChecks = new List<string>();
                 if (_modelVersionNumber != version)
@@ -177,7 +177,7 @@ namespace MLAgents
                 tensorList.Add(
                     new Tensor()
                 {
-                    Name = NodeNames.RandomNormalEpsilonPlaceholder,
+                    Name = TensorNames.RandomNormalEpsilonPlaceholder,
                     Shape = new long[]
                     {
                         n_agents, bp.vectorActionSize[0]
@@ -191,7 +191,7 @@ namespace MLAgents
                 tensorList.Add(
                     new Tensor()
                 {
-                    Name = NodeNames.ActionMaskPlaceholder,
+                    Name = TensorNames.ActionMaskPlaceholder,
                     Shape = new long[]{n_agents, bp.vectorActionSize.Sum()},
                     ValueType = Tensor.TensorType.FloatingPoint,
                     Data = new float[n_agents, bp.vectorActionSize.Sum()]
@@ -201,7 +201,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = NodeNames.VisualObservationPlaceholderPrefix + "0",
+                    Name = TensorNames.VisualObservationPlaceholderPrefix + "0",
                     Shape = new long[4]
                     {
                         n_agents, res.width, res.height, res.blackAndWhite ? 1 : 3
@@ -215,7 +215,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                   {
-                      Name = NodeNames.VectorObservationPlacholder,
+                      Name = TensorNames.VectorObservationPlacholder,
                       Shape = new long[2]
                       {
                           n_agents, bp.vectorObservationSize * bp.numStackedVectorObservations 
@@ -228,7 +228,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = NodeNames.RecurrentInPlaceholder,
+                    Name = TensorNames.RecurrentInPlaceholder,
                     Shape = new long[2]
                     {
                         n_agents, _memorySize
@@ -237,7 +237,7 @@ namespace MLAgents
                 });
                 tensorList.Add(new Tensor()
                 {
-                    Name = NodeNames.SequenceLengthPlaceholder,
+                    Name = TensorNames.SequenceLengthPlaceholder,
                     Shape = new long[]
                     {
                         
@@ -248,7 +248,7 @@ namespace MLAgents
                 {
                     tensorList.Add(new Tensor()
                     {
-                        Name = NodeNames.PreviousActionPlaceholder,
+                        Name = TensorNames.PreviousActionPlaceholder,
                         Shape = new long[2]
                         {
                             n_agents, brain.brainParameters.vectorActionSize.Length
@@ -275,7 +275,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = NodeNames.ActionOutput,
+                    Name = TensorNames.ActionOutput,
                     Shape = new long[]
                     {
                         n_agents, bp.vectorActionSize[0]
@@ -289,7 +289,7 @@ namespace MLAgents
                 tensorList.Add(
                     new Tensor()
                     {
-                        Name = NodeNames.ActionOutput,
+                        Name = TensorNames.ActionOutput,
                         Shape = new long[]{n_agents, bp.vectorActionSize.Sum()},
                         ValueType = Tensor.TensorType.FloatingPoint,
                         Data = new float[n_agents, bp.vectorActionSize.Sum()]
@@ -299,7 +299,7 @@ namespace MLAgents
             {
                 tensorList.Add(new Tensor()
                 {
-                    Name = NodeNames.RecurrentOutOutput,
+                    Name = TensorNames.RecurrentOutOutput,
                     Shape = new long[2]
                     {
                         n_agents, _memorySize

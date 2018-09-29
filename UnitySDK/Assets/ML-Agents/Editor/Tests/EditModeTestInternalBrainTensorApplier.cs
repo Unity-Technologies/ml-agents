@@ -58,7 +58,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[NodeNames.ActionOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[TensorNames.ActionOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -90,7 +90,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[NodeNames.ActionOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[TensorNames.ActionOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -116,7 +116,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[NodeNames.RecurrentOutOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[TensorNames.RecurrentOutOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -141,7 +141,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[NodeNames.ValueEstimateOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[TensorNames.ValueEstimateOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();

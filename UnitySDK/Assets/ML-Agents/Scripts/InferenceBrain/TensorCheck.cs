@@ -84,7 +84,7 @@ namespace MLAgents.InferenceBrain
 
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((brainParams.vectorObservationSize != 0) &&
-                (!tensorsNames.Contains(NodeNames.VectorObservationPlacholder)))
+                (!tensorsNames.Contains(TensorNames.VectorObservationPlacholder)))
             {
                 result.Add("The model does not contain a Vector Observation Placeholder Input. " +
                            "You must set the Vector Observation Space Size to 0.");
@@ -97,7 +97,7 @@ namespace MLAgents.InferenceBrain
                 visObsIndex++)
             {
                 if (!tensorsNames.Contains(
-                    NodeNames.VisualObservationPlaceholderPrefix + visObsIndex))
+                    TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
                 {
                     result.Add("The model does not contain a Visual Observation Placeholder " +
                                "Input for visual observation "+visObsIndex+".");
@@ -107,7 +107,7 @@ namespace MLAgents.InferenceBrain
             // If the model has a non-negative memory size but requires a recurrent input
             if (isRecurrent)
             {
-                if (!tensorsNames.Contains(NodeNames.RecurrentInPlaceholder))
+                if (!tensorsNames.Contains(TensorNames.RecurrentInPlaceholder))
                 {
                     result.Add("The model does not contain a Recurrent Input Node " +
                                "but has memory_size.");
@@ -117,7 +117,7 @@ namespace MLAgents.InferenceBrain
             // If the model uses discrete control but does not have an input for action masks
             if (isContinuous == 0)
             {
-                if (!tensorsNames.Contains(NodeNames.ActionMaskPlaceholder))
+                if (!tensorsNames.Contains(TensorNames.ActionMaskPlaceholder))
                 {
                     result.Add("The model does not contain an Action Mask but is using Discrete " +
                                "Control.");
@@ -134,7 +134,7 @@ namespace MLAgents.InferenceBrain
             var tensorsNames = tensors.Select(x => x.Name);
 
             // If there is no Action Output.
-            if (!tensorsNames.Contains(NodeNames.ActionOutput))
+            if (!tensorsNames.Contains(TensorNames.ActionOutput))
             {
                 result.Add("The model does not contain an Action Output Node.");
             }
@@ -142,7 +142,7 @@ namespace MLAgents.InferenceBrain
             // If there is no Recurrent Output but the model is Recurrent.
             if (isRecurrent)
             {
-                if (!tensorsNames.Contains(NodeNames.RecurrentOutOutput))
+                if (!tensorsNames.Contains(TensorNames.RecurrentOutOutput))
                 {
                     result.Add("The model does not contain a Recurrent Output Node " +
                                "but has memory_size.");
@@ -160,12 +160,12 @@ namespace MLAgents.InferenceBrain
             var tensorTester =
                 new Dictionary<string, Func<Tensor, BrainParameters, string>>()
                 {
-                    {NodeNames.VectorObservationPlacholder, CheckVectorObsShape},
-                    {NodeNames.PreviousActionPlaceholder, CheckPreviousActionShape},
-                    {NodeNames.RandomNormalEpsilonPlaceholder, ((tensor, parameters) => null)},
-                    {NodeNames.ActionMaskPlaceholder, ((tensor, parameters) => null)},
-                    {NodeNames.SequenceLengthPlaceholder, ((tensor, parameters) => null)},
-                    {NodeNames.RecurrentInPlaceholder, ((tensor, parameters) => null)},
+                    {TensorNames.VectorObservationPlacholder, CheckVectorObsShape},
+                    {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
+                    {TensorNames.RandomNormalEpsilonPlaceholder, ((tensor, parameters) => null)},
+                    {TensorNames.ActionMaskPlaceholder, ((tensor, parameters) => null)},
+                    {TensorNames.SequenceLengthPlaceholder, ((tensor, parameters) => null)},
+                    {TensorNames.RecurrentInPlaceholder, ((tensor, parameters) => null)},
                 };
 
             for (var visObsIndex = 0;
@@ -173,7 +173,7 @@ namespace MLAgents.InferenceBrain
                 visObsIndex++)
             {
                 var index = visObsIndex;
-                tensorTester[NodeNames.VisualObservationPlaceholderPrefix + visObsIndex] =
+                tensorTester[TensorNames.VisualObservationPlaceholderPrefix + visObsIndex] =
                     (tensor, bp) => CheckVisualObsShape(tensor, bp, index);
             }
             

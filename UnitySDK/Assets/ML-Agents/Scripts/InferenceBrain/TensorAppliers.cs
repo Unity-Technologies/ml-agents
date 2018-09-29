@@ -29,18 +29,18 @@ namespace MLAgents.InferenceBrain
         {
             dict = new Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>();
             
-            dict[NodeNames.ValueEstimateOutput] = ApplyValueEstimate;
+            dict[TensorNames.ValueEstimateOutput] = ApplyValueEstimate;
             if (bp.vectorActionSpaceType == SpaceType.continuous)
             {
-                dict[NodeNames.ActionOutput] = ApplyContinuousActionOutput;
+                dict[TensorNames.ActionOutput] = ApplyContinuousActionOutput;
             }
             else
             {
-                dict[NodeNames.ActionOutput] = (tensor, agentInfo) =>
+                dict[TensorNames.ActionOutput] = (tensor, agentInfo) =>
                     ApplyDiscreteActionOutput(tensor, agentInfo, multinomial,
                         bp.vectorActionSize);
             }
-            dict[NodeNames.RecurrentOutOutput] = ApplyMemoryOutput;
+            dict[TensorNames.RecurrentOutOutput] = ApplyMemoryOutput;
         }
         
         /// <summary>

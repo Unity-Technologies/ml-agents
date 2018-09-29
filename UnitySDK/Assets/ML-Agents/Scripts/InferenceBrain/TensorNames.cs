@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains the names of the input and output Tensor for the Internal Brain.
     /// </summary>
-    public static class NodeNames
+    public static class TensorNames
     {
         public const string BatchSizePlaceholder = "batch_size";
         public const string SequenceLengthPlaceholder = "sequence_length";
