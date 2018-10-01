@@ -465,6 +465,12 @@ namespace MLAgents
 
 
 #else
+            base.DecideAction();
+            if (isControlled)
+            {
+                agentInfos.Clear();
+                return;
+            }
             if (agentInfos.Count > 0)
             {
                 throw new UnityAgentsException(string.Format(

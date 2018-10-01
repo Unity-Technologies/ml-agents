@@ -95,6 +95,7 @@ namespace MLAgents
                 brainBatcher = batcher;
                 brainBatcher.SubscribeBrain(name);
             }
+            LazyInitialize();
         }
         
         /// <summary>
@@ -104,18 +105,33 @@ namespace MLAgents
         /// <param name="info"></param>
         public void SendState(Agent agent, AgentInfo info)
         {
+            LazyInitialize();
+            agentInfos.Add(agent, info);
+
+        }
+
+        /// <summary>
+        /// If the Brain is not initialized, it subscribes to the Academy's DecideAction Event and
+        /// calls the Initialize method to be implemented by child classes.
+        /// </summary>
+        private void LazyInitialize()
+        {
             if (!_isInitialized)
             {
                 FindObjectOfType<Academy>().BrainDecideAction += DecideAction;
                 Initialize();
                 _isInitialized = true;
             }
-            agentInfos.Add(agent, info);
-
         }
 
+        /// <summary>
+        /// Is called only once at the begening of the training or inference session.
+        /// </summary>
         protected abstract void Initialize();
-
+        
+        /// <summary>
+        /// Is called once per Environment Step when the Brain has been initialized.
+        /// </summary>
         protected virtual void DecideAction()
         {
             brainBatcher?.SendBrainInfo(name, agentInfos);
