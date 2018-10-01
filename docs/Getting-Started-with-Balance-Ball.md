@@ -63,7 +63,7 @@ configuration** and a high graphics quality and the timescale to `1.0` for the
 **Inference Configuration** .
 
 **Note:** if you want to observe the environment during training, you can adjust
-the **Inference Configuration** settings to use a larger window and a timescale
+the **Training Configuration** settings to use a larger window and a timescale
 closer to 1:1. Be sure to set these parameters back when training in earnest;
 otherwise, training can take a very long time.
 
