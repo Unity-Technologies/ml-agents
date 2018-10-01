@@ -1,9 +1,6 @@
-import json
 import numpy as np
 import pathlib
 import logging
-from PIL import Image
-import io
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.utilities import process_pixels
@@ -99,12 +96,23 @@ def make_demo_buffer(brain_infos, brain_params, sequence_length):
     return demo_buffer
 
 
-def load_demonstration(file_path, sequence_length):
+def demo_to_buffer(file_path, sequence_length):
+    """
+    Loads demonstration file and uses it to fill training buffer.
+    :param file_path: Location of demonstration file (.demo).
+    :param sequence_length: Length of trajectories to fill buffer.
+    :return:
+    """
+    brain_params, brain_infos, _ = load_demonstration(file_path)
+    demo_buffer = make_demo_buffer(brain_infos, brain_params, sequence_length)
+    return brain_params, demo_buffer
+
+
+def load_demonstration(file_path):
     """
     Loads and parses a demonstration file.
-    :param sequence_length: Desired sequence length for buffer.
     :param file_path: Location of demonstration file (.demo).
-    :return: BrainParameter and Buffer objects containing demonstration data.
+    :return: BrainParameter and list of BrainInfos containing demonstration data.
     """
     INITIAL_POS = 33
 
@@ -139,6 +147,4 @@ def load_demonstration(file_path, sequence_length):
                 break
             pos += next_pos
         obs_decoded += 1
-
-    demo_buffer = make_demo_buffer(brain_infos, brain_params, sequence_length)
-    return brain_params, demo_buffer
+    return brain_params, brain_infos, total_expected

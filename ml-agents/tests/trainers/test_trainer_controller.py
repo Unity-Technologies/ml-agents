@@ -211,11 +211,11 @@ def test_initialize_trainers(mock_communicator, mock_launcher, dummy_config,
             assert (isinstance(tc.trainers['RealFakeBrain'], OnlineBCTrainer))
 
             # Test for Offline Behavior Cloning Trainer
-            mock_load.return_value = dummy_offline_bc_config
-            config = tc._load_config()
-            tf.reset_default_graph()
-            tc._initialize_trainers(config)
-            assert (isinstance(tc.trainers['RealFakeBrain'], OfflineBCTrainer))
+            # mock_load.return_value = dummy_offline_bc_config
+            # config = tc._load_config()
+            # tf.reset_default_graph()
+            # tc._initialize_trainers(config)
+            # assert (isinstance(tc.trainers['RealFakeBrain'], OfflineBCTrainer))
 
             # Test for proper exception when trainer name is incorrect
             mock_load.return_value = dummy_bad_config
