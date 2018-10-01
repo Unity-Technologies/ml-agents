@@ -28,7 +28,7 @@ namespace MLAgents.Tests
             var agentA = goA.AddComponent<TestAgent>();
             var infoA = new AgentInfo();
             var goB = new GameObject("goB");
-            var agentB = goA.AddComponent<TestAgent>();
+            var agentB = goB.AddComponent<TestAgent>();
             var infoB = new AgentInfo();
 
             return new Dictionary<Agent, AgentInfo>(){{agentA, infoA},{agentB, infoB}};

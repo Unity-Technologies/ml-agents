@@ -30,7 +30,7 @@ namespace MLAgents.Tests
                 
             };
             var goB = new GameObject("goB");
-            var agentB = goA.AddComponent<TestAgent>();
+            var agentB = goB.AddComponent<TestAgent>();
             var infoB = new AgentInfo()
             {
                 stackedVectorObservation = (new float[]{4f, 5f, 6f}).ToList(),
