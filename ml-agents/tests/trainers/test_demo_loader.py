@@ -11,4 +11,4 @@ def test_load_demo():
     assert (len(brain_infos) == total_expected)
 
     demo_buffer = make_demo_buffer(brain_infos, brain_parameters, 1)
-    assert (len(demo_buffer.update_buffer['actions']) == total_expected - 2)
+    assert (len(demo_buffer.update_buffer['actions']) == total_expected - 1)

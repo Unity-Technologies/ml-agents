@@ -91,6 +91,7 @@ def make_demo_buffer(brain_infos, brain_params, sequence_length):
         if next_brain_info.local_done[0]:
             demo_buffer.append_update_buffer(0, batch_size=None,
                                              training_length=sequence_length)
+            demo_buffer.reset_local_buffers()
     demo_buffer.append_update_buffer(0, batch_size=None,
                                      training_length=sequence_length)
     return demo_buffer

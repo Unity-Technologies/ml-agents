@@ -10,8 +10,6 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
-from mlagents.trainers.curriculum import Curriculum
-from mlagents.trainers.exception import CurriculumError
 from mlagents.envs.exception import UnityEnvironmentException
 from tests.mock_communicator import MockCommunicator
 
@@ -102,7 +100,7 @@ def dummy_offline_bc_config():
         '''
         default:
             trainer: offline_bc
-            demo_path: demo.demo
+            demo_path: ./tests/trainers/test.demo
             batches_per_epoch: 16
             batch_size: 32
             beta: 5.0e-3

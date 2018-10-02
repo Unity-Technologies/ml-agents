@@ -303,7 +303,7 @@ class PPOTrainer(Trainer):
         A signal that the Episode has ended. The buffer must be reset. 
         Get only called when the academy resets.
         """
-        self.training_buffer.reset_all()
+        self.training_buffer.reset_local_buffers()
         for agent_id in self.cumulative_rewards:
             self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
