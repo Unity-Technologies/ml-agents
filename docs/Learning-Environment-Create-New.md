@@ -306,8 +306,8 @@ AddVectorObs(rBody.velocity.z / 5);
 ```
 
 All the values are divided to normalize the inputs to the neural network to
-the range [-1,1]. (The number five is used because the platform is 10 units
-across.)
+the range [-1,1]. (The platform is a square which reaches from positions -5 to +5
+thereby having an edge length of 10 units.)
 
 In total, the state observation contains 6 values and we need to use the
 continuous state space when we get around to setting the Brain properties:
