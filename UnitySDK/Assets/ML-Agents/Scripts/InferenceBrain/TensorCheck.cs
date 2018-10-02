@@ -38,8 +38,8 @@ namespace MLAgents.InferenceBrain
         /// if empty, there are no compatibility issues betweent the InferenceEngine and the
         /// BrainParameters</returns>
         public static IEnumerable<string> GetChecks(InferenceEngine engine, 
-            IEnumerable<Tensor> inputs,
-            IEnumerable<Tensor> outputs, 
+            IEnumerable<Tensor> inputs /* TODO : Remove */,
+            IEnumerable<Tensor> outputs /* TODO : Remove */, 
             BrainParameters brainParams, 
             long isContinuousModel,
             bool isRecurrentModel)
@@ -62,12 +62,12 @@ namespace MLAgents.InferenceBrain
                 failedChecks.Add("Model has been trained using Discrete Control but the " +
                                  "Brain Parameters suggest Continuous Control.");
             }
-            failedChecks.AddRange(CheckInputTensorShape(inputs,
-                brainParams));
             failedChecks.AddRange(CheckInputTensorPresence(inputs,
                 brainParams,
                 isRecurrentModel,
                 isContinuousModel));
+            failedChecks.AddRange(CheckInputTensorShape(inputs,
+                brainParams));
             failedChecks.AddRange(CheckOutputTensorPresence(outputs,
                 isRecurrentModel));
             return failedChecks;
@@ -126,8 +126,7 @@ namespace MLAgents.InferenceBrain
             return result;
         }
         
-        private static IEnumerable<string> CheckOutputTensorPresence(
-            IEnumerable<Tensor> tensors,
+        private static IEnumerable<string> CheckOutputTensorPresence(IEnumerable<Tensor> tensors,
             bool isRecurrent)
         {
             var result = new List<string>();
@@ -151,12 +150,10 @@ namespace MLAgents.InferenceBrain
             return result;
         }
 
-        private static IEnumerable<string> CheckInputTensorShape(
-            IEnumerable<Tensor> tensors, 
+        private static IEnumerable<string> CheckInputTensorShape(IEnumerable<Tensor> tensors, 
             BrainParameters brainParams)
         {
             var result = new List<string>();
- 
             var tensorTester =
                 new Dictionary<string, Func<Tensor, BrainParameters, string>>()
                 {
@@ -182,6 +179,7 @@ namespace MLAgents.InferenceBrain
             {
                 if (!tensorTester.ContainsKey(tensor.Name))
                 {
+                    //TODO : Make this error message better
                     result.Add("No placeholder for required input : " + tensor.Name);
                 }
                 else
@@ -197,8 +195,7 @@ namespace MLAgents.InferenceBrain
             return result;
         }
        
-        private static string CheckVectorObsShape(
-            Tensor tensor,
+        private static string CheckVectorObsShape(Tensor tensor,
             BrainParameters brainParams)
         {
             var vecObsSizeBp = brainParams.vectorObservationSize;
@@ -214,8 +211,7 @@ namespace MLAgents.InferenceBrain
             return null;
         }
         
-        private static string CheckPreviousActionShape(
-            Tensor tensor,
+        private static string CheckPreviousActionShape(Tensor tensor,
             BrainParameters brainParams)
         {
             var numberActionsBp = brainParams.vectorActionSize.Length;
@@ -230,8 +226,7 @@ namespace MLAgents.InferenceBrain
             return null;
         }
         
-        private static string CheckVisualObsShape(
-            Tensor tensor,
+        private static string CheckVisualObsShape(Tensor tensor,
             BrainParameters brainParams,
             int visObsIndex)
         {
@@ -251,6 +246,37 @@ namespace MLAgents.InferenceBrain
                     visObsIndex, widthBp, heightBp, pixelBp, widthT, heightT, pixelT);
             }
             return null;
+        }
+
+        private static IEnumerable<string> CheckOutputTensorShape(IEnumerable<Tensor> tensors, 
+            BrainParameters brainParams)
+        {
+            var result = new List<string>();
+            var tensorTester =
+                new Dictionary<string, Func<Tensor, BrainParameters, string>>()
+                {
+                    
+                };
+
+            // If the model expects an output but it is not in this list
+            foreach (var tensor in tensors)
+            {
+                if (!tensorTester.ContainsKey(tensor.Name))
+                {
+                    //TODO : Make this error message better
+                    result.Add("No placeholder for required input : " + tensor.Name);
+                }
+                else
+                {
+                    var tester = tensorTester[tensor.Name];
+                    var error = tester.Invoke(tensor, brainParams);
+                    if (error != null)
+                    {
+                        result.Add(error);
+                    }
+                }
+            }
+            return result;
         }
         
     }
