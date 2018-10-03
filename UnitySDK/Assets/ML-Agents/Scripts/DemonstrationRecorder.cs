@@ -36,7 +36,7 @@ namespace MLAgents
         /// <summary>
         /// Removes all characters except alphanumerics from demonstration name.
         /// </summary>
-        private static string SanitizeName(string demoName)
+        public static string SanitizeName(string demoName)
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
