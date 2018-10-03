@@ -6,32 +6,11 @@ import pytest
 import tensorflow as tf
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.envs.exception import UnityEnvironmentException
 from tests.mock_communicator import MockCommunicator
-
-
-@pytest.fixture
-def dummy_start():
-    return '''{ "AcademyName": "RealFakeAcademy",
-              "resetParameters": {},
-              "brainNames": ["RealFakeBrain"],
-              "externalBrainNames": ["RealFakeBrain"],
-              "logPath":"RealFakePath",
-              "apiNumber":"API-5",
-              "brainParameters": [{
-                  "vectorObservationSize": 3,
-                  "numStackedVectorObservations" : 2,
-                  "vectorActionSize": 2,
-                  "memorySize": 0,
-                  "cameraResolutions": [],
-                  "vectorActionDescriptions": ["",""],
-                  "vectorActionSpaceType": 1
-                  }]
-            }'''.encode()
 
 
 @pytest.fixture
@@ -208,16 +187,31 @@ def test_initialize_trainers(mock_communicator, mock_launcher, dummy_config,
             tc._initialize_trainers(config)
             assert (isinstance(tc.trainers['RealFakeBrain'], OnlineBCTrainer))
 
-            # Test for Offline Behavior Cloning Trainer
-            # mock_load.return_value = dummy_offline_bc_config
-            # config = tc._load_config()
-            # tf.reset_default_graph()
-            # tc._initialize_trainers(config)
-            # assert (isinstance(tc.trainers['RealFakeBrain'], OfflineBCTrainer))
-
             # Test for proper exception when trainer name is incorrect
             mock_load.return_value = dummy_bad_config
             config = tc._load_config()
             tf.reset_default_graph()
             with pytest.raises(UnityEnvironmentException):
                 tc._initialize_trainers(config)
+
+
+@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+def test_initialize_offline_trainers(mock_communicator, mock_launcher, dummy_config,
+                             dummy_offline_bc_config, dummy_online_bc_config, dummy_bad_config):
+    open_name = 'mlagents.trainers.trainer_controller' + '.open'
+    with mock.patch('yaml.load') as mock_load:
+        with mock.patch(open_name, create=True) as _:
+            mock_communicator.return_value = MockCommunicator(
+                discrete_action=False, stack=False, visual_inputs=0,
+                brain_name="Ball3DBrain", vec_obs_size=8)
+            tc = TrainerController(' ', ' ', 1, None, True, False, False, 1, 1,
+                                   1, 1, '', "tests/test_mlagents.trainers.py",
+                                   False)
+
+            # Test for Offline Behavior Cloning Trainer
+            mock_load.return_value = dummy_offline_bc_config
+            config = tc._load_config()
+            tf.reset_default_graph()
+            tc._initialize_trainers(config)
+            assert (isinstance(tc.trainers['Ball3DBrain'], OfflineBCTrainer))
