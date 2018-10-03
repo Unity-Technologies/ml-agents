@@ -116,7 +116,7 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[TensorNames.RecurrentOutOutput].Invoke(inputTensor, agentInfos);
+            tensorGenerator[TensorNames.RecurrentOutput].Invoke(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();

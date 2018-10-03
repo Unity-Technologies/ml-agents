@@ -74,18 +74,17 @@ namespace MLAgents
         {
             if (model != null)
             {
-                Debug.Log("Initialize");
                 InferenceEngineConfig config;
                 _engine = InferenceAPI.LoadModel(model, config);
-
-                // Generate the Input tensors
-                _inferenceInputs = GetInputTensors();
-                _inferenceOutputs = GetOutputTensors();
 
                 var modelVersionNumber = GetModelData(_engine, TensorNames.VersionNumber);
                 _modelMemorySize = GetModelData(_engine, TensorNames.MemorySize);
                 var modelIsContinuous = GetModelData(_engine, TensorNames.IsContinuousControl);
                 var modelActionSize =  GetModelData(_engine, TensorNames.ActionOutputShape);
+                
+                // Generate the Input tensors
+                _inferenceInputs = GetInputTensors();
+                _inferenceOutputs = GetOutputTensors();
 
                 currentFailedModelChecks = TensorCheck.GetChecks(_engine, 
                     _inferenceInputs, 
@@ -223,9 +222,10 @@ namespace MLAgents
             }
             if (_modelMemorySize > 0)
             {
+
                 tensorList.Add(new Tensor()
                 {
-                    Name = TensorNames.RecurrentOutOutput,
+                    Name = TensorNames.RecurrentOutput,
                     Shape = new long[2]
                     {
                         -1, _modelMemorySize
@@ -261,7 +261,6 @@ namespace MLAgents
                     throw new UnityAgentsException("Error to implement.");
                 }
                 _tensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
-
             }
             
             foreach (var tensor in _inferenceOutputs)
@@ -272,7 +271,6 @@ namespace MLAgents
                 }
                 
                 _tensorGenerators[tensor.Name].Invoke(tensor, currentBatchSize, agentInfo);
-
             }
 
             // Execute the Model

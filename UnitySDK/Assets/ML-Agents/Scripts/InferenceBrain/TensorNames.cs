@@ -15,7 +15,7 @@
         public const string RandomNormalEpsilonPlaceholder = "epsilon";
 
         public const string ValueEstimateOutput = "value_estimate";
-        public const string RecurrentOutOutput = "recurrent_out";
+        public const string RecurrentOutput = "recurrent_out";
         public const string MemorySize = "memory_size";
         public const string VersionNumber = "version_number";
         public const string IsContinuousControl = "is_continuous_control";

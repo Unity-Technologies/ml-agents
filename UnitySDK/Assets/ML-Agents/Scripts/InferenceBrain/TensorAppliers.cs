@@ -40,7 +40,7 @@ namespace MLAgents.InferenceBrain
                     ApplyDiscreteActionOutput(tensor, agentInfo, multinomial,
                         bp.vectorActionSize);
             }
-            dict[TensorNames.RecurrentOutOutput] = ApplyMemoryOutput;
+            dict[TensorNames.RecurrentOutput] = ApplyMemoryOutput;
         }
         
         /// <summary>

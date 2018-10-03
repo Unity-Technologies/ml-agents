@@ -2,6 +2,7 @@
 using UnityEngine.MachineLearning.InferenceEngine;
 using System.Linq;
 using System;
+using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
@@ -169,7 +170,7 @@ namespace MLAgents.InferenceBrain
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
-                if (!tensorsNames.Contains(TensorNames.RecurrentOutOutput))
+                if (!tensorsNames.Contains(TensorNames.RecurrentOutput))
                 {
                     result.Add("The model does not contain a Recurrent Output Node " +
                                "but has memory_size.");
@@ -327,7 +328,7 @@ namespace MLAgents.InferenceBrain
             BrainParameters brainParams,
             long modelActionSize)
         {
-            var bpActionSize = brainParams.vectorActionSize.Length;
+            var bpActionSize = brainParams.vectorActionSize[0];
             if  (modelActionSize != bpActionSize)
             {
                 return string.Format(

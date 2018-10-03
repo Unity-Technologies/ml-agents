@@ -35,7 +35,7 @@ class LearningModel(object):
         tf.Variable(self._version_number_, name='version_number', trainable=False, dtype=tf.int32)
         tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
         if brain.vector_action_space_type == 'continuous':
-            tf.Variable(len(self.act_size), name="action_output_shape", trainable=False, dtype=tf.int32)
+            tf.Variable(self.act_size[0], name="action_output_shape", trainable=False, dtype=tf.int32)
         else:
             tf.Variable(sum(self.act_size), name="action_output_shape", trainable=False, dtype=tf.int32)
 

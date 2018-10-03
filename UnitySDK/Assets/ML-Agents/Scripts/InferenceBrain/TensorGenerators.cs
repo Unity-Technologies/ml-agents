@@ -60,7 +60,7 @@ namespace MLAgents.InferenceBrain
             }
             // Generators for Outputs
             dict[TensorNames.ActionOutput] = ReshapeBiDimensionalOutput;
-            dict[TensorNames.RecurrentOutOutput] = ReshapeBiDimensionalOutput;
+            dict[TensorNames.RecurrentOutput] = ReshapeBiDimensionalOutput;
             dict[TensorNames.ValueEstimateOutput] = ReshapeBiDimensionalOutput;
         }
         
