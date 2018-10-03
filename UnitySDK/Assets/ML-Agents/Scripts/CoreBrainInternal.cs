@@ -22,7 +22,7 @@ namespace MLAgents
 #pragma warning restore
 
 
-        public List<string> currentFailedModelChecks = new List<string>();
+        private List<string> _failedModelChecks = new List<string>();
         
         Batcher brainBatcher;
         
@@ -59,7 +59,7 @@ namespace MLAgents
                 this.brainBatcher.SubscribeBrain(brain.gameObject.name);
             }
 
-            InitializeModel(_model);
+            GiveModel(_model);
 
         }
 
@@ -67,10 +67,12 @@ namespace MLAgents
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
         /// </summary>
-        /// <param name="model">The model the brain will use</param>
+        /// <param name="model"> The model the brain will use</param>
+        /// <param name="seed"> The seed that will be used to initialize the RandomNormal
+        /// and Multinomial obsjects used when running inference.</param>
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
         /// </exception>
-        private void InitializeModel(Model model)
+        public void GiveModel(Model model, int seed = 0)
         {
             if (model != null)
             {
@@ -86,7 +88,7 @@ namespace MLAgents
                 _inferenceInputs = GetInputTensors();
                 _inferenceOutputs = GetOutputTensors();
 
-                currentFailedModelChecks = TensorCheck.GetChecks(_engine, 
+                _failedModelChecks = TensorCheck.GetChecks(_engine, 
                     _inferenceInputs, 
                     _inferenceOutputs, 
                     brain.brainParameters,
@@ -96,19 +98,34 @@ namespace MLAgents
                     _modelMemorySize,
                     modelActionSize).ToList();
                 
-                _tensorGenerators = new TensorGenerators(brain.brainParameters, new RandomNormal(0));
+                _tensorGenerators = new TensorGenerators(brain.brainParameters, 
+                    new RandomNormal(seed));
             
-                _outputTensorAppliers = new TensorAppliers(brain.brainParameters, new Multinomial(0));
+                _outputTensorAppliers = new TensorAppliers(brain.brainParameters, 
+                    new Multinomial(seed));
             }
             else
             {
                 _engine = null;
-                currentFailedModelChecks = new List<string>();
-                currentFailedModelChecks.Add(
+                _failedModelChecks = new List<string>();
+                _failedModelChecks.Add(
                     "There is no model on this Brain, cannot run inference. (But can still train)");
                 // TODO : Implement
                 throw new UnityAgentsException("ERROR TO IMPLEMENT : There was no model");
             }
+        }
+
+        /// <summary>
+        /// Return a list of failed checks corresponding to the failed compatibility checks
+        /// between the Model and the BrainParameters. Note : This does not reload the model.
+        /// If changes have been made to the BrainParameters or the Model, the model must be
+        /// reloaded using GiveModel before trying to get the compatibility checks.
+        /// </summary>
+        /// <returns> The list of the failed compatibility checks between the Model and the
+        /// Brain Parameters</returns>
+        public List<string> GetModelFailedChecks()
+        {
+            return _failedModelChecks;
         }
 
         /// <summary>
@@ -306,16 +323,15 @@ namespace MLAgents
             
             if (EditorGUI.EndChangeCheck())
             {
-                InitializeModel(_model);
+                GiveModel(_model);
             }
 
             if (GUILayout.Button("Check model"))
             {
-                InitializeModel(_model);
+                GiveModel(_model);
             }
 
-            
-            foreach (var error in currentFailedModelChecks)
+            foreach (var error in GetModelFailedChecks())
             {
                 if (error != null)
                     EditorGUILayout.HelpBox(error, MessageType.Warning);

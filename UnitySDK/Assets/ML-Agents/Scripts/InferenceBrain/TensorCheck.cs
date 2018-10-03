@@ -45,8 +45,8 @@ namespace MLAgents.InferenceBrain
         /// InferenceEngine is empty, there are no compatibility issues betweent the
         /// InferenceEngine and the BrainParameters.</returns>
         public static IEnumerable<string> GetChecks(InferenceEngine engine, 
-            IEnumerable<Tensor> inputs /* TODO : Remove */,
-            IEnumerable<Tensor> outputs /* TODO : Remove */, 
+            IEnumerable<Tensor> inputs,
+            IEnumerable<Tensor> outputs, 
             BrainParameters brainParams, 
             long versionModel,
             long versionBrain,
