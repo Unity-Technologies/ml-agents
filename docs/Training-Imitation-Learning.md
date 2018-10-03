@@ -24,15 +24,18 @@ Machine Learning tasks work.
 1. In order to use imitation learning in a scene, the first thing you will need
    is to create two Brains, one which will be the "Teacher," and the other which
    will be the "Student." We will assume that the names of the Brain
-   `GameObject`s are "Teacher" and "Student" respectively.
-2. Set the "Teacher" Brain to Player mode, and properly configure the inputs to
-   map to the corresponding actions. **Ensure that "Broadcast" is checked within
-   the Brain inspector window.**
-3. Set the "Student" Brain to External mode.
+   `Assets`s are "Teacher" and "Student" respectively.
+2. The "Teacher" Brain must be a **Player Brain**. You must properly 
+   configure the inputs to map to the corresponding actions.
+3. The "Student" Brain must be a **Learning Brain**.
+4. The Brain Parameters of both the "Teacher" and "Student" brains must be 
+   compatible with the agent.
+5. Drag both the "Teacher" and "Student" brain into the Academy's `Broadcast Hub`
+   and check the `Control` checkbox on the "Student" brain. 
 4. Link the Brains to the desired Agents (one Agent as the teacher and at least
    one Agent as a student).
 5. In `config/trainer_config.yaml`, add an entry for the "Student" Brain. Set
-   the `trainer` parameter of this entry to `imitation`, and the
+   the `Controler` parameter of this entry to `imitation`, and the
    `brain_to_imitate` parameter to the name of the teacher Brain: "Teacher".
    Additionally, set `batches_per_epoch`, which controls how much training to do
    each moment. Increase the `max_steps` option if you'd like to keep training
@@ -49,7 +52,7 @@ Machine Learning tasks work.
    process with `CTL+C` from the command line.
 10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
-    with `Internal` Brain.
+    with `Learning` Brain.
 
 ### BC Teacher Helper
 

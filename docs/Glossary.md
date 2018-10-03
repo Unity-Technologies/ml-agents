@@ -30,5 +30,5 @@
   logic should not be placed here.
 * **External Coordinator** - ML-Agents class responsible for communication with
   outside processes (in this case, the Python API).
-* **Trainer** - Python class which is responsible for training a given External
-  Brain. Contains TensorFlow graph which makes decisions for External Brain.
+* **Trainer** - Python class which is responsible for training a given 
+  Brain. Contains TensorFlow graph which makes decisions for Learning Brain.

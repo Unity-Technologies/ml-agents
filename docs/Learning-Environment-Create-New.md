@@ -18,11 +18,11 @@ steps:
    from a simple physical simulation containing a few objects to an entire game
    or ecosystem.
 2. Implement an Academy subclass and add it to a GameObject in the Unity scene
-   containing the environment. This GameObject will serve as the parent for any
-   Brain objects in the scene. Your Academy class can implement a few optional
+   containing the environment. Your Academy class can implement a few optional
    methods to update the scene independently of any agents. For example, you can
    add, move, or delete agents and other entities in the environment.
-3. Add one or more Brain objects to the scene as children of the Academy.
+3. Create one or more Brain assets by clicking `Assets -> Create -> ML-Agents
+   -> Bain`. And name them appropriately.
 4. Implement your Agent subclasses. An Agent subclass defines the code an Agent
    uses to observe its environment, to carry out assigned actions, and to
    calculate the rewards used for reinforcement training. You can also implement
@@ -30,7 +30,7 @@ steps:
 5. Add your Agent subclasses to appropriate GameObjects, typically, the object
    in the scene that represents the Agent in the simulation. Each Agent object
    must be assigned a Brain object.
-6. If training, set the Brain type to External and
+6. If training, check the `Control` checkbox in the BroadcastHub of the Academy.
    [run the training process](Training-ML-Agents.md).
 
 **Note:** If you are unfamiliar with Unity, refer to
@@ -104,12 +104,10 @@ different material from the list of all materials currently in the project.)
 Note that we will create an Agent subclass to add to this GameObject as a
 component later in the tutorial.
 
-### Add Empty GameObjects to Hold the Academy and Brain
+### Add an Empty GameObject to Hold the Academy
 
 1. Right click in Hierarchy window, select Create Empty.
 2. Name the GameObject "Academy"
-3. Right-click on the Academy GameObject and select Create Empty.
-4. Name this child of the Academy, "Brain".
 
 ![The scene hierarchy](images/mlagents-NewTutHierarchy.png)
 
@@ -156,22 +154,21 @@ in the Inspector window.
 
 ![The Academy properties](images/mlagents-NewTutAcademy.png)
 
-## Add a Brain
+## Add Brains
 
 The Brain object encapsulates the decision making process. An Agent sends its
-observations to its Brain and expects a decision in return. The Brain Type
-setting determines how the Brain makes decisions. Unlike the Academy and Agent
-classes, you don't make your own Brain subclasses.
-
+observations to its Brain and expects a decision in return. The type of the brain
+(Learning, Heuristic or player) determines how the Brain makes decisions. 
 To create the Brain:
 
-1. Select the Brain GameObject created earlier to show its properties in the
-   Inspector window.
-2. Click **Add Component**.
-3. Select the **Scripts/Brain** component to add it to the GameObject.
+1. Go to `Assets -> Create -> ML-Agents` and select the type of brain you want to
+   create. In this tutorial, we will create a **Learning Brain** and 
+   a **Player Brain**.
+2. Name them `RollerBallBrain` and `RollerBallPlayer` respectively.
 
-We will come back to the Brain properties later, but leave the Brain Type as
-**Player** for now.
+We will come back to the Brain properties later, but leave the Model property
+of the `RollerBallBrain` as `None` for now. We will need to first train a 
+model before we can add it to the **Learning Brain**.
 
 ![The Brain default properties](images/mlagents-NewTutBrain.png)
 
@@ -470,15 +467,15 @@ window.
 
 Now, that all the GameObjects and ML-Agent components are in place, it is time
 to connect everything together in the Unity Editor. This involves assigning the
-Brain object to the Agent, changing some of the Agent Components properties, and
+Brain asset to the Agent, changing some of the Agent Components properties, and
 setting the Brain properties so that they are compatible with our Agent code.
 
-1. Expand the Academy GameObject in the Hierarchy window, so that the Brain
-   object is visible.
+1. In the Academy Inspector, add the `RollerBallBrain` and `RollerBallPlayer`
+   brains to the **Broadcast Hub**.
 2. Select the RollerAgent GameObject to show its properties in the Inspector
    window.
-3. Drag the Brain object from the Hierarchy window to the RollerAgent Brain
-   field.
+3. Drag the Brain `RollerBallPlayer` from the Project window to the 
+   RollerAgent `Brain` field.
 4. Change `Decision Frequency` from `1` to `5`.
 
 ![Assign the Brain to the RollerAgent](images/mlagents-NewTutAssignBrain.png)
@@ -486,8 +483,9 @@ setting the Brain properties so that they are compatible with our Agent code.
 Also, drag the Target GameObject from the Hierarchy window to the RollerAgent
 Target field.
 
-Finally, select the Brain GameObject so that you can see its properties in the
-Inspector window. Set the following properties:
+Finally, select the the `RollerBallBrain` and `RollerBallPlayer` brains assets
+so that you can edit their properties in the Inspector window. Set the following 
+properties on both of them:
 
 * `Vector Observation Space Type` = **Continuous**
 * `Vector Observation Space Size` = 8
@@ -500,19 +498,18 @@ Now you are ready to test the environment before training.
 ## Testing the Environment
 
 It is always a good idea to test your environment manually before embarking on
-an extended training run. The reason we have left the Brain set to the
-**Player** type is so that we can control the Agent using direct keyboard
+an extended training run. The reason we have created the `RollerBallPlayer` brain
+is so that we can control the Agent using direct keyboard
 control. But first, you need to define the keyboard to action mapping. Although
 the RollerAgent only has an `Action Size` of two, we will use one key to specify
 positive values and one to specify negative values for each action, for a total
 of four keys.
 
-1. Select the Brain GameObject to view its properties in the Inspector.
-2. Set **Brain Type** to **Player**.
-3. Expand the **Continuous Player Actions** dictionary (only visible when using
-   the **Player* brain).
-4. Set **Size** to 4.
-5. Set the following mappings:
+1. Select the `RollerBallPlayer` brain to view its properties in the Inspector.
+2. Expand the **Continuous Player Actions** dictionary (only visible when using
+   a player brain).
+3. Set **Size** to 4.
+4. Set the following mappings:
 
 | Element   | Key | Index | Value |
 | :------------ | :---: | :------: | :------: |
@@ -539,7 +536,9 @@ the Python API work as expected using the `notebooks/getting-started.ipynb`
 environment.
 
 Now you can train the Agent. To get ready for training, you must first to change
-the **Brain Type** from **Player** to **External**. From there, the process is
+the `Brain` of the agent to be the Learning Brain `RollerBallBrain`.
+Then drag the `RollerBallBrain` into the Academy's `Broadcast Hub` and check 
+to `Control` checkbox for that brain. From there, the process is
 the same as described in [Training ML-Agents](Training-ML-Agents.md).
 
 ## Review: Scene Layout
@@ -547,19 +546,17 @@ the same as described in [Training ML-Agents](Training-ML-Agents.md).
 This section briefly reviews how to organize your scene when using Agents in
 your Unity environment.
 
-There are three kinds of game objects you need to include in your scene in order
+There are two kinds of game objects you need to include in your scene in order
 to use Unity ML-Agents:
 
 * Academy
-* Brain
 * Agents
+
+You also need to have brain assets linked appropriately to Agents and to Academy
 
 Keep in mind:
 
 * There can only be one Academy game object in a scene.
-* You can have multiple Brain game objects but they must be child of the Academy
-  game object.
+* You can only train Learning Brains that have been included into the Academy's  
+  Broadcast Hub.
 
-Here is an example of what your scene hierarchy should look like:
-
-![Scene Hierarchy](images/scene-hierarchy.png)
