@@ -31,8 +31,12 @@ namespace MLAgents.InferenceBrain
         /// continuous control or discrete control. 0 corresponds to discrete control,
         /// 1 corresponds to continuous control and any other value signifies that the
         /// type of control could not be assessed from the InferenceEngine.</param>
-        /// <param name="isRecurrentModel">The memory size of the InferenceEngine. If the value
+        /// <param name="memoryModel">The memory size of the InferenceEngine. If the value
         /// is less or equal to zero, it means that the InferenceEngine is not using memories.
+        /// </param>
+        /// <param name="actionSizeModel">The action size of the InferenceEngine. If the value
+        /// is less or equal to zero, it means that the action size could not be assessed from
+        /// the model.
         /// </param>
         /// <returns> A IEnumerable of string corresponding to the failed checks of InferenceEngine
         /// if empty, there are no compatibility issues betweent the InferenceEngine and the
@@ -41,8 +45,11 @@ namespace MLAgents.InferenceBrain
             IEnumerable<Tensor> inputs /* TODO : Remove */,
             IEnumerable<Tensor> outputs /* TODO : Remove */, 
             BrainParameters brainParams, 
+            long versionModel,
+            long versionBrain,
             long isContinuousModel,
-            bool isRecurrentModel)
+            long memoryModel,
+            long actionSizeModel)
         {
             if (engine == null)
             {
@@ -50,6 +57,25 @@ namespace MLAgents.InferenceBrain
             }
             var failedChecks = new List<string>();
 
+            if (versionModel != versionBrain)
+            {
+                failedChecks.Add("Incompatible Version");
+                return failedChecks;
+            }
+            if (memoryModel == -1)
+            {
+                failedChecks.Add("No Memory Size");
+            }
+            if (isContinuousModel == -1)
+            {
+                failedChecks.Add("Could not infer action space type from model");
+            }
+
+            if (isContinuousModel == -1)
+            {
+                failedChecks.Add("Could not infer action space size from model");
+            }
+            
             if (isContinuousModel == 1 &&
                 brainParams.vectorActionSpaceType != SpaceType.continuous)
             {
@@ -64,19 +90,21 @@ namespace MLAgents.InferenceBrain
             }
             failedChecks.AddRange(CheckInputTensorPresence(inputs,
                 brainParams,
-                isRecurrentModel,
+                memoryModel,
                 isContinuousModel));
             failedChecks.AddRange(CheckInputTensorShape(inputs,
                 brainParams));
             failedChecks.AddRange(CheckOutputTensorPresence(outputs,
-                isRecurrentModel));
+                memoryModel));
+            failedChecks.AddRange(CheckOutputTensorShape(outputs,
+                brainParams, actionSizeModel));
             return failedChecks;
 
         }
         
         private static IEnumerable<string> CheckInputTensorPresence(IEnumerable<Tensor> tensors,
             BrainParameters brainParams,
-            bool isRecurrent,
+            long memory,
             long isContinuous)
         {
             var result = new List<string>();
@@ -105,7 +133,7 @@ namespace MLAgents.InferenceBrain
             }
 
             // If the model has a non-negative memory size but requires a recurrent input
-            if (isRecurrent)
+            if (memory > 0)
             {
                 if (!tensorsNames.Contains(TensorNames.RecurrentInPlaceholder))
                 {
@@ -127,7 +155,7 @@ namespace MLAgents.InferenceBrain
         }
         
         private static IEnumerable<string> CheckOutputTensorPresence(IEnumerable<Tensor> tensors,
-            bool isRecurrent)
+            long memory)
         {
             var result = new List<string>();
             var tensorsNames = tensors.Select(x => x.Name);
@@ -139,7 +167,7 @@ namespace MLAgents.InferenceBrain
             }
             
             // If there is no Recurrent Output but the model is Recurrent.
-            if (isRecurrent)
+            if (memory > 0)
             {
                 if (!tensorsNames.Contains(TensorNames.RecurrentOutOutput))
                 {
@@ -219,7 +247,7 @@ namespace MLAgents.InferenceBrain
             if  (numberActionsBp != numberActionsT)
             {
                 return string.Format(
-                    "Action Size of the model does not match. " +
+                    "Previous Action Size of the model does not match. " +
                     "Received {0} but was expecting {2}.",
                     numberActionsBp, numberActionsT);
             }
@@ -249,27 +277,28 @@ namespace MLAgents.InferenceBrain
         }
 
         private static IEnumerable<string> CheckOutputTensorShape(IEnumerable<Tensor> tensors, 
-            BrainParameters brainParams)
+            BrainParameters brainParams,
+            long modelActionSize)
         {
             var result = new List<string>();
             var tensorTester =
-                new Dictionary<string, Func<Tensor, BrainParameters, string>>()
-                {
-                    
-                };
+                new Dictionary<string, Func<Tensor, BrainParameters, long, string>>();
+            if (brainParams.vectorActionSpaceType == SpaceType.continuous)
+            {
+                tensorTester[TensorNames.ActionOutput] = CheckContinuousActionOutputShape;
+            }
+            else
+            {
+                tensorTester[TensorNames.ActionOutput] = CheckDiscreteActionOutputShape;
+            }
 
             // If the model expects an output but it is not in this list
             foreach (var tensor in tensors)
             {
-                if (!tensorTester.ContainsKey(tensor.Name))
-                {
-                    //TODO : Make this error message better
-                    result.Add("No placeholder for required input : " + tensor.Name);
-                }
-                else
+                if (tensorTester.ContainsKey(tensor.Name))
                 {
                     var tester = tensorTester[tensor.Name];
-                    var error = tester.Invoke(tensor, brainParams);
+                    var error = tester.Invoke(tensor, brainParams, modelActionSize);
                     if (error != null)
                     {
                         result.Add(error);
@@ -277,6 +306,36 @@ namespace MLAgents.InferenceBrain
                 }
             }
             return result;
+        }
+
+        private static string CheckDiscreteActionOutputShape(Tensor tensor,
+            BrainParameters brainParams,
+            long modelActionSize)
+        {
+            var bpActionSize = brainParams.vectorActionSize.Sum();
+            if  (modelActionSize != bpActionSize)
+            {
+                return string.Format(
+                    "Action Size of the model does not match. " +
+                    "The BrainParameters expect {0} but the model contains {1}.",
+                    bpActionSize, modelActionSize);
+            }
+            return null;
+        }
+        
+        private static string CheckContinuousActionOutputShape(Tensor tensor,
+            BrainParameters brainParams,
+            long modelActionSize)
+        {
+            var bpActionSize = brainParams.vectorActionSize.Length;
+            if  (modelActionSize != bpActionSize)
+            {
+                return string.Format(
+                    "Action Size of the model does not match. " +
+                    "The BrainParameters expect {0} but the model contains {1}.",
+                    bpActionSize, modelActionSize);
+            }
+            return null;
         }
         
     }

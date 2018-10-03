@@ -19,6 +19,7 @@
         public const string MemorySize = "memory_size";
         public const string VersionNumber = "version_number";
         public const string IsContinuousControl = "is_continuous_control";
+        public const string ActionOutputShape = "action_output_shape";
         public const string ActionOutput = "action";
     }
 }

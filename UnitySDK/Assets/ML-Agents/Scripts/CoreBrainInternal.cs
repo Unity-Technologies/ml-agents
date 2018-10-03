@@ -26,12 +26,9 @@ namespace MLAgents
         
         Batcher brainBatcher;
         
-        private long _memorySize;
-        private long _modelVersionNumber;
-        private long _isContinuous;
+        private long _modelMemorySize;
 
         private TensorGenerators _tensorGenerators;
-
         private TensorAppliers  _outputTensorAppliers;
 
         public Model _model;
@@ -51,9 +48,6 @@ namespace MLAgents
         /// Loads the tensorflow graph model to generate a TFGraph object
         public void InitializeCoreBrain(Batcher brainBatcher)
         {
-            
-            Debug.Log(TensorFlow.TFCore.Version);
-
             if ((brainBatcher == null)
                 || (!broadcast))
             {
@@ -88,29 +82,20 @@ namespace MLAgents
                 _inferenceInputs = GetInputTensors();
                 _inferenceOutputs = GetOutputTensors();
 
-                _modelVersionNumber = GetModelData(_engine, TensorNames.VersionNumber);
-                _memorySize = GetModelData(_engine, TensorNames.MemorySize);
-                _isContinuous = GetModelData(_engine, TensorNames.IsContinuousControl);
+                var modelVersionNumber = GetModelData(_engine, TensorNames.VersionNumber);
+                _modelMemorySize = GetModelData(_engine, TensorNames.MemorySize);
+                var modelIsContinuous = GetModelData(_engine, TensorNames.IsContinuousControl);
+                var modelActionSize =  GetModelData(_engine, TensorNames.ActionOutputShape);
 
-                currentFailedModelChecks = new List<string>();
-                if (_modelVersionNumber != version)
-                {
-                    currentFailedModelChecks.Add("Incompatible Version");
-                }
-                if (_memorySize == -1)
-                {
-                    currentFailedModelChecks.Add("No Memory Size");
-                }
-                if (_isContinuous == -1)
-                {
-                    currentFailedModelChecks.Add("Could not infer action space type from model");
-                }
-                currentFailedModelChecks.AddRange(TensorCheck.GetChecks(_engine, 
+                currentFailedModelChecks = TensorCheck.GetChecks(_engine, 
                     _inferenceInputs, 
                     _inferenceOutputs, 
                     brain.brainParameters,
-                    _isContinuous, 
-                    _memorySize > 0));
+                    modelVersionNumber,
+                    version,
+                    modelIsContinuous, 
+                    _modelMemorySize,
+                    modelActionSize).ToList();
                 
                 _tensorGenerators = new TensorGenerators(brain.brainParameters, new RandomNormal(0));
             
@@ -177,9 +162,20 @@ namespace MLAgents
         /// <returns>Tensor Array with the expected Tensor outputs</returns>
         private IEnumerable<Tensor> GetOutputTensors()
         {
-            var engineOutputs = _engine.OutputFeatures();
+//            foreach (var t in _engine.OutputFeatures())
+//            {
+//                if (t.Shape != null)
+//                {
+//                    Debug.Log(t.Name);
+//                    foreach (var n in t.Shape)
+//                        Debug.Log(n);
+//                }
+//            }
+       
             
-            /*
+            /*var engineOutputs = _engine.OutputFeatures();
+            
+            
              foreach (var x in _engine.OutputFeatures())
             {
                 if ((x.Name == TensorNames.ActionOutput) ||
@@ -193,8 +189,8 @@ namespace MLAgents
             
             return engineOutputs.Where(x => (x.Name == TensorNames.ActionOutput) ||
                                             (x.Name == TensorNames.RecurrentOutOutput) ||
-                                            (x.Name == TensorNames.ValueEstimateOutput));
-                                            */
+                                            (x.Name == TensorNames.ValueEstimateOutput));*/
+                                            
             
             var bp = brain.brainParameters;
             var tensorList = new List<Tensor>();
@@ -225,14 +221,14 @@ namespace MLAgents
                         Data = null
                     });
             }
-            if (_memorySize > 0)
+            if (_modelMemorySize > 0)
             {
                 tensorList.Add(new Tensor()
                 {
                     Name = TensorNames.RecurrentOutOutput,
                     Shape = new long[2]
                     {
-                        -1, _memorySize
+                        -1, _modelMemorySize
                     },
                     ValueType = Tensor.TensorType.FloatingPoint,
                     Data = null
