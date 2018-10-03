@@ -291,8 +291,8 @@ future.
 _Example of a mathematics curriculum. Lessons progress from simpler topics to
 more complex ones, with each building on the last._
 
-When we think about how reinforcement learning actually works, the learning
-signal is reward received occasionally throughout training. The starting point
+When we think about how reinforcement learning actually works, the learning reward
+signal is received occasionally throughout training. The starting point
 when training an agent to accomplish this task will be a random policy. That
 starting policy will have the agent running in circles, and will likely never,
 or very rarely achieve the reward for complex environments. Thus by simplifying
@@ -356,11 +356,11 @@ inspiration:
   done alone. Examples include environments where each agent only has access to
   partial information, which needs to be shared in order to accomplish the task
   or collaboratively solve a puzzle.
-- Competitive Multi-Agent. Multiple interacting s with inverse reward
+- Competitive Multi-Agent. Multiple interacting agents with inverse reward
   signals linked to either a single or multiple different Brains. In this
-  scenario, s must compete with one another to either win a competition, or
+  scenario, agents must compete with one another to either win a competition, or
   obtain some limited set of resources. All team sports fall into this scenario.
-- Ecosystem. Multiple interacting s with independent reward signals linked
+- Ecosystem. Multiple interacting agents with independent reward signals linked
   to either a single or multiple different Brains. This scenario can be thought
   of as creating a small world in which animals with different goals all
   interact, such as a savanna in which there might be zebras, elephants and
