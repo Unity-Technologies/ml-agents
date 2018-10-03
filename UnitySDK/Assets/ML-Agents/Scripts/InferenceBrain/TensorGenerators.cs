@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
 using System.Linq;
 using System;
-using System.CodeDom;
 
 namespace MLAgents.InferenceBrain
 {

@@ -2,7 +2,6 @@
 using UnityEngine.MachineLearning.InferenceEngine;
 using System.Linq;
 using System;
-using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
@@ -25,9 +24,12 @@ namespace MLAgents.InferenceBrain
         /// ValueType</param>
         /// <param name="outputs">The Output tensors of the InferenceEngine. Note: The checks
         /// ignore the data present in the tensors and only checks for their Name, Shape and
-        /// ValueType</param>
+        /// ValueType.</param>
         /// <param name="brainParams">The BrainParameters used to evaluate the InferenceEngine
-        /// checks</param>
+        /// checks.</param>
+        /// <param name="versionModel"> The version of the Trainer the model was trained with.
+        /// </param>
+        /// <param name="versionBrain"></param>
         /// <param name="isContinuousModel"> Whether or not the InferenceEngine uses
         /// continuous control or discrete control. 0 corresponds to discrete control,
         /// 1 corresponds to continuous control and any other value signifies that the
@@ -39,9 +41,9 @@ namespace MLAgents.InferenceBrain
         /// is less or equal to zero, it means that the action size could not be assessed from
         /// the model.
         /// </param>
-        /// <returns> A IEnumerable of string corresponding to the failed checks of InferenceEngine
-        /// if empty, there are no compatibility issues betweent the InferenceEngine and the
-        /// BrainParameters</returns>
+        /// <returns> A IEnumerable of string corresponding to the failed checks. If the
+        /// InferenceEngine is empty, there are no compatibility issues betweent the
+        /// InferenceEngine and the BrainParameters.</returns>
         public static IEnumerable<string> GetChecks(InferenceEngine engine, 
             IEnumerable<Tensor> inputs /* TODO : Remove */,
             IEnumerable<Tensor> outputs /* TODO : Remove */, 
@@ -57,7 +59,6 @@ namespace MLAgents.InferenceBrain
                 return new List<string>();
             }
             var failedChecks = new List<string>();
-
             if (versionModel != versionBrain)
             {
                 failedChecks.Add("Incompatible Version");
@@ -100,9 +101,20 @@ namespace MLAgents.InferenceBrain
             failedChecks.AddRange(CheckOutputTensorShape(outputs,
                 brainParams, actionSizeModel));
             return failedChecks;
-
         }
         
+        /// <summary>
+        /// Generates failed checks that correspond to inputs expected by the model that are not
+        /// present in the BrainParameters.
+        /// </summary>
+        /// <param name="tensors"> The tensors that the model expects as input.</param>
+        /// <param name="brainParams"> The BrainParameters that would be used to
+        /// generate the inputs of the model.</param>
+        /// <param name="memory"> The memory size that the model is expecting/</param>
+        /// <param name="isContinuous"> Whether the model is expecting continuous or
+        /// discrete control.</param>
+        /// <returns>A IEnumerable of string corresponding to the failed input presence
+        /// checks.</returns>
         private static IEnumerable<string> CheckInputTensorPresence(IEnumerable<Tensor> tensors,
             BrainParameters brainParams,
             long memory,
@@ -110,7 +122,6 @@ namespace MLAgents.InferenceBrain
         {
             var result = new List<string>();
             var tensorsNames = tensors.Select(x => x.Name);
-
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((brainParams.vectorObservationSize != 0) &&
                 (!tensorsNames.Contains(TensorNames.VectorObservationPlacholder)))
@@ -118,7 +129,6 @@ namespace MLAgents.InferenceBrain
                 result.Add("The model does not contain a Vector Observation Placeholder Input. " +
                            "You must set the Vector Observation Space Size to 0.");
             }
-
             // If there are not enough Visual Observation Input compared to what the
             // Brain Parameters expect.
             for (var visObsIndex = 0;
@@ -132,7 +142,6 @@ namespace MLAgents.InferenceBrain
                                "Input for visual observation "+visObsIndex+".");
                 }
             }
-
             // If the model has a non-negative memory size but requires a recurrent input
             if (memory > 0)
             {
@@ -142,7 +151,6 @@ namespace MLAgents.InferenceBrain
                                "but has memory_size.");
                 }
             }
-            
             // If the model uses discrete control but does not have an input for action masks
             if (isContinuous == 0)
             {
@@ -155,6 +163,14 @@ namespace MLAgents.InferenceBrain
             return result;
         }
         
+        /// <summary>
+        /// Generates failed checks that correspond to outputs expected by the model that are not
+        /// present in the BrainParameters.
+        /// </summary>
+        /// <param name="tensors"> The tensors that the model expects as input.</param>
+        /// <param name="memory"> The memory size that the model is expecting/</param>
+        /// <returns>A IEnumerable of string corresponding to the failed output presence
+        /// checks.</returns>
         private static IEnumerable<string> CheckOutputTensorPresence(IEnumerable<Tensor> tensors,
             long memory)
         {
@@ -179,6 +195,15 @@ namespace MLAgents.InferenceBrain
             return result;
         }
 
+        /// <summary>
+        /// Generates failed checks that correspond to inputs shapes incompatibilities between
+        /// the model and the BrainParameters.
+        /// </summary>
+        /// <param name="tensors"> The tensors that the model expects as input.</param>
+        /// <param name="brainParams"> The BrainParameters that would be used to
+        /// generate the inputs of the model.</param>
+        /// <returns>A IEnumerable of string corresponding to the incompatible shapes between
+        /// model and BrainParameters.</returns>
         private static IEnumerable<string> CheckInputTensorShape(IEnumerable<Tensor> tensors, 
             BrainParameters brainParams)
         {
@@ -193,23 +218,18 @@ namespace MLAgents.InferenceBrain
                     {TensorNames.SequenceLengthPlaceholder, ((tensor, parameters) => null)},
                     {TensorNames.RecurrentInPlaceholder, ((tensor, parameters) => null)},
                 };
-
-            for (var visObsIndex = 0;
-                visObsIndex < brainParams.cameraResolutions.Length; 
-                visObsIndex++)
+            for (var ObsIndex = 0; ObsIndex < brainParams.cameraResolutions.Length; ObsIndex++)
             {
-                var index = visObsIndex;
-                tensorTester[TensorNames.VisualObservationPlaceholderPrefix + visObsIndex] =
+                var index = ObsIndex;
+                tensorTester[TensorNames.VisualObservationPlaceholderPrefix + ObsIndex] =
                     (tensor, bp) => CheckVisualObsShape(tensor, bp, index);
             }
-            
             // If the model expects an input but it is not in this list
             foreach (var tensor in tensors)
             {
                 if (!tensorTester.ContainsKey(tensor.Name))
                 {
-                    //TODO : Make this error message better
-                    result.Add("No placeholder for required input : " + tensor.Name);
+                    result.Add("Model requires an unknown input named : " + tensor.Name);
                 }
                 else
                 {
@@ -224,8 +244,16 @@ namespace MLAgents.InferenceBrain
             return result;
         }
        
-        private static string CheckVectorObsShape(Tensor tensor,
-            BrainParameters brainParams)
+        /// <summary>
+        /// Checks that the shape of the Vector Observation input placeholder is the same in the
+        /// model and in the Brain Parameters.
+        /// </summary>
+        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="brainParams"> The BrainParameters the input tensor will be
+        /// generated with.</param>
+        /// <returns>If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.</returns>
+        private static string CheckVectorObsShape(Tensor tensor, BrainParameters brainParams)
         {
             var vecObsSizeBp = brainParams.vectorObservationSize;
             var numStackedVector = brainParams.numStackedVectorObservations;
@@ -240,8 +268,16 @@ namespace MLAgents.InferenceBrain
             return null;
         }
         
-        private static string CheckPreviousActionShape(Tensor tensor,
-            BrainParameters brainParams)
+        /// <summary>
+        /// Checks that the shape of the Previous Vector Action input placeholder is the same in the
+        /// model and in the Brain Parameters.
+        /// </summary>
+        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="brainParams"> The BrainParameters the input tensor will be
+        /// generated with.</param>
+        /// <returns>If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.</returns>
+        private static string CheckPreviousActionShape(Tensor tensor, BrainParameters brainParams)
         {
             var numberActionsBp = brainParams.vectorActionSize.Length;
             var numberActionsT = tensor.Shape[1];
@@ -249,13 +285,23 @@ namespace MLAgents.InferenceBrain
             {
                 return string.Format(
                     "Previous Action Size of the model does not match. " +
-                    "Received {0} but was expecting {2}.",
+                    "Received {0} but was expecting {1}.",
                     numberActionsBp, numberActionsT);
             }
             return null;
         }
         
-        private static string CheckVisualObsShape(Tensor tensor,
+        /// <summary>
+        /// Checks that the shape of the visual observation input placeholder is the same in the
+        /// model and in the Brain Parameters.
+        /// </summary>
+        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="brainParams"> The BrainParameters the input tensor will be
+        /// generated with.</param>
+        /// <param name="visObsIndex"> The index of the visual observation.</param>
+        /// <returns>If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.</returns>
+        private static string CheckVisualObsShape(Tensor tensor, 
             BrainParameters brainParams,
             int visObsIndex)
         {
@@ -277,6 +323,17 @@ namespace MLAgents.InferenceBrain
             return null;
         }
 
+        /// <summary>
+        /// Generates failed checks that correspond to output shapes incompatibilities between
+        /// the model and the BrainParameters.
+        /// </summary>
+        /// <param name="tensors"> The tensors that the model expects as input.</param>
+        /// <param name="brainParams"> The BrainParameters that would be used to
+        /// generate the inputs of the model.</param>
+        /// <param name="modelActionSize"> The size of the action output that is expected
+        /// by the model.</param>
+        /// <returns>A IEnumerable of string corresponding to the incompatible shapes between
+        /// model and BrainParameters.</returns>
         private static IEnumerable<string> CheckOutputTensorShape(IEnumerable<Tensor> tensors, 
             BrainParameters brainParams,
             long modelActionSize)
@@ -292,7 +349,6 @@ namespace MLAgents.InferenceBrain
             {
                 tensorTester[TensorNames.ActionOutput] = CheckDiscreteActionOutputShape;
             }
-
             // If the model expects an output but it is not in this list
             foreach (var tensor in tensors)
             {
@@ -309,6 +365,17 @@ namespace MLAgents.InferenceBrain
             return result;
         }
 
+        /// <summary>
+        /// Checks that the shape of the discrete action output is the same in the
+        /// model and in the Brain Parameters.
+        /// </summary>
+        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="brainParams"> The BrainParameters the input tensor will be
+        /// generated with.</param>
+        /// <param name="modelActionSize"> The size of the action output that is expected
+        /// by the model.</param>
+        /// <returns>If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.</returns>
         private static string CheckDiscreteActionOutputShape(Tensor tensor,
             BrainParameters brainParams,
             long modelActionSize)
@@ -324,6 +391,17 @@ namespace MLAgents.InferenceBrain
             return null;
         }
         
+        /// <summary>
+        /// Checks that the shape of the continuous action output is the same in the
+        /// model and in the Brain Parameters.
+        /// </summary>
+        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="brainParams"> The BrainParameters the input tensor will be
+        /// generated with.</param>
+        /// <param name="modelActionSize"> The size of the action output that is expected
+        /// by the model.</param>
+        /// <returns>If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.</returns>
         private static string CheckContinuousActionOutputShape(Tensor tensor,
             BrainParameters brainParams,
             long modelActionSize)
@@ -338,6 +416,5 @@ namespace MLAgents.InferenceBrain
             }
             return null;
         }
-        
     }
 }
