@@ -17,16 +17,18 @@ class UnityTrainerException(UnityException):
 
 
 class Trainer(object):
-    """This class is the abstract class for the mlagents.trainers"""
+    """This class is the base class for the mlagents.trainers"""
 
-    def __init__(self, brain_name, trainer_parameters, training, run_id):
+    def __init__(self, brain, trainer_parameters, training, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
-        :param trainer_parameters: The parameters for the trainer (dictionary).
-        :param training: Whether the trainer is set for training.
-        :param run_id: The identifier of the current run
+        :BrainParameters brain: Brain to be trained.
+        :dict trainer_parameters: The parameters for the trainer (dictionary).
+        :bool training: Whether the trainer is set for training.
+        :int run_id: The identifier of the current run
         """
-        self.brain_name = brain_name
+        self.param_keys = []
+        self.brain_name = brain.brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.is_training = training
@@ -35,7 +37,14 @@ class Trainer(object):
         self.policy = None
 
     def __str__(self):
-        return '''Empty Trainer'''
+        return '''{} Trainer'''.format(self.__class__)
+
+    def check_param_keys(self):
+        for k in self.param_keys:
+            if k not in self.trainer_parameters:
+                raise UnityTrainerException(
+                    "The hyper-parameter {0} could not be found for the {1} trainer of "
+                    "brain {2}.".format(k, self.__class__, self.brain_name))
 
     @property
     def parameters(self):
@@ -126,7 +135,7 @@ class Trainer(object):
 
     def update_policy(self):
         """
-        Uses training_buffer to update model.
+        Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 

@@ -280,23 +280,20 @@ In our case, the information our Agent collects includes:
   position never changes.
 
 ```csharp
-// Calculate relative position
+// Calculate position relative to the target
 Vector3 relativePosition = Target.position - this.transform.position;
 
-// Relative position
+// Position relative to the target
 AddVectorObs(relativePosition.x / 5);
 AddVectorObs(relativePosition.z / 5);
 ```
 
-* Position of the Agent itself within the confines of the floor. This data is
-  collected as the Agent's distance from each edge of the floor.
+* Position of the Agent itself relative to the size of the floor (which is 10)
 
 ```csharp
-// Distance to edges of platform
-AddVectorObs((this.transform.position.x + 5) / 5);
-AddVectorObs((this.transform.position.x - 5) / 5);
-AddVectorObs((this.transform.position.z + 5) / 5);
-AddVectorObs((this.transform.position.z - 5) / 5);
+// Relative position
+AddVectorObs(this.transform.position.x / 5);
+AddVectorObs(this.transform.position.z / 5);
 ```
 
 * The velocity of the Agent. This helps the Agent learn to control its speed so
@@ -308,28 +305,26 @@ AddVectorObs(rBody.velocity.x / 5);
 AddVectorObs(rBody.velocity.z / 5);
 ```
 
-All the values are divided by 5 to normalize the inputs to the neural network to
-the range [-1,1]. (The number five is used because the platform is 10 units
-across.)
+All the values are divided to normalize the inputs to the neural network to
+the range [-1,1]. (The platform is a square which reaches from positions -5 to +5
+thereby having an edge length of 10 units.)
 
-In total, the state observation contains 8 values and we need to use the
+In total, the state observation contains 6 values and we need to use the
 continuous state space when we get around to setting the Brain properties:
 
 ```csharp
 public override void CollectObservations()
 {
-    // Calculate relative position
-    Vector3 relativePosition = Target.position - this.transform.position;
+   // Calculate position relative to the target
+   Vector3 relativePosition = Target.position - this.transform.position;
 
-    // Relative position
-    AddVectorObs(relativePosition.x/5);
-    AddVectorObs(relativePosition.z/5);
+   // Position relative to the target
+   AddVectorObs(relativePosition.x / 5);
+   AddVectorObs(relativePosition.z / 5);
 
-    // Distance to edges of platform
-    AddVectorObs((this.transform.position.x + 5)/5);
-    AddVectorObs((this.transform.position.x - 5)/5);
-    AddVectorObs((this.transform.position.z + 5)/5);
-    AddVectorObs((this.transform.position.z - 5)/5);
+   // Relative position
+   AddVectorObs(this.transform.position.x / 10);
+   AddVectorObs(this.transform.position.x / 10);
 
     // Agent velocity
     AddVectorObs(rBody.velocity.x/5);
@@ -490,7 +485,7 @@ Finally, select the Brain GameObject so that you can see its properties in the
 Inspector window. Set the following properties:
 
 * `Vector Observation Space Type` = **Continuous**
-* `Vector Observation Space Size` = 8
+* `Vector Observation Space Size` = 6
 * `Vector Action Space Type` = **Continuous**
 * `Vector Action Space Size` = 2
 * `Brain Type` = **Player**

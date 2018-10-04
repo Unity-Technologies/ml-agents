@@ -70,7 +70,6 @@ def test_set_lesson_nums(curriculum_a, curriculum_b):
     assert curriculum_b.lesson_num == 3
 
 
-
 @patch('mlagents.trainers.Curriculum')
 @patch('mlagents.trainers.Curriculum')
 def test_increment_lessons(curriculum_a, curriculum_b, measure_vals):

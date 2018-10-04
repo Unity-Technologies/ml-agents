@@ -3,6 +3,7 @@ from .agent_info_proto_pb2 import *
 from .brain_parameters_proto_pb2 import *
 from .brain_type_proto_pb2 import *
 from .command_proto_pb2 import *
+from .demonstration_meta_proto_pb2 import *
 from .engine_configuration_proto_pb2 import *
 from .environment_parameters_proto_pb2 import *
 from .header_pb2 import *

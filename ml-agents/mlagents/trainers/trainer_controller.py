@@ -14,7 +14,8 @@ from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 
 from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.bc.trainer import BehavioralCloningTrainer
+from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
+from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import MetaCurriculumError
 
@@ -180,8 +181,13 @@ class TrainerController(object):
                     trainer_parameters[k] = trainer_config[_brain_key][k]
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.env.external_brain_names:
-            if trainer_parameters_dict[brain_name]['trainer'] == 'imitation':
-                self.trainers[brain_name] = BehavioralCloningTrainer(
+            if trainer_parameters_dict[brain_name]['trainer'] == 'offline_bc':
+                self.trainers[brain_name] = OfflineBCTrainer(
+                    self.env.brains[brain_name],
+                    trainer_parameters_dict[brain_name], self.train_model,
+                    self.load_model, self.seed, self.run_id)
+            elif trainer_parameters_dict[brain_name]['trainer'] == 'online_bc':
+                self.trainers[brain_name] = OnlineBCTrainer(
                     self.env.brains[brain_name],
                     trainer_parameters_dict[brain_name], self.train_model,
                     self.load_model, self.seed, self.run_id)

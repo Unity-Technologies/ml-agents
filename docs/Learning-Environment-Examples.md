@@ -50,9 +50,9 @@ If you would like to contribute environments, please see our
   * -1.0 if the ball falls from the platform.
 * Brains: One Brain with the following observation/action space.
   * Vector Observation space: 8 variables corresponding to rotation of platform,
-    and position, rotation, and velocity of ball.
+    and position and velocity of ball.
   * Vector Observation space (Hard Version): 5 variables corresponding to
-    rotation of platform and position and rotation of ball.
+    rotation of platform and position of ball.
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
