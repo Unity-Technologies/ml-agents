@@ -14,7 +14,7 @@ namespace MLAgents
     /// CoreBrain which decides actions using internally embedded TensorFlow model.
     public class CoreBrainInternal : ScriptableObject, CoreBrain
     {
-        private const long version = 1; 
+        private const long ApiVersion = 1; 
         
         [SerializeField] [Tooltip("If checked, the brain will broadcast states and actions to Python.")]
 #pragma warning disable
@@ -24,14 +24,14 @@ namespace MLAgents
 
         private List<string> _failedModelChecks = new List<string>();
         
-        Batcher brainBatcher;
+        private Batcher brainBatcher;
         
         private long _modelMemorySize;
 
         private TensorGenerators _tensorGenerators;
         private TensorAppliers  _outputTensorAppliers;
 
-        public Model _model;
+        private Model _model;
 
         InferenceEngine _engine;
         private IEnumerable<Tensor> _inferenceInputs;
@@ -93,7 +93,7 @@ namespace MLAgents
                     _inferenceOutputs, 
                     brain.brainParameters,
                     modelVersionNumber,
-                    version,
+                    ApiVersion,
                     modelIsContinuous, 
                     _modelMemorySize,
                     modelActionSize).ToList();
