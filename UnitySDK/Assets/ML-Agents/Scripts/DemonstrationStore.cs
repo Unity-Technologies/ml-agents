@@ -2,7 +2,6 @@
 using System.IO.Abstractions;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
-using UnityEditor;
 
 namespace MLAgents
 {
@@ -114,7 +113,6 @@ namespace MLAgents
             metaData.meanReward = cumulativeReward / metaData.numberEpisodes;
             WriteMetadata();
             writer.Close();
-            AssetDatabase.Refresh();
         }
 
         /// <summary>
