@@ -292,8 +292,8 @@ AddVectorObs(relativePosition.z / 5);
 
 ```csharp
 // Relative position
-AddVectorObs(this.transform.position.x / 10);
-AddVectorObs(this.transform.position.x / 10);
+AddVectorObs(this.transform.position.x / 5);
+AddVectorObs(this.transform.position.z / 5);
 ```
 
 * The velocity of the Agent. This helps the Agent learn to control its speed so
