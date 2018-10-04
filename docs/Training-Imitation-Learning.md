@@ -35,7 +35,7 @@ Machine Learning tasks work.
 4. Link the Brains to the desired Agents (one Agent as the teacher and at least
    one Agent as a student).
 5. In `config/trainer_config.yaml`, add an entry for the "Student" Brain. Set
-   the `Controler` parameter of this entry to `imitation`, and the
+   the `trainer` parameter of this entry to `imitation`, and the
    `brain_to_imitate` parameter to the name of the teacher Brain: "Teacher".
    Additionally, set `batches_per_epoch`, which controls how much training to do
    each moment. Increase the `max_steps` option if you'd like to keep training

@@ -11,7 +11,8 @@
      ML-Agents`
   *  Edit their `Brain Paramters` to be the same as the parameters used 
      in the `Brain` GameObjects
-  *  Set the `Brain` property of the agents to the appropriate `Brain`
+  *  Agents have a `Brain` field in the Inspector, you need to drag the
+  appropriate Brain asset in it.
   
 __Note:__ You can pass the same brain to multiple agents in a scene by 
 leveraging Unity's prefab system or look for all the agents in a scene
@@ -109,7 +110,7 @@ in order to ensure a smooth transition.
   with ML-Agents. For more information on using `learn.py`, see
   [here](Training-ML-Agents.md#training-with-mlagents-learn).
 * Hyperparameters for training Brains are now stored in the
-  `Controler_config.yaml` file. For more information on using this file, see
+  `trainer_config.yaml` file. For more information on using this file, see
   [here](Training-ML-Agents.md#training-config-file).
 
 ### Unity API

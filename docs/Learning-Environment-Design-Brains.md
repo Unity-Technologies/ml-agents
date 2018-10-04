@@ -8,7 +8,7 @@ Agent.
 There are 3 kinds of brains you can use:
 
 * [Learning](Learning-Environment-Learning-Brains.md) – Use a
-  **LearningBrain**  to make use of a trained model or train a new model.
+  **LearningBrain** to make use of a trained model or train a new model.
 * [Heuristic](Learning-Environment-Design-Heuristic-Brains.md) – Use a
   **HeuristicBrain** to hand-code the Agent's logic by extending the Decision class.
 * [Player](Learning-Environment-Design-Player-Brains.md) – Use a
