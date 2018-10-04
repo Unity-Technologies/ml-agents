@@ -72,6 +72,53 @@ namespace MLAgents
 
         public SpaceType vectorActionSpaceType = SpaceType.discrete;
         /**< \brief Defines if the action is discrete or continuous */
+        
+        /// <summary>
+        /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
+        /// </summary>
+        /// <returns>The BrainInfoProto generated.</returns>
+        /// <param name="name">The name of the brain.</param>
+        /// <param name="type">The type of brain.</param>
+        public CommunicatorObjects.BrainParametersProto 
+            ToProto(string name, CommunicatorObjects.BrainTypeProto type)
+        {
+            var brainParametersProto = new CommunicatorObjects.BrainParametersProto
+            {
+                VectorObservationSize = vectorObservationSize,
+                NumStackedVectorObservations = numStackedVectorObservations,
+                VectorActionSize = {vectorActionSize},
+                VectorActionSpaceType =
+                    (CommunicatorObjects.SpaceTypeProto)vectorActionSpaceType,
+                BrainName = name,
+                BrainType = type
+            };
+            brainParametersProto.VectorActionDescriptions.AddRange(vectorActionDescriptions);
+            foreach (resolution res in cameraResolutions)
+            {
+                brainParametersProto.CameraResolutions.Add(
+                    new CommunicatorObjects.ResolutionProto
+                    {
+                        Width = res.width,
+                        Height = res.height,
+                        GrayScale = res.blackAndWhite
+                    });
+            }
+            return brainParametersProto;
+        }
+
+        public BrainParameters()
+        {
+            
+        }
+
+        public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
+        {
+            vectorObservationSize = brainParametersProto.VectorObservationSize;
+            numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
+            vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
+            vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
+            vectorActionSpaceType = (SpaceType)brainParametersProto.VectorActionSpaceType;
+        }
     }
 
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +

@@ -8,6 +8,7 @@
 /UnitySDK/Assets/AssetStoreTools*
 /UnitySDK/Assets/Plugins*
 /UnitySDK/Assets/Gizmos*
+/UnitySDK/Assets/Demonstrations*
 
 # Tensorflow Model Info
 /models
@@ -55,7 +56,8 @@
 /UnitySDK/Assets/ML-Agents/Plugins/Android*
 /UnitySDK/Assets/ML-Agents/Plugins/iOS*
 /UnitySDK/Assets/ML-Agents/Plugins/Computer*
-/UnitySDK/Assets/ML-Agents/Plugins/System*
+/UnitySDK/Assets/ML-Agents/Plugins/System.Numerics*
+/UnitySDK/Assets/ML-Agents/Plugins/System.ValueTuple*
 
 # Generated doc folders
 /docs/html

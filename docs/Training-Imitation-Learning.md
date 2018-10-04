@@ -7,22 +7,57 @@ Consider our
 of training a medic NPC : instead of indirectly training a medic with the help
 of a reward function, we can give the medic real world examples of observations
 from the game and actions from a game controller to guide the medic's behavior.
-More specifically, in this mode, the Brain type during training is set to Player
-and all the actions performed with the controller (in addition to the agent
-observations) will be recorded and sent to the Python API. The imitation
-learning algorithm will then use these pairs of observations and actions from
-the human player to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
+Imitation Learning uses pairs of observations and actions from
+from a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
 
-## Using Behavioral Cloning
+## Recording Demonstrations
+
+It is possible to record demonstrations of agent behavior from the Unity Editor, and save them as assets. These demonstrations contain information on the observations, actions, and rewards for a given agent during the recording session. They can be managed from the Editor, as well as used for training with Offline Behavioral Cloning (see below).
+
+In order to record demonstrations from an agent, add the `Demonstration Recorder` component to a GameObject in the scene which contains an `Agent` component. Once added, it is possible to name the demonstration that will be recorded from the agent.
+
+<p align="center">
+  <img src="images/demo_component.png"
+       alt="BC Teacher Helper"
+       width="375" border="10" />
+</p>
+
+When `Record` is checked, a demonstration will be created whenever the scene is played from the Editor. Depending on the complexity of the task, anywhere from a few minutes or a few hours of demonstration data may be necessary to be useful for imitation learning. When you have recorded enough data, end the Editor play session, and a `.demo` file will be created in the `Assets/Demonstrations` folder. This file contains the demonstrations. Clicking on the file will provide metadata about the demonstration in the inspector.
+
+<p align="center">
+  <img src="images/demo_inspector.png"
+       alt="BC Teacher Helper"
+       width="375" border="10" />
+</p>
+ 
+
+## Training with Behavioral Cloning
 
 There are a variety of possible imitation learning algorithms which can be used,
-the simplest one of them is Behavioral Cloning. It works by collecting training
-data from a teacher, and then simply uses it to directly learn a policy, in the
+the simplest one of them is Behavioral Cloning. It works by collecting demonstrations from a teacher, and then simply uses them to directly learn a policy, in the
 same way the supervised learning for image classification or other traditional
 Machine Learning tasks work.
 
-1. In order to use imitation learning in a scene, the first thing you will need
-   is to create two Brains, one which will be the "Teacher," and the other which
+
+### Offline Training
+
+With offline behavioral cloning, we can use demonstrations (`.demo` files) generated using the `Demonstration Recorder` as the dataset used to train a behavior.
+
+1. Choose an agent you would like to learn to imitate some set of demonstrations. 
+2. Record a set of demonstration using the `Demonstration Recorder` (see above). For illustrative purposes we will refer to this file as `AgentRecording.demo`. 
+3. Build the scene, assigning the agent a Learning Brain, and set the Brain to Control in the Broadcast Hub. For more information on Brains, see [here](Learning-Environment-Design-Brains.md).
+4. Open the `config/bc_config.yaml` file. 
+5. Modify the `demo_path` parameter in the file to reference the path to the demonstration file recorded in step 2. In our case this is: `./UnitySDK/Assets/Demonstrations/AgentRecording.demo`
+6. Launch `mlagent-learn`, and providing `./config/bc_config.yaml` as the config parameter, and your environment as the `--env` parameter.
+7. (Optional) Observe training performance using Tensorboard.
+
+This will use the demonstration file to train a nerual network driven agent to directly imitate the actions provided in the demonstration. The environment will launch and be used for evaluating the agent's performance during training.
+
+### Online Training
+
+It is also possible to provide demonstrations in realtime during training, without pre-recording a demonstration file. The steps to do this are as follows:
+
+1. First create two Brains, one which will be the "Teacher," and the other which
    will be the "Student." We will assume that the names of the Brain
    `GameObject`s are "Teacher" and "Student" respectively.
 2. Set the "Teacher" Brain to Player mode, and properly configure the inputs to
@@ -51,7 +86,7 @@ Machine Learning tasks work.
     Assets folder (or a subdirectory within Assets of your choosing) , and use
     with `Internal` Brain.
 
-### BC Teacher Helper
+**BC Teacher Helper**
 
 We provide a convenience utility, `BC Teacher Helper` component that you can add
 to the Teacher Agent.

@@ -280,7 +280,7 @@ namespace MLAgents
                 }
             }
 
-            brainBatcher = new MLAgents.Batcher(communicator);
+            brainBatcher = new Batcher(communicator);
 
             // Initialize Brains and communicator (if present)
             foreach (var brain in brains)
@@ -293,17 +293,16 @@ namespace MLAgents
                 isCommunicatorOn = true;
 
                 var academyParameters =
-                    new MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
+                    new CommunicatorObjects.UnityRLInitializationOutput();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = kApiVersion;
                 foreach (var brain in brains)
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                        MLAgents.Batcher.BrainParametersConvertor(
-                            bp,
+                        bp.ToProto(
                             brain.gameObject.name,
-                            (MLAgents.CommunicatorObjects.BrainTypeProto)
+                            (CommunicatorObjects.BrainTypeProto)
                             brain.brainType));
                 }
                 
