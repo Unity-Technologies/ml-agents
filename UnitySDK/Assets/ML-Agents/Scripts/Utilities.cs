@@ -34,11 +34,7 @@ namespace MLAgents
             int batchSize = textures.Count;
             int width = textures[0].width;
             int height = textures[0].height;
-            int pixels = 0;
-            if (blackAndWhite)
-                pixels = 1;
-            else
-                pixels = 3;
+            var pixels = blackAndWhite ? 1 : 3;
             float[,,,] result = new float[batchSize, height, width, pixels];
             float[] resultTemp = new float[batchSize * height * width * pixels];
             int hwp = height * width * pixels;

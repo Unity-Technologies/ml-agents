@@ -90,9 +90,8 @@ class OnlineBCTrainer(BCTrainer):
                                      self.policy.m_size))
                             self.demonstration_buffer[agent_id]['memory'].append(
                                 stored_info_teacher.memories[idx])
-                        self.demonstration_buffer[agent_id]['actions'].append(next_info_teacher.
-                                                                              previous_vector_actions[
-                                                                                  next_idx])
+                        self.demonstration_buffer[agent_id]['actions'].append(
+                            next_info_teacher.previous_vector_actions[next_idx])
 
         super(OnlineBCTrainer, self).add_experiences(curr_info, next_info, take_action_outputs)
 
@@ -108,7 +107,7 @@ class OnlineBCTrainer(BCTrainer):
             teacher_action_list = len(self.demonstration_buffer[info_teacher.agents[l]]['actions'])
             horizon_reached = teacher_action_list > self.trainer_parameters['time_horizon']
             teacher_filled = len(self.demonstration_buffer[info_teacher.agents[l]]['actions']) > 0
-            if ((info_teacher.local_done[l] or horizon_reached) and teacher_filled):
+            if (info_teacher.local_done[l] or horizon_reached) and teacher_filled:
                 agent_id = info_teacher.agents[l]
                 self.demonstration_buffer.append_update_buffer(
                     agent_id, batch_size=None, training_length=self.policy.sequence_length)

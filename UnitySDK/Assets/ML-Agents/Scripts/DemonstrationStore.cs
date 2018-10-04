@@ -106,7 +106,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Peroforms necessary episode-completion steps.
+        /// Performs necessary episode-completion steps.
         /// </summary>
         private void EndEpisode()
         {
@@ -114,7 +114,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Writes meta-data and closes session.
+        /// Writes meta-data.
         /// </summary>
         private void WriteMetadata()
         {

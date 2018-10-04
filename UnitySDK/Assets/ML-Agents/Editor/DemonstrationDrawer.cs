@@ -1,4 +1,5 @@
-﻿using MLAgents;
+﻿using System.Text;
+using MLAgents;
 using UnityEditor;
 
 /// <summary>
@@ -41,25 +42,25 @@ public class DemonstrationEditor : Editor
     /// <summary>
     /// Constructs label for action size array.
     /// </summary>
-    string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
+    static string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
     {
         var actionSize = actionSizeProperty.arraySize;
-        var actionLabel = "[ ";
+        StringBuilder actionLabel = new StringBuilder("[ ");
         for (int i = 0; i < actionSize; i++)
         {
-            actionLabel += actionSizeProperty.GetArrayElementAtIndex(i).intValue;
+            actionLabel.Append(actionSizeProperty.GetArrayElementAtIndex(i).intValue);
             if (i < actionSize - 1)
             {
-                actionLabel += ", ";
+                actionLabel.Append(", ");
             }
         }
 
-        actionLabel += " ]";
-        return actionLabel;
+        actionLabel.Append(" ]");
+        return actionLabel.ToString();
     }
 
     /// <summary>
-    /// Renders Inspextor UI for Brain Parameters of Demonstration.
+    /// Renders Inspector UI for Brain Parameters of Demonstration.
     /// </summary>
     void MakeBrainParametersProperty(SerializedProperty property)
     {

@@ -23,8 +23,8 @@ class OfflineBCTrainer(BCTrainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super(OfflineBCTrainer, self).__init__(brain, trainer_parameters, training, load, seed,
-                                               run_id)
+        super(OfflineBCTrainer, self).__init__(
+            brain, trainer_parameters, training, load, seed, run_id)
 
         self.param_keys = ['batch_size', 'summary_freq', 'max_steps',
                            'batches_per_epoch', 'use_recurrent',

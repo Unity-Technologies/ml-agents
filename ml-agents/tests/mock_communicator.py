@@ -79,8 +79,8 @@ class MockCommunicator(Communicator):
             UnityRLOutput.ListAgentInfoProto(value=list_agent_info)
         global_done = False
         try:
-            global_done = (inputs.rl_input.agent_actions["RealFakeBrain"].value[0].vector_actions[
-                               0] == -1)
+            fake_brain = inputs.rl_input.agent_actions["RealFakeBrain"]
+            global_done = (fake_brain.value[0].vector_actions[0] == -1)
         except:
             pass
         result = UnityRLOutput(
