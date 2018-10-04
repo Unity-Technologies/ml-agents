@@ -23,31 +23,38 @@ namespace MLAgents
                 throw new Exception("Demonstration import error.");
             }
 
-            // Read first two proto objects containing metadata and brain parameters.
-            Stream reader = File.OpenRead(ctx.assetPath);
+            try
+            {
+                // Read first two proto objects containing metadata and brain parameters.
+                Stream reader = File.OpenRead(ctx.assetPath);
 
-            var metaDataProto = DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
-            var metaData = new DemonstrationMetaData(metaDataProto);
+                var metaDataProto = DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
+                var metaData = new DemonstrationMetaData(metaDataProto);
 
-            reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
-            var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
-            var brainParameters = new BrainParameters(brainParamsProto);
+                reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
+                var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
+                var brainParameters = new BrainParameters(brainParamsProto);
 
-            reader.Close();
+                reader.Close();
 
-            var demonstration = ScriptableObject.CreateInstance<Demonstration>();
-            demonstration.Initialize(brainParameters, metaData);
-            userData = demonstration.ToString();
+                var demonstration = ScriptableObject.CreateInstance<Demonstration>();
+                demonstration.Initialize(brainParameters, metaData);
+                userData = demonstration.ToString();
 
-            Texture2D texture = (Texture2D) 
-                AssetDatabase.LoadAssetAtPath(IconPath, typeof(Texture2D));
+                Texture2D texture = (Texture2D)
+                    AssetDatabase.LoadAssetAtPath(IconPath, typeof(Texture2D));
 
 #if UNITY_2017_3_OR_NEWER
-            ctx.AddObjectToAsset(ctx.assetPath, demonstration, texture);
-            ctx.SetMainObject(demonstration);
+                ctx.AddObjectToAsset(ctx.assetPath, demonstration, texture);
+                ctx.SetMainObject(demonstration);
 #else
             ctx.SetMainAsset(ctx.assetPath, model);
 #endif
+            }
+            catch
+            {
+                return;
+            }
         }
     }
 }

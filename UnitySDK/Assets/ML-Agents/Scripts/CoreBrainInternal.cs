@@ -270,7 +270,7 @@ namespace MLAgents
                 }
 
                 observationMatrixList.Add(
-                    Utilities.BatchVisualObservations(texturesHolder,
+                    Utilities.TextureToFloatArray(texturesHolder,
                         brain.brainParameters.cameraResolutions[observationIndex].blackAndWhite));
             }
 
