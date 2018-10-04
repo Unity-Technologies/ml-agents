@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 
@@ -12,7 +13,7 @@ namespace MLAgents.Tests
         [Test]
         public void TestSanitization()
         {
-            var dirtyString = "abc123&!@";
+            const string dirtyString = "abc123&!@";
             var cleanString = DemonstrationRecorder.SanitizeName(dirtyString);
             Assert.AreNotEqual(dirtyString, cleanString);
             Assert.AreEqual(cleanString, "abc123");
@@ -28,7 +29,7 @@ namespace MLAgents.Tests
             
             var brainParameters = new BrainParameters
             {
-                vectorObservationSize = 8,
+                vectorObservationSize = 3,
                 numStackedVectorObservations = 2,
                 cameraResolutions = new [] {new resolution()},
                 vectorActionDescriptions = new [] {"TestActionA", "TestActionB"},
@@ -40,6 +41,24 @@ namespace MLAgents.Tests
             
             Assert.IsTrue(fileSystem.Directory.Exists(DemoDirecory));
             Assert.IsTrue(fileSystem.FileExists(DemoDirecory + "Test" + ExtensionType));
+
+            var agentInfo = new AgentInfo
+            {
+                reward = 1f,
+                visualObservations = new List<Texture2D>(),
+                actionMasks = new []{false, true},
+                done = true,
+                id = 5,
+                maxStepReached = true,
+                memories = new List<float>(),
+                stackedVectorObservation = new List<float>() {1f, 1f, 1f},
+                storedTextActions = "TestAction",
+                storedVectorActions = new [] {0f, 1f},
+                textObservation = "TestAction",
+            };
+            
+            demoStore.Record(agentInfo);
+            demoStore.Close();
         }
     }
 }
