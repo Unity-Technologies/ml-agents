@@ -28,8 +28,8 @@ namespace MLAgents
                 vectorObservationSize = src.vectorObservationSize,
                 numStackedVectorObservations = src.numStackedVectorObservations,
                 vectorActionSize = (int[]) src.vectorActionSize.Clone(),
-                cameraResolutions = (resolution[])src.cameraResolutions.Clone(),
-                vectorActionDescriptions = (string[])src.vectorActionDescriptions.Clone(),
+                cameraResolutions = (resolution[]) src.cameraResolutions.Clone(),
+                vectorActionDescriptions = (string[]) src.vectorActionDescriptions.Clone(),
                 vectorActionSpaceType = src.vectorActionSpaceType
             };
         }

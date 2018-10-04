@@ -44,7 +44,5 @@ namespace MLAgents
             broadcastingBrains.Clear();
             _brainsToControl.Clear();
         }
-        
-
     }
 }

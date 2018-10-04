@@ -11,9 +11,8 @@ namespace MLAgents
     /// the Heuristic Brain.
     /// </summary>
     [CustomEditor(typeof(HeuristicBrain))]
-    public class ScriptableBrainEditor : BrainEditor
+    public class HeuristicBrainEditor : BrainEditor
     {
-
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Heuristic Brain", EditorStyles.boldLabel);

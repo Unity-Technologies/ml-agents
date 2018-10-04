@@ -15,7 +15,9 @@ namespace MLAgents
         private BroadcastHub _hub;
         // The height of a line in the Unity Inspectors
         private const float LineHeight = 17f;
-        private const float ExtraSpaceBellow = 10f;
+        // The vertical space left below the BroadcastHub UI.
+        private const float ExtraSpaceBelow = 10f;
+        // The horizontal size of the Control checkbox
         private const int ControlSize = 80;
 
         /// <summary>
@@ -28,7 +30,7 @@ namespace MLAgents
         {
             LazyInitializeHub(property, label);
             var numLines = _hub.Count + 2 + (_hub.Count > 0 ? 1 : 0);
-            return (numLines) * LineHeight + ExtraSpaceBellow;
+            return (numLines) * LineHeight + ExtraSpaceBelow;
         }
 
         /// <inheritdoc />
@@ -79,8 +81,9 @@ namespace MLAgents
             {
                 addButtonRect.width /= 2;
                 addButtonRect.width -= 24;
-                if (GUI.Button(addButtonRect, new GUIContent("Add New",
-                    "Add a new Brain to the Broadcast Hub"), EditorStyles.miniButton))
+                var buttonContent = new GUIContent("Add New",
+                    "Add a new Brain to the Broadcast Hub");
+                if (GUI.Button(addButtonRect, buttonContent, EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
                     AddBrain();
@@ -89,9 +92,9 @@ namespace MLAgents
                 var removeButtonRect = position;
                 removeButtonRect.x = position.width / 2 + 15;
                 removeButtonRect.width = addButtonRect.width - 18;
-                if (GUI.Button(removeButtonRect, new GUIContent("Remove Last",
-                        "Remove the last Brain from the Broadcast Hub"),
-                    EditorStyles.miniButton))
+                buttonContent = new GUIContent("Remove Last",
+                    "Remove the last Brain from the Broadcast Hub");
+                if (GUI.Button(removeButtonRect, buttonContent, EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
                     RemoveLastBrain();
@@ -100,8 +103,9 @@ namespace MLAgents
             else
             {
                 addButtonRect.width -= 50;
-                if (GUI.Button(addButtonRect, new GUIContent("Add Brain to Broadcast Hub",
-                    "Add a new Brain to the Broadcast Hub"), EditorStyles.miniButton))
+                var buttonContent = new GUIContent("Add Brain to Broadcast Hub",
+                    "Add a new Brain to the Broadcast Hub");
+                if (GUI.Button(addButtonRect, buttonContent, EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
                     AddBrain();

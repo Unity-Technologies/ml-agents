@@ -55,7 +55,6 @@ namespace MLAgents
         /// Contains the mapping from input to discrete actions
         public DiscretePlayerAction[] discretePlayerActions;
 
-
         protected override void Initialize(){ }
         
         /// Uses the continuous inputs or dicrete inputs of the player to 
@@ -70,14 +69,12 @@ namespace MLAgents
                 {
                     var action = new float[brainParameters.vectorActionSize[0]];
                     foreach (KeyContinuousPlayerAction cha in keyContinuousPlayerActions)
+                    {
+                        if (Input.GetKey(cha.key))
                         {
-                            if (Input.GetKey(cha.key))
-                            {
-                                action[cha.index] = cha.value;
-                            }
+                            action[cha.index] = cha.value;
                         }
-    
-
+                    }
                     foreach (AxisContinuousPlayerAction axisAction in axisContinuousPlayerActions)
                     {
                         var axisValue = Input.GetAxis(axisAction.axis);
@@ -103,7 +100,6 @@ namespace MLAgents
                         }
                     }
                     agent.UpdateVectorAction(action);
-
                 }
             }
             agentInfos.Clear();
