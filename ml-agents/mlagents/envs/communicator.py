@@ -2,7 +2,6 @@ import logging
 
 from .communicator_objects import UnityOutput, UnityInput
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mlagents.envs")
 
 
