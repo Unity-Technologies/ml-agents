@@ -178,36 +178,6 @@ namespace MLAgents
         /// <returns>Tensor Array with the expected Tensor outputs</returns>
         private IEnumerable<Tensor> GetOutputTensors()
         {
-//            foreach (var t in _engine.OutputFeatures())
-//            {
-//                if (t.Shape != null)
-//                {
-//                    Debug.Log(t.Name);
-//                    foreach (var n in t.Shape)
-//                        Debug.Log(n);
-//                }
-//            }
-       
-            
-            /*var engineOutputs = _engine.OutputFeatures();
-            
-            
-             foreach (var x in _engine.OutputFeatures())
-            {
-                if ((x.Name == TensorNames.ActionOutput) ||
-                    (x.Name == TensorNames.RecurrentOutOutput) ||
-                    (x.Name == TensorNames.ValueEstimateOutput))
-                {
-                    Debug.Log(x.Name + "  " + x.Shape);
-                    Debug.Log(x.Shape);
-                }
-            }
-            
-            return engineOutputs.Where(x => (x.Name == TensorNames.ActionOutput) ||
-                                            (x.Name == TensorNames.RecurrentOutOutput) ||
-                                            (x.Name == TensorNames.ValueEstimateOutput));*/
-                                            
-            
             var bp = brain.brainParameters;
             var tensorList = new List<Tensor>();
             if (bp.vectorActionSpaceType == SpaceType.continuous)
