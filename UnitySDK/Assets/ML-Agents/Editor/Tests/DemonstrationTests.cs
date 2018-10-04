@@ -9,14 +9,16 @@ namespace MLAgents.Tests
     {
         private const string DemoDirecory = "Assets/Demonstrations/";
         private const string ExtensionType = ".demo";
+        private const string DemoName = "Test";
         
         [Test]
         public void TestSanitization()
         {
             const string dirtyString = "abc123&!@";
+            const string knownCleanString = "abc123";
             var cleanString = DemonstrationRecorder.SanitizeName(dirtyString);
             Assert.AreNotEqual(dirtyString, cleanString);
-            Assert.AreEqual(cleanString, "abc123");
+            Assert.AreEqual(cleanString, knownCleanString);
         }
 
         [Test]
@@ -37,10 +39,10 @@ namespace MLAgents.Tests
                 vectorActionSpaceType = SpaceType.discrete
             };
             
-            demoStore.Initialize("Test", brainParameters, "TestBrain");
+            demoStore.Initialize(DemoName, brainParameters, "TestBrain");
             
             Assert.IsTrue(fileSystem.Directory.Exists(DemoDirecory));
-            Assert.IsTrue(fileSystem.FileExists(DemoDirecory + "Test" + ExtensionType));
+            Assert.IsTrue(fileSystem.FileExists(DemoDirecory + DemoName + ExtensionType));
 
             var agentInfo = new AgentInfo
             {
