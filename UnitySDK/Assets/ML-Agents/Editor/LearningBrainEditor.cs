@@ -16,16 +16,12 @@ namespace MLAgents
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Learning Brain", EditorStyles.boldLabel);
-            
             var brain = (LearningBrain) target;
-            
             var serializedBrain = serializedObject;
             base.OnInspectorGUI();
-
             serializedBrain.Update(); 
             EditorGUILayout.PropertyField(serializedBrain.FindProperty("graphModel"), true);
             serializedBrain.ApplyModifiedProperties();
-            
         }
     }
 }

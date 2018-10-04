@@ -45,10 +45,10 @@ namespace MLAgents
                 var decisionInstance = (CreateInstance(brain.decisionScript.name) as Decision);
                 if (decisionInstance == null)
                 {
-                    brain.decisionScript = null;
                     Debug.LogError(
                         "Instance of " + brain.decisionScript.name + " couldn't be created. " +
                         "The the script class needs to derive from Decision.");
+                    brain.decisionScript = null;
                 }
             }
         }
