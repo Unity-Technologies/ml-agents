@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.IO.Abstractions;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
 using UnityEditor;
@@ -10,14 +11,25 @@ namespace MLAgents
     /// </summary>
     public class DemonstrationStore
     {
+        public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
+        private readonly IFileSystem fileSystem;
         private const string DemoDirecory = "Assets/Demonstrations/";
         private const string ExtensionType = ".demo";
-        public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
 
         private string filePath;
         private DemonstrationMetaData metaData;
         private Stream writer;
         private float cumulativeReward;
+
+        public DemonstrationStore(IFileSystem fileSystem)
+        {
+            this.fileSystem = fileSystem;
+        }
+
+        public DemonstrationStore()
+        {
+            fileSystem = new FileSystem();
+        }
 
         /// <summary>
         /// Initializes the Demonstration Store, and writes initial data.
@@ -36,9 +48,9 @@ namespace MLAgents
         /// </summary>
         private void CreateDirectory()
         {
-            if (!Directory.Exists(DemoDirecory))
+            if (!fileSystem.Directory.Exists(DemoDirecory))
             {
-                Directory.CreateDirectory(DemoDirecory);
+                fileSystem.Directory.CreateDirectory(DemoDirecory);
             }
         }
 
@@ -51,14 +63,14 @@ namespace MLAgents
             var literalName = demonstrationName;
             filePath = DemoDirecory + literalName + ExtensionType;
             var uniqueNameCounter = 0;
-            while (File.Exists(filePath))
+            while (fileSystem.File.Exists(filePath))
             {
                 literalName = demonstrationName + "_" + uniqueNameCounter;
                 filePath = DemoDirecory + literalName + ExtensionType;
                 uniqueNameCounter++;
             }
 
-            writer = File.Create(filePath);
+            writer = fileSystem.File.Create(filePath);
             metaData = new DemonstrationMetaData {demonstrationName = demonstrationName};
             var metaProto = metaData.ToProto();
             metaProto.WriteDelimitedTo(writer);
