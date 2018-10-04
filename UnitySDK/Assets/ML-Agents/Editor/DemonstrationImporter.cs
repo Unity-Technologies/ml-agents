@@ -42,7 +42,6 @@ namespace MLAgents
             Texture2D texture = (Texture2D) 
                 AssetDatabase.LoadAssetAtPath(IconPath, typeof(Texture2D));
 
-
 #if UNITY_2017_3_OR_NEWER
             ctx.AddObjectToAsset(ctx.assetPath, demonstration, texture);
             ctx.SetMainObject(demonstration);
