@@ -268,13 +268,8 @@ namespace MLAgents
                 }
 
                 observationMatrixList.Add(
-<<<<<<< HEAD:UnitySDK/Assets/ML-Agents/Scripts/LearningBrain.cs
-                    BatchVisualObservations(texturesHolder,
-                        brainParameters.cameraResolutions[observationIndex].blackAndWhite));
-=======
                     Utilities.TextureToFloatArray(texturesHolder,
-                        brain.brainParameters.cameraResolutions[observationIndex].blackAndWhite));
->>>>>>> develop:UnitySDK/Assets/ML-Agents/Scripts/CoreBrainInternal.cs
+                        brainParameters.cameraResolutions[observationIndex].blackAndWhite));
             }
 
             // Create the recurrent tensor
