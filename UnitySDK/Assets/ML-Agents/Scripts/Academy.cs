@@ -307,12 +307,9 @@ namespace MLAgents
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                        Batcher.BrainParametersConvertor(
-                            bp,
-                            brain.name,
-                            broadcastHub.IsControlled(brain)
-                            )
+                            bp.ToProto(brain.name, broadcastHub.IsControlled(brain))
                         );
+
                 }
                 
 

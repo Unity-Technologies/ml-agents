@@ -68,7 +68,7 @@ configuration** and a high graphics quality and the timescale to `1.0` for the
 **Inference Configuration** .
 
 **Note:** if you want to observe the environment during training, you can adjust
-the **Inference Configuration** settings to use a larger window and a timescale
+the **Training Configuration** settings to use a larger window and a timescale
 closer to 1:1. Be sure to set these parameters back when training in earnest;
 otherwise, training can take a very long time.
 
@@ -172,7 +172,7 @@ The Ball3DAgent subclass defines the following methods:
   collecting the Agent's observations of the environment. Since the Brain
   instance assigned to the Agent is set to the continuous vector observation
   space with a state size of 8, the `CollectObservations()` must call
-  `AddVectorObs` 8 times.
+  `AddVectorObs` such that  vector size adds up to 8.
 * agent.AgentAction() — Called every simulation step. Receives the action chosen
   by the Brain. The Ball3DAgent example handles both the continuous and the
   discrete action space types. There isn't actually much difference between the

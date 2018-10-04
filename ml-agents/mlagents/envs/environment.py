@@ -7,6 +7,7 @@ import os
 import subprocess
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
+from .utilities import process_pixels
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 
 from .communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto,\
@@ -426,21 +427,6 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
-    @staticmethod
-    def _process_pixels(image_bytes, gray_scale):
-        """
-        Converts byte array observation image into numpy array, re-sizes it, and optionally converts it to grey scale
-        :param image_bytes: input byte array corresponding to image
-        :return: processed numpy array of observation from environment
-        """
-        s = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(s))
-        s = np.array(image) / 255.0
-        if gray_scale:
-            s = np.mean(s, axis=2)
-            s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-        return s
-
     def _get_state(self, output: UnityRLOutput) -> (AllBrainInfo, bool):
         """
         Collects experience information from all external brains in environment at current step.
@@ -452,7 +438,7 @@ class UnityEnvironment(object):
             agent_info_list = output.agentInfos[b].value
             vis_obs = []
             for i in range(self.brains[b].number_visual_observations):
-                obs = [self._process_pixels(x.visual_observations[i],
+                obs = [process_pixels(x.visual_observations[i],
                                             self.brains[b].camera_resolutions[i]['blackAndWhite'])
                     for x in agent_info_list]
                 vis_obs += [np.array(obs)]

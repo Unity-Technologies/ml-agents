@@ -15,7 +15,7 @@ class BCPolicy(Policy):
         :param trainer_parameters: Defined training parameters.
         :param load: Whether a pre-trained model will be loaded or a new one created.
         """
-        super().__init__(seed, brain, trainer_parameters)
+        super(BCPolicy, self).__init__(seed, brain, trainer_parameters)
 
         with self.graph.as_default():
             with self.graph.as_default():
