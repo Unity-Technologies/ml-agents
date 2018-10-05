@@ -307,12 +307,8 @@ namespace MLAgents
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                            bp.ToProto(brain.name, broadcastHub.IsControlled(brain))
-                        );
-
+                        bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
                 }
-                
-
                 academyParameters.EnvironmentParameters =
                     new CommunicatorObjects.EnvironmentParametersProto();
                 foreach (var key in resetParameters.Keys)

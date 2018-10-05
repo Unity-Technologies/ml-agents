@@ -143,7 +143,7 @@ namespace MLAgents
                 {
                     var isTraining = _hub.IsControlled(brain);
                     isTraining = EditorGUI.Toggle(controlRect, isTraining);
-                    _hub.SetTraining(brain, isTraining);
+                    _hub.SetControlled(brain, isTraining);
                 }
                 controlRect.y += LineHeight;
                 if (EditorGUI.EndChangeCheck())

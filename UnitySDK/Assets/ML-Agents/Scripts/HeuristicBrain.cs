@@ -42,7 +42,7 @@ namespace MLAgents
 #endif
         }
         
-        /// Loads the tensorflow graph model to generate a TFGraph object
+        /// <inheritdoc/>
         protected override void Initialize()
         {
             if ((c_decision != null) && decision == null)
@@ -52,18 +52,15 @@ namespace MLAgents
             }
         }
 
-
-        /// Uses the Decision Component to decide that action to take
+        ///Uses the Decision Component to decide that action to take
         protected override void DecideAction()
         {
             base.DecideAction();
-            
             if (decision == null)
             {
                 throw new UnityAgentsException(
                     "The Brain is set to Heuristic, but no decision script attached to it");
             }
-
             foreach (Agent agent in agentInfos.Keys)
             {
                 agent.UpdateVectorAction(decision.Decide(
@@ -74,7 +71,6 @@ namespace MLAgents
                     agentInfos[agent].memories));
 
             }
-
             foreach (Agent agent in agentInfos.Keys)
             {
                 agent.UpdateMemoriesAction(decision.MakeMemory(
@@ -84,7 +80,6 @@ namespace MLAgents
                     agentInfos[agent].done,
                     agentInfos[agent].memories));
             }
-
             agentInfos.Clear();
         }
     }

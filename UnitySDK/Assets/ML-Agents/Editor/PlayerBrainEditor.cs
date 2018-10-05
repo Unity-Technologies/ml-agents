@@ -32,61 +32,75 @@ namespace MLAgents
             serializedBrain.Update();
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
-                GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
-                var keyActionsProp = serializedBrain.FindProperty(KeyContinuousPropName);
-                var axisActionsProp = serializedBrain.FindProperty(AxisContinuousPropName);
-                
-                EditorGUILayout.PropertyField(keyActionsProp , true);
-                EditorGUILayout.PropertyField(axisActionsProp, true);
-                
-                var keyContinuous = brain.keyContinuousPlayerActions;
-                var axisContinuous = brain.axisContinuousPlayerActions;
-                if (keyContinuous == null)
-                {
-                    keyContinuous = new PlayerBrain.KeyContinuousPlayerAction[0];
-                }
-                if (axisContinuous == null)
-                {
-                    axisContinuous = new PlayerBrain.AxisContinuousPlayerAction[0];
-                }
-                foreach (var action in keyContinuous)
-                {
-                    if (action.index >= brain.brainParameters.vectorActionSize[0])
-                    {
-                        EditorGUILayout.HelpBox(
-                            string.Format(
-                                "Key {0} is assigned to index {1} " +
-                                "but the action size is only of size {2}"
-                                , action.key.ToString(), action.index.ToString(), 
-                                brain.brainParameters.vectorActionSize.ToString()), 
-                            MessageType.Error);
-                    }
-                }
-                foreach (var action in axisContinuous)
-                {
-                    if (action.index >= brain.brainParameters.vectorActionSize[0])
-                    {
-                        EditorGUILayout.HelpBox(
-                            string.Format(
-                                "Axis {0} is assigned to index {1} " +
-                                "but the action size is only of size {2}"
-                                , action.axis, action.index.ToString(),
-                                brain.brainParameters.vectorActionSize.ToString()), 
-                            MessageType.Error);
-                    }
-                }
-                GUILayout.Label("You can change axis settings from Edit->Project Settings->Input", 
-                    EditorStyles.helpBox );
+                DrawContinuousKeyMapping(serializedBrain, brain);
             }
             else
             {
-                GUILayout.Label("Edit the discrete inputs for your actions", 
-                    EditorStyles.boldLabel);
-                var dhas = serializedBrain.FindProperty(KeyDiscretePropName);
-                serializedBrain.Update();
-                EditorGUILayout.PropertyField(dhas, true);
+                DrawDiscreteKeyMapping(serializedBrain);
             }
             serializedBrain.ApplyModifiedProperties();
+        } 
+
+        /// <summary>
+        /// Draws the UI for continuous control key mapping to actions.
+        /// </summary>
+        /// <param name="serializedBrain"> The SerializedObject corresponding to the brain. </param>
+        /// <param name="brain"> The Brain of which properties are displayed. </param>
+        private static void DrawContinuousKeyMapping(SerializedObject serializedBrain,
+            PlayerBrain brain)
+        {
+            GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
+            var keyActionsProp = serializedBrain.FindProperty(KeyContinuousPropName);
+            var axisActionsProp = serializedBrain.FindProperty(AxisContinuousPropName);
+            EditorGUILayout.PropertyField(keyActionsProp , true);
+            EditorGUILayout.PropertyField(axisActionsProp, true);
+            var keyContinuous = brain.keyContinuousPlayerActions;
+            var axisContinuous = brain.axisContinuousPlayerActions;
+            var brainParams = brain.brainParameters;
+            if (keyContinuous == null)
+            {
+                keyContinuous = new PlayerBrain.KeyContinuousPlayerAction[0];
+            }
+            if (axisContinuous == null)
+            {
+                axisContinuous = new PlayerBrain.AxisContinuousPlayerAction[0];
+            }
+            foreach (var action in keyContinuous)
+            {
+                if (action.index >= brainParams.vectorActionSize[0])
+                {
+                    EditorGUILayout.HelpBox(
+                        $"Key {action.key.ToString()} is assigned to index " +
+                        $"{action.index.ToString()} but the action size is only of size " +
+                        $"{brainParams.vectorActionSize.ToString()}", 
+                        MessageType.Error);
+                }
+            }
+            foreach (var action in axisContinuous)
+            {
+                if (action.index >= brainParams.vectorActionSize[0])
+                {
+                    EditorGUILayout.HelpBox(
+                        $"Axis {action.axis} is assigned to index {action.index.ToString()} " +
+                        $"but the action size is only of size {brainParams.vectorActionSize}", 
+                        MessageType.Error);
+                }
+            }
+            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input", 
+                EditorStyles.helpBox );
+        }
+
+        /// <summary>
+        /// Draws the UI for discrete control key mapping to actions.
+        /// </summary>
+        /// <param name="serializedBrain"> The SerializedObject corresponding to the brain. </param>
+        private static void DrawDiscreteKeyMapping(SerializedObject serializedBrain)
+        {
+            GUILayout.Label("Edit the discrete inputs for your actions", 
+                EditorStyles.boldLabel);
+            var dhas = serializedBrain.FindProperty(KeyDiscretePropName);
+            serializedBrain.Update();
+            EditorGUILayout.PropertyField(dhas, true);
         }
     }
 }
