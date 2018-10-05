@@ -50,7 +50,7 @@ file, put the file in the same directory as `envs`. For example, if the filename
 of your Unity environment is 3DBall.app, in python, run:
 
 ```python
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 ```
 
@@ -142,6 +142,69 @@ variable named `env` in this example, can be used in the following way:
 - **Close : `env.close()`**
   Sends a shutdown signal to the environment and closes the communication
   socket.
+
+
+## A simple example of random agent
+
+```python
+import sys
+import numpy as np
+
+from mlagents.envs.environment import UnityEnvironment
+
+
+"""The world's simplest agent!"""
+class RandomAgent(object):
+    def __init__(self, action_space):
+        print("Action size="+str(action_space))
+        self.action = np.empty((action_space), dtype=float)
+
+    def act(self, observation, reward, done):
+        for j in range(self.action.shape[0]):
+            self.action[j] = -1.0 + 2.0 * np.random.random_sample()
+        return self.action
+
+
+
+
+if __name__ == '__main__':
+    env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)  # 3DBall executable should exist
+
+    episode_count = 100
+    reward = 0
+    done = False
+
+    brain = env.brains['BrainRoller']       # See brain name in the Unity Editor
+    print("brain="+str(brain))
+    print("number of agents=" + str(len(brain.vector_action_space_size)))
+    print("action space type="+str(brain.vector_action_space_type))
+    print("action space size="+str(brain.vector_action_space_size))
+    print("observation space size=" + str(brain.vector_observation_space_size))
+    print("=================================")
+
+    info = env.reset()
+    agent = RandomAgent(brain.vector_action_space_size)
+
+    agentId = 0            # assume onmy one agent
+    for i in range(episode_count):
+        info = env.reset()
+        gameover = False
+        totalReward = 0
+        while not gameover:
+            brainInfo = info['BrainRoller']
+            action = agent.act( brainInfo.vector_observations[agentId], brainInfo.rewards[agentId], brainInfo.local_done[agentId])
+            totalReward += brainInfo.rewards[agentId]
+            info = env.step(action)
+            brainInfo = info['BrainRoller']
+            gameover = brainInfo.local_done[agentId]
+
+        print("Game over, total reward=" + str(totalReward))
+    env.close()
+
+```
+
+
+
 
 ## mlagents-learn
 
