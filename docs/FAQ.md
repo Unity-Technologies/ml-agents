@@ -20,7 +20,7 @@ ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
 following error message:
 
 ```console
-You need to install and enable the TensorFlowSharp plugin in order to use the Internal Brain.
+You need to install and enable the TensorFlowSharp plugin in order to use the Learning Brain.
 ```
 
 This error message occurs because the TensorFlowSharp plugin won't be usage
@@ -43,28 +43,6 @@ clicking on your Brain Gameobject to let the scene recompile all the changed
 C# scripts, then adding the `CoreBrain` back. Make sure your brain is in
 Internal mode, your TensorFlowSharp plugin is imported and the
 ENABLE_TENSORFLOW flag is set. This fix is only valid locally and unstable.
-
-## Tensorflow epsilon placeholder error
-
-If you have a graph placeholder set in the Internal Brain inspector that is not
-present in the TensorFlow graph, you will see some error like this:
-
-```console
-UnityAgentsException: One of the TensorFlow placeholder could not be found. In brain <some_brain_name>, there are no FloatingPoint placeholder named <some_placeholder_name>.
-```
-
-Solution: Go to all of your Brain object, find `Graph placeholders` and change
-its `size` to 0 to remove the `epsilon` placeholder.
-
-Similarly, if you have a graph scope set in the Internal Brain inspector that is
-not correctly set, you will see some error like this:
-
-```console
-UnityAgentsException: The node <Wrong_Graph_Scope>/action could not be found. Please make sure the graphScope <Wrong_Graph_Scope>/ is correct
-```
-
-Solution: Make sure your Graph Scope field matches the corresponding Brain
-object name in your Hierarchy Inspector when there are multiple Brains.
 
 ## Environment Permission Error
 
@@ -91,8 +69,8 @@ On Windows, you can find
 If you are able to launch the environment from `UnityEnvironment` but then
 receive a timeout error, there may be a number of possible causes.
 
-* _Cause_: There may be no Brains in your environment which are set to
-  `External`.  In this case, the environment will not attempt to communicate
+* _Cause_: There may be no Brains the `Broadcast Hub` of the Academy. 
+  In this case, the environment will not attempt to communicate
   with python. _Solution_: Set the Brains(s) you wish to externally control
   through the Python API to `External` from the Unity Editor, and rebuild the
   environment.

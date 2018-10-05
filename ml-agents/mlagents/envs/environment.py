@@ -7,6 +7,7 @@ import os
 import subprocess
 
 from .brain import BrainInfo, BrainParameters, AllBrainInfo
+from .utilities import process_pixels
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 
 from .communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto,\
@@ -98,14 +99,14 @@ class UnityEnvironment(object):
                     "vectorActionDescriptions": brain_param.vector_action_descriptions,
                     "vectorActionSpaceType": brain_param.vector_action_space_type
                 })
-            if brain_param.brain_type == 2:
+            if brain_param.is_training:
                 self._external_brain_names += [brain_param.brain_name]
         self._num_brains = len(self._brain_names)
         self._num_external_brains = len(self._external_brain_names)
         self._resetParameters = dict(aca_params.environment_parameters.float_parameters) # TODO
         logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
         if self._num_external_brains == 0:
-            logger.warning(" No External Brains found in the Unity Environment. "
+            logger.warning(" No Learning Brains set to train found in the Unity Environment. "
                            "You will not be able to pass actions to your agent(s).")
 
     @property
@@ -223,7 +224,7 @@ class UnityEnvironment(object):
     def __str__(self):
         return '''Unity Academy name: {0}
         Number of Brains: {1}
-        Number of External Brains : {2}
+        Number of Training Brains : {2}
         Reset Parameters :\n\t\t{3}'''.format(self._academy_name, str(self._num_brains),
                                  str(self._num_external_brains),
                                  "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
@@ -426,21 +427,6 @@ class UnityEnvironment(object):
         arr = [float(x) for x in arr]
         return arr
 
-    @staticmethod
-    def _process_pixels(image_bytes, gray_scale):
-        """
-        Converts byte array observation image into numpy array, re-sizes it, and optionally converts it to grey scale
-        :param image_bytes: input byte array corresponding to image
-        :return: processed numpy array of observation from environment
-        """
-        s = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(s))
-        s = np.array(image) / 255.0
-        if gray_scale:
-            s = np.mean(s, axis=2)
-            s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-        return s
-
     def _get_state(self, output: UnityRLOutput) -> (AllBrainInfo, bool):
         """
         Collects experience information from all external brains in environment at current step.
@@ -452,7 +438,7 @@ class UnityEnvironment(object):
             agent_info_list = output.agentInfos[b].value
             vis_obs = []
             for i in range(self.brains[b].number_visual_observations):
-                obs = [self._process_pixels(x.visual_observations[i],
+                obs = [process_pixels(x.visual_observations[i],
                                             self.brains[b].camera_resolutions[i]['blackAndWhite'])
                     for x in agent_info_list]
                 vis_obs += [np.array(obs)]

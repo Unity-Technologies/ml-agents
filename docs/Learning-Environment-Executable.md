@@ -28,15 +28,9 @@ environment:
 ![3DBall Scene](images/mlagents-Open3DBall.png)
 
 Make sure the Brains in the scene have the right type. For example, if you want
-to be able to control your agents from Python, you will need to set the
-corresponding Brain to **External**.
-
-1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
-   object.
-2. Select its child object **Ball3DBrain**.
-3. In the Inspector window, set **Brain Type** to **External**.
-
-![Set Brain to External](images/mlagents-SetExternalBrain.png)
+to be able to control your agents from Python, you will need to put the brain
+controlling the Agents to be a **Learning Brain** and drag it into the
+Academy's `Broadcast Hub` with the `Control`  checkbox checked.
 
 Next, we want the set up scene to play correctly when the training process
 launches our environment executable. This means:
@@ -185,12 +179,12 @@ INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain Ball3DBrain:
         sequence_length:     64
         summary_freq:        1000
         use_recurrent:       False
-        graph_scope:
         summary_path:        ./summaries/first-run-0
         memory_size:         256
         use_curiosity:       False
         curiosity_strength:  0.01
         curiosity_enc_size:  128
+        model_path:	./models/first-run-0/Ball3DBrain
 INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
 INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
 INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
@@ -206,14 +200,14 @@ INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 10000. Mean Reward: 27.2
 You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/<env_name>_<run-identifier>.bytes`, which corresponds
 to your model's latest checkpoint. You can now embed this trained model into
-your Internal Brain by following the steps below:
+your Learning Brain by following the steps below:
 
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
-3. Select the **Ball3DBrain** object from the Scene hierarchy.
-4. Change the **Type of Brain** to **Internal**.
+3. Select the **Ball3DBrain** object from the Project window.
 5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of
-   the Editor to the **Graph Model** placeholder in the **Ball3DBrain**
+   the Editor to the **Model** placeholder in the **Ball3DBrain**
    inspector window.
-6. Press the Play button at the top of the editor.
+6. Remove the **Ball3DBrain** from the Academy's `Broadcast Hub`
+7. Press the Play button at the top of the editor.

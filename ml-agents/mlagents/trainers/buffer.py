@@ -203,7 +203,7 @@ class Buffer(dict):
         """
         self.update_buffer.reset_agent()
 
-    def reset_all(self):
+    def reset_local_buffers(self):
         """
         Resets all the local local_buffers
         """

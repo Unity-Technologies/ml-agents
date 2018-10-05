@@ -14,38 +14,33 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import UnityTrainerException, Trainer
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, brain, reward_buff_cap, trainer_parameters, training, seed, run_id):
+    def __init__(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param sess: Tensorflow session.
-        :param  trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
+        :param load: Whether the model should be loaded.
+        :param seed: The seed the model will be initialized with
+        :param run_id: The The identifier of the current run
         """
-        super(PPOTrainer, self).__init__(sess, brain.brain_name, trainer_parameters, training, run_id)
-
+        super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
-                           'graph_scope', 'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
-                           'curiosity_enc_size']
+                           'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
+                           'curiosity_enc_size', 'model_path']
 
-        for k in self.param_keys:
-            if k not in trainer_parameters:
-                raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
-                                            "brain {1}.".format(k, brain.brain_name))
-
+        self.check_param_keys()
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
-
         self.step = 0
-
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
-                                sess, self.is_training)
+                                self.is_training, load)
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
@@ -311,7 +306,7 @@ class PPOTrainer(Trainer):
         A signal that the Episode has ended. The buffer must be reset. 
         Get only called when the academy resets.
         """
-        self.training_buffer.reset_all()
+        self.training_buffer.reset_local_buffers()
         for agent_id in self.cumulative_rewards:
             self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
@@ -330,7 +325,7 @@ class PPOTrainer(Trainer):
 
     def update_policy(self):
         """
-        Uses training_buffer to update the policy.
+        Uses demonstration_buffer to update the policy.
         """
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []

@@ -10,7 +10,6 @@ from .communicator_objects import UnityMessage, UnityInput, UnityOutput
 from .exception import UnityTimeOutException
 
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mlagents.envs")
 
 
