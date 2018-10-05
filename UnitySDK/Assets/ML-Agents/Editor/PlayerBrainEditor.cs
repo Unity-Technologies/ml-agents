@@ -46,8 +46,8 @@ namespace MLAgents
         /// </summary>
         /// <param name="serializedBrain"> The SerializedObject corresponding to the brain. </param>
         /// <param name="brain"> The Brain of which properties are displayed. </param>
-        private static void DrawContinuousKeyMapping(SerializedObject serializedBrain,
-            PlayerBrain brain)
+        private static void DrawContinuousKeyMapping(
+            SerializedObject serializedBrain, PlayerBrain brain)
         {
             GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
             var keyActionsProp = serializedBrain.FindProperty(KeyContinuousPropName);

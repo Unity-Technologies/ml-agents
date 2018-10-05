@@ -81,8 +81,8 @@ namespace MLAgents
             {
                 addButtonRect.width /= 2;
                 addButtonRect.width -= 24;
-                var buttonContent = new GUIContent("Add New",
-                    "Add a new Brain to the Broadcast Hub");
+                var buttonContent = new GUIContent(
+                    "Add New", "Add a new Brain to the Broadcast Hub");
                 if (GUI.Button(addButtonRect, buttonContent, EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
@@ -92,8 +92,8 @@ namespace MLAgents
                 var removeButtonRect = position;
                 removeButtonRect.x = position.width / 2 + 15;
                 removeButtonRect.width = addButtonRect.width - 18;
-                buttonContent = new GUIContent("Remove Last",
-                    "Remove the last Brain from the Broadcast Hub");
+                buttonContent = new GUIContent(
+                    "Remove Last", "Remove the last Brain from the Broadcast Hub");
                 if (GUI.Button(removeButtonRect, buttonContent, EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();
@@ -103,8 +103,8 @@ namespace MLAgents
             else
             {
                 addButtonRect.width -= 50;
-                var buttonContent = new GUIContent("Add Brain to Broadcast Hub",
-                    "Add a new Brain to the Broadcast Hub");
+                var buttonContent = new GUIContent(
+                    "Add Brain to Broadcast Hub", "Add a new Brain to the Broadcast Hub");
                 if (GUI.Button(addButtonRect, buttonContent, EditorStyles.miniButton))
                 {
                     MarkSceneAsDirty();

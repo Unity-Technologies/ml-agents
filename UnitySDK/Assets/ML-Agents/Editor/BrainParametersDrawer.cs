@@ -257,8 +257,7 @@ namespace MLAgents
             EditorGUI.PropertyField(
                 position,
                 continuousActionSize,
-                new GUIContent("Space Size",
-                    "Length of continuous action vector."));
+                new GUIContent("Space Size", "Length of continuous action vector."));
         }
         
         /// <summary>
@@ -271,9 +270,7 @@ namespace MLAgents
         {
             var vecActionSize = property.FindPropertyRelative(ActionSizePropName);
             vecActionSize.arraySize = EditorGUI.IntField(
-                position,
-                "Branches Size",
-                vecActionSize.arraySize);
+                position, "Branches Size", vecActionSize.arraySize);
             position.y += LineHeight;
             position.x += 20;
             position.width -= 20;
@@ -287,10 +284,8 @@ namespace MLAgents
                 EditorGUI.PropertyField(
                     position,
                     branchActionSize,
-                    new GUIContent(
-                        "Branch " + branchIndex + " Size",
-                        "Number of possible actions for the " +
-                        "branch number " + branchIndex + "."));
+                    new GUIContent("Branch " + branchIndex + " Size",
+                        "Number of possible actions for the branch number " + branchIndex + "."));
                 position.y += LineHeight;
             }
         }
@@ -339,10 +334,9 @@ namespace MLAgents
                 EditorGUI.PropertyField(
                     position,
                     vecActionDescriptions,
-                    new GUIContent(
-                        "Action Descriptions",
-                        "A list of strings used to name the available actions " +
-                        "for the Brain."), true);
+                    new GUIContent("Action Descriptions",
+                        "A list of strings used to name the available actionsm for the Brain."), 
+                    true);
                 position.y += LineHeight;
             }
             else
@@ -352,8 +346,8 @@ namespace MLAgents
                     position,
                     vecActionDescriptions,
                     new GUIContent("Branch Descriptions",
-                        "A list of strings used to name the available branches " +
-                        "for the Brain."), true);
+                        "A list of strings used to name the available branches for the Brain."), 
+                    true);
                 position.y += LineHeight;
             }
         }

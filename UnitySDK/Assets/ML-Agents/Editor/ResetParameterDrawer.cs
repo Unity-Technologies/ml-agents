@@ -105,8 +105,8 @@ namespace MLAgents
             }
             // This is the Remove button
             if (GUI.Button(removeRect, 
-                new GUIContent("Remove Last", 
-                    "Remove the last item from the default reset parameters"), 
+                new GUIContent(
+                    "Remove Last", "Remove the last item from the default reset parameters"), 
                 EditorStyles.miniButton))
             {
                 MarkSceneAsDirty();
