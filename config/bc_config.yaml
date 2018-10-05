@@ -7,6 +7,7 @@ default:
     max_steps: 5.0e4
     memory_size: 256
     batches_per_epoch: 10
+    time_horizon: 64
     num_epoch: 5
     num_layers: 2
     summary_freq: 1000
