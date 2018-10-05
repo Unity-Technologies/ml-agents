@@ -33,7 +33,7 @@ namespace MLAgents.Tests
             {
                 vectorObservationSize = 3,
                 numStackedVectorObservations = 2,
-                cameraResolutions = new [] {new resolution()},
+                cameraResolutions = new [] {new Resolution()},
                 vectorActionDescriptions = new [] {"TestActionA", "TestActionB"},
                 vectorActionSize = new [] {2, 2},
                 vectorActionSpaceType = SpaceType.discrete

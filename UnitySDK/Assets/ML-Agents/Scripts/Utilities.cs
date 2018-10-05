@@ -69,5 +69,24 @@ namespace MLAgents
             System.Buffer.BlockCopy(resultTemp, 0, result, 0, batchSize * hwp * sizeof(float));
             return result;
         }
+        
+        
+        /// <summary>
+        /// Calculates the cumulative sum of an integer array. The result array will be one element
+        /// larger than the input array since it has a padded 0 at the begining.
+        /// If the input is [a, b, c], the result will be [0, a, a+b, a+b+c]
+        /// </summary>
+        /// <returns> The cumulative sum of the input array.</returns>
+        public static int[] CumSum(int [] array)
+        {
+            var runningSum = 0;
+            var result = new int[array.Length + 1];
+            for (var actionIndex = 0; actionIndex < array.Length; actionIndex++)
+            {
+                runningSum += array[actionIndex];
+                result[actionIndex + 1] = runningSum;
+            }
+            return result;
+        }
     }
 }
