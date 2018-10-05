@@ -93,24 +93,6 @@ namespace MLAgents.InferenceBrain
                 agentIndex++;
             }
         }
-
-        /// <summary>
-        /// Generates an array containing the starting indicies of each branch in the vector action
-        /// Makes a cumulative sum.
-        /// </summary>
-        /// <returns></returns>
-        private static int[] CreateActionStartinIndices(int[] vectorActionSize)
-        {
-            var runningSum = 0;
-            var result = new int[vectorActionSize.Length + 1];
-            for (var actionIndex = 0;
-                actionIndex < vectorActionSize.Length; actionIndex++)
-            {
-                runningSum += vectorActionSize[actionIndex];
-                result[actionIndex + 1] = runningSum;
-            }
-            return result;
-        }
        
         /// <summary>
         /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
@@ -131,7 +113,7 @@ namespace MLAgents.InferenceBrain
             var tensorDataProbabilities = tensor.Data as float[,];
             var batchSize = agentInfo.Keys.Count;
             var actions = new float[batchSize, actionSize.Length];
-            var startActionIndices = CreateActionStartinIndices(actionSize);
+            var startActionIndices = Utilities.CumSum(actionSize);
             for (var actionIndex=0; actionIndex < actionSize.Length; actionIndex++)
             {
                 var nBranchAction = startActionIndices[actionIndex + 1] -
