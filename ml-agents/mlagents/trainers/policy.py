@@ -165,7 +165,7 @@ class Policy(object):
 
     def export_model(self):
         """
-        Exports latest saved model to .bytes format for Unity embedding.
+        Exports latest saved model to .tf format for Unity embedding.
         """
         with self.graph.as_default():
             target_nodes = ','.join(self._process_graph())
@@ -175,7 +175,7 @@ class Policy(object):
                 input_binary=True,
                 input_checkpoint=ckpt.model_checkpoint_path,
                 output_node_names=target_nodes,
-                output_graph=(self.model_path + '.bytes'),
+                output_graph=(self.model_path + '.tf'),
                 clear_devices=True, initializer_nodes='', input_saver='',
                 restore_op_name='save/restore_all',
                 filename_tensor_name='save/Const:0')
