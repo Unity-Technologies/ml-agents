@@ -71,7 +71,7 @@ namespace MLAgents
         /// Is used by the academy to send the AcademyParameters to the communicator.
         /// </summary>
         /// <returns>The External Initialization Parameters received.</returns>
-        /// <param name="academyParameters">The Unity Initialization Paramters to be sent.</param>
+        /// <param name="academyParameters">The Unity Initialization Parameters to be sent.</param>
         public CommunicatorObjects.UnityRLInitializationInput SendAcademyParameters(
             CommunicatorObjects.UnityRLInitializationOutput academyParameters)
         {

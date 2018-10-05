@@ -52,12 +52,17 @@ to speed up training since all twelve agents contribute to training in parallel.
 
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
-properties that control how the environment works. For example, the **Training**
-and **Inference Configuration**  properties set the graphics and timescale
-properties for the Unity application. The Academy uses the **Training
-Configuration**  during training and the **Inference Configuration** when not
-training. (*Inference* means that the Agent is using a trained model or
-heuristics or direct control — in other words, whenever **not** training.)
+properties that control how the environment works. 
+The **Broadcast Hub** keeps track of which brains will send data during training,
+If a brain is added to the hub, his data will be sent to the external training
+process. If the `Control` checkbox is checked, the training process will be able to
+control the agents linked to the brain to train them.
+The **Training** and **Inference Configuration** properties 
+set the graphics and timescale properties for the Unity application. 
+The Academy uses the **Training Configuration**  during training and the
+**Inference Configuration** when not training. (*Inference* means that the 
+Agent is using a trained model or heuristics or direct control — in other 
+words, whenever **not** training.)
 Typically, you set low graphics quality and a high time scale for the **Training
 configuration** and a high graphics quality and the timescale to `1.0` for the
 **Inference Configuration** .
@@ -83,27 +88,28 @@ environment around the Agents.
 
 ### Brain
 
-The Ball3DBrain GameObject in the scene, which contains a Brain component, is a
-child of the Academy object. (All Brain objects in a scene must be children of
-the Academy.) All the Agents in the 3D Balance Ball environment use the same
-Brain instance. A Brain doesn't store any information about an Agent, it just
+Brains are assets that exist in your project folder. The Ball3DAgents are connected
+to a brain, for example : the **Ball3DBrain**.
+A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
 returns the chosen action to the Agent. Thus, all Agents can share the same
 Brain, but act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
-The **Brain Type** determines how an Agent makes its decisions. The **External**
-and **Internal** types work together — use **External** when training your
-Agents; use **Internal** when using the trained model. The **Heuristic** Brain
-allows you to hand-code the Agent's logic by extending the Decision class.
+You can create brain objects by selecting `Assets -> 
+Create -> ML-Agents -> Brain`. There are 3 kinds of brains :
+The **Learning Brain** is a brain that uses a Neural Network to take decisions.
+When the Brain is checked as `Control` in the Academy **Broadcast Hub**, the 
+external process will be taking decisions for the agents
+and generate a neural network when the training is over. You can also use the
+**Learning Brain** with a pre-trained model.
+The **Heuristic** Brain allows you to hand-code the Agent's logic by extending
+the Decision class.
 Finally, the **Player** Brain lets you map keyboard commands to actions, which
 can be useful when testing your agents and environment. If none of these types
-of Brains do what you need, you can implement your own CoreBrain to create your
-own type.
+of Brains do what you need, you can implement your own Brain.
 
-In this tutorial, you will set the **Brain Type** to **External** for training;
-when you embed the trained model in the Unity application, you will change the
-**Brain Type** to **Internal**.
+In this tutorial, you will use a **Learning Brain** for training.
 
 #### Vector Observation Space
 
@@ -264,17 +270,17 @@ From TensorBoard, you will see the summary statistics:
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with Agents having an **Internal** Brain type. **Note:** Do not just
-close the Unity Window once the `Saved Model` message appears. Either wait for
-the training process to close the window or press Ctrl+C at the command-line
-prompt. If you simply close the window manually, the .bytes file containing the
-trained model is not exported into the ml-agents folder.
+use it with Agents having a **Learning Brain**.
+__Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
+Either wait for the training process to close the window or press Ctrl+C at the 
+command-line prompt. If you simply close the window manually, the .bytes file 
+containing the trained model is not exported into the ml-agents folder.
 
 ### Setting up TensorFlowSharp Support
 
 Because TensorFlowSharp support is still experimental, it is disabled by
 default. In order to enable it, you must follow these steps. Please note that
-the `Internal` Brain mode will only be available once completing these steps.
+the `Learning` Brain mode will only be available once completing these steps.
 
 To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
 within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the

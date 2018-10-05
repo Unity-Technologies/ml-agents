@@ -581,7 +581,7 @@ namespace MLAgents
                     "Vector Observation size mismatch between continuous " +
                     "agent {0} and brain {1}. " +
                     "Was Expecting {2} but received {3}. ",
-                    gameObject.name, brain.gameObject.name,
+                    gameObject.name, brain.name,
                     brain.brainParameters.vectorObservationSize,
                     info.vectorObservation.Count));
             }
@@ -596,7 +596,7 @@ namespace MLAgents
                 throw new UnityAgentsException(string.Format(
                     "Not enough cameras for agent {0} : Bain {1} expecting at " +
                     "least {2} cameras but only {3} were present.",
-                    gameObject.name, brain.gameObject.name,
+                    gameObject.name, brain.name,
                     brain.brainParameters.cameraResolutions.Length,
                     agentParameters.agentCameras.Count));
             }

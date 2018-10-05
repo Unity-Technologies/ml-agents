@@ -45,17 +45,20 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
 
 ## Running a Pre-trained Model
 
-1. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall` folder
+1. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Scenes` folder
    and open the `3DBall` scene file.
-2. In the **Hierarchy** window, select the **Ball3DBrain** child under the
-   **Ball3DAcademy** GameObject to view its properties in the Inspector window.
-3. On the **Ball3DBrain** object's **Brain** component, change the **Brain
-   Type** to **Internal**.
-4. In the **Project** window, locate the
-   `Assets/ML-Agents/Examples/3DBall/TFModels` folder.
-5. Drag the `3DBall` model file from the `TFModels` folder to the **Graph
-   Model** field of the **Ball3DBrain** object's **Brain** component.
-6. Click the **Play** button and you will see the platforms balance the balls
+2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder
+   and select the `Game/Platform` prefab.
+3. In the `Ball 3D Agent` Component: Drag the **Ball3DBrain** located into 
+   `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
+   the `Ball 3D Agent`.
+4. Make sure that all of the Agents in the Scene now have **Ball3DBrain** as `Brain`.
+   __Note__ : You can modify multiple game objects in a scene by selecting them all at once using the search bar in the Scene Hierarchy. 
+5. In the **Project** window, locate the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+   folder.
+6. Drag the `3DBall` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+   folder to the **Model** field of the **Ball3DBrain**.
+7. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
 ![Running a pretrained model](images/running-a-pretrained-model.gif)
@@ -74,18 +77,18 @@ More information and documentation is provided in the
 
 ## Training the Brain with Reinforcement Learning
 
-### Setting the Brain to External
+### Adding a Brain to the training session
 
-Since we are going to build this environment to conduct training, we need to set
-the Brain used by the Agents to **External**. This allows the Agents to
-communicate with the external training process when making their decisions.
+Since we are going to build this environment to conduct training, we need to add 
+the Brain to the training session. This allows the Agents linked to that Brain
+to communicate with the external training process when making their decisions.
 
-1. In the **Scene** window, click the triangle icon next to the Ball3DAcademy
-   object.
-2. Select its child object **Ball3DBrain**.
-3. In the Inspector window, set **Brain Type** to **External**.
+1. Assign the **Ball3DBrain** to the agents you would like to train. 
+   __Note:__ You can only perform training with an `Learning Brain`.
+2. Select the **Ball3DAcademy** GameObject and add the **Ball3DBrain**
+   to the Broadcast Hub and toggle the `Control` checkbox.
 
-![Set Brain to External](images/mlagents-SetExternalBrain.png)
+![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 
 ### Training the environment
 
@@ -216,15 +219,14 @@ You can press Ctrl+C to stop the training, and your trained model will be at
 `models/<run-identifier>/editor_<academy_name>_<run-identifier>.bytes` where
 `<academy_name>` is the name of the Academy GameObject in the current scene.
 This file corresponds to your model's latest checkpoint. You can now embed this
-trained model into your Internal Brain by following the steps below, which is
+trained model into your Learning Brain by following the steps below, which is
 similar to the steps described
 [above](#play-an-example-environment-using-pretrained-model).
 
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
-3. Select the **Ball3DBrain** object from the Scene hierarchy.
-4. Change the **Type of Brain** to **Internal**.
+3. Select the  **Ball3DBrain** Learning Brain from the Scene hierarchy.
 5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of
    the Editor to the **Graph Model** placeholder in the **Ball3DBrain**
    inspector window.

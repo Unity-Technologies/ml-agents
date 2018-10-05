@@ -92,6 +92,9 @@ namespace MLAgents
              "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
+        [SerializeField] 
+        public BroadcastHub broadcastHub = new BroadcastHub();
+        
         private const string kApiVersion = "API-5";
 
         // Fields provided in the Inspector
@@ -248,16 +251,22 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
-            // Retrieve Brain and initialize Academy
-            var brains = GetBrains(gameObject);
             InitializeAcademy();
-            MLAgents.Communicator communicator = null;
+            Communicator communicator = null;
 
+            var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();;
+            var controlledBrains = broadcastHub.broadcastingBrains.Where(
+                x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
+            foreach (LearningBrain brain in controlledBrains)
+            {
+                brain.SetToControlledExternally();
+            }
+            
             // Try to launch the communicator by usig the arguments passed at launch
             try
             {
-                communicator = new MLAgents.RPCCommunicator(
-                    new MLAgents.CommunicatorParameters
+                communicator = new RPCCommunicator(
+                    new CommunicatorParameters
                     {
                         port = ReadArgs()
                     });
@@ -269,11 +278,10 @@ namespace MLAgents
             catch
             {
                 communicator = null;
-                var externalBrain = brains.FirstOrDefault(b => b.brainType == BrainType.External);
-                if (externalBrain != null)
+                if (controlledBrains.ToList().Count > 0)
                 {
-                    communicator = new MLAgents.RPCCommunicator(
-                        new MLAgents.CommunicatorParameters
+                    communicator = new RPCCommunicator(
+                        new CommunicatorParameters
                         {
                             port = 5005
                         });
@@ -282,10 +290,9 @@ namespace MLAgents
 
             brainBatcher = new Batcher(communicator);
 
-            // Initialize Brains and communicator (if present)
-            foreach (var brain in brains)
+            foreach (var trainingBrain in exposedBrains)
             {
-                brain.InitializeBrain(this, brainBatcher);
+                trainingBrain.SetBatcher(brainBatcher);
             }
 
             if (communicator != null)
@@ -296,19 +303,14 @@ namespace MLAgents
                     new CommunicatorObjects.UnityRLInitializationOutput();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = kApiVersion;
-                foreach (var brain in brains)
+                foreach (var brain in exposedBrains)
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                        bp.ToProto(
-                            brain.gameObject.name,
-                            (CommunicatorObjects.BrainTypeProto)
-                            brain.brainType));
+                        bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
                 }
-                
-
                 academyParameters.EnvironmentParameters =
-                    new MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+                    new CommunicatorObjects.EnvironmentParametersProto();
                 foreach (var key in resetParameters.Keys)
                 {
                     academyParameters.EnvironmentParameters.FloatParameters.Add(
@@ -536,7 +538,7 @@ namespace MLAgents
             {
                 lastCommunicatorMessageNumber = brainBatcher.GetNumberMessageReceived();
                 if (brainBatcher.GetCommand() ==
-                    MLAgents.CommunicatorObjects.CommandProto.Reset)
+                    CommunicatorObjects.CommandProto.Reset)
                 {
                     UpdateResetParameters();
 
@@ -546,7 +548,7 @@ namespace MLAgents
                 }
 
                 if (brainBatcher.GetCommand() ==
-                    MLAgents.CommunicatorObjects.CommandProto.Quit)
+                    CommunicatorObjects.CommandProto.Quit)
                 {
 #if UNITY_EDITOR
                     EditorApplication.isPlaying = false;
@@ -607,33 +609,6 @@ namespace MLAgents
         void FixedUpdate()
         {
             EnvironmentStep();
-        }
-
-        /// <summary>
-        /// Helper method that retrieves the Brain objects that are currently
-        /// specified as children of the Academy within the Editor.
-        /// </summary>
-        /// <param name="academy">Academy.</param>
-        /// <returns>
-        /// List of brains currently attached to academy.
-        /// </returns>
-        static List<Brain> GetBrains(GameObject academy)
-        {
-            List<Brain> brains = new List<Brain>();
-            var transform = academy.transform;
-
-            for (var i = 0; i < transform.childCount; i++)
-            {
-                var child = transform.GetChild(i);
-                var brain = child.GetComponent<Brain>();
-
-                if (brain != null && child.gameObject.activeSelf)
-                {
-                    brains.Add(brain);
-                }
-            }
-
-            return brains;
         }
     }
 }
