@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using UnityEngine.MachineLearning.InferenceEngine;
 
 namespace MLAgents
 {
