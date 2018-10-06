@@ -192,7 +192,7 @@ algorithm for use with ML-Agents toolkit. For more information on PPO, OpenAI
 has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it.
 
-To train the agents within the Ball Balance environment, we will be using the
+Before we get into training, you need to have your environment setup, and the ml-agents python package installed. If you have not done so already, follow [this guide](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Installation.md) to setup your environment. Then, To train the agents within the Ball Balance environment, we will be using the
 Python package. We have provided a convenient script called `mlagents-learn`
 which accepts arguments used to configure both training and inference phases.
 
