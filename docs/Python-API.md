@@ -50,7 +50,7 @@ file, put the file in the same directory as `envs`. For example, if the filename
 of your Unity environment is 3DBall.app, in python, run:
 
 ```python
-from mlagents.env import UnityEnvironment
+from mlagents.envs import UnityEnvironment
 env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 ```
 
