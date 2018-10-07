@@ -56,8 +56,7 @@ ML-Agents 是一个开源项目，我们鼓励并欢迎大家贡献自己的力�
 [贡献准则](/CONTRIBUTING.md)和
 [行为准则](/CODE_OF_CONDUCT.md)。
 
-您可以通过 Unity Connect 和 GitHub 与我们
-以及更广泛的社区进行交流：
+您可以通过 Unity Connect 和 GitHub 与我们以及更广泛的社区进行交流：
 * 加入我们的 
 [Unity 机器学习频道](https://connect.unity.com/messages/c/035fba4f88400000)
 与使用 ML-Agents 的其他人以及对机器学习充满热情的 Unity 开发者
@@ -68,7 +67,7 @@ ML-Agents 是一个开源项目，我们鼓励并欢迎大家贡献自己的力�
 确保提供尽可能多的详细信息。
 
 对于任何其他问题或反馈，请直接与 ML-Agents 团队联系，
-地址为 ml-agents@unity3d.com。
+电子邮件地址为 ml-agents@unity3d.com。
 
 ## 许可证
 
