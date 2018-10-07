@@ -1,84 +1,66 @@
-# # Unity ML Agents
+# # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (PPO)
-# Contains an implementation of PPO as described [here](https://arxiv.org/abs/1707.06347).
+# Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
 
 import logging
 import os
+from collections import deque
 
 import numpy as np
 import tensorflow as tf
 
-from unityagents import AllBrainInfo
-from unitytrainers.buffer import Buffer
-from unitytrainers.mappo.models import MAPPOModel
-from unitytrainers.trainer import UnityTrainerException, Trainer
+from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.trainer import UnityTrainerException, Trainer
 
-logger = logging.getLogger("unityagents")
+logger = logging.getLogger("mlagents.envs")
 
 
-class MAPPOTrainer(Trainer):
-    """The MAPPOTrainer is an implementation of the MAPPO algorythm."""
+class PPOTrainer(Trainer):
+    """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, sess, env, brain_name, trainer_parameters, training, seed):
+    def __init__(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param sess: Tensorflow session.
-        :param env: The UnityEnvironment.
-        :param  trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
+        :param load: Whether the model should be loaded.
+        :param seed: The seed the model will be initialized with
+        :param run_id: The The identifier of the current run
         """
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
-                           'learning_rate',
-                           'max_steps', 'normalize', 'num_epoch', 'num_layers', 'time_horizon', 'sequence_length',
-                           'summary_freq',
-                           'use_recurrent', 'graph_scope', 'summary_path', 'memory_size']
+                           'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
+                           'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
+                           'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
+                           'curiosity_enc_size', 'model_path', 'n_agents']
 
         for k in self.param_keys:
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
-                                            "brain {1}.".format(k, brain_name))
+                                            "brain {1}.".format(k, brain.brain_name))
+        super(PPOTrainer, self).__init__(brain.brain_name, trainer_parameters, training, run_id)
 
-        super(MAPPOTrainer, self).__init__(sess, env, brain_name, trainer_parameters, training)
+        self.use_curiosity = bool(trainer_parameters['use_curiosity'])
 
-        self.use_recurrent = trainer_parameters["use_recurrent"]
-        self.sequence_length = 1
-        self.m_size = None
-        if self.use_recurrent:
-            self.m_size = trainer_parameters["memory_size"]
-            self.sequence_length = trainer_parameters["sequence_length"]
-        if self.use_recurrent:
-            if self.m_size == 0:
-                raise UnityTrainerException("The memory size for brain {0} is 0 even though the trainer uses recurrent."
-                                            .format(brain_name))
-            elif self.m_size % 4 != 0:
-                raise UnityTrainerException("The memory size for brain {0} is {1} but it must be divisible by 4."
-                                            .format(brain_name, self.m_size))
+        self.step = 0
 
-        self.variable_scope = trainer_parameters['graph_scope']
-        with tf.variable_scope(self.variable_scope):
-            tf.set_random_seed(seed)
-            self.model = MAPPOModel(env.brains[brain_name],
-                                  lr=float(trainer_parameters['learning_rate']),
-                                  h_size=int(trainer_parameters['hidden_units']),
-                                  epsilon=float(trainer_parameters['epsilon']),
-                                  beta=float(trainer_parameters['beta']),
-                                  max_step=float(trainer_parameters['max_steps']),
-                                  normalize=trainer_parameters['normalize'],
-                                  use_recurrent=trainer_parameters['use_recurrent'],
-                                  num_layers=int(trainer_parameters['num_layers']),
-                                  m_size=self.m_size,
-                                  n_brain=len(env.brains))
+        self.policy = PPOPolicy(seed, brain, trainer_parameters,
+                                self.is_training, load)
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
                  'entropy': [], 'value_loss': [], 'policy_loss': [], 'learning_rate': []}
+        if self.use_curiosity:
+            stats['forward_loss'] = []
+            stats['inverse_loss'] = []
+            stats['intrinsic_reward'] = []
+            self.intrinsic_rewards = {}
         self.stats = stats
-        self.n_brains = len(env.brains)
+
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
+        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
-        self.is_continuous = (env.brains[brain_name].vector_action_space_type == "continuous")
-        self.use_observations = (env.brains[brain_name].number_visual_observations > 0)
-        self.use_states = (env.brains[brain_name].vector_observation_space_size > 0)
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
@@ -86,7 +68,7 @@ class MAPPOTrainer(Trainer):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
     def __str__(self):
-        return '''Hypermarameters for the PPO Trainer of brain {0}: \n{1}'''.format(
+        return '''Hyperparameters for the PPO Trainer of brain {0}: \n{1}'''.format(
             self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
@@ -95,13 +77,6 @@ class MAPPOTrainer(Trainer):
         Returns the trainer parameters of the trainer.
         """
         return self.trainer_parameters
-
-    @property
-    def graph_scope(self):
-        """
-        Returns the graph scope of the trainer.
-        """
-        return self.variable_scope
 
     @property
     def get_max_steps(self):
@@ -117,138 +92,99 @@ class MAPPOTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.sess.run(self.model.global_step)
+        return self.step
 
     @property
-    def get_last_reward(self):
+    def reward_buffer(self):
         """
-        Returns the last reward the trainer has had
-        :return: the new last reward
+        Returns the reward buffer. The reward buffer contains the cumulative
+        rewards of the most recent episodes completed by agents using this
+        trainer.
+        :return: the reward buffer.
         """
-        return self.sess.run(self.model.last_reward)
+        return self._reward_buffer
 
-    def increment_step(self):
+    def increment_step_and_update_last_reward(self):
         """
-        Increment the step count of the trainer
-        """
-        self.sess.run(self.model.increment_step)
-
-    def update_last_reward(self):
-        """
-        Updates the last reward
+        Increment the step count of the trainer and Updates the last reward
         """
         if len(self.stats['cumulative_reward']) > 0:
             mean_reward = np.mean(self.stats['cumulative_reward'])
-            self.sess.run(self.model.update_reward, feed_dict={self.model.new_reward: mean_reward})
-
-    def running_average(self, data, steps, running_mean, running_variance):
-        """
-        Computes new running mean and variances.
-        :param data: New piece of data.
-        :param steps: Total number of data so far.
-        :param running_mean: TF op corresponding to stored running mean.
-        :param running_variance: TF op corresponding to stored running variance.
-        :return: New mean and variance values.
-        """
-        mean, var = self.sess.run([running_mean, running_variance])
-        current_x = np.mean(data, axis=0)
-        new_mean = mean + (current_x - mean) / (steps + 1)
-        new_variance = var + (current_x - new_mean) * (current_x - mean)
-        return new_mean, new_variance
+            self.policy.update_reward(mean_reward)
+        self.policy.increment_step()
+        self.step = self.policy.get_current_step()
 
     def take_action(self, all_brain_info: AllBrainInfo):
         """
-        Decides actions given state/observation information, and takes them in environment.
+        Decides actions given observations information, and takes them in environment.
         :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
         :return: a tuple containing action, memories, values and an object
         to be passed to add experiences
         """
-        steps = self.get_step
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
-            return [], [], [], None
-        feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations), self.model.sequence_length: 1}
-        run_list = [self.model.output, self.model.all_probs, self.model.entropy,
-                    self.model.learning_rate]
-        if self.is_continuous:
-            run_list.append(self.model.epsilon)
-        elif self.use_recurrent:
-            feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
-        if self.use_observations:
-            for i, _ in enumerate(curr_brain_info.visual_observations):
-                feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
-        if self.use_states:
-            feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
-        if self.use_recurrent:
-            if curr_brain_info.memories.shape[1] == 0:
-                curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
-            feed_dict[self.model.memory_in] = curr_brain_info.memories
-            run_list += [self.model.memory_out]
-        if (self.is_training and self.brain.vector_observation_space_type == "continuous" and
-                self.use_states and self.trainer_parameters['normalize']):
-            new_mean, new_variance = self.running_average(
-                curr_brain_info.vector_observations, steps, self.model.running_mean, self.model.running_variance)
-            feed_dict[self.model.new_mean] = new_mean
-            feed_dict[self.model.new_variance] = new_variance
-            run_list = run_list + [self.model.update_mean, self.model.update_variance]
-        values = self.sess.run(run_list, feed_dict=feed_dict)
-        run_out = dict(zip(run_list, values))
-        self.stats['entropy'].append(run_out[self.model.entropy].mean())
-        self.stats['learning_rate'].append(run_out[self.model.learning_rate])
-        if self.use_recurrent:
-            return (run_out[self.model.output],
-                    run_out[self.model.memory_out],
-                    None,
-                    run_out)
+            return [], [], [], None, None
+
+        run_out = self.policy.evaluate(curr_brain_info)
+        #self.stats['value_estimate'].append(run_out['value'].mean())
+        self.stats['entropy'].append(run_out['entropy'].mean())
+        self.stats['learning_rate'].append(run_out['learning_rate'])
+        if self.policy.use_recurrent:
+            return run_out['action'], run_out['memory_out'], None, \
+                   run_out
         else:
-            return (run_out[self.model.output],
-                    None,
-                    None,
-                    run_out)
+            return run_out['action'], None, None, run_out
 
     def simulate_action(self, all_brain_info: AllBrainInfo):
-        """
-        Decides actions given state/observation information, and takes them in environment.
-        :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
-        :return: a tuple containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        steps = self.get_step
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
-            return [], [], [], None
-        feed_dict = {self.model.batch_size: len(curr_brain_info.vector_observations), self.model.sequence_length: 1}
-        run_list = [self.model.output]
-        if self.is_continuous:
-            run_list.append(self.model.epsilon)
-        elif self.use_recurrent:
-            feed_dict[self.model.prev_action] = np.reshape(curr_brain_info.previous_vector_actions, [-1])
-        if self.use_observations:
-            for i, _ in enumerate(curr_brain_info.visual_observations):
-                feed_dict[self.model.visual_in[i]] = curr_brain_info.visual_observations[i]
-        if self.use_states:
-            feed_dict[self.model.vector_in] = curr_brain_info.vector_observations
-        if self.use_recurrent:
-            if curr_brain_info.memories.shape[1] == 0:
-                curr_brain_info.memories = np.zeros((len(curr_brain_info.agents), self.m_size))
-            feed_dict[self.model.memory_in] = curr_brain_info.memories
-            run_list += [self.model.memory_out]
-        if (self.is_training and self.brain.vector_observation_space_type == "continuous" and
-                self.use_states and self.trainer_parameters['normalize']):
-            new_mean, new_variance = self.running_average(
-                curr_brain_info.vector_observations, steps, self.model.running_mean, self.model.running_variance)
-            feed_dict[self.model.new_mean] = new_mean
-            feed_dict[self.model.new_variance] = new_variance
-            run_list = run_list + [self.model.update_mean, self.model.update_variance]
-        values = self.sess.run(run_list, feed_dict=feed_dict)
-        run_out = dict(zip(run_list, values))
-        if self.use_recurrent:
-            return (run_out[self.model.output],
-                    run_out[self.model.memory_out],
-                    None,
-                    run_out)
-        else:
-            return run_out[self.model.output]
+            return [], [], [], None, None
+        run_out = self.policy.evaluate(curr_brain_info)
+        return run_out['action']
+
+    def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
+        """
+        Constructs a BrainInfo which contains the most recent previous experiences for all agents info
+        which correspond to the agents in a provided next_info.
+        :BrainInfo next_info: A t+1 BrainInfo.
+        :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
+        """
+        visual_observations = [[]]
+        vector_observations = []
+        text_observations = []
+        memories = []
+        rewards = []
+        local_dones = []
+        max_reacheds = []
+        agents = []
+        prev_vector_actions = []
+        prev_text_actions = []
+        for agent_id in next_info.agents:
+            agent_brain_info = self.training_buffer[agent_id].last_brain_info
+            if agent_brain_info is None:
+                agent_brain_info = next_info
+            agent_index = agent_brain_info.agents.index(agent_id)
+            for i in range(len(next_info.visual_observations)):
+                visual_observations[i].append(agent_brain_info.visual_observations[i][agent_index])
+            vector_observations.append(agent_brain_info.vector_observations[agent_index])
+            text_observations.append(agent_brain_info.text_observations[agent_index])
+            if self.policy.use_recurrent:
+                if len(agent_brain_info.memories > 0):
+                    memories.append(agent_brain_info.memories[agent_index])
+                else:
+                    memories.append(self.policy.make_empty_memory(1))
+            rewards.append(agent_brain_info.rewards[agent_index])
+            local_dones.append(agent_brain_info.local_done[agent_index])
+            max_reacheds.append(agent_brain_info.max_reached[agent_index])
+            agents.append(agent_brain_info.agents[agent_index])
+            prev_vector_actions.append(agent_brain_info.previous_vector_actions[agent_index])
+            prev_text_actions.append(agent_brain_info.previous_text_actions[agent_index])
+        if self.policy.use_recurrent:
+            memories = np.vstack(memories)
+        curr_info = BrainInfo(visual_observations, vector_observations, text_observations,
+                              memories, rewards, agents, local_dones, prev_vector_actions,
+                              prev_text_actions, max_reacheds)
+        return curr_info
 
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs, all_actions):
         """
@@ -257,7 +193,6 @@ class MAPPOTrainer(Trainer):
         :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
         :param take_action_outputs: The outputs of the take action method.
         """
-        all_actions = list(all_actions.values())
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
 
@@ -265,86 +200,90 @@ class MAPPOTrainer(Trainer):
             self.training_buffer[agent_id].last_brain_info = curr_info
             self.training_buffer[agent_id].last_take_action_outputs = take_action_outputs
 
+        if curr_info.agents != next_info.agents:
+            curr_to_use = self.construct_curr_info(next_info)
+        else:
+            curr_to_use = curr_info
+
+        intrinsic_rewards = self.policy.get_intrinsic_rewards(curr_to_use, next_info)
+
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
             stored_take_action_outputs = self.training_buffer[agent_id].last_take_action_outputs
-            if stored_info is None:
-                continue
-            else:
+            if stored_info is not None:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
-                #print("step " + str(self.get_step))
                 if not stored_info.local_done[idx]:
-                    if self.use_observations:
-                        for i, _ in enumerate(stored_info.visual_observations):
-                            self.training_buffer[agent_id]['observations%d' % i].append(stored_info.visual_observations[i][idx])
-                    if self.use_states:
-                        self.training_buffer[agent_id]['states'].append(stored_info.vector_observations[idx])
-                    if self.use_recurrent:
+                    for i, _ in enumerate(stored_info.visual_observations):
+                        self.training_buffer[agent_id]['visual_obs%d' % i].append(
+                            stored_info.visual_observations[i][idx])
+                        self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
+                            next_info.visual_observations[i][next_idx])
+                    if self.policy.use_vec_obs:
+                        self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
+                        self.training_buffer[agent_id]['next_vector_in'].append(
+                            next_info.vector_observations[next_idx])
+                    if self.policy.use_recurrent:
                         if stored_info.memories.shape[1] == 0:
-                            stored_info.memories = np.zeros((len(stored_info.agents), self.m_size))
+                            stored_info.memories = np.zeros((len(stored_info.agents), self.policy.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
-                    if self.is_continuous:
-                        epsi = stored_take_action_outputs[self.model.epsilon]
-                        self.training_buffer[agent_id]['epsilons'].append(epsi[idx])
-                    actions = stored_take_action_outputs[self.model.output]
-                    a_dist = stored_take_action_outputs[self.model.all_probs]
+                    actions = stored_take_action_outputs['action']
+                    if self.policy.use_continuous_act:
+                        actions_pre = stored_take_action_outputs['pre_action']
+                        self.training_buffer[agent_id]['actions_pre'].append(actions_pre[idx])
+                    else:
+                        self.training_buffer[agent_id]['action_mask'].append(
+                            stored_info.action_masks[idx])
+                    a_dist = stored_take_action_outputs['log_probs']
+                    # value = stored_take_action_outputs['value']
+                    value = self.policy.get_value_estimate(stored_info, idx, all_actions)
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
-                    self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
+                    if self.use_curiosity:
+                        self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx] +
+                                                                         intrinsic_rewards[next_idx])
+                    else:
+                        self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
-                    # Calculate values using all actions and observations
-                    self.all_actions = np.array([[-1] if not action and action != 0 else action for action in all_actions]).T
-                    #self.all_actions = np.array(all_actions).T
-                    self.training_buffer[agent_id]['all_actions'].append(self.all_actions)
-                    feed_dict = {self.model.vector_in: stored_info.vector_observations, self.model.all_actions: self.all_actions}
-                    value = self.sess.run(self.model.value, feed_dict=feed_dict)
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
-                    self.stats['value_estimate'].append(value[idx][0])
-                    #print("history size: " + str(len(self.training_buffer[agent_id]['actions'])))
+                    self.stats['value_estimate'].append(value[idx])
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
+                    if self.use_curiosity:
+                        if agent_id not in self.intrinsic_rewards:
+                            self.intrinsic_rewards[agent_id] = 0
+                        self.intrinsic_rewards[agent_id] += intrinsic_rewards[next_idx]
+                if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-
-    def process_experiences(self, all_info: AllBrainInfo, all_actions):
+    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo, all_actions):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param current_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
-        all_actions = list(all_actions.values())
-        info = all_info[self.brain_name]
+
+        info = new_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
-                and len(agent_actions) > 0):
+                    and len(agent_actions) > 0):
+                agent_id = info.agents[l]
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
-                    feed_dict = {self.model.batch_size: len(info.vector_observations), self.model.sequence_length: 1}
-                    if self.use_observations:
-                        for i in range(len(info.visual_observations)):
-                            feed_dict[self.model.visual_in[i]] = info.visual_observations[i]
-                    if self.use_states:
-                        feed_dict[self.model.vector_in] = info.vector_observations
-                    if self.use_recurrent:
-                        if info.memories.shape[1] == 0:
-                            info.memories = np.zeros((len(info.vector_observations), self.m_size))
-                        feed_dict[self.model.memory_in] = info.memories
-                    if not self.is_continuous and self.use_recurrent:
-                        feed_dict[self.model.prev_action] = np.reshape(info.previous_vector_actions, [-1])
-                    self.all_actions = np.array([[-1] if not action and action != 0 else action for action in all_actions]).T
-                    #self.all_actions = np.array(all_actions).T
-                    print(all_actions)
-                    feed_dict[self.model.all_actions] = np.reshape(self.all_actions, [-1, self.n_brains])
-                    value_next, all_actions_one = self.sess.run([self.model.value, self.model.all_actions_one_hot], feed_dict)
-                    #print(all_actions, all_actions_one)
-                agent_id = info.agents[l]
+                    if info.max_reached[l]:
+                        bootstrapping_info = self.training_buffer[agent_id].last_brain_info
+                        idx = bootstrapping_info.agents.index(agent_id)
+                    else:
+                        bootstrapping_info = info
+                        idx = l
+                    value_next = self.policy.get_value_estimate(bootstrapping_info, idx, all_actions)
 
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(
@@ -352,21 +291,27 @@ class MAPPOTrainer(Trainer):
                         value_estimates=self.training_buffer[agent_id]['value_estimates'].get_batch(),
                         value_next=value_next,
                         gamma=self.trainer_parameters['gamma'],
-                        lambd=self.trainer_parameters['lambd'])
-                )
+                        lambd=self.trainer_parameters['lambd']))
                 self.training_buffer[agent_id]['discounted_returns'].set(
                     self.training_buffer[agent_id]['advantages'].get_batch()
                     + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
-                self.training_buffer.append_update_buffer(agent_id,
-                                                          batch_size=None, training_length=self.sequence_length)
+                self.training_buffer.append_update_buffer(agent_id, batch_size=None,
+                                                          training_length=self.policy.sequence_length)
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
-                    self.stats['cumulative_reward'].append(self.cumulative_rewards[agent_id])
-                    self.stats['episode_length'].append(self.episode_steps[agent_id])
+                    self.stats['cumulative_reward'].append(
+                        self.cumulative_rewards.get(agent_id, 0))
+                    self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
+                    self.stats['episode_length'].append(
+                        self.episode_steps.get(agent_id, 0))
                     self.cumulative_rewards[agent_id] = 0
                     self.episode_steps[agent_id] = 0
+                    if self.use_curiosity:
+                        self.stats['intrinsic_reward'].append(
+                            self.intrinsic_rewards.get(agent_id, 0))
+                        self.intrinsic_rewards[agent_id] = 0
 
     def end_episode(self):
         """
@@ -378,98 +323,46 @@ class MAPPOTrainer(Trainer):
             self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
+        if self.use_curiosity:
+            for agent_id in self.intrinsic_rewards:
+                self.intrinsic_rewards[agent_id] = 0
 
     def is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return len(self.training_buffer.update_buffer['actions']) > \
-               max(int(self.trainer_parameters['buffer_size'] / self.sequence_length), 1)
+        size_of_buffer = len(self.training_buffer.update_buffer['actions'])
+        return size_of_buffer > max(int(self.trainer_parameters['buffer_size'] / self.policy.sequence_length), 1)
 
-    def update_model(self):
+    def update_policy(self):
         """
-        Uses training_buffer to update model.
+        Uses training_buffer to update the policy.
         """
-        num_epoch = self.trainer_parameters['num_epoch']
-        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.sequence_length), 1)
-        total_v, total_p = 0, 0
+        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
+        value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
+        num_epoch = self.trainer_parameters['num_epoch']
         for k in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
+            buffer = self.training_buffer.update_buffer
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
                 start = l * n_sequences
                 end = (l + 1) * n_sequences
-                _buffer = self.training_buffer.update_buffer
-                feed_dict = {self.model.batch_size: n_sequences,
-                             self.model.sequence_length: self.sequence_length,
-                             self.model.mask_input: np.array(_buffer['masks'][start:end]).reshape(
-                                 [-1]),
-                             self.model.returns_holder: np.array(_buffer['discounted_returns'][start:end]).reshape(
-                                 [-1]),
-                             self.model.old_value: np.array(_buffer['value_estimates'][start:end]).reshape([-1]),
-                             self.model.advantage: np.array(_buffer['advantages'][start:end]).reshape([-1, 1]),
-                             self.model.all_old_probs: np.array(
-                                 _buffer['action_probs'][start:end]).reshape([-1, self.brain.vector_action_space_size]),
-                             self.model.all_actions: np.array(_buffer['all_actions'][start:end]).reshape([-1, self.n_brains])}
-                #print(np.array(_buffer['all_actions'][start:end]).reshape([-1, 2]))
-                if self.is_continuous:
-                    feed_dict[self.model.epsilon] = np.array(
-                        _buffer['epsilons'][start:end]).reshape([-1, self.brain.vector_action_space_size])
-                else:
-                    feed_dict[self.model.action_holder] = np.array(
-                        _buffer['actions'][start:end]).reshape([-1])
-                    if self.use_recurrent:
-                        feed_dict[self.model.prev_action] = np.array(
-                            _buffer['prev_action'][start:end]).reshape([-1])
-                if self.use_states:
-                    if self.brain.vector_observation_space_type == "continuous":
-                        feed_dict[self.model.vector_in] = np.array(
-                            _buffer['states'][start:end]).reshape(
-                            [-1, self.brain.vector_observation_space_size * self.brain.num_stacked_vector_observations])
-                    else:
-                        feed_dict[self.model.vector_in] = np.array(
-                            _buffer['states'][start:end]).reshape([-1, self.brain.num_stacked_vector_observations])
-                if self.use_observations:
-                    for i, _ in enumerate(self.model.visual_in):
-                        _obs = np.array(_buffer['observations%d' % i][start:end])
-                        (_batch, _seq, _w, _h, _c) = _obs.shape
-                        feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
-                if self.use_recurrent:
-                    feed_dict[self.model.memory_in] = np.array(_buffer['memory'][start:end])[:, 0, :]
-                v_loss, p_loss, _ = self.sess.run(
-                    [self.model.value_loss, self.model.policy_loss,
-                     self.model.update_batch], feed_dict=feed_dict)
-                #print(np.shape(feed_dict[self.model.all_actions]))
-                total_v += v_loss
-                total_p += p_loss
-        self.stats['value_loss'].append(total_v)
-        self.stats['policy_loss'].append(total_p)
+                run_out = self.policy.update(buffer.make_mini_batch(start, end), n_sequences)
+                value_total.append(run_out['value_loss'])
+                policy_total.append(np.abs(run_out['policy_loss']))
+                if self.use_curiosity:
+                    inverse_total.append(run_out['inverse_loss'])
+                    forward_total.append(run_out['forward_loss'])
+        self.stats['value_loss'].append(np.mean(value_total))
+        self.stats['policy_loss'].append(np.mean(policy_total))
+        if self.use_curiosity:
+            self.stats['forward_loss'].append(np.mean(forward_total))
+            self.stats['inverse_loss'].append(np.mean(inverse_total))
         self.training_buffer.reset_update_buffer()
-
-    def write_summary(self, lesson_number):
-        """
-        Saves training statistics to Tensorboard.
-        :param lesson_number: The lesson the trainer is at.
-        """
-        if (self.get_step % self.trainer_parameters['summary_freq'] == 0 and self.get_step != 0 and
-                self.is_training and self.get_step <= self.get_max_steps):
-            steps = self.get_step
-            if len(self.stats['cumulative_reward']) > 0:
-                mean_reward = np.mean(self.stats['cumulative_reward'])
-                logger.info(" {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}."
-                            .format(self.brain_name, steps, mean_reward, np.std(self.stats['cumulative_reward'])))
-            summary = tf.Summary()
-            for key in self.stats:
-                if len(self.stats[key]) > 0:
-                    stat_mean = float(np.mean(self.stats[key]))
-                    summary.value.add(tag='Info/{}'.format(key), simple_value=stat_mean)
-                    self.stats[key] = []
-            summary.value.add(tag='Info/Lesson', simple_value=lesson_number)
-            self.summary_writer.add_summary(summary, steps)
-            self.summary_writer.flush()
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):

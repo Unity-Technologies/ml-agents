@@ -306,7 +306,7 @@ class PPOTrainer(Trainer):
 
     def end_episode(self):
         """
-        A signal that the Episode has ended. The buffer must be reset. 
+        A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
         self.training_buffer.reset_all()

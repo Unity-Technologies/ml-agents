@@ -193,6 +193,14 @@ class TrainerController(object):
                         .min_lesson_length if self.meta_curriculum else 0,
                     trainer_parameters_dict[brain_name],
                     self.train_model, self.load_model, self.seed, self.run_id)
+            elif trainer_parameters_dict[brain_name]['trainer'] == "mappo":
+                self.trainers[brain_name] = MAPPOTrainer(
+                    self.env.brains[brain_name],
+                    self.meta_curriculum
+                        .brains_to_curriculums[brain_name]
+                        .min_lesson_length if self.meta_curriculum else 0,
+                    trainer_parameters_dict[brain_name],
+                    self.train_model, self.load_model, self.seed, self.run_id)
             else:
                 raise UnityEnvironmentException('The trainer config contains '
                                                 'an unknown trainer type for '
@@ -308,8 +316,13 @@ class TrainerController(object):
                                          value=take_action_value)
                 for brain_name, trainer in self.trainers.items():
                     trainer.add_experiences(curr_info, new_info,
-                                            take_action_outputs[brain_name])
-                    trainer.process_experiences(curr_info, new_info)
+                                            take_action_outputs[brain_name],
+                                            take_action_vector)
+                for brain_name, trainer in self.trainers.items():
+                        if self.trainer_parameters_dict[brain_name]['trainer'] == "mappo":
+                            take_action_vector[brain_name] = trainer.simulate_action(curr_info)
+                for brain_name, trainer in self.trainers.items():
+                    trainer.process_experiences(curr_info, new_info, take_action_vector)
                     if trainer.is_ready_update() and self.train_model \
                             and trainer.get_step <= trainer.get_max_steps:
                         # Perform gradient descent with experience buffer
