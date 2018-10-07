@@ -213,10 +213,13 @@ When the message _"Start training by pressing the Play button in the Unity
 Editor"_ is displayed on the screen, you can press the :arrow_forward: button in
 Unity to start training in the Editor.
 
+The `--train` flag tells the ML-Agents toolkit to run in training mode.
+
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
 environment first.
 
-The `--train` flag tells the ML-Agents toolkit to run in training mode.
+**Note**: Before you start training the brain, make sure that you have opened Unity on your computer and laoded the environment from the SDK folder. Running the command above will expect the solution to be laoded and in `Play` mode in Unity.
+
 
 **Note**: You can train using an executable rather than the Editor. To do so,
 follow the intructions in
