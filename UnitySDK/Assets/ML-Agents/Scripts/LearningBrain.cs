@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using MLAgents.InferenceBrain;
@@ -34,6 +35,7 @@ namespace MLAgents
         private IEnumerable<Tensor> _inferenceInputs;
         private IEnumerable<Tensor> _inferenceOutputs;
 
+        [NonSerialized]
         private bool _isControlled;
         
         private double _inferenceDelta = 0;
@@ -200,7 +202,6 @@ namespace MLAgents
             }
             if (_modelMemorySize > 0)
             {
-
                 tensorList.Add(new Tensor()
                 {
                     Name = TensorNames.RecurrentOutput,
@@ -229,6 +230,7 @@ namespace MLAgents
             {
                 return;
             }
+            
             // Prepare the input tensors to be feed into the engine
             foreach (var tensor in _inferenceInputs)
             {
@@ -268,6 +270,7 @@ namespace MLAgents
                 }
                 _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfos);
             }
+            agentInfos.Clear();
         }
     }
 }
