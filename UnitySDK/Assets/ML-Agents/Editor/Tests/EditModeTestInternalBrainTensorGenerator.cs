@@ -170,6 +170,5 @@ namespace MLAgents.Tests
             Assert.AreEqual((inputTensor.Data as float[,])[1, 0], 0);
             Assert.AreEqual((inputTensor.Data as float[,])[1, 4], 1);
         }
-
     }
 }

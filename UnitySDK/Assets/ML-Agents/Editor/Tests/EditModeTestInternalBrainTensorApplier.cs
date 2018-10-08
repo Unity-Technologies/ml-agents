@@ -150,7 +150,6 @@ namespace MLAgents.Tests
             action = agent.GetAction();
             Assert.AreEqual(action.value, 8);
         }
-        
-
+       
     }
 }
