@@ -17,7 +17,7 @@ namespace MLAgents.InferenceBrain
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>
     {
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>  dict;
-        
+
         /// <summary>
         /// Constructor of TensorAppliers. Returns a new TensorAppliers object.
         /// </summary>
@@ -42,7 +42,7 @@ namespace MLAgents.InferenceBrain
             }
             dict[TensorNames.RecurrentOutput] = ApplyMemoryOutput;
         }
-        
+
         /// <summary>
         /// Access the Applier corresponding to the key index
         /// </summary>
@@ -68,7 +68,7 @@ namespace MLAgents.InferenceBrain
         {
             return dict.ContainsKey(key);
         }
-        
+
         /// <summary>
         /// The Applier for the Continuous Action output tensor.
         /// </summary>
@@ -93,7 +93,7 @@ namespace MLAgents.InferenceBrain
                 agentIndex++;
             }
         }
-       
+
         /// <summary>
         /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
         /// actions from the logits contained in the tensor.
@@ -182,7 +182,7 @@ namespace MLAgents.InferenceBrain
                 agentIndex++;
             }
         }
-        
+
         /// <summary>
         /// The Applier for the Value Estimate output tensor.
         /// </summary>
@@ -201,6 +201,5 @@ namespace MLAgents.InferenceBrain
                 agentIndex++;
             }
         }
-        
     }
 }

@@ -102,7 +102,7 @@ namespace MLAgents.InferenceBrain
                 brainParams, actionSizeModel));
             return failedChecks;
         }
-        
+
         /// <summary>
         /// Generates failed checks that correspond to inputs expected by the model that are not
         /// present in the BrainParameters.
