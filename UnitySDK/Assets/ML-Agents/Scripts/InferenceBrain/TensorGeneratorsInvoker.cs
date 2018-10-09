@@ -31,13 +31,13 @@ namespace MLAgents.InferenceBrain
         public TensorGeneratorsInvoker(BrainParameters bp, int seed)
         {
             // Generator for Inputs
-            dict[TensorNames.BatchSizePlaceholder] = new GenerateBatchSize();
-            dict[TensorNames.SequenceLengthPlaceholder] = new GenerateSequenceLength();
-            dict[TensorNames.VectorObservationPlacholder] = new GenerateVectorObservation();
-            dict[TensorNames.RecurrentInPlaceholder] = new GenerateRecurrentInput();
-            dict[TensorNames.PreviousActionPlaceholder] = new GeneratePreviousActionInput();
-            dict[TensorNames.ActionMaskPlaceholder] = new GenerateActionMaskInput();
-            dict[TensorNames.RandomNormalEpsilonPlaceholder] = new GenerateRandomNormalInput(seed);
+            dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator();
+            dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator();
+            dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator();
+            dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator();
+            dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator();
+            dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator();
+            dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed);
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;
@@ -47,14 +47,14 @@ namespace MLAgents.InferenceBrain
                     var index = visIndex;
                     var bw = bp.cameraResolutions[visIndex].blackAndWhite;
                     dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = new
-                            GenerateVisualObservationInput(index, bw);
+                            VisualObservationInputGenerator(index, bw);
                 }
             }
 
             // Generators for Outputs
-            dict[TensorNames.ActionOutput] = new ReshapeBiDimensionalOutput();
-            dict[TensorNames.RecurrentOutput] = new ReshapeBiDimensionalOutput();
-            dict[TensorNames.ValueEstimateOutput] = new ReshapeBiDimensionalOutput();
+            dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator();
+            dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator();
+            dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator();
         }
 
         /// <summary>

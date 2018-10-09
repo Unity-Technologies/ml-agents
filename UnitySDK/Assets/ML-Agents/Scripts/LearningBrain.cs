@@ -26,7 +26,7 @@ namespace MLAgents
         private long _modelMemorySize;
         
         private TensorGeneratorsInvoker _tensorGeneratorsInvoker;
-        private TensorAppliers  _outputTensorAppliers;
+        private TensorApplierInvoker  _outputTensorApplierInvoker;
         
         public Model model;
         public InferenceEngineConfig.DeviceType inferenceDevice;
@@ -93,7 +93,7 @@ namespace MLAgents
                     modelActionSize).ToList();
                 
                 _tensorGeneratorsInvoker = new TensorGeneratorsInvoker( brainParameters, seed);
-                _outputTensorAppliers = new TensorAppliers( brainParameters, seed);
+                _outputTensorApplierInvoker = new TensorApplierInvoker( brainParameters, seed);
             }
             else
             {
@@ -254,12 +254,12 @@ namespace MLAgents
             // Update the outputs
             foreach (var tensor in _inferenceOutputs)
             {
-                if (!_outputTensorAppliers.ContainsKey(tensor.Name))
+                if (!_outputTensorApplierInvoker.ContainsKey(tensor.Name))
                 {
                     throw new UnityAgentsException(
                         "Unknow tensor expected as output : "+tensor.Name);
                 }
-                _outputTensorAppliers[tensor.Name].Invoke(tensor, agentInfos);
+                _outputTensorApplierInvoker[tensor.Name].Execute(tensor, agentInfos);
             }
             agentInfos.Clear();
         }

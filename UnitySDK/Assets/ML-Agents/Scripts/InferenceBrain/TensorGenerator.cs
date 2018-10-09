@@ -16,7 +16,7 @@ namespace MLAgents.InferenceBrain
     /// and initializes its content to be zeros. Will only work on 2-dimensional tensors.
     /// The second dimension of the Tensor will not be modiied.
     /// </summary>
-    public class ReshapeBiDimensionalOutput : TensorGenerator
+    public class BiDimensionalOutputGenerator : TensorGenerator
     {
         public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -37,7 +37,7 @@ namespace MLAgents.InferenceBrain
     /// Generates the Tensor corresponding to the BatchSize input : Will be a one dimensional
     /// integer array of size 1 containing the batch size.
     /// </summary>
-    public class GenerateBatchSize : TensorGenerator
+    public class BatchSizeGenerator : TensorGenerator
     {
         public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -51,7 +51,7 @@ namespace MLAgents.InferenceBrain
     /// Note : the sequence length is always one since recurrent networks only predicts for
     /// one step at the time.
     /// </summary>
-    public class GenerateSequenceLength : TensorGenerator
+    public class SequenceLengthGenerator : TensorGenerator
     {
         public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -65,7 +65,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the Vector Observation data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class GenerateVectorObservation : TensorGenerator
+    public class VectorObservationGenerator : TensorGenerator
     {
         public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -91,7 +91,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the Memory data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class GenerateRecurrentInput : TensorGenerator
+    public class RecurrentInputGenerator : TensorGenerator
     {
         public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -126,7 +126,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the previous action data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class GeneratePreviousActionInput : TensorGenerator
+    public class PreviousActionInputGenerator : TensorGenerator
     {
         public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -159,7 +159,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the Action Mask data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class GenerateActionMaskInput : TensorGenerator
+    public class ActionMaskInputGenerator : TensorGenerator
     {
         public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -195,11 +195,11 @@ namespace MLAgents.InferenceBrain
     /// dimensional float array of dimension [batchSize x actionSize].
     /// It will use the generate random input data using a RandomNormal Distribution.
     /// </summary>
-    public class GenerateRandomNormalInput : TensorGenerator
+    public class RandomNormalInputGenerator : TensorGenerator
     {
         private RandomNormal _randomNormal;
         
-        public GenerateRandomNormalInput(int seed)
+        public RandomNormalInputGenerator(int seed)
         {
             _randomNormal = new RandomNormal(seed);
         }
@@ -219,11 +219,11 @@ namespace MLAgents.InferenceBrain
     /// It will use the Texture input data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class GenerateVisualObservationInput : TensorGenerator
+    public class VisualObservationInputGenerator : TensorGenerator
     {
         private int _index;
         private bool _grayScale;
-        public GenerateVisualObservationInput(int index, bool grayScale)
+        public VisualObservationInputGenerator(int index, bool grayScale)
         {
             _index = index;
             _grayScale = grayScale;
