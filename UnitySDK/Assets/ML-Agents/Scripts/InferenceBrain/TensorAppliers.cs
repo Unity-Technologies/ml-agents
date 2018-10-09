@@ -13,8 +13,7 @@ namespace MLAgents.InferenceBrain
     /// This action takes as input the Tensor and the Dictionary of Agent to AgentInfo for
     /// the current batch.
     /// </summary>
-    public class TensorAppliers : 
-        Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>
+    public class TensorAppliers
     {
         Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>  dict;
 
@@ -47,7 +46,7 @@ namespace MLAgents.InferenceBrain
         /// Access the Applier corresponding to the key index
         /// </summary>
         /// <param name="index">The tensor name of the tensor</param>
-        public new Action<Tensor, Dictionary<Agent, AgentInfo>> this[string index]
+        public Action<Tensor, Dictionary<Agent, AgentInfo>> this[string index]
         {
             get
             {
@@ -64,7 +63,7 @@ namespace MLAgents.InferenceBrain
         /// </summary>
         /// <param name="key">The tensor name of the tensor</param>
         /// <returns>true if key is in the TensorAppliers, false otherwise</returns>
-        public new bool ContainsKey(string key)
+        public bool ContainsKey(string key)
         {
             return dict.ContainsKey(key);
         }

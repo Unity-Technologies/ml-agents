@@ -18,8 +18,7 @@ namespace MLAgents.InferenceBrain
     /// When the Tensor is an Output of the model, only the shape of the Tensor will be modified
     /// using the current batch size. The data will be prefilled with zeros.
     /// </summary>
-    public class TensorGenerators : 
-        Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>> 
+    public class TensorGenerators
     {
         Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>  dict = 
             new Dictionary<string, Action<Tensor, int, Dictionary<Agent, AgentInfo>>>();
@@ -66,7 +65,7 @@ namespace MLAgents.InferenceBrain
         /// Access the Generator corresponding to the key index
         /// </summary>
         /// <param name="index">The tensor name of the tensor</param>
-        public new Action<Tensor, int, Dictionary<Agent, AgentInfo>> this[string index]
+        public Action<Tensor, int, Dictionary<Agent, AgentInfo>> this[string index]
         {
             get
             {
@@ -83,7 +82,7 @@ namespace MLAgents.InferenceBrain
         /// </summary>
         /// <param name="key">The tensor name of the tensor</param>
         /// <returns>true if key is in the TensorGenerators, false otherwise</returns>
-        public new bool ContainsKey(string key)
+        public bool ContainsKey(string key)
         {
             return dict.ContainsKey(key);
         }
