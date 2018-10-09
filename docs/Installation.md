@@ -4,6 +4,11 @@ To install and use ML-Agents, you need install Unity, clone this repository and
 install Python with additional dependencies. Each of the subsections below
 overviews each step, in addition to a Docker set-up.
 
+## Windows installation
+For setting up your environment on Windows, we have created a [detailed
+guide]((Installation-Windows.md) to setting up your env. For Mac and Linux,
+continue with this guide.
+
 ## Install **Unity 2017.4** or Later
 
 [Download](https://store.unity.com/download) and install Unity. If you would
@@ -49,11 +54,6 @@ Some of the primary dependencies include:
   the following
   [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda)
   on how to install TensorFlow in an Anaconda environment.
-
-### Windows Users
-
-If you are a Windows user who is new to Python and TensorFlow, follow [this
-guide](Installation-Windows.md) to set up your Python environment.
 
 ### Mac and Unix Users
 
