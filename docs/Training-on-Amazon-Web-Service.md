@@ -7,10 +7,10 @@ Service for training ML-Agents environments.
 
 We've prepared an preconfigured AMI for you with the ID: `ami-18642967` in the
 `us-east-1` region. It was created as a modification of [Deep Learning AMI
-(Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). If you want to do
-training without the headless mode, you need to enable X Server on it. After
-launching your EC2 instance using the ami and ssh into it, run the following
-commands to enable it:
+(Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). We've tested it
+against the p2.xlarge instance. If you want to do training without the headless
+mode, you need to enable X Server on it. After launching your EC2 instance using
+the ami and ssh into it, run the following commands to enable it:
 
 ```console
 //Start the X Server, press Enter to come to the command line
@@ -156,7 +156,7 @@ linux executables which use visual observations.
 5. Start X Server and make the ubuntu use X Server for display:
 
     ```console
-    //Start the X Server, press Enter to come to the command line
+    //Start the X Server, press Enter to come back to the command line
     $ sudo /usr/bin/X :0 &
 
     //Check if Xorg process is running
@@ -187,11 +187,32 @@ linux executables which use visual observations.
 1. In the Unity Editor, load a project containing an ML-Agents environment (you
    can use one of the example environments if you have not created your own).
 2. Open the Build Settings window (menu: File > Build Settings).
-3. Select Linux as the Target Platform, and x86_64 as the target architecture.
-4. Check Headless Mode (If you haven't setup the X Server).
+3. Select Linux as the Target Platform, and x86_64 as the target architecture 
+(the default x86 currently doesn't work).
+4. Check Headless Mode (If you haven't setup the X Server, if you don't use
+Headless Mode, you have to setup the X Server to enable the training).
 5. Click Build to build the Unity environment executable.
 6. Upload the executable to your EC2 instance within `ml-agents` folder.
-7. Test the instance setup from Python using:
+7. Change permission on your executable.
+
+    ```console
+    chmod +x <your_env>.x86_64
+    ```
+8. (Without Headless Mode) Start X Server and make the ubuntu use X Server for
+display:
+
+    ```console
+    //Start the X Server, press Enter to come back to the command line
+    $ sudo /usr/bin/X :0 &
+
+    //Check if Xorg process is running
+    //You will have a list of processes running on the GPU, Xorg should be in the list.
+    $ nvidia-smi
+
+    //Make the ubuntu use X Server for display
+    $ export DISPLAY=:0
+    ```
+9. Test the instance setup from Python using:
 
     ```python
     from mlagents.envs import UnityEnvironment
@@ -202,9 +223,8 @@ linux executables which use visual observations.
     Where `<your_env>` corresponds to the path to your environment executable.
 
     You should receive a message confirming that the environment was loaded successfully.
-8. Train the executable
+10. Train the executable
 
     ```console
-    chmod +x <your_env>.x86_64
     mlagents-learn <trainer-config-file> --env=<your_env> --train
     ```
