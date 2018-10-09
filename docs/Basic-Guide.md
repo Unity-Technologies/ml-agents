@@ -220,10 +220,11 @@ You can press Ctrl+C to stop the training, and your trained model will be at
 `<academy_name>` is the name of the Academy GameObject in the current scene.
 (Note: There is a known bug on Windows that causes the saving of the model to
 fail when you early terminate the training, it's recommended to wait until Step
-has reached the max_steps parameter you set) This file corresponds to your
-model's latest checkpoint. You can now embed this trained model into your
-Learning Brain by following the steps below, which is similar to the steps
-described [above](#play-an-example-environment-using-pretrained-model).
+has reached the max_steps parameter you set in trainer_config.yaml) This file
+corresponds to your model's latest checkpoint. You can now embed this trained
+model into your Learning Brain by following the steps below, which is similar to
+the steps described
+[above](#play-an-example-environment-using-pretrained-model).
 
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
