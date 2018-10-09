@@ -37,8 +37,6 @@ namespace MLAgents
 
         [NonSerialized]
         private bool _isControlled;
-        
-        private double _inferenceDelta = 0;
 
         /// <summary>
         /// When Called, the brain will be controlled externally. It will not use the
@@ -52,7 +50,7 @@ namespace MLAgents
         /// <inheritdoc />
         protected override void Initialize()
         {
-            GiveModel(model);
+            SetModel(model);
         }
         
         /// <summary>
@@ -64,7 +62,7 @@ namespace MLAgents
         /// and Multinomial obsjects used when running inference.</param>
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
         /// </exception>
-        public void GiveModel(Model newModel, int seed = 0)
+        public void SetModel(Model newModel, int seed = 0)
         {
             if (newModel != null)
             {
@@ -74,10 +72,10 @@ namespace MLAgents
                 };;
                 _engine = InferenceAPI.LoadModel(newModel, config);
 
-                var modelVersionNumber = GetModelData(_engine, TensorNames.VersionNumber);
-                _modelMemorySize = GetModelData(_engine, TensorNames.MemorySize);
-                var modelIsContinuous = GetModelData(_engine, TensorNames.IsContinuousControl);
-                var modelActionSize =  GetModelData(_engine, TensorNames.ActionOutputShape);
+                var modelVersionNumber = GetIntScalar(_engine, TensorNames.VersionNumber);
+                _modelMemorySize = GetIntScalar(_engine, TensorNames.MemorySize);
+                var modelIsContinuous = GetIntScalar(_engine, TensorNames.IsContinuousControl);
+                var modelActionSize =  GetIntScalar(_engine, TensorNames.ActionOutputShape);
                 
                 // Generate the Input tensors
                 _inferenceInputs = GetInputTensors();
@@ -94,11 +92,8 @@ namespace MLAgents
                     _modelMemorySize,
                     modelActionSize).ToList();
                 
-                _tensorGenerators = new TensorGenerators(
-                    brainParameters, new RandomNormal(seed));
-            
-                _outputTensorAppliers = new TensorAppliers(
-                    brainParameters, new Multinomial(seed));
+                _tensorGenerators = new TensorGenerators( brainParameters, seed);
+                _outputTensorAppliers = new TensorAppliers( brainParameters, seed);
             }
             else
             {
@@ -130,7 +125,7 @@ namespace MLAgents
         /// <param name="engine">The InferenceEngine to be queried</param>
         /// <param name="name">The name of the Tensor variable</param>
         /// <returns></returns>
-        private static long GetModelData(InferenceEngine engine, string name)
+        private static long GetIntScalar(InferenceEngine engine, string name)
         {
             try
             {
@@ -254,11 +249,7 @@ namespace MLAgents
             }
 
             // Execute the Model
-            double startTime = Time.realtimeSinceStartup;
             _engine.ExecuteGraph(_inferenceInputs, _inferenceOutputs);
-            _inferenceDelta = Time.realtimeSinceStartup - startTime;
-
-            Debug.Log(_inferenceDelta * 1000);
 
             // Update the outputs
             foreach (var tensor in _inferenceOutputs)

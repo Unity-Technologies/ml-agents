@@ -46,7 +46,7 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
+            var tensorGenerator = new TensorGenerators(bp, 0);
             Assert.IsNotNull(tensorGenerator);
         }
 
@@ -54,7 +54,7 @@ namespace MLAgents.Tests
         public void GenerateBatchSize()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
+            var tensorGenerator = new TensorGenerators(bp, 0);
             var inputTensor = new Tensor();
             var batchSize = 4;
             tensorGenerator[TensorNames.BatchSizePlaceholder].Invoke(
@@ -67,7 +67,7 @@ namespace MLAgents.Tests
         public void GenerateSequenceLength()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
+            var tensorGenerator = new TensorGenerators(bp, 0);
             var inputTensor = new Tensor();
             var batchSize = 4;
             tensorGenerator[TensorNames.SequenceLengthPlaceholder].Invoke(
@@ -80,7 +80,7 @@ namespace MLAgents.Tests
         public void GenerateVectorObservation()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
+            var tensorGenerator = new TensorGenerators(bp, 0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[]{2, 3}
@@ -101,7 +101,7 @@ namespace MLAgents.Tests
         public void GenerateRecurrentInput()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
+            var tensorGenerator = new TensorGenerators(bp, 0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[]{2, 5}
@@ -122,7 +122,7 @@ namespace MLAgents.Tests
         public void GeneratePreviousActionInput()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
+            var tensorGenerator = new TensorGenerators(bp,0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[]{2, 2},
@@ -151,7 +151,7 @@ namespace MLAgents.Tests
         public void GenerateActionMaskInput()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerators(bp, new RandomNormal(0));
+            var tensorGenerator = new TensorGenerators(bp, 0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[]{2, 5},

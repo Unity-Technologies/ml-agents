@@ -55,7 +55,7 @@ namespace MLAgents
             }
             if (_requireReload && _timeSinceModelReload > TimeBetweenModelReloads)
             {
-                brain.GiveModel(brain.model);
+                brain.SetModel(brain.model);
                 _requireReload = false;
                 _timeSinceModelReload = 0;
             }
