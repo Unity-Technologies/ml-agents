@@ -92,8 +92,8 @@ namespace MLAgents
                     _modelMemorySize,
                     modelActionSize).ToList();
                 
-                _tensorGeneratorsInvoker = new TensorGeneratorsInvoker( brainParameters, seed);
-                _outputTensorApplierInvoker = new TensorApplierInvoker( brainParameters, seed);
+                _tensorGeneratorsInvoker = new TensorGeneratorsInvoker(brainParameters, seed);
+                _outputTensorApplierInvoker = new TensorApplierInvoker(brainParameters, seed);
             }
             else
             {
