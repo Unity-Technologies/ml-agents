@@ -82,7 +82,7 @@ namespace MLAgents
         {
             // Writes BrainParameters to file.
             writer.Seek(MetaDataBytes + 1, 0);
-            var brainProto = brainParameters.ToProto(brainName, BrainTypeProto.Player);
+            var brainProto = brainParameters.ToProto(brainName, false);
             brainProto.WriteDelimitedTo(writer);
         }
 

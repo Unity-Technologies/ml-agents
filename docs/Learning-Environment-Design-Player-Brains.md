@@ -1,14 +1,13 @@
 # Player Brain
 
-The **Player** Brain type allows you to control an Agent using keyboard
+The **Player Brain** allows you to control an Agent using keyboard
 commands. You can use Player Brains to control a "teacher" Agent that trains
 other Agents during [imitation learning](Training-Imitation-Learning.md). You
-can also use Player Brains to test your Agents and environment before changing
-their Brain types to **External** and running the training process.
+can also use Player Brains to test your Agents and environment before replacing them by **Learning Brains** and running the training process.
 
 ## Player Brain properties
 
-The **Player** Brain properties allow you to assign one or more keyboard keys to
+The **Player Brain** properties allow you to assign one or more keyboard keys to
 each action and a unique value to send when a key is pressed.
 
 ![Player Brain Inspector](images/player_brain.png)

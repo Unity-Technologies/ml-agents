@@ -2,10 +2,10 @@
 using UnityEngine;
 using MLAgents;
 
-public class TemplateDecision : MonoBehaviour, Decision
+public class TemplateDecision : Decision
 {
 
-    public float[] Decide(
+    public override float[] Decide(
         List<float> vectorObs,
         List<Texture2D> visualObs,
         float reward,
@@ -15,7 +15,7 @@ public class TemplateDecision : MonoBehaviour, Decision
         return new float[0];
     }
 
-    public List<float> MakeMemory(
+    public override List<float> MakeMemory(
         List<float> vectorObs,
         List<Texture2D> visualObs,
         float reward,

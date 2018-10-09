@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using System.Linq;
+using Random = UnityEngine.Random;
 #if ENABLE_TENSORFLOW
 using TensorFlow;
 
@@ -12,14 +14,19 @@ using TensorFlow;
 
 namespace MLAgents
 {
-    /// CoreBrain which decides actions using internally embedded TensorFlow model.
-    public class CoreBrainInternal : ScriptableObject, CoreBrain
+    /// <summary>
+    /// The Learning Brain works differently if you are training it or not.
+    /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
+    /// the checkbox Control. When using a pretrained model, just drag the Model file into the
+    /// Model property of the Learning Brain.
+    /// When the Learning Braom is noe training, it uses a TensorFlow model to make decisions.
+    /// The Proximal Policy Optimization (PPO) and Behavioral Cloning algorithms included with
+    /// the ML-Agents SDK produce trained TensorFlow models that you can use with the
+    /// Learning Brain.
+    /// </summary>
+    [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
+    public class LearningBrain : Brain
     {
-        [SerializeField] [Tooltip("If checked, the brain will broadcast states and actions to Python.")]
-#pragma warning disable
-        private bool broadcast = true;
-#pragma warning restore
-
         [System.Serializable]
         private struct TensorFlowAgentPlaceholder
         {
@@ -35,11 +42,12 @@ namespace MLAgents
             public float maxValue;
         }
 
-        Batcher brainBatcher;
-
         [Tooltip("This must be the bytes file corresponding to the pretrained TensorFlow graph.")]
         /// Modify only in inspector : Reference to the Graph asset
         public TextAsset graphModel;
+
+        [NonSerialized]
+        private bool isControlled;
 
         [SerializeField]
         [Tooltip(
@@ -89,17 +97,16 @@ namespace MLAgents
         int memorySize;
 #endif
 
-        /// Reference to the brain that uses this CoreBrainInternal
-        public Brain brain;
-
-        /// Create the reference to the brain
-        public void SetBrain(Brain b)
+        /// <summary>
+        /// When Called, the brain will be controlled externally. It will not use the
+        /// model to decide on actions.
+        /// </summary>
+        public void SetToControlledExternally()
         {
-            brain = b;
+            isControlled = true;
         }
-
-        /// Loads the tensorflow graph model to generate a TFGraph object
-        public void InitializeCoreBrain(MLAgents.Batcher brainBatcher)
+        
+        protected override void Initialize()
         {
 #if ENABLE_TENSORFLOW
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -112,16 +119,6 @@ namespace MLAgents
             
         }
 #endif
-            if ((brainBatcher == null)
-                || (!broadcast))
-            {
-                this.brainBatcher = null;
-            }
-            else
-            {
-                this.brainBatcher = brainBatcher;
-                this.brainBatcher.SubscribeBrain(brain.gameObject.name);
-            }
 
             if (graphModel != null)
             {
@@ -130,8 +127,6 @@ namespace MLAgents
                 graph.Import(graphModel.bytes);
 
                 session = new TFSession(graph);
-
-                // TODO: Make this a loop over a dynamic set of graph inputs
 
                 if (graph[BatchSizePlaceholderName] != null)
                 {
@@ -176,37 +171,40 @@ namespace MLAgents
 
         /// Uses the stored information to run the tensorflow graph and generate 
         /// the actions.
-        public void DecideAction(Dictionary<Agent, AgentInfo> agentInfo)
+        protected override void DecideAction()
         {
 #if ENABLE_TENSORFLOW
-            if (brainBatcher != null)
+            base.DecideAction();
+            
+            if (isControlled)
             {
-                brainBatcher.SendBrainInfo(brain.gameObject.name, agentInfo);
+                agentInfos.Clear();
+                return;
             }
 
-            int currentBatchSize = agentInfo.Count();
-            List<Agent> agentList = agentInfo.Keys.ToList();
+            int currentBatchSize = agentInfos.Count();
+            List<Agent> agentList = agentInfos.Keys.ToList();
             if (currentBatchSize == 0)
             {
                 return;
             }
-
+            
 
             // Create the state tensor
             if (hasState)
             {
                 int stateLength = 1;
-                stateLength = brain.brainParameters.vectorObservationSize;
+                stateLength = brainParameters.vectorObservationSize;
                 inputState =
-                    new float[currentBatchSize, stateLength * brain.brainParameters.numStackedVectorObservations];
+                    new float[currentBatchSize, stateLength * brainParameters.numStackedVectorObservations];
 
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    List<float> stateList = agentInfo[agent].stackedVectorObservation;
+                    List<float> stateList = agentInfos[agent].stackedVectorObservation;
                     for (int j =
                             0;
-                        j < stateLength * brain.brainParameters.numStackedVectorObservations;
+                        j < stateLength * brainParameters.numStackedVectorObservations;
                         j++)
                     {
                         inputState[i, j] = stateList[j];
@@ -219,12 +217,12 @@ namespace MLAgents
             // Create the state tensor
             if (hasPrevAction)
             {
-                int totalNumberActions = brain.brainParameters.vectorActionSize.Length;
+                int totalNumberActions = brainParameters.vectorActionSize.Length;
                 inputPrevAction = new int[currentBatchSize, totalNumberActions];
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    float[] actionList = agentInfo[agent].storedVectorActions;
+                    float[] actionList = agentInfos[agent].storedVectorActions;
                     for (var j = 0 ; j < totalNumberActions; j++)
                     {
                         inputPrevAction[i,j] = Mathf.FloorToInt(actionList[j]);
@@ -237,16 +235,16 @@ namespace MLAgents
             {
                 maskedActions = new float[
                     currentBatchSize, 
-                    brain.brainParameters.vectorActionSize.Sum()
+                    brainParameters.vectorActionSize.Sum()
                 ];
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    for (int j = 0; j < brain.brainParameters.vectorActionSize.Sum(); j++)
+                    for (int j = 0; j < brainParameters.vectorActionSize.Sum(); j++)
                     {
-                        if (agentInfo[agent].actionMasks != null)
+                        if (agentInfos[agent].actionMasks != null)
                         {
-                            maskedActions[i, j] = agentInfo[agent].actionMasks[j] ? 0.0f : 1.0f;
+                            maskedActions[i, j] = agentInfos[agent].actionMasks[j] ? 0.0f : 1.0f;
                         }
                         else
                         {
@@ -260,18 +258,18 @@ namespace MLAgents
             observationMatrixList.Clear();
             for (int observationIndex =
                     0;
-                observationIndex < brain.brainParameters.cameraResolutions.Length;
+                observationIndex < brainParameters.cameraResolutions.Length;
                 observationIndex++)
             {
                 texturesHolder.Clear();
                 foreach (Agent agent in agentList)
                 {
-                    texturesHolder.Add(agentInfo[agent].visualObservations[observationIndex]);
+                    texturesHolder.Add(agentInfos[agent].visualObservations[observationIndex]);
                 }
 
                 observationMatrixList.Add(
                     Utilities.TextureToFloatArray(texturesHolder,
-                        brain.brainParameters.cameraResolutions[observationIndex].blackAndWhite));
+                        brainParameters.cameraResolutions[observationIndex].blackAndWhite));
             }
 
             // Create the recurrent tensor
@@ -282,7 +280,7 @@ namespace MLAgents
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    float[] m = agentInfo[agent].memories.ToArray();
+                    float[] m = agentInfos[agent].memories.ToArray();
                     for (int j = 0; j < m.Length; j++)
                     {
                         inputOldMemories[i, j] = m[j];
@@ -330,7 +328,7 @@ namespace MLAgents
                     throw new UnityAgentsException(string.Format(
                         @"One of the Tensorflow placeholder cound nout be found.
                 In brain {0}, there are no {1} placeholder named {2}.",
-                        brain.gameObject.name, placeholder.valueType.ToString(), placeholder.name));
+                        name, placeholder.valueType.ToString(), placeholder.name));
                 }
             }
 
@@ -355,7 +353,7 @@ namespace MLAgents
             // Create the observation tensors
             for (int obsNumber =
                     0;
-                obsNumber < brain.brainParameters.cameraResolutions.Length;
+                obsNumber < brainParameters.cameraResolutions.Length;
                 obsNumber++)
             {
                 runner.AddInput(graph[VisualObservationPlaceholderName[obsNumber]][0],
@@ -432,14 +430,14 @@ namespace MLAgents
                 }
             }
 
-            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 var output = networkOutput[0].GetValue() as float[,];
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    var a = new float[brain.brainParameters.vectorActionSize[0]];
-                    for (int j = 0; j < brain.brainParameters.vectorActionSize[0]; j++)
+                    var a = new float[brainParameters.vectorActionSize[0]];
+                    for (int j = 0; j < brainParameters.vectorActionSize[0]; j++)
                     {
                         a[j] = output[i, j];
                     }
@@ -448,13 +446,13 @@ namespace MLAgents
                     i++;
                 }
             }
-            else if (brain.brainParameters.vectorActionSpaceType == SpaceType.discrete)
+            else if (brainParameters.vectorActionSpaceType == SpaceType.discrete)
             {
                 long[,] output = networkOutput[0].GetValue() as long[,];
                 var i = 0;
                 foreach (Agent agent in agentList)
                 {
-                    var actSize = brain.brainParameters.vectorActionSize.Length;
+                    var actSize = brainParameters.vectorActionSize.Length;
                     var a = new float[actSize];
                     for (int actIdx = 0; actIdx < actSize; actIdx++)
                     {
@@ -467,139 +465,21 @@ namespace MLAgents
 
 
 #else
-            if (agentInfo.Count > 0)
+            base.DecideAction();
+            if (isControlled)
+            {
+                agentInfos.Clear();
+                return;
+            }
+            if (agentInfos.Count > 0)
             {
                 throw new UnityAgentsException(string.Format(
                     @"The brain {0} was set to Internal but the Tensorflow 
                         library is not present in the Unity project.",
-                    brain.gameObject.name));
+                    name));
             }
 #endif
-        }
-
-        /// Displays the parameters of the CoreBrainInternal in the Inspector 
-        public void OnInspector()
-        {
-#if ENABLE_TENSORFLOW && UNITY_EDITOR
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            broadcast = EditorGUILayout.Toggle(new GUIContent("Broadcast",
-                "If checked, the brain will broadcast states and actions to Python."), broadcast);
-
-            var serializedBrain = new SerializedObject(this);
-            GUILayout.Label("Edit the Tensorflow graph parameters here");
-            var tfGraphModel = serializedBrain.FindProperty("graphModel");
-            serializedBrain.Update();
-            EditorGUILayout.ObjectField(tfGraphModel);
-            serializedBrain.ApplyModifiedProperties();
-
-            if (graphModel == null)
-            {
-                EditorGUILayout.HelpBox("Please provide a tensorflow graph as a bytes file.", MessageType.Error);
-            }
-            if (BatchSizePlaceholderName == "")
-            {
-                BatchSizePlaceholderName = "batch_size";
-            }
-
-            BatchSizePlaceholderName =
-                EditorGUILayout.TextField(new GUIContent("Batch Size Node Name", "If the batch size is one of " +
-                                                                                 "the inputs of your graph, you must specify the name if the placeholder here."),
-                    BatchSizePlaceholderName);
-            if (VectorObservationPlacholderName == "")
-            {
-                VectorObservationPlacholderName = "state";
-            }
-
-            VectorObservationPlacholderName =
-                EditorGUILayout.TextField(new GUIContent("Vector Observation Node Name",
-                    "If your graph uses the state as an input, " +
-                    "you must specify the name if the placeholder here."), VectorObservationPlacholderName);
-            if (RecurrentInPlaceholderName == "")
-            {
-                RecurrentInPlaceholderName = "recurrent_in";
-            }
-
-            RecurrentInPlaceholderName =
-                EditorGUILayout.TextField(new GUIContent("Recurrent Input Node Name", "If your graph uses a " +
-                                                                                      "recurrent input / memory as input and outputs new recurrent input / memory, " +
-                                                                                      "you must specify the name if the input placeholder here."),
-                    RecurrentInPlaceholderName);
-            if (RecurrentOutPlaceholderName == "")
-            {
-                RecurrentOutPlaceholderName = "recurrent_out";
-            }
-
-            RecurrentOutPlaceholderName =
-                EditorGUILayout.TextField(new GUIContent("Recurrent Output Node Name", " If your graph uses a " +
-                                                                                       "recurrent input / memory as input and outputs new recurrent input / memory, you must specify the name if " +
-                                                                                       "the output placeholder here."),
-                    RecurrentOutPlaceholderName);
-
-            if (brain.brainParameters.cameraResolutions != null)
-            {
-                if (brain.brainParameters.cameraResolutions.Count() > 0)
-                {
-                    if (VisualObservationPlaceholderName == null)
-                    {
-                        VisualObservationPlaceholderName =
-                            new string[brain.brainParameters.cameraResolutions.Count()];
-                    }
-
-                    if (VisualObservationPlaceholderName.Count() != brain.brainParameters.cameraResolutions.Count())
-                    {
-                        VisualObservationPlaceholderName =
-                            new string[brain.brainParameters.cameraResolutions.Count()];
-                    }
-
-                    for (int obs_number =
-                            0;
-                        obs_number < brain.brainParameters.cameraResolutions.Count();
-                        obs_number++)
-                    {
-                        if ((VisualObservationPlaceholderName[obs_number] == "") ||
-                            (VisualObservationPlaceholderName[obs_number] == null))
-                        {
-                            VisualObservationPlaceholderName[obs_number] =
-                                "visual_observation_" + obs_number;
-                        }
-                    }
-
-                    var opn = serializedBrain.FindProperty("VisualObservationPlaceholderName");
-                    serializedBrain.Update();
-                    EditorGUILayout.PropertyField(opn, true);
-                    serializedBrain.ApplyModifiedProperties();
-                }
-            }
-
-            if (ActionPlaceholderName == "")
-            {
-                ActionPlaceholderName = "action";
-            }
-
-            ActionPlaceholderName =
-                EditorGUILayout.TextField(new GUIContent("Action Node Name", "Specify the name of the " +
-                                                                             "placeholder corresponding to the actions of the brain in your graph. If the action space type is " +
-                                                                             "continuous, the output must be a one dimensional tensor of float of length Action Space Size, " +
-                                                                             "if the action space type is discrete, the output must be a one dimensional tensor of int " +
-                                                                             "of length 1."), ActionPlaceholderName);
-
-
-            var tfPlaceholders = serializedBrain.FindProperty("graphPlaceholders");
-            serializedBrain.Update();
-            EditorGUILayout.PropertyField(tfPlaceholders, true);
-            serializedBrain.ApplyModifiedProperties();
-#endif
-#if !ENABLE_TENSORFLOW && UNITY_EDITOR
-            EditorGUILayout.HelpBox(
-                "You need to install and enable the TensorflowSharp plugin in " +
-                "order to use the internal brain.", MessageType.Error);
-            if (GUILayout.Button("Show me how"))
-            {
-                Application.OpenURL(
-                    "https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Getting-Started-with-" +
-                    "Balance-Ball.md#embedding-the-trained-brain-into-the-unity-environment-experimental");
-            }
-#endif
+            agentInfos.Clear();
         }
 
     }

@@ -35,8 +35,8 @@ Go to `Edit` -> `Player Settings` and add `ENABLE_TENSORFLOW` to the `Scripting
 Define Symbols` for each type of device you want to use (**`PC, Mac and Linux
 Standalone`**, **`iOS`** or **`Android`**).
 
-Set the Brain you used for training to `Internal`. Drag `your_name_graph.bytes`
-into Unity and then drag it into The `Graph Model` field in the Brain.
+Set the Brain you used for training to `Learning`. Drag `your_name_graph.bytes`
+into Unity and then drag it into The `Model` field in the Brain.
 
 ## Using your own trained graphs
 
@@ -64,7 +64,7 @@ You can have additional placeholders for float or integers but they must be
 placed in placeholders of dimension 1 and size 1. (Be sure to name them.)
 
 It is important that the inputs and outputs of the graph are exactly the ones
-you receive and return when training your model with an `External` Brain. This
+you receive and return when training your model with an External Brain. This
 means you cannot have any operations such as reshaping outside of the graph. The
 object you get by calling `step` or `reset` has fields `vector_observations`,
 `visual_observations` and `memories` which must correspond to the placeholders
@@ -93,11 +93,9 @@ Your model will be saved with the name `your_name_graph.bytes` and will contain
 both the graph and associated weights. Note that you must save your graph as a
 .bytes file so Unity can load it.
 
-![Internal Brain Inspector](images/internal_brain.png)
-
 See
-[Internal Brain](Learning-Environment-Design-External-Internal-Brains.md#internal-brain)
-for more information about using Internal Brains.
+[Learning Brain](Learning-Environment-Design-Learning-Brains.md#learning-brain)
+for more information about using Learning Brains.
 
 If you followed these instructions well, the Agents in your environment that use
 this Brain will use your fully trained network to make decisions.
