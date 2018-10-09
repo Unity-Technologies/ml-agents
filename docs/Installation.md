@@ -6,7 +6,7 @@ overviews each step, in addition to a Docker set-up.
 
 ## Windows installation
 For setting up your environment on Windows, we have created a [detailed
-guide]((Installation-Windows.md) to setting up your env. For Mac and Linux,
+guide](Installation-Windows.md) to setting up your env. For Mac and Linux,
 continue with this guide.
 
 ## Install **Unity 2017.4** or Later
