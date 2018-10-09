@@ -22,9 +22,8 @@ namespace MLAgents.InferenceBrain
         /// </summary>
         /// <param name="bp"> The BrainParameters used to determines what Appliers will be
         /// used</param>
-        /// <param name="multinomial"> The Multinomial objects some of the Appliers will
-        /// be initialized with.</param>
-        public TensorAppliers(BrainParameters bp, Multinomial multinomial)
+        /// <param name="seed"> The seed the Appliers will be initialized with.</param>
+        public TensorAppliers(BrainParameters bp, int seed)
         {
             dict = new Dictionary<string, Action<Tensor, Dictionary<Agent, AgentInfo>>>();
             
@@ -36,7 +35,7 @@ namespace MLAgents.InferenceBrain
             else
             {
                 dict[TensorNames.ActionOutput] = (tensor, agentInfo) =>
-                    ApplyDiscreteActionOutput(tensor, agentInfo, multinomial,
+                    ApplyDiscreteActionOutput(tensor, agentInfo, new Multinomial(seed), 
                         bp.vectorActionSize);
             }
             dict[TensorNames.RecurrentOutput] = ApplyMemoryOutput;

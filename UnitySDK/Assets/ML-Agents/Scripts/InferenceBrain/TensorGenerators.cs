@@ -28,9 +28,8 @@ namespace MLAgents.InferenceBrain
         /// </summary>
         /// <param name="bp"> The BrainParameters used to determines what Generators will be
         /// used</param>
-        /// <param name="randomNormal"> The RandomNormal object some of the Generators will
-        /// be initialized with.</param>
-        public TensorGenerators(BrainParameters bp, RandomNormal randomNormal)
+        /// <param name="seed"> The seed the Generators will be initialized with.</param>
+        public TensorGenerators(BrainParameters bp, int seed)
         {
             // Generator for Inputs
             dict[TensorNames.BatchSizePlaceholder] = GenerateBatchSize;
@@ -41,7 +40,7 @@ namespace MLAgents.InferenceBrain
             dict[TensorNames.ActionMaskPlaceholder] = GenerateActionMaskInput;
             dict[TensorNames.RandomNormalEpsilonPlaceholder] =
                 (tensor, batchSize, agentInfo) =>
-                    GenerateRandomNormalInput(tensor, batchSize, agentInfo, randomNormal);
+                    GenerateRandomNormalInput(tensor, batchSize, agentInfo, new RandomNormal(seed));
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;

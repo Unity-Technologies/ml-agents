@@ -34,7 +34,7 @@ namespace MLAgents.InferenceBrain
         /// continuous control or discrete control. 0 corresponds to discrete control,
         /// 1 corresponds to continuous control and any other value signifies that the
         /// type of control could not be assessed from the InferenceEngine.</param>
-        /// <param name="memoryModel">The memory size of the InferenceEngine. If the value
+        /// <param name="memorySize">The memory size of the InferenceEngine. If the value
         /// is less or equal to zero, it means that the InferenceEngine is not using memories.
         /// </param>
         /// <param name="actionSizeModel">The action size of the InferenceEngine. If the value
@@ -51,7 +51,7 @@ namespace MLAgents.InferenceBrain
             long versionModel,
             long versionBrain,
             long isContinuousModel,
-            long memoryModel,
+            long memorySize,
             long actionSizeModel)
         {
             if (engine == null)
@@ -64,7 +64,7 @@ namespace MLAgents.InferenceBrain
                 failedChecks.Add("Incompatible Version");
                 return failedChecks;
             }
-            if (memoryModel == -1)
+            if (memorySize == -1)
             {
                 failedChecks.Add("No Memory Size");
             }
@@ -92,12 +92,12 @@ namespace MLAgents.InferenceBrain
             }
             failedChecks.AddRange(CheckInputTensorPresence(inputs,
                 brainParams,
-                memoryModel,
+                memorySize,
                 isContinuousModel));
             failedChecks.AddRange(CheckInputTensorShape(inputs,
                 brainParams));
             failedChecks.AddRange(CheckOutputTensorPresence(outputs,
-                memoryModel));
+                memorySize));
             failedChecks.AddRange(CheckOutputTensorShape(outputs,
                 brainParams, actionSizeModel));
             return failedChecks;
