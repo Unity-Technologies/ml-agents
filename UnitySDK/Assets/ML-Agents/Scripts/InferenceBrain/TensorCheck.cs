@@ -29,7 +29,7 @@ namespace MLAgents.InferenceBrain
         /// checks.</param>
         /// <param name="versionModel"> The version of the Trainer the model was trained with.
         /// </param>
-        /// <param name="versionBrain"></param>
+        /// <param name="versionBrain">The api version of the brain running the model</param>
         /// <param name="isContinuousModel"> Whether or not the InferenceEngine uses
         /// continuous control or discrete control. 0 corresponds to discrete control,
         /// 1 corresponds to continuous control and any other value signifies that the
