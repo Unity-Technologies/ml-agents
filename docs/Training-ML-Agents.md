@@ -87,6 +87,10 @@ When training is finished, you can find the saved model in the `models` folder
 under the assigned run-id — in the cats example, the path to the model would be
 `models/cob_1/CatsOnBicycles_cob_1.bytes`.
 
+On Mac and Linux platform, you can press Ctrl+c to terminate your training
+early, the model will be saved as if you set your max_steps to the current
+step. On Windows platform there is a known bug that causes the model to not be
+saved. 
 While this example used the default training hyperparameters, you can edit the
 [training_config.yaml file](#training-config-file) with a text editor to set
 different values.
