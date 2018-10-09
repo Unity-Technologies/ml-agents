@@ -18,7 +18,7 @@ namespace MLAgents.InferenceBrain
     /// When the Tensor is an Output of the model, only the shape of the Tensor will be modified
     /// using the current batch size. The data will be prefilled with zeros.
     /// </summary>
-    public class TensorGeneratorsInvoker
+    public class TensorGeneratorInvoker
     {
         Dictionary<string, TensorGenerator> dict = new Dictionary<string, TensorGenerator>();
 
@@ -28,7 +28,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="bp"> The BrainParameters used to determines what Generators will be
         /// used</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
-        public TensorGeneratorsInvoker(BrainParameters bp, int seed)
+        public TensorGeneratorInvoker(BrainParameters bp, int seed)
         {
             // Generator for Inputs
             dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator();

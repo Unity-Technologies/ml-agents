@@ -25,7 +25,7 @@ namespace MLAgents
         private List<string> _failedModelChecks = new List<string>();
         private long _modelMemorySize;
         
-        private TensorGeneratorsInvoker _tensorGeneratorsInvoker;
+        private TensorGeneratorInvoker _tensorGeneratorInvoker;
         private TensorApplierInvoker  _outputTensorApplierInvoker;
         
         public Model model;
@@ -92,7 +92,7 @@ namespace MLAgents
                     _modelMemorySize,
                     modelActionSize).ToList();
                 
-                _tensorGeneratorsInvoker = new TensorGeneratorsInvoker(brainParameters, seed);
+                _tensorGeneratorInvoker = new TensorGeneratorInvoker(brainParameters, seed);
                 _outputTensorApplierInvoker = new TensorApplierInvoker(brainParameters, seed);
             }
             else
@@ -229,23 +229,23 @@ namespace MLAgents
             // Prepare the input tensors to be feed into the engine
             foreach (var tensor in _inferenceInputs)
             {
-                if (!_tensorGeneratorsInvoker.ContainsKey(tensor.Name))
+                if (!_tensorGeneratorInvoker.ContainsKey(tensor.Name))
                 {
                     throw new UnityAgentsException(
                         "Unknow tensor expected as input : "+tensor.Name);
                 }
-                _tensorGeneratorsInvoker[tensor.Name].Execute(tensor, currentBatchSize, agentInfos);
+                _tensorGeneratorInvoker[tensor.Name].Execute(tensor, currentBatchSize, agentInfos);
             }
             // Prepare the output tensors to be feed into the engine
             foreach (var tensor in _inferenceOutputs)
             {
-                if (!_tensorGeneratorsInvoker.ContainsKey(tensor.Name))
+                if (!_tensorGeneratorInvoker.ContainsKey(tensor.Name))
                 {
                     throw new UnityAgentsException(
                         "Unknow tensor expected as output : "+tensor.Name);
                 }
                 
-                _tensorGeneratorsInvoker[tensor.Name].Execute(tensor, currentBatchSize, agentInfos);
+                _tensorGeneratorInvoker[tensor.Name].Execute(tensor, currentBatchSize, agentInfos);
             }
 
             // Execute the Model
