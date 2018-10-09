@@ -88,12 +88,12 @@ under the assigned run-id — in the cats example, the path to the model would b
 `models/cob_1/CatsOnBicycles_cob_1.bytes`.
 
 On Mac and Linux platform, you can press Ctrl+c to terminate your training
-early, the model will be saved as if you set your max_steps to the current
-step. On Windows platform there is a known bug that causes the model to not be
-saved. 
-While this example used the default training hyperparameters, you can edit the
-[training_config.yaml file](#training-config-file) with a text editor to set
-different values.
+early, the model will be saved as if you set your max_steps to the current step.
+(Note: There is a known bug on Windows that causes the saving of the model to
+fail when you early terminate the training, it's recommended to wait until Step
+has reached the max_steps parameter you set) While this example used the default
+training hyperparameters, you can edit the [training_config.yaml
+file](#training-config-file) with a text editor to set different values.
 
 ### Command line training options
 
