@@ -7,7 +7,7 @@ Windows VM such as Bootcamp or Parallels.
 
 To use the ML-Agents toolkit, you install Python and the required Python
 packages as outlined below. This guide also covers how set up GPU-based training
-(for advanced users). GPU-based training is not required for the v0.4 release of
+(for advanced users). GPU-based training is not required for the v0.6 release of
 the ML-Agents toolkit. However, training on a GPU might be required by future
 versions and features.
 
@@ -152,7 +152,7 @@ GPU). This is a guide for advanced users who want to train using GPUs.
 Additionally, you will need to check if your GPU is CUDA compatible. Please
 check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
-As of the ML-Agents toolkit v0.4, only CUDA v9.0 and cuDNN v7.0.5 is supported.
+As of the ML-Agents toolkit v0.6, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
 ### Install Nvidia CUDA toolkit
 
