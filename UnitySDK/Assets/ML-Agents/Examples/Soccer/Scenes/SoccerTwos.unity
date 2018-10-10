@@ -904,30 +904,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114458726074197592, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 0e2b949bf7d37469786426a6d913f5af,
-        type: 2}
-    - target: {fileID: 114707577830819224, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 0e2b949bf7d37469786426a6d913f5af,
-        type: 2}
-    - target: {fileID: 114848174355100558, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: b7b6884feff2f4a17a645d7e0b9dc8f3,
-        type: 2}
-    - target: {fileID: 114785077592236372, guid: ab518b4d19ded4d9dbe6fec8239e88b8,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: b7b6884feff2f4a17a645d7e0b9dc8f3,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ab518b4d19ded4d9dbe6fec8239e88b8, type: 2}
   m_IsPrefabParent: 0

@@ -1443,21 +1443,9 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
         type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
       propertyPath: scoreText
       value: 
       objectReference: {fileID: 2073469450}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
     - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
         type: 2}
       propertyPath: scoreText
