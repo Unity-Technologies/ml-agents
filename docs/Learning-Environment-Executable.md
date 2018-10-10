@@ -202,7 +202,7 @@ You can press Ctrl+C to stop the training, and your trained model will be at
 to your model's latest checkpoint. (**Note:** There is a known bug on Windows
 that causes the saving of the model to fail when you early terminate the
 training, it's recommended to wait until Step has reached the max_steps
-parameter you set in trainer_config.yaml.)You can now embed this trained model
+parameter you set in trainer_config.yaml.) You can now embed this trained model
 into your Learning Brain by following the steps below:
 
 1. Move your model file into
