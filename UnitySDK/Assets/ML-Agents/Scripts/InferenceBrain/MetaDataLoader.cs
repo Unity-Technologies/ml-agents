@@ -7,7 +7,8 @@ using System.Linq;
 namespace MLAgents.InferenceBrain
 {
     /// <summary>
-    /// TODO 
+    /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
+    /// and BrainParameters have incompatibilities.
     /// </summary>
     public class MetaDataLoader
     {
@@ -92,7 +93,6 @@ namespace MLAgents.InferenceBrain
         /// Only works with int32 Tensors with zero dimensions containing a unique element.
         /// If the node was not found or could not be retrieved, the value -1 will be returned. 
         /// </summary>
-        /// <param name="engine">The InferenceEngine to be queried</param>
         /// <param name="name">The name of the Tensor variable</param>
         /// <returns></returns>
         private int GetIntScalar(string name)
@@ -122,13 +122,17 @@ namespace MLAgents.InferenceBrain
 
         /// <summary>
         /// Retrieves an IEnumerable of string corresponding to the failed compatibility checks
-        /// between the InferenceEngine and the BrainParameters.
+        /// between the InferenceEngine and the BrainParameters. 
         /// </summary>
         public IEnumerable<string> GetChecks()
         {
             return _failedModelChecks;
         }
 
+        /// <summary>
+        /// Generates the list of failed checks that failed when comparing the data from the Model
+        /// and from the BrainParameters
+        /// </summary>
         private void GenerateChecks()
         {
             _failedModelChecks.Clear();
