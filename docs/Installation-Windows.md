@@ -126,19 +126,28 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 If you don't want to use Git, you can always directly download all the files
 [here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
 
+The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
+It also contains many [example environments](Learning-Environment-Examples.md)
+that can be used to help get you familiar with Unity.
+
+The `ml-agents` subdirectory contains Python packages which provide
+trainers and a Python API to interface with Unity.
+
+The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
+
 In our example, the files are located in `C:\Downloads`. After you have either
-cloned or downloaded the files, from the Anaconda Prompt, change to the python
-directory inside the ml-agents directory:
+cloned or downloaded the files, from the Anaconda Prompt, change to the ml-agents
+subdirectory inside the ml-agents directory:
 
 ```console
 cd C:\Downloads\ml-agents\ml-agents
 ```
 
 Make sure you are connected to the internet and then type in the Anaconda
-Prompt:
+Prompt within `ml-agents` subdirectory:
 
 ```sh
-pip install .
+pip install -e .
 ```
 
 This will complete the installation of all the required Python packages to run

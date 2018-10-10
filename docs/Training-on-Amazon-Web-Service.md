@@ -66,7 +66,7 @@ After launching your EC2 instance using the ami and ssh into it:
     ```sh
     git clone https://github.com/Unity-Technologies/ml-agents.git
     cd ml-agents/ml-agents/
-    pip3 install .
+    pip3 install -e .
     ```
 
 ### Setting up X Server (optional)

@@ -16,12 +16,14 @@ Build Support_ component when installing Unity.
        width="500" border="10" />
 </p>
 
-## Windows installation
+## Windows Users
 For setting up your environment on Windows, we have created a [detailed
 guide](Installation-Windows.md) to setting up your env. For Mac and Linux,
 continue with this guide.
 
-## Clone the ML-Agents Toolkit Repository
+## Mac and Unix Users
+
+### Clone the ML-Agents Toolkit Repository
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
@@ -38,7 +40,7 @@ trainers and a Python API to interface with Unity.
 
 The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
 
-## Install Python and mlagents Package
+### Install Python and mlagents Package
 
 In order to use ML-Agents toolkit, you need Python 3.6 along with the
 dependencies listed in the [requirements file](../ml-agents/requirements.txt).
@@ -46,16 +48,6 @@ Some of the primary dependencies include:
 
 - [TensorFlow](Background-TensorFlow.md)
 - [Jupyter](Background-Jupyter.md)
-
-### NOTES
-
-- We do not currently support Python 3.7 or Python 3.5.
-- If you are using Anaconda and are having trouble with TensorFlow, please see
-  the following
-  [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda)
-  on how to install TensorFlow in an Anaconda environment.
-
-### Mac and Unix Users
 
 [Download](https://www.python.org/downloads/) and install Python 3.6 if you do not
 already have it.
@@ -68,11 +60,19 @@ To install the dependencies and `mlagents` Python package, enter the
 `ml-agents/` subdirectory and run from the command line:
 
 ```sh
-pip3 install .
+pip3 install -e .
 ```
 
 If you installed this correctly, you should be able to run
 `mlagents-learn --help`
+
+**Notes:**
+
+- We do not currently support Python 3.7 or Python 3.5.
+- If you are using Anaconda and are having trouble with TensorFlow, please see
+  the following
+  [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda)
+  on how to install TensorFlow in an Anaconda environment.
 
 ## Docker-based Installation
 
