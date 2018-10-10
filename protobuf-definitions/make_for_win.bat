@@ -37,7 +37,7 @@ rem rm -f $DST_DIR_P/$PYTHON_PACKAGE/__init__.py
 setlocal enabledelayedexpansion
 for %%i in (%DST_DIR_P%\%PYTHON_PACKAGE%\*.py) do ( 
 set FILE=%%~ni
-rem echo from .$(basename $FILE) import \* >> $DST_DIR_P/$PYTHON_PACKAGE/__init__.py
+rem echo from .$(basename $FILE) import * >> $DST_DIR_P/$PYTHON_PACKAGE/__init__.py
 echo from .!FILE! import * >> %DST_DIR_P%\%PYTHON_PACKAGE%\__init__.py
 )
 
