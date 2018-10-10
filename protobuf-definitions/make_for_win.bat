@@ -2,9 +2,8 @@ rem variables
 
 rem GRPC-TOOLS required. Install with `nuget install Grpc.Tools`. 
 rem Then un-comment and replace [DIRECTORY] with location of files.
-rem For example, on macOS, you might have something like:
-rem COMPILER=Grpc.Tools.1.14.1/tools/windows_x64
-rem set COMPILER=[DIRECTORY]
+rem For example, on Windows, you might have something like:
+rem set COMPILER=Grpc.Tools.1.14.1/tools/windows_x64
 
 set SRC_DIR=proto\mlagents\envs\communicator_objects
 set DST_DIR_C=..\UnitySDK\Assets\ML-Agents\Scripts\CommunicatorObjects
