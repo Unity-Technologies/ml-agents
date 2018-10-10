@@ -16,7 +16,8 @@ imitation learning.
 The ML-Agents Toolkit provides a Python API for controlling the Agent simulation
 loop of an environment or game built with Unity. This API is used by the
 training algorithms inside the ML-Agent Toolkit, but you can also write your own
-Python programs using this API.
+Python programs using this API. Go [here](../notebooks/getting-started.ipynb) 
+for a Jupyter Notebook walking through the functionality of the API.
 
 The key objects in the Python API include:
 
