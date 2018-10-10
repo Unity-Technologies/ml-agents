@@ -11,7 +11,7 @@ import tensorflow as tf
 from mlagents.envs import AllBrainInfo
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import Buffer
-from mlagents.trainers.trainer import UnityTrainerException, Trainer
+from mlagents.trainers.trainer import Trainer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -33,7 +33,8 @@ class BCTrainer(Trainer):
         self.n_sequences = 1
         self.cumulative_rewards = {}
         self.episode_steps = {}
-        self.stats = {'losses': [], 'episode_length': [], 'cumulative_reward': []}
+        self.stats = {'Losses/Cloning Loss': [], 'Environment/Episode Length': [],
+                      'Environment/Cumulative Reward': []}
 
         self.summary_path = trainer_parameters['summary_path']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
@@ -73,8 +74,8 @@ class BCTrainer(Trainer):
         Returns the last reward the trainer has had
         :return: the new last reward
         """
-        if len(self.stats['cumulative_reward']) > 0:
-            return np.mean(self.stats['cumulative_reward'])
+        if len(self.stats['Environment/Cumulative Reward']) > 0:
+            return np.mean(self.stats['Environment/Cumulative Reward'])
         else:
             return 0
 
@@ -142,9 +143,9 @@ class BCTrainer(Trainer):
         for l in range(len(info_student.agents)):
             if info_student.local_done[l]:
                 agent_id = info_student.agents[l]
-                self.stats['cumulative_reward'].append(
+                self.stats['Environment/Cumulative Reward'].append(
                     self.cumulative_rewards.get(agent_id, 0))
-                self.stats['episode_length'].append(
+                self.stats['Environment/Episode Length'].append(
                     self.episode_steps.get(agent_id, 0))
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
@@ -184,6 +185,6 @@ class BCTrainer(Trainer):
             loss = run_out['policy_loss']
             batch_losses.append(loss)
         if len(batch_losses) > 0:
-            self.stats['losses'].append(np.mean(batch_losses))
+            self.stats['Losses/Cloning Loss'].append(np.mean(batch_losses))
         else:
-            self.stats['losses'].append(0)
+            self.stats['Losses/Cloning Loss'].append(0)
