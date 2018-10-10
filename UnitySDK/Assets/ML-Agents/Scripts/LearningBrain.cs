@@ -22,12 +22,9 @@ namespace MLAgents
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
-        private const long ApiVersion = 1; 
-        private List<string> _failedModelChecks = new List<string>();
-        private long _modelMemorySize;
-        
         private TensorGeneratorInvoker _tensorGeneratorInvoker;
-        private TensorApplierInvoker  _outputTensorApplierInvoker;
+        private TensorApplierInvoker _outputTensorApplierInvoker;
+        private MetaDataLoader _metaDataLoader;
         
         public Model model;
         public InferenceEngineConfig.DeviceType inferenceDevice;
@@ -69,40 +66,18 @@ namespace MLAgents
                 var config = new InferenceEngineConfig
                 {
                     Device = inferenceDevice
-                };;
+                };
                 _engine = InferenceAPI.LoadModel(model, config);
-
-                var modelVersionNumber = GetIntScalar(_engine, TensorNames.VersionNumber);
-                _modelMemorySize = GetIntScalar(_engine, TensorNames.MemorySize);
-                var modelIsContinuous = GetIntScalar(_engine, TensorNames.IsContinuousControl);
-                var modelActionSize =  GetIntScalar(_engine, TensorNames.ActionOutputShape);
-                
-                // Generate the Input tensors
-                _inferenceInputs = GetInputTensors();
-                _inferenceOutputs = GetOutputTensors();
-
-                _failedModelChecks = TensorCheck.GetChecks(
-                    _engine, 
-                    _inferenceInputs, 
-                    _inferenceOutputs, 
-                    brainParameters,
-                    modelVersionNumber,
-                    ApiVersion,
-                    modelIsContinuous, 
-                    _modelMemorySize,
-                    modelActionSize).ToList();
-                
-                _tensorGeneratorInvoker = new TensorGeneratorInvoker(brainParameters, seed);
-                _outputTensorApplierInvoker = new TensorApplierInvoker(brainParameters, seed);
             }
             else
             {
                 _engine = null;
-                _failedModelChecks = new List<string>();
-                _failedModelChecks.Add(
-                    "There is no model for this Brain, cannot run inference. " +
-                    "(But can still train)");
             }
+            _metaDataLoader = new MetaDataLoader(_engine, brainParameters);
+            _inferenceInputs = _metaDataLoader.GetInputTensors();
+            _inferenceOutputs = _metaDataLoader.GetOutputTensors();
+            _tensorGeneratorInvoker = new TensorGeneratorInvoker(brainParameters, seed);
+            _outputTensorApplierInvoker = new TensorApplierInvoker(brainParameters, seed);
         }
         
         /// <summary>
@@ -113,103 +88,9 @@ namespace MLAgents
         /// </summary>
         /// <returns> The list of the failed compatibility checks between the Model and the
         /// Brain Parameters</returns>
-        public List<string> GetModelFailedChecks()
+        public IEnumerable<string> GetModelFailedChecks()
         {
-            return _failedModelChecks;
-        }
-
-        /// <summary>
-        /// Queries the InferenceEngine for the value of a variable in the graph given its name.
-        /// Only works with int32 Tensors with zero dimensions containing a unique element.
-        /// If the node was not found or could not be retrieved, the value -1 will be returned. 
-        /// </summary>
-        /// <param name="engine">The InferenceEngine to be queried</param>
-        /// <param name="name">The name of the Tensor variable</param>
-        /// <returns></returns>
-        private static long GetIntScalar(InferenceEngine engine, string name)
-        {
-            var outputs = new Tensor[]
-            {
-                new Tensor()
-                {
-                    Name = name,
-                    ValueType = Tensor.TensorType.Integer,
-                    Shape = new long[]{},
-                    Data = new long[1]
-                },
-            };
-            try
-            {
-                engine.ExecuteGraph(new Tensor[0], outputs);
-            }
-            catch (Exception e)
-            {
-                Debug.Log("Node not in graph: " + name +". The following error occured : \n" + e);
-                return -1;
-            }
-            return (outputs[0].Data as int[])[0];
-        }
-
-        /// <summary>
-        /// Generates the Tensor inputs that are expected to be present in the Model given the
-        /// BrainParameters. 
-        /// </summary>
-        /// <returns>Tensor Array with the expected Tensor inputs</returns>
-        private IEnumerable<Tensor> GetInputTensors()
-        {
-            return _engine.InputFeatures();
-        }
-        
-        /// <summary>
-        /// Generates the Tensor outputs that are expected to be present in the Model given the
-        /// BrainParameters. 
-        /// </summary>
-        /// <returns>Tensor Array with the expected Tensor outputs</returns>
-        private IEnumerable<Tensor> GetOutputTensors()
-        {
-            var bp = brainParameters;
-            var tensorList = new List<Tensor>();
-            if (bp.vectorActionSpaceType == SpaceType.continuous)
-            {
-                tensorList.Add(new Tensor()
-                {
-                    Name = TensorNames.ActionOutput,
-                    Shape = new long[]
-                    {
-                        -1, bp.vectorActionSize[0]
-                    },
-                    ValueType = Tensor.TensorType.FloatingPoint,
-                    Data = null
-                });
-            }
-            else
-            {
-                tensorList.Add(
-                    new Tensor()
-                    {
-                        Name = TensorNames.ActionOutput,
-                        Shape = new long[]
-                        {
-                            -1, bp.vectorActionSize.Sum()
-                        },
-                        ValueType = Tensor.TensorType.FloatingPoint,
-                        Data = null
-                    });
-            }
-            if (_modelMemorySize > 0)
-            {
-                tensorList.Add(new Tensor()
-                {
-                    Name = TensorNames.RecurrentOutput,
-                    Shape = new long[2]
-                    {
-                        -1, _modelMemorySize
-                    },
-                    ValueType = Tensor.TensorType.FloatingPoint,
-                    Data = null
-                });
-            }
-            return tensorList;
+            return (_metaDataLoader != null) ? _metaDataLoader.GetChecks() : new List<string>();
         }
 
         /// <inheritdoc />
