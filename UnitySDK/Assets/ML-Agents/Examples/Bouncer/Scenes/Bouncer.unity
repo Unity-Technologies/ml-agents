@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 8
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -38,8 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824862, g: 0.49827534, b: 0.57558274, a: 1}
-  m_UseRadianceAmbientProbe: 0
+  m_IndirectSpecularColor: {r: 0.4482636, g: 0.49828887, b: 0.5755903, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -55,10 +54,11 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 10
+    serializedVersion: 9
     m_Resolution: 2
     m_BakeResolution: 40
-    m_AtlasSize: 1024
+    m_TextureWidth: 1024
+    m_TextureHeight: 1024
     m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
@@ -156,7 +156,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (15)
@@ -211,7 +212,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (14)
@@ -266,7 +268,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (13)
@@ -321,7 +324,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (11)
@@ -376,7 +380,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (8)
@@ -431,7 +436,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (2)
@@ -486,7 +492,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (3)
@@ -541,7 +548,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (10)
@@ -596,7 +604,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (6)
@@ -608,18 +617,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &843971902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 1319880098}
 --- !u!1001 &892755145
 Prefab:
   m_ObjectHideFlags: 0
@@ -663,7 +660,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (4)
@@ -718,7 +716,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (16)
@@ -773,7 +772,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (1)
@@ -785,64 +785,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1319880096
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1319880097}
-  - component: {fileID: 1319880098}
-  m_Layer: 0
-  m_Name: BouncerBrain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1319880097
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1319880096}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1453982295}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1319880098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1319880096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c676a8ddf5a5f4f64b35e9ed5028679d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brainParameters:
-    vectorObservationSize: 6
-    numStackedVectorObservations: 3
-    vectorActionSize: 03000000
-    test: 010000000200000003000000
-    cameraResolutions: []
-    vectorActionDescriptions:
-    - 
-    - 
-    - 
-    vectorActionSpaceType: 1
-  brainType: 0
-  CoreBrains:
-  - {fileID: 1542945058}
-  - {fileID: 1443417188}
-  - {fileID: 843971902}
-  - {fileID: 1734263332}
-  instanceID: 100942
 --- !u!1001 &1342597084
 Prefab:
   m_ObjectHideFlags: 0
@@ -882,27 +824,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 114113529865546740, guid: e2c4e1ad4f2224d34bb09d20f26b3207,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 1319880098}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1443417188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 0}
 --- !u!1 &1453982293
 GameObject:
   m_ObjectHideFlags: 0
@@ -930,6 +854,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7223013998783490db672119a97e1fdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  broadcastHub:
+    broadcastingBrains:
+    - {fileID: 11400000, guid: 573920e3a672d40038169c7ffdbdca05, type: 2}
+    _brainsToControl: []
   maxSteps: 0
   trainingConfiguration:
     width: 80
@@ -955,42 +883,10 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 72.52305, y: 72.39882, z: 72.52292}
-  m_Children:
-  - {fileID: 1319880097}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1542945058
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  keyContinuousPlayerActions:
-  - key: 97
-    index: 0
-    value: -1
-  - key: 100
-    index: 0
-    value: 1
-  - key: 119
-    index: 2
-    value: 1
-  - key: 115
-    index: 2
-    value: -1
-  - key: 101
-    index: 1
-    value: 1
-  axisContinuousPlayerActions: []
-  discretePlayerActions: []
-  brain: {fileID: 1319880098}
 --- !u!1001 &1594422523
 Prefab:
   m_ObjectHideFlags: 0
@@ -1034,7 +930,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (17)
@@ -1089,7 +986,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (18)
@@ -1144,7 +1042,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (19)
@@ -1156,29 +1055,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1734263332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: f6197a66bd242464e8b654ef1ac01faf, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 1319880098}
 --- !u!1001 &1822801414
 Prefab:
   m_ObjectHideFlags: 0
@@ -1222,7 +1098,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (9)
@@ -1277,7 +1154,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (7)
@@ -1332,7 +1210,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (5)
@@ -1533,7 +1412,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 1319880098}
+      objectReference: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1,
+        type: 2}
     - target: {fileID: 1397068878990112, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
       propertyPath: m_Name
       value: Environment (12)
