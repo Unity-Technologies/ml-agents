@@ -12,9 +12,9 @@ namespace MLAgents.InferenceBrain
     }
 
     /// <summary>
-    /// Reshapes a Tensor so that his first diemsion becomes equal to the current batch size
+    /// Reshapes a Tensor so that its first dimension becomes equal to the current batch size
     /// and initializes its content to be zeros. Will only work on 2-dimensional tensors.
-    /// The second dimension of the Tensor will not be modiied.
+    /// The second dimension of the Tensor will not be modified.
     /// </summary>
     public class BiDimensionalOutputGenerator : TensorGenerator
     {
@@ -48,7 +48,7 @@ namespace MLAgents.InferenceBrain
     /// <summary>
     /// Generates the Tensor corresponding to the SequenceLength input : Will be a one
     /// dimensional integer array of size 1 containing 1.
-    /// Note : the sequence length is always one since recurrent networks only predicts for
+    /// Note : the sequence length is always one since recurrent networks only predict for
     /// one step at the time.
     /// </summary>
     public class SequenceLengthGenerator : TensorGenerator
@@ -102,13 +102,13 @@ namespace MLAgents.InferenceBrain
             foreach (var agent in agentInfo.Keys)
             {
                 var memory = agentInfo[agent].memories;
-                for (var j = 0; j < memorySize; j++)
+                if (memory == null)
                 {
-                    if (memory == null)
-                    {
-                        break;
-                    }
-
+                    agentIndex++;
+                    continue;
+                }
+                for (var j = 0; j < Math.Min(memorySize, memory.Count); j++)
+                {
                     if (j >= memory.Count)
                     {
                         break;
@@ -172,18 +172,8 @@ namespace MLAgents.InferenceBrain
                 var maskList = agentInfo[agent].actionMasks;
                 for (var j = 0; j < maskSize; j++)
                 {
-                    if (maskList != null)
-                    {
-                        tensor.Data.SetValue(
-                            maskList[j] ? 0.0f : 1.0f,
-                            new int[2] {agentIndex, j});
-                    }
-                    else
-                    {
-                        tensor.Data.SetValue(
-                            1.0f,
-                            new int[2] {agentIndex, j});
-                    }
+                    var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
+                    tensor.Data.SetValue(isUnmasked, new int[2] {agentIndex, j});
                 }
                 agentIndex++;
             }
@@ -193,7 +183,7 @@ namespace MLAgents.InferenceBrain
     /// <summary>
     /// Generates the Tensor corresponding to the Epsilon input : Will be a two
     /// dimensional float array of dimension [batchSize x actionSize].
-    /// It will use the generate random input data using a RandomNormal Distribution.
+    /// It will use the generate random input data from a normal Distribution.
     /// </summary>
     public class RandomNormalInputGenerator : TensorGenerator
     {
@@ -237,4 +227,3 @@ namespace MLAgents.InferenceBrain
         } 
     } 
 }
-    

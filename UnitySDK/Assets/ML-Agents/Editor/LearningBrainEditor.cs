@@ -16,23 +16,26 @@ namespace MLAgents
         private const string ModelPropName = "model";
         private const string DevicePropName = "inferenceDevice";
         private const float TimeBetweenModelReloads = 2f;
+        // Keeps track of time since the last reload of the model
         private float _timeSinceModelReload;
+        // Keeps track of whether or not the model needs to be reloaded
         private bool _requireReload;
         
         /// <summary>
-        /// Is called once when the user opens the Inspector for the LearningBrain
+        /// Called when the user opens the Inspector for the LearningBrain
         /// </summary>
         public void OnEnable()
         {
             _requireReload = true;
-            EditorApplication.update += Update;
+            EditorApplication.update += IncreaseTimeSinceLastModelReload;
         }
+        
         /// <summary>
-        /// Is called once when the user leaves the Inspector for the LearningBrain
+        /// Called when the user leaves the Inspector for the LearningBrain
         /// </summary>
         public void OnDisable()
         {
-            EditorApplication.update -= Update;
+            EditorApplication.update -= IncreaseTimeSinceLastModelReload;
         }
         
         public override void OnInspectorGUI()
@@ -55,21 +58,24 @@ namespace MLAgents
             }
             if (_requireReload && _timeSinceModelReload > TimeBetweenModelReloads)
             {
-                brain.SetModel(brain.model);
+                brain.ReloadModel();
                 _requireReload = false;
                 _timeSinceModelReload = 0;
             }
             foreach (var error in brain.GetModelFailedChecks())
             {
                 if (error != null)
+                {
                     EditorGUILayout.HelpBox(error, MessageType.Warning);
+                }
             }
         }
 
         /// <summary>
-        /// Is called once every EditorApplication update 
+        /// Increases the time since last model reload by the deltaTime since the last Update call
+        /// from the UnityEditor
         /// </summary>
-        private void Update()
+        private void IncreaseTimeSinceLastModelReload()
         {
             _timeSinceModelReload += Time.deltaTime;
         }

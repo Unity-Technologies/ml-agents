@@ -20,24 +20,24 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class TensorGeneratorInvoker
     {
-        Dictionary<string, TensorGenerator> dict = new Dictionary<string, TensorGenerator>();
+        Dictionary<string, TensorGenerator> _dict = new Dictionary<string, TensorGenerator>();
 
         /// <summary>
-        /// The constructor for the TensorGenerators. Returns a new TensorGenerators object.
+        /// Returns a new TensorGenerators object.
         /// </summary>
-        /// <param name="bp"> The BrainParameters used to determines what Generators will be
+        /// <param name="bp"> The BrainParameters used to determine what Generators will be
         /// used</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
         public TensorGeneratorInvoker(BrainParameters bp, int seed)
         {
             // Generator for Inputs
-            dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator();
-            dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator();
-            dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator();
-            dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator();
-            dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator();
-            dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator();
-            dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed);
+            _dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator();
+            _dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator();
+            _dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator();
+            _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator();
+            _dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator();
+            _dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator();
+            _dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed);
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;
@@ -46,25 +46,25 @@ namespace MLAgents.InferenceBrain
                 {
                     var index = visIndex;
                     var bw = bp.cameraResolutions[visIndex].blackAndWhite;
-                    dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = new
+                    _dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = new
                             VisualObservationInputGenerator(index, bw);
                 }
             }
 
             // Generators for Outputs
-            dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator();
-            dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator();
-            dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator();
+            _dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator();
+            _dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator();
+            _dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator();
         }
 
         /// <summary>
         /// Access the Generator corresponding to the key index
         /// </summary>
-        /// <param name="index">The tensor name of the tensor</param>
-        public TensorGenerator this[string index]
+        /// <param name="key">The tensor name of the tensor</param>
+        public TensorGenerator this[string key]
         {
-            get { return dict[index]; }
-            set { dict[index] = value; }
+            get { return _dict[key]; }
+            set { _dict[key] = value; }
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace MLAgents.InferenceBrain
         /// <returns>true if key is in the TensorGenerators, false otherwise</returns>
         public bool ContainsKey(string key)
         {
-            return dict.ContainsKey(key);
+            return _dict.ContainsKey(key);
         }
     }
 }

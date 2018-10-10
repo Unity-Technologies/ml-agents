@@ -15,39 +15,37 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class TensorApplierInvoker
     {
-        Dictionary<string, TensorApplier>  dict;
+        Dictionary<string, TensorApplier>  _dict = new Dictionary<string, TensorApplier>();
 
         /// <summary>
-        /// Constructor of TensorAppliers. Returns a new TensorAppliers object.
+        /// Returns a new TensorAppliers object.
         /// </summary>
-        /// <param name="bp"> The BrainParameters used to determines what Appliers will be
+        /// <param name="bp"> The BrainParameters used to determine what Appliers will be
         /// used</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         public TensorApplierInvoker(BrainParameters bp, int seed)
         {
-            dict = new Dictionary<string, TensorApplier>();
-            
-            dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
+            _dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
             if (bp.vectorActionSpaceType == SpaceType.continuous)
             {
-                dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
+                _dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
             else
             {
-                dict[TensorNames.ActionOutput] = new DiscreteActionOutputApplier(
+                _dict[TensorNames.ActionOutput] = new DiscreteActionOutputApplier(
                     bp.vectorActionSize, seed);
             }
-            dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
+            _dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
         }
 
         /// <summary>
         /// Access the Applier corresponding to the key index
         /// </summary>
-        /// <param name="index">The tensor name of the tensor</param>
-        public TensorApplier this[string index]
+        /// <param name="key">The tensor name of the tensor</param>
+        public TensorApplier this[string key]
         {
-            get { return dict[index]; }
-            set { dict[index] = value; }
+            get { return _dict[key]; }
+            set { _dict[key] = value; }
         }
 
         /// <summary>
@@ -57,7 +55,7 @@ namespace MLAgents.InferenceBrain
         /// <returns>true if key is in the TensorAppliers, false otherwise</returns>
         public bool ContainsKey(string key)
         {
-            return dict.ContainsKey(key);
+            return _dict.ContainsKey(key);
         }
     }
 }

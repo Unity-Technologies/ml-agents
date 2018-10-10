@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Linq;
 using MLAgents.InferenceBrain;
 using UnityEngine.MachineLearning.InferenceEngine;
-using UnityEngine.MachineLearning.InferenceEngine.Util;
 
 namespace MLAgents
 {
@@ -13,7 +12,9 @@ namespace MLAgents
     /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
     /// the checkbox Control. When using a pretrained model, just drag the Model file into the
     /// Model property of the Learning Brain.
-    /// When the Learning Braom is noe training, it uses a TensorFlow model to make decisions.
+    /// The property model corresponds to the Model currently attached to the Brain. Before
+    /// being used, a call to ReloadModel is required.
+    /// When the Learning Brain is not training, it uses a TensorFlow model to make decisions.
     /// The Proximal Policy Optimization (PPO) and Behavioral Cloning algorithms included with
     /// the ML-Agents SDK produce trained TensorFlow models that you can use with the
     /// Learning Brain.
@@ -31,7 +32,7 @@ namespace MLAgents
         public Model model;
         public InferenceEngineConfig.DeviceType inferenceDevice;
 
-        InferenceEngine _engine;
+        private InferenceEngine _engine;
         private IEnumerable<Tensor> _inferenceInputs;
         private IEnumerable<Tensor> _inferenceOutputs;
 
@@ -50,27 +51,26 @@ namespace MLAgents
         /// <inheritdoc />
         protected override void Initialize()
         {
-            SetModel(model);
+            ReloadModel();
         }
         
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
         /// </summary>
-        /// <param name="newModel"> The model the brain will use</param>
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
         /// and Multinomial obsjects used when running inference.</param>
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
         /// </exception>
-        public void SetModel(Model newModel, int seed = 0)
+        public void ReloadModel(int seed = 0)
         {
-            if (newModel != null)
+            if (model != null)
             {
                 var config = new InferenceEngineConfig
                 {
                     Device = inferenceDevice
                 };;
-                _engine = InferenceAPI.LoadModel(newModel, config);
+                _engine = InferenceAPI.LoadModel(model, config);
 
                 var modelVersionNumber = GetIntScalar(_engine, TensorNames.VersionNumber);
                 _modelMemorySize = GetIntScalar(_engine, TensorNames.MemorySize);
@@ -100,7 +100,8 @@ namespace MLAgents
                 _engine = null;
                 _failedModelChecks = new List<string>();
                 _failedModelChecks.Add(
-                    "There is no model on this Brain, cannot run inference. (But can still train)");
+                    "There is no model for this Brain, cannot run inference. " +
+                    "(But can still train)");
             }
         }
         
@@ -127,26 +128,26 @@ namespace MLAgents
         /// <returns></returns>
         private static long GetIntScalar(InferenceEngine engine, string name)
         {
+            var outputs = new Tensor[]
+            {
+                new Tensor()
+                {
+                    Name = name,
+                    ValueType = Tensor.TensorType.Integer,
+                    Shape = new long[]{},
+                    Data = new long[1]
+                },
+            };
             try
             {
-                var outputs = new Tensor[]
-                {
-                    new Tensor()
-                    {
-                        Name = name,
-                        ValueType = Tensor.TensorType.Integer,
-                        Shape = new long[]{},
-                        Data = new long[1]
-                    },
-                };
                 engine.ExecuteGraph(new Tensor[0], outputs);
-                return (outputs[0].Data as int[])[0];
             }
-            catch
+            catch (Exception e)
             {
-                Debug.Log("Node not in graph " + name);
+                Debug.Log("Node not in graph: " + name +". The following error occured : \n" + e);
                 return -1;
             }
+            return (outputs[0].Data as int[])[0];
         }
 
         /// <summary>

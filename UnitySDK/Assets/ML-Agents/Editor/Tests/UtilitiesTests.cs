@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using UnityEngine;
 
 namespace MLAgents.Tests
 {
@@ -9,7 +10,7 @@ namespace MLAgents.Tests
         {
             var output = Utilities.CumSum(new int[]{1, 2, 3, 10});
             CollectionAssert.AreEqual(output, new int[] {0, 1, 3, 6, 16});
-            
+
             output = Utilities.CumSum(new int[0]);
             CollectionAssert.AreEqual(output, new int[]{0});
             

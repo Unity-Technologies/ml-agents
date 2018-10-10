@@ -9,7 +9,6 @@ using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
-    
     public class EditModeTestInternalBrainTensorGenerator 
     {
         private class TestAgent : Agent
@@ -23,9 +22,9 @@ namespace MLAgents.Tests
             var agentA = goA.AddComponent<TestAgent>();
             var infoA = new AgentInfo()
             {
-                stackedVectorObservation = (new float[]{1f, 2f, 3f}).ToList(),
+                stackedVectorObservation = (new float[] {1f, 2f, 3f}).ToList(),
                 memories = null,
-                storedVectorActions = new float[]{1, 2},
+                storedVectorActions = new float[] {1, 2},
                 actionMasks = null,
                 
             };
@@ -33,10 +32,10 @@ namespace MLAgents.Tests
             var agentB = goB.AddComponent<TestAgent>();
             var infoB = new AgentInfo()
             {
-                stackedVectorObservation = (new float[]{4f, 5f, 6f}).ToList(),
-                memories = (new float[]{1f, 1f, 1f}).ToList(),
-                storedVectorActions = new float[]{3, 4},
-                actionMasks = new bool[]{true, false, false, false, false},
+                stackedVectorObservation = (new float[] {4f, 5f, 6f}).ToList(),
+                memories = (new float[] {1f, 1f, 1f}).ToList(),
+                storedVectorActions = new float[] {3, 4},
+                actionMasks = new bool[] {true, false, false, false, false},
             };
 
             return new Dictionary<Agent, AgentInfo>(){{agentA, infoA},{agentB, infoB}};
@@ -83,7 +82,7 @@ namespace MLAgents.Tests
             var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 3}
+                Shape = new long[] {2, 3}
             };
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
@@ -104,7 +103,7 @@ namespace MLAgents.Tests
             var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 5}
+                Shape = new long[] {2, 5}
             };
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
@@ -125,7 +124,7 @@ namespace MLAgents.Tests
             var tensorGenerator = new TensorGeneratorInvoker(bp,0);
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 2},
+                Shape = new long[] {2, 2},
                 ValueType = Tensor.TensorType.FloatingPoint
                 
             };
@@ -154,7 +153,7 @@ namespace MLAgents.Tests
             var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 5},
+                Shape = new long[] {2, 5},
                 ValueType = Tensor.TensorType.FloatingPoint
                 
             };

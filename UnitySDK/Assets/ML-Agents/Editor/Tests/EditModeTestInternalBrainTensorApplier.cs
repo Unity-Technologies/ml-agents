@@ -9,7 +9,6 @@ using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
-    
     public class EditModeTestInternalBrainTensorApplier
     {
         private class TestAgent : Agent
@@ -53,8 +52,8 @@ namespace MLAgents.Tests
             
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 3},
-                Data = new float[,]{{1, 2, 3}, {4, 5, 6}}
+                Shape = new long[] {2, 3},
+                Data = new float[,] {{1, 2, 3}, {4, 5, 6}}
             };
             var agentInfos = GetFakeAgentInfos();
             
@@ -84,8 +83,8 @@ namespace MLAgents.Tests
             
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 5},
-                Data = new float[,]{{0.5f, 22.5f, 0.1f, 5f, 1f},
+                Shape = new long[] {2, 5},
+                Data = new float[,] {{0.5f, 22.5f, 0.1f, 5f, 1f},
                     {4f, 5f, 6f, 7f, 8f}}
             };
             var agentInfos = GetFakeAgentInfos();
@@ -110,8 +109,8 @@ namespace MLAgents.Tests
             
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 5},
-                Data = new float[,]{{0.5f, 22.5f, 0.1f, 5f, 1f},
+                Shape = new long[] {2, 5},
+                Data = new float[,] {{0.5f, 22.5f, 0.1f, 5f, 1f},
                     {4f, 5f, 6f, 7f, 8f}}
             };
             var agentInfos = GetFakeAgentInfos();
@@ -136,8 +135,8 @@ namespace MLAgents.Tests
             
             var inputTensor = new Tensor()
             {
-                Shape = new long[]{2, 1},
-                Data = new float[,]{{0.5f}, {8f}}
+                Shape = new long[] {2, 1},
+                Data = new float[,] {{0.5f}, {8f}}
             };
             var agentInfos = GetFakeAgentInfos();
             
@@ -150,6 +149,5 @@ namespace MLAgents.Tests
             action = agent.GetAction();
             Assert.AreEqual(action.value, 8);
         }
-       
     }
 }
