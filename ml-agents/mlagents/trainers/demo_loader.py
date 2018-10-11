@@ -52,6 +52,8 @@ def load_demonstration(file_path):
     :param file_path: Location of demonstration file (.demo).
     :return: BrainParameter and list of BrainInfos containing demonstration data.
     """
+
+    # First 32 bytes of file dedicated to meta-data.
     INITIAL_POS = 33
 
     if not os.path.isfile(file_path):
