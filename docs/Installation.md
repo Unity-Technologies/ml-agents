@@ -33,7 +33,7 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 
 The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)
-that can be used to help get you familiar with Unity.
+to help you get started.
 
 The `ml-agents` subdirectory contains Python packages which provide
 trainers and a Python API to interface with Unity.
