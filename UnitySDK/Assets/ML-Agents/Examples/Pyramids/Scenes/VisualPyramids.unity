@@ -586,7 +586,8 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: 60f0ffcd08c3b43a6bdc746cfc0c4059, type: 2}
-    _brainsToControl: []
+    _brainsToControl:
+    - {fileID: 11400000, guid: 60f0ffcd08c3b43a6bdc746cfc0c4059, type: 2}
   maxSteps: 0
   trainingConfiguration:
     width: 80
@@ -704,6 +705,12 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114021675794892514, guid: 85206c30964c245ee92be7d0ed13b3b8,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 60f0ffcd08c3b43a6bdc746cfc0c4059,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 85206c30964c245ee92be7d0ed13b3b8, type: 2}
   m_IsPrefabParent: 0

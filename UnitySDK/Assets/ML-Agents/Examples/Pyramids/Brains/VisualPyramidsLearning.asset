@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Name: VisualPyramidsLearning
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 1
+    vectorObservationSize: 0
     numStackedVectorObservations: 1
-    vectorActionSize: 01000000
-    cameraResolutions: []
+    vectorActionSize: 05000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
     vectorActionDescriptions:
     - 
     vectorActionSpaceType: 0
