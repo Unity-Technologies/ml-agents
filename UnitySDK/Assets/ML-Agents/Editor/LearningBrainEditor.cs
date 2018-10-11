@@ -59,11 +59,12 @@ namespace MLAgents
                 _timeSinceModelReload = 0;
             }
             // Display all failed checks
-            foreach (var error in brain.GetModelFailedChecks())
+            var failedChecks = brain.GetModelFailedChecks();
+            foreach (var check in failedChecks)
             {
-                if (error != null)
+                if (check != null)
                 {
-                    EditorGUILayout.HelpBox(error, MessageType.Warning);
+                    EditorGUILayout.HelpBox(check, MessageType.Warning);
                 }
             }
         }
