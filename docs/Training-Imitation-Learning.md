@@ -46,9 +46,9 @@ With offline behavioral cloning, we can use demonstrations (`.demo` files) gener
 1. Choose an agent you would like to learn to imitate some set of demonstrations. 
 2. Record a set of demonstration using the `Demonstration Recorder` (see above). For illustrative purposes we will refer to this file as `AgentRecording.demo`. 
 3. Build the scene, assigning the agent a Learning Brain, and set the Brain to Control in the Broadcast Hub. For more information on Brains, see [here](Learning-Environment-Design-Brains.md).
-4. Open the `config/bc_config.yaml` file. 
+4. Open the `config/offline_bc_config.yaml` file. 
 5. Modify the `demo_path` parameter in the file to reference the path to the demonstration file recorded in step 2. In our case this is: `./UnitySDK/Assets/Demonstrations/AgentRecording.demo`
-6. Launch `mlagent-learn`, and providing `./config/bc_config.yaml` as the config parameter, and your environment as the `--env` parameter.
+6. Launch `mlagent-learn`, and providing `./config/offline_bc_config.yaml` as the config parameter, and your environment as the `--env` parameter.
 7. (Optional) Observe training performance using Tensorboard.
 
 This will use the demonstration file to train a nerual network driven agent to directly imitate the actions provided in the demonstration. The environment will launch and be used for evaluating the agent's performance during training.
@@ -69,13 +69,13 @@ It is also possible to provide demonstrations in realtime during training, witho
    and check the `Control` checkbox on the "Student" brain. 
 4. Link the Brains to the desired Agents (one Agent as the teacher and at least
    one Agent as a student).
-5. In `config/trainer_config.yaml`, add an entry for the "Student" Brain. Set
+5. In `config/online_bc_config.yaml`, add an entry for the "Student" Brain. Set
    the `trainer` parameter of this entry to `imitation`, and the
    `brain_to_imitate` parameter to the name of the teacher Brain: "Teacher".
    Additionally, set `batches_per_epoch`, which controls how much training to do
    each moment. Increase the `max_steps` option if you'd like to keep training
    the Agents for a longer period of time.
-6. Launch the training process with `mlagents-learn config/trainer_config.yaml
+6. Launch the training process with `mlagents-learn config/online_bc_config.yaml
    --train --slow`, and press the :arrow_forward: button in Unity when the
    message _"Start training by pressing the Play button in the Unity Editor"_ is
    displayed on the screen
