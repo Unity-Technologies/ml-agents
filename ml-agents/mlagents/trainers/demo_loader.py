@@ -1,5 +1,6 @@
 import pathlib
 import logging
+import os
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.utilities import brain_param_proto_to_obj, agent_info_proto_to_brain_info
 from mlagents.envs.communicator_objects import *
@@ -53,6 +54,8 @@ def load_demonstration(file_path):
     """
     INITIAL_POS = 33
 
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError("The demonstration file {} does not exist.".format(file_path))
     file_extension = pathlib.Path(file_path).suffix
     if file_extension != '.demo':
         raise ValueError("The file is not a '.demo' file. Please provide a file with the "
