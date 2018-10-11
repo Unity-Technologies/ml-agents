@@ -55,7 +55,6 @@ namespace MLAgents
         ///Uses the Decision Component to decide that action to take
         protected override void DecideAction()
         {
-            base.DecideAction();
             if (decision == null)
             {
                 throw new UnityAgentsException(

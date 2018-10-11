@@ -14,11 +14,10 @@ namespace MLAgents
     public class LearningBrainEditor : BrainEditor
     {
         private const string ModelPropName = "model";
-        private const string DevicePropName = "inferenceDevice";
         private const float TimeBetweenModelReloads = 2f;
-        // Keeps track of time since the last reload of the model
+        // Time since the last reload of the model
         private float _timeSinceModelReload;
-        // Keeps track of whether or not the model needs to be reloaded
+        // Whether or not the model needs to be reloaded
         private bool _requireReload;
         
         /// <summary>
@@ -48,10 +47,7 @@ namespace MLAgents
             serializedBrain.Update(); 
             var tfGraphModel = serializedBrain.FindProperty(ModelPropName);
             EditorGUILayout.ObjectField(tfGraphModel);
-            var deviceType = serializedBrain.FindProperty(DevicePropName);
-            EditorGUILayout.PropertyField(deviceType);
             serializedBrain.ApplyModifiedProperties();
-
             if (EditorGUI.EndChangeCheck())
             {
                 _requireReload = true;
@@ -62,6 +58,7 @@ namespace MLAgents
                 _requireReload = false;
                 _timeSinceModelReload = 0;
             }
+            // Display all failed checks
             foreach (var error in brain.GetModelFailedChecks())
             {
                 if (error != null)

@@ -8,37 +8,57 @@ namespace MLAgents.InferenceBrain
 {
     /// <summary>
     /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
-    /// and BrainParameters have incompatibilities.
+    /// and BrainParameters are incompatible.
     /// </summary>
-    public class MetaDataLoader
+    public class ModelParamLoader
     {
+        private enum ModelActionType
+        {
+            Unknown,
+            Discrete,
+            Continuous
+        }
         private const long ApiVersion = 1;
         private InferenceEngine _engine;
         private BrainParameters _brainParameters;
         private List<string> _failedModelChecks = new List<string>();
 
-        public MetaDataLoader(InferenceEngine engine, BrainParameters brainParameters)
+        /// <summary>
+        /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
+        /// on it.
+        /// </summary>
+        /// <param name="engine"> The InferenceEngine we get the parameters and the checks from
+        /// </param>
+        /// <param name="brainParameters"> The BrainParamters that are used verify the
+        /// compatibility with the InferenceEngine</param>
+        /// <returns></returns>
+        public static ModelParamLoader GetLoaderAndCheck(InferenceEngine engine,
+            BrainParameters brainParameters)
+        {
+            ModelParamLoader modelParamLoader = new ModelParamLoader(engine, brainParameters);
+            modelParamLoader.GenerateChecks();
+            return modelParamLoader;
+        }
+        
+        private ModelParamLoader(InferenceEngine engine, BrainParameters brainParameters)
         {
             _engine = engine;
             _brainParameters = brainParameters;
-            GenerateChecks();
         }
 
         /// <summary>
-        /// Generates the Tensor inputs that are expected to be present in the Model given the
-        /// BrainParameters. 
+        /// Generates the Tensor inputs that are expected to be present in the Model. 
         /// </summary>
-        /// <returns>Tensor Array with the expected Tensor inputs</returns>
+        /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
         public IEnumerable<Tensor> GetInputTensors()
         {
             return _engine?.InputFeatures();
         }
 
         /// <summary>
-        /// Generates the Tensor outputs that are expected to be present in the Model given the
-        /// BrainParameters. 
+        /// Generates the Tensor outputs that are expected to be present in the Model. 
         /// </summary>
-        /// <returns>Tensor Array with the expected Tensor outputs</returns>
+        /// <returns>Tensor IEnumerable with the expected Tensor outputs</returns>
         public IEnumerable<Tensor> GetOutputTensors()
         {
             var tensorList = new List<Tensor>();
@@ -83,10 +103,8 @@ namespace MLAgents.InferenceBrain
                     Data = null
                 });
             }
-
             return tensorList;
         }
-
 
         /// <summary>
         /// Queries the InferenceEngine for the value of a variable in the graph given its name.
@@ -94,7 +112,7 @@ namespace MLAgents.InferenceBrain
         /// If the node was not found or could not be retrieved, the value -1 will be returned. 
         /// </summary>
         /// <param name="name">The name of the Tensor variable</param>
-        /// <returns></returns>
+        /// <returns>The value of the scalar variable in the model. (-1 if not found)</returns>
         private int GetIntScalar(string name)
         {
             var outputs = new Tensor[]
@@ -116,7 +134,6 @@ namespace MLAgents.InferenceBrain
                 Debug.Log("Node not in graph: " + name + ". The following error occured : \n" + e);
                 return -1;
             }
-
             return (outputs[0].Data as int[])[0];
         }
 
@@ -146,7 +163,8 @@ namespace MLAgents.InferenceBrain
 
             var modelApiVersion = GetIntScalar(TensorNames.VersionNumber);
             var memorySize = GetIntScalar(TensorNames.MemorySize);
-            var isContinuous = GetIntScalar(TensorNames.IsContinuousControl);
+            var isContinuousInt = GetIntScalar(TensorNames.IsContinuousControl);
+            var isContinuous = GetActionType(isContinuousInt);
             var actionSize = GetIntScalar(TensorNames.ActionOutputShape);
             if (modelApiVersion == -1)
             {
@@ -163,31 +181,55 @@ namespace MLAgents.InferenceBrain
                 return;
             }
 
-            CheckIntScalarPresenceHelper(memorySize, isContinuous, actionSize);
+            CheckIntScalarPresenceHelper(new Dictionary<string, int>()
+            {
+                {TensorNames.MemorySize, memorySize},
+                {TensorNames.IsContinuousControl, isContinuousInt},
+                {TensorNames.ActionOutputShape, actionSize}
+            });
             CheckInputTensorPresence(memorySize, isContinuous);
             CheckOutputTensorPresence(memorySize);
             CheckInputTensorShape();
             CheckOutputTensorShape(isContinuous, actionSize);
         }
 
-        private void CheckIntScalarPresenceHelper(int memorySize, int isContinuous, int actionSize)
+        /// <summary>
+        /// Converts the integer value in the model corresponding to the type of control to a
+        /// ModelActionType.
+        /// </summary>
+        /// <param name="isContinuousInt"> The integer value in the model indicating the
+        /// type of control</param>
+        /// <returns>The equivalent ModelActionType</returns>
+        private static ModelActionType GetActionType(int isContinuousInt)
         {
-            if (memorySize == -1)
+            ModelActionType isContinuous;
+            switch (isContinuousInt)
             {
-                _failedModelChecks.Add(
-                    $"Missing node in the model provided : {TensorNames.MemorySize}");
+                case 0:
+                    isContinuous = ModelActionType.Discrete;
+                    break;
+                case 1: 
+                    isContinuous = ModelActionType.Continuous;
+                    break;
+                default:
+                    isContinuous = ModelActionType.Unknown;
+                    break;
             }
+            return isContinuous;
+        }
 
-            if (isContinuous == -1)
+        /// <summary>
+        /// Given a Dictionary of node names to int values, create checks if the values have the
+        /// invalid value of -1.
+        /// </summary>
+        /// <param name="requiredScalarFields"> Mapping from node names to int values</param>
+        private void CheckIntScalarPresenceHelper(Dictionary<string, int> requiredScalarFields)
+        {
+            foreach(var field in requiredScalarFields)
+            if (field.Value == -1)
             {
                 _failedModelChecks.Add(
-                    $"Missing node in the model provided : {TensorNames.IsContinuousControl}");
-            }
-
-            if (actionSize == -1)
-            {
-                _failedModelChecks.Add(
-                    $"Missing node in the model provided : {TensorNames.ActionOutputShape}");
+                    $"Missing node in the model provided : {field.Key}");
             }
         }
 
@@ -200,7 +242,7 @@ namespace MLAgents.InferenceBrain
         /// discrete control.</param>
         /// <returns>A IEnumerable of string corresponding to the failed input presence
         /// checks.</returns>
-        private void CheckInputTensorPresence(int memory, int isContinuous)
+        private void CheckInputTensorPresence(int memory, ModelActionType isContinuous)
         {
             var tensorsNames = GetInputTensors().Select(x => x.Name).ToList();
             // If there is no Vector Observation Input but the Brain Parameters expect one.
@@ -235,7 +277,7 @@ namespace MLAgents.InferenceBrain
                 }
             }
             // If the model uses discrete control but does not have an input for action masks
-            if (isContinuous == 0)
+            if (isContinuous == ModelActionType.Discrete)
             {
                 if (!tensorsNames.Contains(TensorNames.ActionMaskPlaceholder))
                 {
@@ -365,10 +407,8 @@ namespace MLAgents.InferenceBrain
         /// <param name="visObsIndex"> The index of the visual observation.</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckVisualObsShape(Tensor tensor, 
-            int visObsIndex)
+        private string CheckVisualObsShape(Tensor tensor, int visObsIndex)
         {
-            
             var resolutionBp = _brainParameters.cameraResolutions[visObsIndex];
             var widthBp = resolutionBp.width;
             var heightBp = resolutionBp.height;
@@ -396,9 +436,15 @@ namespace MLAgents.InferenceBrain
         /// by the model.</param>
         /// <returns>A IEnumerable of string corresponding to the incompatible shapes between
         /// model and BrainParameters.</returns>
-        private void CheckOutputTensorShape(int isContinuous, int modelActionSize)
+        private void CheckOutputTensorShape(ModelActionType isContinuous, int modelActionSize)
         {
-            if (isContinuous == 1 &&
+            if (isContinuous == ModelActionType.Unknown)
+            {
+                _failedModelChecks.Add(
+                    "Cannot infer type of Control from the provided model.");
+                return;
+            }
+            if (isContinuous == ModelActionType.Continuous &&
                 _brainParameters.vectorActionSpaceType != SpaceType.continuous)
             {
                 _failedModelChecks.Add(
@@ -406,7 +452,7 @@ namespace MLAgents.InferenceBrain
                     "suggest Discrete Control.");
                 return;
             }
-            if (isContinuous == 0 &&
+            if (isContinuous == ModelActionType.Discrete &&
                 _brainParameters.vectorActionSpaceType != SpaceType.discrete)
             {
                 _failedModelChecks.Add(

@@ -65,23 +65,29 @@ namespace MLAgents
         {
             if (!_isInitialized)
             {
-                FindObjectOfType<Academy>().BrainDecideAction += DecideAction;
+                FindObjectOfType<Academy>().BrainDecideAction += BrainDecideAction;
                 Initialize();
                 _isInitialized = true;
             }
+        }
+        
+        /// <summary>
+        /// Calls the DecideAction method that the concrete brain implements.
+        /// </summary>
+        private void BrainDecideAction()
+        {
+            brainBatcher?.SendBrainInfo(name, agentInfos);
+            DecideAction();
         }
 
         /// <summary>
         /// Is called only once at the begening of the training or inference session.
         /// </summary>
         protected abstract void Initialize();
-        
+
         /// <summary>
-        /// Is called once per Environment Step when the Brain has been initialized.
+        /// Is called once per Environment Step after the Brain has been initialized.
         /// </summary>
-        protected virtual void DecideAction()
-        {
-            brainBatcher?.SendBrainInfo(name, agentInfos);
-        }
+        protected abstract void DecideAction();
     }
 }

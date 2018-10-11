@@ -37,19 +37,13 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorApplierInvoker(bp, 0);
+            var tensorGenerator = new TensorApplier(bp, 0);
             Assert.IsNotNull(tensorGenerator);
         }
 
         [Test]
         public void ApplyContinuousActionOutput()
         {
-            var bp = new BrainParameters()
-            {
-                vectorActionSpaceType = SpaceType.continuous
-            };
-            var tensorGenerator = new TensorApplierInvoker(bp, 0);
-            
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 3},
@@ -57,7 +51,8 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[TensorNames.ActionOutput].Execute(inputTensor, agentInfos);
+            var applier = new ContinuousActionOutputApplier();
+            applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -74,13 +69,6 @@ namespace MLAgents.Tests
         [Test]
         public void ApplyDiscreteActionOutput()
         {
-            var bp = new BrainParameters()
-            {
-                vectorActionSpaceType = SpaceType.discrete,
-                vectorActionSize = new int[]{2, 3}
-            };
-            var tensorGenerator = new TensorApplierInvoker(bp, 0);
-            
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 5},
@@ -89,7 +77,8 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[TensorNames.ActionOutput].Execute(inputTensor, agentInfos);
+            var applier = new DiscreteActionOutputApplier(new int[]{2, 3}, 0);
+            applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -104,9 +93,6 @@ namespace MLAgents.Tests
         [Test]
         public void ApplyMemoryOutput()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorApplierInvoker(bp, 0);
-            
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 5},
@@ -115,7 +101,8 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[TensorNames.RecurrentOutput].Execute(inputTensor, agentInfos);
+            var applier = new MemoryOutputApplier();
+            applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();
@@ -130,9 +117,6 @@ namespace MLAgents.Tests
         [Test]
         public void ApplyValueEstimate()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorApplierInvoker(bp, 0);
-            
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 1},
@@ -140,7 +124,8 @@ namespace MLAgents.Tests
             };
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[TensorNames.ValueEstimateOutput].Execute(inputTensor, agentInfos);
+            var applier = new ValueEstimateApplier();
+            applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
             var action = agent.GetAction();

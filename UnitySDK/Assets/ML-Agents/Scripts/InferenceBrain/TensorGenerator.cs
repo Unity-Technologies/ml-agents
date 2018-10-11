@@ -1,229 +1,99 @@
 ﻿using UnityEngine.MachineLearning.InferenceEngine;
 using System.Collections.Generic;
-using System;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
 using System.Linq;
+using System;
 
 namespace MLAgents.InferenceBrain
 {
-    public interface TensorGenerator
-    {
-        void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo);
-    }
-
     /// <summary>
-    /// Reshapes a Tensor so that its first dimension becomes equal to the current batch size
-    /// and initializes its content to be zeros. Will only work on 2-dimensional tensors.
-    /// The second dimension of the Tensor will not be modified.
+    /// Mapping between Tensor names and generators.
+    /// A TensorGenerator implements a Dictionary of strings (node names) to an Action.
+    /// The Action take as argument the tensor, the current batch size and a Dictionary of
+    /// Agent to AgentInfo corresponding to the current batch.
+    /// Each Generator reshapes and fills the data of the tensor based of the data of the batch.
+    /// When the Tensor is an Input to the model, the shape of the Tensor will be modified
+    /// depending on the current batch size and the data of the Tensor will be filled using the
+    /// Dictionary of Agent to AgentInfo.
+    /// When the Tensor is an Output of the model, only the shape of the Tensor will be modified
+    /// using the current batch size. The data will be prefilled with zeros.
     /// </summary>
-    public class BiDimensionalOutputGenerator : TensorGenerator
+    public class TensorGenerator
     {
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
+        public interface Generator
         {
-            var shapeSecondAxis = tensor.Shape[1];
-            tensor.Shape[0] = batchSize;
-            if (tensor.ValueType == Tensor.TensorType.FloatingPoint)
-            {
-                tensor.Data = new float[batchSize, shapeSecondAxis];
-            }
-            else
-            {
-                tensor.Data = new int[batchSize, shapeSecondAxis];
-            }
-        }
-    }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the BatchSize input : Will be a one dimensional
-    /// integer array of size 1 containing the batch size.
-    /// </summary>
-    public class BatchSizeGenerator : TensorGenerator
-    {
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            tensor.Data = new int[] {batchSize};
-        }
-    }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the SequenceLength input : Will be a one
-    /// dimensional integer array of size 1 containing 1.
-    /// Note : the sequence length is always one since recurrent networks only predict for
-    /// one step at the time.
-    /// </summary>
-    public class SequenceLengthGenerator : TensorGenerator
-    {
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            tensor.Data = new int[] {1};
-        }
-    }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the VectorObservation input : Will be a two
-    /// dimensional float array of dimension [batchSize x vectorObservationSize].
-    /// It will use the Vector Observation data contained in the agentInfo to fill the data
-    /// of the tensor.
-    /// </summary>
-    public class VectorObservationGenerator : TensorGenerator
-    {
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            tensor.Shape[0] = batchSize;
-            var vecObsSizeT = tensor.Shape[1];
-            tensor.Data = new float[batchSize, vecObsSizeT];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var vectorObs = agentInfo[agent].stackedVectorObservation;
-                for (var j = 0; j < vecObsSizeT; j++)
-                {
-                    tensor.Data.SetValue(vectorObs[j], new int[2] {agentIndex, j});
-                }
-                agentIndex++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the Recurrent input : Will be a two
-    /// dimensional float array of dimension [batchSize x memorySize].
-    /// It will use the Memory data contained in the agentInfo to fill the data
-    /// of the tensor.
-    /// </summary>
-    public class RecurrentInputGenerator : TensorGenerator
-    {
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            tensor.Shape[0] = batchSize;
-            var memorySize = tensor.Shape[1];
-            tensor.Data = new float[batchSize, memorySize];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var memory = agentInfo[agent].memories;
-                if (memory == null)
-                {
-                    agentIndex++;
-                    continue;
-                }
-                for (var j = 0; j < Math.Min(memorySize, memory.Count); j++)
-                {
-                    if (j >= memory.Count)
-                    {
-                        break;
-                    }
-                    tensor.Data.SetValue(memory[j], new int[2] {agentIndex, j});
-                }
-                agentIndex++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the Previous Action input : Will be a two
-    /// dimensional integer array of dimension [batchSize x actionSize].
-    /// It will use the previous action data contained in the agentInfo to fill the data
-    /// of the tensor.
-    /// </summary>
-    public class PreviousActionInputGenerator : TensorGenerator
-    {
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            if (tensor.ValueType != Tensor.TensorType.Integer)
-            {
-                throw new NotImplementedException(
-                    "Previous Action Inputs are only valid for discrete control");
-            }
-
-            tensor.Shape[0] = batchSize;
-            var actionSize = tensor.Shape[1];
-            tensor.Data = new int[batchSize, actionSize];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var pastAction = agentInfo[agent].storedVectorActions;
-                for (var j = 0; j < actionSize; j++)
-                {
-                    tensor.Data.SetValue((int) pastAction[j], new int[2] {agentIndex, j});
-                }
-
-                agentIndex++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the Action Mask input : Will be a two
-    /// dimensional float array of dimension [batchSize x numActionLogits].
-    /// It will use the Action Mask data contained in the agentInfo to fill the data
-    /// of the tensor.
-    /// </summary>
-    public class ActionMaskInputGenerator : TensorGenerator
-    {
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            tensor.Shape[0] = batchSize;
-            var maskSize = tensor.Shape[1];
-            tensor.Data = new float[batchSize, maskSize];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var maskList = agentInfo[agent].actionMasks;
-                for (var j = 0; j < maskSize; j++)
-                {
-                    var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
-                    tensor.Data.SetValue(isUnmasked, new int[2] {agentIndex, j});
-                }
-                agentIndex++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the Epsilon input : Will be a two
-    /// dimensional float array of dimension [batchSize x actionSize].
-    /// It will use the generate random input data from a normal Distribution.
-    /// </summary>
-    public class RandomNormalInputGenerator : TensorGenerator
-    {
-        private RandomNormal _randomNormal;
-        
-        public RandomNormalInputGenerator(int seed)
-        {
-            _randomNormal = new RandomNormal(seed);
+            /// <summary>
+            /// Modifies the data inside a Tensor according to the information contained in the
+            /// AgentInfos contained in the current batch.
+            /// </summary>
+            /// <param name="tensor"> The tensor the data and shape will be modified</param>
+            /// <param name="batchSize"> The number of agents present in the current batch</param>
+            /// <param name="agentInfo"> Dictionary of Agent to AgentInfo containing the
+            /// information that will be used to populate the tensor's data</param>
+            void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo);
         }
         
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
+        Dictionary<string, Generator> _dict = new Dictionary<string, Generator>();
+
+        /// <summary>
+        /// Returns a new TensorGenerators object.
+        /// </summary>
+        /// <param name="bp"> The BrainParameters used to determine what Generators will be
+        /// used</param>
+        /// <param name="seed"> The seed the Generators will be initialized with.</param>
+        public TensorGenerator(BrainParameters bp, int seed)
         {
-            tensor.Shape[0] = batchSize;
-            var actionSize = tensor.Shape[1];
-            tensor.Data = new float[batchSize, actionSize];
-            _randomNormal.FillTensor(tensor);
+            // Generator for Inputs
+            _dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator();
+            _dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator();
+            _dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator();
+            _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator();
+            _dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator();
+            _dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator();
+            _dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed);
+            if (bp.cameraResolutions != null)
+            {
+                for (var visIndex = 0;
+                    visIndex < bp.cameraResolutions.Length;
+                    visIndex++)
+                {
+                    var index = visIndex;
+                    var bw = bp.cameraResolutions[visIndex].blackAndWhite;
+                    _dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = new
+                            VisualObservationInputGenerator(index, bw);
+                }
+            }
+
+            // Generators for Outputs
+            _dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator();
+            _dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator();
+            _dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator();
+        }
+
+        /// <summary>
+        /// Populates the data of the tensor inputs given the data contained in the current batch
+        /// of agents.
+        /// </summary>
+        /// <param name="tensors"> Enumerable of tensors that will be modified.</param>
+        /// <param name="currentBatchSize"> The number of agents present in the current batch
+        /// </param>
+        /// <param name="agentInfos"> Dictionary of Agent to AgentInfo that contains the
+        /// data that will be used to modify the tensors</param>
+        /// <exception cref="UnityAgentsException"> One of the tensor does not have an
+        /// associated generator.</exception>
+        public void GenerateTensors(IEnumerable<Tensor> tensors, 
+            int currentBatchSize, 
+            Dictionary<Agent, AgentInfo> agentInfos)
+        {
+            foreach (var tensor in tensors)
+            {
+                if (!_dict.ContainsKey(tensor.Name))
+                {
+                    throw new UnityAgentsException(
+                        "Unknow tensor expected as input : " + tensor.Name);
+                }
+                _dict[tensor.Name].Generate(tensor, currentBatchSize, agentInfos);
+            }
         }
     }
-
-    /// <summary>
-    /// Generates the Tensor corresponding to the Visual Observation input : Will be a 4
-    /// dimensional float array of dimension [batchSize x width x heigth x numChannels].
-    /// It will use the Texture input data contained in the agentInfo to fill the data
-    /// of the tensor.
-    /// </summary>
-    public class VisualObservationInputGenerator : TensorGenerator
-    {
-        private int _index;
-        private bool _grayScale;
-        public VisualObservationInputGenerator(int index, bool grayScale)
-        {
-            _index = index;
-            _grayScale = grayScale;
-        }
-        
-        public void Execute(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var textures = agentInfo.Keys.Select(
-                agent => agentInfo[agent].visualObservations[_index]).ToList();
-            tensor.Data = Utilities.TextureToFloatArray(textures, _grayScale);
-        } 
-    } 
 }

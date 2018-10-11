@@ -22,12 +22,11 @@ namespace MLAgents
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
-        private TensorGeneratorInvoker _tensorGeneratorInvoker;
-        private TensorApplierInvoker _outputTensorApplierInvoker;
-        private MetaDataLoader _metaDataLoader;
+        private TensorGenerator _tensorGenerator;
+        private TensorApplier _tensorApplier;
+        private ModelParamLoader _modelParamLoader;
         
         public Model model;
-        public InferenceEngineConfig.DeviceType inferenceDevice;
 
         private InferenceEngine _engine;
         private IEnumerable<Tensor> _inferenceInputs;
@@ -65,7 +64,7 @@ namespace MLAgents
             {
                 var config = new InferenceEngineConfig
                 {
-                    Device = inferenceDevice
+                    Device = InferenceEngineConfig.DeviceType.CPU
                 };
                 _engine = InferenceAPI.LoadModel(model, config);
             }
@@ -73,11 +72,11 @@ namespace MLAgents
             {
                 _engine = null;
             }
-            _metaDataLoader = new MetaDataLoader(_engine, brainParameters);
-            _inferenceInputs = _metaDataLoader.GetInputTensors();
-            _inferenceOutputs = _metaDataLoader.GetOutputTensors();
-            _tensorGeneratorInvoker = new TensorGeneratorInvoker(brainParameters, seed);
-            _outputTensorApplierInvoker = new TensorApplierInvoker(brainParameters, seed);
+            _modelParamLoader = ModelParamLoader.GetLoaderAndCheck(_engine, brainParameters);
+            _inferenceInputs = _modelParamLoader.GetInputTensors();
+            _inferenceOutputs = _modelParamLoader.GetOutputTensors();
+            _tensorGenerator = new TensorGenerator(brainParameters, seed);
+            _tensorApplier = new TensorApplier(brainParameters, seed);
         }
         
         /// <summary>
@@ -90,13 +89,12 @@ namespace MLAgents
         /// Brain Parameters</returns>
         public IEnumerable<string> GetModelFailedChecks()
         {
-            return (_metaDataLoader != null) ? _metaDataLoader.GetChecks() : new List<string>();
+            return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
         }
 
         /// <inheritdoc />
         protected override void DecideAction()
         {
-            base.DecideAction();
             if (_isControlled)
             {
                 agentInfos.Clear();
@@ -109,40 +107,16 @@ namespace MLAgents
             }
             
             // Prepare the input tensors to be feed into the engine
-            foreach (var tensor in _inferenceInputs)
-            {
-                if (!_tensorGeneratorInvoker.ContainsKey(tensor.Name))
-                {
-                    throw new UnityAgentsException(
-                        "Unknow tensor expected as input : "+tensor.Name);
-                }
-                _tensorGeneratorInvoker[tensor.Name].Execute(tensor, currentBatchSize, agentInfos);
-            }
+            _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
+            
             // Prepare the output tensors to be feed into the engine
-            foreach (var tensor in _inferenceOutputs)
-            {
-                if (!_tensorGeneratorInvoker.ContainsKey(tensor.Name))
-                {
-                    throw new UnityAgentsException(
-                        "Unknow tensor expected as output : "+tensor.Name);
-                }
-                
-                _tensorGeneratorInvoker[tensor.Name].Execute(tensor, currentBatchSize, agentInfos);
-            }
+            _tensorGenerator.GenerateTensors(_inferenceOutputs, currentBatchSize, agentInfos);
 
             // Execute the Model
             _engine.ExecuteGraph(_inferenceInputs, _inferenceOutputs);
 
             // Update the outputs
-            foreach (var tensor in _inferenceOutputs)
-            {
-                if (!_outputTensorApplierInvoker.ContainsKey(tensor.Name))
-                {
-                    throw new UnityAgentsException(
-                        "Unknow tensor expected as output : "+tensor.Name);
-                }
-                _outputTensorApplierInvoker[tensor.Name].Execute(tensor, agentInfos);
-            }
+            _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
             agentInfos.Clear();
         }
     }

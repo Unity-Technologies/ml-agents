@@ -1,153 +1,79 @@
 ﻿using UnityEngine.MachineLearning.InferenceEngine;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.MachineLearning.InferenceEngine.Util;
+using System;
 
 namespace MLAgents.InferenceBrain
-{
+{    
     /// <summary>
-    /// A tensor Applier's Execute method takes a Tensor and a Dictionary of Agent to AgentInfo.
-    /// Uses the data contained inside the Tensor to modify the state of the Agent. The Tensors
-    /// are assumed to have the batch size on the first dimension and the agents to be ordered
-    /// the same way in the dictionary and in the Tensor.
+    /// Mapping between the output Tensor names and the method that will use the
+    /// output tensors and the Agents present in the batch to update their action, memories and
+    /// value estimates.
+    /// A TensorApplier implements a Dictionary of strings (node names) to an Action.
+    /// This action takes as input the Tensor and the Dictionary of Agent to AgentInfo for
+    /// the current batch.
     /// </summary>
-    public interface TensorApplier
+    public class TensorApplier
     {
-        void Execute(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo);
-    }
-
-    /// <summary>
-    /// The Applier for the Continuous Action output tensor. Tensor is assumed to contain the
-    /// continuous action data of the agents in the batch.
-    /// </summary>
-    public class ContinuousActionOutputApplier : TensorApplier
-    {
-        public void Execute(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
+        /// <summary>
+        /// A tensor Applier's Execute method takes a Tensor and a Dictionary of Agent to AgentInfo.
+        /// Uses the data contained inside the Tensor to modify the state of the Agent. The Tensors
+        /// are assumed to have the batch size on the first dimension and the agents to be ordered
+        /// the same way in the dictionary and in the Tensor.
+        /// </summary>
+        public interface Applier
         {
-            var tensorDataAction = tensor.Data as float[,];
-            var actionSize = tensor.Shape[1];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                var action = new float[actionSize];
-                for (var j = 0; j < actionSize; j++)
-                {
-                    action[j] = tensorDataAction[agentIndex, j];
-                }
-                agent.UpdateVectorAction(action);
-                agentIndex++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
-    /// actions from the logits contained in the tensor.
-    /// </summary>
-    public class DiscreteActionOutputApplier : TensorApplier
-    {
-        private int[] _actionSize;
-        private Multinomial _multinomial;
-        
-        public DiscreteActionOutputApplier(int[] actionSize, int seed)
-        {
-            _actionSize = actionSize;
-            _multinomial = new Multinomial(seed);
+            /// <summary>
+            /// Applies the values in the Tensor to the Agents present in the agentInfos
+            /// </summary>
+            /// <param name="tensor"> The Tensor containing the data to be applied to the Agents</param>
+            /// <param name="agentInfo"> Dictionary of Agents to AgentInfo that will reveive
+            /// the values of the Tensor.</param>
+            void Apply(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo);
         }
         
-        public void Execute(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
+        Dictionary<string, Applier>  _dict = new Dictionary<string, Applier>();
+
+        /// <summary>
+        /// Returns a new TensorAppliers object.
+        /// </summary>
+        /// <param name="bp"> The BrainParameters used to determine what Appliers will be
+        /// used</param>
+        /// <param name="seed"> The seed the Appliers will be initialized with.</param>
+        public TensorApplier(BrainParameters bp, int seed)
         {
-            var tensorDataProbabilities = tensor.Data as float[,];
-            var batchSize = agentInfo.Keys.Count;
-            var actions = new float[batchSize, _actionSize.Length];
-            var startActionIndices = Utilities.CumSum(_actionSize);
-            for (var actionIndex=0; actionIndex < _actionSize.Length; actionIndex++)
+            _dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
+            if (bp.vectorActionSpaceType == SpaceType.continuous)
             {
-                var nBranchAction = _actionSize[actionIndex];
-                var actionProbs = new float[batchSize, nBranchAction];
-                for (var batchIndex = 0; batchIndex < batchSize; batchIndex++)
-                {
-                    for (var branchActionIndex = 0; 
-                        branchActionIndex < nBranchAction; 
-                        branchActionIndex++)
-                    {
-                        actionProbs[batchIndex, branchActionIndex] = 
-                            tensorDataProbabilities[
-                                batchIndex, startActionIndices[actionIndex] + branchActionIndex];
-                    }
-                }
-                var inputTensor = new Tensor()
-                {
-                    ValueType = Tensor.TensorType.FloatingPoint,
-                    Shape = new long[]{batchSize, _actionSize[actionIndex]},
-                    Data = actionProbs
-                };
-                var outputTensor = new Tensor()
-                {
-                    ValueType = Tensor.TensorType.FloatingPoint,
-                    Shape = new long[]{batchSize, 1},
-                    Data = new float[batchSize, 1]
-                };
-                _multinomial.Eval(inputTensor, outputTensor);
-                var outTensor = outputTensor.Data as float[,];
-                for (var ii = 0; ii < batchSize; ii++)
-                {
-                    actions[ii, actionIndex] = outTensor[ii, 0];
-                }
+                _dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
+            else
             {
-                var action = new float[_actionSize.Length];
-                for (var j = 0; j < _actionSize.Length; j++)
-                {
-                    action[j] = actions[agentIndex, j];
-                }
-                agent.UpdateVectorAction(action);
-                agentIndex++;
+                _dict[TensorNames.ActionOutput] = new DiscreteActionOutputApplier(
+                    bp.vectorActionSize, seed);
             }
+            _dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
         }
-    }
 
-    /// <summary>
-    /// The Applier for the Memory output tensor. Tensor is assumed to contain the new
-    /// memory data of the agents in the batch.
-    /// </summary>
-    public class MemoryOutputApplier : TensorApplier
-    {
-        public void Execute(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
+        /// <summary>
+        /// Updates the state of the agents based on the data present in the tensor.
+        /// </summary>
+        /// <param name="tensors"> Enumerable of tensors containing the data.</param>
+        /// <param name="agentInfos"> Dictionary of Agent to AgentInfo that contains the
+        /// Agents that will be updated using the tensor's data</param>
+        /// <exception cref="UnityAgentsException"> One of the tensor does not have an
+        /// associated applier.</exception>
+        public void ApplyTensors(IEnumerable<Tensor> tensors, 
+            Dictionary<Agent, AgentInfo> agentInfos)
         {
-            var tensorDataMemory = tensor.Data as float[,];
-            var agentIndex = 0;
-            var memorySize = tensor.Shape[1];
-            foreach (var agent in agentInfo.Keys)
+            foreach (var tensor in tensors)
             {
-                var memory = new List<float>();
-                for (var j = 0; j < memorySize; j++)
+                if (!_dict.ContainsKey(tensor.Name))
                 {
-                    memory.Add(tensorDataMemory[agentIndex, j]);
+                    throw new UnityAgentsException(
+                        "Unknow tensor expected as output : "+tensor.Name);
                 }
-
-                agent.UpdateMemoriesAction(memory);
-                agentIndex++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// The Applier for the Value Estimate output tensor. Tensor is assumed to contain the
-    /// value estimates of the agents in the batch.
-    /// </summary>
-    public class ValueEstimateApplier : TensorApplier
-    {
-        public void Execute(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
-        {
-            var tensorDataValue = tensor.Data as float[,];
-            var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
-            {
-                agent.UpdateValueAction(tensorDataValue[agentIndex, 0]);
-                agentIndex++;
+                _dict[tensor.Name].Apply(tensor, agentInfos);
             }
         }
     }

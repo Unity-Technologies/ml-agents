@@ -45,19 +45,17 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
+            var tensorGenerator = new TensorGenerator(bp, 0);
             Assert.IsNotNull(tensorGenerator);
         }
 
         [Test]
         public void GenerateBatchSize()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor();
             var batchSize = 4;
-            tensorGenerator[TensorNames.BatchSizePlaceholder].Execute(
-                inputTensor, batchSize, null);
+            var generator = new BatchSizeGenerator();
+            generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.Data as int[]);
             Assert.AreEqual((inputTensor.Data as int[])[0], batchSize);
         }
@@ -65,12 +63,10 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateSequenceLength()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor();
             var batchSize = 4;
-            tensorGenerator[TensorNames.SequenceLengthPlaceholder].Execute(
-                inputTensor, batchSize, null);
+            var generator = new SequenceLengthGenerator();
+            generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.Data as int[]);
             Assert.AreEqual((inputTensor.Data as int[])[0], 1);
         }
@@ -78,8 +74,6 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateVectorObservation()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 3}
@@ -87,8 +81,8 @@ namespace MLAgents.Tests
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[TensorNames.VectorObservationPlacholder].Execute(
-                inputTensor, batchSize, agentInfos);
+            var generator = new VectorObservationGenerator();
+            generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.Data as float[,]);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 1);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 2], 3);
@@ -99,8 +93,6 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateRecurrentInput()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 5}
@@ -108,8 +100,8 @@ namespace MLAgents.Tests
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
             
-            tensorGenerator[TensorNames.RecurrentInPlaceholder].Execute(
-                inputTensor, batchSize, agentInfos);
+            var generator = new RecurrentInputGenerator();
+            generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.Data as float[,]);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 0);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 4], 0);
@@ -120,8 +112,6 @@ namespace MLAgents.Tests
         [Test]
         public void GeneratePreviousActionInput()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorGeneratorInvoker(bp,0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 2},
@@ -130,15 +120,13 @@ namespace MLAgents.Tests
             };
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
-            
+
+            var generator = new PreviousActionInputGenerator();
             Assert.Catch<NotImplementedException>(
-                () => tensorGenerator[TensorNames.PreviousActionPlaceholder].Execute(
-                    inputTensor, batchSize, agentInfos));
+                () => generator.Generate(inputTensor, batchSize, agentInfos));
 
             inputTensor.ValueType = Tensor.TensorType.Integer;
-            tensorGenerator[TensorNames.PreviousActionPlaceholder].Execute(
-                inputTensor, batchSize, agentInfos);
-            
+            generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.Data as int[,]);
             Assert.AreEqual((inputTensor.Data as int[,])[0, 0], 1);
             Assert.AreEqual((inputTensor.Data as int[,])[0, 1], 2);
@@ -149,8 +137,6 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateActionMaskInput()
         {
-            var bp = new BrainParameters();
-            var tensorGenerator = new TensorGeneratorInvoker(bp, 0);
             var inputTensor = new Tensor()
             {
                 Shape = new long[] {2, 5},
@@ -160,9 +146,8 @@ namespace MLAgents.Tests
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
   
-            tensorGenerator[TensorNames.ActionMaskPlaceholder].Execute(
-                inputTensor, batchSize, agentInfos);
-            
+            var generator = new ActionMaskInputGenerator();
+            generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.Data as float[,]);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 1);
             Assert.AreEqual((inputTensor.Data as float[,])[0, 4], 1);
