@@ -2,7 +2,7 @@ import pathlib
 import logging
 import os
 from mlagents.trainers.buffer import Buffer
-from mlagents.envs.utilities import brain_param_proto_to_obj, agent_info_proto_to_brain_info
+from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects import *
 from google.protobuf.internal.decoder import _DecodeVarint32
 
@@ -76,12 +76,12 @@ def load_demonstration(file_path):
         if obs_decoded == 1:
             brain_param_proto = BrainParametersProto()
             brain_param_proto.ParseFromString(data[pos:pos + next_pos])
-            brain_params = brain_param_proto_to_obj(brain_param_proto)
+            brain_params = BrainParameters.from_proto(brain_param_proto)
             pos += next_pos
         if obs_decoded > 1:
             agent_info = AgentInfoProto()
             agent_info.ParseFromString(data[pos:pos + next_pos])
-            brain_info = agent_info_proto_to_brain_info([agent_info], brain_params)
+            brain_info = BrainInfo.from_agent_proto([agent_info], brain_params)
             brain_infos.append(brain_info)
             if len(brain_infos) == total_expected:
                 break

@@ -5,8 +5,7 @@ import numpy as np
 import os
 import subprocess
 
-from .brain import AllBrainInfo
-from .utilities import agent_info_proto_to_brain_info, brain_param_proto_to_obj
+from .brain import AllBrainInfo, BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 
 from .communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto, \
@@ -81,7 +80,7 @@ class UnityEnvironment(object):
         self._external_brain_names = []
         for brain_param in aca_params.brain_parameters:
             self._brain_names += [brain_param.brain_name]
-            self._brains[brain_param.brain_name] = brain_param_proto_to_obj(brain_param)
+            self._brains[brain_param.brain_name] = BrainParameters.from_proto(brain_param)
             if brain_param.is_training:
                 self._external_brain_names += [brain_param.brain_name]
         self._num_brains = len(self._brain_names)
@@ -256,10 +255,11 @@ class UnityEnvironment(object):
 
     def step(self, vector_action=None, memory=None, text_action=None, value=None) -> AllBrainInfo:
         """
-        Provides the environment with an action, moves the environment dynamics forward accordingly, and returns
-        observation, state, and reward information to the agent.
-        :param vector_action: Agent's vector action to send to environment. Can be a scalar or vector of int/floats.
-        :param memory: Vector corresponding to memory used for RNNs, frame-stacking, or other auto-regressive process.
+        Provides the environment with an action, moves the environment dynamics forward accordingly,
+        and returns observation, state, and reward information to the agent.
+        :param value: Value estimates provided by agents.
+        :param vector_action: Agent's vector action. Can be a scalar or vector of int/floats.
+        :param memory: Vector corresponding to memory used for recurrent policies.
         :param text_action: Text action to send to environment for.
         :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
@@ -267,6 +267,8 @@ class UnityEnvironment(object):
         memory = {} if memory is None else memory
         text_action = {} if text_action is None else text_action
         value = {} if value is None else value
+
+        # Check that environment is loaded, and episode is currently running.
         if self._loaded and not self._global_done and self._global_done is not None:
             if isinstance(vector_action, (int, np.int_, float, np.float_, list, np.ndarray)):
                 if self._num_external_brains == 1:
@@ -291,6 +293,7 @@ class UnityEnvironment(object):
                     raise UnityActionException(
                         "There are no external brains in the environment, "
                         "step cannot take a memory input")
+
             if isinstance(text_action, (str, list, np.ndarray)):
                 if self._num_external_brains == 1:
                     text_action = {self._external_brain_names[0]: text_action}
@@ -302,6 +305,7 @@ class UnityEnvironment(object):
                     raise UnityActionException(
                         "There are no external brains in the environment, "
                         "step cannot take a value input")
+
             if isinstance(value, (int, np.int_, float, np.float_, list, np.ndarray)):
                 if self._num_external_brains == 1:
                     value = {self._external_brain_names[0]: value}
@@ -321,63 +325,75 @@ class UnityEnvironment(object):
                         "The name {0} does not correspond to an external brain "
                         "in the environment".format(brain_name))
 
-            for b in self._external_brain_names:
-                n_agent = self._n_agents[b]
-                if b not in vector_action:
-                    # raise UnityActionException("You need to input an action for the brain {0}".format(b))
-                    if self._brains[b].vector_action_space_type == "discrete":
-                        vector_action[b] = [0.0] * n_agent * len(
-                            self._brains[b].vector_action_space_size)
+            for brain_name in self._external_brain_names:
+                n_agent = self._n_agents[brain_name]
+                if brain_name not in vector_action:
+                    if self._brains[brain_name].vector_action_space_type == "discrete":
+                        vector_action[brain_name] = [0.0] * n_agent * len(
+                            self._brains[brain_name].vector_action_space_size)
                     else:
-                        vector_action[b] = [0.0] * n_agent * \
-                                           self._brains[b].vector_action_space_size[0]
+                        vector_action[brain_name] = [0.0] * n_agent * \
+                                                    self._brains[
+                                                        brain_name].vector_action_space_size[0]
                 else:
-                    vector_action[b] = self._flatten(vector_action[b])
-                if b not in memory:
-                    memory[b] = []
+                    vector_action[brain_name] = self._flatten(vector_action[brain_name])
+                if brain_name not in memory:
+                    memory[brain_name] = []
                 else:
-                    if memory[b] is None:
-                        memory[b] = []
+                    if memory[brain_name] is None:
+                        memory[brain_name] = []
                     else:
-                        memory[b] = self._flatten(memory[b])
-                if b not in text_action:
-                    text_action[b] = [""] * n_agent
+                        memory[brain_name] = self._flatten(memory[brain_name])
+                if brain_name not in text_action:
+                    text_action[brain_name] = [""] * n_agent
                 else:
-                    if text_action[b] is None:
-                        text_action[b] = [""] * n_agent
-                    if isinstance(text_action[b], str):
-                        text_action[b] = [text_action[b]] * n_agent
-                if not ((len(text_action[b]) == n_agent) or len(text_action[b]) == 0):
+                    if text_action[brain_name] is None:
+                        text_action[brain_name] = [""] * n_agent
+                    if isinstance(text_action[brain_name], str):
+                        text_action[brain_name] = [text_action[brain_name]] * n_agent
+
+                number_text_actions = len(text_action[brain_name])
+                if not ((number_text_actions == n_agent) or number_text_actions == 0):
                     raise UnityActionException(
-                        "There was a mismatch between the provided text_action and environment's expectation: "
+                        "There was a mismatch between the provided text_action and "
+                        "the environment's expectation: "
                         "The brain {0} expected {1} text_action but was given {2}".format(
-                            b, n_agent, len(text_action[b])))
-                if not ((self._brains[b].vector_action_space_type == "discrete" and len(
-                        vector_action[b]) == n_agent * len(
-                    self._brains[b].vector_action_space_size)) or
-                        (self._brains[b].vector_action_space_type == "continuous" and len(
-                            vector_action[b]) == self._brains[b].vector_action_space_size[
-                             0] * n_agent)):
+                            brain_name, n_agent, number_text_actions))
+
+                discrete_check = self._brains[brain_name].vector_action_space_type == "discrete"
+
+                expected_discrete_size = n_agent * len(
+                    self._brains[brain_name].vector_action_space_size)
+
+                continuous_check = self._brains[brain_name].vector_action_space_type == "continuous"
+
+                expected_continuous_size = self._brains[brain_name].vector_action_space_size[
+                                               0] * n_agent
+
+                if not ((discrete_check and len(
+                        vector_action[brain_name]) == expected_discrete_size) or
+                        (continuous_check and len(
+                            vector_action[brain_name]) == expected_continuous_size)):
                     raise UnityActionException(
-                        "There was a mismatch between the provided action and environment's expectation: "
+                        "There was a mismatch between the provided action and "
+                        "the environment's expectation: "
                         "The brain {0} expected {1} {2} action(s), but was provided: {3}"
-                            .format(b, str(len(self._brains[b].vector_action_space_size) * n_agent)
-                        if self._brains[b].vector_action_space_type == "discrete"
-                        else str(self._brains[b].vector_action_space_size[0] * n_agent),
-                                    self._brains[b].vector_action_space_type,
-                                    str(vector_action[b])))
+                            .format(brain_name, str(expected_discrete_size)
+                        if discrete_check
+                        else str(expected_continuous_size),
+                                    self._brains[brain_name].vector_action_space_type,
+                                    str(vector_action[brain_name])))
 
             outputs = self.communicator.exchange(
-                self._generate_step_input(vector_action, memory, text_action, value)
-            )
+                self._generate_step_input(vector_action, memory, text_action, value))
             if outputs is None:
                 raise KeyboardInterrupt
             rl_output = outputs.rl_output
-            s = self._get_state(rl_output)
-            self._global_done = s[1]
+            state = self._get_state(rl_output)
+            self._global_done = state[1]
             for _b in self._external_brain_names:
-                self._n_agents[_b] = len(s[0][_b].agents)
-            return s[0]
+                self._n_agents[_b] = len(state[0][_b].agents)
+            return state[0]
         elif not self._loaded:
             raise UnityEnvironmentException("No Unity environment is loaded.")
         elif self._global_done:
@@ -432,8 +448,8 @@ class UnityEnvironment(object):
         global_done = output.global_done
         for brain_name in output.agentInfos:
             agent_info_list = output.agentInfos[brain_name].value
-            _data[brain_name] = agent_info_proto_to_brain_info(agent_info_list,
-                                                               self.brains[brain_name])
+            _data[brain_name] = BrainInfo.from_agent_proto(agent_info_list,
+                                                           self.brains[brain_name])
         return _data, global_done
 
     def _generate_step_input(self, vector_action, memory, text_action, value) -> UnityRLInput:
