@@ -5,7 +5,6 @@ import io
 from typing import Dict
 from PIL import Image
 
-
 logger = logging.getLogger("mlagents.envs")
 
 
@@ -53,7 +52,7 @@ class BrainInfo:
         vis_obs = []
         for i in range(brain_params.number_visual_observations):
             obs = [BrainInfo.process_pixels(x.visual_observations[i],
-                                  brain_params.camera_resolutions[i]['blackAndWhite'])
+                                            brain_params.camera_resolutions[i]['blackAndWhite'])
                    for x in agent_info_list]
             vis_obs += [np.array(obs)]
         if len(agent_info_list) == 0:
@@ -103,8 +102,6 @@ class BrainParameters:
                  vector_action_descriptions, vector_action_space_type):
         """
         Contains all brain-specific parameters.
-        :param brain_name: Name of brain.
-        :param brain_param: Dictionary of brain parameters.
         """
         self.brain_name = brain_name
         self.vector_observation_space_size = vector_observation_space_size
