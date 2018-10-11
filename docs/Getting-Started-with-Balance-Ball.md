@@ -276,15 +276,11 @@ Either wait for the training process to close the window or press Ctrl+C at the
 command-line prompt. If you simply close the window manually, the `.tf` file 
 containing the trained model is not exported into the ml-agents folder.
 
-### Setting up TensorFlowSharp Support
+### Setting up Inference Support
 
-Because TensorFlowSharp support is still experimental, it is disabled by
-default. In order to enable it, you must follow these steps. Please note that
-the `Learning` Brain mode will only be available once completing these steps.
-
-To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
-within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the
-Basic Guide page.
+In order to run neural network models inside of Unity, you will need to setup the
+Inference Engine with an appropriate backend. See [here](TensorflowSharp) for more
+information.
 
 ### Embedding the trained model into Unity
 

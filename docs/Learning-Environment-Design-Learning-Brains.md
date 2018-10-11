@@ -43,9 +43,9 @@ model.
 To use a graph model:
 
 1. Select the **Learning Brain** asset in the **Project** window of the Unity Editor.
- **Note:** In order to see the **Learning** Brain Type option, you must
-    [enable TensorFlowSharp](Using-TensorFlow-Sharp-in-Unity.md).
-3. Import the `model_name` file produced by the PPO training
+ **Note:** In order to use the **Learning** Brain, you have appropriate backend for the
+ Inference Engine. See [here](TensorFlowSharp).
+2. Import the `model_name` file produced by the PPO training
    program. (Where `model_name` is the name of the model file, which is
    constructed from the name of your Unity environment executable and the run-id
    value you assigned when running the training process.)
@@ -54,7 +54,7 @@ To use a graph model:
    [import assets into Unity](https://docs.unity3d.com/Manual/ImportingAssets.html)
    in various ways. The easiest way is to simply drag the file into the
    **Project** window and drop it into an appropriate folder.
-4. Once the `model_name.tf` file is imported, drag it from the **Project**
+3. Once the `model_name.tf` file is imported, drag it from the **Project**
    window to the **Model** field of the Brain component.
 
 If you are using a model produced by the ML-Agents `mlagents-learn` command, use

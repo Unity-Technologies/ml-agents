@@ -15,7 +15,7 @@ Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
 ## TensorFlowSharp flag not turned on
 
-If you have already imported the TensorFlowSharp plugin, but haven't set
+Before version 0.6, we use specific scripting define symbols when using TensorflowSharp. If you have already imported the TensorFlowSharp plugin, but haven't set
 ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
 following error message:
 

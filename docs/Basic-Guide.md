@@ -11,10 +11,9 @@ the basic concepts of Unity.
 ## Setting up the ML-Agents Toolkit within Unity
 
 In order to use the ML-Agents toolkit within Unity, you need to change some
-Unity settings first. Also [TensorFlowSharp
-plugin](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
-is needed for you to use pre-trained model within Unity, which is based on the
-[TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp).
+Unity settings first. Youy will also need to have appropriate inference backends
+installed in order to run your models inside of Unity. See [here](TensorflowSharp)
+for more information.
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
@@ -26,22 +25,7 @@ is needed for you to use pre-trained model within Unity, which is based on the
     1. Option the **Other Settings** section.
     2. Select **Scripting Runtime Version** to **Experimental (.NET 4.6
        Equivalent or .NET 4.x Equivalent)**
-    3. In **Scripting Defined Symbols**, add the flag `ENABLE_TENSORFLOW`. After
-       typing in the flag name, press Enter.
 6. Go to **File** > **Save Project**
-
-![Project Settings](images/project-settings.png)
-
-[Download](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
-the TensorFlowSharp plugin. Then import it into Unity by double clicking the
-downloaded file.  You can check if it was successfully imported by checking the
-TensorFlow files in the Project window under **Assets** > **ML-Agents** >
-**Plugins** > **Computer**.
-
-**Note**: If you don't see anything under **Assets**, drag the
-`UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
-
-![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
 
 ## Running a Pre-trained Model
 
