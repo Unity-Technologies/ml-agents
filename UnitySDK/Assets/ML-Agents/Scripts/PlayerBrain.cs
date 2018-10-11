@@ -61,8 +61,6 @@ namespace MLAgents
         /// decide action
         protected override void DecideAction()
         {
-            base.DecideAction();
-
             if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 foreach (Agent agent in agentInfos.Keys)

@@ -75,7 +75,6 @@ namespace MLAgents.Tests
 
         protected override void DecideAction()
         {
-            base.DecideAction();
             numberOfCallsToDecideAction++;
             agentInfos.Clear();
         }

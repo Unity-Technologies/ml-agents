@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
@@ -67,6 +68,7 @@ class PPOPolicy(Policy):
         """
         feed_dict = {self.model.batch_size: len(brain_info.vector_observations),
                      self.model.sequence_length: 1}
+        epsilon = None
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[self.model.prev_action] = brain_info.previous_vector_actions.reshape(
@@ -74,8 +76,14 @@ class PPOPolicy(Policy):
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
+        if self.use_continuous_act:
+            epsilon = np.random.normal(
+                size=(len(brain_info.vector_observations), self.model.act_size[0]))
+            feed_dict[self.model.epsilon] = epsilon
         feed_dict = self._fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)
+        if self.use_continuous_act:
+            run_out['random_normal_epsilon'] = epsilon
         return run_out
 
     def update(self, mini_batch, num_sequences):
@@ -95,6 +103,8 @@ class PPOPolicy(Policy):
                          [-1, sum(self.model.act_size)])}
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch['actions_pre'].reshape(
+                [-1, self.model.act_size[0]])
+            feed_dict[self.model.epsilon] = mini_batch['random_normal_epsilon'].reshape(
                 [-1, self.model.act_size[0]])
         else:
             feed_dict[self.model.action_holder] = mini_batch['actions'].reshape(
