@@ -161,7 +161,7 @@ GPU). This is a guide for advanced users who want to train using GPUs.
 Additionally, you will need to check if your GPU is CUDA compatible. Please
 check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
-Currently for ML-Agents toolkit, only CUDA v9.0 and cuDNN v7.0.5 is supported.
+Currently for the ML-Agents toolkit, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
 ### Install Nvidia CUDA toolkit
 
