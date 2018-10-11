@@ -63,8 +63,8 @@ namespace MLAgents.InferenceBrain
         /// Agents that will be updated using the tensor's data</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated applier.</exception>
-        public void ApplyTensors(IEnumerable<Tensor> tensors, 
-            Dictionary<Agent, AgentInfo> agentInfos)
+        public void ApplyTensors(
+            IEnumerable<Tensor> tensors,  Dictionary<Agent, AgentInfo> agentInfos)
         {
             foreach (var tensor in tensors)
             {
