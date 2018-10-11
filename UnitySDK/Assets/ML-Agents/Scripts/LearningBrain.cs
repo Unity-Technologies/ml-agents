@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using MLAgents.InferenceBrain;
 using UnityEngine.MachineLearning.InferenceEngine;
+using UnityEngine.Profiling;
 
 namespace MLAgents
 {
@@ -113,7 +114,9 @@ namespace MLAgents
             _tensorGenerator.GenerateTensors(_inferenceOutputs, currentBatchSize, agentInfos);
 
             // Execute the Model
+            Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
             _engine.ExecuteGraph(_inferenceInputs, _inferenceOutputs);
+            Profiler.EndSample();
 
             // Update the outputs
             _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
