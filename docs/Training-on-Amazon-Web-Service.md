@@ -5,7 +5,7 @@ Service for training ML-Agents environments.
 
 ## Preconfigured AMI
 
-We've prepared a preconfigured AMI for you with the ID: `ami-18642967` in the
+We've prepared a preconfigured AMI for you with the ID: `ami-016ff5559334f8619` in the
 `us-east-1` region. It was created as a modification of [Deep Learning AMI
 (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). The AMI has been 
 tested with p2.xlarge instance. Furthermore, if you want to train without 
@@ -311,7 +311,3 @@ You might see something like:
 NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 ```
 This means the NVIDIA's driver needs to be updated. Refer to [this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver) for more information. 
-
-
-
- 
