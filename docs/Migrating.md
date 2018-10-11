@@ -54,13 +54,14 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
   python3 learn.py 3DBall --train
   ```
 
-  from the `python/` directory, we now run
+  from the `python` subdirectory (which is changed to `ml-agents` subdirectory
+  in v0.5), we now run
 
   ```sh
   mlagents-learn config/trainer_config.yaml --env=3DBall --train
   ```
 
-  from the directory where we installed the ML-Agents Toolkit.
+  from the root directory where we installed the ML-Agents Toolkit.
 
 * It is now required to specify the path to the yaml trainer configuration file
   when running `mlagents-learn`. For an example trainer configuration file, see
@@ -88,7 +89,8 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
 ### Python API
 
 * We've changed some of the Python packages dependencies in requirement.txt
-  file. Make sure to run `pip3 install .` within your `ml-agents/python` folder
+  file. Make sure to run `pip3 install -e .` within your `ml-agents/python`
+  folder
   to update your Python packages.
 
 ## Migrating from ML-Agents toolkit v0.2 to v0.3
