@@ -1,25 +1,20 @@
 import atexit
 import glob
-import io
 import logging
 import numpy as np
 import os
 import subprocess
 
-from .brain import BrainInfo, BrainParameters, AllBrainInfo
-from .utilities import process_pixels
+from .brain import AllBrainInfo
+from .utilities import agent_info_proto_to_brain_info, brain_param_proto_to_obj
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 
-from .communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto,\
-    EnvironmentParametersProto, UnityRLInitializationInput, UnityRLInitializationOutput,\
+from .communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto, \
+    EnvironmentParametersProto, UnityRLInitializationInput, UnityRLInitializationOutput, \
     UnityInput, UnityOutput
 
 from .rpc_communicator import RpcCommunicator
-from .socket_communicator import SocketCommunicator
-
-
 from sys import platform
-from PIL import Image
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mlagents.envs")
@@ -45,16 +40,17 @@ class UnityEnvironment(object):
         self.port = base_port + worker_id
         self._buffer_size = 12000
         self._version_ = "API-5"
-        self._loaded = False    # If true, this means the environment was successfully loaded
-        self.proc1 = None       # The process that is started. If None, no process was started
+        self._loaded = False  # If true, this means the environment was successfully loaded
+        self.proc1 = None  # The process that is started. If None, no process was started
         self.communicator = self.get_communicator(worker_id, base_port)
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
         # If the worker-id is not 0 and the environment name is None, an error is thrown
-        if file_name is None and worker_id!=0:
+        if file_name is None and worker_id != 0:
             raise UnityEnvironmentException(
-                "If the environment name is None, the worker-id must be 0 in order to connect with the Editor.")
+                "If the environment name is None, "
+                "the worker-id must be 0 in order to connect with the Editor.")
         if file_name is not None:
             self.executable_launcher(file_name, docker_training, no_graphics)
         else:
@@ -85,25 +81,12 @@ class UnityEnvironment(object):
         self._external_brain_names = []
         for brain_param in aca_params.brain_parameters:
             self._brain_names += [brain_param.brain_name]
-            resolution = [{
-                "height": x.height,
-                "width": x.width,
-                "blackAndWhite": x.gray_scale
-            } for x in brain_param.camera_resolutions]
-            self._brains[brain_param.brain_name] = \
-                BrainParameters(brain_param.brain_name, {
-                    "vectorObservationSize": brain_param.vector_observation_size,
-                    "numStackedVectorObservations": brain_param.num_stacked_vector_observations,
-                    "cameraResolutions": resolution,
-                    "vectorActionSize": brain_param.vector_action_size,
-                    "vectorActionDescriptions": brain_param.vector_action_descriptions,
-                    "vectorActionSpaceType": brain_param.vector_action_space_type
-                })
+            self._brains[brain_param.brain_name] = brain_param_proto_to_obj(brain_param)
             if brain_param.is_training:
                 self._external_brain_names += [brain_param.brain_name]
         self._num_brains = len(self._brain_names)
         self._num_external_brains = len(self._external_brain_names)
-        self._resetParameters = dict(aca_params.environment_parameters.float_parameters) # TODO
+        self._resetParameters = dict(aca_params.environment_parameters.float_parameters)
         logger.info("\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self)))
         if self._num_external_brains == 0:
             logger.warning(" No Learning Brains set to train found in the Unity Environment. "
@@ -144,7 +127,8 @@ class UnityEnvironment(object):
     def executable_launcher(self, file_name, docker_training, no_graphics):
         cwd = os.getcwd()
         file_name = (file_name.strip()
-                     .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86', ''))
+                     .replace('.app', '').replace('.exe', '').replace('.x86_64', '').replace('.x86',
+                                                                                             ''))
         true_filename = os.path.basename(os.path.normpath(file_name))
         logger.debug('The true file name is {}'.format(true_filename))
         launch_string = None
@@ -160,11 +144,14 @@ class UnityEnvironment(object):
                 launch_string = candidates[0]
 
         elif platform == 'darwin':
-            candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
+            candidates = glob.glob(
+                os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', true_filename))
             if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
+                candidates = glob.glob(
+                    os.path.join(file_name + '.app', 'Contents', 'MacOS', true_filename))
             if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', '*'))
+                candidates = glob.glob(
+                    os.path.join(cwd, file_name + '.app', 'Contents', 'MacOS', '*'))
             if len(candidates) == 0:
                 candidates = glob.glob(os.path.join(file_name + '.app', 'Contents', 'MacOS', '*'))
             if len(candidates) > 0:
@@ -186,7 +173,7 @@ class UnityEnvironment(object):
             if not docker_training:
                 if no_graphics:
                     self.proc1 = subprocess.Popen(
-                        [launch_string,'-nographics', '-batchmode',
+                        [launch_string, '-nographics', '-batchmode',
                          '--port', str(self.port)])
                 else:
                     self.proc1 = subprocess.Popen(
@@ -226,15 +213,16 @@ class UnityEnvironment(object):
         Number of Brains: {1}
         Number of Training Brains : {2}
         Reset Parameters :\n\t\t{3}'''.format(self._academy_name, str(self._num_brains),
-                                 str(self._num_external_brains),
-                                 "\n\t\t".join([str(k) + " -> " + str(self._resetParameters[k])
-                                         for k in self._resetParameters])) + '\n' + \
+                                              str(self._num_external_brains),
+                                              "\n\t\t".join(
+                                                  [str(k) + " -> " + str(self._resetParameters[k])
+                                                   for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
     def reset(self, config=None, train_mode=True) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
-        :return: AllBrainInfo  : A Data structure corresponding to the initial reset state of the environment.
+        :return: AllBrainInfo  : A data structure corresponding to the initial reset state of the environment.
         """
         if config is None:
             config = self._resetParameters
@@ -248,7 +236,8 @@ class UnityEnvironment(object):
                 raise UnityEnvironmentException(
                     "The value for parameter '{0}'' must be an Integer or a Float.".format(k))
             else:
-                raise UnityEnvironmentException("The parameter '{0}' is not a valid parameter.".format(k))
+                raise UnityEnvironmentException(
+                    "The parameter '{0}' is not a valid parameter.".format(k))
 
         if self._loaded:
             outputs = self.communicator.exchange(
@@ -265,7 +254,7 @@ class UnityEnvironment(object):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
-    def step(self,  vector_action=None, memory=None, text_action=None, value=None) -> AllBrainInfo:
+    def step(self, vector_action=None, memory=None, text_action=None, value=None) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly, and returns
         observation, state, and reward information to the agent.
@@ -325,7 +314,8 @@ class UnityEnvironment(object):
                         "There are no external brains in the environment, "
                         "step cannot take a value input")
 
-            for brain_name in list(vector_action.keys()) + list(memory.keys()) + list(text_action.keys()):
+            for brain_name in list(vector_action.keys()) + list(memory.keys()) + list(
+                    text_action.keys()):
                 if brain_name not in self._external_brain_names:
                     raise UnityActionException(
                         "The name {0} does not correspond to an external brain "
@@ -336,9 +326,11 @@ class UnityEnvironment(object):
                 if b not in vector_action:
                     # raise UnityActionException("You need to input an action for the brain {0}".format(b))
                     if self._brains[b].vector_action_space_type == "discrete":
-                        vector_action[b] = [0.0] * n_agent * len(self._brains[b].vector_action_space_size)
+                        vector_action[b] = [0.0] * n_agent * len(
+                            self._brains[b].vector_action_space_size)
                     else:
-                        vector_action[b] = [0.0] * n_agent * self._brains[b].vector_action_space_size[0]
+                        vector_action[b] = [0.0] * n_agent * \
+                                           self._brains[b].vector_action_space_size[0]
                 else:
                     vector_action[b] = self._flatten(vector_action[b])
                 if b not in memory:
@@ -361,17 +353,19 @@ class UnityEnvironment(object):
                         "The brain {0} expected {1} text_action but was given {2}".format(
                             b, n_agent, len(text_action[b])))
                 if not ((self._brains[b].vector_action_space_type == "discrete" and len(
-                        vector_action[b]) == n_agent * len(self._brains[b].vector_action_space_size)) or
-                            (self._brains[b].vector_action_space_type == "continuous" and len(
-                                vector_action[b]) == self._brains[b].vector_action_space_size[0] * n_agent)):
+                        vector_action[b]) == n_agent * len(
+                    self._brains[b].vector_action_space_size)) or
+                        (self._brains[b].vector_action_space_type == "continuous" and len(
+                            vector_action[b]) == self._brains[b].vector_action_space_size[
+                             0] * n_agent)):
                     raise UnityActionException(
                         "There was a mismatch between the provided action and environment's expectation: "
                         "The brain {0} expected {1} {2} action(s), but was provided: {3}"
-                        .format(b, str(len(self._brains[b].vector_action_space_size) * n_agent)
+                            .format(b, str(len(self._brains[b].vector_action_space_size) * n_agent)
                         if self._brains[b].vector_action_space_type == "discrete"
                         else str(self._brains[b].vector_action_space_size[0] * n_agent),
-                        self._brains[b].vector_action_space_type,
-                        str(vector_action[b])))
+                                    self._brains[b].vector_action_space_type,
+                                    str(vector_action[b])))
 
             outputs = self.communicator.exchange(
                 self._generate_step_input(vector_action, memory, text_action, value)
@@ -387,10 +381,12 @@ class UnityEnvironment(object):
         elif not self._loaded:
             raise UnityEnvironmentException("No Unity environment is loaded.")
         elif self._global_done:
-            raise UnityActionException("The episode is completed. Reset the environment with 'reset()'")
+            raise UnityActionException(
+                "The episode is completed. Reset the environment with 'reset()'")
         elif self.global_done is None:
             raise UnityActionException(
-                "You cannot conduct step without first calling reset. Reset the environment with 'reset()'")
+                "You cannot conduct step without first calling reset. "
+                "Reset the environment with 'reset()'")
 
     def close(self):
         """
@@ -434,47 +430,10 @@ class UnityEnvironment(object):
         """
         _data = {}
         global_done = output.global_done
-        for b in output.agentInfos:
-            agent_info_list = output.agentInfos[b].value
-            vis_obs = []
-            for i in range(self.brains[b].number_visual_observations):
-                obs = [process_pixels(x.visual_observations[i],
-                                            self.brains[b].camera_resolutions[i]['blackAndWhite'])
-                    for x in agent_info_list]
-                vis_obs += [np.array(obs)]
-            if len(agent_info_list) == 0:
-                memory_size = 0
-            else:
-                memory_size = max([len(x.memories) for x in agent_info_list])
-            if memory_size == 0:
-                memory = np.zeros((0, 0))
-            else:
-                [x.memories.extend([0] * (memory_size - len(x.memories))) for x in agent_info_list]
-                memory = np.array([x.memories for x in agent_info_list])
-            total_num_actions = sum(self.brains[b].vector_action_space_size)
-            mask_actions = np.ones((len(agent_info_list), total_num_actions))
-            for agent_index, agent_info in enumerate(agent_info_list):
-                if agent_info.action_mask is not None:
-                    if len(agent_info.action_mask) == total_num_actions:
-                        mask_actions[agent_index, :] = [
-                            0 if agent_info.action_mask[k] else 1 for k in range(total_num_actions)]
-            if any([np.isnan(x.reward) for x in agent_info_list]):
-                logger.warning("An agent had a NaN reward for brain "+b)
-            if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
-                logger.warning("An agent had a NaN observation for brain " + b)
-            _data[b] = BrainInfo(
-                visual_observation=vis_obs,
-                vector_observation=np.nan_to_num(np.array([x.stacked_vector_observation for x in agent_info_list])),
-                text_observations=[x.text_observation for x in agent_info_list],
-                memory=memory,
-                reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
-                agents=[x.id for x in agent_info_list],
-                local_done=[x.done for x in agent_info_list],
-                vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
-                text_action=[x.stored_text_actions for x in agent_info_list],
-                max_reached=[x.max_step_reached for x in agent_info_list],
-                action_mask=mask_actions
-                )
+        for brain_name in output.agentInfos:
+            agent_info_list = output.agentInfos[brain_name].value
+            _data[brain_name] = agent_info_proto_to_brain_info(agent_info_list,
+                                                               self.brains[brain_name])
         return _data, global_done
 
     def _generate_step_input(self, vector_action, memory, text_action, value) -> UnityRLInput:
@@ -487,8 +446,8 @@ class UnityEnvironment(object):
             _m_s = len(memory[b]) // n_agents
             for i in range(n_agents):
                 action = AgentActionProto(
-                    vector_actions=vector_action[b][i*_a_s: (i+1)*_a_s],
-                    memories=memory[b][i*_m_s: (i+1)*_m_s],
+                    vector_actions=vector_action[b][i * _a_s: (i + 1) * _a_s],
+                    memories=memory[b][i * _m_s: (i + 1) * _m_s],
                     text_actions=text_action[b][i],
                 )
                 if b in value:
@@ -507,7 +466,8 @@ class UnityEnvironment(object):
         rl_in.command = 1
         return self.wrap_unity_input(rl_in)
 
-    def send_academy_parameters(self, init_parameters: UnityRLInitializationInput) -> UnityRLInitializationOutput:
+    def send_academy_parameters(self,
+                                init_parameters: UnityRLInitializationInput) -> UnityRLInitializationOutput:
         inputs = UnityInput()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
         return self.communicator.initialize(inputs).rl_initialization_output
