@@ -310,7 +310,7 @@ You might see something like:
 ```console
 NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 ```
-This means the NVIDIA's driver needs to be updated. 
+This means the NVIDIA's driver needs to be updated. Refer to [this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver) for more information. 
 
 
 
