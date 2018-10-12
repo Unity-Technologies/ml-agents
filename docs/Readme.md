@@ -42,8 +42,7 @@
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Inference
-* Link to [*Unity Machine Learning Inference SDK*](TensorflowSharp)
-* [Installing Backends](TensorflowSharp)
+* [Unity Machine Learning Inference SDK](Inference-Engine.md)
 
 ## Help
 

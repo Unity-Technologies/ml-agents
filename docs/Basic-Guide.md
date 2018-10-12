@@ -12,7 +12,7 @@ the basic concepts of Unity.
 
 In order to use the ML-Agents toolkit within Unity, you need to change some
 Unity settings first. Youy will also need to have appropriate inference backends
-installed in order to run your models inside of Unity. See [here](TensorflowSharp)
+installed in order to run your models inside of Unity. See [here](Inference-Engine.md)
 for more information.
 
 1. Launch Unity

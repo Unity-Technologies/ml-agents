@@ -279,7 +279,7 @@ containing the trained model is not exported into the ml-agents folder.
 ### Setting up Inference Support
 
 In order to run neural network models inside of Unity, you will need to setup the
-Inference Engine with an appropriate backend. See [here](TensorflowSharp) for more
+Inference Engine with an appropriate backend. See [here](Inference-Engine.md) for more
 information.
 
 ### Embedding the trained model into Unity

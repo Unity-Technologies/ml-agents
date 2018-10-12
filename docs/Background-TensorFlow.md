@@ -39,6 +39,6 @@ recommend this
 ## Tensorflow Model Inference
 
 One of the drawbacks of TensorFlow is that it does not provide a native C# API.
-We have are using the [Unity Machine Learning Inference SDK](TensorflowSharp) to
+We have are using the [Unity Machine Learning Inference SDK](Inference-Engine.md) to
 run the models inside of Unity. In order to use it, you will need to have an 
-appropriate backend downloaded. You can find more information [here](TensorflowSharp) 
+appropriate backend downloaded. 
