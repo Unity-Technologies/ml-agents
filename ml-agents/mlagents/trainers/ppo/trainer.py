@@ -30,11 +30,11 @@ class PPOTrainer(Trainer):
         :param run_id: The The identifier of the current run
         """
         super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
-        self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
-                           'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
-                           'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
-                           'summary_path', 'memory_size', 'use_curiosity', 'curiosity_strength',
-                           'curiosity_enc_size', 'model_path']
+        self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units',
+                           'lambd', 'learning_rate', 'max_steps', 'normalize', 'num_epoch',
+                           'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
+                           'use_recurrent', 'summary_path', 'memory_size', 'use_curiosity',
+                           'curiosity_strength', 'curiosity_enc_size', 'model_path']
 
         self.check_param_keys()
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
@@ -64,7 +64,8 @@ class PPOTrainer(Trainer):
 
     def __str__(self):
         return '''Hyperparameters for the PPO Trainer of brain {0}: \n{1}'''.format(
-            self.brain_name, '\n'.join(['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
+            self.brain_name, '\n'.join(
+                ['\t{0}:\t{1}'.format(x, self.trainer_parameters[x]) for x in self.param_keys]))
 
     @property
     def parameters(self):
@@ -132,7 +133,7 @@ class PPOTrainer(Trainer):
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
-        Constructs a BrainInfo which contains the most recent previous experiences for all agents info
+        Constructs a BrainInfo which contains the most recent previous experiences for all agents
         which correspond to the agents in a provided next_info.
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
@@ -174,7 +175,8 @@ class PPOTrainer(Trainer):
                               prev_text_actions, max_reacheds)
         return curr_info
 
-    def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
+    def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo,
+                        take_action_outputs):
         """
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
@@ -193,7 +195,8 @@ class PPOTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        intrinsic_rewards = self.policy.get_intrinsic_rewards(curr_to_use, next_info)
+        if self.use_curiosity:
+            intrinsic_rewards = self.policy.curiosity.get_intrinsic_rewards(curr_to_use, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -208,12 +211,14 @@ class PPOTrainer(Trainer):
                         self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
                             next_info.visual_observations[i][next_idx])
                     if self.policy.use_vec_obs:
-                        self.training_buffer[agent_id]['vector_obs'].append(stored_info.vector_observations[idx])
+                        self.training_buffer[agent_id]['vector_obs'].append(
+                            stored_info.vector_observations[idx])
                         self.training_buffer[agent_id]['next_vector_in'].append(
                             next_info.vector_observations[next_idx])
                     if self.policy.use_recurrent:
                         if stored_info.memories.shape[1] == 0:
-                            stored_info.memories = np.zeros((len(stored_info.agents), self.policy.m_size))
+                            stored_info.memories = np.zeros(
+                                (len(stored_info.agents), self.policy.m_size))
                         self.training_buffer[agent_id]['memory'].append(stored_info.memories[idx])
                     actions = stored_take_action_outputs['action']
                     if self.policy.use_continuous_act:
@@ -228,13 +233,16 @@ class PPOTrainer(Trainer):
                     a_dist = stored_take_action_outputs['log_probs']
                     value = stored_take_action_outputs['value']
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
-                    self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
+                    self.training_buffer[agent_id]['prev_action'].append(
+                        stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
                     if self.use_curiosity:
-                        self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx] +
-                                                                         intrinsic_rewards[next_idx])
+                        self.training_buffer[agent_id]['rewards'].append(
+                            next_info.rewards[next_idx] +
+                            intrinsic_rewards[next_idx])
                     else:
-                        self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
+                        self.training_buffer[agent_id]['rewards'].append(
+                            next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
                     if agent_id not in self.cumulative_rewards:
@@ -277,7 +285,8 @@ class PPOTrainer(Trainer):
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(
                         rewards=self.training_buffer[agent_id]['rewards'].get_batch(),
-                        value_estimates=self.training_buffer[agent_id]['value_estimates'].get_batch(),
+                        value_estimates=self.training_buffer[agent_id][
+                            'value_estimates'].get_batch(),
                         value_next=value_next,
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd']))
@@ -285,8 +294,8 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['advantages'].get_batch()
                     + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
-                self.training_buffer.append_update_buffer(agent_id, batch_size=None,
-                                                          training_length=self.policy.sequence_length)
+                self.training_buffer.append_update_buffer(
+                    agent_id, batch_size=None, training_length=self.policy.sequence_length)
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
@@ -322,13 +331,15 @@ class PPOTrainer(Trainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         size_of_buffer = len(self.training_buffer.update_buffer['actions'])
-        return size_of_buffer > max(int(self.trainer_parameters['buffer_size'] / self.policy.sequence_length), 1)
+        return size_of_buffer > max(
+            int(self.trainer_parameters['buffer_size'] / self.policy.sequence_length), 1)
 
     def update_policy(self):
         """
         Uses demonstration_buffer to update the policy.
         """
-        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
+        n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length),
+                          1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(

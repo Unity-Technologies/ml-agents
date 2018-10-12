@@ -3,6 +3,7 @@ import numpy as np
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
+from mlagents.trainers.ppo.curiosity import Curiosity
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -33,9 +34,12 @@ class PPOPolicy(Policy):
                                   num_layers=int(trainer_params['num_layers']),
                                   m_size=self.m_size,
                                   use_curiosity=bool(trainer_params['use_curiosity']),
-                                  curiosity_strength=float(trainer_params['curiosity_strength']),
-                                  curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
                                   seed=seed)
+            if self.use_curiosity:
+                self.curiosity = Curiosity(self,
+                                           strength=float(trainer_params['curiosity_strength']),
+                                           encoding_size=float(
+                                               trainer_params['curiosity_enc_size']))
 
         if load:
             self._load_graph()
@@ -57,8 +61,8 @@ class PPOPolicy(Policy):
                             'policy_loss': self.model.policy_loss,
                             'update_batch': self.model.update_batch}
         if self.use_curiosity:
-            self.update_dict['forward_loss'] = self.model.forward_loss
-            self.update_dict['inverse_loss'] = self.model.inverse_loss
+            self.update_dict['forward_loss'] = self.curiosity.icm.forward_loss
+            self.update_dict['inverse_loss'] = self.curiosity.icm.inverse_loss
 
     def evaluate(self, brain_info):
         """
@@ -118,7 +122,7 @@ class PPOPolicy(Policy):
             feed_dict[self.model.vector_in] = mini_batch['vector_obs'].reshape(
                 [-1, self.vec_obs_size])
             if self.use_curiosity:
-                feed_dict[self.model.next_vector_in] = mini_batch['next_vector_in'].reshape(
+                feed_dict[self.curiosity.icm.next_vector_in] = mini_batch['next_vector_in'].reshape(
                     [-1, self.vec_obs_size])
         if self.model.vis_obs_size > 0:
             for i, _ in enumerate(self.model.visual_in):
@@ -133,48 +137,16 @@ class PPOPolicy(Policy):
                     _obs = mini_batch['next_visual_obs%d' % i]
                     if self.sequence_length > 1 and self.use_recurrent:
                         (_batch, _seq, _w, _h, _c) = _obs.shape
-                        feed_dict[self.model.next_visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
+                        feed_dict[self.curiosity.icm.next_visual_in[i]] = _obs.reshape(
+                            [-1, _w, _h, _c])
                     else:
-                        feed_dict[self.model.next_visual_in[i]] = _obs
+                        feed_dict[self.curiosity.icm.next_visual_in[i]] = _obs
         if self.use_recurrent:
             mem_in = mini_batch['memory'][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
         self.has_updated = True
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
-
-    def get_intrinsic_rewards(self, curr_info, next_info):
-        """
-        Generates intrinsic reward used for Curiosity-based training.
-        :BrainInfo curr_info: Current BrainInfo.
-        :BrainInfo next_info: Next BrainInfo.
-        :return: Intrinsic rewards for all agents.
-        """
-        if self.use_curiosity:
-            if len(curr_info.agents) == 0:
-                return []
-
-            feed_dict = {self.model.batch_size: len(next_info.vector_observations),
-                         self.model.sequence_length: 1}
-            if self.use_continuous_act:
-                feed_dict[self.model.output] = next_info.previous_vector_actions
-            else:
-                feed_dict[self.model.action_holder] = next_info.previous_vector_actions
-            for i in range(self.model.vis_obs_size):
-                feed_dict[self.model.visual_in[i]] = curr_info.visual_observations[i]
-                feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
-            if self.use_vec_obs:
-                feed_dict[self.model.vector_in] = curr_info.vector_observations
-                feed_dict[self.model.next_vector_in] = next_info.vector_observations
-            if self.use_recurrent:
-                if curr_info.memories.shape[1] == 0:
-                    curr_info.memories = self.make_empty_memory(len(curr_info.agents))
-                feed_dict[self.model.memory_in] = curr_info.memories
-            intrinsic_rewards = self.sess.run(self.model.intrinsic_reward,
-                                              feed_dict=feed_dict) * float(self.has_updated)
-            return intrinsic_rewards
-        else:
-            return None
 
     def get_value_estimate(self, brain_info, idx):
         """

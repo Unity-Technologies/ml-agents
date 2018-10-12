@@ -92,7 +92,7 @@ GoalieBrain:
     num_layers: 2
     normalize: false
 
-PyramidBrain:
+PyramidsLearning:
     use_curiosity: true
     summary_freq: 2000
     curiosity_strength: 0.01

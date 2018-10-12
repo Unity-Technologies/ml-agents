@@ -35,9 +35,11 @@ class LearningModel(object):
         tf.Variable(self._version_number_, name='version_number', trainable=False, dtype=tf.int32)
         tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
         if brain.vector_action_space_type == 'continuous':
-            tf.Variable(self.act_size[0], name="action_output_shape", trainable=False, dtype=tf.int32)
+            tf.Variable(self.act_size[0], name="action_output_shape", trainable=False,
+                        dtype=tf.int32)
         else:
-            tf.Variable(sum(self.act_size), name="action_output_shape", trainable=False, dtype=tf.int32)
+            tf.Variable(sum(self.act_size), name="action_output_shape", trainable=False,
+                        dtype=tf.int32)
 
     @staticmethod
     def create_global_steps():
@@ -164,15 +166,20 @@ class LearningModel(object):
         :return: The action output dimension [batch_size, num_branches] and the concatenated normalized logits
         """
         action_idx = [0] + list(np.cumsum(action_size))
-        branches_logits = [all_logits[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
-        branch_masks = [action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
+        branches_logits = [all_logits[:, action_idx[i]:action_idx[i + 1]] for i in
+                           range(len(action_size))]
+        branch_masks = [action_masks[:, action_idx[i]:action_idx[i + 1]] for i in
+                        range(len(action_size))]
         raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k]) + 1.0e-10
                      for k in range(len(action_size))]
         normalized_probs = [
             tf.divide(raw_probs[k], tf.reduce_sum(raw_probs[k] + 1.0e-10, axis=1, keepdims=True))
-                            for k in range(len(action_size))]
-        output = tf.concat([tf.multinomial(tf.log(normalized_probs[k]), 1) for k in range(len(action_size))], axis=1)
-        return output, tf.concat([tf.log(normalized_probs[k]) for k in range(len(action_size))], axis=1)
+            for k in range(len(action_size))]
+        output = tf.concat(
+            [tf.multinomial(tf.log(normalized_probs[k]), 1) for k in range(len(action_size))],
+            axis=1)
+        return output, tf.concat([tf.log(normalized_probs[k]) for k in range(len(action_size))],
+                                 axis=1)
 
     def create_observation_streams(self, num_streams, h_size, num_layers):
         """
@@ -281,7 +288,8 @@ class LearningModel(object):
 
         sigma_sq = tf.exp(log_sigma_sq)
 
-        self.epsilon = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32, name='epsilon')
+        self.epsilon = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32,
+                                      name='epsilon')
         # Clip and scale output to ensure actions are always within [-1, 1] range.
         self.output_pre = mu + tf.sqrt(sigma_sq) * self.epsilon
         output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
@@ -333,11 +341,14 @@ class LearningModel(object):
         policy_branches = []
         for size in self.act_size:
             policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
-                                      kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
+                                                   kernel_initializer=c_layers.variance_scaling_initializer(
+                                                       factor=0.01)))
 
-        self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
+        self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1,
+                                       name="action_probs")
 
-        self.action_masks = tf.placeholder(shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks")
+        self.action_masks = tf.placeholder(shape=[None, sum(self.act_size)], dtype=tf.float32,
+                                           name="action_masks")
         output, normalized_logits = self.create_discrete_action_masking_layer(
             self.all_log_probs, self.action_masks, self.act_size)
 
@@ -350,7 +361,8 @@ class LearningModel(object):
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
         self.selected_actions = tf.concat([
-            tf.one_hot(self.action_holder[:, i], self.act_size[i]) for i in range(len(self.act_size))], axis=1)
+            tf.one_hot(self.action_holder[:, i], self.act_size[i]) for i in
+            range(len(self.act_size))], axis=1)
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name='old_probabilities')
