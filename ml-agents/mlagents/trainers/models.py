@@ -49,6 +49,10 @@ class LearningModel(object):
         return global_step, increment_step
 
     @staticmethod
+    def scaled_init(scale):
+        return c_layers.variance_scaling_initializer(scale)
+
+    @staticmethod
     def swish(input_activation):
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
@@ -70,8 +74,8 @@ class LearningModel(object):
         else:
             c_channels = 3
 
-        visual_in = tf.placeholder(shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32,
-                                   name=name)
+        visual_in = tf.placeholder(
+            shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name)
         return visual_in
 
     def create_vector_input(self, name='vector_observation'):
@@ -111,8 +115,8 @@ class LearningModel(object):
         return update_mean, update_variance
 
     @staticmethod
-    def create_vector_observation_encoder(observation_input, h_size, activation, num_layers, scope,
-                                          reuse):
+    def create_vector_obs_encoder(
+            observation_input, h_size, activation, num_layers, scope, reuse):
         """
         Builds a set of hidden state encoders.
         :param reuse: Whether to re-use the weights within the same scope.
@@ -128,12 +132,12 @@ class LearningModel(object):
             for i in range(num_layers):
                 hidden = tf.layers.dense(hidden, h_size, activation=activation, reuse=reuse,
                                          name="hidden_{}".format(i),
-                                         kernel_initializer=c_layers.variance_scaling_initializer(
-                                             1.0))
+                                         kernel_initializer=LearningModel.scaled_init(1.0))
         return hidden
 
-    def create_visual_observation_encoder(self, image_input, h_size, activation, num_layers, scope,
-                                          reuse):
+    @staticmethod
+    def create_visual_obs_encoder(image_input, h_size, activation, num_layers, scope,
+                                  reuse):
         """
         Builds a set of visual (CNN) encoders.
         :param reuse: Whether to re-use the weights within the same scope.
@@ -149,11 +153,11 @@ class LearningModel(object):
                                      activation=tf.nn.elu, reuse=reuse, name="conv_1")
             conv2 = tf.layers.conv2d(conv1, 32, kernel_size=[4, 4], strides=[2, 2],
                                      activation=tf.nn.elu, reuse=reuse, name="conv_2")
-            hidden = c_layers.flatten(conv2)
+            hidden = tf.layers.flatten(conv2)
 
         with tf.variable_scope(scope + '/' + 'flat_encoding'):
-            hidden_flat = self.create_vector_observation_encoder(hidden, h_size, activation,
-                                                                 num_layers, scope, reuse)
+            hidden_flat = LearningModel.create_vector_obs_encoder(hidden, h_size, activation,
+                                                         num_layers, scope, reuse)
         return hidden_flat
 
     @staticmethod
@@ -205,20 +209,17 @@ class LearningModel(object):
             hidden_state, hidden_visual = None, None
             if self.vis_obs_size > 0:
                 for j in range(brain.number_visual_observations):
-                    encoded_visual = self.create_visual_observation_encoder(self.visual_in[j],
-                                                                            h_size,
-                                                                            activation_fn,
-                                                                            num_layers,
-                                                                            "main_graph_{}_encoder{}"
-                                                                            .format(i, j), False)
+                    encoded_visual = self.create_visual_obs_encoder(
+                        self.visual_in[j], h_size, activation_fn, num_layers,
+                        "main_graph_{}_encoder{}".format(i, j), False)
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
-                hidden_state = self.create_vector_observation_encoder(vector_observation_input,
-                                                                      h_size, activation_fn,
-                                                                      num_layers,
+                hidden_state = self.create_vector_obs_encoder(vector_observation_input,
+                                                              h_size, activation_fn,
+                                                              num_layers,
                                                                       "main_graph_{}".format(i),
-                                                                      False)
+                                                              False)
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
             elif hidden_state is None and hidden_visual is not None:
@@ -244,15 +245,15 @@ class LearningModel(object):
         m_size = memory_in.get_shape().as_list()[1]
         lstm_input_state = tf.reshape(input_state, shape=[-1, sequence_length, s_size])
         memory_in = tf.reshape(memory_in[:, :], [-1, m_size])
-        _half_point = int(m_size / 2)
+        half_point = int(m_size / 2)
         with tf.variable_scope(name):
-            rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
-            lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :_half_point],
-                                                           memory_in[:, _half_point:])
+            rnn_cell = tf.contrib.rnn.BasicLSTMCell(half_point)
+            lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(memory_in[:, :half_point],
+                                                           memory_in[:, half_point:])
             recurrent_output, lstm_state_out = tf.nn.dynamic_rnn(rnn_cell, lstm_input_state,
                                                                  initial_state=lstm_vector_in)
 
-        recurrent_output = tf.reshape(recurrent_output, shape=[-1, _half_point])
+        recurrent_output = tf.reshape(recurrent_output, shape=[-1, half_point])
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     def create_cc_actor_critic(self, h_size, num_layers):
@@ -281,7 +282,7 @@ class LearningModel(object):
             hidden_value = hidden_streams[1]
 
         mu = tf.layers.dense(hidden_policy, self.act_size[0], activation=None,
-                             kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01))
+                             kernel_initializer=LearningModel.scaled_init(0.01))
 
         log_sigma_sq = tf.get_variable("log_sigma_squared", [self.act_size[0]], dtype=tf.float32,
                                        initializer=tf.zeros_initializer())
@@ -310,7 +311,8 @@ class LearningModel(object):
         self.all_old_log_probs = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32,
                                                 name='old_probabilities')
 
-        # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
+        # We keep these tensors the same name,
+        # but use new nodes to keep code parallelism with discrete control.
         self.log_probs = tf.reduce_sum((tf.identity(self.all_log_probs)), axis=1, keepdims=True)
         self.old_log_probs = tf.reduce_sum((tf.identity(self.all_old_log_probs)), axis=1,
                                            keepdims=True)
@@ -341,8 +343,8 @@ class LearningModel(object):
         policy_branches = []
         for size in self.act_size:
             policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
-                                                   kernel_initializer=c_layers.variance_scaling_initializer(
-                                                       factor=0.01)))
+                                                   kernel_initializer=LearningModel.scaled_init(
+                                                       0.01)))
 
         self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1,
                                        name="action_probs")

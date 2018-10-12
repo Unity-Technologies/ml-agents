@@ -36,7 +36,7 @@ class PPOModel(LearningModel):
             self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers)
-        self.create_ppo_optimizer(self.log_probs, self.old_log_probs, self.value,
+        self.create_losses(self.log_probs, self.old_log_probs, self.value,
                                   self.entropy, beta, epsilon, lr, max_step)
 
     @staticmethod
@@ -47,7 +47,7 @@ class PPOModel(LearningModel):
         update_reward = tf.assign(last_reward, new_reward)
         return last_reward, new_reward, update_reward
 
-    def create_ppo_optimizer(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
+    def create_losses(self, probs, old_probs, value, entropy, beta, epsilon, lr, max_step):
         """
         Creates training-specific Tensorflow ops for PPO models.
         :param probs: Current policy probabilities
@@ -70,7 +70,6 @@ class PPOModel(LearningModel):
         decay_epsilon = tf.train.polynomial_decay(epsilon, self.global_step, max_step, 0.1,
                                                   power=1.0)
         decay_beta = tf.train.polynomial_decay(beta, self.global_step, max_step, 1e-5, power=1.0)
-        optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
 
         clipped_value_estimate = self.old_value + tf.clip_by_value(
             tf.reduce_sum(value, axis=1) - self.old_value,
@@ -91,4 +90,7 @@ class PPOModel(LearningModel):
         self.loss = self.policy_loss + 0.5 * self.value_loss - decay_beta * tf.reduce_mean(
             tf.dynamic_partition(entropy, self.mask, 2)[1])
 
+
+    def create_ppo_optimizer(self):
+        optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
         self.update_batch = optimizer.minimize(self.loss)

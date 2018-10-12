@@ -10,6 +10,7 @@ class ICM(object):
         encoded_state, encoded_next_state = self.create_curiosity_encoders()
         self.create_inverse_model(encoded_state, encoded_next_state)
         self.create_forward_model(encoded_state, encoded_next_state)
+        self.create_loss()
 
     def create_curiosity_encoders(self):
         """
@@ -35,14 +36,14 @@ class ICM(object):
 
                 # Create the encoder ops for current and next visual input.
                 # Note that these encoders are siamese.
-                encoded_visual = self.policy_model.create_visual_observation_encoder(
+                encoded_visual = self.policy_model.create_visual_obs_encoder(
                     self.policy_model.visual_in[i],
                     self.policy_model.curiosity_enc_size,
                     LearningModel.swish, 1,
                     "stream_{}_visual_obs_encoder"
                     .format(i), False)
 
-                encoded_next_visual = self.policy_model.create_visual_observation_encoder(
+                encoded_next_visual = self.policy_model.create_visual_obs_encoder(
                     self.next_visual_in[i],
                     self.encoding_size,
                     LearningModel.swish, 1,
@@ -64,13 +65,13 @@ class ICM(object):
                                                  dtype=tf.float32,
                                                  name='next_vector_observation')
 
-            encoded_vector_obs = self.policy_model.create_vector_observation_encoder(
+            encoded_vector_obs = self.policy_model.create_vector_obs_encoder(
                 self.policy_model.vector_in,
                 self.encoding_size,
                 LearningModel.swish, 2,
                 "vector_obs_encoder",
                 False)
-            encoded_next_vector_obs = self.policy_model.create_vector_observation_encoder(
+            encoded_next_vector_obs = self.policy_model.create_vector_obs_encoder(
                 self.next_vector_in,
                 self.encoding_size,
                 LearningModel.swish, 2,
@@ -103,8 +104,7 @@ class ICM(object):
                 [tf.layers.dense(hidden, self.policy_model.act_size[i], activation=tf.nn.softmax)
                  for i in range(len(self.policy_model.act_size))], axis=1)
             cross_entropy = tf.reduce_sum(
-                -tf.log(pred_action + 1e-10) * self.policy_model.selected_actions,
-                axis=1)
+                -tf.log(pred_action + 1e-10) * self.policy_model.selected_actions, axis=1)
             self.inverse_loss = tf.reduce_mean(
                 tf.dynamic_partition(cross_entropy, self.policy_model.mask, 2)[1])
 
@@ -122,8 +122,7 @@ class ICM(object):
                                           activation=None)
         squared_difference = 0.5 * tf.reduce_sum(
             tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
-        self.intrinsic_reward = tf.clip_by_value(self.strength * squared_difference,
-                                                 0, 1)
+        self.intrinsic_reward = tf.clip_by_value(self.strength * squared_difference, 0, 1)
         self.forward_loss = tf.reduce_mean(
             tf.dynamic_partition(squared_difference, self.policy_model.mask, 2)[1])
 

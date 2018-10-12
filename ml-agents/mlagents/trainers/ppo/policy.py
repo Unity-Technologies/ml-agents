@@ -40,6 +40,7 @@ class PPOPolicy(Policy):
                                            strength=float(trainer_params['curiosity_strength']),
                                            encoding_size=float(
                                                trainer_params['curiosity_enc_size']))
+            self.model.create_ppo_optimizer()
 
         if load:
             self._load_graph()
