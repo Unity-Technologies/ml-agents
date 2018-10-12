@@ -156,7 +156,7 @@ class LearningModel(object):
 
         with tf.variable_scope(scope + '/' + 'flat_encoding'):
             hidden_flat = LearningModel.create_vector_obs_encoder(hidden, h_size, activation,
-                                                         num_layers, scope, reuse)
+                                                                  num_layers, scope, reuse)
         return hidden_flat
 
     @staticmethod
@@ -217,7 +217,7 @@ class LearningModel(object):
                 hidden_state = self.create_vector_obs_encoder(vector_observation_input,
                                                               h_size, activation_fn,
                                                               num_layers,
-                                                                      "main_graph_{}".format(i),
+                                                              "main_graph_{}".format(i),
                                                               False)
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
@@ -361,9 +361,10 @@ class LearningModel(object):
 
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
-        self.selected_actions = tf.concat([
+        self.action_oh = tf.concat([
             tf.one_hot(self.action_holder[:, i], self.act_size[i]) for i in
             range(len(self.act_size))], axis=1)
+        self.selected_actions = tf.stop_gradient(self.action_oh)
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name='old_probabilities')
@@ -380,13 +381,13 @@ class LearningModel(object):
 
         self.log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
-                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                labels=self.action_oh[:, action_idx[i]:action_idx[i + 1]],
                 logits=normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)
         self.old_log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
-                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                labels=self.action_oh[:, action_idx[i]:action_idx[i + 1]],
                 logits=old_normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)

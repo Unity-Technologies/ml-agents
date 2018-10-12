@@ -119,8 +119,10 @@ VisualPyramidBrain:
     max_steps: 5.0e5
     num_epoch: 3
 
-Ball3DBrain:
+3DBallLearning:
     normalize: true
+    use_gail: true
+    demo_path: ./demos/ExpertBall.demo
     batch_size: 64
     buffer_size: 12000
     summary_freq: 1000

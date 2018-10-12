@@ -1,5 +1,3 @@
-import numpy as np
-
 from .intrinsic_reward import IntrinsicReward
 from .gail_discriminator import Discriminator
 from mlagents.trainers.demo_loader import demo_to_buffer
@@ -20,7 +18,7 @@ class GAIL(IntrinsicReward):
         feed_dict = {self.policy.model.batch_size: len(next_info.vector_observations),
                      self.policy.model.sequence_length: 1}
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.output] = next_info.previous_vector_actions
+            feed_dict[self.policy.model.selected_actions] = next_info.previous_vector_actions
         else:
             feed_dict[self.policy.model.action_holder] = next_info.previous_vector_actions
         for i in range(self.policy.model.vis_obs_size):
