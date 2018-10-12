@@ -209,7 +209,7 @@ into your Learning Brain by following the steps below:
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the **Ball3DLearning** object from the Project window.
-5. Drag the `<brain_name>.bytes` file from the Project window of
+5. Drag the `<brain_name>.tf` file from the Project window of
    the Editor to the **Model** placeholder in the **Ball3DLearning**
    inspector window.
 6. Remove the **Ball3DLearning** from the Academy's `Broadcast Hub`

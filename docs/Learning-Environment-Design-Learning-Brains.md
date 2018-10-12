@@ -54,7 +54,7 @@ To use a graph model:
    [import assets into Unity](https://docs.unity3d.com/Manual/ImportingAssets.html)
    in various ways. The easiest way is to simply drag the file into the
    **Project** window and drop it into an appropriate folder.
-4. Once the `model_name .tf` file is imported, drag it from the **Project**
+4. Once the `model_name.tf` file is imported, drag it from the **Project**
    window to the **Model** field of the Brain component.
 
 If you are using a model produced by the ML-Agents `mlagents-learn` command, use
