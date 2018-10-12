@@ -139,7 +139,7 @@ class PPOTrainer(Trainer):
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
-        Constructs a BrainInfo which contains the most recent previous experiences for all agents info
+        Constructs a BrainInfo which contains the most recent previous experiences for all agents
         which correspond to the agents in a provided next_info.
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
@@ -237,7 +237,8 @@ class PPOTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        intrinsic_rewards = self.policy.get_intrinsic_rewards(curr_to_use, next_info)
+        if self.use_curiosity:
+            intrinsic_rewards = self.policy.curiosity.get_intrinsic_rewards(curr_to_use, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info

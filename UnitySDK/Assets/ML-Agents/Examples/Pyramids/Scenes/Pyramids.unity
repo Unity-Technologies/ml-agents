@@ -153,10 +153,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 17
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -199,10 +231,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -245,10 +309,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -291,10 +387,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -337,10 +465,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -383,10 +543,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -491,10 +683,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -602,10 +826,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 16
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (12)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -648,10 +904,37 @@ Prefab:
       propertyPath: m_RootOrder
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -694,6 +977,12 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -814,10 +1103,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -860,10 +1181,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -906,10 +1259,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -957,10 +1342,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -994,7 +1411,8 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576, type: 2}
-    _brainsToControl: []
+    _brainsToControl:
+    - {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576, type: 2}
   maxSteps: 0
   trainingConfiguration:
     width: 80
@@ -1062,10 +1480,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 19
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
@@ -1108,10 +1558,42 @@ Prefab:
       propertyPath: m_RootOrder
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576,
+        type: 2}
+    - target: {fileID: 114937736047215868, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: myAcademyObj
+      value: 
+      objectReference: {fileID: 1574236047}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: numPyra
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
       propertyPath: m_Name
       value: AreaPB (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 1464170487903594, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: pyramid
+      value: 
+      objectReference: {fileID: 1891363201150404, guid: 8be2b3870e2cd4ad8bbf080059b2a132,
+        type: 2}
+    - target: {fileID: 114038595653051694, guid: bd804431e808a492bb5658bcd296e58e,
+        type: 2}
+      propertyPath: smallPyramid
+      value: 
+      objectReference: {fileID: 1547757191175352, guid: f4fa41b001eb3450198c8662e255ac2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd804431e808a492bb5658bcd296e58e, type: 2}
   m_IsPrefabParent: 0
