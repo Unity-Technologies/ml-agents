@@ -157,7 +157,7 @@ class PPOPolicy(Policy):
             feed_dict = {self.model.batch_size: len(next_info.vector_observations),
                          self.model.sequence_length: 1}
             if self.use_continuous_act:
-                feed_dict[self.model.output] = next_info.previous_vector_actions
+                feed_dict[self.model.selected_actions] = next_info.previous_vector_actions
             else:
                 feed_dict[self.model.action_holder] = next_info.previous_vector_actions
             for i in range(self.model.vis_obs_size):
