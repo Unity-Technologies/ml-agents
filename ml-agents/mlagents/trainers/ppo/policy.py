@@ -3,7 +3,9 @@ import numpy as np
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.ppo.curiosity import Curiosity
+from mlagents.trainers.ppo.intrinsic_rewards.curiosity import Curiosity
+from mlagents.trainers.ppo.intrinsic_rewards.gail import GAIL
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -20,7 +22,8 @@ class PPOPolicy(Policy):
         """
         super().__init__(seed, brain, trainer_params)
         self.has_updated = False
-        self.use_curiosity = bool(trainer_params["use_curiosity"])
+        self.use_curiosity = bool(trainer_params['use_curiosity'])
+        self.use_gail = bool(trainer_params['use_gail'])
 
         with self.graph.as_default():
             self.model = PPOModel(brain,
@@ -40,6 +43,10 @@ class PPOPolicy(Policy):
                                            strength=float(trainer_params['curiosity_strength']),
                                            encoding_size=float(
                                                trainer_params['curiosity_enc_size']))
+            if self.use_gail:
+                self.gail = GAIL(self, int(trainer_params['hidden_units']),
+                                 float(trainer_params['learning_rate']),
+                                 trainer_params['demo_path'])
             self.model.create_ppo_optimizer()
 
         if load:

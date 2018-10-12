@@ -126,7 +126,6 @@ class PPOModel(LearningModel):
             * tf.reduce_mean(tf.dynamic_partition(entropy, self.mask, 2)[1])
         )
 
-
     def create_ppo_optimizer(self):
         optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
         self.update_batch = optimizer.minimize(self.loss)

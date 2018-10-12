@@ -1,5 +1,5 @@
 import tensorflow as tf
-from ..models import LearningModel
+from mlagents.trainers.models import LearningModel
 
 
 class ICM(object):
