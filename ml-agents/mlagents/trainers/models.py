@@ -92,8 +92,7 @@ class LearningModel(object):
                                                 trainable=False, dtype=tf.float32,
                                                 initializer=tf.zeros_initializer())
             self.running_variance = tf.get_variable("running_variance", [self.vec_obs_size],
-                                                    trainable=False,
-                                                    dtype=tf.float32,
+                                                    trainable=False, dtype=tf.float32,
                                                     initializer=tf.ones_initializer())
             self.update_mean, self.update_variance = self.create_normalizer_update(self.vector_in)
 

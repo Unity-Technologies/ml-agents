@@ -34,10 +34,12 @@ class PPOTrainer(Trainer):
                            'lambd', 'learning_rate', 'max_steps', 'normalize', 'num_epoch',
                            'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
                            'use_recurrent', 'summary_path', 'memory_size', 'use_curiosity',
-                           'curiosity_strength', 'curiosity_enc_size', 'model_path']
+                           'curiosity_strength', 'curiosity_enc_size', 'model_path',
+                           'use_gail', 'demo_path']
 
         self.check_param_keys()
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
+        self.use_gail = bool(trainer_parameters['use_gail'])
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
                                 self.is_training, load)
@@ -49,7 +51,11 @@ class PPOTrainer(Trainer):
             stats['Losses/Forward Loss'] = []
             stats['Losses/Inverse Loss'] = []
             stats['Policy/Curiosity Reward'] = []
-            self.intrinsic_rewards = {}
+            self.curiosity_rewards = {}
+        if self.use_gail:
+            stats['Losses/GAIL Loss'] = []
+            stats['Policy/GAIL Reward'] = []
+            self.gail_rewards = {}
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -197,6 +203,8 @@ class PPOTrainer(Trainer):
 
         if self.use_curiosity:
             intrinsic_rewards = self.policy.curiosity.get_intrinsic_rewards(curr_to_use, next_info)
+        if self.use_gail:
+            intrinsic_rewards = self.policy.gail.get_intrinsic_rewards(curr_to_use, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -236,7 +244,7 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['prev_action'].append(
                         stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
-                    if self.use_curiosity:
+                    if self.use_curiosity or self.use_gail:
                         self.training_buffer[agent_id]['rewards'].append(
                             next_info.rewards[next_idx] +
                             intrinsic_rewards[next_idx])
@@ -249,9 +257,9 @@ class PPOTrainer(Trainer):
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
                     if self.use_curiosity:
-                        if agent_id not in self.intrinsic_rewards:
-                            self.intrinsic_rewards[agent_id] = 0
-                        self.intrinsic_rewards[agent_id] += intrinsic_rewards[next_idx]
+                        if agent_id not in self.curiosity_rewards:
+                            self.curiosity_rewards[agent_id] = 0
+                        self.curiosity_rewards[agent_id] += intrinsic_rewards[next_idx]
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
@@ -308,8 +316,8 @@ class PPOTrainer(Trainer):
                     self.episode_steps[agent_id] = 0
                     if self.use_curiosity:
                         self.stats['Policy/Curiosity Reward'].append(
-                            self.intrinsic_rewards.get(agent_id, 0))
-                        self.intrinsic_rewards[agent_id] = 0
+                            self.curiosity_rewards.get(agent_id, 0))
+                        self.curiosity_rewards[agent_id] = 0
 
     def end_episode(self):
         """
@@ -322,8 +330,8 @@ class PPOTrainer(Trainer):
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
         if self.use_curiosity:
-            for agent_id in self.intrinsic_rewards:
-                self.intrinsic_rewards[agent_id] = 0
+            for agent_id in self.curiosity_rewards:
+                self.curiosity_rewards[agent_id] = 0
 
     def is_ready_update(self):
         """
