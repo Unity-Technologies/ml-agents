@@ -36,7 +36,7 @@ class Discriminator(object):
         self.expert_estimate = self.create_encoder(self.obs_in_expert, self.action_in_expert, False)
         self.policy_estimate = self.create_encoder(self.policy_model.vector_in,
                                                    self.policy_model.selected_actions, True)
-        self.intrinsic_reward = tf.identity(self.policy_estimate, name="GAIL_reward")
+        self.intrinsic_reward = tf.reshape(self.policy_estimate, [-1], name="GAIL_reward")
 
     def create_loss(self, learning_rate):
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)

@@ -394,6 +394,10 @@ class PPOTrainer(Trainer):
                         self.stats['Policy/Curiosity Reward'].append(
                             self.curiosity_rewards.get(agent_id, 0))
                         self.curiosity_rewards[agent_id] = 0
+                    if self.use_gail:
+                        self.stats['Policy/GAIL Reward'].append(
+                            self.gail_rewards.get(agent_id, 0))
+                        self.gail_rewards[agent_id] = 0
 
     def end_episode(self):
         """
