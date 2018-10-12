@@ -89,7 +89,7 @@ environment around the Agents.
 ### Brain
 
 Brains are assets that exist in your project folder. The Ball3DAgents are connected
-to a brain, for example : the **Ball3DBrain**.
+to a brain, for example : the **3DBallLearning**.
 A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
 returns the chosen action to the Agent. Thus, all Agents can share the same
