@@ -71,6 +71,10 @@ class LearningModel(object):
         return global_step, increment_step
 
     @staticmethod
+    def scaled_init(scale):
+        return c_layers.variance_scaling_initializer(scale)
+
+    @staticmethod
     def swish(input_activation):
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
@@ -333,7 +337,7 @@ class LearningModel(object):
         m_size = memory_in.get_shape().as_list()[1]
         lstm_input_state = tf.reshape(input_state, shape=[-1, sequence_length, s_size])
         memory_in = tf.reshape(memory_in[:, :], [-1, m_size])
-        _half_point = int(m_size / 2)
+        half_point = int(m_size / 2)
         with tf.variable_scope(name):
             rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
             lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(
@@ -343,7 +347,7 @@ class LearningModel(object):
                 rnn_cell, lstm_input_state, initial_state=lstm_vector_in
             )
 
-        recurrent_output = tf.reshape(recurrent_output, shape=[-1, _half_point])
+        recurrent_output = tf.reshape(recurrent_output, shape=[-1, half_point])
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     def create_cc_actor_critic(self, h_size, num_layers):
