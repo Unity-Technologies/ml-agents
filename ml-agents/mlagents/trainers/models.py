@@ -349,8 +349,9 @@ class LearningModel(object):
 
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
-        self.selected_actions = tf.concat([
+        self.action_oh = tf.concat([
             tf.one_hot(self.action_holder[:, i], self.act_size[i]) for i in range(len(self.act_size))], axis=1)
+        self.selected_actions = tf.stop_gradient(self.action_oh)
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name='old_probabilities')
@@ -367,13 +368,13 @@ class LearningModel(object):
 
         self.log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
-                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                labels=self.action_oh[:, action_idx[i]:action_idx[i + 1]],
                 logits=normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)
         self.old_log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
-                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                labels=self.action_oh[:, action_idx[i]:action_idx[i + 1]],
                 logits=old_normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)
