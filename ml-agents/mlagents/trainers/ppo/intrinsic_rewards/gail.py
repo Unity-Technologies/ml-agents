@@ -1,3 +1,5 @@
+import numpy as np
+
 from .intrinsic_reward import IntrinsicReward
 from .gail_discriminator import Discriminator
 from mlagents.trainers.demo_loader import demo_to_buffer
@@ -9,7 +11,7 @@ class GAIL(IntrinsicReward):
         self.name = "GAIL"
         self.policy = policy
         self.discriminator = Discriminator(policy.model, h_size, lr)
-        self.expert_demos, _ = demo_to_buffer(demo_path, 1)
+        _, self.demonstration_buffer = demo_to_buffer(demo_path, 1)
 
     def get_intrinsic_rewards(self, current_info, next_info):
         if len(current_info.agents) == 0:
@@ -34,5 +36,43 @@ class GAIL(IntrinsicReward):
         intrinsic_rewards = raw_intrinsic_rewards * float(self.policy.has_updated)
         return intrinsic_rewards
 
-    def update_generator(self, mini_batch):
-        return None
+    def update_generator(self, policy_buffer, n_sequences, batches_per_epoch):
+        self.demonstration_buffer.update_buffer.shuffle()
+        policy_buffer.update_buffer.shuffle()
+        batch_losses = []
+        num_batches = min(len(self.demonstration_buffer.update_buffer['actions']) //
+                          n_sequences, batches_per_epoch)
+        for i in range(num_batches):
+            demo_update_buffer = self.demonstration_buffer.update_buffer
+            policy_update_buffer = policy_buffer.update_buffer
+            start = i * n_sequences
+            end = (i + 1) * n_sequences
+            mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
+            mini_batch_policy = policy_update_buffer.make_mini_batch(start, end)
+            run_out = self.update(mini_batch_demo, mini_batch_policy)
+            loss = run_out['gail_loss']
+            batch_losses.append(loss)
+        return np.mean(batch_losses)
+
+    def update(self, mini_batch_demo, mini_batch_policy):
+        feed_dict = {}
+        if self.policy.use_continuous_act:
+            feed_dict[self.policy.model.selected_actions] = mini_batch_policy['actions'].reshape(
+                [-1, self.policy.model.act_size[0]])
+            feed_dict[self.discriminator.action_in_expert] = mini_batch_demo['actions'].reshape(
+                [-1, self.policy.model.act_size[0]])
+        else:
+            feed_dict[self.policy.model.action_holder] = mini_batch_policy['actions'].reshape(
+                [-1, len(self.policy.model.act_size)])
+            feed_dict[self.discriminator.action_in_expert] = mini_batch_demo['actions'].reshape(
+                [-1, len(self.policy.model.act_size)])
+
+        if self.policy.use_vec_obs:
+            feed_dict[self.policy.model.vector_in] = mini_batch_policy['vector_obs'].reshape(
+                [-1, self.policy.vec_obs_size])
+            feed_dict[self.discriminator.obs_in_expert] = mini_batch_demo['vector_obs'].reshape(
+                [-1, self.policy.vec_obs_size])
+        loss, _ = self.policy.sess.run([self.discriminator.loss, self.discriminator.update_batch],
+                                       feed_dict=feed_dict)
+        run_out = {'gail_loss': loss}
+        return run_out

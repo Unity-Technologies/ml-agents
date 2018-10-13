@@ -14,6 +14,3 @@ class IntrinsicReward(object):
         :return: the intrinsic reward provided by the generator
         """
         raise UnityTrainerException("The get_reward property was not implemented.")
-
-    def update_generator(self, mini_batch):
-        raise UnityTrainerException("The update_generator property was not implemented.")
