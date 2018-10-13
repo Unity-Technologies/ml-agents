@@ -305,7 +305,8 @@ class PPOTrainer(Trainer):
                     if self.use_gail:
                         intrinsic_rewards += gail_rewards[next_idx]
                     self.training_buffer[agent_id]['rewards'].append(
-                        next_info.rewards[next_idx] + intrinsic_rewards)
+                        intrinsic_rewards)
+                        #next_info.rewards[next_idx] + intrinsic_rewards)
 
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
@@ -465,8 +466,11 @@ class PPOTrainer(Trainer):
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
         if self.use_curiosity:
-            self.stats["Losses/Forward Loss"].append(np.mean(forward_total))
-            self.stats["Losses/Inverse Loss"].append(np.mean(inverse_total))
+            self.stats['Losses/Forward Loss'].append(np.mean(forward_total))
+            self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
+
+        gail_loss = self.policy.gail.update_generator(self.training_buffer, n_sequences, 10)
+        self.stats['Losses/GAIL Loss'].append(gail_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 
