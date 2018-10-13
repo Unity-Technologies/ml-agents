@@ -244,9 +244,9 @@ class PPOTrainer(Trainer):
             curr_to_use = curr_info
 
         if self.use_curiosity:
-            intrinsic_rewards = self.policy.curiosity.get_intrinsic_rewards(curr_to_use, next_info)
+            curiosity_rewards = self.policy.curiosity.get_intrinsic_rewards(curr_to_use, next_info)
         if self.use_gail:
-            intrinsic_rewards = self.policy.gail.get_intrinsic_rewards(curr_to_use, next_info)
+            gail_rewards = self.policy.gail.get_intrinsic_rewards(curr_to_use, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -298,25 +298,28 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['prev_action'].append(
                         stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
-                    if self.use_curiosity or self.use_gail:
-                        self.training_buffer[agent_id]['rewards'].append(
-                            next_info.rewards[next_idx] +
-                            intrinsic_rewards[next_idx])
-                    else:
-                        self.training_buffer[agent_id]["rewards"].append(
-                            next_info.rewards[next_idx]
-                        )
-                    self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
-                    self.training_buffer[agent_id]["value_estimates"].append(
-                        value[idx][0]
-                    )
+
+                    intrinsic_rewards = next_info.rewards[next_idx] * 0.0
+                    if self.use_curiosity:
+                        intrinsic_rewards += curiosity_rewards[next_idx]
+                    if self.use_gail:
+                        intrinsic_rewards += gail_rewards[next_idx]
+                    self.training_buffer[agent_id]['rewards'].append(
+                        next_info.rewards[next_idx] + intrinsic_rewards)
+
+                    self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
+                    self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
                     if self.use_curiosity:
                         if agent_id not in self.curiosity_rewards:
                             self.curiosity_rewards[agent_id] = 0
-                        self.curiosity_rewards[agent_id] += intrinsic_rewards[next_idx]
+                        self.curiosity_rewards[agent_id] += curiosity_rewards[next_idx]
+                    if self.use_gail:
+                        if agent_id not in self.gail_rewards:
+                            self.gail_rewards[agent_id] = 0
+                        self.gail_rewards[agent_id] += gail_rewards[next_idx]
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
@@ -412,6 +415,9 @@ class PPOTrainer(Trainer):
         if self.use_curiosity:
             for agent_id in self.curiosity_rewards:
                 self.curiosity_rewards[agent_id] = 0
+        if self.use_gail:
+            for agent_id in self.gail_rewards:
+                self.gail_rewards[agent_id] = 0
 
     def is_ready_update(self):
         """
