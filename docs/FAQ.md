@@ -13,36 +13,12 @@ This is because .NET 3.5 doesn't support method Clear() for StringBuilder, refer
 to [Setting Up The ML-Agents Toolkit Within
 Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
-## TensorFlowSharp flag not turned on
+## Cannot drag Model into Learning Brain
 
-Before version 0.6, we use specific scripting define symbols when using TensorflowSharp. If you have already imported the TensorFlowSharp plugin, but haven't set
-ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
-following error message:
+You migh not have the appropriate backend required to import the model. Refer to the 
+[Inference Engine](Inference-Engine.md) for more information on how to import backends
+and reimport the asset.
 
-```console
-You need to install and enable the TensorFlowSharp plugin in order to use the Learning Brain.
-```
-
-This error message occurs because the TensorFlowSharp plugin won't be usage
-without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit
-Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
-
-## Instance of CoreBrainInternal couldn't be created
-
-If you try to use ML-Agents in Unity versions 2017.1 - 2017.3, you might
-encounter an error that looks like this:
-
-```console
-Instance of CoreBrainInternal couldn't be created. The the script
-class needs to derive from ScriptableObject.
-UnityEngine.ScriptableObject:CreateInstance(String)
-```
-
-You can fix the error by removing `CoreBrain` from CoreBrainInternal.cs:16,
-clicking on your Brain Gameobject to let the scene recompile all the changed
-C# scripts, then adding the `CoreBrain` back. Make sure your brain is in
-Internal mode, your TensorFlowSharp plugin is imported and the
-ENABLE_TENSORFLOW flag is set. This fix is only valid locally and unstable.
 
 ## Environment Permission Error
 
