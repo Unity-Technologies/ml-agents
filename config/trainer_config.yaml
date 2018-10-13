@@ -136,6 +136,7 @@ VisualPyramidsLearning:
     buffer_size: 12000
     summary_freq: 1000
     time_horizon: 1000
+    max_steps: 5.0e5
     gamma: 0.995
     beta: 0.001
 
