@@ -242,10 +242,10 @@ public class RollerAgent : Agent
     public Transform Target;
     public override void AgentReset()
     {
-        if (this.transform.position.y < -1.0)
+        if (this.transform.position.y < 0)
         {
             // The Agent fell
-            this.transform.position = Vector3.zero;
+            this.transform.position = new Vector3(0, 0.5f, 0);
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
         }
@@ -415,7 +415,7 @@ in the next step:
 
 ```csharp
 // Fell off platform
-if (this.transform.position.y < -1.0)
+if (this.transform.position.y < 0)
 {
     AddReward(-1.0f);
     Done();
@@ -448,7 +448,7 @@ public override void AgentAction(float[] vectorAction, string textAction)
     AddReward(-0.05f);
 
     // Fell off platform
-    if (this.transform.position.y < -1.0)
+    if (this.transform.position.y < 0)
     {
         AddReward(-1.0f);
         Done();
