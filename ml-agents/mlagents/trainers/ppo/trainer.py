@@ -1,6 +1,6 @@
 # # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (PPO)
-# Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
+# Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 import logging
 from collections import deque
@@ -244,9 +244,9 @@ class PPOTrainer(Trainer):
             curr_to_use = curr_info
 
         if self.use_curiosity:
-            curiosity_rewards = self.policy.curiosity.get_intrinsic_rewards(curr_to_use, next_info)
+            curiosity_rewards = self.policy.curiosity.evaluate(curr_to_use, next_info)
         if self.use_gail:
-            gail_rewards = self.policy.gail.get_intrinsic_rewards(curr_to_use, next_info)
+            gail_rewards = self.policy.gail.evaluate(curr_to_use, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -468,9 +468,9 @@ class PPOTrainer(Trainer):
         if self.use_curiosity:
             self.stats['Losses/Forward Loss'].append(np.mean(forward_total))
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
-
-        gail_loss = self.policy.gail.update_generator(self.training_buffer, n_sequences, 10)
-        self.stats['Losses/GAIL Loss'].append(gail_loss)
+        if self.use_gail:
+            gail_loss = self.policy.gail.update(self.training_buffer, n_sequences, 32)
+            self.stats['Losses/GAIL Loss'].append(gail_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 

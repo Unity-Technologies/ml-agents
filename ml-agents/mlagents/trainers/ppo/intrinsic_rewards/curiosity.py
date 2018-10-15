@@ -9,7 +9,7 @@ class Curiosity(IntrinsicReward):
         self.policy = policy
         self.icm = ICM(policy.model, encoding_size=encoding_size, strength=strength)
 
-    def get_intrinsic_rewards(self, current_info, next_info):
+    def evaluate(self, current_info, next_info):
         """
         Generates intrinsic reward used for Curiosity-based training.
         :BrainInfo current_info: Current BrainInfo.

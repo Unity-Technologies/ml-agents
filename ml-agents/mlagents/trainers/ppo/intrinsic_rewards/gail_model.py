@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
+
 class Discriminator(object):
     def __init__(self, policy_model, h_size, lr):
         self.h_size = h_size
@@ -33,9 +34,10 @@ class Discriminator(object):
             return estimate
 
     def create_network(self):
-        self.expert_estimate = self.create_encoder(self.obs_in_expert, self.action_in_expert, False)
-        self.policy_estimate = self.create_encoder(self.policy_model.vector_in,
-                                                   self.policy_model.selected_actions, True)
+        self.expert_estimate = self.create_encoder(
+            self.obs_in_expert, self.action_in_expert, False)
+        self.policy_estimate = self.create_encoder(
+            self.policy_model.vector_in,self.policy_model.selected_actions, True)
         self.intrinsic_reward = tf.reshape(self.policy_estimate, [-1], name="GAIL_reward")
 
     def create_loss(self, learning_rate):
