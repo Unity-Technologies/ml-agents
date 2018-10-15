@@ -3,8 +3,8 @@ import numpy as np
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.ppo.intrinsic_rewards.curiosity import Curiosity
-from mlagents.trainers.ppo.intrinsic_rewards.gail import GAIL
+from mlagents.trainers.ppo.intrinsic_rewards.curiosity.curiosity import Curiosity
+from mlagents.trainers.ppo.intrinsic_rewards.gail.gail import GAIL
 
 
 logger = logging.getLogger("mlagents.trainers")
