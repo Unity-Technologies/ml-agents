@@ -11,9 +11,7 @@ the basic concepts of Unity.
 ## Setting up the ML-Agents Toolkit within Unity
 
 In order to use the ML-Agents toolkit within Unity, you need to change some
-Unity settings first. You will also need to have appropriate inference backends
-installed in order to run your models inside of Unity. See [here](Inference-Engine.md)
-for more information.
+Unity settings first. 
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
@@ -26,6 +24,20 @@ for more information.
     2. Select **Scripting Runtime Version** to **Experimental (.NET 4.6
        Equivalent or .NET 4.x Equivalent)**
 6. Go to **File** > **Save Project**
+
+## Setting up the Inference Engine
+
+In order to run pre-trained models of agents behaviors, you will need to set-up the 
+[Inference Engine](Inference-Engine.md). The Inference Engine is a general API to
+run Neural Network models in Unity that leverages existing inference libraries such 
+as TensorFlowSharp and CoreML. The models we ship with our examples and the models
+generated with our trainers use the TensorFlowSharp inference backend : 
+They have a `.tf` extension. This means that you will not be able to use them
+without first installing the TensorflowSharp backend. You can find instructions 
+on how to install the TensorflowSharp backend [here](Inference-Engine.md).
+Once the backend is installed, you will need to reimport the models : Right click
+on the `.tf` model and select `Reimport`.
+
 
 ## Running a Pre-trained Model
 
@@ -63,15 +75,25 @@ More information and documentation is provided in the
 
 ### Adding a Brain to the training session
 
-Since we are going to build this environment to conduct training, we need to add 
-the Brain to the training session. This allows the Agents linked to that Brain
-to communicate with the external training process when making their decisions.
+To set up the environment for training, you will need specify which agents are contributing
+to the training and which Brain is being trained. You can only perform training with
+ an `Learning Brain`.
 
-1. Assign the **3DBallLearning** to the agents you would like to train and the **3DBallPlayer** Brain to the agents you want to control manually. 
-   __Note:__ You can only perform training with an `Learning Brain`.
+1. Assign the **3DBallLearning** to the agents you would like to train.  
+   __Note:__ You can assign the same brain to multiple agents at once : To do so, you can
+   use the prefab system. When an agent is created from a prefab, modifying the prefab 
+   will modify the agent as well. If the agent does not synchronize with the prefab, you
+   can hit the Revert button on top of the Inspector.
+   Alternatively, you can select multiple agents in the scene and modify their `Brain`
+   property all at once.
 2. Select the **Ball3DAcademy** GameObject and make sure the **3DBallLearning** Brain
    is in the Broadcast Hub. In order to train, you need to toggle the
    `Control` checkbox.
+   
+__Note:__ Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
+the agent) means that the Brain will be making decision for that agent. Whereas dragging
+a Brain into the Broadcast Hub means that the Brain will be exposed to the Python process.
+You need both these steps to train a model. 
 
 ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 

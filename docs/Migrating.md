@@ -1,10 +1,16 @@
 # Migrating
 
 ## Migrating from ML-Agents toolkit v0.5 to v0.6
+
 ### Important
-* Brains are now Scriptable Objects instead of MonoBehaviors. This will
-  allow you to set Brains into prefabs and use the same brains across 
-  scenes.
+
+* Brains are now Scriptable Objects instead of MonoBehaviors. 
+* You can no longer modify the type of a Brain. If you want to switch
+  between `PlayerBrain` and `LearningBrain` for multiple agents,
+  you will need to assign a new Brain to each agent separately.
+  __Note:__ You can pass the same brain to multiple agents in a scene by 
+leveraging Unity's prefab system or look for all the agents in a scene
+using the search bar of the `Hierarchy` window with the word `Agent`.
 * To update a scene from v0.5 to v0.6, you must:
   *  Remove the `Brain` GameObjects in the scene
   *  Create new `Brain` Scriptable Objects using `Assets -> Create ->
@@ -13,10 +19,13 @@
      in the `Brain` GameObjects
   *  Agents have a `Brain` field in the Inspector, you need to drag the
   appropriate Brain asset in it.
-  
-__Note:__ You can pass the same brain to multiple agents in a scene by 
-leveraging Unity's prefab system or look for all the agents in a scene
-using the search bar of the `Hierarchy` window with the word `Agent`.
+* We modified the way we do inference with ML-Agents. All previous `.bytes`
+  files can no longer be used. The training process and the shipped models
+  have now a `.tf` extension and use TensorflowSharp as a backend for the 
+  [Inference Engine](Inference-Engine.md).
+  __Note:__ You will need to delete the previous TensorFlowSharp package 
+  and install the new one to do inference.
+
 
 ## Migrating from ML-Agents toolkit v0.4 to v0.5
 
