@@ -112,36 +112,25 @@ class LearningModel(object):
             shape=[None, self.vec_obs_size], dtype=tf.float32, name=name
         )
         if self.normalize:
-            self.running_mean = tf.get_variable(
-                "running_mean",
-                [self.vec_obs_size],
-                trainable=False,
-                dtype=tf.float32,
-                initializer=tf.zeros_initializer(),
-            )
-            self.running_variance = tf.get_variable(
-                "running_variance",
-                [self.vec_obs_size],
-                trainable=False,
-                dtype=tf.float32,
-                initializer=tf.ones_initializer(),
-            )
-            self.update_mean, self.update_variance = self.create_normalizer_update(
-                self.vector_in
-            )
-
-            self.normalized_state = tf.clip_by_value(
-                (self.vector_in - self.running_mean)
-                / tf.sqrt(
-                    self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)
-                ),
-                -5,
-                5,
-                name="normalized_state",
-            )
-            return self.normalized_state
+            self.create_normalizer(self.vector_in)
+            return self.normalize_vector_obs(self.vector_in)
         else:
             return self.vector_in
+
+    def normalize_vector_obs(self, vector_obs):
+        normalized_state = tf.clip_by_value((vector_obs - self.running_mean) / tf.sqrt(
+            self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)), -5, 5,
+                                                 name="normalized_state")
+        return normalized_state
+
+    def create_normalizer(self, vector_obs):
+        self.running_mean = tf.get_variable("running_mean", [self.vec_obs_size],
+                                            trainable=False, dtype=tf.float32,
+                                            initializer=tf.zeros_initializer())
+        self.running_variance = tf.get_variable("running_variance", [self.vec_obs_size],
+                                                trainable=False, dtype=tf.float32,
+                                                initializer=tf.ones_initializer())
+        self.update_mean, self.update_variance = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
         mean_current_observation = tf.reduce_mean(vector_input, axis=0)

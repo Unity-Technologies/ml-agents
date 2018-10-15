@@ -25,3 +25,15 @@ HallwayLearning:
     memory_size: 256
     sequence_length: 32
     demo_path: ./UnitySDK/Assets/Demonstrations/Hallway.demo
+
+BouncerLearning:
+    trainer: offline_bc
+    normalize: true
+    max_steps: 5.0e5
+    batch_size: 32
+    batches_per_epoch: 10
+    buffer_size: 512
+    num_layers: 2
+    hidden_units: 64
+    summary_freq: 1000
+    demo_path: ./demos/ExpertBouncer.demo

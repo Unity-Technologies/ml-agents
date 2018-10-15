@@ -20,6 +20,8 @@ default:
     use_curiosity: false
     curiosity_strength: 0.01
     curiosity_enc_size: 128
+    reward_strength: 1.0
+    use_gail: false
 
 BananaLearning:
     normalize: false
@@ -31,8 +33,14 @@ BananaLearning:
 BouncerLearning:
     normalize: true
     max_steps: 5.0e5
+    batch_size: 32
+    buffer_size: 512
     num_layers: 2
     hidden_units: 64
+    summary_freq: 1000
+    use_gail: true
+    reward_strength: 0.0
+    demo_path: ./demos/ExpertBouncer.demo
 
 PushBlockLearning:
     max_steps: 5.0e4

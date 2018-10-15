@@ -56,7 +56,8 @@ class PPOTrainer(Trainer):
             "curiosity_enc_size",
             "model_path",
             "use_gail",
-            "demo_path"
+            "demo_path",
+            "reward_strength"
         ]
 
         self.check_param_keys()
@@ -299,14 +300,14 @@ class PPOTrainer(Trainer):
                         stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
 
-                    intrinsic_rewards = next_info.rewards[next_idx] * 0.0
+                    extrinsic_rewards = next_info.rewards[next_idx] * self.reward_strength
+                    intrinsic_rewards = extrinsic_rewards * 0.0
                     if self.use_curiosity:
                         intrinsic_rewards += curiosity_rewards[next_idx]
                     if self.use_gail:
                         intrinsic_rewards += gail_rewards[next_idx]
                     self.training_buffer[agent_id]['rewards'].append(
-                        intrinsic_rewards)
-                        #next_info.rewards[next_idx] + intrinsic_rewards)
+                        extrinsic_rewards + intrinsic_rewards)
 
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
@@ -469,7 +470,7 @@ class PPOTrainer(Trainer):
             self.stats['Losses/Forward Loss'].append(np.mean(forward_total))
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
         if self.use_gail:
-            gail_loss = self.policy.gail.update(self.training_buffer, n_sequences, 32)
+            gail_loss = self.policy.gail.update(self.training_buffer, n_sequences, 0)
             self.stats['Losses/GAIL Loss'].append(gail_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
