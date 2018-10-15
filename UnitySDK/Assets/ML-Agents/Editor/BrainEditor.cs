@@ -4,6 +4,7 @@ using UnityEngine;
 
 using UnityEditor;
 using System.Linq;
+using System.Reflection;
 
 namespace MLAgents
 {
@@ -23,6 +24,9 @@ namespace MLAgents
             if (brainToCopy != null)
             {
                 brain.brainParameters = brainToCopy.brainParameters.Clone();
+                EditorUtility.SetDirty(brain);
+                AssetDatabase.SaveAssets();
+                return;
             }
             var serializedBrain = serializedObject;
             serializedBrain.Update(); 
