@@ -13,4 +13,4 @@ class IntrinsicReward(object):
         Returns the number of training steps the trainer has performed
         :return: the intrinsic reward provided by the generator
         """
-        raise UnityTrainerException("The get_reward property was not implemented.")
+        raise UnityTrainerException("The evaluate function was not implemented.")
