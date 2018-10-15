@@ -181,6 +181,8 @@ WalkerLearning:
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    use_gail: true
+    demo_path: ./demos/ExpertWalker.demo
 
 ReacherLearning:
     normalize: true
