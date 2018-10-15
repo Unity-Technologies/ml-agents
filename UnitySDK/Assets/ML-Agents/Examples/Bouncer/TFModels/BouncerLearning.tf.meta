@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: f56446a8344df44e49fd7969fe6ada58
-DefaultImporter:
-  externalObjects: {}
-  userData: 
+ScriptedImporter:
+  userData: TensorFlow
   assetBundleName: 
   assetBundleVariant: 
+  script: {fileID: 11500000, guid: 4b15384ff8c114abcb34267954bfe23a, type: 3}
