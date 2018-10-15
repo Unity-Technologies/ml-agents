@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
 using UnityEditor;
-using System.Linq;
+
 
 namespace MLAgents
 {
@@ -23,6 +20,9 @@ namespace MLAgents
             if (brainToCopy != null)
             {
                 brain.brainParameters = brainToCopy.brainParameters.Clone();
+                EditorUtility.SetDirty(brain);
+                AssetDatabase.SaveAssets();
+                return;
             }
             var serializedBrain = serializedObject;
             serializedBrain.Update(); 

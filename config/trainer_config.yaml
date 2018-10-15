@@ -92,7 +92,7 @@ GoalieLearning:
     num_layers: 2
     normalize: false
 
-PyramidLearning:
+PyramidsLearning:
     use_curiosity: true
     summary_freq: 2000
     curiosity_strength: 0.01
@@ -106,7 +106,7 @@ PyramidLearning:
     max_steps: 5.0e5
     num_epoch: 3
 
-VisualPyramidLearning:
+VisualPyramidsLearning:
     use_curiosity: true
     curiosity_strength: 0.01
     curiosity_enc_size: 256
@@ -119,7 +119,7 @@ VisualPyramidLearning:
     max_steps: 5.0e5
     num_epoch: 3
 
-Ball3DLearning:
+3DBallLearning:
     normalize: true
     batch_size: 64
     buffer_size: 12000
@@ -128,8 +128,9 @@ Ball3DLearning:
     lambd: 0.99
     gamma: 0.995
     beta: 0.001
+    use_curiosity: true
 
-Ball3DHardLearning:
+3DBallHardLearning:
     normalize: true
     batch_size: 1200
     buffer_size: 12000

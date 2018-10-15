@@ -393,7 +393,7 @@ Academy to reset the environment. This RollerBall environment relies on the
 `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so
 it never resets the environment).
 
-It can also encourage an Agent to finish a task more quickly to assign a
+It can also encourage an Agent to finish a task more quickly by assigning a
 negative reward at each step:
 
 ```csharp
