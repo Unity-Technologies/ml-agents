@@ -12,19 +12,14 @@ MonoBehaviour:
   m_Name: SmallWallJumpLearning
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 1
-    numStackedVectorObservations: 1
-    vectorActionSize: 01000000
+    vectorObservationSize: 74
+    numStackedVectorObservations: 6
+    vectorActionSize: 03000000030000000300000002000000
     cameraResolutions: []
     vectorActionDescriptions:
     - 
+    - 
+    - 
+    - 
     vectorActionSpaceType: 0
-  graphModel: {fileID: 0}
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
+  model: {fileID: 0}
