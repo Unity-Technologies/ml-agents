@@ -5,7 +5,7 @@ Service for training ML-Agents environments.
 
 ## Preconfigured AMI
 
-We've prepared a preconfigured AMI for you with the ID: `ami-18642967` in the
+We've prepared a preconfigured AMI for you with the ID: `ami-016ff5559334f8619` in the
 `us-east-1` region. It was created as a modification of [Deep Learning AMI
 (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). The AMI has been 
 tested with p2.xlarge instance. Furthermore, if you want to train without 
@@ -86,7 +86,7 @@ can display the Unity environment in the virtual environment, and train as we
 would on a local machine. Ensure that `headless` mode is disabled when building
 linux executables which use visual observations.
 
-1. Install and setup Xorg:
+#### Install and setup Xorg:
 
     ```console
     # Install Xorg
@@ -105,11 +105,12 @@ linux executables which use visual observations.
     $ sudo vim /etc/X11/xorg.conf 
     ```
 
-2. Update and setup Nvidia driver:
+#### Update and setup Nvidia driver:
 
     ```console
     # Download and install the latest Nvidia driver for ubuntu
-    $ wget http://download.nvidia.com/XFree86/Linux-x86_64/390.67/NVIDIA-Linux-x86_64-390.67.run
+    # Please refer to http://download.nvidia.com/XFree86/Linux-#x86_64/latest.txt     
+    $ wget http://download.nvidia.com/XFree86/Linux-x86_64/390.87/NVIDIA-Linux-x86_64-390.87.run
     $ sudo /bin/bash ./NVIDIA-Linux-x86_64-390.67.run --accept-license --no-questions --ui=none
 
     # Disable Nouveau as it will clash with the Nvidia driver
@@ -119,13 +120,13 @@ linux executables which use visual observations.
     $ sudo update-initramfs -u
     ```
 
-3. Restart the EC2 instance:
+#### Restart the EC2 instance:
 
     ```console
     sudo reboot now
     ```
 
-4. Make sure there are no Xorg processes running:
+#### Make sure there are no Xorg processes running:
 
    ```console
    # Kill any possible running Xorg processes
@@ -158,7 +159,7 @@ linux executables which use visual observations.
    
    ```
 
-5. Start X Server and make the ubuntu use X Server for display:
+#### Start X Server and make the ubuntu use X Server for display:
 
     ```console
     # Start the X Server, press Enter to come back to the command line
@@ -172,7 +173,7 @@ linux executables which use visual observations.
     $ export DISPLAY=:0
     ```
 
-6. Ensure the Xorg is correctly configured:
+#### Ensure the Xorg is correctly configured:
 
     ```console
     # For more information on glxgears, see ftp://www.x.org/pub/X11R6.8.1/doc/glxgears.1.html.
@@ -232,3 +233,81 @@ Headless Mode, you have to setup the X Server to enable training.)
     ```console
     mlagents-learn <trainer-config-file> --env=<your_env> --train
     ```
+    
+## FAQ
+
+### The <Executable_Name>_Data folder hasn't been copied cover
+
+If you've built your Linux executable, but forget to copy over the corresponding <Executable_Name>_Data folder, you will see error message like the following: 
+
+```console
+Set current directory to /home/ubuntu/ml-agents/ml-agents
+Found path: /home/ubuntu/ml-agents/ml-agents/3dball_linux.x86_64
+no boot config - using default values
+
+(Filename:  Line: 403)
+
+There is no data folder
+```
+
+### Unity Environment not responding
+
+If you didn't setup X Server or hasn't launched it properly, or you didn't made your environment with external brain, or your environment somehow crashes, or you haven't `chmod +x` your Unity Environment, all of these will cause connection between Unity and Python to fail. Then you will see something like this:
+
+```console
+Logging to /home/ubuntu/.config/unity3d/<Some_Path>/Player.log
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/environment.py", line 63, in __init__
+    aca_params = self.send_academy_parameters(rl_init_parameters_in)
+  File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/environment.py", line 489, in send_academy_parameters
+    return self.communicator.initialize(inputs).rl_initialization_output
+  File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/rpc_communicator.py", line 60, in initialize
+mlagents.envs.exception.UnityTimeOutException: The Unity environment took too long to respond. Make sure that :
+         The environment does not need user interaction to launch
+         The Academy and the External Brain(s) are attached to objects in the Scene
+         The environment and the Python interface have compatible versions.
+```
+
+It would be also really helpful to check your /home/ubuntu/.config/unity3d/<Some_Path>/Player.log to see what happens with your Unity environment. 
+
+### Could not launch X Server
+
+When you execute:
+
+```console
+sudo /usr/bin/X :0 &
+```
+
+You might see something like:
+
+```console
+X.Org X Server 1.18.4
+...
+(==) Log file: "/var/log/Xorg.0.log", Time: Thu Oct 11 21:10:38 2018
+(==) Using config file: "/etc/X11/xorg.conf"
+(==) Using system config directory "/usr/share/X11/xorg.conf.d"
+(EE)
+Fatal server error:
+(EE) no screens found(EE)
+(EE)
+Please consult the The X.Org Foundation support
+         at http://wiki.x.org
+ for help.
+(EE) Please also check the log file at "/var/log/Xorg.0.log" for additional information.
+(EE)
+(EE) Server terminated with error (1). Closing log file.
+```
+
+And when you execute:
+
+```console
+nvidia-smi
+```
+
+You might see something like:
+
+```console
+NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+```
+This means the NVIDIA's driver needs to be updated. Refer to [this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver) for more information. 

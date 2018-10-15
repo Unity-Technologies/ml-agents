@@ -89,7 +89,7 @@ environment around the Agents.
 ### Brain
 
 Brains are assets that exist in your project folder. The Ball3DAgents are connected
-to a brain, for example : the **Ball3DBrain**.
+to a brain, for example : the **3DBallLearning**.
 A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
 returns the chosen action to the Agent. Thus, all Agents can share the same
@@ -273,18 +273,14 @@ Once the training process completes, and the training process saves the model
 use it with Agents having a **Learning Brain**.
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
 Either wait for the training process to close the window or press Ctrl+C at the 
-command-line prompt. If you simply close the window manually, the .bytes file 
+command-line prompt. If you simply close the window manually, the `.tf` file 
 containing the trained model is not exported into the ml-agents folder.
 
-### Setting up TensorFlowSharp Support
+### Setting up Inference Support
 
-Because TensorFlowSharp support is still experimental, it is disabled by
-default. In order to enable it, you must follow these steps. Please note that
-the `Learning` Brain mode will only be available once completing these steps.
-
-To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
-within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the
-Basic Guide page.
+In order to run neural network models inside of Unity, you will need to setup the
+Inference Engine with an appropriate backend. See [here](Inference-Engine.md) for more
+information.
 
 ### Embedding the trained model into Unity
 

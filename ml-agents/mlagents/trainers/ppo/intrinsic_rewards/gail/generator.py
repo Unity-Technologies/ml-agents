@@ -40,6 +40,7 @@ class GAIL(IntrinsicReward):
         self.demonstration_buffer.update_buffer.shuffle()
         policy_buffer.update_buffer.shuffle()
         batch_losses = []
+        n_sequences = n_sequences // 2
         possible_batches = len(self.demonstration_buffer.update_buffer['actions']) // n_sequences
         if max_batches == 0:
             num_batches = possible_batches

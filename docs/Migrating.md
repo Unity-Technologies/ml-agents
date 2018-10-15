@@ -2,14 +2,14 @@
 
 ## Migrating from ML-Agents toolkit v0.5 to v0.6
 ### Important
-* Brains are now Scriptable Objects instead of Monobehaviors. This will
-  allow you to set Brains into prefabs and use the same brains accross 
+* Brains are now Scriptable Objects instead of MonoBehaviors. This will
+  allow you to set Brains into prefabs and use the same brains across 
   scenes.
 * To update a scene from v0.5 to v0.6, you must:
   *  Remove the `Brain` GameObjects in the scene
   *  Create new `Brain` Scriptable Objects using `Assets -> Create ->
      ML-Agents`
-  *  Edit their `Brain Paramters` to be the same as the parameters used 
+  *  Edit their `Brain Parameters` to be the same as the parameters used 
      in the `Brain` GameObjects
   *  Agents have a `Brain` field in the Inspector, you need to drag the
   appropriate Brain asset in it.

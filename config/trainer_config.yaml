@@ -21,20 +21,20 @@ default:
     curiosity_strength: 0.01
     curiosity_enc_size: 128
 
-BananaBrain:
+BananaLearning:
     normalize: false
     batch_size: 1024
     beta: 5.0e-3
     buffer_size: 10240
     max_steps: 1.0e5
 
-BouncerBrain:
+BouncerLearning:
     normalize: true
     max_steps: 5.0e5
     num_layers: 2
     hidden_units: 64
 
-PushBlockBrain:
+PushBlockLearning:
     max_steps: 5.0e4
     batch_size: 128
     buffer_size: 2048
@@ -44,7 +44,7 @@ PushBlockBrain:
     time_horizon: 64
     num_layers: 2
 
-SmallWallBrain: 
+SmallWallLearning: 
     max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
@@ -55,7 +55,7 @@ SmallWallBrain:
     num_layers: 2
     normalize: false
 
-BigWallBrain: 
+BigWallLearning: 
     max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
@@ -66,7 +66,7 @@ BigWallBrain:
     num_layers: 2
     normalize: false
 
-StrikerBrain:
+StrikerLearning:
     max_steps: 5.0e5
     learning_rate: 1e-3
     batch_size: 128
@@ -79,7 +79,7 @@ StrikerBrain:
     num_layers: 2
     normalize: false
 
-GoalieBrain:
+GoalieLearning:
     max_steps: 5.0e5
     learning_rate: 1e-3
     batch_size: 320
@@ -106,7 +106,7 @@ PyramidsLearning:
     max_steps: 5.0e5
     num_epoch: 3
 
-VisualPyramidBrain:
+VisualPyramidsLearning:
     use_curiosity: true
     curiosity_strength: 0.01
     curiosity_enc_size: 256
@@ -130,8 +130,9 @@ VisualPyramidBrain:
     lambd: 0.99
     gamma: 0.995
     beta: 0.001
+    use_curiosity: true
 
-Ball3DHardBrain:
+3DBallHardLearning:
     normalize: true
     batch_size: 1200
     buffer_size: 12000
@@ -140,10 +141,10 @@ Ball3DHardBrain:
     gamma: 0.995
     beta: 0.001
 
-TennisBrain:
+TennisLearning:
     normalize: true
 
-CrawlerBrain:
+CrawlerLearning:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
@@ -155,7 +156,7 @@ CrawlerBrain:
     num_layers: 3
     hidden_units: 512
 
-WalkerBrain:
+WalkerLearning:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
@@ -167,7 +168,7 @@ WalkerBrain:
     num_layers: 3
     hidden_units: 512
 
-ReacherBrain:
+ReacherLearning:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
@@ -177,7 +178,7 @@ ReacherBrain:
     max_steps: 1e6
     summary_freq: 3000
 
-HallwayBrain:
+HallwayLearning:
     use_recurrent: true
     sequence_length: 64
     num_layers: 2
@@ -192,7 +193,7 @@ HallwayBrain:
     summary_freq: 1000
     time_horizon: 64
 
-VisualHallwayBrain:
+VisualHallwayLearning:
     use_recurrent: true
     sequence_length: 64
     num_layers: 1
@@ -207,7 +208,7 @@ VisualHallwayBrain:
     summary_freq: 1000
     time_horizon: 64
 
-VisualPushBlockBrain:
+VisualPushBlockLearning:
     use_recurrent: true
     sequence_length: 32
     num_layers: 1
@@ -222,7 +223,7 @@ VisualPushBlockBrain:
     summary_freq: 1000
     time_horizon: 64
 
-GridWorldBrain:
+GridWorldLearning:
     batch_size: 32
     normalize: false
     num_layers: 1
@@ -234,7 +235,7 @@ GridWorldBrain:
     summary_freq: 2000
     time_horizon: 5
 
-BasicBrain:
+BasicLearning:
     batch_size: 32
     normalize: false
     num_layers: 1

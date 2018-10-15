@@ -10,20 +10,34 @@ public class TennisAgent : Agent
     public GameObject ball;
     public bool invertX;
     public int score;
-    public GameObject scoreText;
     public GameObject myArea;
-    public GameObject opponent;
 
     private Text textComponent;
     private Rigidbody agentRb;
     private Rigidbody ballRb;
     private float invertMult;
 
+    // Looks for the scoreboard based on the name of the gameObjects.
+    // Do not modify the names of the Score GameObjects
+    private const string CanvasName = "Canvas";
+    private const string ScoreBoardAName = "ScoreA";
+    private const string ScoreBoardBName = "ScoreB";
+
     public override void InitializeAgent()
     {
         agentRb = GetComponent<Rigidbody>();
         ballRb = GetComponent<Rigidbody>();
-        textComponent = scoreText.GetComponent<Text>();
+        var canvas = GameObject.Find(CanvasName);
+        GameObject scoreBoard;
+        if (invertX)
+        {
+            scoreBoard = canvas.transform.Find(ScoreBoardBName).gameObject;
+        }
+        else
+        {
+            scoreBoard = canvas.transform.Find(ScoreBoardAName).gameObject;
+        }
+        textComponent = scoreBoard.GetComponent<Text>();
     }
 
     public override void CollectObservations()
