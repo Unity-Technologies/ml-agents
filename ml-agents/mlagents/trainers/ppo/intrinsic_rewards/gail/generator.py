@@ -1,7 +1,7 @@
 import numpy as np
 
 from mlagents.trainers.ppo.intrinsic_rewards.intrinsic_reward import IntrinsicReward
-from .gail_model import Discriminator
+from .model import Discriminator
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
@@ -40,8 +40,11 @@ class GAIL(IntrinsicReward):
         self.demonstration_buffer.update_buffer.shuffle()
         policy_buffer.update_buffer.shuffle()
         batch_losses = []
-        num_batches = min(len(self.demonstration_buffer.update_buffer['actions']) //
-                          n_sequences, max_batches)
+        possible_batches = len(self.demonstration_buffer.update_buffer['actions']) // n_sequences
+        if max_batches == 0:
+            num_batches = possible_batches
+        else:
+            num_batches = min(possible_batches, max_batches)
         for i in range(num_batches):
             demo_update_buffer = self.demonstration_buffer.update_buffer
             policy_update_buffer = policy_buffer.update_buffer

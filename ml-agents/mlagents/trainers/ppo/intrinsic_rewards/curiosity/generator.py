@@ -1,5 +1,5 @@
 from mlagents.trainers.ppo.intrinsic_rewards.intrinsic_reward import IntrinsicReward
-from .curiosity_model import ICM
+from .model import ICM
 
 
 class Curiosity(IntrinsicReward):
