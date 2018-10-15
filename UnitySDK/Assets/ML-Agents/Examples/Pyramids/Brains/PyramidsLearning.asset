@@ -19,12 +19,4 @@ MonoBehaviour:
     vectorActionDescriptions:
     - 
     vectorActionSpaceType: 0
-  graphModel: {fileID: 4900000, guid: 97f59608051e548d9a79803894260d13, type: 3}
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
+  model: {fileID: 11400000, guid: 1e535922a03ea47e0a72d71aa1a26a5e, type: 3}
