@@ -11,7 +11,7 @@ the basic concepts of Unity.
 ## Setting up the ML-Agents Toolkit within Unity
 
 In order to use the ML-Agents toolkit within Unity, you need to change some
-Unity settings first. Youy will also need to have appropriate inference backends
+Unity settings first. You will also need to have appropriate inference backends
 installed in order to run your models inside of Unity. See [here](Inference-Engine.md)
 for more information.
 
