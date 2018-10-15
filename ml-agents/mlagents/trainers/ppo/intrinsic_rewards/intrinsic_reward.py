@@ -8,7 +8,7 @@ class IntrinsicReward(object):
     def __init__(self):
         self.name = "Base"
 
-    def get_intrinsic_rewards(self, current_info, next_info):
+    def evaluate(self, current_info, next_info):
         """
         Returns the number of training steps the trainer has performed
         :return: the intrinsic reward provided by the generator

@@ -1,7 +1,7 @@
 import numpy as np
 
 from .intrinsic_reward import IntrinsicReward
-from .gail_discriminator import Discriminator
+from .gail_model import Discriminator
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
@@ -13,7 +13,7 @@ class GAIL(IntrinsicReward):
         self.discriminator = Discriminator(policy.model, h_size, lr)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, 1)
 
-    def get_intrinsic_rewards(self, current_info, next_info):
+    def evaluate(self, current_info, next_info):
         if len(current_info.agents) == 0:
             return []
 
@@ -36,12 +36,12 @@ class GAIL(IntrinsicReward):
         intrinsic_rewards = raw_intrinsic_rewards * float(self.policy.has_updated)
         return intrinsic_rewards
 
-    def update_generator(self, policy_buffer, n_sequences, batches_per_epoch):
+    def update(self, policy_buffer, n_sequences, max_batches):
         self.demonstration_buffer.update_buffer.shuffle()
         policy_buffer.update_buffer.shuffle()
         batch_losses = []
         num_batches = min(len(self.demonstration_buffer.update_buffer['actions']) //
-                          n_sequences, batches_per_epoch)
+                          n_sequences, max_batches)
         for i in range(num_batches):
             demo_update_buffer = self.demonstration_buffer.update_buffer
             policy_update_buffer = policy_buffer.update_buffer
@@ -49,12 +49,12 @@ class GAIL(IntrinsicReward):
             end = (i + 1) * n_sequences
             mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
             mini_batch_policy = policy_update_buffer.make_mini_batch(start, end)
-            run_out = self.update(mini_batch_demo, mini_batch_policy)
+            run_out = self._update_batch(mini_batch_demo, mini_batch_policy)
             loss = run_out['gail_loss']
             batch_losses.append(loss)
         return np.mean(batch_losses)
 
-    def update(self, mini_batch_demo, mini_batch_policy):
+    def _update_batch(self, mini_batch_demo, mini_batch_policy):
         feed_dict = {}
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.selected_actions] = mini_batch_policy['actions'].reshape(
