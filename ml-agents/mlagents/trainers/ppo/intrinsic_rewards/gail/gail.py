@@ -1,6 +1,6 @@
 import numpy as np
 
-from .intrinsic_reward import IntrinsicReward
+from mlagents.trainers.ppo.intrinsic_rewards.intrinsic_reward import IntrinsicReward
 from .gail_model import Discriminator
 from mlagents.trainers.demo_loader import demo_to_buffer
 
