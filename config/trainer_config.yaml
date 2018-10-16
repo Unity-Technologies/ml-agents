@@ -142,7 +142,7 @@ VisualPyramidsLearning:
 TennisLearning:
     normalize: true
 
-CrawlerLearning:
+CrawlerStaticLearning:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
