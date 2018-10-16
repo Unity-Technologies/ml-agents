@@ -697,9 +697,9 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  noWallBrain: {fileID: 11400000, guid: 39363e248a8794f05baed8bfa17eb690, type: 2}
-  smallWallBrain: {fileID: 11400000, guid: 39363e248a8794f05baed8bfa17eb690, type: 2}
-  bigWallBrain: {fileID: 11400000, guid: 39363e248a8794f05baed8bfa17eb690, type: 2}
+  noWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
+  smallWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
+  bigWallBrain: {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}
   ground: {fileID: 1964440537870194}
   spawnArea: {fileID: 1535176706844624}
   goal: {fileID: 1982078136115924}
