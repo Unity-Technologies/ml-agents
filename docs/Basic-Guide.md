@@ -10,8 +10,8 @@ the basic concepts of Unity.
 
 ## Setting up the ML-Agents Toolkit within Unity
 
-In order to use the ML-Agents toolkit within Unity, you need to change some
-Unity settings first. 
+In order to use the ML-Agents toolkit within Unity, you need to change a few
+Unity settings. 
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
@@ -20,20 +20,22 @@ Unity settings first.
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target (**PC, Mac and Linux Standalone**,
    **iOS** or **Android**):
-    1. Option the **Other Settings** section.
+    1. Expand the **Other Settings** section.
     2. Select **Scripting Runtime Version** to **Experimental (.NET 4.6
        Equivalent or .NET 4.x Equivalent)**
 6. Go to **File** > **Save Project**
 
 ## Setting up the Inference Engine
 
-In order to run pre-trained models of agents behaviors, you will need to set-up the 
-[Inference Engine](Inference-Engine.md). The Inference Engine is a general API to
-run Neural Network models in Unity that leverages existing inference libraries such 
-as TensorFlowSharp and CoreML. The models we ship with our examples and the models
-generated with our trainers use the TensorFlowSharp inference backend : 
-They have a `.tf` extension. This means that you will not be able to use them
-without first installing the TensorFlowSharp backend. You can find instructions 
+We provide pre-trained models for all the agents in our all demo environments. 
+To be able to run those models, you'll first need to set-up the Inference 
+Engine.The Inference Engine is a general API to
+run neural network models in Unity that leverages existing inference libraries such 
+as TensorFlowSharp and Apple's CoreML. Since the ML-Agents Toolkit uses TensorFlow 
+for training neural network models, the output model format is TensorFlow and 
+the model files include a `.tf` extension. Consequently, you need to install 
+the TensorFlowSharp backend to be able to run these models within the Unity 
+Editor. You can find instructions 
 on how to install the TensorFlowSharp backend [here](Inference-Engine.md).
 Once the backend is installed, you will need to reimport the models : Right click
 on the `.tf` model and select `Reimport`.
@@ -45,7 +47,7 @@ on the `.tf` model and select `Reimport`.
    and open the `3DBall` scene file.
 2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder
    and select the `Game/Platform` prefab.
-3. In the `Ball 3D Agent` Component: Drag the **3DBallLearning** Brain located into 
+3. In the `Ball 3D Agent` Component: Drag the **3DBallLearning** Brain located in 
    `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
    the `Ball 3D Agent`.
 4. Make sure that all of the Agents in the Scene now have **3DBallLearning** as `Brain`.
