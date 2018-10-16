@@ -19,7 +19,7 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
      in the `Brain` GameObjects
   *  Agents have a `Brain` field in the Inspector, you need to drag the
   appropriate Brain asset in it.
-* We modified the way we do inference with ML-Agents. All previous `.bytes`
+* We have changed the way ML-Agents models perform inference. All previous `.bytes`
   files can no longer be used. The training process and the shipped models
   have now a `.tf` extension and use TensorflowSharp as a backend for the 
   [Inference Engine](Inference-Engine.md).

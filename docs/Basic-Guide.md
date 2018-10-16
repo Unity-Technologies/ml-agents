@@ -33,8 +33,8 @@ run Neural Network models in Unity that leverages existing inference libraries s
 as TensorFlowSharp and CoreML. The models we ship with our examples and the models
 generated with our trainers use the TensorFlowSharp inference backend : 
 They have a `.tf` extension. This means that you will not be able to use them
-without first installing the TensorflowSharp backend. You can find instructions 
-on how to install the TensorflowSharp backend [here](Inference-Engine.md).
+without first installing the TensorFlowSharp backend. You can find instructions 
+on how to install the TensorFlowSharp backend [here](Inference-Engine.md).
 Once the backend is installed, you will need to reimport the models : Right click
 on the `.tf` model and select `Reimport`.
 
@@ -45,15 +45,16 @@ on the `.tf` model and select `Reimport`.
    and open the `3DBall` scene file.
 2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder
    and select the `Game/Platform` prefab.
-3. In the `Ball 3D Agent` Component: Drag the **3DBallLearning** located into 
+3. In the `Ball 3D Agent` Component: Drag the **3DBallLearning** Brain located into 
    `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
    the `Ball 3D Agent`.
 4. Make sure that all of the Agents in the Scene now have **3DBallLearning** as `Brain`.
-   __Note__ : You can modify multiple game objects in a scene by selecting them all at once using the search bar in the Scene Hierarchy. 
+   __Note__ : You can modify multiple game objects in a scene by selecting them all at 
+   once using the search bar in the Scene Hierarchy. 
 5. In the **Project** window, locate the `Assets/ML-Agents/Examples/3DBall/TFModels` 
    folder.
-6. Drag the `3DBall` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
-   folder to the **Model** field of the **3DBallLearning**.
+6. Drag the `3DBallLearning` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+   folder to the **Model** field of the **3DBallLearning** Brain.
 7. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
@@ -77,9 +78,9 @@ More information and documentation is provided in the
 
 To set up the environment for training, you will need specify which agents are contributing
 to the training and which Brain is being trained. You can only perform training with
- an `Learning Brain`.
+a `Learning Brain`.
 
-1. Assign the **3DBallLearning** to the agents you would like to train.  
+1. Assign the **3DBallLearning** Brain to the agents you would like to train.  
    __Note:__ You can assign the same brain to multiple agents at once : To do so, you can
    use the prefab system. When an agent is created from a prefab, modifying the prefab 
    will modify the agent as well. If the agent does not synchronize with the prefab, you
