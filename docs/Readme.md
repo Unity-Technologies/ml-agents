@@ -42,7 +42,7 @@
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Inference
-* [Unity Machine Learning Inference SDK](https://github.com/Unity-Technologies/ml-inference/blob/0.1.0/docs/Using-ML-Agents-Toolkit-With-ML-Inference-SDK.md)
+* [Unity Machine Learning Inference SDK](Inference-Engine.md)
 
 ## Help
 

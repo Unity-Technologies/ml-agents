@@ -16,7 +16,7 @@ Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 ## Cannot drag Model into Learning Brain
 
 You migh not have the appropriate backend required to import the model. Refer to the 
-[Inference Engine](https://github.com/Unity-Technologies/ml-inference/blob/0.1.0/docs/Using-ML-Agents-Toolkit-With-ML-Inference-SDK.md) for more information on how to import backends
+[Inference Engine](Inference-Engine.md) for more information on how to import backends
 and reimport the asset.
 
 

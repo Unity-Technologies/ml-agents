@@ -39,7 +39,7 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
   files can no longer be used (you will have to retrain them). The models
   produced by the training process and the shipped models have now a `.tf` 
   extension and use TensorflowSharp as a backend for the 
-  [Inference Engine](https://github.com/Unity-Technologies/ml-inference/blob/0.1.0/docs/Using-ML-Agents-Toolkit-With-ML-Inference-SDK.md).
+  [Inference Engine](Inference-Engine.md).
 * To use a `.tf` model, drag it inside the `Model` property of the `Learning Brain`
 
 

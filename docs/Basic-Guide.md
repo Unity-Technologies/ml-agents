@@ -36,7 +36,7 @@ for training neural network models, the output model format is TensorFlow and
 the model files include a `.tf` extension. Consequently, you need to install 
 the TensorFlowSharp backend to be able to run these models within the Unity 
 Editor. You can find instructions 
-on how to install the TensorFlowSharp backend [here](https://github.com/Unity-Technologies/ml-inference/blob/0.1.0/docs/Using-ML-Agents-Toolkit-With-ML-Inference-SDK.md).
+on how to install the TensorFlowSharp backend [here](Inference-Engine.md).
 Once the backend is installed, you will need to reimport the models : Right click
 on the `.tf` model and select `Reimport`.
 
