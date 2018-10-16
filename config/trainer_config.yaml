@@ -143,7 +143,7 @@ TennisLearning:
     normalize: true
     max_steps: 2e5
 
-CrawlerLearning:
+CrawlerStaticLearning:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
