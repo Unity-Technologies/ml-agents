@@ -141,6 +141,7 @@ VisualPyramidsLearning:
 
 TennisLearning:
     normalize: true
+    max_steps: 2e5
 
 CrawlerLearning:
     normalize: true
