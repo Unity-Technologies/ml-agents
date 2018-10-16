@@ -50,6 +50,7 @@ importing the ML-Agents assets into it:
    ML-Agents repository.
 3. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity Editor
    Project window.
+4. Setup the ML-Agents toolkit by following the instructions [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Basic-Guide.md#setting-up-the-ml-agents-toolkit-within-unity).
 
 Your Unity **Project** window should contain the following assets:
 
