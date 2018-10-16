@@ -154,6 +154,18 @@ CrawlerStaticLearning:
     num_layers: 3
     hidden_units: 512
 
+CrawlerDynamicLearning:
+    normalize: true
+    num_epoch: 3
+    time_horizon: 1000
+    batch_size: 2024
+    buffer_size: 20240
+    gamma: 0.995
+    max_steps: 1e6
+    summary_freq: 3000
+    num_layers: 3
+    hidden_units: 512
+
 WalkerLearning:
     normalize: true
     num_epoch: 3
