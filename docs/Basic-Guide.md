@@ -27,7 +27,7 @@ Unity settings.
 
 ## Setting up the Inference Engine
 
-We provide pre-trained models for all the agents in our all demo environments. 
+We provide pre-trained models for all the agents in all our demo environments. 
 To be able to run those models, you'll first need to set-up the Inference 
 Engine.The Inference Engine is a general API to
 run neural network models in Unity that leverages existing inference libraries such 
@@ -78,7 +78,7 @@ More information and documentation is provided in the
 
 ### Adding a Brain to the training session
 
-To set up the environment for training, you will need specify which agents are contributing
+To set up the environment for training, you will need to specify which agents are contributing
 to the training and which Brain is being trained. You can only perform training with
 a `Learning Brain`.
 
@@ -96,7 +96,8 @@ a `Learning Brain`.
 __Note:__ Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
 the agent) means that the Brain will be making decision for that agent. Whereas dragging
 a Brain into the Broadcast Hub means that the Brain will be exposed to the Python process.
-You need both these steps to train a model. 
+The `Control` checkbox means that in addition to being exposed to Python, the Brain will
+be controlled by the Python process (required for training).
 
 ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 

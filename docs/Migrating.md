@@ -12,19 +12,36 @@
 leveraging Unity's prefab system or look for all the agents in a scene
 using the search bar of the `Hierarchy` window with the word `Agent`.
 * To update a scene from v0.5 to v0.6, you must:
-  *  Remove the `Brain` GameObjects in the scene
+  *  Remove the `Brain` GameObjects in the scene. (Delete all of the 
+  Brain GameObjects under Academy in the scene.)
   *  Create new `Brain` Scriptable Objects using `Assets -> Create ->
-     ML-Agents`
+     ML-Agents` for each type of the Brain you plan to use, and put
+     the created files under a folder called Brains within your project.
   *  Edit their `Brain Parameters` to be the same as the parameters used 
-     in the `Brain` GameObjects
+     in the `Brain` GameObjects.
   *  Agents have a `Brain` field in the Inspector, you need to drag the
-  appropriate Brain asset in it.
-* We have changed the way ML-Agents models perform inference. All previous `.bytes`
-  files can no longer be used. The training process and the shipped models
-  have now a `.tf` extension and use TensorflowSharp as a backend for the 
-  [Inference Engine](Inference-Engine.md).
+  appropriate Brain ScriptableObject in it.
+  
   __Note:__ You will need to delete the previous TensorFlowSharp package 
-  and install the new one to do inference.
+  and install the new one to do inference. To correctly delete the previous 
+  TensorFlowSharp package, Delete all of the files under `ML-Agents/Plugins`
+  folder except the files under `ML-Agents/Plugins/ProtoBuffer`.
+  
+* We replaced the **Internal** and **External** Brain with **Learning Brain**.
+  When you need to train a model, you need to drag it into the `Training Hub`
+  inside the `Academy` and check the `Control` checkbox.
+* We removed the `Broadcast` checkbox of the Brain, to use the broadcast 
+  functionality, you need to drag the Brain into the `Broadcast Hub`.
+* When training multiple brains at the same time, each model is now stored 
+  into a separate model file rather than in the same file under different
+  graph scopes. 
+* We have changed the way ML-Agents models perform inference. All previous `.bytes`
+  files can no longer be used (you will have to retrain them). The models
+  produced by the training process and the shipped models have now a `.tf` 
+  extension and use TensorflowSharp as a backend for the 
+  [Inference Engine](Inference-Engine.md).
+* To use a `.tf` model, drag it inside the `Model` property of the `Learning Brain`
+
 
 
 ## Migrating from ML-Agents toolkit v0.4 to v0.5
