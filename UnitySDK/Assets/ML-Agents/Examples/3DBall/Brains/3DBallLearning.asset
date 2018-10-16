@@ -20,4 +20,4 @@ MonoBehaviour:
     - 
     - 
     vectorActionSpaceType: 1
-  model: {fileID: 11400000, guid: 9437689fcd48f447792a3ca8406d1b4a, type: 3}
+  model: {fileID: 0}
