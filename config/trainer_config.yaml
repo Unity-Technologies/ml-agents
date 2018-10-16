@@ -141,6 +141,10 @@ VisualPyramidsLearning:
 
 TennisLearning:
     normalize: true
+    batch_size: 64
+    buffer_size: 640
+    summary_freq: 1000
+    max_steps: 1e5
 
 CrawlerLearning:
     normalize: true

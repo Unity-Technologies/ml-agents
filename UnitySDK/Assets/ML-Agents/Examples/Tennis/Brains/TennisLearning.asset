@@ -13,19 +13,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainParameters:
     vectorObservationSize: 8
-    numStackedVectorObservations: 1
+    numStackedVectorObservations: 3
     vectorActionSize: 02000000
     cameraResolutions: []
     vectorActionDescriptions:
     - 
     - 
     vectorActionSpaceType: 1
-  graphModel: {fileID: 4900000, guid: c428950472279436d97dd5fa123febc4, type: 3}
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
+  model: {fileID: 0}

@@ -214,35 +214,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 22
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (17)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -286,35 +260,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 14
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (9)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -358,35 +306,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 17
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (12)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -430,35 +352,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 20
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (15)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -502,35 +398,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 9
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (4)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -574,35 +444,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -646,35 +490,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 12
       objectReference: {fileID: 0}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (7)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -718,35 +536,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (10)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -855,35 +647,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 16
       objectReference: {fileID: 0}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (11)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -986,35 +752,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1058,35 +798,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (3)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1130,35 +844,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1202,35 +890,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 13
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (8)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1369,35 +1031,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 18
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (13)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1441,16 +1077,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -1558,35 +1184,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 19
       objectReference: {fileID: 0}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (14)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1704,35 +1304,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 11
       objectReference: {fileID: 0}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (6)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1776,35 +1350,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 21
       objectReference: {fileID: 0}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114915946461826994, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 2073469450}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229,
-        type: 2}
-    - target: {fileID: 114800310164848628, guid: 812997c7bc2544b6f927ff684c03450f,
-        type: 2}
-      propertyPath: scoreText
-      value: 
-      objectReference: {fileID: 1871669621}
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (16)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
