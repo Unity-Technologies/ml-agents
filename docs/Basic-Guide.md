@@ -31,7 +31,7 @@ We provide pre-trained models for all the agents in all our demo environments.
 To be able to run those models, you'll first need to set-up the Inference 
 Engine.The Inference Engine is a general API to
 run neural network models in Unity that leverages existing inference libraries such 
-as TensorFlowSharp and Apple's CoreML. Since the ML-Agents Toolkit uses TensorFlow 
+as TensorFlowSharp and Apple's Core ML. Since the ML-Agents Toolkit uses TensorFlow 
 for training neural network models, the output model format is TensorFlow and 
 the model files include a `.tf` extension. Consequently, you need to install 
 the TensorFlowSharp backend to be able to run these models within the Unity 
