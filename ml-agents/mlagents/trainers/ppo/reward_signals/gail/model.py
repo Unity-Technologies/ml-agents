@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 
-class Discriminator(object):
+class GAILModel(object):
     def __init__(self, policy_model, h_size, lr):
         self.h_size = h_size
         self.policy_model = policy_model

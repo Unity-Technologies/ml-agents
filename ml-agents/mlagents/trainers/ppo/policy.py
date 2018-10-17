@@ -3,8 +3,9 @@ import numpy as np
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.ppo.intrinsic_rewards.curiosity.generator import Curiosity
-from mlagents.trainers.ppo.intrinsic_rewards.gail.generator import GAIL
+from mlagents.trainers.ppo.reward_signals.gail.signal import GAILSignal
+from mlagents.trainers.ppo.reward_signals.curiosity.signal import CuriositySignal
+from mlagents.trainers.ppo.reward_signals.reward_manager import RewardManager
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -24,6 +25,7 @@ class PPOPolicy(Policy):
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
         self.use_gail = bool(trainer_params['use_gail'])
+        self.reward_managers = {}
 
         with self.graph.as_default():
             self.model = PPOModel(brain,
@@ -38,16 +40,20 @@ class PPOPolicy(Policy):
                                   m_size=self.m_size,
                                   use_curiosity=bool(trainer_params['use_curiosity']),
                                   seed=seed)
-            if self.use_curiosity:
-                self.curiosity = Curiosity(self,
-                                           strength=float(trainer_params['curiosity_strength']),
-                                           encoding_size=float(
-                                               trainer_params['curiosity_enc_size']))
-            if self.use_gail:
-                self.gail = GAIL(self, int(trainer_params['hidden_units']),
-                                 float(trainer_params['learning_rate']),
-                                 trainer_params['demo_path'])
             self.model.create_ppo_optimizer()
+
+            if self.use_curiosity:
+                strength = float(trainer_params['curiosity_strength'])
+                encoding_size = float(trainer_params['curiosity_enc_size'])
+                curiosity_generator = CuriositySignal(policy=self, strength=strength,
+                                                      encoding_size=encoding_size)
+                self.reward_managers['curiosity'] = RewardManager(curiosity_generator,
+                                                                  'Policy/Curiosity Reward')
+            if self.use_gail:
+                gail_generator = GAILSignal(self, int(trainer_params['hidden_units']),
+                                            float(trainer_params['learning_rate']),
+                                            trainer_params['demo_path'])
+                self.reward_managers['gail'] = RewardManager(gail_generator, 'Policy/GAIL Reward')
 
         if load:
             self._load_graph()
@@ -69,14 +75,9 @@ class PPOPolicy(Policy):
             self.inference_dict["update_mean"] = self.model.update_mean
             self.inference_dict["update_variance"] = self.model.update_variance
 
-        self.update_dict = {
-            "value_loss": self.model.value_loss,
-            "policy_loss": self.model.policy_loss,
-            "update_batch": self.model.update_batch,
-        }
-        if self.use_curiosity:
-            self.update_dict['forward_loss'] = self.curiosity.icm.forward_loss
-            self.update_dict['inverse_loss'] = self.curiosity.icm.inverse_loss
+        self.update_dict = {'value_loss': self.model.value_loss,
+                            'policy_loss': self.model.policy_loss,
+                            'update_batch': self.model.update_batch}
 
     def evaluate(self, brain_info):
         """
@@ -147,13 +148,8 @@ class PPOPolicy(Policy):
                 [-1, sum(self.brain.vector_action_space_size)]
             )
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, self.vec_obs_size]
-            )
-            if self.use_curiosity:
-                feed_dict[self.model.next_vector_in] = mini_batch[
-                    "next_vector_in"
-                ].reshape([-1, self.vec_obs_size])
+            feed_dict[self.model.vector_in] = mini_batch['vector_obs'].reshape(
+                [-1, self.vec_obs_size])
         if self.model.vis_obs_size > 0:
             for i, _ in enumerate(self.model.visual_in):
                 _obs = mini_batch["visual_obs%d" % i]
@@ -162,15 +158,6 @@ class PPOPolicy(Policy):
                     feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
                 else:
                     feed_dict[self.model.visual_in[i]] = _obs
-            if self.use_curiosity:
-                for i, _ in enumerate(self.model.visual_in):
-                    _obs = mini_batch["next_visual_obs%d" % i]
-                    if self.sequence_length > 1 and self.use_recurrent:
-                        (_batch, _seq, _w, _h, _c) = _obs.shape
-                        feed_dict[self.curiosity.icm.next_visual_in[i]] = _obs.reshape(
-                            [-1, _w, _h, _c])
-                    else:
-                        feed_dict[self.curiosity.icm.next_visual_in[i]] = _obs
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
