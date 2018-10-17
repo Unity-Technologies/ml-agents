@@ -6,6 +6,7 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.ppo.reward_signals.gail import GAILSignal
 from mlagents.trainers.ppo.reward_signals.curiosity import CuriositySignal
 from mlagents.trainers.ppo.reward_signals.extrinsic import ExtrinsicSignal
+from mlagents.trainers.ppo.reward_signals.entropy import EntropySignal
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -25,6 +26,7 @@ class PPOPolicy(Policy):
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
         self.use_gail = bool(trainer_params['use_gail'])
+        self.use_entropy = bool(trainer_params['use_entropy'])
         self.reward_signals = {}
 
         with self.graph.as_default():
@@ -42,7 +44,8 @@ class PPOPolicy(Policy):
                                   seed=seed)
             self.model.create_ppo_optimizer()
 
-            self.reward_signals['extrinsic'] = ExtrinsicSignal()
+            self.reward_signals['extrinsic'] = ExtrinsicSignal(
+                float(trainer_params['reward_strength']))
 
             if self.use_curiosity:
                 strength = float(trainer_params['curiosity_strength'])
@@ -53,8 +56,10 @@ class PPOPolicy(Policy):
             if self.use_gail:
                 gail_signal = GAILSignal(self, int(trainer_params['hidden_units']),
                                          float(trainer_params['learning_rate']),
-                                         trainer_params['demo_path'])
+                                         trainer_params['demo_path'], 1.0)
                 self.reward_signals['gail'] = gail_signal
+            if self.use_entropy:
+                self.reward_signals['entropy'] = EntropySignal(self, 0.01)
 
         if load:
             self._load_graph()
