@@ -3,7 +3,7 @@
 ## General
 
 * It is often helpful to start with the simplest version of the problem, to
-  ensure the agent can learn it. From there increase complexity over time. This
+  ensure the agent can learn it. From there, increase complexity over time. This
   can either be done manually, or via Curriculum Learning, where a set of
   lessons which progressively increase in difficulty are presented to the agent
   ([learn more here](Training-Curriculum-Learning.md)).

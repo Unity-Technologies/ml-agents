@@ -161,7 +161,7 @@ If you would like to contribute environments, please see our
 ![Reacher](images/reacher.png)
 
 * Set-up: Double-jointed arm which can move to target locations.
-* Goal: The agents must move it's hand to the goal location, and keep it there.
+* Goal: The agents must move its hand to the goal location, and keep it there.
 * Agents: The environment contains 10 agent linked to a single Brain.
 * Agent Reward Function (independent):
   * +0.1 Each step agent's hand is in goal location.

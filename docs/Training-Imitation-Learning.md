@@ -51,7 +51,7 @@ With offline behavioral cloning, we can use demonstrations (`.demo` files) gener
 6. Launch `mlagent-learn`, and providing `./config/offline_bc_config.yaml` as the config parameter, and your environment as the `--env` parameter.
 7. (Optional) Observe training performance using Tensorboard.
 
-This will use the demonstration file to train a nerual network driven agent to directly imitate the actions provided in the demonstration. The environment will launch and be used for evaluating the agent's performance during training.
+This will use the demonstration file to train a neural network driven agent to directly imitate the actions provided in the demonstration. The environment will launch and be used for evaluating the agent's performance during training.
 
 ### Online Training
 
@@ -59,7 +59,7 @@ It is also possible to provide demonstrations in realtime during training, witho
 
 1. First create two Brains, one which will be the "Teacher," and the other which
    will be the "Student." We will assume that the names of the Brain
-   `Assets`s are "Teacher" and "Student" respectively.
+   Assets are "Teacher" and "Student" respectively.
 2. The "Teacher" Brain must be a **Player Brain**. You must properly 
    configure the inputs to map to the corresponding actions.
 3. The "Student" Brain must be a **Learning Brain**.
