@@ -1,11 +1,11 @@
-from mlagents.trainers.ppo.reward_signals.reward_signal import RewardSignal
+from mlagents.trainers.ppo.reward_signals import RewardSignal
 from .model import CuriosityModel
 
 
 class CuriositySignal(RewardSignal):
-    def __init__(self, policy, encoding_size, strength, stat_name):
+    def __init__(self, policy, encoding_size, strength):
         self.policy = policy
-        self.stat_name = stat_name
+        self.stat_name = 'Policy/Curiosity Reward'
         self.model = CuriosityModel(policy.model, encoding_size=encoding_size, strength=strength)
         self.update_dict = {'forward_loss': self.model.forward_loss,
                             'inverse_loss': self.model.inverse_loss,
