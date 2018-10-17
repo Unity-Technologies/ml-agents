@@ -35,11 +35,12 @@ class PPOTrainer(Trainer):
                            'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
                            'use_recurrent', 'summary_path', 'memory_size', 'use_curiosity',
                            'curiosity_strength', 'curiosity_enc_size', 'model_path',
-                           'use_gail', 'demo_path', 'reward_strength']
+                           'use_gail', 'demo_path', 'reward_strength', 'use_entropy']
 
         self.check_param_keys()
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
         self.use_gail = bool(trainer_parameters['use_gail'])
+        self.use_entropy = bool(trainer_parameters['use_entropy'])
         self.reward_strength = float(trainer_parameters['reward_strength'])
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
@@ -60,6 +61,9 @@ class PPOTrainer(Trainer):
             stats['Losses/GAIL Loss'] = []
             stats['Policy/GAIL Reward'] = []
             self.collected_rewards['gail'] = {}
+        if self.use_entropy:
+            stats['Policy/Entropy Reward'] = []
+            self.collected_rewards['entropy'] = {}
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -148,7 +152,7 @@ class PPOTrainer(Trainer):
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
-        visual_observations = [[]]
+        visual_observations = []
         vector_observations = []
         text_observations = []
         memories = []

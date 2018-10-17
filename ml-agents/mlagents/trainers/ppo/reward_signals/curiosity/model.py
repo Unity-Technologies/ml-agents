@@ -3,10 +3,9 @@ from mlagents.trainers.models import LearningModel
 
 
 class CuriosityModel(object):
-    def __init__(self, policy_model, strength=0.01, encoding_size=128,
+    def __init__(self, policy_model, encoding_size=128,
                  learning_rate=1e-4):
         self.encoding_size = encoding_size
-        self.strength = strength
         self.policy_model = policy_model
         encoded_state, encoded_next_state = self.create_curiosity_encoders()
         self.create_inverse_model(encoded_state, encoded_next_state)
@@ -123,7 +122,7 @@ class CuriosityModel(object):
                                           activation=None)
         squared_difference = 0.5 * tf.reduce_sum(
             tf.squared_difference(pred_next_state, encoded_next_state), axis=1)
-        self.intrinsic_reward = tf.clip_by_value(self.strength * squared_difference, 0, 1)
+        self.intrinsic_reward = squared_difference
         self.forward_loss = tf.reduce_mean(
             tf.dynamic_partition(squared_difference, self.policy_model.mask, 2)[1])
 

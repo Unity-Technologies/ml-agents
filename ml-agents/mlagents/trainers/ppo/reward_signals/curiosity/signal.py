@@ -1,3 +1,4 @@
+import numpy as np
 from mlagents.trainers.ppo.reward_signals import RewardSignal
 from .model import CuriosityModel
 
@@ -5,8 +6,9 @@ from .model import CuriosityModel
 class CuriositySignal(RewardSignal):
     def __init__(self, policy, encoding_size, strength):
         self.policy = policy
+        self.strength = strength
         self.stat_name = 'Policy/Curiosity Reward'
-        self.model = CuriosityModel(policy.model, encoding_size=encoding_size, strength=strength)
+        self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
         self.update_dict = {'forward_loss': self.model.forward_loss,
                             'inverse_loss': self.model.inverse_loss,
                             'update': self.model.update_batch}
@@ -39,7 +41,8 @@ class CuriositySignal(RewardSignal):
             feed_dict[self.policy.model.memory_in] = current_info.memories
         raw_intrinsic_rewards = self.policy.sess.run(self.model.intrinsic_reward,
                                                      feed_dict=feed_dict)
-        intrinsic_rewards = raw_intrinsic_rewards * float(self.policy.has_updated)
+        intrinsic_rewards = np.clip(
+            raw_intrinsic_rewards * float(self.policy.has_updated) * self.strength, 0, 1)
         return intrinsic_rewards
 
     def update(self, mini_batch, num_sequences):

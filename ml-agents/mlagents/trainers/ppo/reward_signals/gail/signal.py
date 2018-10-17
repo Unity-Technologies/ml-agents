@@ -6,9 +6,10 @@ from mlagents.trainers.demo_loader import demo_to_buffer
 
 
 class GAILSignal(RewardSignal):
-    def __init__(self, policy, h_size, lr, demo_path):
+    def __init__(self, policy, h_size, lr, demo_path, signal_strength):
         super().__init__()
         self.policy = policy
+        self.strength = signal_strength
         self.stat_name = 'Policy/GAIL Reward'
         self.model = GAILModel(policy.model, h_size, lr)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, 1)
@@ -33,7 +34,7 @@ class GAILSignal(RewardSignal):
             feed_dict[self.policy.model.memory_in] = current_info.memories
         raw_intrinsic_rewards = self.policy.sess.run(self.model.intrinsic_reward,
                                                      feed_dict=feed_dict)
-        intrinsic_rewards = raw_intrinsic_rewards * float(self.policy.has_updated)
+        intrinsic_rewards = raw_intrinsic_rewards * float(self.policy.has_updated) * self.strength
         return intrinsic_rewards
 
     def update(self, policy_buffer, n_sequences, max_batches):
