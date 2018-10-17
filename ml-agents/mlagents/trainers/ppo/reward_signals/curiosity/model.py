@@ -2,15 +2,16 @@ import tensorflow as tf
 from mlagents.trainers.models import LearningModel
 
 
-class ICM(object):
-    def __init__(self, policy_model, strength=0.01, encoding_size=128):
+class CuriosityModel(object):
+    def __init__(self, policy_model, strength=0.01, encoding_size=128,
+                 learning_rate=1e-4):
         self.encoding_size = encoding_size
         self.strength = strength
         self.policy_model = policy_model
         encoded_state, encoded_next_state = self.create_curiosity_encoders()
         self.create_inverse_model(encoded_state, encoded_next_state)
         self.create_forward_model(encoded_state, encoded_next_state)
-        self.create_loss()
+        self.create_loss(learning_rate)
 
     def create_curiosity_encoders(self):
         """
@@ -126,6 +127,7 @@ class ICM(object):
         self.forward_loss = tf.reduce_mean(
             tf.dynamic_partition(squared_difference, self.policy_model.mask, 2)[1])
 
-    def create_loss(self):
+    def create_loss(self, learning_rate):
         self.loss = 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
-        self.policy_model.loss += self.loss
+        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+        self.update_batch = optimizer.minimize(self.loss)

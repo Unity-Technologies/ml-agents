@@ -1,16 +1,17 @@
 import numpy as np
 
-from mlagents.trainers.ppo.intrinsic_rewards.intrinsic_reward import IntrinsicReward
-from .model import Discriminator
+from mlagents.trainers.ppo.reward_signals.reward_signal import RewardGenerator
+from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
-class GAIL(IntrinsicReward):
+class GAILSignal(RewardGenerator):
     def __init__(self, policy, h_size, lr, demo_path):
         super().__init__()
         self.name = "GAIL"
         self.policy = policy
-        self.discriminator = Discriminator(policy.model, h_size, lr)
+        with policy.graph.as_default():
+            self.discriminator = GAILModel(policy.model, h_size, lr)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, 1)
 
     def evaluate(self, current_info, next_info):

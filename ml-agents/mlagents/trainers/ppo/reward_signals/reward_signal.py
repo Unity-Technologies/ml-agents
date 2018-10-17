@@ -4,7 +4,7 @@ from mlagents.trainers.trainer import UnityTrainerException
 logger = logging.getLogger("mlagents.trainers")
 
 
-class IntrinsicReward(object):
+class RewardGenerator(object):
     def __init__(self):
         self.name = "Base"
 

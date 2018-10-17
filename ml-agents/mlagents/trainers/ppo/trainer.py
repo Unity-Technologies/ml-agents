@@ -48,19 +48,22 @@ class PPOTrainer(Trainer):
         stats = {'Environment/Cumulative Reward': [], 'Environment/Episode Length': [],
                  'Policy/Value Estimate': [], 'Policy/Entropy': [], 'Losses/Value Loss': [],
                  'Losses/Policy Loss': [], 'Policy/Learning Rate': []}
+
+        self.intrinsic_rewards = {}
+
         if self.use_curiosity:
             stats['Losses/Forward Loss'] = []
             stats['Losses/Inverse Loss'] = []
             stats['Policy/Curiosity Reward'] = []
-            self.curiosity_rewards = {}
         if self.use_gail:
             stats['Losses/GAIL Loss'] = []
             stats['Policy/GAIL Reward'] = []
-            self.gail_rewards = {}
+            self.intrinsic_rewards['gail'] = {}
         self.stats = stats
 
         self.training_buffer = Buffer()
         self.cumulative_rewards = {}
+
         self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
         self.summary_path = trainer_parameters['summary_path']
@@ -202,10 +205,9 @@ class PPOTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        if self.use_curiosity:
-            curiosity_rewards = self.policy.curiosity.evaluate(curr_to_use, next_info)
-        if self.use_gail:
-            gail_rewards = self.policy.gail.evaluate(curr_to_use, next_info)
+        intrinsic_rewards_list = []
+        for manager in self.policy.reward_managers.values():
+            intrinsic_rewards_list.append(manager.generator.evaluate(curr_to_use, next_info))
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -248,10 +250,10 @@ class PPOTrainer(Trainer):
 
                     extrinsic_rewards = next_info.rewards[next_idx] * self.reward_strength
                     intrinsic_rewards = extrinsic_rewards * 0.0
-                    if self.use_curiosity:
-                        intrinsic_rewards += curiosity_rewards[next_idx]
-                    if self.use_gail:
-                        intrinsic_rewards += gail_rewards[next_idx]
+
+                    for reward in intrinsic_rewards_list:
+                        intrinsic_rewards += reward[next_idx]
+
                     self.training_buffer[agent_id]['rewards'].append(
                         extrinsic_rewards + intrinsic_rewards)
 
@@ -260,14 +262,12 @@ class PPOTrainer(Trainer):
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
-                    if self.use_curiosity:
-                        if agent_id not in self.curiosity_rewards:
-                            self.curiosity_rewards[agent_id] = 0
-                        self.curiosity_rewards[agent_id] += curiosity_rewards[next_idx]
-                    if self.use_gail:
-                        if agent_id not in self.gail_rewards:
-                            self.gail_rewards[agent_id] = 0
-                        self.gail_rewards[agent_id] += gail_rewards[next_idx]
+
+                    for idx, manager in enumerate(self.policy.reward_managers.values()):
+                        if agent_id not in manager.agents_rewards:
+                            manager.agents_rewards[agent_id] = 0
+                        manager.agents_rewards[agent_id] += intrinsic_rewards_list[idx][next_idx]
+
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
@@ -322,14 +322,10 @@ class PPOTrainer(Trainer):
                         self.episode_steps.get(agent_id, 0))
                     self.cumulative_rewards[agent_id] = 0
                     self.episode_steps[agent_id] = 0
-                    if self.use_curiosity:
-                        self.stats['Policy/Curiosity Reward'].append(
-                            self.curiosity_rewards.get(agent_id, 0))
-                        self.curiosity_rewards[agent_id] = 0
-                    if self.use_gail:
-                        self.stats['Policy/GAIL Reward'].append(
-                            self.gail_rewards.get(agent_id, 0))
-                        self.gail_rewards[agent_id] = 0
+                    for manager in self.policy.reward_managers.values():
+                        self.stats[manager.stat_name].append(
+                            manager.agents_rewards.get(agent_id, 0))
+                        manager.agents_rewards[agent_id] = 0
 
     def end_episode(self):
         """
@@ -341,12 +337,9 @@ class PPOTrainer(Trainer):
             self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
-        if self.use_curiosity:
-            for agent_id in self.curiosity_rewards:
-                self.curiosity_rewards[agent_id] = 0
-        if self.use_gail:
-            for agent_id in self.gail_rewards:
-                self.gail_rewards[agent_id] = 0
+        for manager in self.policy.reward_managers.values():
+            for agent_id in manager.agents_rewards:
+                manager.agents_rewards[agent_id] = 0
 
     def is_ready_update(self):
         """
@@ -378,15 +371,18 @@ class PPOTrainer(Trainer):
                 value_total.append(run_out['value_loss'])
                 policy_total.append(np.abs(run_out['policy_loss']))
                 if self.use_curiosity:
-                    inverse_total.append(run_out['inverse_loss'])
-                    forward_total.append(run_out['forward_loss'])
+                    run_out_curio = self.policy.reward_managers['curiosity'].generator.update(
+                        buffer.make_mini_batch(start, end), n_sequences)
+                    inverse_total.append(run_out_curio['inverse_loss'])
+                    forward_total.append(run_out_curio['forward_loss'])
         self.stats['Losses/Value Loss'].append(np.mean(value_total))
         self.stats['Losses/Policy Loss'].append(np.mean(policy_total))
         if self.use_curiosity:
             self.stats['Losses/Forward Loss'].append(np.mean(forward_total))
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
         if self.use_gail:
-            gail_loss = self.policy.gail.update(self.training_buffer, n_sequences, 0)
+            gail_loss = self.policy.reward_managers['gail'].generator.update(self.training_buffer,
+                                                                              n_sequences, 0)
             self.stats['Losses/GAIL Loss'].append(gail_loss)
         self.training_buffer.reset_update_buffer()
 
