@@ -5,6 +5,8 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.ppo.reward_signals.gail.signal import GAILSignal
 from mlagents.trainers.ppo.reward_signals.curiosity.signal import CuriositySignal
+from mlagents.trainers.ppo.reward_signals.extrinsic.signal import ExtrinsicSignal
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -39,6 +41,9 @@ class PPOPolicy(Policy):
                                   use_curiosity=bool(trainer_params['use_curiosity']),
                                   seed=seed)
             self.model.create_ppo_optimizer()
+
+            environment_signal = ExtrinsicSignal('Environment/Cumulative Reward')
+            self.reward_signals['extrinsic'] = environment_signal
 
             if self.use_curiosity:
                 strength = float(trainer_params['curiosity_strength'])

@@ -4,7 +4,6 @@ from .model import CuriosityModel
 
 class CuriositySignal(RewardSignal):
     def __init__(self, policy, encoding_size, strength, stat_name):
-        super().__init__()
         self.policy = policy
         self.stat_name = stat_name
         self.model = CuriosityModel(policy.model, encoding_size=encoding_size, strength=strength)
@@ -38,7 +37,8 @@ class CuriositySignal(RewardSignal):
             if current_info.memories.shape[1] == 0:
                 current_info.memories = self.policy.make_empty_memory(len(current_info.agents))
             feed_dict[self.policy.model.memory_in] = current_info.memories
-        raw_intrinsic_rewards = self.policy.sess.run(self.model.intrinsic_reward, feed_dict=feed_dict)
+        raw_intrinsic_rewards = self.policy.sess.run(self.model.intrinsic_reward,
+                                                     feed_dict=feed_dict)
         intrinsic_rewards = raw_intrinsic_rewards * float(self.policy.has_updated)
         return intrinsic_rewards
 
