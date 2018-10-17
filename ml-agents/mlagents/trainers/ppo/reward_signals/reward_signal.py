@@ -4,10 +4,7 @@ from mlagents.trainers.trainer import UnityTrainerException
 logger = logging.getLogger("mlagents.trainers")
 
 
-class RewardGenerator(object):
-    def __init__(self):
-        self.name = "Base"
-
+class RewardSignal(object):
     def evaluate(self, current_info, next_info):
         """
         Returns the number of training steps the trainer has performed

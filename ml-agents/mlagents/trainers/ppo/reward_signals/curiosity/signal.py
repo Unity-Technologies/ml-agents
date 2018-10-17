@@ -1,17 +1,16 @@
-from mlagents.trainers.ppo.reward_signals.reward_signal import RewardGenerator
+from mlagents.trainers.ppo.reward_signals.reward_signal import RewardSignal
 from .model import CuriosityModel
 
 
-class CuriositySignal(RewardGenerator):
-    def __init__(self, policy, encoding_size, strength):
+class CuriositySignal(RewardSignal):
+    def __init__(self, policy, encoding_size, strength, stat_name):
         super().__init__()
-        self.name = "Curiosity"
         self.policy = policy
-        with policy.graph.as_default():
-            self.icm = CuriosityModel(policy.model, encoding_size=encoding_size, strength=strength)
-        self.update_dict = {'forward_loss': self.icm.forward_loss,
-                            'inverse_loss': self.icm.inverse_loss,
-                            'update': self.icm.update_batch}
+        self.stat_name = stat_name
+        self.model = CuriosityModel(policy.model, encoding_size=encoding_size, strength=strength)
+        self.update_dict = {'forward_loss': self.model.forward_loss,
+                            'inverse_loss': self.model.inverse_loss,
+                            'update': self.model.update_batch}
 
     def evaluate(self, current_info, next_info):
         """
@@ -31,15 +30,15 @@ class CuriositySignal(RewardGenerator):
             feed_dict[self.policy.model.action_holder] = next_info.previous_vector_actions
         for i in range(self.policy.model.vis_obs_size):
             feed_dict[self.policy.model.visual_in[i]] = current_info.visual_observations[i]
-            feed_dict[self.icm.next_visual_in[i]] = next_info.visual_observations[i]
+            feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = current_info.vector_observations
-            feed_dict[self.icm.next_vector_in] = next_info.vector_observations
+            feed_dict[self.model.next_vector_in] = next_info.vector_observations
         if self.policy.use_recurrent:
             if current_info.memories.shape[1] == 0:
                 current_info.memories = self.policy.make_empty_memory(len(current_info.agents))
             feed_dict[self.policy.model.memory_in] = current_info.memories
-        raw_intrinsic_rewards = self.policy.sess.run(self.icm.intrinsic_reward, feed_dict=feed_dict)
+        raw_intrinsic_rewards = self.policy.sess.run(self.model.intrinsic_reward, feed_dict=feed_dict)
         intrinsic_rewards = raw_intrinsic_rewards * float(self.policy.has_updated)
         return intrinsic_rewards
 
@@ -74,7 +73,7 @@ class CuriositySignal(RewardGenerator):
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = mini_batch['vector_obs'].reshape(
                 [-1, self.policy.vec_obs_size])
-            feed_dict[self.icm.next_vector_in] = mini_batch['next_vector_in'].reshape(
+            feed_dict[self.model.next_vector_in] = mini_batch['next_vector_in'].reshape(
                 [-1, self.policy.vec_obs_size])
         if self.policy.model.vis_obs_size > 0:
             for i, _ in enumerate(self.policy.model.visual_in):
@@ -88,10 +87,10 @@ class CuriositySignal(RewardGenerator):
                 _obs = mini_batch['next_visual_obs%d' % i]
                 if self.policy.sequence_length > 1 and self.policy.use_recurrent:
                     (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.icm.next_visual_in[i]] = _obs.reshape(
+                    feed_dict[self.model.next_visual_in[i]] = _obs.reshape(
                         [-1, _w, _h, _c])
                 else:
-                    feed_dict[self.icm.next_visual_in[i]] = _obs
+                    feed_dict[self.model.next_visual_in[i]] = _obs
         if self.policy.use_recurrent:
             mem_in = mini_batch['memory'][:, 0, :]
             feed_dict[self.policy.model.memory_in] = mem_in

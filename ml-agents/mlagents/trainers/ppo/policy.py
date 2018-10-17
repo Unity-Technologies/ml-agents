@@ -5,8 +5,6 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.ppo.reward_signals.gail.signal import GAILSignal
 from mlagents.trainers.ppo.reward_signals.curiosity.signal import CuriositySignal
-from mlagents.trainers.ppo.reward_signals.reward_manager import RewardManager
-
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -25,7 +23,7 @@ class PPOPolicy(Policy):
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
         self.use_gail = bool(trainer_params['use_gail'])
-        self.reward_managers = {}
+        self.reward_signals = {}
 
         with self.graph.as_default():
             self.model = PPOModel(brain,
@@ -45,15 +43,16 @@ class PPOPolicy(Policy):
             if self.use_curiosity:
                 strength = float(trainer_params['curiosity_strength'])
                 encoding_size = float(trainer_params['curiosity_enc_size'])
-                curiosity_generator = CuriositySignal(policy=self, strength=strength,
-                                                      encoding_size=encoding_size)
-                self.reward_managers['curiosity'] = RewardManager(curiosity_generator,
-                                                                  'Policy/Curiosity Reward')
+                curiosity_signal = CuriositySignal(policy=self, strength=strength,
+                                                   encoding_size=encoding_size,
+                                                   stat_name='Policy/Curiosity Reward')
+                self.reward_signals['curiosity'] = curiosity_signal
             if self.use_gail:
-                gail_generator = GAILSignal(self, int(trainer_params['hidden_units']),
-                                            float(trainer_params['learning_rate']),
-                                            trainer_params['demo_path'])
-                self.reward_managers['gail'] = RewardManager(gail_generator, 'Policy/GAIL Reward')
+                gail_signal = GAILSignal(self, int(trainer_params['hidden_units']),
+                                         float(trainer_params['learning_rate']),
+                                         trainer_params['demo_path'],
+                                         'Policy/GAIL Reward')
+                self.reward_signals['gail'] = gail_signal
 
         if load:
             self._load_graph()
