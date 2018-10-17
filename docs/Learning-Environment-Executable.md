@@ -28,7 +28,7 @@ environment:
 ![3DBall Scene](images/mlagents-Open3DBall.png)
 
 Make sure the Brains in the scene have the right type. For example, if you want
-to be able to control your agents from Python, you will need to put the brain
+to be able to control your agents from Python, you will need to put the Brain
 controlling the Agents to be a **Learning Brain** and drag it into the
 Academy's `Broadcast Hub` with the `Control`  checkbox checked.
 

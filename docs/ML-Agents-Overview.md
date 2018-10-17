@@ -224,7 +224,7 @@ inference can proceed.
 
 As mentioned previously, the ML-Agents toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
-In this mode, the only brain used is a **Learning Brain**. More 
+In this mode, the only Brain used is a **Learning Brain**. More 
 specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
 Communicator (this is the behavior with an External Brain). The Python API
@@ -409,7 +409,7 @@ training process.
   observations for all its Agents to the Python API when dragged into the
   Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
   for training and later inference. Broadcasting is a feature which can be 
-  enabled all types of brains (Player, Learning, Heuristic) where the Agent
+  enabled all types of Brains (Player, Learning, Heuristic) where the Agent
   observations and actions are also sent to the Python API (despite the fact
   that the Agent is **not** controlled by the Python API). This feature is
   leveraged by Imitation Learning, where the observations and actions for a

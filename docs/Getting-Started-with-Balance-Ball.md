@@ -53,10 +53,10 @@ to speed up training since all twelve agents contribute to training in parallel.
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
 properties that control how the environment works. 
-The **Broadcast Hub** keeps track of which brains will send data during training,
-If a brain is added to the hub, his data will be sent to the external training
+The **Broadcast Hub** keeps track of which Brains will send data during training,
+If a Brain is added to the hub, his data will be sent to the external training
 process. If the `Control` checkbox is checked, the training process will be able to
-control the agents linked to the brain to train them.
+control the agents linked to the Brain to train them.
 The **Training** and **Inference Configuration** properties 
 set the graphics and timescale properties for the Unity application. 
 The Academy uses the **Training Configuration**  during training and the
@@ -89,16 +89,16 @@ environment around the Agents.
 ### Brain
 
 Brains are assets that exist in your project folder. The Ball3DAgents are connected
-to a brain, for example : the **3DBallLearning**.
+to a Brain, for example : the **3DBallLearning**.
 A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
 returns the chosen action to the Agent. Thus, all Agents can share the same
 Brain, but act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
-You can create brain objects by selecting `Assets -> 
-Create -> ML-Agents -> Brain`. There are 3 kinds of brains :
-The **Learning Brain** is a brain that uses a Neural Network to take decisions.
+You can create Brain objects by selecting `Assets -> 
+Create -> ML-Agents -> Brain`. There are 3 kinds of Brains :
+The **Learning Brain** is a Brain that uses a Neural Network to take decisions.
 When the Brain is checked as `Control` in the Academy **Broadcast Hub**, the 
 external process will be taking decisions for the agents
 and generate a neural network when the training is over. You can also use the

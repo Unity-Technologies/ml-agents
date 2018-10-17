@@ -83,7 +83,7 @@ to the training and which Brain is being trained. You can only perform training 
 a `Learning Brain`.
 
 1. Assign the **3DBallLearning** Brain to the agents you would like to train.  
-   __Note:__ You can assign the same brain to multiple agents at once : To do so, you can
+   __Note:__ You can assign the same Brain to multiple agents at once : To do so, you can
    use the prefab system. When an agent is created from a prefab, modifying the prefab 
    will modify the agent as well. If the agent does not synchronize with the prefab, you
    can hit the Revert button on top of the Inspector.

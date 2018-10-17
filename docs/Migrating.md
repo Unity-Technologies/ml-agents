@@ -8,7 +8,7 @@
 * You can no longer modify the type of a Brain. If you want to switch
   between `PlayerBrain` and `LearningBrain` for multiple agents,
   you will need to assign a new Brain to each agent separately.
-  __Note:__ You can pass the same brain to multiple agents in a scene by 
+  __Note:__ You can pass the same Brain to multiple agents in a scene by 
 leveraging Unity's prefab system or look for all the agents in a scene
 using the search bar of the `Hierarchy` window with the word `Agent`.
 * To update a scene from v0.5 to v0.6, you must:
@@ -32,7 +32,7 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
   inside the `Academy` and check the `Control` checkbox.
 * We removed the `Broadcast` checkbox of the Brain, to use the broadcast 
   functionality, you need to drag the Brain into the `Broadcast Hub`.
-* When training multiple brains at the same time, each model is now stored 
+* When training multiple Brains at the same time, each model is now stored 
   into a separate model file rather than in the same file under different
   graph scopes. 
 * We have changed the way ML-Agents models perform inference. All previous `.bytes`
@@ -98,7 +98,7 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
     [curriculum learning documentation](Training-Curriculum-Learning.md)
     for detailed information. In summary:
   * Curriculum files for the same environment must now be placed into a folder.
-    Each curriculum file should be named after the brain whose curriculum it
+    Each curriculum file should be named after the Brain whose curriculum it
     specifies.
   * `min_lesson_length` now specifies the minimum number of episodes in a lesson
     and affects reward thresholding.

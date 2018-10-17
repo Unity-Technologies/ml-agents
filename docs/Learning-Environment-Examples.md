@@ -115,11 +115,11 @@ If you would like to contribute environments, please see our
 
 * Set-up: A platforming environment where the agent can push a block around.
 * Goal: The agent must push the block to the goal.
-* Agents: The environment contains one agent linked to a single brain.
+* Agents: The environment contains one agent linked to a single Brain.
 * Agent Reward Function:
   * -0.0025 for every step.
   * +1.0 if the block touches the goal.
-* Brains: One brain with the following observation/action space.
+* Brains: One Brain with the following observation/action space.
   * Vector Observation space: (Continuous) 70 variables corresponding to 14
     ray-casts each detecting one of three possible objects (wall, goal, or
     block).
