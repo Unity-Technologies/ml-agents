@@ -18,7 +18,7 @@ class GAILModel(object):
             shape=[None, np.cumsum(self.policy_model.act_size)], dtype=tf.float32)
 
     def create_encoder(self, state_in, action_in, reuse):
-        with tf.variable_scope("discriminator"):
+        with tf.variable_scope("model"):
             concat_input = tf.concat([state_in, action_in], axis=1)
 
             hidden_1 = tf.layers.dense(
