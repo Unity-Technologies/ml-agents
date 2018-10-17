@@ -3,9 +3,9 @@ import numpy as np
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.ppo.reward_signals.gail.signal import GAILSignal
-from mlagents.trainers.ppo.reward_signals.curiosity.signal import CuriositySignal
-from mlagents.trainers.ppo.reward_signals.extrinsic.signal import ExtrinsicSignal
+from mlagents.trainers.ppo.reward_signals.gail import GAILSignal
+from mlagents.trainers.ppo.reward_signals.curiosity import CuriositySignal
+from mlagents.trainers.ppo.reward_signals.extrinsic import ExtrinsicSignal
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -42,21 +42,18 @@ class PPOPolicy(Policy):
                                   seed=seed)
             self.model.create_ppo_optimizer()
 
-            environment_signal = ExtrinsicSignal('Environment/Cumulative Reward')
-            self.reward_signals['extrinsic'] = environment_signal
+            self.reward_signals['extrinsic'] = ExtrinsicSignal()
 
             if self.use_curiosity:
                 strength = float(trainer_params['curiosity_strength'])
                 encoding_size = float(trainer_params['curiosity_enc_size'])
                 curiosity_signal = CuriositySignal(policy=self, strength=strength,
-                                                   encoding_size=encoding_size,
-                                                   stat_name='Policy/Curiosity Reward')
+                                                   encoding_size=encoding_size)
                 self.reward_signals['curiosity'] = curiosity_signal
             if self.use_gail:
                 gail_signal = GAILSignal(self, int(trainer_params['hidden_units']),
                                          float(trainer_params['learning_rate']),
-                                         trainer_params['demo_path'],
-                                         'Policy/GAIL Reward')
+                                         trainer_params['demo_path'])
                 self.reward_signals['gail'] = gail_signal
 
         if load:

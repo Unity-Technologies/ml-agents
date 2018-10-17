@@ -1,15 +1,15 @@
 import numpy as np
 
-from mlagents.trainers.ppo.reward_signals.reward_signal import RewardSignal
+from mlagents.trainers.ppo.reward_signals import RewardSignal
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
 class GAILSignal(RewardSignal):
-    def __init__(self, policy, h_size, lr, demo_path, stat_name):
+    def __init__(self, policy, h_size, lr, demo_path):
         super().__init__()
         self.policy = policy
-        self.stat_name = stat_name
+        self.stat_name = 'Policy/GAIL Reward'
         self.model = GAILModel(policy.model, h_size, lr)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, 1)
 
