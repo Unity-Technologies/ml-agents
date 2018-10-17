@@ -75,20 +75,20 @@ class PPOTrainer(Trainer):
             "Policy/Learning Rate": [],
         }
 
-        self.intrinsic_rewards = {}
+        self.collected_rewards = {'extrinsic': {}}
+
         if self.use_curiosity:
             stats['Losses/Forward Loss'] = []
             stats['Losses/Inverse Loss'] = []
             stats['Policy/Curiosity Reward'] = []
-            self.intrinsic_rewards['curiosity'] = {}
+            self.collected_rewards['curiosity'] = {}
         if self.use_gail:
             stats['Losses/GAIL Loss'] = []
             stats['Policy/GAIL Reward'] = []
-            self.intrinsic_rewards['gail'] = {}
+            self.collected_rewards['gail'] = {}
         self.stats = stats
 
         self.training_buffer = Buffer()
-        self.cumulative_rewards = {}
 
         self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
@@ -247,9 +247,9 @@ class PPOTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        intrinsic_rewards_list = []
+        rewards_list = []
         for signal in self.policy.reward_signals.values():
-            intrinsic_rewards_list.append(signal.evaluate(curr_to_use, next_info))
+            rewards_list.append(signal.evaluate(curr_to_use, next_info))
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -302,25 +302,21 @@ class PPOTrainer(Trainer):
                         stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
 
-                    extrinsic_rewards = next_info.rewards[next_idx] * self.reward_strength
-                    intrinsic_rewards = extrinsic_rewards * 0.0
+                    agent_rewards = None
+                    for reward in rewards_list:
+                        if agent_rewards is None:
+                            agent_rewards = reward[next_idx]
+                        else:
+                            agent_rewards += reward[next_idx]
 
-                    for reward in intrinsic_rewards_list:
-                        intrinsic_rewards += reward[next_idx]
-
-                    self.training_buffer[agent_id]['rewards'].append(
-                        extrinsic_rewards + intrinsic_rewards)
-
+                    self.training_buffer[agent_id]['rewards'].append(agent_rewards)
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
-                    if agent_id not in self.cumulative_rewards:
-                        self.cumulative_rewards[agent_id] = 0
-                    self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
 
-                    for idx, rewards in enumerate(self.intrinsic_rewards.values()):
+                    for idx, rewards in enumerate(self.collected_rewards.values()):
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
-                        rewards[agent_id] += intrinsic_rewards_list[idx][next_idx]
+                        rewards[agent_id] += rewards_list[idx][next_idx]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -381,21 +377,10 @@ class PPOTrainer(Trainer):
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
-                    self.cumulative_returns_since_policy_update.append(
-                        self.cumulative_rewards.get(agent_id, 0)
-                    )
-                    self.stats["Environment/Cumulative Reward"].append(
-                        self.cumulative_rewards.get(agent_id, 0)
-                    )
-                    self.reward_buffer.appendleft(
-                        self.cumulative_rewards.get(agent_id, 0)
-                    )
-                    self.stats["Environment/Episode Length"].append(
-                        self.episode_steps.get(agent_id, 0)
-                    )
-                    self.cumulative_rewards[agent_id] = 0
+                    self.stats['Environment/Episode Length'].append(
+                        self.episode_steps.get(agent_id, 0))
                     self.episode_steps[agent_id] = 0
-                    for name, rewards in self.intrinsic_rewards.items():
+                    for name, rewards in self.collected_rewards.items():
                         self.stats[self.policy.reward_signals[name].stat_name].append(
                             rewards.get(agent_id, 0))
                         rewards[agent_id] = 0
@@ -406,11 +391,9 @@ class PPOTrainer(Trainer):
         Get only called when the academy resets.
         """
         self.training_buffer.reset_local_buffers()
-        for agent_id in self.cumulative_rewards:
-            self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
-        for rewards in self.intrinsic_rewards.values():
+        for rewards in self.collected_rewards.values():
             for agent_id in rewards:
                 rewards[agent_id] = 0
 
