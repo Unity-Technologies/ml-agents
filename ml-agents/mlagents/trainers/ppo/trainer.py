@@ -80,6 +80,7 @@ class PPOTrainer(Trainer):
         }
 
         self.collected_rewards = {'extrinsic': {}}
+        self.environment_rewards = {}
 
         if self.use_curiosity:
             stats['Losses/Forward Loss'] = []
@@ -254,9 +255,9 @@ class PPOTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        rewards_list = []
-        for signal in self.policy.reward_signals.values():
-            rewards_list.append(signal.evaluate(curr_to_use, next_info))
+        tmp_rewards_list = []
+        for name, signal in self.policy.reward_signals.items():
+            tmp_rewards_list.append(signal.evaluate(curr_to_use, next_info))
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -310,20 +311,24 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['masks'].append(1.0)
 
                     agent_rewards = None
-                    for reward in rewards_list:
+                    for (scaled_reward, reward) in tmp_rewards_list:
                         if agent_rewards is None:
-                            agent_rewards = reward[next_idx]
+                            agent_rewards = scaled_reward[next_idx]
                         else:
-                            agent_rewards += reward[next_idx]
+                            agent_rewards += scaled_reward[next_idx]
 
                     self.training_buffer[agent_id]['rewards'].append(agent_rewards)
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
 
-                    for idx, rewards in enumerate(self.collected_rewards.values()):
+                    for idx, (name, rewards) in enumerate(self.collected_rewards.items()):
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
-                        rewards[agent_id] += rewards_list[idx][next_idx]
+                        if name == 'extrinsic':
+                            unscaled = 1
+                        else:
+                            unscaled = 0
+                        rewards[agent_id] += tmp_rewards_list[idx][unscaled][next_idx]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:

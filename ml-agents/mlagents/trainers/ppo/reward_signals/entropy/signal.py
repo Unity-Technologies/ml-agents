@@ -9,4 +9,6 @@ class EntropySignal(RewardSignal):
 
     def evaluate(self, current_info, next_info):
         run_out = self.policy.evaluate(current_info)
-        return self.strength * run_out['entropy']
+        unscaled_reward = run_out['entropy']
+        scaled_reward = self.strength * unscaled_reward
+        return scaled_reward, unscaled_reward

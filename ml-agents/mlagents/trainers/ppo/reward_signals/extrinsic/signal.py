@@ -9,4 +9,6 @@ class ExtrinsicSignal(RewardSignal):
         self.strength = signal_strength
 
     def evaluate(self, current_info, next_info):
-        return np.array(next_info.rewards) * self.strength
+        unscaled_reward = np.array(next_info.rewards)
+        scaled_reward = self.strength * unscaled_reward
+        return scaled_reward, unscaled_reward
