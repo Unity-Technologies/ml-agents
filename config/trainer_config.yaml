@@ -22,6 +22,8 @@ default:
     curiosity_enc_size: 128
     reward_strength: 1.0
     use_gail: false
+    use_entropy: false
+    demo_path: None
 
 BananaLearning:
     normalize: false
@@ -32,14 +34,17 @@ BananaLearning:
 
 BouncerLearning:
     normalize: true
+    beta: 0.0
     max_steps: 5.0e5
     batch_size: 32
     buffer_size: 512
     num_layers: 2
     hidden_units: 64
     summary_freq: 1000
-    use_gail: true
-    reward_strength: 0.0
+    use_gail: false
+    use_curiosity: false
+    use_entropy: true
+    reward_strength: 1.0
     demo_path: ./demos/ExpertBouncer.demo
 
 PushBlockLearning:
@@ -47,10 +52,17 @@ PushBlockLearning:
     batch_size: 128
     buffer_size: 2048
     beta: 1.0e-2
+    beta: 0.0
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 64
     num_layers: 2
+    use_gail: false
+    use_curiosity: false
+    use_entropy: false
+    reward_strength: 1.0
+    demo_path: None
+
 
 SmallWallJumpLearning: 
     max_steps: 1.0e6
