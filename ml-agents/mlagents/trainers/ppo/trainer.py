@@ -51,7 +51,6 @@ class PPOTrainer(Trainer):
                  'Losses/Policy Loss': [], 'Policy/Learning Rate': []}
 
         self.collected_rewards = {'extrinsic': {}}
-        self.environment_rewards = {}
 
         if self.use_curiosity:
             stats['Losses/Forward Loss'] = []
