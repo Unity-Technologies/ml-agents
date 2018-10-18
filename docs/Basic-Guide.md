@@ -10,7 +10,7 @@ the basic concepts of Unity.
 
 ## Setting up the ML-Agents Toolkit within Unity
 
-In order to use the ML-Agents toolkit within Unity, you need to change a few
+In order to use the ML-Agents toolkit within Unity, you first need to change a few
 Unity settings. 
 
 1. Launch Unity
@@ -29,7 +29,7 @@ Unity settings.
 
 We provide pre-trained models for all the agents in all our demo environments. 
 To be able to run those models, you'll first need to set-up the Inference 
-Engine.The Inference Engine is a general API to
+Engine. The Inference Engine is a general API to
 run neural network models in Unity that leverages existing inference libraries such 
 as TensorFlowSharp and Apple's Core ML. Since the ML-Agents Toolkit uses TensorFlow 
 for training neural network models, the output model format is TensorFlow and 
