@@ -39,11 +39,11 @@ class CuriositySignal(RewardSignal):
             if current_info.memories.shape[1] == 0:
                 current_info.memories = self.policy.make_empty_memory(len(current_info.agents))
             feed_dict[self.policy.model.memory_in] = current_info.memories
-        raw_intrinsic_rewards = self.policy.sess.run(self.model.intrinsic_reward,
-                                                     feed_dict=feed_dict)
-        intrinsic_rewards = np.clip(
-            raw_intrinsic_rewards * float(self.policy.has_updated) * self.strength, 0, 1)
-        return intrinsic_rewards
+        unscaled_reward = self.policy.sess.run(self.model.intrinsic_reward,
+                                               feed_dict=feed_dict)
+        scaled_reward = np.clip(
+            unscaled_reward * float(self.policy.has_updated) * self.strength, 0, 1)
+        return scaled_reward, unscaled_reward
 
     def update(self, mini_batch, num_sequences):
         """
