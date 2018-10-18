@@ -483,11 +483,9 @@ Finally, select the the `RollerBallBrain` and `RollerBallPlayer` brains assets
 so that you can edit their properties in the Inspector window. Set the following 
 properties on both of them:
 
-* `Vector Observation Space Type` = **Continuous**
 * `Vector Observation Space Size` = 6
 * `Vector Action Space Type` = **Continuous**
 * `Vector Action Space Size` = 2
-* `Brain Type` = **Player**
 
 Now you are ready to test the environment before training.
 
