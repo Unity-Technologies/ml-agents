@@ -72,7 +72,7 @@ information.
 
 To train and use the ML-Agents toolkit in a Unity scene, the scene must contain
 a single Academy subclass and as many Agent subclasses
-as you need. The brain assets are present in the project and should be grouped 
+as you need. The Brain assets are present in the project and should be grouped 
 together and named according to the type of agents they are compatible with.
 Agent instances should be attached to the GameObject representing that Agent.
 
@@ -114,18 +114,18 @@ the Academy properties and their uses.
 
 The Brain encapsulates the decision making process. Every Agent must be
 assigned a Brain, but you can use the same Brain with more than one Agent.
-__Note__:You can assign the same brain to multiple agents by using prefabs
-or by selecting all the agents you want to attach the brain to using the 
+__Note__:You can assign the same Brain to multiple agents by using prefabs
+or by selecting all the agents you want to attach the Brain to using the 
 search bar on top of the Scene Hierarchy window.
 
 To Create a Brain, go to `Assets -> Create -> Ml-Agents` and select the 
-type of brain you want to use. During training, use a **Learning Brain** 
+type of Brain you want to use. During training, use a **Learning Brain** 
 and drag it into the Academy's `Broadcast Hub` with the `Control` checkbox checked.
 When you want to use the trained model, import the model file into the Unity
 project, add it to the **Model** property of the **Learning Brain** and uncheck
 the `Control` checkbox of the `Broadcast Hub`. See
 [Brains](Learning-Environment-Design-Brains.md) for details on using the
-different types of Brains. You can create new kinds of brains if the three
+different types of Brains. You can create new kinds of Brains if the three
 built-in don't do what you need.
 
 The Brain class has several important properties that you can set using the
