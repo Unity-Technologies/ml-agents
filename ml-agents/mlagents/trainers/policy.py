@@ -140,7 +140,7 @@ class Policy(object):
         run_out = dict(zip(list(out_dict.keys()), network_out))
         return run_out
 
-    def _fill_eval_dict(self, feed_dict, brain_info):
+    def fill_eval_dict(self, feed_dict, brain_info):
         for i, _ in enumerate(brain_info.visual_observations):
             feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
         if self.use_vec_obs:

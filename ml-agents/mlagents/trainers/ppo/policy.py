@@ -56,10 +56,10 @@ class PPOPolicy(Policy):
             if self.use_gail:
                 gail_signal = GAILSignal(self, int(trainer_params['hidden_units']),
                                          float(trainer_params['learning_rate']),
-                                         trainer_params['demo_path'], 1.0)
+                                         trainer_params['demo_path'], 0.005)
                 self.reward_signals['gail'] = gail_signal
             if self.use_entropy:
-                self.reward_signals['entropy'] = EntropySignal(self, 0.01)
+                self.reward_signals['entropy'] = EntropySignal(self, 0.001)
 
         if load:
             self._load_graph()
@@ -111,7 +111,7 @@ class PPOPolicy(Policy):
                 size=(len(brain_info.vector_observations), self.model.act_size[0])
             )
             feed_dict[self.model.epsilon] = epsilon
-        feed_dict = self._fill_eval_dict(feed_dict, brain_info)
+        feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         if self.use_continuous_act:
             run_out["random_normal_epsilon"] = epsilon

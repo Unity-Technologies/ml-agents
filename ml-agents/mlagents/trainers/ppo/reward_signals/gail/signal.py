@@ -20,14 +20,11 @@ class GAILSignal(RewardSignal):
 
         feed_dict = {self.policy.model.batch_size: len(next_info.vector_observations),
                      self.policy.model.sequence_length: 1}
+        feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.selected_actions] = next_info.previous_vector_actions
         else:
             feed_dict[self.policy.model.action_holder] = next_info.previous_vector_actions
-        for i in range(self.policy.model.vis_obs_size):
-            feed_dict[self.policy.model.visual_in[i]] = current_info.visual_observations[i]
-        if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = current_info.vector_observations
         if self.policy.use_recurrent:
             if current_info.memories.shape[1] == 0:
                 current_info.memories = self.policy.make_empty_memory(len(current_info.agents))

@@ -57,7 +57,7 @@ class BCPolicy(Policy):
             self.model.sequence_length: 1,
         }
 
-        feed_dict = self._fill_eval_dict(feed_dict, brain_info)
+        feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         if self.use_recurrent:
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))

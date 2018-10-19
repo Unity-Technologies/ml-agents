@@ -113,7 +113,7 @@ GoalieLearning:
     normalize: false
 
 PyramidsLearning:
-    use_curiosity: true
+    use_curiosity: false
     summary_freq: 2000
     curiosity_strength: 0.01
     curiosity_enc_size: 256
@@ -122,9 +122,13 @@ PyramidsLearning:
     buffer_size: 2048
     hidden_units: 512
     num_layers: 2
-    beta: 1.0e-2
+    beta: 0.0
     max_steps: 5.0e5
     num_epoch: 3
+    use_gail: true
+    use_entropy: false
+    reward_strength: 0.0
+    demo_path: ./demos/HumanPyramid.demo
 
 VisualPyramidsLearning:
     use_curiosity: true
