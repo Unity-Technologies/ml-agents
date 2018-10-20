@@ -1,5 +1,4 @@
 import tensorflow as tf
-import numpy as np
 
 
 class GAILModel(object):
@@ -14,6 +13,11 @@ class GAILModel(object):
     def make_inputs(self):
         self.obs_in_expert = tf.placeholder(
             shape=[None, self.policy_model.vec_obs_size], dtype=tf.float32)
+        self.done_expert = tf.placeholder(
+            shape=[None, 1], dtype=tf.float32)
+        self.done_policy =  tf.placeholder(
+            shape=[None, 1], dtype=tf.float32)
+
         if self.policy_model.brain.vector_action_space_type == 'continuous':
             action_length = self.policy_model.act_size[0]
             self.action_in_expert = tf.placeholder(
@@ -27,9 +31,9 @@ class GAILModel(object):
             tf.one_hot(self.action_in_expert[:, i], self.policy_model.act_size[i]) for i in
             range(len(self.policy_model.act_size))], axis=1)
 
-    def create_encoder(self, state_in, action_in, reuse):
+    def create_encoder(self, state_in, action_in, done_in, reuse):
         with tf.variable_scope("model"):
-            concat_input = tf.concat([state_in, action_in], axis=1)
+            concat_input = tf.concat([state_in, action_in, done_in], axis=1)
 
             hidden_1 = tf.layers.dense(
                 concat_input, self.h_size, activation=tf.nn.elu,
@@ -45,9 +49,9 @@ class GAILModel(object):
 
     def create_network(self):
         self.expert_estimate = self.create_encoder(
-            self.obs_in_expert, self.expert_action, False)
+            self.obs_in_expert, self.expert_action, self.done_expert, False)
         self.policy_estimate = self.create_encoder(
-            self.policy_model.vector_in, self.policy_model.selected_actions, True)
+            self.policy_model.vector_in, self.policy_model.selected_actions, self.done_policy, True)
         self.discriminator_score = tf.reshape(self.policy_estimate, [-1], name="GAIL_reward")
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
 

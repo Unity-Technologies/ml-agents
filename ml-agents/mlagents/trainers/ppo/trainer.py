@@ -308,6 +308,7 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['prev_action'].append(
                         stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
+                    self.training_buffer[agent_id]['done'].append(next_info.local_done[idx])
 
                     agent_rewards = None
                     for (scaled_reward, reward) in tmp_rewards_list:

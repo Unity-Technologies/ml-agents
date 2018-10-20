@@ -21,6 +21,7 @@ class GAILSignal(RewardSignal):
         feed_dict = {self.policy.model.batch_size: len(next_info.vector_observations),
                      self.policy.model.sequence_length: 1}
         feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
+        feed_dict[self.model.done_policy] = np.reshape(next_info.local_done, [-1, 1])
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.selected_actions] = next_info.previous_vector_actions
         else:
@@ -57,6 +58,9 @@ class GAILSignal(RewardSignal):
 
     def _update_batch(self, mini_batch_demo, mini_batch_policy):
         feed_dict = {}
+        feed_dict[self.model.done_expert] = mini_batch_demo['done'].reshape([-1, 1])
+        feed_dict[self.model.done_policy] = mini_batch_policy['done'].reshape([-1, 1])
+
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.selected_actions] = mini_batch_policy['actions'].reshape(
                 [-1, self.policy.model.act_size[0]])
