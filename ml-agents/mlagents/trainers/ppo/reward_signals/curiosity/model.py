@@ -41,7 +41,7 @@ class CuriosityModel(object):
                     self.policy_model.curiosity_enc_size,
                     LearningModel.swish, 1,
                     "stream_{}_visual_obs_encoder"
-                    .format(i), False)
+                        .format(i), False)
 
                 encoded_next_visual = self.policy_model.create_visual_obs_encoder(
                     self.next_visual_in[i],

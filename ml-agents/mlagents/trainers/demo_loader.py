@@ -18,6 +18,8 @@ def make_demo_buffer(brain_infos, brain_params, sequence_length):
         current_brain_info = brain_infos[idx]
         next_brain_info = brain_infos[idx + 1]
         demo_buffer[0].last_brain_info = current_brain_info
+        demo_buffer[0]['done'].append(next_brain_info.local_done[0])
+        demo_buffer[0]['rewards'].append(next_brain_info.rewards[0])
         for i in range(brain_params.number_visual_observations):
             demo_buffer[0]['visual_obs%d' % i] \
                 .append(current_brain_info.visual_observations[i][0])
