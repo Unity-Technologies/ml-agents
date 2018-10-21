@@ -35,13 +35,14 @@ class PPOTrainer(Trainer):
                            'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
                            'use_recurrent', 'summary_path', 'memory_size', 'use_curiosity',
                            'curiosity_strength', 'curiosity_enc_size', 'model_path',
-                           'use_gail', 'demo_path', 'reward_strength', 'use_entropy']
+                           'use_gail', 'demo_path', 'extrinsic_strength', 'use_entropy',
+                           'entropy_strength', 'gail_strength']
 
         self.check_param_keys()
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
         self.use_gail = bool(trainer_parameters['use_gail'])
         self.use_entropy = bool(trainer_parameters['use_entropy'])
-        self.reward_strength = float(trainer_parameters['reward_strength'])
+        self.reward_strength = float(trainer_parameters['extrinsic_strength'])
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters,
                                 self.is_training, load)
