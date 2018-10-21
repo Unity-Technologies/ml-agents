@@ -45,7 +45,7 @@ class PPOPolicy(Policy):
             self.model.create_ppo_optimizer()
 
             self.reward_signals['extrinsic'] = ExtrinsicSignal(
-                float(trainer_params['reward_strength']))
+                float(trainer_params['extrinsic_strength']))
 
             if self.use_curiosity:
                 strength = float(trainer_params['curiosity_strength'])
