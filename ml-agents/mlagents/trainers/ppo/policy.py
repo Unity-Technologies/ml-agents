@@ -54,12 +54,14 @@ class PPOPolicy(Policy):
                                                    encoding_size=encoding_size)
                 self.reward_signals['curiosity'] = curiosity_signal
             if self.use_gail:
+                strength = float(trainer_params['gail_strength'])
                 gail_signal = GAILSignal(self, int(trainer_params['hidden_units']),
                                          float(trainer_params['learning_rate']),
-                                         trainer_params['demo_path'], 0.005)
+                                         trainer_params['demo_path'], strength)
                 self.reward_signals['gail'] = gail_signal
             if self.use_entropy:
-                self.reward_signals['entropy'] = EntropySignal(self, 0.001)
+                strength = float(trainer_params['entropy_strength'])
+                self.reward_signals['entropy'] = EntropySignal(self, strength)
 
         if load:
             self._load_graph()

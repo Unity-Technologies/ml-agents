@@ -20,16 +20,21 @@ default:
     use_curiosity: false
     curiosity_strength: 0.01
     curiosity_enc_size: 128
-    reward_strength: 1.0
+    extrinsic_strength: 1.0
+    gail_strength: 0.005
+    entropy_strength: 0.001
     use_gail: false
     use_entropy: false
     demo_path: None
 
 BananaLearning:
     normalize: false
-    batch_size: 1024
-    beta: 5.0e-3
-    buffer_size: 10240
+    use_gail: false
+    use_entropy: false
+    extrinsic_strength: 1.0
+    beta: 0.0
+    batch_size: 256
+    buffer_size: 2560
     max_steps: 1.0e5
 
 BouncerLearning:
@@ -44,7 +49,7 @@ BouncerLearning:
     use_gail: false
     use_curiosity: false
     use_entropy: true
-    reward_strength: 1.0
+    extrinsic_strength: 1.0
     demo_path: ./demos/ExpertBouncer.demo
 
 PushBlockLearning:
@@ -60,7 +65,7 @@ PushBlockLearning:
     use_gail: false
     use_curiosity: false
     use_entropy: false
-    reward_strength: 1.0
+    extrinsic_strength: 1.0
     demo_path: None
 
 
@@ -125,10 +130,12 @@ PyramidsLearning:
     beta: 0.0
     max_steps: 5.0e5
     num_epoch: 3
+    sequence_length: 32
     use_gail: true
-    use_entropy: false
-    reward_strength: 0.0
-    demo_path: ./demos/HumanPyramid.demo
+    use_entropy: true
+    extrinsic_strength: 1.0
+    use_recurrent: false
+    demo_path: ./demos/PyramidTime.demo
 
 VisualPyramidsLearning:
     use_curiosity: true
@@ -184,12 +191,16 @@ CrawlerStaticLearning:
 
 CrawlerDynamicLearning:
     normalize: true
+    use_gail: false
+    use_entropy: false
+    extrinsic_strength: 1.0
+    beta: 0.0
     num_epoch: 3
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
     gamma: 0.995
-    max_steps: 1e6
+    max_steps: 1e5
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
