@@ -1,6 +1,7 @@
 import logging
+import numpy as np
 
-from mlagents.trainers.ppo.models import PPOModel
+from mlagents.trainers.mappo.models import MAPPOModel
 from mlagents.trainers.policy import Policy
 
 logger = logging.getLogger("mlagents.trainers")
@@ -19,20 +20,20 @@ class MAPPOPolicy(Policy):
         super().__init__(seed, brain, trainer_params)
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
-        self.n_agents = int(trainer_parameters['n_agents'])
+        self.n_agents = int(trainer_params['n_agents'])
 
         with self.graph.as_default():
-            self.model = MAPPOModel(env.brains[brain_name],
-                                  lr=float(trainer_parameters['learning_rate']),
-                                  h_size=int(trainer_parameters['hidden_units']),
-                                  epsilon=float(trainer_parameters['epsilon']),
-                                  beta=float(trainer_parameters['beta']),
-                                  max_step=float(trainer_parameters['max_steps']),
-                                  normalize=trainer_parameters['normalize'],
-                                  use_recurrent=trainer_parameters['use_recurrent'],
-                                  num_layers=int(trainer_parameters['num_layers']),
+            self.model = MAPPOModel(brain,
+                                  lr=float(trainer_params['learning_rate']),
+                                  h_size=int(trainer_params['hidden_units']),
+                                  epsilon=float(trainer_params['epsilon']),
+                                  beta=float(trainer_params['beta']),
+                                  max_step=float(trainer_params['max_steps']),
+                                  normalize=trainer_params['normalize'],
+                                  use_recurrent=trainer_params['use_recurrent'],
+                                  num_layers=int(trainer_params['num_layers']),
                                   m_size=self.m_size,
-                                  n_agents=int(trainer_parameters['n_agents']),
+                                  n_agents=int(trainer_params['n_agents']),
                                   use_curiosity=bool(trainer_params['use_curiosity']),
                                   curiosity_strength=float(trainer_params['curiosity_strength']),
                                   curiosity_enc_size=float(trainer_params['curiosity_enc_size']),
@@ -93,9 +94,11 @@ class MAPPOPolicy(Policy):
                      self.model.old_value: mini_batch['value_estimates'].flatten(),
                      self.model.advantage: mini_batch['advantages'].reshape([-1, 1]),
                      self.model.all_old_log_probs: mini_batch['action_probs'].reshape(
-                         [-1, sum(self.model.act_size)])
-                     self.model.all_actions: mini_batch['other_actions'][start:end]).reshape(
-                         [-1, self.n_agents-1])}
+                         [-1, sum(self.model.act_size)]),
+                     self.model.other_actions: mini_batch['other_actions'].reshape(
+                         [-1, len(self.model.act_size), self.n_agents-1])}
+
+        print(len(feed_dict[self.model.all_old_log_probs]))
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch['actions_pre'].reshape(
                 [-1, self.model.act_size[0]])
@@ -133,6 +136,8 @@ class MAPPOPolicy(Policy):
             mem_in = mini_batch['memory'][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
         self.has_updated = True
+        other_actions_one_hot = self.sess.run(self.model.other_actions_one_hot, feed_dict)
+        print(len(other_actions_one_hot))
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
@@ -169,17 +174,18 @@ class MAPPOPolicy(Policy):
         else:
             return None
 
-    def get_value_estimate(self, brain_info, idx, all_actions):
+    def get_value_estimate(self, brain_info, idx, all_actions, brain_name):
         """
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
         :param idx: Index in BrainInfo of agent.
         :return: Value estimate.
         """
-        other_actions = [action for brain_name, action in all_actions.items() if brain_name != self.brain_name]
-        other_actions = np.array([[-1] if not action and action != 0 else action for action in other_actions]).T
+        other_actions = [action for other_brain_name, action in all_actions.items() if other_brain_name != brain_name]
+        other_actions = np.array(
+            [[-1]*len(self.model.act_size) if len(action) != len(self.model.act_size) else action for action in other_actions])
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1,
-                     self.model.other_actions: other_actions}
+                     self.model.other_actions: [other_actions]}
         for i in range(len(brain_info.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
         if self.use_vec_obs:
@@ -192,7 +198,7 @@ class MAPPOPolicy(Policy):
             feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape(
                 [-1, len(self.model.act_size)])
         value_estimate = self.sess.run(self.model.value, feed_dict)
-        return value_estimate
+        return value_estimate, other_actions
 
     def get_last_reward(self):
         """

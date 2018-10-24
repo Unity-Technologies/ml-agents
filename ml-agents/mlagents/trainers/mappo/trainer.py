@@ -11,13 +11,13 @@ import tensorflow as tf
 
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
-from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.mappo.policy import MAPPOPolicy
 from mlagents.trainers.trainer import UnityTrainerException, Trainer
 
 logger = logging.getLogger("mlagents.envs")
 
 
-class PPOTrainer(Trainer):
+class MAPPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
@@ -39,13 +39,13 @@ class PPOTrainer(Trainer):
             if k not in trainer_parameters:
                 raise UnityTrainerException("The hyperparameter {0} could not be found for the PPO trainer of "
                                             "brain {1}.".format(k, brain.brain_name))
-        super(PPOTrainer, self).__init__(brain.brain_name, trainer_parameters, training, run_id)
+        super(MAPPOTrainer, self).__init__(brain.brain_name, trainer_parameters, training, run_id)
 
         self.use_curiosity = bool(trainer_parameters['use_curiosity'])
 
         self.step = 0
 
-        self.policy = PPOPolicy(seed, brain, trainer_parameters,
+        self.policy = MAPPOPolicy(seed, brain, trainer_parameters,
                                 self.is_training, load)
 
         stats = {'cumulative_reward': [], 'episode_length': [], 'value_estimate': [],
@@ -131,7 +131,7 @@ class PPOTrainer(Trainer):
         self.stats['learning_rate'].append(run_out['learning_rate'])
         if self.policy.use_recurrent:
             return run_out['action'], run_out['memory_out'], None, \
-                   run_out
+                   run_out['value'], run_out
         else:
             return run_out['action'], None, None, run_out
 
@@ -236,7 +236,7 @@ class PPOTrainer(Trainer):
                             stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs['log_probs']
                     # value = stored_take_action_outputs['value']
-                    value = self.policy.get_value_estimate(stored_info, idx, all_actions)
+                    value, other_actions = self.policy.get_value_estimate(stored_info, idx, all_actions, self.brain_name)
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
@@ -247,6 +247,7 @@ class PPOTrainer(Trainer):
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
+                    self.training_buffer[agent_id]['other_actions'].append(other_actions)
                     self.stats['value_estimate'].append(value[idx])
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
@@ -283,7 +284,7 @@ class PPOTrainer(Trainer):
                     else:
                         bootstrapping_info = info
                         idx = l
-                    value_next = self.policy.get_value_estimate(bootstrapping_info, idx, all_actions)
+                    value_next, _ = self.policy.get_value_estimate(bootstrapping_info, idx, all_actions, self.brain_name)
 
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(

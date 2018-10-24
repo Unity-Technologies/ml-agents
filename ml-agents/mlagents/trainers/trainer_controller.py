@@ -14,6 +14,7 @@ from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 
 from mlagents.trainers.ppo.trainer import PPOTrainer
+from mlagents.trainers.mappo.trainer import MAPPOTrainer
 from mlagents.trainers.bc.trainer import BehavioralCloningTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import MetaCurriculumError
@@ -162,7 +163,7 @@ class TrainerController(object):
         Initialization of the trainers
         :param trainer_config: The configurations of the trainers
         """
-        trainer_parameters_dict = {}
+        self.trainer_parameters_dict = {}
         for brain_name in self.env.external_brain_names:
             trainer_parameters = trainer_config['default'].copy()
             trainer_parameters['summary_path'] = '{basedir}/{name}'.format(
@@ -178,28 +179,28 @@ class TrainerController(object):
                     _brain_key = trainer_config[_brain_key]
                 for k in trainer_config[_brain_key]:
                     trainer_parameters[k] = trainer_config[_brain_key][k]
-            trainer_parameters_dict[brain_name] = trainer_parameters.copy()
+            self.trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.env.external_brain_names:
-            if trainer_parameters_dict[brain_name]['trainer'] == 'imitation':
+            if self.trainer_parameters_dict[brain_name]['trainer'] == 'imitation':
                 self.trainers[brain_name] = BehavioralCloningTrainer(
                     self.env.brains[brain_name],
-                    trainer_parameters_dict[brain_name], self.train_model,
+                    self.trainer_parameters_dict[brain_name], self.train_model,
                     self.load_model, self.seed, self.run_id)
-            elif trainer_parameters_dict[brain_name]['trainer'] == 'ppo':
+            elif self.trainer_parameters_dict[brain_name]['trainer'] == 'ppo':
                 self.trainers[brain_name] = PPOTrainer(
                     self.env.brains[brain_name],
                     self.meta_curriculum
                         .brains_to_curriculums[brain_name]
                         .min_lesson_length if self.meta_curriculum else 0,
-                    trainer_parameters_dict[brain_name],
+                    self.trainer_parameters_dict[brain_name],
                     self.train_model, self.load_model, self.seed, self.run_id)
-            elif trainer_parameters_dict[brain_name]['trainer'] == "mappo":
+            elif self.trainer_parameters_dict[brain_name]['trainer'] == "mappo":
                 self.trainers[brain_name] = MAPPOTrainer(
                     self.env.brains[brain_name],
                     self.meta_curriculum
                         .brains_to_curriculums[brain_name]
                         .min_lesson_length if self.meta_curriculum else 0,
-                    trainer_parameters_dict[brain_name],
+                    self.trainer_parameters_dict[brain_name],
                     self.train_model, self.load_model, self.seed, self.run_id)
             else:
                 raise UnityEnvironmentException('The trainer config contains '
@@ -304,12 +305,19 @@ class TrainerController(object):
                 take_action_outputs \
                     = {}, {}, {}, {}, {}
                 for brain_name, trainer in self.trainers.items():
-                    (take_action_vector[brain_name],
-                     take_action_memories[brain_name],
-                     take_action_text[brain_name],
-                     take_action_value[brain_name],
-                     take_action_outputs[brain_name]) = \
-                        trainer.take_action(curr_info)
+                    if self.trainer_parameters_dict[brain_name]['trainer'] == "mappo":
+                        (take_action_vector[brain_name],
+                         take_action_memories[brain_name],
+                         take_action_text[brain_name],
+                         take_action_outputs[brain_name]) = \
+                            trainer.take_action(curr_info)
+                    else:
+                        (take_action_vector[brain_name],
+                         take_action_memories[brain_name],
+                         take_action_text[brain_name],
+                         take_action_value[brain_name],
+                         take_action_outputs[brain_name]) = \
+                            trainer.take_action(curr_info)
                 new_info = self.env.step(vector_action=take_action_vector,
                                          memory=take_action_memories,
                                          text_action=take_action_text,
@@ -319,8 +327,8 @@ class TrainerController(object):
                                             take_action_outputs[brain_name],
                                             take_action_vector)
                 for brain_name, trainer in self.trainers.items():
-                        if self.trainer_parameters_dict[brain_name]['trainer'] == "mappo":
-                            take_action_vector[brain_name] = trainer.simulate_action(curr_info)
+                    if self.trainer_parameters_dict[brain_name]['trainer'] == "mappo":
+                        take_action_vector[brain_name] = trainer.simulate_action(curr_info)
                 for brain_name, trainer in self.trainers.items():
                     trainer.process_experiences(curr_info, new_info, take_action_vector)
                     if trainer.is_ready_update() and self.train_model \
