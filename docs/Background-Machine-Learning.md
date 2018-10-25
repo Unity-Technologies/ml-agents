@@ -2,7 +2,7 @@
 
 Given that a number of users of the ML-Agents toolkit might not have a formal
 machine learning background, this page provides an overview to facilitate the
-understanding of the ML-Agents toolkit. However, We will not attempt to provide
+understanding of the ML-Agents toolkit. However, we will not attempt to provide
 a thorough treatment of machine learning as there are fantastic resources
 online.
 
