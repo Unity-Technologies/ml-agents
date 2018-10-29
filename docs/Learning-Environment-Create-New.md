@@ -515,6 +515,11 @@ and outputs, using small batch and buffer sizes speeds up the training. However,
 add more complexity to the environment or change the reward or observation functions,
 you might also find that training performs better with different hyperparameters.
 
+**Note:** In addition to setting these hyperparameter values, the Agent 
+**DecisionFrequency** parameter has a large effect on training time and success.
+A larger value reduces the number of decisions the training algorithm has to consider and,
+in this simple environment, speeds up training. 
+
 To train in the editor, run the following Python command from a Terminal or Console 
 window before pressing play:
 
