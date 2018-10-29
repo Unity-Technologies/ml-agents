@@ -404,7 +404,7 @@ class LearningModel(object):
 
         self.output = tf.identity(output, name="action")
 
-        self.other_actions = tf.placeholder(shape=[None, len(self.act_size), n_agents - 1], dtype=tf.int32, name='other_actions')
+        self.other_actions = tf.placeholder(shape=[None, n_agents, len(self.act_size)], dtype=tf.int32, name='other_actions')
         # for now let's assume that the action space is the same for all brains.
         self.other_actions_one_hot = tf.concat([
             tf.one_hot(self.other_actions[:, i, :], self.act_size[i]) for i in range(len(self.act_size))], axis=2)

@@ -323,14 +323,21 @@ class TrainerController(object):
                                          text_action=take_action_text,
                                          value=take_action_value)
                 for brain_name, trainer in self.trainers.items():
-                    trainer.add_experiences(curr_info, new_info,
-                                            take_action_outputs[brain_name],
-                                            take_action_vector)
+                    if self.trainer_parameters_dict[brain_name]['trainer'] == 'mappo':
+                        trainer.add_experiences(curr_info, new_info,
+                                                take_action_outputs[brain_name],
+                                                take_action_vector)
+                    else:
+                        trainer.add_experiences(curr_info, new_info,
+                                                take_action_outputs[brain_name])
                 for brain_name, trainer in self.trainers.items():
-                    if self.trainer_parameters_dict[brain_name]['trainer'] == "mappo":
-                        take_action_vector[brain_name] = trainer.simulate_action(curr_info)
+                        if self.trainer_parameters_dict[brain_name]['trainer'] == 'mappo':
+                            take_action_vector[brain_name] = trainer.simulate_action(curr_info)
                 for brain_name, trainer in self.trainers.items():
-                    trainer.process_experiences(curr_info, new_info, take_action_vector)
+                    if self.trainer_parameters_dict[brain_name]['trainer'] == 'mappo':
+                        trainer.process_experiences(curr_info, new_info, take_action_vector)
+                    else:
+                        trainer.process_experiences(curr_info, new_info)
                     if trainer.is_ready_update() and self.train_model \
                             and trainer.get_step <= trainer.get_max_steps:
                         # Perform gradient descent with experience buffer

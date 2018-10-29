@@ -207,6 +207,7 @@ class MAPPOTrainer(Trainer):
 
         intrinsic_rewards = self.policy.get_intrinsic_rewards(curr_to_use, next_info)
 
+        values = []
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
             stored_take_action_outputs = self.training_buffer[agent_id].last_take_action_outputs
@@ -235,8 +236,8 @@ class MAPPOTrainer(Trainer):
                         self.training_buffer[agent_id]['action_mask'].append(
                             stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs['log_probs']
-                    # value = stored_take_action_outputs['value']
                     value, other_actions = self.policy.get_value_estimate(stored_info, idx, all_actions, self.brain_name)
+                    values.append(value)
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
                     self.training_buffer[agent_id]['masks'].append(1.0)
@@ -246,9 +247,9 @@ class MAPPOTrainer(Trainer):
                     else:
                         self.training_buffer[agent_id]['rewards'].append(next_info.rewards[next_idx])
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
-                    self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
+                    self.training_buffer[agent_id]['value_estimates'].append(values[idx][0][0])
                     self.training_buffer[agent_id]['other_actions'].append(other_actions)
-                    self.stats['value_estimate'].append(value[idx])
+                    self.stats['value_estimate'].append(values[idx])
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
                     self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
@@ -285,7 +286,6 @@ class MAPPOTrainer(Trainer):
                         bootstrapping_info = info
                         idx = l
                     value_next, _ = self.policy.get_value_estimate(bootstrapping_info, idx, all_actions, self.brain_name)
-
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(
                         rewards=self.training_buffer[agent_id]['rewards'].get_batch(),

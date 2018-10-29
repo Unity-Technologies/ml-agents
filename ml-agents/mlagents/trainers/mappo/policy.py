@@ -96,9 +96,8 @@ class MAPPOPolicy(Policy):
                      self.model.all_old_log_probs: mini_batch['action_probs'].reshape(
                          [-1, sum(self.model.act_size)]),
                      self.model.other_actions: mini_batch['other_actions'].reshape(
-                         [-1, len(self.model.act_size), self.n_agents-1])}
+                         [-1, self.n_agents, len(self.model.act_size)])}
 
-        print(len(feed_dict[self.model.all_old_log_probs]))
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch['actions_pre'].reshape(
                 [-1, self.model.act_size[0]])
@@ -136,8 +135,6 @@ class MAPPOPolicy(Policy):
             mem_in = mini_batch['memory'][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
         self.has_updated = True
-        other_actions_one_hot = self.sess.run(self.model.other_actions_one_hot, feed_dict)
-        print(len(other_actions_one_hot))
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
@@ -181,11 +178,12 @@ class MAPPOPolicy(Policy):
         :param idx: Index in BrainInfo of agent.
         :return: Value estimate.
         """
-        other_actions = [action for other_brain_name, action in all_actions.items() if other_brain_name != brain_name]
-        other_actions = np.array(
-            [[-1]*len(self.model.act_size) if len(action) != len(self.model.act_size) else action for action in other_actions])
+        all_actions = all_actions.values()
+        all_actions = np.array(
+            [[-1]*len(self.model.act_size) if len(action) < len(self.model.act_size) else action for action in all_actions])
+        all_actions = all_actions.reshape([-1, self.n_agents, len(self.model.act_size)])
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1,
-                     self.model.other_actions: [other_actions]}
+                     self.model.other_actions: all_actions}
         for i in range(len(brain_info.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
         if self.use_vec_obs:
@@ -198,7 +196,7 @@ class MAPPOPolicy(Policy):
             feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[idx].reshape(
                 [-1, len(self.model.act_size)])
         value_estimate = self.sess.run(self.model.value, feed_dict)
-        return value_estimate, other_actions
+        return value_estimate, all_actions
 
     def get_last_reward(self):
         """
