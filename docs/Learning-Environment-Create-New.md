@@ -562,9 +562,10 @@ to use Unity ML-Agents:
 Keep in mind:
 
 * There can only be one Academy game object in a scene.
-* You can have multiple Brain game objects but they must be child of the Academy
+* You can have multiple Brain game objects but they must all be a child of the Academy
   game object.
 
-Here is an example of what your scene hierarchy should look like:
+Here is an example of what your scene hierarchy should look like when using several 
+different Agents and Brains in the same environment:
 
 ![Scene Hierarchy](images/scene-hierarchy.png)
