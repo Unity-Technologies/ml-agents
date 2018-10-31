@@ -11,7 +11,7 @@ class GAILSignal(RewardSignal):
         self.policy = policy
         self.strength = signal_strength
         self.stat_name = 'Policy/GAIL Reward'
-        self.model = GAILModel(policy.model, h_size, lr)
+        self.model = GAILModel(policy.model, h_size, lr, 64)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, 1)
 
     def evaluate(self, current_info, next_info):
