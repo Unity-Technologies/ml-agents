@@ -38,7 +38,7 @@ developer communities.
 * For more information, in addition to installation and usage instructions, see
   our [documentation home](docs/Readme.md).
 * If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print of our [reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627). Also, see below for instructions on citing this paper.
-* If you have used a version of the ML-Agents toolkit prior to v0.6, we strongly
+* If you have used an earlier version of the ML-Agents toolkit, we strongly
   recommend our [guide on migrating from earlier versions](docs/Migrating.md).
 
 ## Additional Resources

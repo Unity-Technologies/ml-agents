@@ -109,7 +109,7 @@ Notes on argument values:
 - `docker-target-name`: Tells the ML-Agents Python package what the name of the
   disk where it can read the Unity executable and store the graph. **This should
   therefore be identical to `target`.**
-- `Ctrainer-config-file`, `train`, `run-id`: ML-Agents arguments passed to
+- `trainer-config-file`, `train`, `run-id`: ML-Agents arguments passed to
   `mlagents-learn`. `trainer-config-file` is the filename of the trainer config
   file, `train` trains the algorithm, and `run-id` is used to tag each
   experiment with a unique identifier. We recommend placing the trainer-config
