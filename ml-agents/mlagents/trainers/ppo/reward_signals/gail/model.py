@@ -40,7 +40,7 @@ class GAILModel(object):
             encoded_policy_list.append(self.policy_model.vector_in)
 
         if self.policy_model.vis_obs_size > 0:
-            self.visual_in = []
+            self.expert_visual_in = []
             visual_policy_encoders = []
             visual_expert_encoders = []
             for i in range(self.policy_model.vis_obs_size):
@@ -48,7 +48,7 @@ class GAILModel(object):
                 visual_input = self.policy_model.create_visual_input(
                     self.policy_model.brain.camera_resolutions[i],
                     name="visual_observation_" + str(i))
-                self.visual_in.append(visual_input)
+                self.expert_visual_in.append(visual_input)
 
                 encoded_policy_visual = self.policy_model.create_visual_obs_encoder(
                     self.policy_model.visual_in[i],
@@ -58,7 +58,7 @@ class GAILModel(object):
                         .format(i), False)
 
                 encoded_expert_visual = self.policy_model.create_visual_obs_encoder(
-                    self.visual_in[i],
+                    self.expert_visual_in[i],
                     self.encoding_size,
                     LearningModel.swish, 1,
                     "stream_{}_visual_obs_encoder".format(i),
