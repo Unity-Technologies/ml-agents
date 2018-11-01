@@ -45,8 +45,6 @@ class OfflineBCTrainer(BCTrainer):
         expert_brain = brain_params.__dict__
         policy_brain.pop('brain_name')
         expert_brain.pop('brain_name')
-        print(policy_brain)
-        print(expert_brain)
         if expert_brain != policy_brain:
             raise UnityTrainerException("The provided demonstration is not compatible with the "
                                         "brain being used for performance evaluation.")
