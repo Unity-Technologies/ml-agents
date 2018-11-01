@@ -30,7 +30,8 @@ default:
 BananaLearning:
     normalize: false
     use_gail: false
-    use_entropy: false
+    use_entropy: true
+    entropy_strength: 0.005
     extrinsic_strength: 1.0
     beta: 0.0
     batch_size: 256
@@ -132,10 +133,12 @@ PyramidsLearning:
     num_epoch: 3
     sequence_length: 32
     use_gail: true
-    use_entropy: true
-    extrinsic_strength: 1.0
+    use_entropy: false
+    extrinsic_strength: 0.0
     use_recurrent: false
     demo_path: ./demos/PyramidTime.demo
+    entropy_strength: 0.0005
+    gail_strength: 0.003
 
 VisualPyramidsLearning:
     use_curiosity: true
@@ -235,7 +238,9 @@ HallwayLearning:
     num_layers: 2
     hidden_units: 128
     memory_size: 256
-    beta: 1.0e-2
+    beta: 0.0
+    use_entropy: true
+    entropy_strength: 0.01
     gamma: 0.99
     num_epoch: 3
     buffer_size: 1024
@@ -285,6 +290,9 @@ GridWorldLearning:
     max_steps: 5.0e5
     summary_freq: 2000
     time_horizon: 5
+    demo_path: ./demos/GridDemo.demo
+    use_gail: true
+    extrinsic_strength: 0.0
 
 BasicLearning:
     batch_size: 32
