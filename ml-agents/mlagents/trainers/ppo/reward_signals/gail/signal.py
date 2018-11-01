@@ -12,7 +12,7 @@ class GAILSignal(RewardSignal):
         self.strength = signal_strength
         self.stat_name = 'Policy/GAIL Reward'
         self.model = GAILModel(policy.model, h_size, lr, 64)
-        _, self.demonstration_buffer = demo_to_buffer(demo_path, 1)
+        _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
 
     def evaluate(self, current_info, next_info):
         if len(current_info.agents) == 0:
