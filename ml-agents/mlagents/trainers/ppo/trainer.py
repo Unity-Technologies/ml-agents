@@ -233,9 +233,9 @@ class PPOTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        tmp_rewards_list = []
+        tmp_rewards_dict = {}
         for name, signal in self.policy.reward_signals.items():
-            tmp_rewards_list.append(signal.evaluate(curr_to_use, next_info))
+            tmp_rewards_dict[name] = signal.evaluate(curr_to_use, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -289,14 +289,10 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['masks'].append(1.0)
                     self.training_buffer[agent_id]['done'].append(next_info.local_done[idx])
 
-                    agent_rewards = None
-                    for (scaled_reward, reward) in tmp_rewards_list:
-                        if agent_rewards is None:
-                            agent_rewards = scaled_reward[next_idx]
-                        else:
-                            agent_rewards += scaled_reward[next_idx]
+                    for name, reward in tmp_rewards_dict.items():
+                        self.training_buffer[agent_id]['{}_rewards'.format(name)].append(
+                            tmp_rewards_dict[name][0][next_idx])
 
-                    self.training_buffer[agent_id]['rewards'].append(agent_rewards)
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
 
@@ -307,7 +303,7 @@ class PPOTrainer(Trainer):
                             unscaled = 1
                         else:
                             unscaled = 0
-                        rewards[agent_id] += tmp_rewards_list[idx][unscaled][next_idx]
+                        rewards[agent_id] += tmp_rewards_dict[name][unscaled][next_idx]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -344,21 +340,25 @@ class PPOTrainer(Trainer):
                         idx = l
                     value_next = self.policy.get_value_estimate(bootstrapping_info, idx)
 
-                self.training_buffer[agent_id]["advantages"].set(
-                    get_gae(
-                        rewards=self.training_buffer[agent_id]["rewards"].get_batch(),
+                tmp_advantages = []
+                for name in self.policy.reward_signals.keys():
+                    local_advantage = get_gae(
+                        rewards=self.training_buffer[agent_id]['{}_rewards'.format(name)].get_batch(),
                         value_estimates=self.training_buffer[agent_id][
                             "value_estimates"
                         ].get_batch(),
                         value_next=value_next,
-                        gamma=self.trainer_parameters["gamma"],
-                        lambd=self.trainer_parameters["lambd"],
-                    )
-                )
-                self.training_buffer[agent_id]["discounted_returns"].set(
-                    self.training_buffer[agent_id]["advantages"].get_batch()
-                    + self.training_buffer[agent_id]["value_estimates"].get_batch()
-                )
+                        gamma=self.trainer_parameters['gamma'],
+                        lambd=self.trainer_parameters['lambd'])
+                    self.training_buffer[agent_id]['{}_advantages'.format(name)].set(
+                        local_advantage)
+                    tmp_advantages.append(local_advantage)
+
+                global_advantages = list(np.mean(np.array(tmp_advantages), axis=0))
+                self.training_buffer[agent_id]['advantages'].set(global_advantages)
+                self.training_buffer[agent_id]['discounted_returns'].set(
+                    self.training_buffer[agent_id]['advantages'].get_batch()
+                    + self.training_buffer[agent_id]['value_estimates'].get_batch())
 
                 self.training_buffer.append_update_buffer(
                     agent_id,
