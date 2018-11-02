@@ -284,30 +284,36 @@ class PPOTrainer(Trainer):
         :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
 
+        # TODO: Use separate value streams for value bootstrapping
         info = new_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
             if ((info.local_done[l] or len(agent_actions) > self.trainer_parameters['time_horizon'])
                     and len(agent_actions) > 0):
                 agent_id = info.agents[l]
+                if info.max_reached[l]:
+                    bootstrapping_info = self.training_buffer[agent_id].last_brain_info
+                    idx = bootstrapping_info.agents.index(agent_id)
+                else:
+                    bootstrapping_info = info
+                    idx = l
+                value_next_bootstrap = self.policy.get_value_estimate(bootstrapping_info, idx)
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
-                    if info.max_reached[l]:
-                        bootstrapping_info = self.training_buffer[agent_id].last_brain_info
-                        idx = bootstrapping_info.agents.index(agent_id)
-                    else:
-                        bootstrapping_info = info
-                        idx = l
-                    value_next = self.policy.get_value_estimate(bootstrapping_info, idx)
+                    value_next = value_next_bootstrap
 
                 tmp_advantages = []
                 for name in self.policy.reward_signals.keys():
+                    if name == 'extrinsic':
+                        bootstrap_value = value_next
+                    else:
+                        bootstrap_value = value_next_bootstrap
                     local_advantage = get_gae(
                         rewards=self.training_buffer[agent_id]['{}_rewards'.format(name)].get_batch(),
                         value_estimates=self.training_buffer[agent_id][
                             'value_estimates'].get_batch(),
-                        value_next=value_next,
+                        value_next=bootstrap_value,
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd'])
                     self.training_buffer[agent_id]['{}_advantages'.format(name)].set(
