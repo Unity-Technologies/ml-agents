@@ -141,7 +141,7 @@ class TrainerController(object):
         else:
             return None
 
-    def _save_model(self,steps=0):
+    def _save_model(self, steps=0):
         """
         Saves current model to checkpoint folder.
         :param steps: Current number of steps in training process.
