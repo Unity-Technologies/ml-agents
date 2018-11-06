@@ -179,17 +179,15 @@ and rewards from the Agent and returns actions. The Academy ensures that all the
 Agents and Brains are in sync in addition to controlling environment-wide
 settings. So how does the Brain control what the Agent does?
 
-In practice, we have four different types of Brains, which enable a wide
+In practice, we have three different categories of Brains, which enable a wide
 range of training and inference scenarios:
 
-- **External** - where decisions are made using the Python API. Here, the
-  observations and rewards collected by the Brain are forwarded to the Python
-  API through the External Communicator. The Python API then returns the
-  corresponding action that needs to be taken by the Agent.
-- **Internal** - where decisions are made using an embedded
+- **Learning** - where decisions are made using an embedded
   [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
   represents a learned policy and the Brain directly uses this model to
-  determine the action for each Agent.
+  determine the action for each Agent. You can train a **Learning Brain** 
+  by dragging it into the Academy's `Broadcast Hub` with the `Control` 
+  checkbox checked.
 - **Player** - where decisions are made using real input from a keyboard or
   controller. Here, a human player is controlling the Agent and the observations
   and rewards collected by the Brain are not used to control the Agent.
@@ -202,8 +200,8 @@ range of training and inference scenarios:
   hard-coded behaviors. We can then evaluate which medic is more effective.
 
 As currently described, it may seem that the External Communicator and Python
-API are only leveraged by the External Brain. This is not true. It is possible
-to configure the Internal, Player and Heuristic Brains to also send the
+API are only leveraged by the Learning Brain. This is not true. It is possible
+to configure the Learning, Player and Heuristic Brains to also send the
 observations, rewards and actions to the Python API through the External
 Communicator (a feature called _broadcasting_). As we will see shortly, this
 enables additional training modes.
@@ -226,8 +224,8 @@ inference can proceed.
 
 As mentioned previously, the ML-Agents toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
-In this mode, the Brain type is set to External during training and Internal
-during inference. More specifically, during training, all the medics in the
+In this mode, the only Brain used is a **Learning Brain**. More 
+specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
 Communicator (this is the behavior with an External Brain). The Python API
 processes these observations and sends back actions for each medic to take.
@@ -235,7 +233,8 @@ During training these actions are mostly exploratory to help the Python API
 learn the best policy for each medic. Once training concludes, the learned
 policy for each medic can be exported. Given that all our implementations are
 based on TensorFlow, the learned policy is just a TensorFlow model file. Then
-during the inference phase, we switch the Brain type to Internal and include the
+during the inference phase, we use the **Learning Brain** in internal mode
+and include the
 TensorFlow model generated from the training phase. Now during the inference
 phase, the medics still  continue to generate their observations, but instead of
 being sent to the Python API, they will be fed into their (internal, embedded)
@@ -244,11 +243,8 @@ time.
 
 To summarize: our built-in implementations are based on TensorFlow, thus, during
 training the Python API uses the observations it receives to learn a TensorFlow
-model. This model is then embedded within the Internal Brain during inference to
-generate the optimal actions for all Agents linked to that Brain. **Note that
-our Internal Brain is currently experimental as it is limited to TensorFlow
-models and leverages the third-party
-[TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp) library.**
+model. This model is then embedded within the Learning Brain during inference to
+generate the optimal actions for all Agents linked to that Brain. 
 
 The
 [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
@@ -256,12 +252,13 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 
 ### Custom Training and Inference
 
-In the previous mode, the External Brain type was used for training to generate
-a TensorFlow model that the Internal Brain type can understand and use. However,
-any user of the ML-Agents toolkit can leverage their own algorithms for both
-training and inference. In this case, the Brain type would be set to External
-for both training and inferences phases and the behaviors of all the Agents in
-the scene will be controlled within Python.
+In the previous mode, the Learning Brain was used for training to generate
+a TensorFlow model that the Learning Brain can later use. However,
+any user of the ML-Agents toolkit can leverage their own algorithms for
+training. In this case, the Brain type would be set to Learning and be linked 
+to the BroadcastHub (with checked `Control` checkbox)
+and the behaviors of all the Agents in the scene will be controlled within Python.
+You can even turn your environment into a [gym.](../gym-unity/README.md)
 
 We do not currently have a tutorial highlighting this mode, but you can
 learn more about the Python API [here](Python-API.md).
@@ -291,8 +288,8 @@ future.
 _Example of a mathematics curriculum. Lessons progress from simpler topics to
 more complex ones, with each building on the last._
 
-When we think about how reinforcement learning actually works, the learning
-signal is reward received occasionally throughout training. The starting point
+When we think about how reinforcement learning actually works, the learning reward
+signal is received occasionally throughout training. The starting point
 when training an agent to accomplish this task will be a random policy. That
 starting policy will have the agent running in circles, and will likely never,
 or very rarely achieve the reward for complex environments. Thus by simplifying
@@ -356,11 +353,11 @@ inspiration:
   done alone. Examples include environments where each agent only has access to
   partial information, which needs to be shared in order to accomplish the task
   or collaboratively solve a puzzle.
-- Competitive Multi-Agent. Multiple interacting s with inverse reward
+- Competitive Multi-Agent. Multiple interacting agents with inverse reward
   signals linked to either a single or multiple different Brains. In this
-  scenario, s must compete with one another to either win a competition, or
+  scenario, agents must compete with one another to either win a competition, or
   obtain some limited set of resources. All team sports fall into this scenario.
-- Ecosystem. Multiple interacting s with independent reward signals linked
+- Ecosystem. Multiple interacting agents with independent reward signals linked
   to either a single or multiple different Brains. This scenario can be thought
   of as creating a small world in which animals with different goals all
   interact, such as a savanna in which there might be zebras, elephants and
@@ -408,15 +405,16 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
-- **Broadcasting** - As discussed earlier, an External Brain sends the
-  observations for all its Agents to the Python API by default. This is helpful
-  for training or inference. Broadcasting is a feature which can be enabled for
-  the other three modes (Player, Internal, Heuristic) where the Agent
+- **Broadcasting** - As discussed earlier, a Learning Brain sends the
+  observations for all its Agents to the Python API when dragged into the
+  Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
+  for training and later inference. Broadcasting is a feature which can be 
+  enabled all types of Brains (Player, Learning, Heuristic) where the Agent
   observations and actions are also sent to the Python API (despite the fact
   that the Agent is **not** controlled by the Python API). This feature is
   leveraged by Imitation Learning, where the observations and actions for a
   Player Brain are used to learn the policies of an agent through demonstration.
-  However, this could also be helpful for the Heuristic and Internal Brains,
+  However, this could also be helpful for the Heuristic and Learning Brains,
   particularly when debugging agent behaviors. You can learn more about using
   the broadcasting feature
   [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).

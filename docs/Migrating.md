@@ -1,5 +1,49 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.5 to v0.6
+
+### Important
+
+* Brains are now Scriptable Objects instead of MonoBehaviors. 
+* You can no longer modify the type of a Brain. If you want to switch
+  between `PlayerBrain` and `LearningBrain` for multiple agents,
+  you will need to assign a new Brain to each agent separately.
+  __Note:__ You can pass the same Brain to multiple agents in a scene by 
+leveraging Unity's prefab system or look for all the agents in a scene
+using the search bar of the `Hierarchy` window with the word `Agent`.
+* To update a scene from v0.5 to v0.6, you must:
+  *  Remove the `Brain` GameObjects in the scene. (Delete all of the 
+  Brain GameObjects under Academy in the scene.)
+  *  Create new `Brain` Scriptable Objects using `Assets -> Create ->
+     ML-Agents` for each type of the Brain you plan to use, and put
+     the created files under a folder called Brains within your project.
+  *  Edit their `Brain Parameters` to be the same as the parameters used 
+     in the `Brain` GameObjects.
+  *  Agents have a `Brain` field in the Inspector, you need to drag the
+  appropriate Brain ScriptableObject in it.
+  
+  __Note:__ You will need to delete the previous TensorFlowSharp package 
+  and install the new one to do inference. To correctly delete the previous 
+  TensorFlowSharp package, Delete all of the files under `ML-Agents/Plugins`
+  folder except the files under `ML-Agents/Plugins/ProtoBuffer`.
+  
+* We replaced the **Internal** and **External** Brain with **Learning Brain**.
+  When you need to train a model, you need to drag it into the `Training Hub`
+  inside the `Academy` and check the `Control` checkbox.
+* We removed the `Broadcast` checkbox of the Brain, to use the broadcast 
+  functionality, you need to drag the Brain into the `Broadcast Hub`.
+* When training multiple Brains at the same time, each model is now stored 
+  into a separate model file rather than in the same file under different
+  graph scopes. 
+* We have changed the way ML-Agents models perform inference. All previous `.bytes`
+  files can no longer be used (you will have to retrain them). The models
+  produced by the training process and the shipped models have now a `.tf` 
+  extension and use TensorflowSharp as a backend for the 
+  [Inference Engine](Inference-Engine.md).
+* To use a `.tf` model, drag it inside the `Model` property of the `Learning Brain`
+
+
+
 ## Migrating from ML-Agents toolkit v0.4 to v0.5
 
 ### Important
@@ -36,13 +80,14 @@
   python3 learn.py 3DBall --train
   ```
 
-  from the `python/` directory, we now run
+  from the `python` subdirectory (which is changed to `ml-agents` subdirectory
+  in v0.5), we now run
 
   ```sh
   mlagents-learn config/trainer_config.yaml --env=3DBall --train
   ```
 
-  from the directory where we installed the ML-Agents Toolkit.
+  from the root directory where we installed the ML-Agents Toolkit.
 
 * It is now required to specify the path to the yaml trainer configuration file
   when running `mlagents-learn`. For an example trainer configuration file, see
@@ -53,7 +98,7 @@
     [curriculum learning documentation](Training-Curriculum-Learning.md)
     for detailed information. In summary:
   * Curriculum files for the same environment must now be placed into a folder.
-    Each curriculum file should be named after the brain whose curriculum it
+    Each curriculum file should be named after the Brain whose curriculum it
     specifies.
   * `min_lesson_length` now specifies the minimum number of episodes in a lesson
     and affects reward thresholding.
@@ -70,7 +115,8 @@
 ### Python API
 
 * We've changed some of the Python packages dependencies in requirement.txt
-  file. Make sure to run `pip3 install .` within your `ml-agents/python` folder
+  file. Make sure to run `pip3 install -e .` within your `ml-agents/python`
+  folder
   to update your Python packages.
 
 ## Migrating from ML-Agents toolkit v0.2 to v0.3

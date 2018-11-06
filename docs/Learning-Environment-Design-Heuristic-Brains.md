@@ -1,12 +1,11 @@
 # Heuristic Brain
 
-The **Heuristic** Brain type allows you to hand code an Agent's decision making
-process. A Heuristic Brain requires an implementation of the Decision interface
+The **Heuristic Brain** allows you to hand code an Agent's decision making
+process. A Heuristic Brain requires an implementation of the Decision script
 to which it delegates the decision making process.
 
-When you set the **Brain Type** property of a Brain to **Heuristic**, you must
-add a component implementing the Decision interface to the same GameObject as
-the Brain.
+When you use a **Heuristic Brain**, you must add a decision script to the `Decision` 
+property of the **Heuristic Brain**.
 
 ## Implementing the Decision interface
 
@@ -17,7 +16,7 @@ class as a Unity component) and extend the Decision interface.
 using UnityEngine;
 using MLAgents;
 
-public class HeuristicLogic : MonoBehaviour, Decision
+public class HeuristicLogic : Decision
 {
     // ...
 }

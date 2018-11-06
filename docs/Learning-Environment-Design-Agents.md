@@ -17,13 +17,12 @@ trained agents or for imitation learning.)
 
 The Brain class abstracts out the decision making logic from the Agent itself so
 that you can use the same Brain in multiple Agents. How a Brain makes its
-decisions depends on the type of Brain it is. An **External** Brain simply
-passes the observations from its Agents to an external process and then passes
-the decisions made externally back to the Agents. An **Internal** Brain uses the
-trained policy parameters to make decisions (and no longer adjusts the
-parameters in search of a better decision). The other types of Brains do not
-directly involve training, but you might find them useful as part of a training
-project. See [Brains](Learning-Environment-Design-Brains.md).
+decisions depends on the kind of Brain it is. A Player Brain allows you
+to directly control the agent. A Heuristic Brain allows you to create a 
+decision script to control the agent with a set of rules. These two Brains
+do not involve neural networks but they can be useful for debugging. The
+Learning Brain allows you to train and use neural network models for
+your Agents. See [Brains](Learning-Environment-Design-Brains.md).
   
 ## Decisions
 
@@ -127,8 +126,6 @@ When you set up an Agent's Brain in the Unity Editor, set the following
 properties to use a continuous vector observation:
 
 * **Space Size** — The state size must match the length of your feature vector.
-* **Brain Type** — Set to **External** during training; set to **Internal** to
-  use the trained model.
 
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
@@ -346,8 +343,8 @@ continuous action spaces.
 #### Masking Discrete Actions
 
 When using Discrete Actions, it is possible to specify that some actions are
-impossible for the next decision. Then the Agent is controlled by an External or
-Internal Brain, the Agent will be unable to perform the specified action. Note
+impossible for the next decision. Then the Agent is controlled by a
+Learning Brain, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by a Player or Heuristic Brain, the Agent will
 still be able to decide to perform the masked action. In order to mask an
 action, call the method `SetActionMask` within the `CollectObservation` method :

@@ -50,7 +50,10 @@ logic for creating them in the `AcademyStep()` function.
 ## Academy Properties
 
 ![Academy Inspector](images/academy.png)
-
+* `Broadcast Hub` - Gathers the Brains that will communicate with the external 
+  process. Any Brain added to the Broadcast Hub will be visible from the external
+  process. In addition, if the checkbox `Control` is checked, the Brain will be 
+  controllable from the external process and will thus be trainable.
 * `Max Steps` - Total number of steps per-episode. `0` corresponds to episodes
   without a maximum number of steps. Once the step counter reaches maximum, the
   environment will reset.

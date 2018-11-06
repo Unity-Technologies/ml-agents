@@ -8,25 +8,31 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class BCPolicy(Policy):
-    def __init__(self, seed, brain, trainer_parameters, sess):
+    def __init__(self, seed, brain, trainer_parameters, load):
         """
         :param seed: Random seed.
         :param brain: Assigned Brain object.
         :param trainer_parameters: Defined training parameters.
-        :param sess: TensorFlow session.
+        :param load: Whether a pre-trained model will be loaded or a new one created.
         """
-        super().__init__(seed, brain, trainer_parameters, sess)
+        super(BCPolicy, self).__init__(seed, brain, trainer_parameters)
 
-        self.model = BehavioralCloningModel(
-            h_size=int(trainer_parameters['hidden_units']),
-            lr=float(trainer_parameters['learning_rate']),
-            n_layers=int(trainer_parameters['num_layers']),
-            m_size=self.m_size,
-            normalize=False,
-            use_recurrent=trainer_parameters['use_recurrent'],
-            brain=brain,
-            scope=self.variable_scope,
-            seed=seed)
+        with self.graph.as_default():
+            with self.graph.as_default():
+                self.model = BehavioralCloningModel(
+                    h_size=int(trainer_parameters['hidden_units']),
+                    lr=float(trainer_parameters['learning_rate']),
+                    n_layers=int(trainer_parameters['num_layers']),
+                    m_size=self.m_size,
+                    normalize=False,
+                    use_recurrent=trainer_parameters['use_recurrent'],
+                    brain=brain,
+                    seed=seed)
+
+        if load:
+            self._load_graph()
+        else:
+            self._initialize_graph()
 
         self.inference_dict = {'action': self.model.sample_action}
         self.update_dict = {'policy_loss': self.model.loss,
