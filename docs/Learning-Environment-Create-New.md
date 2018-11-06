@@ -350,8 +350,8 @@ assigned task. In this case, the Agent is given a reward of 1.0 for reaching the
 Target cube.
 
 The RollerAgent calculates the distance to detect when it reaches the target.
-When it does, the code increments the Agent.reward variable by 1.0 and marks the
-agent as finished by setting the Agent to done.
+When it does, the code calls the `Agent.SetReward()` method to assign a
+reward of 1.0 and marks the agent as finished by calling Agent to `Done()` method.
 
 ```csharp
 float distanceToTarget = Vector3.Distance(this.transform.position,
@@ -424,7 +424,7 @@ window.
 
 Now, that all the GameObjects and ML-Agent components are in place, it is time
 to connect everything together in the Unity Editor. This involves assigning the
-Brain asset to the Agent, changing some of the Agent Components properties, and
+Brain asset to the Agent, changing some of the Agent Component's properties, and
 setting the Brain properties so that they are compatible with our Agent code.
 
 1. In the Academy Inspector, add the `RollerBallBrain` and `RollerBallPlayer`
@@ -434,13 +434,12 @@ setting the Brain properties so that they are compatible with our Agent code.
 3. Drag the Brain **RollerBallPlayer** from the Project window to the 
     RollerAgent **Brain** field.
 4. Change **Decision Frequency** from `1` to `10`.
+5. Drag the Target GameObject from the Hierarchy window to the RollerAgent
+    Target field.
 
 ![Assign the Brain to the RollerAgent](images/mlagents-NewTutAssignBrain.png)
 
-Also, drag the Target GameObject from the Hierarchy window to the RollerAgent
-Target field.
-
-Finally, select the RollerBallBrain Asset in the **Project** window so that you can 
+Finally, select the **RollerBallBrain** Asset in the **Project** window so that you can 
 see its properties in the Inspector window. Set the following properties:
 
 * `Vector Observation` `Space Size` = 8
