@@ -5,9 +5,9 @@ assigned a Brain, but you can use the same Brain with more than one Agent. You
 can also create several Brains, attach each of the Brain to one or more than one
 Agent.
 
-There are 3 kinds of brains you can use:
+There are 3 kinds of Brains you can use:
 
-* [Learning](Learning-Environment-Learning-Brains.md) – Use a
+* [Learning](Learning-Environment-Design-Learning-Brains.md) – Use a
   **LearningBrain** to make use of a trained model or train a new model.
 * [Heuristic](Learning-Environment-Design-Heuristic-Brains.md) – Use a
   **HeuristicBrain** to hand-code the Agent's logic by extending the Decision class.
@@ -55,7 +55,7 @@ to a Brain component:
     * `Action Descriptions` - A list of strings used to name the available
       actions for the Brain.
 
-The other properties of the brain depend on the type of Brain you are using.
+The other properties of the Brain depend on the type of Brain you are using.
 
 ## Using the Broadcast Feature
 

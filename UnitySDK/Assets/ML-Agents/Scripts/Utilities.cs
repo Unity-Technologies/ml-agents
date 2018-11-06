@@ -28,45 +28,38 @@ namespace MLAgents
         /// If set to <c>true</c> the textures
         /// will be converted to grayscale before being stored in the tensor.
         /// </param>
-        public static float[,,,] TextureToFloatArray(
-            List<Texture2D> textures, bool blackAndWhite)
+        public static float[,,,] TextureToFloatArray(List<Texture2D> textures, bool blackAndWhite)
         {
-            int batchSize = textures.Count;
-            int width = textures[0].width;
-            int height = textures[0].height;
+            var batchSize = textures.Count;
+            var width = textures[0].width;
+            var height = textures[0].height;
             var pixels = blackAndWhite ? 1 : 3;
-            float[,,,] result = new float[batchSize, height, width, pixels];
-            float[] resultTemp = new float[batchSize * height * width * pixels];
-            int hwp = height * width * pixels;
-            int wp = width * pixels;
+            var result = new float[batchSize, height, width, pixels];
 
-            for (int b = 0; b < batchSize; b++)
+            for (var b = 0; b < batchSize; b++)
             {
-                Color32[] cc = textures[b].GetPixels32();
-                for (int h = height - 1; h >= 0; h--)
+                var cc = textures[b].GetPixels32();
+                for (var h = height - 1; h >= 0; h--)
                 {
-                    for (int w = 0; w < width; w++)
+                    for (var w = 0; w < width; w++)
                     {
-                        Color32 currentPixel = cc[(height - h - 1) * width + w];
+                        var currentPixel = cc[(height - h - 1) * width + w];
                         if (!blackAndWhite)
                         {
                             // For Color32, the r, g and b values are between
                             // 0 and 255.
-                            resultTemp[b * hwp + h * wp + w * pixels] = currentPixel.r / 255.0f;
-                            resultTemp[b * hwp + h * wp + w * pixels + 1] = currentPixel.g / 255.0f;
-                            resultTemp[b * hwp + h * wp + w * pixels + 2] = currentPixel.b / 255.0f;
+                            result[b, h, w, 0] = currentPixel.r / 255.0f;
+                            result[b, h, w, 1] = currentPixel.g / 255.0f;
+                            result[b, h, w,2] = currentPixel.b / 255.0f;
                         }
                         else
                         {
-                            resultTemp[b * hwp + h * wp + w * pixels] =
-                                (currentPixel.r + currentPixel.g + currentPixel.b)
+                            result[b, h, w, 0] = (currentPixel.r + currentPixel.g + currentPixel.b)
                                 / 3f / 255.0f;
                         }
                     }
                 }
             }
-
-            System.Buffer.BlockCopy(resultTemp, 0, result, 0, batchSize * hwp * sizeof(float));
             return result;
         }
         

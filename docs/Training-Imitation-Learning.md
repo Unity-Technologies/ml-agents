@@ -51,7 +51,7 @@ With offline behavioral cloning, we can use demonstrations (`.demo` files) gener
 6. Launch `mlagent-learn`, and providing `./config/offline_bc_config.yaml` as the config parameter, and your environment as the `--env` parameter.
 7. (Optional) Observe training performance using Tensorboard.
 
-This will use the demonstration file to train a nerual network driven agent to directly imitate the actions provided in the demonstration. The environment will launch and be used for evaluating the agent's performance during training.
+This will use the demonstration file to train a neural network driven agent to directly imitate the actions provided in the demonstration. The environment will launch and be used for evaluating the agent's performance during training.
 
 ### Online Training
 
@@ -59,14 +59,14 @@ It is also possible to provide demonstrations in realtime during training, witho
 
 1. First create two Brains, one which will be the "Teacher," and the other which
    will be the "Student." We will assume that the names of the Brain
-   `Assets`s are "Teacher" and "Student" respectively.
+   Assets are "Teacher" and "Student" respectively.
 2. The "Teacher" Brain must be a **Player Brain**. You must properly 
    configure the inputs to map to the corresponding actions.
 3. The "Student" Brain must be a **Learning Brain**.
-4. The Brain Parameters of both the "Teacher" and "Student" brains must be 
+4. The Brain Parameters of both the "Teacher" and "Student" Brains must be 
    compatible with the agent.
-5. Drag both the "Teacher" and "Student" brain into the Academy's `Broadcast Hub`
-   and check the `Control` checkbox on the "Student" brain. 
+5. Drag both the "Teacher" and "Student" Brain into the Academy's `Broadcast Hub`
+   and check the `Control` checkbox on the "Student" Brain. 
 4. Link the Brains to the desired Agents (one Agent as the teacher and at least
    one Agent as a student).
 5. In `config/online_bc_config.yaml`, add an entry for the "Student" Brain. Set
@@ -85,7 +85,7 @@ It is also possible to provide demonstrations in realtime during training, witho
    similarly to the demonstrations.
 9. Once the Student Agents are exhibiting the desired behavior, end the training
    process with `CTL+C` from the command line.
-10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
+10. Move the resulting `*.tf` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
     with `Learning` Brain.
 

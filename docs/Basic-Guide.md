@@ -10,11 +10,8 @@ the basic concepts of Unity.
 
 ## Setting up the ML-Agents Toolkit within Unity
 
-In order to use the ML-Agents toolkit within Unity, you need to change some
-Unity settings first. Also [TensorFlowSharp
-plugin](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
-is needed for you to use pre-trained model within Unity, which is based on the
-[TensorFlowSharp repo](https://github.com/migueldeicaza/TensorFlowSharp).
+In order to use the ML-Agents toolkit within Unity, you first need to change a few
+Unity settings. 
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
@@ -23,25 +20,26 @@ is needed for you to use pre-trained model within Unity, which is based on the
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target (**PC, Mac and Linux Standalone**,
    **iOS** or **Android**):
-    1. Option the **Other Settings** section.
+    1. Expand the **Other Settings** section.
     2. Select **Scripting Runtime Version** to **Experimental (.NET 4.6
        Equivalent or .NET 4.x Equivalent)**
-    3. In **Scripting Defined Symbols**, add the flag `ENABLE_TENSORFLOW`. After
-       typing in the flag name, press Enter.
 6. Go to **File** > **Save Project**
 
-![Project Settings](images/project-settings.png)
+## Setting up the Inference Engine
 
-[Download](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
-the TensorFlowSharp plugin. Then import it into Unity by double clicking the
-downloaded file.  You can check if it was successfully imported by checking the
-TensorFlow files in the Project window under **Assets** > **ML-Agents** >
-**Plugins** > **Computer**.
+We provide pre-trained models for all the agents in all our demo environments. 
+To be able to run those models, you'll first need to set-up the Inference 
+Engine. The Inference Engine is a general API to
+run neural network models in Unity that leverages existing inference libraries such 
+as TensorFlowSharp and Apple's Core ML. Since the ML-Agents Toolkit uses TensorFlow 
+for training neural network models, the output model format is TensorFlow and 
+the model files include a `.tf` extension. Consequently, you need to install 
+the TensorFlowSharp backend to be able to run these models within the Unity 
+Editor. You can find instructions 
+on how to install the TensorFlowSharp backend [here](Inference-Engine.md).
+Once the backend is installed, you will need to reimport the models : Right click
+on the `.tf` model and select `Reimport`.
 
-**Note**: If you don't see anything under **Assets**, drag the
-`UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
-
-![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
 
 ## Running a Pre-trained Model
 
@@ -49,15 +47,16 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
    and open the `3DBall` scene file.
 2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder
    and select the `Game/Platform` prefab.
-3. In the `Ball 3D Agent` Component: Drag the **Ball3DBrain** located into 
+3. In the `Ball 3D Agent` Component: Drag the **3DBallLearning** Brain located in 
    `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
    the `Ball 3D Agent`.
-4. Make sure that all of the Agents in the Scene now have **Ball3DBrain** as `Brain`.
-   __Note__ : You can modify multiple game objects in a scene by selecting them all at once using the search bar in the Scene Hierarchy. 
+4. Make sure that all of the Agents in the Scene now have **3DBallLearning** as `Brain`.
+   __Note__ : You can modify multiple game objects in a scene by selecting them all at 
+   once using the search bar in the Scene Hierarchy. 
 5. In the **Project** window, locate the `Assets/ML-Agents/Examples/3DBall/TFModels` 
    folder.
-6. Drag the `3DBall` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
-   folder to the **Model** field of the **Ball3DBrain**.
+6. Drag the `3DBallLearning` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+   folder to the **Model** field of the **3DBallLearning** Brain.
 7. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
@@ -79,14 +78,26 @@ More information and documentation is provided in the
 
 ### Adding a Brain to the training session
 
-Since we are going to build this environment to conduct training, we need to add 
-the Brain to the training session. This allows the Agents linked to that Brain
-to communicate with the external training process when making their decisions.
+To set up the environment for training, you will need to specify which agents are contributing
+to the training and which Brain is being trained. You can only perform training with
+a `Learning Brain`.
 
-1. Assign the **Ball3DBrain** to the agents you would like to train. 
-   __Note:__ You can only perform training with an `Learning Brain`.
-2. Select the **Ball3DAcademy** GameObject and add the **Ball3DBrain**
-   to the Broadcast Hub and toggle the `Control` checkbox.
+1. Assign the **3DBallLearning** Brain to the agents you would like to train.  
+   __Note:__ You can assign the same Brain to multiple agents at once : To do so, you can
+   use the prefab system. When an agent is created from a prefab, modifying the prefab 
+   will modify the agent as well. If the agent does not synchronize with the prefab, you
+   can hit the Revert button on top of the Inspector.
+   Alternatively, you can select multiple agents in the scene and modify their `Brain`
+   property all at once.
+2. Select the **Ball3DAcademy** GameObject and make sure the **3DBallLearning** Brain
+   is in the Broadcast Hub. In order to train, you need to toggle the
+   `Control` checkbox.
+   
+__Note:__ Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
+the agent) means that the Brain will be making decision for that agent. Whereas dragging
+a Brain into the Broadcast Hub means that the Brain will be exposed to the Python process.
+The `Control` checkbox means that in addition to being exposed to Python, the Brain will
+be controlled by the Python process (required for training).
 
 ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 
@@ -168,17 +179,17 @@ INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
         Number of Brains: 1
-        Number of External Brains : 1
+        Number of Training Brains : 1
         Reset Parameters :
 
-Unity brain name: Ball3DBrain
+Unity brain name: 3DBallLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8
         Number of stacked Vector Observation: 1
         Vector Action space type: continuous
         Vector Action space size (per agent): [2]
         Vector Action descriptions: ,
-INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain Ball3DBrain:
+INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
         batch_size:          64
         beta:                0.001
         buffer_size:         12000
@@ -200,24 +211,24 @@ INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain Ball3DBrain:
         use_curiosity:       False
         curiosity_strength:  0.01
         curiosity_enc_size:  128
-        model_path:	./models/first-run-0/Ball3DBrain
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 4000. Mean Reward: 2.151. Std of Reward: 1.432. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 5000. Mean Reward: 3.175. Std of Reward: 2.250. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 6000. Mean Reward: 4.898. Std of Reward: 4.019. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 7000. Mean Reward: 6.716. Std of Reward: 5.125. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 8000. Mean Reward: 12.124. Std of Reward: 11.929. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 9000. Mean Reward: 18.151. Std of Reward: 16.871. Training.
-INFO:mlagents.trainers: first-run-0: Ball3DBrain: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
+        model_path:	./models/first-run-0/3DBallLearning
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 4000. Mean Reward: 2.151. Std of Reward: 1.432. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 5000. Mean Reward: 3.175. Std of Reward: 2.250. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 6000. Mean Reward: 4.898. Std of Reward: 4.019. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 7000. Mean Reward: 6.716. Std of Reward: 5.125. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 8000. Mean Reward: 12.124. Std of Reward: 11.929. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 9000. Mean Reward: 18.151. Std of Reward: 16.871. Training.
+INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
 ```
 
 ### After training
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/editor_<academy_name>_<run-identifier>.bytes` where
-`<academy_name>` is the name of the Academy GameObject in the current scene.
+`models/<run-identifier>/<brain_name>.tf` where
+`<brain_name>` is the name of the Brain corresponding to the model.
 (**Note:** There is a known bug on Windows that causes the saving of the model to
 fail when you early terminate the training, it's recommended to wait until Step
 has reached the max_steps parameter you set in trainer_config.yaml.) This file
@@ -229,9 +240,9 @@ the steps described
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
-3. Select the  **Ball3DBrain** Learning Brain from the Scene hierarchy.
-5. Drag the `<env_name>_<run-identifier>.bytes` file from the Project window of
-   the Editor to the **Graph Model** placeholder in the **Ball3DBrain**
+3. Select the  **3DBallLearning** Learning Brain from the Scene hierarchy.
+5. Drag the `<brain_name>.tf` file from the Project window of
+   the Editor to the **Model** placeholder in the **3DBallLearning**
    inspector window.
 6. Press the :arrow_forward: button at the top of the Editor.
 

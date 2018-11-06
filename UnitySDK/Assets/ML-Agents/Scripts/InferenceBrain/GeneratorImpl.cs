@@ -50,6 +50,7 @@ namespace MLAgents.InferenceBrain
     {
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
+            tensor.Shape = new long[0];
             tensor.Data = new int[] {1};
         }
     }

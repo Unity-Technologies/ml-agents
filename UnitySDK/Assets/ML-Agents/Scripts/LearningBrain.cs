@@ -106,7 +106,11 @@ namespace MLAgents
             {
                 return;
             }
-            
+            if (_engine == null)
+            {
+                Debug.LogError($"No model was present for the Brain {name}.");
+                return;
+            }
             // Prepare the input tensors to be feed into the engine
             _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
             

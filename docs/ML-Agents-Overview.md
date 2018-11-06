@@ -224,7 +224,7 @@ inference can proceed.
 
 As mentioned previously, the ML-Agents toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
-In this mode, the only brain used is a **Learning Brain**. More 
+In this mode, the only Brain used is a **Learning Brain**. More 
 specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
 Communicator (this is the behavior with an External Brain). The Python API
@@ -244,10 +244,7 @@ time.
 To summarize: our built-in implementations are based on TensorFlow, thus, during
 training the Python API uses the observations it receives to learn a TensorFlow
 model. This model is then embedded within the Learning Brain during inference to
-generate the optimal actions for all Agents linked to that Brain. **Note that
-our Learning Brain is currently experimental as it is limited to TensorFlow
-models and leverages the third-party
-[TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp) library.**
+generate the optimal actions for all Agents linked to that Brain. 
 
 The
 [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
@@ -412,7 +409,7 @@ training process.
   observations for all its Agents to the Python API when dragged into the
   Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
   for training and later inference. Broadcasting is a feature which can be 
-  enabled all types of brains (Player, Learning, Heuristic) where the Agent
+  enabled all types of Brains (Player, Learning, Heuristic) where the Agent
   observations and actions are also sent to the Python API (despite the fact
   that the Agent is **not** controlled by the Python API). This feature is
   leveraged by Imitation Learning, where the observations and actions for a

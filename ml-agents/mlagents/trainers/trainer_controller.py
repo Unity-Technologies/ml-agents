@@ -148,7 +148,7 @@ class TrainerController(object):
         :param saver: Tensorflow saver for session.
         """
         for brain_name in self.trainers.keys():
-            self.trainers[brain_name].save_model(steps)
+            self.trainers[brain_name].save_model()
         self.logger.info('Saved Model')
 
     def _export_graph(self):

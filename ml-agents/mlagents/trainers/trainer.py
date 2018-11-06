@@ -139,12 +139,11 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def save_model(self, steps):
+    def save_model(self):
         """
         Saves the model
-        :param steps: The number of steps of training
         """
-        self.policy.save_model(steps)
+        self.policy.save_model(self.get_step)
 
     def export_model(self):
         """

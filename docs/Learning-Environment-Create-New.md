@@ -50,6 +50,7 @@ importing the ML-Agents assets into it:
    ML-Agents repository.
 3. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity Editor
    Project window.
+4. Setup the ML-Agents toolkit by following the instructions [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Basic-Guide.md#setting-up-the-ml-agents-toolkit-within-unity).
 
 Your Unity **Project** window should contain the following assets:
 
@@ -157,11 +158,11 @@ in the Inspector window.
 ## Add Brains
 
 The Brain object encapsulates the decision making process. An Agent sends its
-observations to its Brain and expects a decision in return. The type of the brain
+observations to its Brain and expects a decision in return. The type of the Brain
 (Learning, Heuristic or player) determines how the Brain makes decisions. 
 To create the Brain:
 
-1. Go to `Assets -> Create -> ML-Agents` and select the type of brain you want to
+1. Go to `Assets -> Create -> ML-Agents` and select the type of Brain you want to
    create. In this tutorial, we will create a **Learning Brain** and 
    a **Player Brain**.
 2. Name them `RollerBallBrain` and `RollerBallPlayer` respectively.
@@ -239,10 +240,10 @@ public class RollerAgent : Agent
     public Transform Target;
     public override void AgentReset()
     {
-        if (this.transform.position.y < -1.0)
+        if (this.transform.position.y < 0)
         {
             // The Agent fell
-            this.transform.position = Vector3.zero;
+            this.transform.position = new Vector3(0, 0.5f, 0);
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
         }
@@ -393,7 +394,7 @@ Academy to reset the environment. This RollerBall environment relies on the
 `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so
 it never resets the environment).
 
-It can also encourage an Agent to finish a task more quickly to assign a
+It can also encourage an Agent to finish a task more quickly by assigning a
 negative reward at each step:
 
 ```csharp
@@ -407,7 +408,7 @@ in the next step:
 
 ```csharp
 // Fell off platform
-if (this.transform.position.y < -1.0)
+if (this.transform.position.y < 0)
 {
     AddReward(-1.0f);
     Done();
@@ -440,7 +441,7 @@ public override void AgentAction(float[] vectorAction, string textAction)
     AddReward(-0.05f);
 
     // Fell off platform
-    if (this.transform.position.y < -1.0)
+    if (this.transform.position.y < 0)
     {
         AddReward(-1.0f);
         Done();
@@ -466,7 +467,7 @@ Brain asset to the Agent, changing some of the Agent Components properties, and
 setting the Brain properties so that they are compatible with our Agent code.
 
 1. In the Academy Inspector, add the `RollerBallBrain` and `RollerBallPlayer`
-   brains to the **Broadcast Hub**.
+   Brains to the **Broadcast Hub**.
 2. Select the RollerAgent GameObject to show its properties in the Inspector
    window.
 3. Drag the Brain `RollerBallPlayer` from the Project window to the 
@@ -478,31 +479,29 @@ setting the Brain properties so that they are compatible with our Agent code.
 Also, drag the Target GameObject from the Hierarchy window to the RollerAgent
 Target field.
 
-Finally, select the the `RollerBallBrain` and `RollerBallPlayer` brains assets
+Finally, select the the `RollerBallBrain` and `RollerBallPlayer` Brain assets
 so that you can edit their properties in the Inspector window. Set the following 
 properties on both of them:
 
-* `Vector Observation Space Type` = **Continuous**
 * `Vector Observation Space Size` = 6
 * `Vector Action Space Type` = **Continuous**
 * `Vector Action Space Size` = 2
-* `Brain Type` = **Player**
 
 Now you are ready to test the environment before training.
 
 ## Testing the Environment
 
 It is always a good idea to test your environment manually before embarking on
-an extended training run. The reason we have created the `RollerBallPlayer` brain
+an extended training run. The reason we have created the `RollerBallPlayer` Brain
 is so that we can control the Agent using direct keyboard
 control. But first, you need to define the keyboard to action mapping. Although
 the RollerAgent only has an `Action Size` of two, we will use one key to specify
 positive values and one to specify negative values for each action, for a total
 of four keys.
 
-1. Select the `RollerBallPlayer` brain to view its properties in the Inspector.
+1. Select the `RollerBallPlayer` Brain to view its properties in the Inspector.
 2. Expand the **Continuous Player Actions** dictionary (only visible when using
-   a player brain).
+   a **PlayerBrain**).
 3. Set **Size** to 4.
 4. Set the following mappings:
 

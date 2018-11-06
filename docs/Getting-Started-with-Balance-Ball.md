@@ -53,10 +53,10 @@ to speed up training since all twelve agents contribute to training in parallel.
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
 properties that control how the environment works. 
-The **Broadcast Hub** keeps track of which brains will send data during training,
-If a brain is added to the hub, his data will be sent to the external training
+The **Broadcast Hub** keeps track of which Brains will send data during training,
+If a Brain is added to the hub, his data will be sent to the external training
 process. If the `Control` checkbox is checked, the training process will be able to
-control the agents linked to the brain to train them.
+control the agents linked to the Brain to train them.
 The **Training** and **Inference Configuration** properties 
 set the graphics and timescale properties for the Unity application. 
 The Academy uses the **Training Configuration**  during training and the
@@ -89,16 +89,16 @@ environment around the Agents.
 ### Brain
 
 Brains are assets that exist in your project folder. The Ball3DAgents are connected
-to a brain, for example : the **Ball3DBrain**.
+to a Brain, for example : the **3DBallLearning**.
 A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
 returns the chosen action to the Agent. Thus, all Agents can share the same
 Brain, but act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
-You can create brain objects by selecting `Assets -> 
-Create -> ML-Agents -> Brain`. There are 3 kinds of brains :
-The **Learning Brain** is a brain that uses a Neural Network to take decisions.
+You can create Brain objects by selecting `Assets -> 
+Create -> ML-Agents -> Brain`. There are 3 kinds of Brains :
+The **Learning Brain** is a Brain that uses a Neural Network to take decisions.
 When the Brain is checked as `Control` in the Academy **Broadcast Hub**, the 
 external process will be taking decisions for the agents
 and generate a neural network when the training is over. You can also use the
@@ -225,7 +225,7 @@ environment first.
 The `--train` flag tells the ML-Agents toolkit to run in training mode.
 
 **Note**: You can train using an executable rather than the Editor. To do so,
-follow the intructions in
+follow the instructions in
 [Using an Executable](Learning-Environment-Executable.md).
 
 ### Observing Training Progress
@@ -273,18 +273,14 @@ Once the training process completes, and the training process saves the model
 use it with Agents having a **Learning Brain**.
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
 Either wait for the training process to close the window or press Ctrl+C at the 
-command-line prompt. If you simply close the window manually, the .bytes file 
+command-line prompt. If you simply close the window manually, the `.tf` file 
 containing the trained model is not exported into the ml-agents folder.
 
-### Setting up TensorFlowSharp Support
+### Setting up Inference Support
 
-Because TensorFlowSharp support is still experimental, it is disabled by
-default. In order to enable it, you must follow these steps. Please note that
-the `Learning` Brain mode will only be available once completing these steps.
-
-To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
-within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the
-Basic Guide page.
+In order to run neural network models inside of Unity, you will need to setup the
+Inference Engine with an appropriate backend. See [here](Inference-Engine.md) for more
+information.
 
 ### Embedding the trained model into Unity
 

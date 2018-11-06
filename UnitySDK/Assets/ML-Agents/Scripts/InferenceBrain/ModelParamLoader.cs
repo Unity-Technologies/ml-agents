@@ -131,7 +131,6 @@ namespace MLAgents.InferenceBrain
             }
             catch (Exception e)
             {
-                Debug.Log("Node not in graph: " + name + ". The following error occured : \n" + e);
                 return -1;
             }
             return (outputs[0].Data as int[])[0];
