@@ -302,14 +302,16 @@ class TrainerController(object):
                 take_action_memories, \
                 take_action_text, \
                 take_action_value, \
-                take_action_outputs \
-                    = {}, {}, {}, {}, {}
+                take_action_outputs, \
+                hidden_obs \
+                    = {}, {}, {}, {}, {}, {}
                 for brain_name, trainer in self.trainers.items():
                     if self.trainer_parameters_dict[brain_name]['trainer'] == "mappo":
                         (take_action_vector[brain_name],
                          take_action_memories[brain_name],
                          take_action_text[brain_name],
-                         take_action_outputs[brain_name]) = \
+                         take_action_outputs[brain_name],
+                         hidden_obs[brain_name]) = \
                             trainer.take_action(curr_info)
                     else:
                         (take_action_vector[brain_name],
@@ -326,16 +328,17 @@ class TrainerController(object):
                     if self.trainer_parameters_dict[brain_name]['trainer'] == 'mappo':
                         trainer.add_experiences(curr_info, new_info,
                                                 take_action_outputs[brain_name],
-                                                take_action_vector)
+                                                take_action_vector,
+                                                hidden_obs)
                     else:
                         trainer.add_experiences(curr_info, new_info,
                                                 take_action_outputs[brain_name])
                 for brain_name, trainer in self.trainers.items():
                         if self.trainer_parameters_dict[brain_name]['trainer'] == 'mappo':
-                            take_action_vector[brain_name] = trainer.simulate_action(curr_info)
+                            take_action_vector[brain_name], hidden_obs[brain_name] = trainer.simulate_action(curr_info)
                 for brain_name, trainer in self.trainers.items():
                     if self.trainer_parameters_dict[brain_name]['trainer'] == 'mappo':
-                        trainer.process_experiences(curr_info, new_info, take_action_vector)
+                        trainer.process_experiences(curr_info, new_info, take_action_vector, hidden_obs)
                     else:
                         trainer.process_experiences(curr_info, new_info)
                     if trainer.is_ready_update() and self.train_model \
