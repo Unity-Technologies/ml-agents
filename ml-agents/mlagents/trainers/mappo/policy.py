@@ -21,6 +21,7 @@ class MAPPOPolicy(Policy):
         self.has_updated = False
         self.use_curiosity = bool(trainer_params['use_curiosity'])
         self.n_agents = int(trainer_params['n_agents'])
+        self.h_size = int(trainer_params['hidden_units'])
 
         with self.graph.as_default():
             self.model = MAPPOModel(brain,
@@ -45,7 +46,8 @@ class MAPPOPolicy(Policy):
             self._initialize_graph()
 
         self.inference_dict = {'action': self.model.output, 'log_probs': self.model.all_log_probs,
-                               'entropy': self.model.entropy, 'learning_rate': self.model.learning_rate}
+                               'entropy': self.model.entropy, 'learning_rate': self.model.learning_rate,
+                               'hidden': self.model.hidden}
         if self.use_continuous_act:
             self.inference_dict['pre_action'] = self.model.output_pre
         if self.use_recurrent:
@@ -96,7 +98,9 @@ class MAPPOPolicy(Policy):
                      self.model.all_old_log_probs: mini_batch['action_probs'].reshape(
                          [-1, sum(self.model.act_size)]),
                      self.model.other_actions: mini_batch['other_actions'].reshape(
-                         [-1, self.n_agents, len(self.model.act_size)])}
+                         [-1, self.n_agents, len(self.model.act_size)]),
+                     self.model.other_hidden_obs: mini_batch['other_hidden_obs'].reshape(
+                         [-1, self.n_agents - 1, self.h_size])}
 
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch['actions_pre'].reshape(
@@ -171,7 +175,7 @@ class MAPPOPolicy(Policy):
         else:
             return None
 
-    def get_value_estimate(self, brain_info, idx, all_actions, brain_name):
+    def get_value_estimate(self, brain_info, idx, all_actions, other_hidden_obs):
         """
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
@@ -183,7 +187,8 @@ class MAPPOPolicy(Policy):
             [[-1]*len(self.model.act_size) if len(action) < len(self.model.act_size) else action for action in all_actions])
         all_actions = all_actions.reshape([-1, self.n_agents, len(self.model.act_size)])
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1,
-                     self.model.other_actions: all_actions}
+                     self.model.other_actions: all_actions,
+                     self.model.other_hidden_obs: [other_hidden_obs]}
         for i in range(len(brain_info.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [brain_info.visual_observations[i][idx]]
         if self.use_vec_obs:

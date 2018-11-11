@@ -133,14 +133,14 @@ class MAPPOTrainer(Trainer):
             return run_out['action'], run_out['memory_out'], None, \
                    run_out['value'], run_out
         else:
-            return run_out['action'], None, None, run_out
+            return run_out['action'], None, None, run_out, run_out['hidden']
 
     def simulate_action(self, all_brain_info: AllBrainInfo):
         curr_brain_info = all_brain_info[self.brain_name]
         if len(curr_brain_info.agents) == 0:
             return [], [], [], None, None
         run_out = self.policy.evaluate(curr_brain_info)
-        return run_out['action']
+        return run_out['action'], run_out['hidden']
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
@@ -186,7 +186,7 @@ class MAPPOTrainer(Trainer):
                               prev_text_actions, max_reacheds)
         return curr_info
 
-    def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs, all_actions):
+    def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs, all_actions, hidden):
         """
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
@@ -236,7 +236,8 @@ class MAPPOTrainer(Trainer):
                         self.training_buffer[agent_id]['action_mask'].append(
                             stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs['log_probs']
-                    value, other_actions = self.policy.get_value_estimate(stored_info, idx, all_actions, self.brain_name)
+                    other_hidden_obs = [hidden for i, hidden in enumerate(hidden[self.brain_name]) if i != idx]
+                    value, other_actions = self.policy.get_value_estimate(stored_info, idx, all_actions, other_hidden_obs)
                     values.append(value)
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(stored_info.previous_vector_actions[idx])
@@ -249,6 +250,9 @@ class MAPPOTrainer(Trainer):
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
                     self.training_buffer[agent_id]['value_estimates'].append(values[idx][0][0])
                     self.training_buffer[agent_id]['other_actions'].append(other_actions)
+                    #other_observations = [obs for i,obs in enumerate(stored_info.vector_observations) if i != idx]
+                    self.training_buffer[agent_id]['other_hidden_obs'].append(other_hidden_obs)
+                    #self.training_buffer[agent_id]['other_observations'].append(other_observations)
                     self.stats['value_estimate'].append(values[idx])
                     if agent_id not in self.cumulative_rewards:
                         self.cumulative_rewards[agent_id] = 0
@@ -262,7 +266,7 @@ class MAPPOTrainer(Trainer):
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
 
-    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo, all_actions):
+    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo, all_actions, hidden):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
@@ -285,7 +289,8 @@ class MAPPOTrainer(Trainer):
                     else:
                         bootstrapping_info = info
                         idx = l
-                    value_next, _ = self.policy.get_value_estimate(bootstrapping_info, idx, all_actions, self.brain_name)
+                    other_hidden_obs = [hidden for i, hidden in enumerate(hidden[self.brain_name]) if i != idx]
+                    value_next, _ = self.policy.get_value_estimate(bootstrapping_info, idx, all_actions, other_hidden_obs)
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(
                         rewards=self.training_buffer[agent_id]['rewards'].get_batch(),
