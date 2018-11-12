@@ -1,7 +1,5 @@
 import pytest
 
-import numpy as np
-
 from mlagents.envs import RpcCommunicator
 from mlagents.envs import UnityWorkerInUseException
 
@@ -11,6 +9,7 @@ def test_rpc_communicator_checks_port_on_create():
 
     with pytest.raises(UnityWorkerInUseException):
         second_comm = RpcCommunicator()
+        second_comm.close()
 
     first_comm.close()
 

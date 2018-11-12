@@ -60,7 +60,7 @@ class RpcCommunicator(Communicator):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             s.bind(("127.0.0.1", port))
-        except socket.error as e:
+        except socket.error:
             raise UnityWorkerInUseException(self.worker_id)
         finally:
             s.close()
