@@ -39,7 +39,7 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
     in the `Brain` GameObjects.
   * Agents have a `Brain` field in the Inspector, you need to drag the
     appropriate Brain ScriptableObject in it.
-  * Academies have a `Broadcast Hub` field in the inspector, which is
+  * The Academy has a `Broadcast Hub` field in the inspector, which is
     list of brains used in the scene.  You need to drag all `Brain`
     ScriptableObjects used in your scene into entries in this list.
 * You will need to delete the previous TensorFlowSharp package
