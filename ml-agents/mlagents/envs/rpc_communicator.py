@@ -57,6 +57,9 @@ class RpcCommunicator(Communicator):
             raise UnityWorkerInUseException(self.worker_id)
 
     def check_port(self, port):
+        """
+        Attempts to bind to the requested communicator port, checking if it is already in use.
+        """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             s.bind(("127.0.0.1", port))
