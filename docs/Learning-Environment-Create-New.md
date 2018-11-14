@@ -70,7 +70,7 @@ agent to seek, and a Sphere to represent the Agent itself.
 1. Right click in Hierarchy window, select 3D Object > Plane.
 2. Name the GameObject "Floor."
 3. Select Plane to view its properties in the Inspector window.
-4. Set Transform to Position = (0,0,0), Rotation = (0,0,0), Scale = (1,1,1).
+4. Set Transform to Position = (0, 0, 0), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Plane's Mesh Renderer, expand the Materials property and change the
     default-material to *LightGridFloorSquare* (or any suitable material of your choice).
 
@@ -85,7 +85,7 @@ different material from the list of all materials currently in the project.)
 1. Right click in Hierarchy window, select 3D Object > Cube.
 2. Name the GameObject "Target"
 3. Select Target to view its properties in the Inspector window.
-4. Set Transform to Position = (3,0.5,3), Rotation = (0,0,0), Scale = (1,1,1).
+4. Set Transform to Position = (3, 0.5, 3), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Cube's Mesh Renderer, expand the Materials property and change the
     default-material to *Block*.
 
@@ -96,7 +96,7 @@ different material from the list of all materials currently in the project.)
 1. Right click in Hierarchy window, select 3D Object > Sphere.
 2. Name the GameObject "RollerAgent"
 3. Select Target to view its properties in the Inspector window.
-4. Set Transform to Position = (0,0.5,0), Rotation = (0,0,0), Scale = (1,1,1).
+4. Set Transform to Position = (0, 0.5, 0), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Sphere's Mesh Renderer, expand the Materials property and change the
     default-material to *CheckerSquare*.
 6. Click **Add Component**.
@@ -558,6 +558,5 @@ have brain assets linked appropriately to your Agents and to the Academy.
 Keep in mind:
 
 * There can only be one Academy game object in a scene.
-* You can only train Learning Brains that have been added to the Academy's  
-    Broadcast Hub list.
+* You can only train Learning Brains that have been added to the Academy's Broadcast Hub list.
 
