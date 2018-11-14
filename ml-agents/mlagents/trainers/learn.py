@@ -2,7 +2,7 @@
 
 import logging
 
-import os
+import time
 import multiprocessing
 import numpy as np
 from docopt import docopt
@@ -108,3 +108,4 @@ def main():
         p = multiprocessing.Process(target=run_training, args=(i, run_seed, options))
         jobs.append(p)
         p.start()
+        time.sleep(3)
