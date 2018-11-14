@@ -2,8 +2,7 @@
 
 import logging
 
-import time
-import multiprocessing
+from multiprocessing import Process, Queue
 import numpy as np
 from docopt import docopt
 
@@ -11,7 +10,7 @@ from .trainer_controller import TrainerController
 from .exception import TrainerError
 
 
-def run_training(sub_id, run_seed, run_options):
+def run_training(sub_id, run_seed, run_options, q):
     """
     Launches training session.
     :param sub_id: Unique id for training session.
@@ -44,6 +43,7 @@ def run_training(sub_id, run_seed, run_options):
                            load_model, train_model, worker_id + sub_id,
                            keep_checkpoints, lesson, run_seed,
                            docker_target_name, trainer_config_path, no_graphics)
+    q.put(True)
     tc.start_learning()
 
 
@@ -105,7 +105,9 @@ def main():
     for i in range(num_runs):
         if seed == -1:
             run_seed = np.random.randint(0, 10000)
-        p = multiprocessing.Process(target=run_training, args=(i, run_seed, options))
+        q = Queue()
+        p = Process(target=run_training, args=(i, run_seed, options, q))
         jobs.append(p)
         p.start()
-        time.sleep(3)
+        while q.get() is not True:
+            continue
