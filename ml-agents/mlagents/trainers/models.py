@@ -339,6 +339,13 @@ class LearningModel(object):
         recurrent_output = tf.reshape(recurrent_output, shape=[-1, half_point])
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
+    def create_value_heads(self, stream_names, hidden_input):
+        self.value_heads = []
+        for name in stream_names:
+            value = tf.layers.dense(hidden_input, 1, name='{}_value'.format(name))
+            self.value_heads.append(value)
+        self.value = tf.mean(self.value_heads, 1)
+
     def create_cc_actor_critic(self, h_size, num_layers):
         """
         Creates Continuous control actor-critic model.
