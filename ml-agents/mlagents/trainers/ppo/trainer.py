@@ -480,7 +480,7 @@ class PPOTrainer(Trainer):
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
         if self.use_gail:
             gail_loss = self.policy.reward_signals['gail'].update(self.training_buffer,
-                                                                  n_sequences, 0)
+                                                                  128, 16)
             self.stats['Losses/GAIL Loss'].append(gail_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()

@@ -134,7 +134,7 @@ PyramidsLearning:
     sequence_length: 32
     use_gail: true
     use_entropy: false
-    extrinsic_strength: 1.0
+    extrinsic_strength: 0.0
     use_recurrent: false
     demo_path: ./demos/PyramidTime.demo
     entropy_strength: 0.0005
@@ -182,6 +182,9 @@ TennisLearning:
 
 CrawlerStaticLearning:
     normalize: true
+    use_gail: true
+    extrinsic_strength: 0.0
+    demo_path: ./demos/CrawlerDemo.demo
     num_epoch: 3
     time_horizon: 1000
     batch_size: 2024

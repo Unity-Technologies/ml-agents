@@ -5,8 +5,12 @@ from mlagents.trainers.models import LearningModel
 class GAILModel(object):
     def __init__(self, policy_model, h_size, lr, encoding_size):
         self.h_size = h_size
+        self.z_size = 32
+        self.beta = 0.1
         self.policy_model = policy_model
         self.encoding_size = encoding_size
+        self.use_vail = True
+        self.use_actions = False
         self.make_inputs()
         self.create_network()
         self.create_loss(lr)
@@ -75,7 +79,10 @@ class GAILModel(object):
 
     def create_encoder(self, state_in, action_in, done_in, reuse):
         with tf.variable_scope("model"):
-            concat_input = tf.concat([state_in, action_in, done_in], axis=1)
+            if self.use_actions:
+                concat_input = tf.concat([state_in, action_in, done_in], axis=1)
+            else:
+                concat_input = state_in
 
             hidden_1 = tf.layers.dense(
                 concat_input, self.h_size, activation=tf.nn.elu,
@@ -85,7 +92,21 @@ class GAILModel(object):
                 hidden_1, self.h_size, activation=tf.nn.elu,
                 name="d_hidden_2", reuse=reuse)
 
-            estimate = tf.layers.dense(hidden_2, 1, activation=tf.nn.sigmoid,
+            if self.use_vail:
+                # Latent representation
+                self.z_mean = tf.layers.dense(hidden_2, self.z_size, reuse=reuse)
+                self.z_log_sigma_sq = tf.layers.dense(hidden_2, self.z_size, reuse=reuse)
+                self.z_sigma_sq = tf.exp(self.z_log_sigma_sq)
+                self.z_sigma = tf.sqrt(self.z_sigma_sq)
+                self.noise = tf.random_normal(shape=[self.z_size])
+
+                # Sampled latent code
+                self.z = self.z_mean + self.z_sigma * self.noise
+                estimate_input = self.z
+            else:
+                estimate_input = hidden_2
+
+            estimate = tf.layers.dense(estimate_input, 1, activation=tf.nn.sigmoid,
                                        name="d_estimate", reuse=reuse)
             return estimate
 
@@ -100,7 +121,16 @@ class GAILModel(object):
     def create_loss(self, learning_rate):
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
-        self.loss = -tf.reduce_mean(
+
+        self.disc_loss = -tf.reduce_mean(
             tf.log(self.expert_estimate + 1e-10) + tf.log(1.0 - self.policy_estimate + 1e-10))
+
+        if self.use_vail:
+            # KL divergence loss (encourage latent representation to be normal)
+            self.kl_loss = -0.5 * tf.reduce_sum(
+                1 + self.z_log_sigma_sq - tf.square(self.z_mean) - tf.exp(self.z_log_sigma_sq), 1)
+            self.loss = self.beta * self.kl_loss + self.disc_loss
+        else:
+            self.loss = self.disc_loss
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
