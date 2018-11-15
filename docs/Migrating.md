@@ -40,8 +40,10 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
   * Agents have a `Brain` field in the Inspector, you need to drag the
     appropriate Brain ScriptableObject in it.
   * The Academy has a `Broadcast Hub` field in the inspector, which is
-    list of brains used in the scene.  You need to drag all `Brain`
-    ScriptableObjects used in your scene into entries in this list.
+    list of brains used in the scene.  To train or control your Brain 
+    from the `mlagents-learn` Python script, you need to drag the relevant 
+    `LearningBrain` ScriptableObjects used in your scene into entries 
+    into this list.
 * You will need to delete the previous TensorFlowSharp package
   and install the new one to do inference. To correctly delete the previous
   TensorFlowSharp package, Delete all of the files under `ML-Agents/Plugins`
