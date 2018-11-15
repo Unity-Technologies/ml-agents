@@ -52,7 +52,7 @@ namespace MLAgents.InferenceBrain
         /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
         public IEnumerable<Tensor> GetInputTensors()
         {
-            return _engine?.InputFeatures();
+            return _engine?.GetModelMetadata().InputFeatures();
         }
 
         /// <summary>
@@ -115,25 +115,14 @@ namespace MLAgents.InferenceBrain
         /// <returns>The value of the scalar variable in the model. (-1 if not found)</returns>
         private int GetIntScalar(string name)
         {
-            var outputs = new Tensor[]
-            {
-                new Tensor()
-                {
-                    Name = name,
-                    ValueType = Tensor.TensorType.Integer,
-                    Shape = new long[] { },
-                    Data = new long[1]
-                },
-            };
             try
             {
-                _engine.ExecuteGraph(new Tensor[0], outputs);
+                return _engine.GetModelMetadata().GetIntConstant(name);
             }
             catch (Exception e)
             {
                 return -1;
             }
-            return (outputs[0].Data as int[])[0];
         }
 
         /// <summary>
