@@ -159,12 +159,12 @@ class Trainer(object):
         """
         if global_step % self.trainer_parameters['summary_freq'] == 0 and global_step != 0:
             is_training = "Training." if self.is_training and self.get_step <= self.get_max_steps else "Not Training."
-            if len(self.stats['Environment/Cumulative Reward']) > 0:
-                mean_reward = np.mean(self.stats['Environment/Cumulative Reward'])
+            if len(self.stats['Environment/Extrinsic Reward']) > 0:
+                mean_reward = np.mean(self.stats['Environment/Extrinsic Reward'])
                 logger.info(" {}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}. {}"
                             .format(self.run_id, self.brain_name,
                                     min(self.get_step, self.get_max_steps),
-                                    mean_reward, np.std(self.stats['Environment/Cumulative Reward']),
+                                    mean_reward, np.std(self.stats['Environment/Extrinsic Reward']),
                                     is_training))
             else:
                 logger.info(" {}: {}: Step: {}. No episode was completed since last summary. {}"

@@ -134,7 +134,7 @@ PyramidsLearning:
     sequence_length: 32
     use_gail: true
     use_entropy: false
-    extrinsic_strength: 0.0
+    extrinsic_strength: 1.0
     use_recurrent: false
     demo_path: ./demos/PyramidTime.demo
     entropy_strength: 0.0005

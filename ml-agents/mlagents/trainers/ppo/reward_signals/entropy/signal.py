@@ -6,6 +6,7 @@ class EntropySignal(RewardSignal):
         self.policy = policy
         self.strength = signal_strength
         self.stat_name = 'Policy/Entropy Reward'
+        self.value_name = 'Policy/Entropy Value Estimate'
 
     def evaluate(self, current_info, next_info):
         run_out = self.policy.evaluate(current_info)
