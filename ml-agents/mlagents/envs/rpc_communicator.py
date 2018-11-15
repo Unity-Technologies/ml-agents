@@ -43,7 +43,9 @@ class RpcCommunicator(Communicator):
         self.create_server()
 
     def create_server(self):
-        # Attempt to open a socket, failing if the port is in use.
+        """
+        Creates the GRPC server.
+        """
         self.check_port(self.port)
 
         try:
@@ -51,7 +53,7 @@ class RpcCommunicator(Communicator):
             self.server = grpc.server(ThreadPoolExecutor(max_workers=10))
             self.unity_to_external = UnityToExternalServicerImplementation()
             add_UnityToExternalServicer_to_server(self.unity_to_external, self.server)
-            self.server.add_insecure_port('[::]:' + str(self.port))
+            self.server.add_insecure_port('localhost:' + str(self.port))
             self.server.start()
         except:
             raise UnityWorkerInUseException(self.worker_id)
@@ -62,7 +64,7 @@ class RpcCommunicator(Communicator):
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            s.bind(("127.0.0.1", port))
+            s.bind(("localhost", port))
         except socket.error:
             raise UnityWorkerInUseException(self.worker_id)
         finally:
