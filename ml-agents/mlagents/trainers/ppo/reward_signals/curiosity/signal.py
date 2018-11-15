@@ -8,6 +8,7 @@ class CuriositySignal(RewardSignal):
         self.policy = policy
         self.strength = strength
         self.stat_name = 'Policy/Curiosity Reward'
+        self.value_name = 'Policy/Curiosity Value Estimate'
         self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
         self.update_dict = {'forward_loss': self.model.forward_loss,
                             'inverse_loss': self.model.inverse_loss,

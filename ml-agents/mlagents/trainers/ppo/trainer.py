@@ -64,13 +64,16 @@ class PPOTrainer(Trainer):
             stats['Losses/Forward Loss'] = []
             stats['Losses/Inverse Loss'] = []
             stats['Policy/Curiosity Reward'] = []
+            stats['Policy/Curiosity Value Estimate'] = []
             self.collected_rewards['curiosity'] = {}
         if self.use_gail:
             stats['Losses/GAIL Loss'] = []
             stats['Policy/GAIL Reward'] = []
+            stats['Policy/GAIL Value Estimate'] = []
             self.collected_rewards['gail'] = {}
         if self.use_entropy:
             stats['Policy/Entropy Reward'] = []
+            stats['Policy/Entropy Value Estimate'] = []
             self.collected_rewards['entropy'] = {}
         self.stats = stats
 
@@ -127,11 +130,35 @@ class PPOTrainer(Trainer):
         """
         Increment the step count of the trainer and Updates the last reward
         """
-        if len(self.stats["Environment/Cumulative Reward"]) > 0:
-            mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
+        if len(self.stats['Environment/Extrinsic Reward']) > 0:
+            mean_reward = np.mean(self.stats['Environment/Extrinsic Reward'])
             self.policy.update_reward(mean_reward)
         self.policy.increment_step()
         self.step = self.policy.get_current_step()
+
+    def take_action(self, all_brain_info: AllBrainInfo):
+        """
+        Decides actions given observations information, and takes them in environment.
+        :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
+        :return: a tuple containing action, memories, values and an object
+        to be passed to add experiences
+        """
+        curr_brain_info = all_brain_info[self.brain_name]
+        if len(curr_brain_info.agents) == 0:
+            return [], [], [], None, None
+
+        run_out = self.policy.evaluate(curr_brain_info)
+
+        for name, signal in self.policy.reward_signals.items():
+            self.stats[signal.value_name].append(np.mean(run_out['value'][name]))
+        self.stats['Policy/Entropy'].append(run_out['entropy'].mean())
+        self.stats['Policy/Learning Rate'].append(run_out['learning_rate'])
+        mean_values = np.mean(np.array(list(run_out['value'].values())), axis=0).flatten()
+        if self.policy.use_recurrent:
+            return run_out['action'], run_out['memory_out'], None, \
+                   mean_values, run_out
+        else:
+            return run_out['action'], None, None, mean_values, run_out
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
@@ -292,9 +319,10 @@ class PPOTrainer(Trainer):
                     for name, reward in tmp_rewards_dict.items():
                         self.training_buffer[agent_id]['{}_rewards'.format(name)].append(
                             tmp_rewards_dict[name][0][next_idx])
+                        self.training_buffer[agent_id]['{}_value_estimates'.format(name)]\
+                            .append(value[name][idx][0])
 
                     self.training_buffer[agent_id]['action_probs'].append(a_dist[idx])
-                    self.training_buffer[agent_id]['value_estimates'].append(value[idx][0])
 
                     for idx, (name, rewards) in enumerate(self.collected_rewards.items()):
                         if agent_id not in rewards:
@@ -334,34 +362,43 @@ class PPOTrainer(Trainer):
                 else:
                     bootstrapping_info = info
                     idx = l
-                value_next_bootstrap = self.policy.get_value_estimate(bootstrapping_info, idx)
+                value_next_bootstrap = self.policy.get_value_estimates(bootstrapping_info, idx)
                 if info.local_done[l] and not info.max_reached[l]:
                     value_next = 0.0
                 else:
                     value_next = value_next_bootstrap
 
                 tmp_advantages = []
-                for name in self.policy.reward_signals.keys():
+                tmp_returns = []
+                for idx, name in enumerate(self.policy.reward_signals.keys()):
                     if name == 'extrinsic':
                         bootstrap_value = value_next
+                        if isinstance(bootstrap_value, dict):
+                            bootstrap_value = bootstrap_value[name]
                     else:
-                        bootstrap_value = value_next_bootstrap
+                        bootstrap_value = value_next_bootstrap[name]
+
+                    local_rewards = self.training_buffer[agent_id][
+                            '{}_rewards'.format(name)].get_batch()
+                    local_value_estimates = self.training_buffer[agent_id][
+                            '{}_value_estimates'.format(name)].get_batch()
                     local_advantage = get_gae(
-                        rewards=self.training_buffer[agent_id]['{}_rewards'.format(name)].get_batch(),
-                        value_estimates=self.training_buffer[agent_id][
-                            'value_estimates'].get_batch(),
+                        rewards=local_rewards,
+                        value_estimates=local_value_estimates,
                         value_next=bootstrap_value,
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd'])
-                    self.training_buffer[agent_id]['{}_advantages'.format(name)].set(
-                        local_advantage)
+                    local_return = local_advantage + self.training_buffer[agent_id][
+                            '{}_value_estimates'.format(name)].get_batch()
+                    self.training_buffer[agent_id]['{}_returns'.format(name)].set(local_return)
+                    self.training_buffer[agent_id]['{}_advantage'.format(name)].set(local_advantage)
                     tmp_advantages.append(local_advantage)
+                    tmp_returns.append(local_return)
 
                 global_advantages = list(np.mean(np.array(tmp_advantages), axis=0))
+                global_returns = list(np.mean(np.array(tmp_returns), axis=0))
                 self.training_buffer[agent_id]['advantages'].set(global_advantages)
-                self.training_buffer[agent_id]['discounted_returns'].set(
-                    self.training_buffer[agent_id]['advantages'].get_batch()
-                    + self.training_buffer[agent_id]['value_estimates'].get_batch())
+                self.training_buffer[agent_id]['discounted_returns'].set(global_returns)
 
                 self.training_buffer.append_update_buffer(
                     agent_id,

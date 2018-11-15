@@ -27,7 +27,15 @@ class PPOPolicy(Policy):
         self.use_curiosity = bool(trainer_params['use_curiosity'])
         self.use_gail = bool(trainer_params['use_gail'])
         self.use_entropy = bool(trainer_params['use_entropy'])
-        self.reward_signals = {}
+        self.reward_signals = {'extrinsic': ExtrinsicSignal(
+            float(trainer_params['extrinsic_strength']))}
+
+        if self.use_curiosity:
+            self.reward_signals['curiosity'] = None
+        if self.use_gail:
+            self.reward_signals['gail'] = None
+        if self.use_entropy:
+            self.reward_signals['entropy'] = None
 
         with self.graph.as_default():
             self.model = PPOModel(brain,
@@ -41,11 +49,9 @@ class PPOPolicy(Policy):
                                   num_layers=int(trainer_params['num_layers']),
                                   m_size=self.m_size,
                                   use_curiosity=bool(trainer_params['use_curiosity']),
-                                  seed=seed)
+                                  seed=seed,
+                                  stream_names=list(self.reward_signals.keys()))
             self.model.create_ppo_optimizer()
-
-            self.reward_signals['extrinsic'] = ExtrinsicSignal(
-                float(trainer_params['extrinsic_strength']))
 
             if self.use_curiosity:
                 strength = float(trainer_params['curiosity_strength'])
@@ -126,17 +132,16 @@ class PPOPolicy(Policy):
         :param mini_batch: Experience batch.
         :return: Output from update process.
         """
-        feed_dict = {
-            self.model.batch_size: num_sequences,
-            self.model.sequence_length: self.sequence_length,
-            self.model.mask_input: mini_batch["masks"].flatten(),
-            self.model.returns_holder: mini_batch["discounted_returns"].flatten(),
-            self.model.old_value: mini_batch["value_estimates"].flatten(),
-            self.model.advantage: mini_batch["advantages"].reshape([-1, 1]),
-            self.model.all_old_log_probs: mini_batch["action_probs"].reshape(
-                [-1, sum(self.model.act_size)]
-            ),
-        }
+        feed_dict = {self.model.batch_size: num_sequences,
+                     self.model.sequence_length: self.sequence_length,
+                     self.model.mask_input: mini_batch['masks'].flatten(),
+                     self.model.advantage: mini_batch['advantages'].reshape([-1, 1]),
+                     self.model.all_old_log_probs: mini_batch['action_probs'].reshape(
+                         [-1, sum(self.model.act_size)])}
+        for i, name in enumerate(self.reward_signals.keys()):
+            feed_dict[self.model.returns_holders[i]] = mini_batch['{}_returns'.format(name)].flatten()
+            feed_dict[self.model.old_values[i]] = mini_batch['{}_value_estimates'.format(name)].flatten()
+
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch["actions_pre"].reshape(
                 [-1, self.model.act_size[0]]
@@ -173,7 +178,7 @@ class PPOPolicy(Policy):
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
-    def get_value_estimate(self, brain_info, idx):
+    def get_value_estimates(self, brain_info, idx):
         """
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.

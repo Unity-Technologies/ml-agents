@@ -10,7 +10,7 @@ logger = logging.getLogger("mlagents.trainers")
 class LearningModel(object):
     _version_number_ = 2
 
-    def __init__(self, m_size, normalize, use_recurrent, brain, seed):
+    def __init__(self, m_size, normalize, use_recurrent, brain, seed, stream_names):
         tf.set_random_seed(seed)
         self.brain = brain
         self.vector_in = None
@@ -22,6 +22,7 @@ class LearningModel(object):
         )
         self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name="masks")
         self.mask = tf.cast(self.mask_input, tf.int32)
+        self.stream_names = stream_names
         self.use_recurrent = use_recurrent
         if self.use_recurrent:
             self.m_size = m_size
@@ -340,11 +341,11 @@ class LearningModel(object):
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     def create_value_heads(self, stream_names, hidden_input):
-        self.value_heads = []
+        self.value_heads = {}
         for name in stream_names:
             value = tf.layers.dense(hidden_input, 1, name='{}_value'.format(name))
-            self.value_heads.append(value)
-        self.value = tf.mean(self.value_heads, 1)
+            self.value_heads[name] = value
+        self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
     def create_cc_actor_critic(self, h_size, num_layers):
         """
@@ -415,8 +416,7 @@ class LearningModel(object):
 
         self.entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + log_sigma_sq)
 
-        value = tf.layers.dense(hidden_value, 1, activation=None)
-        self.value = tf.identity(value, name="value_estimate")
+        self.create_value_heads(self.stream_names, hidden_value)
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, self.act_size[0]], dtype=tf.float32, name="old_probabilities"
@@ -488,8 +488,7 @@ class LearningModel(object):
         self.output = tf.identity(output)
         self.normalized_logits = tf.identity(normalized_logits, name="action")
 
-        value = tf.layers.dense(hidden, 1, activation=None)
-        self.value = tf.identity(value, name="value_estimate")
+        self.create_value_heads(self.stream_names, hidden)
 
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"

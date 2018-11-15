@@ -5,7 +5,8 @@ from mlagents.trainers.ppo.reward_signals import RewardSignal
 
 class ExtrinsicSignal(RewardSignal):
     def __init__(self, signal_strength):
-        self.stat_name = 'Environment/Cumulative Reward'
+        self.stat_name = 'Environment/Extrinsic Reward'
+        self.value_name = 'Policy/Extrinsic Value Estimate'
         self.strength = signal_strength
 
     def evaluate(self, current_info, next_info):
