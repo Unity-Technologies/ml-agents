@@ -41,7 +41,8 @@ class GAILSignal(RewardSignal):
         policy_buffer.update_buffer.shuffle()
         batch_losses = []
         n_sequences = n_sequences // 2
-        possible_demo_batches = len(self.demonstration_buffer.update_buffer['actions']) // n_sequences
+        possible_demo_batches = len(
+            self.demonstration_buffer.update_buffer['actions']) // n_sequences
         possible_policy_batches = len(policy_buffer.update_buffer['actions']) // n_sequences
         possible_batches = min(possible_policy_batches, possible_demo_batches)
         if max_batches == 0:
@@ -96,7 +97,14 @@ class GAILSignal(RewardSignal):
                 [-1, self.policy.vec_obs_size])
             feed_dict[self.model.obs_in_expert] = mini_batch_demo['vector_obs'].reshape(
                 [-1, self.policy.vec_obs_size])
-        loss, _ = self.policy.sess.run([self.model.loss, self.model.update_batch],
-                                       feed_dict=feed_dict)
+
+        if self.model.use_vail:
+            loss, _, kl_loss = self.policy.sess.run([self.model.loss, self.model.update_batch,
+                                                     self.model.kl_loss],
+                                                    feed_dict=feed_dict)
+            self.model.update_beta(kl_loss)
+        else:
+            loss, _ = self.policy.sess.run([self.model.loss, self.model.update_batch],
+                                           feed_dict=feed_dict)
         run_out = {'gail_loss': loss}
         return run_out

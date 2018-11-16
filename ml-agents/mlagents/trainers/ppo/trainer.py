@@ -388,6 +388,8 @@ class PPOTrainer(Trainer):
                         value_next=bootstrap_value,
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd'])
+                    if name == 'extrinsic':
+                        local_advantage *= 0.0
                     local_return = local_advantage + self.training_buffer[agent_id][
                             '{}_value_estimates'.format(name)].get_batch()
                     self.training_buffer[agent_id]['{}_returns'.format(name)].set(local_return)
@@ -480,7 +482,7 @@ class PPOTrainer(Trainer):
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
         if self.use_gail:
             gail_loss = self.policy.reward_signals['gail'].update(self.training_buffer,
-                                                                  128, 16)
+                                                                  32, 100)
             self.stats['Losses/GAIL Loss'].append(gail_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()

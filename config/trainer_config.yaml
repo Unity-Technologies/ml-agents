@@ -184,7 +184,7 @@ CrawlerStaticLearning:
     normalize: true
     use_gail: true
     extrinsic_strength: 0.0
-    demo_path: ./demos/CrawlerDemo.demo
+    demo_path: ./demos/CrawlerDemo2.demo
     num_epoch: 3
     time_horizon: 1000
     batch_size: 2024
