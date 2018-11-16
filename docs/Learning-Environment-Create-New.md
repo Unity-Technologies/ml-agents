@@ -505,8 +505,8 @@ in the `config/trainer_config.yaml` file (in your ml-agents folder), the
 RollerAgent takes about 300,000 steps to train. However, you can change the 
 following hyperparameters  to speed up training considerably (to under 20,000 steps):
 
-    batch_size: 1
-    buffer_size: 10
+    batch_size: 10
+    buffer_size: 100
 
 Since this example creates a very simple training environment with only a few inputs 
 and outputs, using small batch and buffer sizes speeds up the training considerably. 
