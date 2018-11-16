@@ -10,10 +10,10 @@ class GAILModel(object):
         self.policy_model = policy_model
         self.encoding_size = encoding_size
         self.use_vail = True
-        self.use_actions = False
+        self.use_actions = True
         self.make_inputs()
         self.create_network()
-        self.create_loss(lr)
+        self.create_loss(5e-5)
 
     def make_inputs(self):
         self.done_expert = tf.placeholder(
@@ -118,6 +118,10 @@ class GAILModel(object):
         self.discriminator_score = tf.reshape(self.policy_estimate, [-1], name="GAIL_reward")
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
 
+    def update_beta(self, kl_div):
+        self.beta = max(0, self.beta + 1e-5 * (kl_div - 0.5))
+        print(self.beta, kl_div)
+
     def create_loss(self, learning_rate):
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
@@ -127,9 +131,9 @@ class GAILModel(object):
 
         if self.use_vail:
             # KL divergence loss (encourage latent representation to be normal)
-            self.kl_loss = -0.5 * tf.reduce_sum(
-                1 + self.z_log_sigma_sq - tf.square(self.z_mean) - tf.exp(self.z_log_sigma_sq), 1)
-            self.loss = self.beta * self.kl_loss + self.disc_loss
+            self.kl_loss = tf.reduce_mean(-0.5 * tf.reduce_sum(
+                1 + self.z_log_sigma_sq - tf.square(self.z_mean) - tf.exp(self.z_log_sigma_sq), 1))
+            self.loss = self.beta * (self.kl_loss - 0.5) + self.disc_loss
         else:
             self.loss = self.disc_loss
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
