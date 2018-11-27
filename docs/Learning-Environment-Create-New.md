@@ -351,7 +351,8 @@ Target cube.
 
 The RollerAgent calculates the distance to detect when it reaches the target.
 When it does, the code calls the `Agent.SetReward()` method to assign a
-reward of 1.0 and marks the agent as finished by calling Agent to `Done()` method.
+reward of 1.0 and marks the agent as finished by calling the `Done()` method 
+on the Agent.
 
 ```csharp
 float distanceToTarget = Vector3.Distance(this.transform.position,
@@ -371,7 +372,7 @@ Academy to reset the environment. This RollerBall environment relies on the
 `ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so
 it never resets the environment).
 
-Finally, if the Agent falls off the platform,  set the Agent to done so that it can resets itself:
+Finally, if the Agent falls off the platform,  set the Agent to done so that it can reset itself:
 
 ```csharp
 // Fell off platform
