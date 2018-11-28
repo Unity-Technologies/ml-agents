@@ -214,23 +214,6 @@ namespace MLAgents.InferenceBrain
 
                         return inputs;
                 }
-
-                public IEnumerable<Tensor> OutputFeatures()
-                {
-                        // In TF, any op can be an output
-                        List<Tensor> outputs = new List<Tensor>();
-                        foreach (var op in m_graph.GetEnumerator())
-                        {
-                                outputs.Add(GetOpMetadata(op));
-                        }
-
-                        return outputs;
-                }
-
-                public bool AllocateOutputs()
-                {
-                        return false;
-                }
         }
 }
 #endif
