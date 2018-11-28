@@ -1,7 +1,0 @@
-fileFormatVersion: 2
-guid: 472ed359e918d443b8c58ebd85ad95a3
-ScriptedImporter:
-  userData: TensorFlow
-  assetBundleName: 
-  assetBundleVariant: 
-  script: {fileID: 11500000, guid: 4b15384ff8c114abcb34267954bfe23a, type: 3}
