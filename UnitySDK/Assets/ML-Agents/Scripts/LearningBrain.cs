@@ -136,8 +136,8 @@ namespace MLAgents
             if (agentInfos.Count > 0)
             {
                 throw new UnityAgentsException(string.Format(
-                    @"The brain {0} was set to inference mode but the Tensorflow 
-                        library is not present in the Unity project.",
+                    "The brain {0} was set to inference mode but the Tensorflow library is not " +
+                    "present in the Unity project.",
                     name));
             }
 #endif
