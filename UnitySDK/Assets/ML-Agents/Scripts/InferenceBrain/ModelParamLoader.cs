@@ -128,7 +128,7 @@ namespace MLAgents.InferenceBrain
             {
                 _engine.ExecuteGraph(new Tensor[0], outputs);
             }
-            catch (Exception e)
+            catch
             {
                 return -1;
             }
