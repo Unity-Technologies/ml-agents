@@ -95,8 +95,9 @@ namespace MLAgents
 #if ENABLE_TENSORFLOW
             return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
 #else
-            return new List<string>(){"You need to install and enable the TensorflowSharp plugin " +
-                                      "in order to use inference. "};
+            return new List<string>(){
+                "You need to install the TensorflowSharp plugin and add the ENABLE_TENSORFLOW " +
+                "flag in your Player Settings in order to use inference. "};
 #endif
         }
 
