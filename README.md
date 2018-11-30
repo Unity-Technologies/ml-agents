@@ -83,7 +83,7 @@ through Unity Connect and GitHub:
   make sure to include as much detail as possible.
 
 For any other questions or feedback, connect directly with the ML-Agents
-team at ml-agents@unity3d.com.
+team at ml-agents@unity3d.com. You can also fill out the [survey](https://github.com/Unity-Technologies/ml-agents/issues/1454) to let us know about your thoughts. 
 
 ## Translations
 
