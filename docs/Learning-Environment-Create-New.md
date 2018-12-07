@@ -154,7 +154,8 @@ public class RollerAcademy : Academy { }
 
 The default settings for the Academy properties are also fine for this
 environment, so we don't need to change anything for the RollerAcademy component
-in the Inspector window.
+in the Inspector window. You may not have the RollerBrain in the Broadcast Hub yet, 
+more on that later. 
 
 ![The Academy properties](images/mlagents-NewTutAcademy.png)
 
