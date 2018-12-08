@@ -43,7 +43,7 @@ Typical Range: `0.8` - `0.995`
 
 ### Lambda
 
-`lambd` corresponds to the `lambda` parameter used when calculating the
+`lambda` corresponds to the `lambda` parameter used when calculating the
 Generalized Advantage Estimate ([GAE](https://arxiv.org/abs/1506.02438)). This
 can be thought of as how much the agent relies on its current value estimate
 when calculating an updated value estimate. Low values correspond to relying
