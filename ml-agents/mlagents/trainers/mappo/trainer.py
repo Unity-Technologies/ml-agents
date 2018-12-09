@@ -131,7 +131,7 @@ class MAPPOTrainer(Trainer):
         self.stats['learning_rate'].append(run_out['learning_rate'])
         if self.policy.use_recurrent:
             return run_out['action'], run_out['memory_out'], None, \
-                   run_out['value'], run_out
+                   run_out, run_out['hidden']
         else:
             return run_out['action'], None, None, run_out, run_out['hidden']
 
@@ -236,7 +236,9 @@ class MAPPOTrainer(Trainer):
                         self.training_buffer[agent_id]['action_mask'].append(
                             stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs['log_probs']
-                    other_hidden_obs = [hidden for i, hidden in enumerate(hidden[self.brain_name]) if i != idx]
+                    other_hidden_obs = []
+                    for brain_name in hidden.keys():
+                        other_hidden_obs += [list(hidden) for i, hidden in enumerate(list(hidden[brain_name])) if (i != idx or brain_name != self.brain_name)]
                     value, other_actions = self.policy.get_value_estimate(stored_info, idx, all_actions, other_hidden_obs)
                     values.append(value)
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
@@ -289,7 +291,9 @@ class MAPPOTrainer(Trainer):
                     else:
                         bootstrapping_info = info
                         idx = l
-                    other_hidden_obs = [hidden for i, hidden in enumerate(hidden[self.brain_name]) if i != idx]
+                    other_hidden_obs = []
+                    for brain_name in hidden.keys():
+                        other_hidden_obs += [list(hidden) for i, hidden in enumerate(list(hidden[brain_name])) if (i != idx or brain_name != self.brain_name)]
                     value_next, _ = self.policy.get_value_estimate(bootstrapping_info, idx, all_actions, other_hidden_obs)
                 self.training_buffer[agent_id]['advantages'].set(
                     get_gae(

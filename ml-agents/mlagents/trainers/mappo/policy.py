@@ -100,7 +100,8 @@ class MAPPOPolicy(Policy):
                      self.model.other_actions: mini_batch['other_actions'].reshape(
                          [-1, self.n_agents, len(self.model.act_size)]),
                      self.model.other_hidden_obs: mini_batch['other_hidden_obs'].reshape(
-                         [-1, self.n_agents - 1, self.h_size])}
+                         [-1, self.n_agents - 1, self.model.hidden.shape[1]])}
+
 
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch['actions_pre'].reshape(
