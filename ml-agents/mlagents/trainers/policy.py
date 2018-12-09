@@ -22,7 +22,7 @@ class Policy(object):
     Contains a learning model, and the necessary
     functions to interact with it to perform evaluate and updating.
     """
-    possible_output_nodes = ['action', 'value_estimate',
+    possible_output_nodes = ['action',# 'value_estimate',
                              'action_probs', 'recurrent_out', 'memory_size']
 
     def __init__(self, seed, brain, trainer_parameters):

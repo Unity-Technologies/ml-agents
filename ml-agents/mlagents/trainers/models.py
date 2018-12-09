@@ -374,7 +374,7 @@ class LearningModel(object):
         :param num_layers: Number of hidden linear layers.
         """
         hidden_streams = self.create_observation_streams(1, h_size, num_layers)
-        hidden = hidden_streams[0]
+        self.hidden = hidden_streams[0]
 
         if self.use_recurrent:
             tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
@@ -383,17 +383,17 @@ class LearningModel(object):
             prev_action_oh = tf.concat([
                 tf.one_hot(self.prev_action[:, i], self.act_size[i]) for i in
                 range(len(self.act_size))], axis=1)
-            hidden = tf.concat([hidden, prev_action_oh], axis=1)
+            self.hidden = tf.concat([self.hidden, prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32,
                                             name='recurrent_in')
-            hidden, memory_out = self.create_recurrent_encoder(hidden, self.memory_in,
+            self.hidden, memory_out = self.create_recurrent_encoder(self.hidden, self.memory_in,
                                                                self.sequence_length)
             self.memory_out = tf.identity(memory_out, name='recurrent_out')
 
         policy_branches = []
         for size in self.act_size:
-            policy_branches.append(tf.layers.dense(hidden, size, activation=None, use_bias=False,
+            policy_branches.append(tf.layers.dense(self.hidden, size, activation=None, use_bias=False,
                                       kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01)))
 
         self.all_log_probs = tf.concat([branch for branch in policy_branches], axis=1, name="action_probs")
@@ -405,13 +405,17 @@ class LearningModel(object):
         self.output = tf.identity(output, name="action")
 
         self.other_actions = tf.placeholder(shape=[None, n_agents, len(self.act_size)], dtype=tf.int32, name='other_actions')
-        # for now let's assume that the action space is the same for all brains.
+        #TODO: Action space not necessarely the same for all brains.
         self.other_actions_one_hot = tf.concat([
-            tf.one_hot(self.other_actions[:, i, :], self.act_size[i]) for i in range(len(self.act_size))], axis=2)
-        self.other_actions_one_hot = tf.reshape(self.other_actions_one_hot, [-1, sum(self.act_size)*(n_agents - 1)])
-        hidden = tf.concat([hidden, self.other_actions_one_hot], axis=1)
+            tf.one_hot(self.other_actions[:, :, i], self.act_size[i]) for i in range(len(self.act_size))], axis=2)
+        self.other_actions_one_hot = tf.reshape(self.other_actions_one_hot, [-1, sum(self.act_size)*n_agents])
+        #TODO: Allow also visual observations
+        self.other_hidden_obs = tf.placeholder(shape=[None, n_agents - 1, self.hidden.shape[1]], dtype=tf.float32, name='other_hidden_obs')
+        other_hidden_obs = tf.reshape(self.other_hidden_obs, [-1, self.hidden.shape[1]*(n_agents - 1)])
+        centralized_hidden = tf.concat([self.hidden, self.other_actions_one_hot, other_hidden_obs], axis=1)
 
-        value = tf.layers.dense(hidden, 1, activation=None)
+        value = tf.layers.dense(centralized_hidden, h_size, activation=tf.nn.elu)
+        value = tf.layers.dense(value, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
         self.action_holder = tf.placeholder(

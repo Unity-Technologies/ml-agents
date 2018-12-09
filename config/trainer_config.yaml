@@ -1,5 +1,5 @@
 default:
-    trainer: ppo
+    trainer: mappo
     batch_size: 1024
     beta: 5.0e-3
     buffer_size: 10240
@@ -8,25 +8,26 @@ default:
     hidden_units: 128
     lambd: 0.95
     learning_rate: 3.0e-4
-    max_steps: 5.0e4
-    memory_size: 256
+    max_steps: 5.0e5
+    memory_size: 128
     normalize: false
     num_epoch: 3
     num_layers: 2
-    time_horizon: 64
-    sequence_length: 64
+    time_horizon: 10
+    sequence_length: 34
     summary_freq: 1000
-    use_recurrent: false
+    use_recurrent: true
     use_curiosity: false
     curiosity_strength: 0.01
     curiosity_enc_size: 128
+    n_agents: 4
 
 BananaBrain:
     normalize: false
     batch_size: 1024
     beta: 5.0e-3
     buffer_size: 10240
-    max_steps: 1.0e5
+    max_steps: 5.0e5
 
 BouncerBrain:
     normalize: true
@@ -44,7 +45,7 @@ PushBlockBrain:
     time_horizon: 64
     num_layers: 2
 
-SmallWallBrain: 
+SmallWallBrain:
     max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
@@ -55,7 +56,7 @@ SmallWallBrain:
     num_layers: 2
     normalize: false
 
-BigWallBrain: 
+BigWallBrain:
     max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
@@ -73,9 +74,9 @@ StrikerBrain:
     num_epoch: 3
     buffer_size: 2000
     beta: 1.0e-2
-    hidden_units: 256
+    hidden_units: 64
     summary_freq: 2000
-    time_horizon: 128
+    time_horizon: 10
     num_layers: 2
     normalize: false
 
@@ -86,9 +87,9 @@ GoalieBrain:
     num_epoch: 3
     buffer_size: 2000
     beta: 1.0e-2
-    hidden_units: 256
+    hidden_units: 64
     summary_freq: 2000
-    time_horizon: 128
+    time_horizon: 10
     num_layers: 2
     normalize: false
 
