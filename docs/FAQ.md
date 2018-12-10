@@ -13,12 +13,18 @@ This is because .NET 3.5 doesn't support method Clear() for StringBuilder, refer
 to [Setting Up The ML-Agents Toolkit Within
 Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
-## Cannot drag Model into Learning Brain
+## TensorFlowSharp flag not turned on
 
-You might not have the appropriate backend required to import the model. Refer to the 
-[Inference Engine](Inference-Engine.md) for more information on how to import backends
-and reimport the asset.
+If you have already imported the TensorFlowSharp plugin, but haven't set
+ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
+following error message:
 
+```console
+UnityAgentsException: The brain 3DBallLearning was set to inference mode but the Tensorflow library is not present in the Unity project.
+```
+ This error message occurs because the TensorFlowSharp plugin won't be used
+without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit
+Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
 ## Environment Permission Error
 

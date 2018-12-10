@@ -25,21 +25,29 @@ Unity settings.
        Equivalent or .NET 4.x Equivalent)**
 6. Go to **File** > **Save Project**
 
-## Setting up the Inference Engine
+## Setting up TensorFlowSharp
 
-We provide pre-trained models for all the agents in all our demo environments. 
-To be able to run those models, you'll first need to set-up the Inference 
-Engine. The Inference Engine is a general API to
-run neural network models in Unity that leverages existing inference libraries such 
-as TensorFlowSharp and Apple's Core ML. Since the ML-Agents Toolkit uses TensorFlow 
-for training neural network models, the output model format is TensorFlow and 
-the model files include a `.tf` extension. Consequently, you need to install 
-the TensorFlowSharp backend to be able to run these models within the Unity 
-Editor. You can find instructions 
-on how to install the TensorFlowSharp backend [here](Inference-Engine.md).
-Once the backend is installed, you will need to reimport the models : Right click
-on the `.tf` model and select `Reimport`.
+We provide pre-trained models (`.bytes` files) for all the agents 
+in all our demo environments. To be able to run those models, you'll 
+first need to set-up TensorFlowSharp support. Consequently, you need to install 
+the TensorFlowSharp plugin to be able to run these models within the Unity 
+Editor. 
 
+1. Download the [TensorFlowSharp Plugin](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
+2. Import it into Unity by double clicking the downloaded file. You can check 
+if it was successfully imported by checking the
+TensorFlow files in the Project window under **Assets** > **ML-Agents** >
+**Plugins** > **Computer**.
+3. Go to **Edit** > **Project Settings** > **Player** and add `ENABLE_TENSORFLOW`
+to the `Scripting Define Symbols` for each type of device you want to use 
+(**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**).
+
+![Project Settings](images/project-settings.png)
+
+**Note**: If you don't see anything under **Assets**, drag the
+`UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
+
+![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
 
 ## Running a Pre-trained Model
 
@@ -227,7 +235,7 @@ INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 10000. Mean Reward: 2
 ### After training
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<brain_name>.tf` where
+`models/<run-identifier>/<brain_name>.bytes` where
 `<brain_name>` is the name of the Brain corresponding to the model.
 (**Note:** There is a known bug on Windows that causes the saving of the model to
 fail when you early terminate the training, it's recommended to wait until Step
@@ -241,7 +249,7 @@ the steps described
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the  **3DBallLearning** Learning Brain from the Scene hierarchy.
-5. Drag the `<brain_name>.tf` file from the Project window of
+5. Drag the `<brain_name>.bytes` file from the Project window of
    the Editor to the **Model** placeholder in the **3DBallLearning**
    inspector window.
 6. Press the :arrow_forward: button at the top of the Editor.
