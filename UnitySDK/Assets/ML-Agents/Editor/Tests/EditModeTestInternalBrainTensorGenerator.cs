@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.MachineLearning.InferenceEngine;
-using UnityEngine.MachineLearning.InferenceEngine.Util;
 using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests

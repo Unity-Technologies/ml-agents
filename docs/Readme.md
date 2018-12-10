@@ -42,7 +42,7 @@
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Inference
-* [Unity Machine Learning Inference SDK](Inference-Engine.md)
+* [TensorFlowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
 
 ## Help
 

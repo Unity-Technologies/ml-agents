@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using MLAgents.InferenceBrain;
-using UnityEngine.MachineLearning.InferenceEngine;
 using UnityEngine.Profiling;
 
 namespace MLAgents
@@ -25,11 +24,14 @@ namespace MLAgents
     {
         private TensorGenerator _tensorGenerator;
         private TensorApplier _tensorApplier;
+#if ENABLE_TENSORFLOW
         private ModelParamLoader _modelParamLoader;
-        
-        public Model model;
+#endif
+        public TextAsset model;
 
-        private InferenceEngine _engine;
+#if ENABLE_TENSORFLOW
+        private TFSharpInferenceEngine _engine;
+#endif
         private IEnumerable<Tensor> _inferenceInputs;
         private IEnumerable<Tensor> _inferenceOutputs;
 
@@ -61,13 +63,11 @@ namespace MLAgents
         /// </exception>
         public void ReloadModel(int seed = 0)
         {
+#if ENABLE_TENSORFLOW
             if (model != null)
             {
-                var config = new InferenceEngineConfig
-                {
-                    Device = InferenceEngineConfig.DeviceType.CPU
-                };
-                _engine = InferenceAPI.LoadModel(model, config);
+                _engine = new TFSharpInferenceEngine();
+                _engine.PrepareModel(model.bytes);
             }
             else
             {
@@ -78,6 +78,7 @@ namespace MLAgents
             _inferenceOutputs = _modelParamLoader.GetOutputTensors();
             _tensorGenerator = new TensorGenerator(brainParameters, seed);
             _tensorApplier = new TensorApplier(brainParameters, seed);
+#endif
         }
         
         /// <summary>
@@ -90,7 +91,14 @@ namespace MLAgents
         /// Brain Parameters</returns>
         public IEnumerable<string> GetModelFailedChecks()
         {
+
+#if ENABLE_TENSORFLOW
             return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
+#else
+            return new List<string>(){
+                "You need to install the TensorflowSharp plugin and add the ENABLE_TENSORFLOW " +
+                "flag in your Player Settings in order to use inference. "};
+#endif
         }
 
         /// <inheritdoc />
@@ -106,6 +114,7 @@ namespace MLAgents
             {
                 return;
             }
+#if ENABLE_TENSORFLOW
             if (_engine == null)
             {
                 Debug.LogError($"No model was present for the Brain {name}.");
@@ -124,6 +133,15 @@ namespace MLAgents
 
             // Update the outputs
             _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
+#else
+            if (agentInfos.Count > 0)
+            {
+                Debug.LogError(string.Format(
+                    "The brain {0} was set to inference mode but the Tensorflow library is not " +
+                    "present in the Unity project.",
+                    name));
+            }
+#endif
             agentInfos.Clear();
         }
     }

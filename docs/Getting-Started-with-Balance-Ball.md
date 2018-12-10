@@ -273,14 +273,18 @@ Once the training process completes, and the training process saves the model
 use it with Agents having a **Learning Brain**.
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
 Either wait for the training process to close the window or press Ctrl+C at the 
-command-line prompt. If you simply close the window manually, the `.tf` file 
+command-line prompt. If you close the window manually, the `.bytes` file 
 containing the trained model is not exported into the ml-agents folder.
 
-### Setting up Inference Support
+### Setting up TensorFlowSharp
 
-In order to run neural network models inside of Unity, you will need to setup the
-Inference Engine with an appropriate backend. See [here](Inference-Engine.md) for more
-information.
+Because TensorFlowSharp support is still experimental, it is disabled by
+default. Please note that the `Learning` Brain inference can only be used with
+TensorFlowSharp.
+ 
+To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
+within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the
+Basic Guide page.
 
 ### Embedding the trained model into Unity
 
