@@ -55,6 +55,7 @@ class RpcCommunicator(Communicator):
             add_UnityToExternalServicer_to_server(self.unity_to_external, self.server)
             self.server.add_insecure_port('localhost:' + str(self.port))
             self.server.start()
+            self.is_open = True
         except:
             raise UnityWorkerInUseException(self.worker_id)
 
@@ -78,7 +79,6 @@ class RpcCommunicator(Communicator):
                 "\t The Academy and the External Brain(s) are attached to objects in the Scene\n"
                 "\t The environment and the Python interface have compatible versions.")
         aca_param = self.unity_to_external.parent_conn.recv().unity_output
-        self.is_open = True
         message = UnityMessage()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
