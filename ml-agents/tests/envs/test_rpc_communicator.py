@@ -13,6 +13,8 @@ def test_rpc_communicator_checks_port_on_create():
 
 
 def test_rpc_communicator_close():
+    # Ensures it is possible to open a new RPC Communicators
+    # after closing one on the same worker_id
     first_comm = RpcCommunicator()
     first_comm.close()
     second_comm = RpcCommunicator()
