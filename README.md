@@ -69,18 +69,9 @@ contributions. If you wish to contribute, be sure to review our
 [contribution guidelines](CONTRIBUTING.md) and
 [code of conduct](CODE_OF_CONDUCT.md).
 
-You can connect with us and the broader community
-through Unity Connect and GitHub:
-
-* Join our
-  [Unity Machine Learning Channel](https://connect.unity.com/messages/c/035fba4f88400000)
-  to connect with others using the ML-Agents toolkit and Unity developers
-  enthusiastic about machine learning. We use that channel to surface updates
-  regarding the ML-Agents toolkit (and, more broadly, machine learning in
-  games).
-* If you run into any problems using the ML-Agents toolkit,
-  [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
-  make sure to include as much detail as possible.
+If you run into any problems using the ML-Agents toolkit,
+[submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
+make sure to include as much detail as possible.
 
 For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
