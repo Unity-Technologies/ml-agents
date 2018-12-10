@@ -95,7 +95,7 @@ namespace MLAgents
         [SerializeField] 
         public BroadcastHub broadcastHub = new BroadcastHub();
         
-        private const string kApiVersion = "API-5";
+        private const string kApiVersion = "API-6";
 
         // Fields provided in the Inspector
 
