@@ -22,7 +22,7 @@ following error message:
 ```console
 UnityAgentsException: The brain 3DBallLearning was set to inference mode but the Tensorflow library is not present in the Unity project.
 ```
- This error message occurs because the TensorFlowSharp plugin won't be usage
+ This error message occurs because the TensorFlowSharp plugin won't be used
 without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit
 Within Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
 
