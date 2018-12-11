@@ -569,7 +569,6 @@ parallelize your RollerBall environment.
 5. You can now instantiate copies of the TrainingArea prefab. Drag them into your scene, 
    positioning them so that they do not overlap. 
 
-
 ### Editing the Scripts 
 
 You will notice that in the previous section, we wrote our scripts assuming that our 
@@ -581,12 +580,11 @@ A quick way to adapt our current code is to use
 localPosition rather than position, so that our position reference is in reference 
 to the prefab TrainingArea's location, and not global coordinates. 
 
-1. Replace all references of this.transform.position in RollerAgent.cs with `this.transform.localPosition`.
-2. Replace all references of Target.position in RollerAgent.cs with Target.localPosition.
+1. Replace all references of `this.transform.position` in RollerAgent.cs with `this.transform.localPosition`.
+2. Replace all references of `Target.position` in RollerAgent.cs with `Target.localPosition`.
 
 This is only one way to achieve this objective. Refer to the 
-[example environments](Learning-Environment-Examples.md) for other ways we can achieve relative
-positioning.
+[example environments](Learning-Environment-Examples.md) for other ways we can achieve relative positioning.
 
 ## Review: Scene Layout
 
