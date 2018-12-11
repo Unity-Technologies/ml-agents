@@ -1,0 +1,43 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "ml-agents/setup.py" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd ml-agents && pip install -e .
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
+        
+      - run:
+          name: Run Tests
+          command: |
+            . venv/bin/activate
+            cd ml-agents/ && pytest tests/
+            mkdir test-reports
+            pytest --junitxml=test-reports/junit.xml
+
+      - store_test_results:
+          path: ml-agents/test-reports
+
+      - store_artifacts:
+          path: ml-agents/test-reports
+          destination: ml-agents/test-reports
