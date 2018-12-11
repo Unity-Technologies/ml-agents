@@ -194,7 +194,8 @@ If you would like to contribute environments, please see our
     rotations for joints.
   * Visual Observations: None.
 * Reset Parameters: None
-* Benchmark Mean Reward: 2000
+* Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
+* Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
 
 ## [Banana Collector](https://youtu.be/heVMs3t9qSk)
 
