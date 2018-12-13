@@ -1,7 +1,7 @@
 # Basic Guide
 
 This guide will show you how to use a pre-trained model in an example Unity
-environment, and show you how to train the model yourself.
+environment (3D Ball) and show you how to train the model yourself.
 
 If you are not familiar with the [Unity Engine](https://unity3d.com/unity), we
 highly recommend the [Roll-a-ball
@@ -90,7 +90,7 @@ To set up the environment for training, you will need to specify which agents ar
 to the training and which Brain is being trained. You can only perform training with
 a `Learning Brain`.
 
-1. Assign the **3DBallLearning** Brain to the agents you would like to train.  
+1. From the Hierarchy panel, select Ball3DAcademy.   the **3DBallLearning** Brain to the agents you would like to train.  
    __Note:__ You can assign the same Brain to multiple agents at once : To do so, you can
    use the prefab system. When an agent is created from a prefab, modifying the prefab 
    will modify the agent as well. If the agent does not synchronize with the prefab, you
