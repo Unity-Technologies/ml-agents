@@ -55,7 +55,7 @@ We've included pre-trained models for the 3D Ball example.
 1. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Scenes` folder
    and open the `3DBall` scene file.
 2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder. 
-   Expand `Game` and click on the `Platform` prefab.  You should see the `Platform` prefab in the **Inspector** windows.
+   Expand `Game` and click on the `Platform` prefab.  You should see the `Platform` prefab in the **Inspector** window.
    
    **Note**: The platforms in the `3DBall` scene were created using the `Platform` prefab.  Instead of updating all 12 platforms individually, you can update the `Platform` prefab instead.
    
@@ -66,14 +66,15 @@ We've included pre-trained models for the 3D Ball example.
    
    ![3dball learning brain](images/3dball_learning_brain.png)
    
-4. You should notice that each `Platform` under each `Game` in the **Hierarchy** windows now contains **3DBallLearning** as `Brain`.
-   __Note__ : You can modify multiple game objects in a scene by selecting them all at 
+4. You should notice that each `Platform` under each `Game` in the **Hierarchy** windows now contains **3DBallLearning** as `Brain`. __Note__ : You can modify multiple game objects in a scene by selecting them all at 
    once using the search bar in the Scene Hierarchy. 
-5. In the **Project** window, locate the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+5. In the **Project** window, click on the **3DBallLearning** Brain located in 
+   `Assets/ML-Agents/Examples/3DBall/Brains`.  You should see the properties in the **Inspector** window.
+6. In the **Project** window, open the `Assets/ML-Agents/Examples/3DBall/TFModels` 
    folder.
-6. Drag the `3DBallLearning` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
-   folder to the **Model** field of the **3DBallLearning** Brain.
-7. Click the **Play** button and you will see the platforms balance the balls
+7. Drag the `3DBallLearning` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
+   folder to the **Model** field of the **3DBallLearning** Brain in the **Inspector** window. __Note__ : All of the brains should now have `3DBallLearning` as the TensorFlow model in the `Model` property 
+8. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
    ![Running a pretrained model](images/running-a-pretrained-model.gif)
