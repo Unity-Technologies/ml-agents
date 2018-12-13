@@ -13,7 +13,7 @@ leveraging Unity's prefab system or look for all the agents in a scene
 using the search bar of the `Hierarchy` window with the word `Agent`.
 
 * We replaced the **Internal** and **External** Brain with **Learning Brain**.
-  When you need to train a model, you need to drag it into the `Training Hub`
+  When you need to train a model, you need to drag it into the `Broadcast Hub`
   inside the `Academy` and check the `Control` checkbox.
 * We removed the `Broadcast` checkbox of the Brain, to use the broadcast 
   functionality, you need to drag the Brain into the `Broadcast Hub`.
