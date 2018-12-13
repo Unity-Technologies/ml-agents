@@ -66,7 +66,7 @@ We've included pre-trained models for the 3D Ball example.
    
    ![3dball learning brain](images/3dball_learning_brain.png)
    
-4. Make sure that all of the Agents in the Scene now have **3DBallLearning** as `Brain`.
+4. You should notice that each `Platform` under each `Game` in the **Hierarchy** windows now contains **3DBallLearning** as `Brain`.
    __Note__ : You can modify multiple game objects in a scene by selecting them all at 
    once using the search bar in the Scene Hierarchy. 
 5. In the **Project** window, locate the `Assets/ML-Agents/Examples/3DBall/TFModels` 
