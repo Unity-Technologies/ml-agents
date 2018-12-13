@@ -148,8 +148,7 @@ perform training. Please refer to [this
 page](Learning-Environment-Executable.md) for instructions on how to build and
 use an executable.
 
-   ```console
-ml-agents$ mlagents-learn config/trainer_config.yaml --run-id=first-run --train
+   ```console ml-agents$ mlagents-learn config/trainer_config.yaml --run-id=first-run --train
 
 
                         ▄▄▄▓▓▓▓
