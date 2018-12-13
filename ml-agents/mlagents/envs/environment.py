@@ -20,9 +20,8 @@ logger = logging.getLogger("mlagents.envs")
 
 
 class UnityEnvironment(object):
-    SINGLE_BRAIN_ACTION_TYPES = (
-        int, np.int32, np.int64, float, np.float32, np.float64, list, np.ndarray
-    )
+    SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
+    SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
     SINGLE_BRAIN_TEXT_TYPES = (str, list, np.ndarray)
 
     def __init__(self, file_name=None, worker_id=0,
@@ -424,14 +423,14 @@ class UnityEnvironment(object):
         if self.proc1 is not None:
             self.proc1.kill()
 
-    @staticmethod
-    def _flatten(arr):
+    @classmethod
+    def _flatten(cls, arr):
         """
         Converts arrays to list.
         :param arr: numpy vector.
         :return: flattened list.
         """
-        if isinstance(arr, (int, np.int_, float, np.float_)):
+        if isinstance(arr, cls.SCALAR_ACTION_TYPES):
             arr = [float(arr)]
         if isinstance(arr, np.ndarray):
             arr = arr.tolist()
