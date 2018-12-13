@@ -10,7 +10,7 @@ default:
     num_layers: 2
     sequence_length: 32
     memory_size: 256
-    demo_path: ./UnitySDK/Assets/Demonstrations/<Your_Demon_File>.demo
+    demo_path: ./UnitySDK/Assets/Demonstrations/<Your_Demo_File>.demo
 
 HallwayLearning:
     trainer: offline_bc
