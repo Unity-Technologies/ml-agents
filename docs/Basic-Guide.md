@@ -57,7 +57,11 @@ We've included pre-trained models for the 3D Ball example.
 2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder. 
    Expand `Game` and click on the `Platform` prefab.
    
-   **Note**: The platforms in the `3DBall` scene were created using the `Platform` prefab.  Instead of editing all 12 platforms, you can update the `Platform` prefab instead.
+   **Note**: The platforms in the `3DBall` scene were created using the `Platform` prefab.  Instead of updating all 12 platforms individually, you can update the `Platform` prefab instead.
+   
+   ![Platform Prefab](images/platform_prefab.png)
+
+   
 3. In the `Ball 3D Agent` Component: Drag the **3DBallLearning** Brain located in 
    `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
    the `Ball 3D Agent`.
