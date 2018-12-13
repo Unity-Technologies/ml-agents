@@ -42,12 +42,12 @@ TensorFlow files in the Project window under **Assets** > **ML-Agents** >
 to the `Scripting Define Symbols` for each type of device you want to use 
 (**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**).
 
-![Project Settings](images/project-settings.png)
+   ![Project Settings](images/project-settings.png)
 
-**Note**: If you don't see anything under **Assets**, drag the
-`UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
+   **Note**: If you don't see anything under **Assets**, drag the
+   `UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
 
-![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
+   ![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
 
 ## Running a Pre-trained Model
 We've included pre-trained models for the 3D Ball example.
@@ -76,7 +76,7 @@ We've included pre-trained models for the 3D Ball example.
 7. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
-![Running a pretrained model](images/running-a-pretrained-model.gif)
+   ![Running a pretrained model](images/running-a-pretrained-model.gif)
 
 ## Using the Basics Jupyter Notebook
 
@@ -109,13 +109,13 @@ a `Learning Brain`.
    is in the Broadcast Hub. In order to train, you need to toggle the
    `Control` checkbox.
    
-__Note:__ Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
+   __Note:__ Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
 the agent) means that the Brain will be making decision for that agent. Whereas dragging
 a Brain into the Broadcast Hub means that the Brain will be exposed to the Python process.
 The `Control` checkbox means that in addition to being exposed to Python, the Brain will
 be controlled by the Python process (required for training).
 
-![Set Brain to External](images/mlagents-SetBrainToTrain.png)
+   ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 
 ### Training the environment
 
