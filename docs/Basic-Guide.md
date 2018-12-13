@@ -50,11 +50,14 @@ to the `Scripting Define Symbols` for each type of device you want to use
 ![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
 
 ## Running a Pre-trained Model
+We've included pre-trained models for the 3D Ball example.
 
 1. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Scenes` folder
    and open the `3DBall` scene file.
-2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder
-   and select the `Game/Platform` prefab.
+2. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Prefabs` folder. 
+   Expand `Game` and click on the `Platform` prefab.
+   
+   **Note**: The platforms in the `3DBall` scene were created using the `Platform` prefab.  Instead of editing all 12 platforms, you can update the `Platform` prefab instead.
 3. In the `Ball 3D Agent` Component: Drag the **3DBallLearning** Brain located in 
    `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property of 
    the `Ball 3D Agent`.
