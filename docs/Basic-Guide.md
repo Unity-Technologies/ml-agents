@@ -148,7 +148,8 @@ perform training. Please refer to [this
 page](Learning-Environment-Executable.md) for instructions on how to build and
 use an executable.
 
-   ```console ml-agents$ mlagents-learn config/trainer_config.yaml --run-id=first-run --train
+```console
+ml-agents$ mlagents-learn config/trainer_config.yaml --run-id=first-run --train
 
 
                         ▄▄▄▓▓▓▓
@@ -184,13 +185,13 @@ INFO:mlagents.learn:{'--curriculum': 'None',
 INFO:mlagents.envs:Start training by pressing the Play button in the Unity Editor.
  ```
 
-   **Note**: If you're using Anaconda, don't forget to activate the ml-agents
+**Note**: If you're using Anaconda, don't forget to activate the ml-agents
 environment first.
 
-   If `mlagents-learn` runs correctly and starts training, you should see something
+If `mlagents-learn` runs correctly and starts training, you should see something
 like this:
 
-   ```console
+```console
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
