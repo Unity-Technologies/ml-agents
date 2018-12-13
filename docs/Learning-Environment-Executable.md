@@ -21,7 +21,7 @@ environment:
 3. Using the file dialog that opens, locate the `UnitySDK` folder within the
    ML-Agents project and click **Open**.
 4. In the **Project** window, navigate to the folder
-   `Assets/ML-Agents/Examples/3DBall/`.
+   `Assets/ML-Agents/Examples/3DBall/Scenes/`.
 5. Double-click the `3DBall` file to load the scene containing the Balance Ball
    environment.
 
@@ -30,7 +30,10 @@ environment:
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to put the Brain
 controlling the Agents to be a **Learning Brain** and drag it into the
-Academy's `Broadcast Hub` with the `Control`  checkbox checked.
+Academy's `Broadcast Hub` with the `Control` checkbox checked. In the 3DBall
+scene, this can be done in the Platform GameObject within the Game prefab in 
+`Assets/ML-Agents/Examples/3DBall/Prefabs/`, or in each instance of the 
+Platform in the Scene.
 
 Next, we want the set up scene to play correctly when the training process
 launches our environment executable. This means:
@@ -48,7 +51,7 @@ launches our environment executable. This means:
    * (optional) Select “Development Build” to [log debug
       messages](https://docs.unity3d.com/Manual/LogFiles.html).
 5. If any scenes are shown in the **Scenes in Build** list, make sure that the
-   3DBall Scene is the only one checked. (If the list is empty, than only the
+   3DBall Scene is the only one checked. (If the list is empty, then only the
    current scene is included in the build).
 6. Click **Build**:
    * In the File dialog, navigate to your ML-Agents directory.

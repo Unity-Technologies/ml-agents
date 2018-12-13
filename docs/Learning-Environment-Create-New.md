@@ -65,11 +65,11 @@ The "physical" components of the environment include a Plane to act as the floor
 for the Agent to move around on, a Cube to act as the goal or target for the
 agent to seek, and a Sphere to represent the Agent itself.
 
-### Create the floor plane
+### Create the Floor Plane
 
 1. Right click in Hierarchy window, select 3D Object > Plane.
 2. Name the GameObject "Floor."
-3. Select Plane to view its properties in the Inspector window.
+3. Select the Floor Plane to view its properties in the Inspector window.
 4. Set Transform to Position = (0, 0, 0), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Plane's Mesh Renderer, expand the Materials property and change the
     default-material to *LightGridFloorSquare* (or any suitable material of your choice).
@@ -84,7 +84,7 @@ different material from the list of all materials currently in the project.)
 
 1. Right click in Hierarchy window, select 3D Object > Cube.
 2. Name the GameObject "Target"
-3. Select Target to view its properties in the Inspector window.
+3. Select the Target Cube to view its properties in the Inspector window.
 4. Set Transform to Position = (3, 0.5, 3), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Cube's Mesh Renderer, expand the Materials property and change the
     default-material to *Block*.
@@ -95,7 +95,7 @@ different material from the list of all materials currently in the project.)
 
 1. Right click in Hierarchy window, select 3D Object > Sphere.
 2. Name the GameObject "RollerAgent"
-3. Select Target to view its properties in the Inspector window.
+3. Select the RollerAgent Sphere to view its properties in the Inspector window.
 4. Set Transform to Position = (0, 0.5, 0), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Sphere's Mesh Renderer, expand the Materials property and change the
     default-material to *CheckerSquare*.
@@ -162,7 +162,7 @@ in the Inspector window.
 
 The Brain object encapsulates the decision making process. An Agent sends its
 observations to its Brain and expects a decision in return. The type of the Brain
-(Learning, Heuristic or player) determines how the Brain makes decisions. 
+(Learning, Heuristic or Player) determines how the Brain makes decisions. 
 To create the Brain:
 
 1. Go to **Assets** > **Create** > **ML-Agents** and select the type of Brain asset
