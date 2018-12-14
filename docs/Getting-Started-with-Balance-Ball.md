@@ -64,7 +64,7 @@ The Academy uses the **Training Configuration**  during training and the
 Agent is using a trained model or heuristics or direct control — in other 
 words, whenever **not** training.)
 Typically, you would set a low graphics quality and timescale to greater `1.0` for the **Training
-configuration** and a high graphics quality and timescale to `1.0` for the
+Configuration** and a high graphics quality and timescale to `1.0` for the
 **Inference Configuration** .
 
 **Note:** if you want to observe the environment during training, you can adjust
@@ -72,7 +72,7 @@ the **Training Configuration** settings to use a larger window and a timescale
 closer to 1:1. Be sure to set these parameters back when training in earnest;
 otherwise, training can take a very long time.
 
-Another aspect of an environment to look at is the Academy implementation. Since
+Another aspect of an environment is the Academy implementation. Since
 the base Academy class is abstract, you must always define a subclass. There are
 three functions you can implement, though they are all optional:
 
