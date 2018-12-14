@@ -4,7 +4,7 @@ It is often more intuitive to simply demonstrate the behavior we want an agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
 Consider our
 [running example](ML-Agents-Overview.md#running-example-training-npc-behaviors)
-of training a medic NPC : instead of indirectly training a medic with the help
+of training a medic NPC. Instead of indirectly training a medic with the help
 of a reward function, we can give the medic real world examples of observations
 from the game and actions from a game controller to guide the medic's behavior.
 Imitation Learning uses pairs of observations and actions from
