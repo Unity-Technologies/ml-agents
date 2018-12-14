@@ -88,7 +88,7 @@ environment around the Agents.
 
 ### Brain
 
-As of v0.6, a Brain is a Unity asset and exists within the `UnitySDK` folder. These brains (ex. **3DBallLearning.asset**) are loaded into each Agent (ex. **Ball3DAgents**) object.  A Brain doesn't store any information about an Agent, it just
+As of v0.6, a Brain is a Unity asset and exists within the `UnitySDK` folder. These brains (ex. **3DBallLearning.asset**) are loaded into each Agent object (ex. **Ball3DAgents**).  A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
 returns the chosen action to the Agent. All Agents can share the same
 Brain, but would act independently. The Brain settings tell you quite a bit about how
