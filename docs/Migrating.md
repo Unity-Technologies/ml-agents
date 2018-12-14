@@ -41,7 +41,6 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
     `LearningBrain` ScriptableObjects used in your scene into entries 
     into this list.
 
-
 ## Migrating from ML-Agents toolkit v0.4 to v0.5
 
 ### Important
