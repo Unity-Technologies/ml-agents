@@ -93,7 +93,7 @@ More information and documentation is provided in the
 
 ## Training the Brain with Reinforcement Learning
 
-### Adding a Brain to the training session
+### Setting up the enviornment for training
 
 To set up the environment for training, you will need to specify which agents are contributing
 to the training and which Brain is being trained. You can only perform training with
