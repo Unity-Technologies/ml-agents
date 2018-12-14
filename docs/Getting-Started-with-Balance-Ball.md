@@ -53,18 +53,18 @@ to speed up training since all twelve agents contribute to training in parallel.
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
 properties that control how the environment works. 
-The **Broadcast Hub** keeps track of which Brains will send data during training,
-If a Brain is added to the hub, his data will be sent to the external training
+The **Broadcast Hub** keeps track of which Brains will send data during training.
+If a Brain is added to the hub, the data from this Brain will be sent to the external training
 process. If the `Control` checkbox is checked, the training process will be able to
-control the agents linked to the Brain to train them.
-The **Training** and **Inference Configuration** properties 
+control and train the agents linked to the Brain.
+The **Training Configuration** and **Inference Configuration** properties 
 set the graphics and timescale properties for the Unity application. 
 The Academy uses the **Training Configuration**  during training and the
 **Inference Configuration** when not training. (*Inference* means that the 
 Agent is using a trained model or heuristics or direct control — in other 
 words, whenever **not** training.)
-Typically, you set low graphics quality and a high time scale for the **Training
-configuration** and a high graphics quality and the timescale to `1.0` for the
+Typically, you would set a low graphics quality and timescale to greater `1.0` for the **Training
+configuration** and a high graphics quality and timescale to `1.0` for the
 **Inference Configuration** .
 
 **Note:** if you want to observe the environment during training, you can adjust
