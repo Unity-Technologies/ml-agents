@@ -88,28 +88,24 @@ environment around the Agents.
 
 ### Brain
 
-Brains are assets that exist in your project folder. The Ball3DAgents are connected
-to a Brain, for example : the **3DBallLearning**.
-A Brain doesn't store any information about an Agent, it just
+As of v0.6, a Brain is a Unity asset and exists within the `UnitySDK` folder. These brains (ex. **3DBallLearning.asset**) are loaded into each Agent (ex. **Ball3DAgents**) object.  A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
-returns the chosen action to the Agent. Thus, all Agents can share the same
-Brain, but act independently. The Brain settings tell you quite a bit about how
+returns the chosen action to the Agent. All Agents can share the same
+Brain, but would act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
 You can create Brain objects by selecting `Assets -> 
-Create -> ML-Agents -> Brain`. There are 3 kinds of Brains :
-The **Learning Brain** is a Brain that uses a Neural Network to take decisions.
-When the Brain is checked as `Control` in the Academy **Broadcast Hub**, the 
-external process will be taking decisions for the agents
-and generate a neural network when the training is over. You can also use the
+Create -> ML-Agents -> Brain`. There are 3 kinds of Brains. 
+The **Learning Brain** is a Brain that uses a trained neural network to take decisions.
+When the `Control` box is checked in the Brains property under the **Broadcast Hub** in the Academy is checked as `Control`, the external process will be take over making decisions for the agents
+and ultimately generate a trained neural network. You can also use the
 **Learning Brain** with a pre-trained model.
 The **Heuristic** Brain allows you to hand-code the Agent's logic by extending
 the Decision class.
 Finally, the **Player** Brain lets you map keyboard commands to actions, which
-can be useful when testing your agents and environment. If none of these types
-of Brains do what you need, you can implement your own Brain.
+can be useful when testing your agents and environment. You can also implement your own type of Brain.
 
-In this tutorial, you will use a **Learning Brain** for training.
+In this tutorial, you will use the **Learning Brain** for training.
 
 #### Vector Observation Space
 
