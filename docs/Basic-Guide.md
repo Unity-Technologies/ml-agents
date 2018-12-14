@@ -99,11 +99,14 @@ To set up the environment for training, you will need to specify which agents ar
 to the training and which Brain is being trained. You can only perform training with
 a `Learning Brain`.
 
-1. In the ***Hierarchy*** window, select `Ball3DAcademy`.
-2. In the ***Proejct*** window, go to `Assets/ML-Agents/Examples/3DBall/Brains` folder and drag the **3DBallLearning** Brain to the `Brains` property under `Braodcast Hub` in the `Ball3DAcademy` object in the ***Inspector*** window.  In order to train, make the `Control` checkbox is selected.
-3. You will also need to ensure each agent has an assigned brain.  In this example, each platform agent was created using a prefab.  To update all of the brains in each agent at once, you only need to update the agent prefab.  In the **Project** window, go to the `Assets/ML-Agents/Examples/3DBall/Prefabs` folder. Expand `Game` and click on the `Platform` prefab.  You should see the `Platform` prefab in the **Inspector** window.  In the **Project** window, drag the **3DBallLearning** Brain located in  `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property under `Ball 3D Agent (Script)` component in the **Inspector** window.  **Note**: The Unity prefab system will modify all instances of the agent properties in your scene.  If the agent does not synchronize automatically with the prefab, you can hit the Revert button in the top of the ***Inspector*** window.
+1. You will also need to ensure each platform agent has an assigned brain.  In this example, each platform agent was created using a prefab.  To update all of the brains in each agent at once, you only need to update the platform agent prefab.  In the **Project** window, go to the `Assets/ML-Agents/Examples/3DBall/Prefabs` folder. Expand `Game` and click on the `Platform` prefab.  You should see the `Platform` prefab in the **Inspector** window.  In the **Project** window, drag the **3DBallLearning** Brain located in  `Assets/ML-Agents/Examples/3DBall/Brains` into the `Brain` property under `Ball 3D Agent (Script)` component in the **Inspector** window.  
 
-__Note:__ Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
+**Note**: The Unity prefab system will modify all instances of the agent properties in your scene.  If the agent does not synchronize automatically with the prefab, you can hit the Revert button in the top of the ***Inspector*** window.
+
+2. In the ***Hierarchy*** window, select `Ball3DAcademy`.
+3. In the ***Project*** window, go to `Assets/ML-Agents/Examples/3DBall/Brains` folder and drag the **3DBallLearning** Brain to the `Brains` property under `Braodcast Hub` in the `Ball3DAcademy` object in the ***Inspector*** window.  In order to train, make the `Control` checkbox is selected.
+
+**Note:** Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
 the agent) means that the Brain will be making decision for that agent. Whereas dragging
 a Brain into the Broadcast Hub means that the Brain will be exposed to the Python process.
 The `Control` checkbox means that in addition to being exposed to Python, the Brain will
