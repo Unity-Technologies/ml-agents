@@ -4,7 +4,7 @@ It is often more intuitive to simply demonstrate the behavior we want an agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
 Consider our
 [running example](ML-Agents-Overview.md#running-example-training-npc-behaviors)
-of training a medic NPC : instead of indirectly training a medic with the help
+of training a medic NPC. Instead of indirectly training a medic with the help
 of a reward function, we can give the medic real world examples of observations
 from the game and actions from a game controller to guide the medic's behavior.
 Imitation Learning uses pairs of observations and actions from
@@ -48,7 +48,7 @@ With offline behavioral cloning, we can use demonstrations (`.demo` files) gener
 3. Build the scene, assigning the agent a Learning Brain, and set the Brain to Control in the Broadcast Hub. For more information on Brains, see [here](Learning-Environment-Design-Brains.md).
 4. Open the `config/offline_bc_config.yaml` file. 
 5. Modify the `demo_path` parameter in the file to reference the path to the demonstration file recorded in step 2. In our case this is: `./UnitySDK/Assets/Demonstrations/AgentRecording.demo`
-6. Launch `mlagent-learn`, and providing `./config/offline_bc_config.yaml` as the config parameter, and your environment as the `--env` parameter.
+6. Launch `mlagent-learn`, providing `./config/offline_bc_config.yaml` as the config parameter, and include the `--run-id` and `--train` as usual. Provide your environment as the `--env` parameter if it has been compiled as standalone, or omit to train in the editor.
 7. (Optional) Observe training performance using Tensorboard.
 
 This will use the demonstration file to train a neural network driven agent to directly imitate the actions provided in the demonstration. The environment will launch and be used for evaluating the agent's performance during training.
@@ -85,7 +85,7 @@ It is also possible to provide demonstrations in realtime during training, witho
    similarly to the demonstrations.
 9. Once the Student Agents are exhibiting the desired behavior, end the training
    process with `CTL+C` from the command line.
-10. Move the resulting `*.tf` file into the `TFModels` subdirectory of the
+10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
     with `Learning` Brain.
 

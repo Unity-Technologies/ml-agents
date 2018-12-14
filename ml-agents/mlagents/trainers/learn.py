@@ -2,8 +2,7 @@
 
 import logging
 
-import os
-import multiprocessing
+from multiprocessing import Process, Queue
 import numpy as np
 from docopt import docopt
 
@@ -11,9 +10,10 @@ from .trainer_controller import TrainerController
 from .exception import TrainerError
 
 
-def run_training(sub_id, run_seed, run_options):
+def run_training(sub_id, run_seed, run_options, process_queue):
     """
     Launches training session.
+    :param process_queue: Queue used to send signal back to main.
     :param sub_id: Unique id for training session.
     :param run_seed: Random seed used for training.
     :param run_options: Command line arguments for training.
@@ -38,12 +38,17 @@ def run_training(sub_id, run_seed, run_options):
     no_graphics = run_options['--no-graphics']
     trainer_config_path = run_options['<trainer-config-path>']
 
-    # Create controller and begin training.
+    # Create controller and launch environment.
     tc = TrainerController(env_path, run_id + '-' + str(sub_id),
                            save_freq, curriculum_file, fast_simulation,
                            load_model, train_model, worker_id + sub_id,
                            keep_checkpoints, lesson, run_seed,
                            docker_target_name, trainer_config_path, no_graphics)
+
+    # Signal that environment has been launched.
+    process_queue.put(True)
+
+    # Begin training
     tc.start_learning()
 
 
@@ -105,6 +110,10 @@ def main():
     for i in range(num_runs):
         if seed == -1:
             run_seed = np.random.randint(0, 10000)
-        p = multiprocessing.Process(target=run_training, args=(i, run_seed, options))
+        process_queue = Queue()
+        p = Process(target=run_training, args=(i, run_seed, options, process_queue))
         jobs.append(p)
         p.start()
+        # Wait for signal that environment has successfully launched
+        while process_queue.get() is not True:
+            continue

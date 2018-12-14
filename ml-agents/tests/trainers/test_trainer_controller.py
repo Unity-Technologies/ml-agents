@@ -1,5 +1,6 @@
 import json
 import unittest.mock as mock
+import os
 
 import yaml
 import pytest
@@ -79,7 +80,8 @@ def dummy_offline_bc_config():
         '''
         default:
             trainer: offline_bc
-            demo_path: ./tests/trainers/test.demo
+            demo_path: '''
+        + os.path.dirname(os.path.abspath(__file__)) + '''/test.demo
             batches_per_epoch: 16
             batch_size: 32
             beta: 5.0e-3

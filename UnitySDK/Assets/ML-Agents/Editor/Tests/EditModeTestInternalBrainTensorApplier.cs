@@ -2,8 +2,6 @@
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.MachineLearning.InferenceEngine;
-using UnityEngine.MachineLearning.InferenceEngine.Util;
 using System.Reflection;
 using MLAgents.InferenceBrain;
 

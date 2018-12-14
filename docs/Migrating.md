@@ -13,19 +13,15 @@ leveraging Unity's prefab system or look for all the agents in a scene
 using the search bar of the `Hierarchy` window with the word `Agent`.
 
 * We replaced the **Internal** and **External** Brain with **Learning Brain**.
-  When you need to train a model, you need to drag it into the `Training Hub`
+  When you need to train a model, you need to drag it into the `Broadcast Hub`
   inside the `Academy` and check the `Control` checkbox.
 * We removed the `Broadcast` checkbox of the Brain, to use the broadcast 
   functionality, you need to drag the Brain into the `Broadcast Hub`.
 * When training multiple Brains at the same time, each model is now stored 
   into a separate model file rather than in the same file under different
   graph scopes. 
-* We have changed the way ML-Agents models perform inference. All previous `.bytes`
-  files can no longer be used (you will have to retrain them). The models
-  produced by the training process and the shipped models have now a `.tf` 
-  extension and use TensorflowSharp as a backend for the 
-  [Inference Engine](Inference-Engine.md).
-* To use a `.tf` model, drag it inside the `Model` property of the `Learning Brain`
+* The **Learning Brain** graph scope, placeholder names, output names and custom
+  placeholders can no longer be modified.
 
 #### Steps to Migrate
 
@@ -44,11 +40,6 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
     from the `mlagents-learn` Python script, you need to drag the relevant 
     `LearningBrain` ScriptableObjects used in your scene into entries 
     into this list.
-* You will need to delete the previous TensorFlowSharp package
-  and install the new one to do inference. To correctly delete the previous
-  TensorFlowSharp package, Delete all of the files under `ML-Agents/Plugins`
-  folder except the files under `ML-Agents/Plugins/ProtoBuffer`.
-
 
 ## Migrating from ML-Agents toolkit v0.4 to v0.5
 

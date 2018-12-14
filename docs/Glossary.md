@@ -7,7 +7,7 @@
 * **Agent** - Unity Component which produces observations and takes actions in
   the environment. Agents actions are determined by decisions produced by a
   linked Brain.
-* **Brain** - Unity Component which makes decisions for the agents linked to it.
+* **Brain** - Unity Asset which makes decisions for the agents linked to it.
 * **Decision** - The specification produced by a Brain for an action to be
   carried out given an observation.
 * **Editor** - The Unity Editor, which may include any pane (e.g. Hierarchy,
