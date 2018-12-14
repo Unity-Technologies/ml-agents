@@ -97,7 +97,7 @@ an Agent works.
 You can create new Brain assets by selecting `Assets -> 
 Create -> ML-Agents -> Brain`. There are 3 types of Brains. 
 The **Learning Brain** is a Brain that uses a trained neural network to make decisions.
-When the `Control` box is checked in the Brains property under the **Broadcast Hub** in the Academy, the external process will  take over decision making for the agents
+When the `Control` box is checked in the Brains property under the **Broadcast Hub** in the Academy, the external process that is training the neural network will take over decision making for the agents
 and ultimately generate a trained neural network. You can also use the
 **Learning Brain** with a pre-trained model.
 The **Heuristic** Brain allows you to hand-code the Agent logic by extending
