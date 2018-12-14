@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='gym_unity',
-      version='0.1.1',
+      version='0.2.0',
       description='Unity Machine Learning Agents Gym Interface',
       license='Apache License 2.0',
       author='Unity Technologies',

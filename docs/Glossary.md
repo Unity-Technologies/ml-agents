@@ -7,7 +7,7 @@
 * **Agent** - Unity Component which produces observations and takes actions in
   the environment. Agents actions are determined by decisions produced by a
   linked Brain.
-* **Brain** - Unity Component which makes decisions for the agents linked to it.
+* **Brain** - Unity Asset which makes decisions for the agents linked to it.
 * **Decision** - The specification produced by a Brain for an action to be
   carried out given an observation.
 * **Editor** - The Unity Editor, which may include any pane (e.g. Hierarchy,
@@ -30,5 +30,5 @@
   logic should not be placed here.
 * **External Coordinator** - ML-Agents class responsible for communication with
   outside processes (in this case, the Python API).
-* **Trainer** - Python class which is responsible for training a given External
-  Brain. Contains TensorFlow graph which makes decisions for External Brain.
+* **Trainer** - Python class which is responsible for training a given 
+  Brain. Contains TensorFlow graph which makes decisions for Learning Brain.

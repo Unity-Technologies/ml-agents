@@ -7,8 +7,8 @@ Windows VM such as Bootcamp or Parallels.
 
 To use the ML-Agents toolkit, you install Python and the required Python
 packages as outlined below. This guide also covers how set up GPU-based training
-(for advanced users). GPU-based training is not required for the v0.4 release of
-the ML-Agents toolkit. However, training on a GPU might be required by future
+(for advanced users). GPU-based training is not currently required for the 
+ML-Agents toolkit. However, training on a GPU might be required by future
 versions and features.
 
 ## Step 1: Install Python via Anaconda
@@ -126,19 +126,28 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 If you don't want to use Git, you can always directly download all the files
 [here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
 
+The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
+It also contains many [example environments](Learning-Environment-Examples.md)
+to help you get started.
+
+The `ml-agents` subdirectory contains Python packages which provide
+trainers and a Python API to interface with Unity.
+
+The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
+
 In our example, the files are located in `C:\Downloads`. After you have either
-cloned or downloaded the files, from the Anaconda Prompt, change to the python
-directory inside the ml-agents directory:
+cloned or downloaded the files, from the Anaconda Prompt, change to the ml-agents
+subdirectory inside the ml-agents directory:
 
 ```console
 cd C:\Downloads\ml-agents\ml-agents
 ```
 
 Make sure you are connected to the internet and then type in the Anaconda
-Prompt:
+Prompt within `ml-agents` subdirectory:
 
 ```sh
-pip install .
+pip install -e .
 ```
 
 This will complete the installation of all the required Python packages to run
@@ -152,7 +161,7 @@ GPU). This is a guide for advanced users who want to train using GPUs.
 Additionally, you will need to check if your GPU is CUDA compatible. Please
 check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
-As of the ML-Agents toolkit v0.4, only CUDA v9.0 and cuDNN v7.0.5 is supported.
+Currently for the ML-Agents toolkit, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
 ### Install Nvidia CUDA toolkit
 

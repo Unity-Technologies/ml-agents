@@ -8,8 +8,8 @@ from mlagents.envs import UnityEnvironment, UnityEnvironmentException, UnityActi
     BrainInfo
 from tests.mock_communicator import MockCommunicator
 
-
-def test_handles_bad_filename():
+@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+def test_handles_bad_filename(get_communicator):
     with pytest.raises(UnityEnvironmentException):
         UnityEnvironment(' ')
 

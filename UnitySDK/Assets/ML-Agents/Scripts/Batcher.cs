@@ -26,23 +26,31 @@ namespace MLAgents
         /// Keeps track of which brains have data to send on the current step
         Dictionary<string, bool> m_hasData =
             new Dictionary<string, bool>();
+
         /// Keeps track of which brains queried the batcher on the current step
         Dictionary<string, bool> m_hasQueried =
             new Dictionary<string, bool>();
+
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_currentAgents =
             new Dictionary<string, List<Agent>>();
+
         /// The Communicator of the batcher, sends a message at most once per step
         Communicator m_communicator;
+
         /// The current UnityRLOutput to be sent when all the brains queried the batcher
         CommunicatorObjects.UnityRLOutput m_currentUnityRLOutput =
-                               new CommunicatorObjects.UnityRLOutput();
+            new CommunicatorObjects.UnityRLOutput();
+
         /// Keeps track of the done flag of the Academy
         bool m_academyDone;
+
         /// Keeps track of last CommandProto sent by External
         CommunicatorObjects.CommandProto m_command;
+
         /// Keeps track of last EnvironmentParametersProto sent by External
         CommunicatorObjects.EnvironmentParametersProto m_environmentParameters;
+
         /// Keeps track of last training mode sent by External
         bool m_isTraining;
 
@@ -63,7 +71,7 @@ namespace MLAgents
         /// Is used by the academy to send the AcademyParameters to the communicator.
         /// </summary>
         /// <returns>The External Initialization Parameters received.</returns>
-        /// <param name="academyParameters">The Unity Initialization Paramters to be sent.</param>
+        /// <param name="academyParameters">The Unity Initialization Parameters to be sent.</param>
         public CommunicatorObjects.UnityRLInitializationInput SendAcademyParameters(
             CommunicatorObjects.UnityRLInitializationOutput academyParameters)
         {
@@ -72,11 +80,11 @@ namespace MLAgents
             try
             {
                 initializationInput = m_communicator.Initialize(
-                        new CommunicatorObjects.UnityOutput
-                        {
-                            RlInitializationOutput = academyParameters
-                        },
-                        out input);
+                    new CommunicatorObjects.UnityOutput
+                    {
+                        RlInitializationOutput = academyParameters
+                    },
+                    out input);
             }
             catch
             {
@@ -155,79 +163,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
-        /// </summary>
-        /// <returns>The protobuf verison of the AgentInfo.</returns>
-        /// <param name="info">The AgentInfo to convert.</param>
-        public static CommunicatorObjects.AgentInfoProto 
-                                         AgentInfoConvertor(AgentInfo info)
-        {
-
-            var agentInfoProto = new CommunicatorObjects.AgentInfoProto
-            {
-                StackedVectorObservation = { info.stackedVectorObservation },
-                StoredVectorActions = { info.storedVectorActions },
-                StoredTextActions = info.storedTextActions,
-                TextObservation = info.textObservation,
-                Reward = info.reward,
-                MaxStepReached = info.maxStepReached,
-                Done = info.done,
-                Id = info.id,
-            };
-            if (info.memories != null)
-            {
-                agentInfoProto.Memories.Add(info.memories);
-            }
-            if (info.actionMasks != null)
-            {
-                agentInfoProto.ActionMask.AddRange(info.actionMasks);
-            }
-            foreach (Texture2D obs in info.visualObservations)
-            {
-                agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToPNG())
-                );
-            }
-            return agentInfoProto;
-        }
-
-        /// <summary>
-        /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
-        /// </summary>
-        /// <returns>The BrainInfoProto generated.</returns>
-        /// <param name="brainParameters">The BrainParameters.</param>
-        /// <param name="name">The name of the brain.</param>
-        /// <param name="type">The type of brain.</param>
-        public static CommunicatorObjects.BrainParametersProto BrainParametersConvertor(
-            BrainParameters brainParameters, string name, CommunicatorObjects.BrainTypeProto type)
-        {
-
-            var brainParametersProto = new CommunicatorObjects.BrainParametersProto
-                {
-                    VectorObservationSize = brainParameters.vectorObservationSize,
-                    NumStackedVectorObservations = brainParameters.numStackedVectorObservations,
-                    VectorActionSize = {brainParameters.vectorActionSize},
-                    VectorActionSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto)brainParameters.vectorActionSpaceType,
-                    BrainName = name,
-                    BrainType = type
-                };
-            brainParametersProto.VectorActionDescriptions.AddRange(
-                brainParameters.vectorActionDescriptions);
-            foreach (resolution res in brainParameters.cameraResolutions)
-            {
-                brainParametersProto.CameraResolutions.Add(
-                    new CommunicatorObjects.ResolutionProto
-                    {
-                        Width = res.width,
-                        Height = res.height,
-                        GrayScale = res.blackAndWhite
-                    });
-            }
-            return brainParametersProto;
-        }
-
-        /// <summary>
         /// Sends the brain info. If at least one brain has an agent in need of
         /// a decision or if the academy is done, the data is sent via 
         /// Communicator. Else, a new step is realized. The data can only be
@@ -254,16 +189,17 @@ namespace MLAgents
             {
                 m_currentAgents[brainKey].Add(agent);
             }
+
             // If at least one agent has data to send, then append data to
             // the message and update hasSentState
             if (m_currentAgents[brainKey].Count > 0)
             {
                 foreach (Agent agent in m_currentAgents[brainKey])
                 {
-                    CommunicatorObjects.AgentInfoProto agentInfoProto =
-                        AgentInfoConvertor(agentInfo[agent]);
+                    CommunicatorObjects.AgentInfoProto agentInfoProto = agentInfo[agent].ToProto();
                     m_currentUnityRLOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                 }
+
                 m_hasData[brainKey] = true;
             }
 
@@ -276,6 +212,7 @@ namespace MLAgents
                     m_currentUnityRLOutput.GlobalDone = m_academyDone;
                     SendBatchedMessageHelper();
                 }
+
                 // The message was just sent so we must reset hasSentState and
                 // triedSendState
                 foreach (string k in m_currentAgents.Keys)
@@ -293,15 +230,17 @@ namespace MLAgents
         void SendBatchedMessageHelper()
         {
             var input = m_communicator.Exchange(
-                new CommunicatorObjects.UnityOutput{
-                RlOutput = m_currentUnityRLOutput
-            });
+                new CommunicatorObjects.UnityOutput
+                {
+                    RlOutput = m_currentUnityRLOutput
+                });
             m_messagesReceived += 1;
 
             foreach (string k in m_currentUnityRLOutput.AgentInfos.Keys)
             {
                 m_currentUnityRLOutput.AgentInfos[k].Value.Clear();
             }
+
             if (input == null)
             {
                 m_command = CommunicatorObjects.CommandProto.Quit;
@@ -326,34 +265,27 @@ namespace MLAgents
             }
 
             foreach (var brainName in rlInput.AgentActions.Keys)
+            {
+                if (!m_currentAgents[brainName].Any())
                 {
-                    if (!m_currentAgents[brainName].Any())
-                    {
-                        continue;
-                    }
-                    if (!rlInput.AgentActions[brainName].Value.Any())
-                    {
-                        continue;
-                    }
-                    for (var i = 0; i < m_currentAgents[brainName].Count(); i++)
-                    {
-                        var agent = m_currentAgents[brainName][i];
-                        var action = rlInput.AgentActions[brainName].Value[i];
-                        agent.UpdateVectorAction(
-                            action.VectorActions.ToArray());
-                        agent.UpdateMemoriesAction(
-                            action.Memories.ToList());
-                        agent.UpdateTextAction(
-                            action.TextActions);
-                        agent.UpdateValueAction(
-                            action.Value);
-                    }
+                    continue;
                 }
-            
-        }
 
+                if (!rlInput.AgentActions[brainName].Value.Any())
+                {
+                    continue;
+                }
+
+                for (var i = 0; i < m_currentAgents[brainName].Count; i++)
+                {
+                    var agent = m_currentAgents[brainName][i];
+                    var action = rlInput.AgentActions[brainName].Value[i];
+                    agent.UpdateVectorAction(action.VectorActions.ToArray());
+                    agent.UpdateMemoriesAction(action.Memories.ToList());
+                    agent.UpdateTextAction(action.TextActions);
+                    agent.UpdateValueAction(action.Value);
+                }
+            }
+        }
     }
 }
-
-
-

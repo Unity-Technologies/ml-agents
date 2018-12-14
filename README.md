@@ -38,7 +38,7 @@ developer communities.
 * For more information, in addition to installation and usage instructions, see
   our [documentation home](docs/Readme.md).
 * If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print of our [reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627). Also, see below for instructions on citing this paper.
-* If you have used a version of the ML-Agents toolkit prior to v0.5, we strongly
+* If you have used an earlier version of the ML-Agents toolkit, we strongly
   recommend our [guide on migrating from earlier versions](docs/Migrating.md).
 
 ## Additional Resources
@@ -69,19 +69,12 @@ contributions. If you wish to contribute, be sure to review our
 [contribution guidelines](CONTRIBUTING.md) and
 [code of conduct](CODE_OF_CONDUCT.md).
 
-You can connect with us and the broader community
-through Unity Connect and GitHub:
+If you run into any problems using the ML-Agents toolkit,
+[submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
+make sure to include as much detail as possible.
 
-* Join our
-  [Unity Machine Learning Channel](https://connect.unity.com/messages/c/035fba4f88400000)
-  to connect with others using the ML-Agents toolkit and Unity developers
-  enthusiastic about machine learning. We use that channel to surface updates
-  regarding the ML-Agents toolkit (and, more broadly, machine learning in
-  games).
-* If you run into any problems using the ML-Agents toolkit,
-  [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
-  make sure to include as much detail as possible.
-* Your opinion matters a great deal to us. Only by hearing your thoughts on the Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few minutes to [let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454). 
+Your opinion matters a great deal to us. Only by hearing your thoughts on the Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few minutes to [let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454). 
+
 
 For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com. 

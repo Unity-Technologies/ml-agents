@@ -47,7 +47,7 @@ namespace MLAgents
             // indices for each branch.
             if (_startingActionIndices == null)
             {
-                _startingActionIndices = CreateActionStartinIndices();
+                _startingActionIndices = Utilities.CumSum(_brainParameters.vectorActionSize);
             }
             
             // Perform the masking
@@ -109,25 +109,6 @@ namespace MLAgents
             {
                 Array.Clear(_currentMask, 0, _currentMask.Length);
             }
-        }
-
-        /// <summary>
-        /// Generates an array containing the starting indicies of each branch in the vector action
-        /// Makes a cumulative sum.
-        /// </summary>
-        /// <returns></returns>
-        private int[] CreateActionStartinIndices()
-        {
-            var vectorActionSize = _brainParameters.vectorActionSize;
-            var runningSum = 0;
-            var result = new int[vectorActionSize.Length + 1];
-            for (var actionIndex = 0;
-                actionIndex < vectorActionSize.Length; actionIndex++)
-            {
-                runningSum += vectorActionSize[actionIndex];
-                result[actionIndex + 1] = runningSum;
-            }
-            return result;
         }
 
         /// <summary>

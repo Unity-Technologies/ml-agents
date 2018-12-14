@@ -50,9 +50,9 @@ If you would like to contribute environments, please see our
   * -1.0 if the ball falls from the platform.
 * Brains: One Brain with the following observation/action space.
   * Vector Observation space: 8 variables corresponding to rotation of platform,
-    and position, rotation, and velocity of ball.
+    and position and velocity of ball.
   * Vector Observation space (Hard Version): 5 variables corresponding to
-    rotation of platform and position and rotation of ball.
+    rotation of platform and position of ball.
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
@@ -115,11 +115,11 @@ If you would like to contribute environments, please see our
 
 * Set-up: A platforming environment where the agent can push a block around.
 * Goal: The agent must push the block to the goal.
-* Agents: The environment contains one agent linked to a single brain.
+* Agents: The environment contains one agent linked to a single Brain.
 * Agent Reward Function:
   * -0.0025 for every step.
   * +1.0 if the block touches the goal.
-* Brains: One brain with the following observation/action space.
+* Brains: One Brain with the following observation/action space.
   * Vector Observation space: (Continuous) 70 variables corresponding to 14
     ray-casts each detecting one of three possible objects (wall, goal, or
     block).
@@ -161,7 +161,7 @@ If you would like to contribute environments, please see our
 ![Reacher](images/reacher.png)
 
 * Set-up: Double-jointed arm which can move to target locations.
-* Goal: The agents must move it's hand to the goal location, and keep it there.
+* Goal: The agents must move its hand to the goal location, and keep it there.
 * Agents: The environment contains 10 agent linked to a single Brain.
 * Agent Reward Function (independent):
   * +0.1 Each step agent's hand is in goal location.
@@ -194,7 +194,8 @@ If you would like to contribute environments, please see our
     rotations for joints.
   * Visual Observations: None.
 * Reset Parameters: None
-* Benchmark Mean Reward: 2000
+* Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
+* Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
 
 ## [Banana Collector](https://youtu.be/heVMs3t9qSk)
 

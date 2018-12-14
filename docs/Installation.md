@@ -1,6 +1,6 @@
 # Installation
 
-To install and use ML-Agents, you need install Unity, clone this repository and
+To install and use ML-Agents, you need to install Unity, clone this repository and
 install Python with additional dependencies. Each of the subsections below
 overviews each step, in addition to a Docker set-up.
 
@@ -16,7 +16,14 @@ Build Support_ component when installing Unity.
        width="500" border="10" />
 </p>
 
-## Clone the ML-Agents Toolkit Repository
+## Windows Users
+For setting up your environment on Windows, we have created a [detailed
+guide](Installation-Windows.md) to setting up your env. For Mac and Linux,
+continue with this guide.
+
+## Mac and Unix Users
+
+### Clone the ML-Agents Toolkit Repository
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
@@ -26,36 +33,21 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 
 The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)
-that can be used to help get you familiar with Unity.
+to help you get started.
 
 The `ml-agents` subdirectory contains Python packages which provide
 trainers and a Python API to interface with Unity.
 
 The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
 
-## Install Python and mlagents Package
+### Install Python and mlagents Package
 
 In order to use ML-Agents toolkit, you need Python 3.6 along with the
-dependencies listed in the [requirements file](../ml-agents/requirements.txt).
+dependencies listed in the [setup.py file](../ml-agents/setup.py).
 Some of the primary dependencies include:
 
 - [TensorFlow](Background-TensorFlow.md)
 - [Jupyter](Background-Jupyter.md)
-
-### NOTES
-
-- We do not currently support Python 3.7 or Python 3.5.
-- If you are using Anaconda and are having trouble with TensorFlow, please see
-  the following
-  [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda)
-  on how to install TensorFlow in an Anaconda environment.
-
-### Windows Users
-
-If you are a Windows user who is new to Python and TensorFlow, follow [this
-guide](Installation-Windows.md) to set up your Python environment.
-
-### Mac and Unix Users
 
 [Download](https://www.python.org/downloads/) and install Python 3.6 if you do not
 already have it.
@@ -68,11 +60,19 @@ To install the dependencies and `mlagents` Python package, enter the
 `ml-agents/` subdirectory and run from the command line:
 
 ```sh
-pip3 install .
+pip3 install -e .
 ```
 
 If you installed this correctly, you should be able to run
 `mlagents-learn --help`
+
+**Notes:**
+
+- We do not currently support Python 3.7 or Python 3.5.
+- If you are using Anaconda and are having trouble with TensorFlow, please see
+  the following
+  [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda)
+  on how to install TensorFlow in an Anaconda environment.
 
 ## Docker-based Installation
 

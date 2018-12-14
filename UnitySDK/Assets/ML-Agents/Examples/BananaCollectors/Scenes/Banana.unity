@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4482636, g: 0.49828887, b: 0.5755903, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824862, g: 0.49827534, b: 0.57558274, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -115,64 +115,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &7561197
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 7561198}
-  - component: {fileID: 7561199}
-  m_Layer: 0
-  m_Name: BananaBrain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7561198
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 7561197}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1574236049}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7561199
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 7561197}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c676a8ddf5a5f4f64b35e9ed5028679d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brainParameters:
-    vectorObservationSize: 53
-    numStackedVectorObservations: 3
-    vectorActionSize: 03000000030000000300000002000000
-    cameraResolutions: []
-    vectorActionDescriptions:
-    - 
-    - 
-    - 
-    - 
-    vectorActionSpaceType: 0
-  brainType: 0
-  CoreBrains:
-  - {fileID: 940555745}
-  - {fileID: 1212824969}
-  - {fileID: 1701529996}
-  - {fileID: 953646587}
-  instanceID: 11742
 --- !u!1 &273651478
 GameObject:
   m_ObjectHideFlags: 0
@@ -469,81 +411,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 45, y: -45, z: 0}
---- !u!114 &940555745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  keyContinuousPlayerActions:
-  - key: 119
-    index: 0
-    value: 1
-  - key: 97
-    index: 1
-    value: -3
-  - key: 100
-    index: 1
-    value: 1
-  - key: 32
-    index: 2
-    value: 1
-  - key: 115
-    index: 0
-    value: -1
-  axisContinuousPlayerActions: []
-  discretePlayerActions:
-  - key: 119
-    branchIndex: 0
-    value: 1
-  - key: 115
-    branchIndex: 0
-    value: 2
-  - key: 113
-    branchIndex: 1
-    value: 1
-  - key: 101
-    branchIndex: 1
-    value: 2
-  - key: 97
-    branchIndex: 2
-    value: 1
-  - key: 100
-    branchIndex: 2
-    value: 2
-  - key: 32
-    branchIndex: 3
-    value: 1
-  brain: {fileID: 7561199}
---- !u!114 &953646587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: 88f1d4da9ad644b2490a103d19616b4e, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 7561199}
 --- !u!1 &1009000883
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,97 +589,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 38400a68c4ea54b52998e34ee238d1a7, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1212824969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 7561199}
 --- !u!1001 &1237871472
 Prefab:
   m_ObjectHideFlags: 0
@@ -852,81 +631,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 1819751139121548, guid: 38400a68c4ea54b52998e34ee238d1a7, type: 2}
       propertyPath: m_Name
       value: RLArea (2)
@@ -961,6 +665,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 956340fb74508451c9078ee4dad2329b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  broadcastHub:
+    broadcastingBrains:
+    - {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
+    _brainsToControl: []
   maxSteps: 1500
   trainingConfiguration:
     width: 500
@@ -989,23 +697,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.71938086, y: 0.27357092, z: 4.1970553}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 7561198}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1701529996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 7561199}
 --- !u!1 &1799584680
 GameObject:
   m_ObjectHideFlags: 0
@@ -1114,31 +809,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
     - target: {fileID: 1819751139121548, guid: 38400a68c4ea54b52998e34ee238d1a7, type: 2}
       propertyPath: m_Name
       value: RLArea (3)
@@ -1184,81 +854,6 @@ Prefab:
     - target: {fileID: 4688212428263696, guid: 38400a68c4ea54b52998e34ee238d1a7, type: 2}
       propertyPath: m_RootOrder
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 7561199}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 114875485509234200, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114816434626527468, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114846764322938622, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114508049814297234, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114245753946332258, guid: 38400a68c4ea54b52998e34ee238d1a7,
-        type: 2}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1819751139121548, guid: 38400a68c4ea54b52998e34ee238d1a7, type: 2}
       propertyPath: m_Name

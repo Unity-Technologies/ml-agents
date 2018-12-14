@@ -8,6 +8,8 @@ logger = logging.getLogger("mlagents.envs")
 
 
 class LearningModel(object):
+    _version_number_ = 1
+
     def __init__(self, m_size, normalize, use_recurrent, brain, seed):
         tf.set_random_seed(seed)
         self.brain = brain
@@ -18,13 +20,24 @@ class LearningModel(object):
         self.sequence_length = tf.placeholder(shape=None, dtype=tf.int32, name='sequence_length')
         self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name='masks')
         self.mask = tf.cast(self.mask_input, tf.int32)
-        self.m_size = m_size
-        self.normalize = normalize
         self.use_recurrent = use_recurrent
+        if self.use_recurrent:
+            self.m_size = m_size
+        else:
+            self.m_size = 0
+        self.normalize = normalize
         self.act_size = brain.vector_action_space_size
         self.vec_obs_size = brain.vector_observation_space_size * \
                             brain.num_stacked_vector_observations
         self.vis_obs_size = brain.number_visual_observations
+        tf.Variable(int(brain.vector_action_space_type == 'continuous'),
+                    name='is_continuous_control', trainable=False, dtype=tf.int32)
+        tf.Variable(self._version_number_, name='version_number', trainable=False, dtype=tf.int32)
+        tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
+        if brain.vector_action_space_type == 'continuous':
+            tf.Variable(self.act_size[0], name="action_output_shape", trainable=False, dtype=tf.int32)
+        else:
+            tf.Variable(sum(self.act_size), name="action_output_shape", trainable=False, dtype=tf.int32)
 
     @staticmethod
     def create_global_steps():
@@ -153,13 +166,13 @@ class LearningModel(object):
         action_idx = [0] + list(np.cumsum(action_size))
         branches_logits = [all_logits[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
         branch_masks = [action_masks[:, action_idx[i]:action_idx[i + 1]] for i in range(len(action_size))]
-        raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]), branch_masks[k]) + 1.0e-10
+        raw_probs = [tf.multiply(tf.nn.softmax(branches_logits[k]) + 1.0e-10, branch_masks[k])
                      for k in range(len(action_size))]
         normalized_probs = [
-            tf.divide(raw_probs[k], tf.reduce_sum(raw_probs[k] + 1.0e-10, axis=1, keepdims=True))
-                            for k in range(len(action_size))]
+            tf.divide(raw_probs[k], tf.reduce_sum(raw_probs[k], axis=1, keepdims=True))
+            for k in range(len(action_size))]
         output = tf.concat([tf.multinomial(tf.log(normalized_probs[k]), 1) for k in range(len(action_size))], axis=1)
-        return output, tf.concat([tf.log(normalized_probs[k]) for k in range(len(action_size))], axis=1)
+        return output, tf.concat([tf.log(normalized_probs[k] + 1.0e-10) for k in range(len(action_size))], axis=1)
 
     def create_observation_streams(self, num_streams, h_size, num_layers):
         """
@@ -244,7 +257,6 @@ class LearningModel(object):
         hidden_streams = self.create_observation_streams(2, h_size, num_layers)
 
         if self.use_recurrent:
-            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.memory_in = tf.placeholder(shape=[None, self.m_size], dtype=tf.float32,
                                             name='recurrent_in')
             _half_point = int(self.m_size / 2)
@@ -269,10 +281,9 @@ class LearningModel(object):
 
         sigma_sq = tf.exp(log_sigma_sq)
 
-        epsilon = tf.random_normal(tf.shape(mu), dtype=tf.float32)
-
+        self.epsilon = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32, name='epsilon')
         # Clip and scale output to ensure actions are always within [-1, 1] range.
-        self.output_pre = mu + tf.sqrt(sigma_sq) * epsilon
+        self.output_pre = mu + tf.sqrt(sigma_sq) * self.epsilon
         output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
         self.output = tf.identity(output_post, name='action')
         self.selected_actions = tf.stop_gradient(output_post)
@@ -306,7 +317,6 @@ class LearningModel(object):
         hidden = hidden_streams[0]
 
         if self.use_recurrent:
-            tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
             self.prev_action = tf.placeholder(shape=[None, len(self.act_size)], dtype=tf.int32,
                                               name='prev_action')
             prev_action_oh = tf.concat([
@@ -331,15 +341,17 @@ class LearningModel(object):
         output, normalized_logits = self.create_discrete_action_masking_layer(
             self.all_log_probs, self.action_masks, self.act_size)
 
-        self.output = tf.identity(output, name="action")
+        self.output = tf.identity(output)
+        self.normalized_logits = tf.identity(normalized_logits, name='action')
 
         value = tf.layers.dense(hidden, 1, activation=None)
         self.value = tf.identity(value, name="value_estimate")
 
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder")
-        self.selected_actions = tf.concat([
+        self.action_oh = tf.concat([
             tf.one_hot(self.action_holder[:, i], self.act_size[i]) for i in range(len(self.act_size))], axis=1)
+        self.selected_actions = tf.stop_gradient(self.action_oh)
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name='old_probabilities')
@@ -356,13 +368,13 @@ class LearningModel(object):
 
         self.log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
-                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                labels=self.action_oh[:, action_idx[i]:action_idx[i + 1]],
                 logits=normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)
         self.old_log_probs = tf.reduce_sum((tf.stack([
             -tf.nn.softmax_cross_entropy_with_logits_v2(
-                labels=self.selected_actions[:, action_idx[i]:action_idx[i + 1]],
+                labels=self.action_oh[:, action_idx[i]:action_idx[i + 1]],
                 logits=old_normalized_logits[:, action_idx[i]:action_idx[i + 1]]
             )
             for i in range(len(self.act_size))], axis=1)), axis=1, keepdims=True)

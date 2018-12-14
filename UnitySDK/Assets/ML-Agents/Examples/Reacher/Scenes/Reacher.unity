@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 8
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -38,8 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 762086411}
-  m_IndirectSpecularColor: {r: 0.4465785, g: 0.49641252, b: 0.574817, a: 1}
-  m_UseRadianceAmbientProbe: 0
+  m_IndirectSpecularColor: {r: 0.4465934, g: 0.49642956, b: 0.5748249, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -55,10 +54,11 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 10
+    serializedVersion: 9
     m_Resolution: 2
     m_BakeResolution: 40
-    m_AtlasSize: 1024
+    m_TextureWidth: 1024
+    m_TextureHeight: 1024
     m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
@@ -156,7 +156,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (17)
@@ -207,7 +208,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (11)
@@ -258,7 +260,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (4)
@@ -305,11 +308,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 114955921823023820, guid: 2f13abef2db804f96bdc7692a1dcf2b2,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 846768605}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
   m_IsPrefabParent: 0
@@ -344,7 +342,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: ea4e6e61f90ae46daaf643b945c080ed, type: 2}
   m_StaticBatchInfo:
@@ -398,57 +395,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &528306545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  brain: {fileID: 846768605}
---- !u!114 &589219526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  keyContinuousPlayerActions: []
-  axisContinuousPlayerActions: []
-  discretePlayerActions: []
-  brain: {fileID: 846768605}
---- !u!114 &608621039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 4900000, guid: 6eda13e905c504296ab2533939a59646, type: 3}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 846768605}
 --- !u!1001 &624846107
 Prefab:
   m_ObjectHideFlags: 0
@@ -488,11 +434,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 114955921823023820, guid: 2f13abef2db804f96bdc7692a1dcf2b2,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 846768605}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (6)
@@ -500,19 +441,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &640077483
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  brain: {fileID: 0}
 --- !u!1001 &716814932
 Prefab:
   m_ObjectHideFlags: 0
@@ -556,7 +484,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (13)
@@ -607,7 +536,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (9)
@@ -680,65 +610,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &846768603
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 846768604}
-  - component: {fileID: 846768605}
-  m_Layer: 0
-  m_Name: ReacherBrain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &846768604
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 846768603}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1574236049}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &846768605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 846768603}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c676a8ddf5a5f4f64b35e9ed5028679d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brainParameters:
-    vectorObservationSize: 33
-    numStackedVectorObservations: 1
-    vectorActionSize: 04000000
-    test: 010000000200000003000000
-    cameraResolutions: []
-    vectorActionDescriptions:
-    - 
-    - 
-    - 
-    - 
-    vectorActionSpaceType: 1
-  brainType: 0
-  CoreBrains:
-  - {fileID: 589219526}
-  - {fileID: 640077483}
-  - {fileID: 528306545}
-  - {fileID: 608621039}
-  instanceID: 110728
 --- !u!1001 &987691372
 Prefab:
   m_ObjectHideFlags: 0
@@ -782,7 +653,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (3)
@@ -833,7 +705,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (19)
@@ -880,11 +753,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 114955921823023820, guid: 2f13abef2db804f96bdc7692a1dcf2b2,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 846768605}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (2)
@@ -935,7 +803,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (18)
@@ -986,7 +855,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (8)
@@ -1037,7 +907,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (10)
@@ -1088,7 +959,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (5)
@@ -1139,7 +1011,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (12)
@@ -1190,7 +1063,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (16)
@@ -1225,6 +1099,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c970415924214d13949fbd6cddd1759, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  broadcastHub:
+    broadcastingBrains:
+    - {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f, type: 2}
+    _brainsToControl: []
   maxSteps: 0
   trainingConfiguration:
     width: 80
@@ -1255,8 +1133,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.71938086, y: 0.27357092, z: 4.1970553}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 846768604}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1303,7 +1180,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (1)
@@ -1354,7 +1232,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (7)
@@ -1470,7 +1349,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (14)
@@ -1521,7 +1401,8 @@ Prefab:
         type: 2}
       propertyPath: brain
       value: 
-      objectReference: {fileID: 846768605}
+      objectReference: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f,
+        type: 2}
     - target: {fileID: 1395682910799436, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 2}
       propertyPath: m_Name
       value: Agent (15)

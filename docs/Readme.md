@@ -25,11 +25,10 @@
   * [Brains](Learning-Environment-Design-Brains.md):
     [Player](Learning-Environment-Design-Player-Brains.md),
     [Heuristic](Learning-Environment-Design-Heuristic-Brains.md),
-    [Internal & External](Learning-Environment-Design-External-Internal-Brains.md)
+    [Learning](Learning-Environment-Design-Learning-Brains.md)
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 * [Using the Monitor](Feature-Monitor.md)
 * [Using an Executable Environment](Learning-Environment-Executable.md)
-* [TensorFlowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
 
 ## Training
 
@@ -41,6 +40,9 @@
 * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
+
+## Inference
+* [TensorFlowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
 
 ## Help
 

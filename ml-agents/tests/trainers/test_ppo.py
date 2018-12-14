@@ -44,22 +44,20 @@ def dummy_config():
 @mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
 def test_ppo_policy_evaluate(mock_communicator, mock_launcher):
     tf.reset_default_graph()
-    with tf.Session() as sess:
-        mock_communicator.return_value = MockCommunicator(
-            discrete_action=False, visual_inputs=0)
-        env = UnityEnvironment(' ')
-        brain_infos = env.reset()
-        brain_info = brain_infos[env.brain_names[0]]
+    mock_communicator.return_value = MockCommunicator(
+        discrete_action=False, visual_inputs=0)
+    env = UnityEnvironment(' ')
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
 
-        trainer_parameters = dummy_config()
-        graph_scope = env.brain_names[0]
-        trainer_parameters['graph_scope'] = graph_scope
-        policy = PPOPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, sess, False)
-        init = tf.global_variables_initializer()
-        sess.run(init)
-        run_out = policy.evaluate(brain_info)
-        assert run_out['action'].shape == (3, 2)
-        env.close()
+    trainer_parameters = dummy_config()
+    model_path = env.brain_names[0]
+    trainer_parameters['model_path'] = model_path
+    trainer_parameters['keep_checkpoints'] = 3
+    policy = PPOPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, False, False)
+    run_out = policy.evaluate(brain_info)
+    assert run_out['action'].shape == (3, 2)
+    env.close()
 
 
 @mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
@@ -81,7 +79,8 @@ def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
             feed_dict = {model.batch_size: 2,
                          model.sequence_length: 1,
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
-                                                    [3, 4, 5, 3, 4, 5]])}
+                                                    [3, 4, 5, 3, 4, 5]],),
+                         model.epsilon: np.array([[0, 1], [2, 3]])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -107,7 +106,8 @@ def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                     [3, 4, 5, 3, 4, 5]]),
                          model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                         model.visual_in[1]: np.ones([2, 40, 30, 3])}
+                         model.visual_in[1]: np.ones([2, 40, 30, 3]),
+                         model.epsilon: np.array([[0, 1], [2, 3]])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -133,7 +133,7 @@ def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
                                                     [3, 4, 5, 3, 4, 5]]),
                          model.visual_in[0]: np.ones([2, 40, 30, 3]),
                          model.visual_in[1]: np.ones([2, 40, 30, 3]),
-                         model.action_masks: np.ones([2,2])
+                         model.action_masks: np.ones([2, 2],)
                          }
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
@@ -158,7 +158,7 @@ def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
                          model.sequence_length: 1,
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                     [3, 4, 5, 3, 4, 5]]),
-                         model.action_masks: np.ones([2,2])}
+                         model.action_masks: np.ones([2, 2])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -185,7 +185,7 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
                          model.memory_in: np.zeros((1, memory_size)),
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                     [3, 4, 5, 3, 4, 5]]),
-                         model.action_masks: np.ones([1,2])}
+                         model.action_masks: np.ones([1, 2])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -210,7 +210,8 @@ def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
                          model.sequence_length: 2,
                          model.memory_in: np.zeros((1, memory_size)),
                          model.vector_in: np.array([[1, 2, 3, 1, 2, 3],
-                                                    [3, 4, 5, 3, 4, 5]])}
+                                                    [3, 4, 5, 3, 4, 5]]),
+                         model.epsilon: np.array([[0, 1]])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -263,7 +264,8 @@ def test_ppo_model_cc_vector_curio(mock_communicator, mock_launcher):
                                                     [3, 4, 5, 3, 4, 5]]),
                          model.next_vector_in: np.array([[1, 2, 3, 1, 2, 3],
                                                          [3, 4, 5, 3, 4, 5]]),
-                         model.output: [[0.0, 0.0], [0.0, 0.0]]}
+                         model.output: [[0.0, 0.0], [0.0, 0.0]],
+                         model.epsilon: np.array([[0, 1], [2, 3]])}
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
 
@@ -294,7 +296,7 @@ def test_ppo_model_dc_visual_curio(mock_communicator, mock_launcher):
                          model.visual_in[1]: np.ones([2, 40, 30, 3]),
                          model.next_visual_in[0]: np.ones([2, 40, 30, 3]),
                          model.next_visual_in[1]: np.ones([2, 40, 30, 3]),
-                         model.action_masks: np.ones([2,2])
+                         model.action_masks: np.ones([2, 2])
                          }
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
@@ -325,7 +327,8 @@ def test_ppo_model_cc_visual_curio(mock_communicator, mock_launcher):
                          model.visual_in[0]: np.ones([2, 40, 30, 3]),
                          model.visual_in[1]: np.ones([2, 40, 30, 3]),
                          model.next_visual_in[0]: np.ones([2, 40, 30, 3]),
-                         model.next_visual_in[1]: np.ones([2, 40, 30, 3])
+                         model.next_visual_in[1]: np.ones([2, 40, 30, 3]),
+                         model.epsilon: np.array([[0, 1], [2, 3]])
                          }
             sess.run(run_list, feed_dict=feed_dict)
             env.close()

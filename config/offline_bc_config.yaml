@@ -1,0 +1,27 @@
+default:
+    trainer: offline_bc
+    batch_size: 64
+    summary_freq: 1000
+    max_steps: 5.0e4
+    batches_per_epoch: 10
+    use_recurrent: false
+    hidden_units: 128
+    learning_rate: 3.0e-4
+    num_layers: 2
+    sequence_length: 32
+    memory_size: 256
+    demo_path: ./UnitySDK/Assets/Demonstrations/<Your_Demo_File>.demo
+
+HallwayLearning:
+    trainer: offline_bc
+    max_steps: 5.0e5
+    num_epoch: 5
+    batch_size: 64
+    batches_per_epoch: 5
+    num_layers: 2
+    hidden_units: 128
+    sequence_length: 16
+    use_recurrent: true
+    memory_size: 256
+    sequence_length: 32
+    demo_path: ./UnitySDK/Assets/Demonstrations/Hallway.demo

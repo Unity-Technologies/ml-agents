@@ -27,25 +27,25 @@ Step-by-step procedures for running the training process are provided in the
 ## The Simulation and Training Process
 
 Training and simulation proceed in steps orchestrated by the ML-Agents Academy
-class. The Academy works with Agent and Brain objects in the scene to step
+class. The Academy works with Agent objects in the scene to step
 through the simulation. When either the Academy has reached its maximum number
 of steps or all Agents in the scene are _done_, one training episode is
 finished.
 
 During training, the external Python training process communicates with the
 Academy to run a series of episodes while it collects data and optimizes its
-neural network model. The type of Brain assigned to an Agent determines whether
-it participates in training or not. The **External** Brain communicates with the
-external process to train the TensorFlow model. When training is completed
-successfully, you can add the trained model file to your Unity project for use
-with an **Internal** Brain.
+neural network model. The kind of Brain assigned to an Agent determines whether
+it participates in training or not. The **Learning Brain** can be used to train 
+or execute a TensorFlow model. When training is completed
+successfully, you can add the trained model file to your Unity project for later
+use.
 
 The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 
 1. Calls your Academy subclass's `AcademyReset()` function.
 2. Calls the `AgentReset()` function for each Agent in the scene.
 3. Calls the  `CollectObservations()` function for each Agent in the scene.
-4. Uses each Agent's Brain class to decide on the Agent's next action.
+4. Uses each Agent's Brain to decide on the Agent's next action.
 5. Calls your subclass's `AcademyStep()` function.
 6. Calls the `AgentAction()` function for each Agent in the scene, passing in
    the action chosen by the Agent's Brain. (This function is not called if the
@@ -71,17 +71,15 @@ information.
 ## Organizing the Unity Scene
 
 To train and use the ML-Agents toolkit in a Unity scene, the scene must contain
-a single Academy subclass along with as many Brain objects and Agent subclasses
-as you need. Any Brain instances in the scene must be attached to GameObjects
-that are children of the Academy in the Unity Scene Hierarchy. Agent instances
-should be attached to the GameObject representing that Agent.
-
-![Scene Hierarchy](images/scene-hierarchy.png)
+a single Academy subclass and as many Agent subclasses
+as you need. The Brain assets are present in the project and should be grouped 
+together and named according to the type of agents they are compatible with.
+Agent instances should be attached to the GameObject representing that Agent.
 
 You must assign a Brain to every Agent, but you can share Brains between
 multiple Agents. Each Agent will make its own observations and act
-independently, but will use the same decision-making logic and, for **Internal**
-Brains, the same trained TensorFlow model.
+independently, but will use the same decision-making logic and, for **Learning
+Brains**, the same trained TensorFlow model.
 
 ### Academy
 
@@ -114,17 +112,21 @@ the Academy properties and their uses.
 
 ### Brain
 
-The Brain encapsulates the decision making process. Brain objects must be
-children of the Academy in the Unity scene hierarchy. Every Agent must be
+The Brain encapsulates the decision making process. Every Agent must be
 assigned a Brain, but you can use the same Brain with more than one Agent.
+__Note__:You can assign the same Brain to multiple agents by using prefabs
+or by selecting all the agents you want to attach the Brain to using the 
+search bar on top of the Scene Hierarchy window.
 
-Use the Brain class directly, rather than a subclass. Brain behavior is
-determined by the Brain type. During training, set your Agent's Brain type to
-**External**. To use the trained model, import the model file into the Unity
-project and change the Brain type to **Internal**. See
+To Create a Brain, go to `Assets -> Create -> Ml-Agents` and select the 
+type of Brain you want to use. During training, use a **Learning Brain** 
+and drag it into the Academy's `Broadcast Hub` with the `Control` checkbox checked.
+When you want to use the trained model, import the model file into the Unity
+project, add it to the **Model** property of the **Learning Brain** and uncheck
+the `Control` checkbox of the `Broadcast Hub`. See
 [Brains](Learning-Environment-Design-Brains.md) for details on using the
-different types of Brains. You can extend the CoreBrain class to create
-different Brain types if the four built-in types don't do what you need.
+different types of Brains. You can create new kinds of Brains if the three
+built-in don't do what you need.
 
 The Brain class has several important properties that you can set using the
 Inspector window. These properties must be appropriate for the Agents using the
@@ -195,7 +197,8 @@ include:
 
 * The training scene must start automatically when your Unity application is
   launched by the training process.
-* The scene must include at least one **External** Brain.
+* The scene must include an Academy with at least one Brain in the `Broadcast Hub`
+  with the `Control` checkbox checked.
 * The Academy must reset the scene to a valid starting point for each episode of
   training.
 * A training episode must have a definite end — either using `Max Steps` or by

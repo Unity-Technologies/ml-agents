@@ -71,13 +71,18 @@ slightly modifications to the ones provided for Atari and Mujoco environments.
 ### Example - DQN Baseline
 
 In order to train an agent to play the `GridWorld` environment using the
-Baselines DQN algorithm, create a file called `train_unity.py` within the
-`baselines/deepq/experiments` subfolder of the baselines repository. This file
-will be a modification of the `run_atari.py` file within the same folder. Then
-create and `/envs/` directory within the repository, and build the GridWorld
-environment to that directory. For more information on building Unity
-environments, see [here](../docs/Learning-Environment-Executable.md). Add the
-following code to the `train_unity.py` file:
+Baselines DQN algorithm, you first need to install the baselines package using 
+pip:
+
+```
+pip install git+git://github.com/openai/baselines
+```
+
+Next, create a file called `train_unity.py`. Then create an `/envs/` directory 
+and build the GridWorld environment to that directory. For more information on 
+building Unity environments, see 
+[here](../docs/Learning-Environment-Executable.md). Add the following code to 
+the `train_unity.py` file:
 
 ```python
 import gym
@@ -87,20 +92,15 @@ from gym_unity.envs import UnityEnv
 
 def main():
     env = UnityEnv("./envs/GridWorld", 0, use_visual=True)
-    model = deepq.models.cnn_to_mlp(
-        convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
-        hiddens=[256],
-        dueling=True,
-    )
     act = deepq.learn(
         env,
-        q_func=model,
+        "mlp",
         lr=1e-3,
-        max_timesteps=100000,
+        total_timesteps=100000,
         buffer_size=50000,
         exploration_fraction=0.1,
         exploration_final_eps=0.02,
-        print_freq=10,
+        print_freq=10
     )
     print("Saving model to unity_model.pkl")
     act.save("unity_model.pkl")
@@ -114,14 +114,14 @@ To start the training process, run the following from the root of the baselines
 repository:
 
 ```sh
-python -m baselines.deepq.experiments.train_unity
+python -m train_unity
 ```
 
 ### Other Algorithms
 
 Other algorithms in the Baselines repository can be run using scripts similar to
-the example provided above. In most cases, the primary changes needed to use a
-Unity environment are to import `UnityEnv`, and to replace the environment
+the examples from the baselines package. In most cases, the primary changes needed 
+to use a Unity environment are to import `UnityEnv`, and to replace the environment
 creation code, typically `gym.make()`, with a call to `UnityEnv(env_path)`
 passing the environment binary path.
 
@@ -129,30 +129,49 @@ A typical rule of thumb is that for vision-based environments, modification
 should be done to Atari training scripts, and for vector observation
 environments, modification should be done to Mujoco scripts.
 
-Some algorithms will make use of `make_atari_env()` or `make_mujoco_env()`
-functions. These are defined in `baselines/common/cmd_util.py`. In order to use
-Unity environments for these algorithms, add the following import statement and
-function to `cmd_utils.py`:
+Some algorithms will make use of `make_env()` or `make_mujoco_env()`
+functions. You can define a similar function for Unity environments.  An example of 
+such a method using the PPO2 baseline:
 
 ```python
 from gym_unity.envs import UnityEnv
+from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
+from baselines.bench import Monitor
+from baselines import logger
+import baselines.ppo2.ppo2 as ppo2
+
+import os
+
+try:
+    from mpi4py import MPI
+except ImportError:
+    MPI = None
 
 def make_unity_env(env_directory, num_env, visual, start_index=0):
     """
     Create a wrapped, monitored Unity environment.
     """
-    def make_env(rank): # pylint: disable=C0111
+    def make_env(rank, use_visual=True): # pylint: disable=C0111
         def _thunk():
-            env = UnityEnv(env_directory, rank, use_visual=True)
+            env = UnityEnv(env_directory, rank, use_visual=use_visual)
             env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
             return env
         return _thunk
     if visual:
         return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
     else:
-        rank = MPI.COMM_WORLD.Get_rank()
-        env = UnityEnv(env_directory, rank, use_visual=False)
-        env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
-        return env
+        rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
+        return make_env(rank, use_visual=False)
 
+def main():
+    env = make_unity_env('./envs/GridWorld', 4, True)
+    ppo2.learn(
+        network="mlp",
+        env=env,
+        total_timesteps=100000,
+        lr=1e-3,
+    )
+
+if __name__ == '__main__':
+    main()
 ```
