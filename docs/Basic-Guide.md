@@ -109,7 +109,7 @@ a `Learning Brain`.
    **Note:** Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
 the agent) means that the Brain will be making decision for that agent. Whereas dragging
 a Brain into the Broadcast Hub means that the Brain will be exposed to the Python process.
-The `Control` checkbox means that in addition to being exposed to Python, the Brain will
+The `Control` checkbox means that in addition to being exposed to Python, the agent Brain will
 be controlled by the Python process (required for training).
 
    ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
