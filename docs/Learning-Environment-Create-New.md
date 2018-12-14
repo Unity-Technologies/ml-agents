@@ -51,8 +51,8 @@ importing the ML-Agents assets into it:
     but is the default as of 2018.3.)
 3. In a file system window, navigate to the folder containing your cloned
     ML-Agents repository.
-4. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity Editor
-    Project window.
+4. Drag the `ML-Agents` and `Gizmos` folders from `UnitySDK/Assets` to the Unity 
+    Editor Project window.
 
 Your Unity **Project** window should contain the following assets:
 
