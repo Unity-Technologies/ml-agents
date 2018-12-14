@@ -28,7 +28,7 @@ Let's get started!
 In order to install and set up the ML-Agents toolkit, the Python dependencies
 and Unity, see the [installation instructions](Installation.md).
 
-## Understanding a Unity Environment (3D Balance Ball)
+## Understanding the Unity Environment (3D Balance Ball)
 
 An agent is an autonomous actor that observes and interacts with an
 _environment_. In the context of Unity, an environment is a scene containing an
