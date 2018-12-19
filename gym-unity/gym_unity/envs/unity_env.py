@@ -23,12 +23,13 @@ class UnityEnv(gym.Env):
     https://github.com/openai/multiagent-particle-envs
     """
 
-    def __init__(self, environment_filename: str, worker_id=0, use_visual=False, multiagent=False):
+    def __init__(self, environment_filename: str, worker_id=0, use_visual=False, uint8_visual=False, multiagent=False):
         """
         Environment initialization
         :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
         :param worker_id: Worker number for environment.
         :param use_visual: Whether to use visual observation or vector observation.
+        :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
         """
         self._env = UnityEnvironment(environment_filename, worker_id)
@@ -50,6 +51,12 @@ class UnityEnv(gym.Env):
             raise UnityGymException("`use_visual` was set to True, however there are no"
                                     " visual observations as part of this environment.")
         self.use_visual = brain.number_visual_observations >= 1 and use_visual
+
+        if not use_visual and uint8_visual:
+            logger.warning("`uint8_visual was set to true, but visual observations are not in use. "
+                           "This setting will not have any effect.")
+        else:
+            self.uint8_visual = uint8_visual
 
         if brain.number_visual_observations > 1:
             logger.warning("The environment contains more than one visual observation. "
@@ -141,7 +148,7 @@ class UnityEnv(gym.Env):
 
     def _single_step(self, info):
         if self.use_visual:
-            self.visual_obs = info.visual_observations[0][0, :, :, :]
+            self.visual_obs = self._preprocess_single(info.visual_observations[0][0, :, :, :])
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
@@ -150,15 +157,27 @@ class UnityEnv(gym.Env):
             "text_observation": info.text_observations[0],
             "brain_info": info}
 
+    def _preprocess_single(self, single_visual_obs):
+        if self.uint8_visual:
+            return (255.0*single_visual_obs).astype(np.uint8)
+        else:
+            return single_visual_obs
+
     def _multi_step(self, info):
         if self.use_visual:
-            self.visual_obs = info.visual_observations
+            self.visual_obs = self._preprocess_multi(info.visual_observations)
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations
         return list(default_observation), info.rewards, info.local_done, {
             "text_observation": info.text_observations,
             "brain_info": info}
+    
+    def _preprocess_multi(self, multiple_visual_obs):
+        if self.uint8_visual:
+            return [(255.0*_visual_obs).astype(np.uint8) for _visual_obs in multiple_visual_obs]
+        else:
+            return multiple_visual_obs
 
     def render(self, mode='rgb_array'):
         return self.visual_obs
