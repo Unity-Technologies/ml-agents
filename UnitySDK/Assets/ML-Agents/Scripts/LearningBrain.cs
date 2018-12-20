@@ -1,9 +1,13 @@
-﻿using System;
+﻿#define ENABLE_BARRACUDA
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Barracuda;
 using MLAgents.InferenceBrain;
 using UnityEngine.Profiling;
+using Tensor = MLAgents.InferenceBrain.Tensor;
 
 namespace MLAgents
 {
@@ -32,6 +36,13 @@ namespace MLAgents
 #if ENABLE_TENSORFLOW
         private TFSharpInferenceEngine _engine;
 #endif
+#if ENABLE_BARRACUDA
+        private Model _barracudaModel;
+        private IWorker _engine;
+        
+        private BarracudaModelParamLoader _modelParamLoader;
+#endif
+        
         private IEnumerable<Tensor> _inferenceInputs;
         private IEnumerable<Tensor> _inferenceOutputs;
 
@@ -79,6 +90,25 @@ namespace MLAgents
             _tensorGenerator = new TensorGenerator(brainParameters, seed);
             _tensorApplier = new TensorApplier(brainParameters, seed);
 #endif
+            
+#if ENABLE_BARRACUDA
+            if (model != null)
+            {
+                _barracudaModel = ModelLoader.Load(model.bytes);
+                _engine = BarracudaWorkerFactory.CreateWorker(BarracudaWorkerFactory.Type.CSharpFast, _barracudaModel, false);
+            }
+            else
+            {
+                _barracudaModel = null;
+                _engine = null;
+            }
+
+            _modelParamLoader = BarracudaModelParamLoader.GetLoaderAndCheck(_engine, _barracudaModel, brainParameters);
+            _inferenceInputs = _modelParamLoader.GetInputTensors();
+            //TODO: _inferenceOutputs = _modelParamLoader.GetOutputTensors();
+            _tensorGenerator = new TensorGenerator(brainParameters, seed);
+            _tensorApplier = new TensorApplier(brainParameters, seed);
+#endif
         }
         
         /// <summary>
@@ -93,6 +123,8 @@ namespace MLAgents
         {
 
 #if ENABLE_TENSORFLOW
+            return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
+#elif ENABLE_BARRACUDA
             return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
 #else
             return new List<string>(){
@@ -130,6 +162,44 @@ namespace MLAgents
             Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
             _engine.ExecuteGraph(_inferenceInputs, _inferenceOutputs);
             Profiler.EndSample();
+
+            // Update the outputs
+            _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
+#elif ENABLE_BARRACUDA
+            if (_engine == null)
+            {
+                Debug.LogError($"No model was present for the Brain {name}.");
+                return;
+            }
+            
+            // Prepare the input tensors to be feed into the engine
+            _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
+            
+            // Prepare the output tensors to be feed into the engine
+            //_tensorGenerator.GenerateTensors(_inferenceOutputs, currentBatchSize, agentInfos);
+
+            var inputs = new Dictionary<string, Barracuda.Tensor>();
+            foreach (var inp in _inferenceInputs)
+            {
+                inputs[inp.Name] = BarracudaUtils.ToBarracuda(inp);
+                //inputs[inp.Name].PrintDataPart(32, inp.Name);
+            }
+
+            // Execute the Model
+            Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
+            _engine.Execute(inputs);
+            Profiler.EndSample();
+
+            var outputs = new List<Tensor>();
+            foreach (var name in _barracudaModel.outputs)
+            {
+                Debug.Log($"output: {name}");
+                var outp = _engine.Fetch(name);
+                outputs.Add(BarracudaUtils.FromBarracuda(outp, name));
+                outp.Dispose();
+            }
+
+            _inferenceOutputs = outputs;
 
             // Update the outputs
             _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
