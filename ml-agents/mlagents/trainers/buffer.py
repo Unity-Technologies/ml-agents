@@ -38,8 +38,8 @@ class Buffer(dict):
             def append(self, element, padding_value=0):
                 """
                 Adds an element to this list. Also lets you change the padding 
-                type, so that it can be set on append (e.g. action_masks should)
-                be padded with 1. 
+                type, so that it can be set on append (e.g. action_masks should
+                be padded with 1.) 
                 :param element: The element to append to the list.
                 :param padding_value: The value used to pad when get_batch is called.
                 """
