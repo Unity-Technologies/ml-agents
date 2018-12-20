@@ -65,27 +65,26 @@ It is also possible to provide demonstrations in realtime during training, witho
 3. The "Student" Brain must be a **Learning Brain**.
 4. The Brain Parameters of both the "Teacher" and "Student" Brains must be 
    compatible with the agent.
-5. Drag both the "Teacher" and "Student" Brain into the Academy's `Broadcast Hub`
-   and check the `Control` checkbox on the "Student" Brain. 
-4. Link the Brains to the desired Agents (one Agent as the teacher and at least
+5. Drag both the "Teacher" and "Student" Brain into the Academy's `Broadcast Hub` and check the `Control` checkbox on the "Student" Brain. 
+6. Link the Brains to the desired Agents (one Agent as the teacher and at least
    one Agent as a student).
-5. In `config/online_bc_config.yaml`, add an entry for the "Student" Brain. Set
-   the `trainer` parameter of this entry to `imitation`, and the
+7. In `config/online_bc_config.yaml`, add an entry for the "Student" Brain. Set
+   the `trainer` parameter of this entry to `online_bc`, and the
    `brain_to_imitate` parameter to the name of the teacher Brain: "Teacher".
    Additionally, set `batches_per_epoch`, which controls how much training to do
    each moment. Increase the `max_steps` option if you'd like to keep training
    the Agents for a longer period of time.
-6. Launch the training process with `mlagents-learn config/online_bc_config.yaml
+8. Launch the training process with `mlagents-learn config/online_bc_config.yaml
    --train --slow`, and press the :arrow_forward: button in Unity when the
    message _"Start training by pressing the Play button in the Unity Editor"_ is
    displayed on the screen
-7. From the Unity window, control the Agent with the Teacher Brain by providing
+9. From the Unity window, control the Agent with the Teacher Brain by providing
    "teacher demonstrations" of the behavior you would like to see.
-8. Watch as the Agent(s) with the student Brain attached begin to behave
+10. Watch as the Agent(s) with the student Brain attached begin to behave
    similarly to the demonstrations.
-9. Once the Student Agents are exhibiting the desired behavior, end the training
+11. Once the Student Agents are exhibiting the desired behavior, end the training
    process with `CTL+C` from the command line.
-10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
+12. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
     with `Learning` Brain.
 
