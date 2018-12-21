@@ -31,7 +31,7 @@ from the root of the project repository use:
 ```python
 from gym_unity.envs import UnityEnv
 
-env = UnityEnv(environment_filename, worker_id, default_visual, multiagent)
+env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multiagent)
 ```
 
 * `environment_filename` refers to the path to the Unity environment.
@@ -40,6 +40,9 @@ env = UnityEnv(environment_filename, worker_id, default_visual, multiagent)
 * `use_visual` refers to whether to use visual observations (True) or vector
   observations (False) as the default observation provided by the `reset` and
   `step` functions. Defaults to `False`.
+* `uint8_visual` refers to whether to ouput visual observations as `uint8` values 
+  (0-255). Many common Gym environments (e.g. Atari) do this. By default they 
+  will be floats (0.0-1.0). Defaults to `False`. 
 * `multiagent` refers to whether you intent to launch an environment which
   contains more than one agent. Defaults to `False`.
 
@@ -91,7 +94,7 @@ from baselines import deepq
 from gym_unity.envs import UnityEnv
 
 def main():
-    env = UnityEnv("./envs/GridWorld", 0, use_visual=True)
+    env = UnityEnv("./envs/GridWorld", 0, use_visual=True, uint8_visual=True)
     act = deepq.learn(
         env,
         "mlp",
@@ -153,7 +156,7 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
     """
     def make_env(rank, use_visual=True): # pylint: disable=C0111
         def _thunk():
-            env = UnityEnv(env_directory, rank, use_visual=use_visual)
+            env = UnityEnv(env_directory, rank, use_visual=use_visual, uint8_visual=True)
             env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
             return env
         return _thunk
