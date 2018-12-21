@@ -62,6 +62,10 @@ namespace MLAgents.InferenceBrain
         public IEnumerable<Tensor> GetInputTensors()
         {
             List<Tensor> tensors = new List<Tensor>();
+
+            if (_model == null)
+                return tensors;
+            
             foreach (var input in _model.inputs)
             {
                 tensors.Add(new Tensor
@@ -97,6 +101,9 @@ namespace MLAgents.InferenceBrain
         public string[] GetOutputNames()
         {
             var names = new List<string>();
+
+            if (_model == null)
+                return names.ToArray();
             
             names.Add(TensorNames.ActionOutput);                
              
