@@ -108,7 +108,6 @@ namespace MLAgents.InferenceBrain
         
         public void Apply(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            Debug.Log($"Applying {tensor.Name}");
             var tensorDataMemory = tensor.Data as float[,];
             var agentIndex = 0;
             var memorySize = tensor.Shape[tensor.Shape.Length - 1];

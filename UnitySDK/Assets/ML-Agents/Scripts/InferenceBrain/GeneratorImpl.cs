@@ -168,12 +168,6 @@ namespace MLAgents.InferenceBrain
     {
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            if (tensor.ValueType != Tensor.TensorType.Integer)
-            {
-                throw new NotImplementedException(
-                    "Previous Action Inputs are only valid for discrete control");
-            }
-
             tensor.Shape[0] = batchSize;
             var actionSize = tensor.Shape[tensor.Shape.Length - 1];
             tensor.Data = new int[batchSize, actionSize];

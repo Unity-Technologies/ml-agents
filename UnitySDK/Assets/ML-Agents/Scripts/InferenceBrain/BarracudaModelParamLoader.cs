@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using Barracuda;
+using UnityEngine;
 using Tensor = MLAgents.InferenceBrain.Tensor;
 
 namespace MLAgents.InferenceBrain
@@ -71,7 +72,21 @@ namespace MLAgents.InferenceBrain
                     Shape = input.shape.Select(i => (long)i).ToArray()
                 });
             }
-
+            
+            foreach (var mem in _model.memories)
+            {
+                //Debug.Log($"{mem.input}: {mem.shape} -> {BarracudaUtils.FromBarracuda(mem.shape).Length}");
+                tensors.Add(new Tensor
+                {
+                    Name = mem.input,
+                    ValueType = Tensor.TensorType.FloatingPoint,
+                    Data = null,
+                    Shape = BarracudaUtils.FromBarracuda(mem.shape)
+                });
+            }
+            
+            tensors.Sort((el1, el2) => el1.Name.CompareTo(el2.Name));
+            
             return tensors;
         }
         
@@ -91,6 +106,9 @@ namespace MLAgents.InferenceBrain
                 names.Add(TensorNames.RecurrentOutput_C);
                 names.Add(TensorNames.RecurrentOutput_H);
             }
+
+            names.Sort();
+            
             return names.ToArray();
         }
 
@@ -214,6 +232,7 @@ namespace MLAgents.InferenceBrain
         private void CheckInputTensorPresence(int memory, ModelActionType isContinuous)
         {
             var tensorsNames = GetInputTensors().Select(x => x.Name).ToList();
+            
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((_brainParameters.vectorObservationSize != 0) &&
                 (!tensorsNames.Contains(TensorNames.VectorObservationPlacholder)))
@@ -275,8 +294,10 @@ namespace MLAgents.InferenceBrain
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
-                if (!_model.outputs.Contains(TensorNames.RecurrentOutput_H) || 
-                    !_model.outputs.Contains(TensorNames.RecurrentOutput_C))
+                var memOutputs = _model.memories.Select(x => x.output).ToList();
+                
+                if (!memOutputs.Contains(TensorNames.RecurrentOutput_H) || 
+                    !memOutputs.Contains(TensorNames.RecurrentOutput_C))
                 {
                     _failedModelChecks.Add(
                         "The model does not contain a Recurrent Output Node but has memory_size.");
@@ -518,16 +539,41 @@ public class BarracudaUtils
             throw new NotImplementedException("Barracuda does not support Tensor shapes with rank higher than 4");
 
         var shape = new int[4];
-        for (var axis = 0; axis < src.Length; ++axis)
-            shape[shape.Length-axis-1] = (int)src[src.Length-axis-1];
 
+        if (src.Length == 2)
+        {
+            shape[0] = (int)src[0];
+            shape[1] = 1;
+            shape[2] = 1;
+            shape[3] = (int)src[1];
+        }
+        else
+        {
+            for (var axis = 0; axis < src.Length; ++axis)
+                shape[shape.Length-axis-1] = (int)src[src.Length-axis-1];
+        }
+        
         return new Barracuda.TensorShape(shape);
+    }
+    
+    private static float[] IntArrayToFloatArray(int[] src)
+    {
+        var dest = new float[src.Length];
+        for (var i = 0; i < src.Length; i++)
+            dest[i] = (float) src[i];
+
+        return dest;
     }
     
     public static Barracuda.Tensor ToBarracuda(MLAgents.InferenceBrain.Tensor src)
     {
+        Array linearArray = LinearizeArray(src.Data);
+
+        if (linearArray.GetType().GetElementType() == typeof(int))
+            linearArray = IntArrayToFloatArray(linearArray as int[]);
+
         var shape = ToBarracuda(src.Shape);
-        return new Barracuda.Tensor(shape, LinearizeArray(src.Data) as float[], src.Name);
+        return new Barracuda.Tensor(shape,  linearArray as float[], src.Name);
     }
     
     internal static long[] FromBarracuda(Barracuda.TensorShape src)

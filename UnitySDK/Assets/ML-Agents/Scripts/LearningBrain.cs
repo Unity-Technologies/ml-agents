@@ -181,9 +181,8 @@ namespace MLAgents
 
             var inputs = new Dictionary<string, Barracuda.Tensor>();
             foreach (var inp in _inferenceInputs)
-            {
+            {        
                 inputs[inp.Name] = BarracudaUtils.ToBarracuda(inp);
-                //inputs[inp.Name].PrintDataPart(32, inp.Name);
             }
 
             // Execute the Model
