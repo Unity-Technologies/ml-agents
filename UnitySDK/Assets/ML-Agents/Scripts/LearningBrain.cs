@@ -41,6 +41,7 @@ namespace MLAgents
         private IWorker _engine;
         
         private BarracudaModelParamLoader _modelParamLoader;
+        private string[] _outputNames;
 #endif
         
         private IEnumerable<Tensor> _inferenceInputs;
@@ -105,7 +106,7 @@ namespace MLAgents
 
             _modelParamLoader = BarracudaModelParamLoader.GetLoaderAndCheck(_engine, _barracudaModel, brainParameters);
             _inferenceInputs = _modelParamLoader.GetInputTensors();
-            //TODO: _inferenceOutputs = _modelParamLoader.GetOutputTensors();
+            _outputNames = _modelParamLoader.GetOutputNames();
             _tensorGenerator = new TensorGenerator(brainParameters, seed);
             _tensorApplier = new TensorApplier(brainParameters, seed);
 #endif
@@ -191,9 +192,8 @@ namespace MLAgents
             Profiler.EndSample();
 
             var outputs = new List<Tensor>();
-            foreach (var name in _barracudaModel.outputs)
+            foreach (var name in _outputNames)
             {
-                Debug.Log($"output: {name}");
                 var outp = _engine.Fetch(name);
                 outputs.Add(BarracudaUtils.FromBarracuda(outp, name));
                 outp.Dispose();

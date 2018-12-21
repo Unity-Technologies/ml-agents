@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using Barracuda;
 using Tensor = MLAgents.InferenceBrain.Tensor;
 
@@ -72,6 +73,25 @@ namespace MLAgents.InferenceBrain
             }
 
             return tensors;
+        }
+        
+        /// <summary>
+        /// Generates the Tensor outputs that are expected to be present in the Model. 
+        /// </summary>
+        /// <returns>Tensor IEnumerable with the expected Tensor outputs</returns>
+        public string[] GetOutputNames()
+        {
+            var names = new List<string>();
+            
+            names.Add(TensorNames.ActionOutput);                
+             
+            var memory = GetIntScalar(TensorNames.MemorySize);
+            if (memory > 0)
+            {
+                names.Add(TensorNames.RecurrentOutput_C);
+                names.Add(TensorNames.RecurrentOutput_H);
+            }
+            return names.ToArray();
         }
 
         /// <summary>
