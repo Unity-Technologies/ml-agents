@@ -38,6 +38,7 @@ class UnityEnv(gym.Env):
         self._current_state = None
         self._n_agents = None
         self._multiagent = multiagent
+        self.game_over = False # Hidden flag used by Atari environments to determine if the game is over
 
         # Check brain configuration
         if len(self._env.brains) != 1:
@@ -103,6 +104,7 @@ class UnityEnv(gym.Env):
         info = self._env.reset()[self.brain_name]
         n_agents = len(info.agents)
         self._check_agents(n_agents)
+        self.game_over = False
 
         if not self._multiagent:
             obs, reward, done, info = self._single_step(info)
@@ -142,8 +144,10 @@ class UnityEnv(gym.Env):
 
         if not self._multiagent:
             obs, reward, done, info = self._single_step(info)
+            self.game_over = done
         else:
             obs, reward, done, info = self._multi_step(info)
+            self.game_over = all(done)
         return obs, reward, done, info
 
     def _single_step(self, info):
