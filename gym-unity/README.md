@@ -311,4 +311,4 @@ As a baseline, here are rewards over time for the three algorithms provided with
 Dopamine. All three runs were done with the same epsilon, epsilon decay, replay
 history, training steps, and buffer settings as specified above. 
 
-![Dopamine on GridWorld](images/dopamine_gridworld_plot.png){:height="50%" width="50%"}
+![Dopamine on GridWorld](images/dopamine_gridworld_plot.png)
