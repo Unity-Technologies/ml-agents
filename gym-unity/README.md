@@ -45,6 +45,8 @@ env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multia
   will be floats (0.0-1.0). Defaults to `False`. 
 * `multiagent` refers to whether you intent to launch an environment which
   contains more than one agent. Defaults to `False`.
+* `flatten_branched` will flatten a branched discrete action space into a Gym Discrete. 
+  Otherwise, it will be converted into a MultiDiscrete. Defaults to `False`.
 
 The returned environment `env` will function as a gym.
 
@@ -229,7 +231,9 @@ on the Python side.
 ### Limitations
 
 Since Dopamine is designed around variants of DQN, it is only compatible
-with discrete action spaces. 
+with discrete action spaces, and specifically the Discrete Gym space. For environments
+that use branched discrete action spaces (e.g. VisualBanana), you can still use
+Dopamine by enabling the `flatten_branched` parameter in `UnityEnv`. 
 
 Furthermore, when building your environments, ensure that your
 [Learning Brain](../docs/Learning-Environment-Design-Brains.md) is using visual
