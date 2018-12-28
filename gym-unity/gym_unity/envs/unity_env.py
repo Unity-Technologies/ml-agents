@@ -1,4 +1,5 @@
 import logging
+import itertools
 import gym
 import numpy as np
 from mlagents.envs import UnityEnvironment
@@ -23,7 +24,7 @@ class UnityEnv(gym.Env):
     https://github.com/openai/multiagent-particle-envs
     """
 
-    def __init__(self, environment_filename: str, worker_id=0, use_visual=False, uint8_visual=False, multiagent=False):
+    def __init__(self, environment_filename: str, worker_id=0, use_visual=False, uint8_visual=False, multiagent=False, flatten_branched=False):
         """
         Environment initialization
         :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
@@ -31,6 +32,7 @@ class UnityEnv(gym.Env):
         :param use_visual: Whether to use visual observation or vector observation.
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
+        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete. 
         """
         self._env = UnityEnvironment(environment_filename, worker_id)
         self.name = self._env.academy_name
@@ -38,6 +40,7 @@ class UnityEnv(gym.Env):
         self._current_state = None
         self._n_agents = None
         self._multiagent = multiagent
+        self._flattener = None
         self.game_over = False # Hidden flag used by Atari environments to determine if the game is over
 
         # Check brain configuration
@@ -77,8 +80,16 @@ class UnityEnv(gym.Env):
             if len(brain.vector_action_space_size) == 1:
                 self._action_space = spaces.Discrete(brain.vector_action_space_size[0])
             else:
-                self._action_space = spaces.MultiDiscrete(brain.vector_action_space_size)
+                if flatten_branched:
+                    self._flattener = ActionFlattener(brain.vector_action_space_size)
+                    self._action_space = self._flattener.action_space
+                else:
+                    self._action_space = spaces.MultiDiscrete(brain.vector_action_space_size)
+
         else:
+            if flatten_branched:
+                logger.warning("The environment has a non-discrete action space. It will "
+                                "not be flattened.")
             high = np.array([1] * brain.vector_action_space_size[0])
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
         high = np.array([np.inf] * brain.vector_observation_space_size)
@@ -135,7 +146,14 @@ class UnityEnv(gym.Env):
                 raise UnityGymException(
                     "The environment was expecting a list of {} actions.".format(self._n_agents))
             else:
+                if self._flattener is not None:
+                    # Action space is discrete and flattened - we expect a list of scalars
+                    action = [self._flattener.lookup_action(_act) for _act in action]
                 action = np.array(action)
+        else:
+            if self._flattener is not None:
+                # Translate action into list
+                action = self._flattener.lookup_action(action)
 
         info = self._env.step(action)[self.brain_name]
         n_agents = len(info.agents)
@@ -242,3 +260,42 @@ class UnityEnv(gym.Env):
     @property
     def number_agents(self):
         return self._n_agents
+
+class ActionFlattener():
+    """
+    Flattens branched discrete action spaces into single-branch discrete action spaces.
+    """
+    def __init__(self,branched_action_space):
+        """
+        Initialize the flattener.
+        :param branched_action_space: A List containing the sizes of each branch of the action
+        space, e.g. [2,3,3] for three branches with size 2, 3, and 3 respectively.
+        """
+        self._action_shape = branched_action_space
+        self.action_lookup = self._create_lookup(self._action_shape)
+        self.action_space = spaces.Discrete(len(self.action_lookup))
+    
+    def _create_lookup(self, branched_action_space):
+        """
+        Creates a Dict that maps discrete actions (scalars) to branched actions (lists).
+        Each key in the Dict maps to one unique set of branched actions, and each value
+        contains the List of branched actions.
+        """
+        possible_vals = [range(_num) for _num in branched_action_space]
+        all_actions = [list(_action) for _action in itertools.product(*possible_vals)]
+        # Dict should be faster than List for 
+        action_lookup = {_scalar: _action for (_scalar, _action) in enumerate(all_actions)}
+        return action_lookup
+    
+    def lookup_action(self, action):
+        """
+        Convert a scalar discrete action into a unique set of branched actions.
+        :param: action: A scalar value representing one of the discrete actions. 
+        :return: The List containing the branched actions.
+        """
+        return self.action_lookup[action]
+    
+
+
+
+    
