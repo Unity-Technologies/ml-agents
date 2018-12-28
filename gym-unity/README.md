@@ -223,24 +223,27 @@ the method with the following code.
 ```
 
 `./envs/GridWorld` is the path to your built Unity executable. For more information on 
-building Unity environments, see [here](../docs/Learning-Environment-Executable.md). 
-Note that we are not using the preprocessor from Dopamine, as it uses many Atari-specific
-calls. Furthermore, frame-skipping can be done from within Unity, rather than 
-on the Python side. 
+building Unity environments, see [here](../docs/Learning-Environment-Executable.md), and note 
+the Limitations section below. 
+
+Note that we are not using the preprocessor from Dopamine, 
+as it uses many Atari-specific calls. Furthermore, frame-skipping can be done from within Unity, 
+rather than on the Python side. 
 
 ### Limitations
 
 Since Dopamine is designed around variants of DQN, it is only compatible
 with discrete action spaces, and specifically the Discrete Gym space. For environments
-that use branched discrete action spaces (e.g. VisualBanana), you can still use
-Dopamine by enabling the `flatten_branched` parameter in `UnityEnv`. 
+that use branched discrete action spaces (e.g. VisualBanana), you can enable 
+the `flatten_branched` parameter in `UnityEnv`, which treats each combination of 
+branched actions as separate actions.
 
 Furthermore, when building your environments, ensure that your
 [Learning Brain](../docs/Learning-Environment-Design-Brains.md) is using visual
 observations with greyscale enabled, and that the dimensions of the visual observations
 is 84 by 84 (matches the parameter found in `dqn_agent.py` and `rainbow_agent.py`).
 Dopamine's agents currently do not automatically adapt to the observation 
-dimensions.  
+dimensions or number of channels.  
 
 ### Hyperparameters
 
@@ -270,11 +273,9 @@ RainbowAgent.replay_scheme = 'prioritized'
 RainbowAgent.tf_device = '/cpu:0'  # use '/cpu:*' for non-GPU version
 RainbowAgent.optimizer = @tf.train.AdamOptimizer()
 
-# Note these parameters are different from C51's.
-tf.train.AdamOptimizer.learning_rate = 0.0001
-tf.train.AdamOptimizer.epsilon = 0.00015
+tf.train.AdamOptimizer.learning_rate = 0.00025
+tf.train.AdamOptimizer.epsilon = 0.0003125
 
-# Sticky actions with probability 0.25, as suggested by (Machado et al., 2017).
 Runner.game_name = "Unity"
 Runner.sticky_actions = False
 Runner.num_iterations = 200
@@ -303,3 +304,11 @@ python -um dopamine.unity.train \
 
 Remember to replace `unity` with the directory you copied your files into. If you
 edited the Atari files directly, this should be `atari`.
+
+### Example: GridWorld
+
+As a baseline, here are rewards over time for the three algorithms provided with
+Dopamine. All three runs were done with the same epsilon, epsilon decay, replay
+history, training steps, and buffer settings as specified above. 
+
+![Dopamine on GridWorld](images/dopamine_gridworld_plot.png)
