@@ -283,7 +283,7 @@ class ActionFlattener():
         """
         possible_vals = [range(_num) for _num in branched_action_space]
         all_actions = [list(_action) for _action in itertools.product(*possible_vals)]
-        # Dict should be faster than List for 
+        # Dict should be faster than List for large action spaces
         action_lookup = {_scalar: _action for (_scalar, _action) in enumerate(all_actions)}
         return action_lookup
     
