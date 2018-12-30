@@ -234,9 +234,10 @@ rather than on the Python side.
 
 Since Dopamine is designed around variants of DQN, it is only compatible
 with discrete action spaces, and specifically the Discrete Gym space. For environments
-that use branched discrete action spaces (e.g. VisualBanana), you can enable 
-the `flatten_branched` parameter in `UnityEnv`, which treats each combination of 
-branched actions as separate actions.
+that use branched discrete action spaces (e.g. 
+[VisualBanana](../docs/Learning-Environment-Examples.md)), you can enable the 
+`flatten_branched` parameter in `UnityEnv`, which treats each combination of branched 
+actions as separate actions.
 
 Furthermore, when building your environments, ensure that your
 [Learning Brain](../docs/Learning-Environment-Design-Brains.md) is using visual
@@ -308,7 +309,19 @@ edited the Atari files directly, this should be `atari`.
 ### Example: GridWorld
 
 As a baseline, here are rewards over time for the three algorithms provided with
-Dopamine. All three runs were done with the same epsilon, epsilon decay, replay
-history, training steps, and buffer settings as specified above. 
+Dopamine as run on the GridWorld example environment. All three runs were done 
+with the same epsilon, epsilon decay, replay history, training steps, and buffer 
+settings as specified above. Note that the first 20000 steps are used to pre-fill
+the training buffer, and no learning happens. 
 
 ![Dopamine on GridWorld](images/dopamine_gridworld_plot.png)
+
+### Example: VisualBanana
+
+As an example of using the `flatten_branched` option, we also used the Rainbow
+algorithm to train on the VisualBanana environment, and provide the results below. 
+The same hyperparameters were used as in the GridWorld case, except that 
+`replay_history` and `epsilon_decay` were increased to 100000.
+
+![Dopamine on VisualBanana](images/dopamine_visualbanana_plot.png)
+
