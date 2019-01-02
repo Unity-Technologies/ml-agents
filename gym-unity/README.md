@@ -42,7 +42,7 @@ env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multia
   `step` functions. Defaults to `False`.
 * `uint8_visual` refers to whether to ouput visual observations as `uint8` values 
   (0-255). Many common Gym environments (e.g. Atari) do this. By default they 
-  will be floats (0.0-1.0). Defaults to `False`. 
+  will be floats (0.0-1.0). Defaults to `False`.
 * `multiagent` refers to whether you intent to launch an environment which
   contains more than one agent. Defaults to `False`.
 * `flatten_branched` will flatten a branched discrete action space into a Gym Discrete. 
@@ -324,4 +324,3 @@ The same hyperparameters were used as in the GridWorld case, except that
 `replay_history` and `epsilon_decay` were increased to 100000.
 
 ![Dopamine on VisualBanana](images/dopamine_visualbanana_plot.png)
-

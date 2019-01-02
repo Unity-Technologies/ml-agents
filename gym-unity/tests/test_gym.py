@@ -54,7 +54,6 @@ def test_branched_flatten(mock_env):
     mock_brain.return_value.num_stacked_vector_observations = 1
     mock_brain.return_value.vector_action_space_type = 'discrete'
     mock_brain.return_value.vector_observation_space_size = 1
-    
     # Unflattened action space
     mock_brain.return_value.vector_action_space_size = [2,2,3]
 

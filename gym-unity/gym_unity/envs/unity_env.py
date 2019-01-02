@@ -32,7 +32,7 @@ class UnityEnv(gym.Env):
         :param use_visual: Whether to use visual observation or vector observation.
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
-        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete. 
+        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete.
         """
         self._env = UnityEnvironment(environment_filename, worker_id)
         self.name = self._env.academy_name
@@ -275,6 +275,7 @@ class ActionFlattener():
         self.action_lookup = self._create_lookup(self._action_shape)
         self.action_space = spaces.Discrete(len(self.action_lookup))
     
+    @classmethod
     def _create_lookup(self, branched_action_space):
         """
         Creates a Dict that maps discrete actions (scalars) to branched actions (lists).
@@ -290,12 +291,7 @@ class ActionFlattener():
     def lookup_action(self, action):
         """
         Convert a scalar discrete action into a unique set of branched actions.
-        :param: action: A scalar value representing one of the discrete actions. 
+        :param: action: A scalar value representing one of the discrete actions.
         :return: The List containing the branched actions.
         """
         return self.action_lookup[action]
-    
-
-
-
-    
