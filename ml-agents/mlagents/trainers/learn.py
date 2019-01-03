@@ -55,7 +55,6 @@ def run_training(sub_id, run_seed, run_options, process_queue):
 def main():
     try:
         print('''
-          222
     
                         ▄▄▄▓▓▓▓
                    ╓▓▓▓▓▓▓█▓▓▓▓▓
