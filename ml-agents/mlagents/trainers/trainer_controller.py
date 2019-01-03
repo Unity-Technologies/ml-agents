@@ -8,7 +8,6 @@ import logging
 import shutil
 import sys
 import win32api, win32con
-import multiprocessing
 
 import yaml
 import re
@@ -188,10 +187,9 @@ class TrainerController(object):
     def _win_handler(self, event):
         """
         This function gets triggered after ctrl-c or ctrl-break is pressed 
-        in Windows platform.
+        under Windows platform.
         """
         if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):        
-            print('_win_ctrl_handler gets triggered')
             print('--------------------------Now saving model--------------'
                       '-----------')
             self.logger.info('Learning was interrupted. Please wait '
@@ -395,7 +393,7 @@ class TrainerController(object):
             # Final save Tensorflow model
             if self.global_step != 0 and self.train_model:
                 self._save_model(steps=self.global_step)
-        except BaseException:
+        except KeyboardInterrupt:
             if self.train_model:
                 print('--------------------------Now saving model--------------'
                   '-----------')
