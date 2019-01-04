@@ -9,6 +9,7 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
+from typing import Optional
 
 
 from mlagents.trainers.trainer_controller import TrainerController
@@ -66,33 +67,17 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         summaries_dir = '/{docker_target_name}/summaries'.format(
             docker_target_name=docker_target_name)
 
+    trainer_config = load_config(trainer_config_path)
     env = init_environment(env_path, docker_target_name, no_graphics, worker_id + sub_id, fast_simulation, run_seed)
-
-    if curriculum_folder is None:
-        meta_curriculum = None
-    else:
-        meta_curriculum = MetaCurriculum(curriculum_folder, env._resetParameters)
-
-    if meta_curriculum:
-        for brain_name in meta_curriculum.brains_to_curriculums.keys():
-            if brain_name not in env.external_brain_names:
-                raise MetaCurriculumError('One of the curricula '
-                                          'defined in ' +
-                                          curriculum_folder + ' '
-                                          'does not have a corresponding '
-                                          'Brain. Check that the '
-                                          'curriculum file has the same '
-                                          'name as the Brain '
-                                          'whose curriculum it defines.')
+    maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
 
     external_brains = {}
     for brain_name in env.external_brain_names:
         external_brains[brain_name] = env.brains[brain_name]
-    trainer_config = load_config(trainer_config_path)
 
     # Create controller and begin training.
     tc = TrainerController(model_path, summaries_dir, run_id + '-' + str(sub_id),
-                           save_freq, meta_curriculum,
+                           save_freq, maybe_meta_curriculum,
                            load_model, train_model,
                            keep_checkpoints, lesson, external_brains, run_seed)
 
@@ -101,6 +86,25 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
 
     # Begin training
     tc.start_learning(env, trainer_config)
+
+
+def try_create_meta_curriculum(curriculum_folder: Optional[str], env: UnityEnvironment) -> Optional[MetaCurriculum]:
+    if curriculum_folder is None:
+        return None
+    else:
+        meta_curriculum = MetaCurriculum(curriculum_folder, env._resetParameters)
+        if meta_curriculum:
+            for brain_name in meta_curriculum.brains_to_curriculums.keys():
+                if brain_name not in env.external_brain_names:
+                    raise MetaCurriculumError('One of the curricula '
+                                              'defined in ' +
+                                              curriculum_folder + ' '
+                                              'does not have a corresponding '
+                                              'Brain. Check that the '
+                                              'curriculum file has the same '
+                                              'name as the Brain '
+                                              'whose curriculum it defines.')
+        return meta_curriculum
 
 
 def prepare_for_docker_run(docker_target_name, env_path):
