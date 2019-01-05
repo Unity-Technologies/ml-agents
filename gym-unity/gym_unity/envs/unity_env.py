@@ -287,7 +287,7 @@ class ActionFlattener():
         # Dict should be faster than List for large action spaces
         action_lookup = {_scalar: _action for (_scalar, _action) in enumerate(all_actions)}
         return action_lookup
-    
+
     def lookup_action(self, action):
         """
         Convert a scalar discrete action into a unique set of branched actions.
@@ -295,3 +295,4 @@ class ActionFlattener():
         :return: The List containing the branched actions.
         """
         return self.action_lookup[action]
+        

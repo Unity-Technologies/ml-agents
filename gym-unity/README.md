@@ -40,7 +40,7 @@ env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multia
 * `use_visual` refers to whether to use visual observations (True) or vector
   observations (False) as the default observation provided by the `reset` and
   `step` functions. Defaults to `False`.
-* `uint8_visual` refers to whether to ouput visual observations as `uint8` values 
+* `uint8_visual` refers to whether to output visual observations as `uint8` values 
   (0-255). Many common Gym environments (e.g. Atari) do this. By default they 
   will be floats (0.0-1.0). Defaults to `False`.
 * `multiagent` refers to whether you intent to launch an environment which
@@ -183,9 +183,9 @@ if __name__ == '__main__':
 
 ## Run Google Dopamine Algorithms
 
-Google provides an implementation of DQN, Rainbow, and the C51 variant of Rainbow 
-within their framework [Dopamine](https://github.com/google/dopamine). Using the Gym
-wrapper, we can run Unity environments using Dopamine. 
+Google provides a framework [Dopamine](https://github.com/google/dopamine), and
+implementations of algorithms, e.g. DQN, Rainbow, and the C51 variant of Rainbow.  
+Using the Gym wrapper, we can run Unity environments using Dopamine. 
 
 First, after installing the Gym wrapper, clone the Dopamine repository. 
 
@@ -193,9 +193,10 @@ First, after installing the Gym wrapper, clone the Dopamine repository.
 git clone https://github.com/google/dopamine
 ```
 
-Then, follow the install instructions as specified on 
-[Dopamine's homepage](https://github.com/google/dopamine). Don't install as a package yet,
-as you will need to make some changes to the files. 
+Then, follow the appropriate install instructions as specified on 
+[Dopamine's homepage](https://github.com/google/dopamine). Note that the Dopamine 
+guide specifies using a virtualenv. If you choose to do so, make sure your unity_env 
+package is also installed within the same virtualenv as Dopamine.
 
 ### Adapting Dopamine's Scripts
 
@@ -288,9 +289,12 @@ WrappedPrioritizedReplayBuffer.replay_capacity = 1000000
 WrappedPrioritizedReplayBuffer.batch_size = 32
 ```
 
-Remember to replace `unity` in `import dopamine.unity.run_experiment` with 
-the folder you copied your `run_experiment.py` and `trainer.py` files to.
+This example assumed you copied `atari` to a separate folder named `unity`.
+Replace `unity` in `import dopamine.unity.run_experiment` with the folder you 
+copied your `run_experiment.py` and `trainer.py` files to.
 If you directly modified the existing files, then use `atari` here. 
+
+`Runner.game_name` can be set to any desired name. 
 
 ### Starting a Run
 
@@ -303,6 +307,7 @@ python -um dopamine.unity.train \
   --gin_files='dopamine/agents/rainbow/configs/rainbow.gin'
 ```
 
+Again, we assume that you've copied `atari` into a separate folder. 
 Remember to replace `unity` with the directory you copied your files into. If you
 edited the Atari files directly, this should be `atari`.
 
