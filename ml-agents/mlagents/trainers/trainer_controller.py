@@ -186,17 +186,20 @@ class TrainerController(object):
             self.trainers[brain_name].save_model()
         self.logger.info('Saved Model')
 
+    def _save_model_when_interrupted(self, steps=0):
+        print('--------------------------Now saving model--------------'
+              '-----------')
+        self.logger.info('Learning was interrupted. Please wait '
+                         'while the graph is generated.')
+        self._save_model(steps)
+
     def _win_handler(self, event):
         """
-        This function gets triggered after ctrl-c or ctrl-break is pressed 
+        This function gets triggered after ctrl-c or ctrl-break is pressed
         under Windows platform.
         """
-        if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):        
-            print('--------------------------Now saving model--------------'
-                      '-----------')
-            self.logger.info('Learning was interrupted. Please wait '
-                                     'while the graph is generated.')
-            self._save_model(self.global_step)
+        if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):
+            self._save_model_when_interrupted(self.global_step)
             self._export_graph()
             sys.exit()
             return True
@@ -397,11 +400,7 @@ class TrainerController(object):
                 self._save_model(steps=self.global_step)
         except KeyboardInterrupt:
             if self.train_model:
-                print('--------------------------Now saving model--------------'
-                  '-----------')
-                self.logger.info('Learning was interrupted. Please wait '
-                                 'while the graph is generated.')
-                self._save_model(steps=self.global_step)
+                self._save_model_when_interrupted(steps=self.global_step)
             pass
         self.env.close()
         if self.train_model:
