@@ -7,7 +7,9 @@ import glob
 import logging
 import shutil
 import sys
-import win32api, win32con 
+if sys.platform == 'win32':
+    import win32api
+    import win32con
 
 import yaml
 import re
