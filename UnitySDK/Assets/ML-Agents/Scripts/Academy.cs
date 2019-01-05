@@ -469,14 +469,25 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current epside).
+        /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
-        /// Current episode number.
+        /// Current step count.
         /// </returns>
         public int GetStepCount()
         {
             return stepCount;
+        }
+
+        /// <summary>
+        /// Returns the total step counter.
+        /// </summary>
+        /// <returns>
+        /// Total step count.
+        /// </returns>
+        public int GetTotalStepCount()
+        {
+            return GetStepCount() + GetEpisodeCount() * maxSteps;
         }
 
         /// <summary>
