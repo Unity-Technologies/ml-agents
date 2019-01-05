@@ -278,7 +278,7 @@ RainbowAgent.optimizer = @tf.train.AdamOptimizer()
 tf.train.AdamOptimizer.learning_rate = 0.00025
 tf.train.AdamOptimizer.epsilon = 0.0003125
 
-Runner.game_name = "Unity"
+Runner.game_name = "Unity" # any name can be used here
 Runner.sticky_actions = False
 Runner.num_iterations = 200
 Runner.training_steps = 10000  # agent steps
@@ -293,8 +293,6 @@ This example assumed you copied `atari` to a separate folder named `unity`.
 Replace `unity` in `import dopamine.unity.run_experiment` with the folder you 
 copied your `run_experiment.py` and `trainer.py` files to.
 If you directly modified the existing files, then use `atari` here. 
-
-`Runner.game_name` can be set to any desired name. 
 
 ### Starting a Run
 
