@@ -314,10 +314,14 @@ edited the Atari files directly, this should be `atari`.
 ### Example: GridWorld
 
 As a baseline, here are rewards over time for the three algorithms provided with
-Dopamine as run on the GridWorld example environment. All three runs were done 
-with the same epsilon, epsilon decay, replay history, training steps, and buffer 
-settings as specified above. Note that the first 20000 steps are used to pre-fill
+Dopamine as run on the GridWorld example environment. All Dopamine (DQN, Rainbow, 
+C51) runs were done with the same epsilon, epsilon decay, replay history, training steps, 
+and buffer settings as specified above. Note that the first 20000 steps are used to pre-fill
 the training buffer, and no learning happens. 
+
+We also compare our PPO implementation as reference. Note that the PPO was run with the
+same greyscale GridWorld as Dopamine, and `num_layers` was set to 2. All other hyperparameters
+are the default for GridWorld in `trainer_config.yaml`. 
 
 ![Dopamine on GridWorld](images/dopamine_gridworld_plot.png)
 
