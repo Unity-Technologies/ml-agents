@@ -98,30 +98,40 @@ the `train_unity.py` file:
 import gym
 
 from baselines import deepq
-from gym_unity.envs import UnityEnv
+from baselines import logger
+
+from gym_unity.envs.unity_env import UnityEnv
 
 def main():
     env = UnityEnv("./envs/GridWorld", 0, use_visual=True, uint8_visual=True)
+    logger.configure('./logs') # Çhange to log in a different directory
     act = deepq.learn(
         env,
-        "mlp",
-        lr=1e-3,
-        total_timesteps=100000,
+        "cnn", # conv_only is also a good choice for GridWorld
+        lr=2.5e-4,
+        total_timesteps=1000000,
         buffer_size=50000,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.02,
-        print_freq=10
+        exploration_fraction=0.05,
+        exploration_final_eps=0.1,
+        print_freq=20,
+        train_freq=5,
+        learning_starts=20000,
+        target_network_update_freq=50,
+        gamma=0.99,
+        prioritized_replay=False,
+        checkpoint_freq=1000,
+        checkpoint_path='./logs', # Change to save model in a different directory
+        dueling=True
     )
     print("Saving model to unity_model.pkl")
     act.save("unity_model.pkl")
-
 
 if __name__ == '__main__':
     main()
 ```
 
-To start the training process, run the following from the root of the baselines
-repository:
+To start the training process, run the following from the directory containing
+`train_unity.py`:
 
 ```sh
 python -m train_unity
@@ -322,9 +332,12 @@ C51) runs were done with the same epsilon, epsilon decay, replay history, traini
 and buffer settings as specified above. Note that the first 20000 steps are used to pre-fill
 the training buffer, and no learning happens. 
 
-We also compare our PPO implementation as reference. Note that the PPO was run with the
-same greyscale GridWorld as Dopamine, and `num_layers` was set to 2. All other hyperparameters
-are the default for GridWorld in `trainer_config.yaml`. 
+We provide results from our PPO implementation and the DQN from Baselines as reference. 
+Note that all runs used the same greyscale GridWorld as Dopamine. For PPO, `num_layers` 
+was set to 2, and all other hyperparameters are the default for GridWorld in `trainer_config.yaml`.
+For Baselines DQN, the provided hyperparameters in the previous section are used. Note
+that Baselines implements certain features (e.g. dueling-Q) that are not enabled
+in Dopamine DQN.
 
 ![Dopamine on GridWorld](images/dopamine_gridworld_plot.png)
 
