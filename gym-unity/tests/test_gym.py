@@ -68,4 +68,3 @@ def test_branched_flatten(mock_env):
     # Check that False produces a MultiDiscrete
     env = UnityEnv(' ', use_visual=False, multiagent=False, flatten_branched=False)
     assert isinstance(env.action_space, spaces.MultiDiscrete)
-    
