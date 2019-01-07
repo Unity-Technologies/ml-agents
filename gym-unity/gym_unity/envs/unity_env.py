@@ -274,7 +274,7 @@ class ActionFlattener():
         self._action_shape = branched_action_space
         self.action_lookup = self._create_lookup(self._action_shape)
         self.action_space = spaces.Discrete(len(self.action_lookup))
-    
+
     @classmethod
     def _create_lookup(self, branched_action_space):
         """
@@ -295,4 +295,3 @@ class ActionFlattener():
         :return: The List containing the branched actions.
         """
         return self.action_lookup[action]
-        
