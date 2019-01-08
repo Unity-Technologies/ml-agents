@@ -6,6 +6,10 @@ import os
 import glob
 import logging
 import shutil
+import sys
+if sys.platform.startswith('win'):
+    import win32api
+    import win32con
 
 import yaml
 import re
@@ -103,6 +107,7 @@ class TrainerController(object):
         self.keep_checkpoints = keep_checkpoints
         self.trainers = {}
         self.seed = seed
+        self.global_step = 0
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.env = UnityEnvironment(file_name=env_path,
@@ -180,6 +185,23 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].save_model()
         self.logger.info('Saved Model')
+
+    def _save_model_when_interrupted(self, steps=0):
+        self.logger.info('Learning was interrupted. Please wait '
+                         'while the graph is generated.')
+        self._save_model(steps)
+
+    def _win_handler(self, event):
+        """
+        This function gets triggered after ctrl-c or ctrl-break is pressed
+        under Windows platform.
+        """
+        if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):
+            self._save_model_when_interrupted(self.global_step)
+            self._export_graph()
+            sys.exit()
+            return True
+        return False
 
     def _export_graph(self):
         """
@@ -288,12 +310,14 @@ class TrainerController(object):
         self._initialize_trainers(trainer_config)
         for _, t in self.trainers.items():
             self.logger.info(t)
-        global_step = 0  # This is only for saving the model
         curr_info = self._reset_env()
         if self.train_model:
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters',
                                                trainer.parameters)
+            if sys.platform.startswith('win'):
+                # Add the _win_handler function to the windows console's handler function list
+                win32api.SetConsoleCtrlHandler(self._win_handler, True)
         try:
             while any([t.get_step <= t.get_max_steps \
                        for k, t in self.trainers.items()]) \
@@ -353,31 +377,27 @@ class TrainerController(object):
                     # Write training statistics to Tensorboard.
                     if self.meta_curriculum is not None:
                         trainer.write_summary(
-                            global_step,
+                            self.global_step,
                             lesson_num=self.meta_curriculum
                                 .brains_to_curriculums[brain_name]
                                 .lesson_num)
                     else:
-                        trainer.write_summary(global_step)
+                        trainer.write_summary(self.global_step)
                     if self.train_model \
                             and trainer.get_step <= trainer.get_max_steps:
                         trainer.increment_step_and_update_last_reward()
-                global_step += 1
-                if global_step % self.save_freq == 0 and global_step != 0 \
+                self.global_step += 1
+                if self.global_step % self.save_freq == 0 and self.global_step != 0 \
                         and self.train_model:
                     # Save Tensorflow model
-                    self._save_model(steps=global_step)
+                    self._save_model(steps=self.global_step)
                 curr_info = new_info
             # Final save Tensorflow model
-            if global_step != 0 and self.train_model:
-                self._save_model(steps=global_step)
+            if self.global_step != 0 and self.train_model:
+                self._save_model(steps=self.global_step)
         except KeyboardInterrupt:
-            print('--------------------------Now saving model--------------'
-                  '-----------')
             if self.train_model:
-                self.logger.info('Learning was interrupted. Please wait '
-                                 'while the graph is generated.')
-                self._save_model(steps=global_step)
+                self._save_model_when_interrupted(steps=self.global_step)
             pass
         self.env.close()
         if self.train_model:

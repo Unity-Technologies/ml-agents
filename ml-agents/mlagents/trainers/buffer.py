@@ -28,12 +28,27 @@ class Buffer(dict):
             AgentBufferField with the append method.
             """
 
+            def __init__(self):
+                self.padding_value = 0
+                super(Buffer.AgentBuffer.AgentBufferField, self).__init__()
+
             def __str__(self):
                 return str(np.array(self).shape)
 
+            def append(self, element, padding_value=0):
+                """
+                Adds an element to this list. Also lets you change the padding 
+                type, so that it can be set on append (e.g. action_masks should
+                be padded with 1.) 
+                :param element: The element to append to the list.
+                :param padding_value: The value used to pad when get_batch is called.
+                """
+                super(Buffer.AgentBuffer.AgentBufferField, self).append(element)
+                self.padding_value = padding_value
+
             def extend(self, data):
                 """
-                Ads a list of np.arrays to the end of the list of np.arrays.
+                Adds a list of np.arrays to the end of the list of np.arrays.
                 :param data: The np.array list to append.
                 """
                 self += list(np.array(data))
@@ -99,7 +114,7 @@ class Buffer(dict):
                             raise BufferException("The batch size and training length requested for get_batch where"
                                                   " too large given the current number of data points.")
                         tmp_list = []
-                        padding = np.array(self[-1]) * 0
+                        padding = np.array(self[-1]) * self.padding_value
                         # The padding is made with zeros and its shape is given by the shape of the last element
                         for end in range(len(self), len(self) % training_length, -training_length)[:batch_size]:
                             tmp_list += [np.array(self[end - training_length:end])]
