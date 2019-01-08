@@ -107,16 +107,22 @@ def main():
 
     jobs = []
     run_seed = seed
-    for i in range(num_runs):
+
+    if num_runs == 1:
         if seed == -1:
             run_seed = np.random.randint(0, 10000)
-        process_queue = Queue()
-        p = Process(target=run_training, args=(i, run_seed, options, process_queue))
-        jobs.append(p)
-        p.start()
-        # Wait for signal that environment has successfully launched
-        while process_queue.get() is not True:
-            continue
+        run_training(0, run_seed, options, Queue())
+    else:
+        for i in range(num_runs):
+            if seed == -1:
+                run_seed = np.random.randint(0, 10000)
+            process_queue = Queue()
+            p = Process(target=run_training, args=(i, run_seed, options, process_queue))
+            jobs.append(p)
+            p.start()
+            # Wait for signal that environment has successfully launched
+            while process_queue.get() is not True:
+                continue
 
 # For python debugger to directly run this script
 if __name__ == "__main__":
