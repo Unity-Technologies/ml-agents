@@ -201,7 +201,9 @@ class TrainerController(object):
         if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):
             self._save_model_when_interrupted(self.global_step)
             self._export_graph()
+            self.logger.info("----------------1---------")
             sys.exit()
+            self.logger.info("----------------2---------")
             return True
         return False
 
