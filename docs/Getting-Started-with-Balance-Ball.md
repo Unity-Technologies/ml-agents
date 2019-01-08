@@ -224,10 +224,6 @@ The `--train` flag tells the ML-Agents toolkit to run in training mode.
 follow the instructions in
 [Using an Executable](Learning-Environment-Executable.md).
 
-**Note**: Re-running this command will start training from scratch again. To resume
-a previous training run, append the `--load` flag and give the same `--run-id` as the
-run you want to resume.
-
 ### Observing Training Progress
 
 Once you start training using `mlagents-learn` in the way described in the
