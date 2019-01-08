@@ -5,7 +5,6 @@ import logging
 from multiprocessing import Process, Queue
 import numpy as np
 from docopt import docopt
-import sys
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
