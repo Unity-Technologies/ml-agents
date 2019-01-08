@@ -179,7 +179,7 @@ class Policy(object):
                 clear_devices=True, initializer_nodes='', input_saver='',
                 restore_op_name='save/restore_all',
                 filename_tensor_name='save/Const:0')
-            logger.info('Exported ' + self.brain + '.bytes file at ' + self.model_path)
+            logger.info('Exported ' + self.brain.brain_name + '.bytes file')
 
     def _process_graph(self):
         """
