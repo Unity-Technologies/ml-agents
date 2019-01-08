@@ -7,7 +7,7 @@ import glob
 import logging
 import shutil
 import sys
-if sys.platform == 'win32':
+if sys.platform.startswith('win'):
     import win32api
     import win32con
 
@@ -211,7 +211,6 @@ class TrainerController(object):
         """
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
-        self.logger.info("Exported .bytes file")
 
     def _initialize_trainers(self, trainer_config):
         """
@@ -318,7 +317,7 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters',
                                                trainer.parameters)
-            if sys.platform == 'win32':
+            if sys.platform.startswith('win'):
                 # Add the _win_handler function to the windows console's handler function list
                 win32api.SetConsoleCtrlHandler(self._win_handler, True)
         try:
