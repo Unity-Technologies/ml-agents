@@ -6,8 +6,8 @@ from multiprocessing import Process, Queue
 import numpy as np
 from docopt import docopt
 
-from .trainer_controller import TrainerController
-from .exception import TrainerError
+from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.exception import TrainerError
 
 
 def run_training(sub_id, run_seed, run_options, process_queue):
@@ -117,3 +117,7 @@ def main():
         # Wait for signal that environment has successfully launched
         while process_queue.get() is not True:
             continue
+
+# For python debugger to directly run this script
+if __name__ == "__main__":
+    main()
