@@ -187,8 +187,6 @@ class TrainerController(object):
         self.logger.info('Saved Model')
 
     def _save_model_when_interrupted(self, steps=0):
-        print('--------------------------Now saving model--------------'
-              '-----------')
         self.logger.info('Learning was interrupted. Please wait '
                          'while the graph is generated.')
         self._save_model(steps)
@@ -201,9 +199,6 @@ class TrainerController(object):
         if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):
             self._save_model_when_interrupted(self.global_step)
             self._export_graph()
-            self.logger.info('-------------Your model is exported correctly, '
-                             'please ignore the InvalidArgumentError and the '
-                             'AssertionError-------------')
             sys.exit()
             return True
         return False
