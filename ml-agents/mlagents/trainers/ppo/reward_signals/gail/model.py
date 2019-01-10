@@ -120,7 +120,7 @@ class GAILModel(object):
 
     def update_beta(self, kl_div):
         self.beta = max(0, self.beta + 1e-5 * (kl_div - 0.5))
-        print(self.beta, kl_div)
+        # print(self.beta, kl_div)
 
     def create_loss(self, learning_rate):
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
