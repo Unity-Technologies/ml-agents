@@ -164,7 +164,7 @@ class Policy(object):
 
     def export_model(self):
         """
-        Exports latest saved model to .tf format for Unity embedding.
+        Exports latest saved model to .nn format for Unity embedding.
         """
 
         with self.graph.as_default():
@@ -181,7 +181,7 @@ class Policy(object):
                 filename_tensor_name='save/Const:0')
 
         mc = ModelConverter()
-        mc.process(self.model_path + '/frozen_graph_def.pb', self.model_path + '.bytes')
+        mc.process(self.model_path + '/frozen_graph_def.pb', self.model_path + '.nn')
 
     def _process_graph(self):
         """
