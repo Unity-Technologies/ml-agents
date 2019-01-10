@@ -346,8 +346,6 @@ class PPOTrainer(Trainer):
         :param current_info: Dictionary of all current brains and corresponding BrainInfo.
         :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
-
-        # TODO: Use separate value streams for value bootstrapping
         info = new_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]["actions"]
