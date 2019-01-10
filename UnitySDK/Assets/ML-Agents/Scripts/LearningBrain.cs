@@ -122,7 +122,6 @@ namespace MLAgents
                     : BarracudaWorkerFactory.Type.CSharpFast;
                                        
                 _engine = BarracudaWorkerFactory.CreateWorker(executionDevice, _barracudaModel, _verbose);
-
             }
             else
             {
