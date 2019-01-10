@@ -3855,7 +3855,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: b7b6884feff2f4a17a645d7e0b9dc8f3, type: 2}
+  brain: {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
   agentParameters:
     agentCameras: []
     maxStep: 3000
@@ -3921,7 +3921,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 0e2b949bf7d37469786426a6d913f5af, type: 2}
+  brain: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
   agentParameters:
     agentCameras: []
     maxStep: 3000
@@ -4008,7 +4008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: b7b6884feff2f4a17a645d7e0b9dc8f3, type: 2}
+  brain: {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
   agentParameters:
     agentCameras: []
     maxStep: 3000
@@ -4041,7 +4041,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 0e2b949bf7d37469786426a6d913f5af, type: 2}
+  brain: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
   agentParameters:
     agentCameras: []
     maxStep: 3000
