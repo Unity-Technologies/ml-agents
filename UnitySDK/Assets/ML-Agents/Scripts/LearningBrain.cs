@@ -49,6 +49,7 @@ namespace MLAgents
 #if ENABLE_BARRACUDA
         private Model _barracudaModel;
         private IWorker _engine;
+        private bool _verbose = false;
         
         private BarracudaModelParamLoader _modelParamLoader;
         private string[] _outputNames;
@@ -105,6 +106,12 @@ namespace MLAgents
 #if ENABLE_BARRACUDA
             if (model != null)
             {
+                #if BARRACUDA_VERBOSE
+                _verbose = true;
+                #endif
+
+                D.logEnabled = _verbose;
+                
                 // Cleanup previous instance
                 if (_engine != null)
                     _engine.Dispose();
@@ -114,7 +121,7 @@ namespace MLAgents
                     ? BarracudaWorkerFactory.Type.ComputeFast
                     : BarracudaWorkerFactory.Type.CSharpFast;
                                        
-                _engine = BarracudaWorkerFactory.CreateWorker(executionDevice, _barracudaModel, false);
+                _engine = BarracudaWorkerFactory.CreateWorker(executionDevice, _barracudaModel, _verbose);
             }
             else
             {
