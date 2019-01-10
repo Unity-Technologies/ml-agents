@@ -58,6 +58,7 @@ class PPOTrainer(Trainer):
             "Policy/Learning Rate": [],
         }
 
+        # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         self.collected_rewards = {'extrinsic': {}}
 
         if self.use_curiosity:
@@ -309,6 +310,7 @@ class PPOTrainer(Trainer):
                         self.training_buffer[agent_id]['action_mask'].append(
                             stored_info.action_masks[idx])
                     a_dist = stored_take_action_outputs['log_probs']
+                    # value is a dictionary from name of reward to value estimate of the value head
                     value = stored_take_action_outputs['value']
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
                     self.training_buffer[agent_id]['prev_action'].append(
@@ -360,21 +362,13 @@ class PPOTrainer(Trainer):
                 else:
                     bootstrapping_info = info
                     idx = l
-                value_next_bootstrap = self.policy.get_value_estimates(bootstrapping_info, idx)
+                value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
                 if info.local_done[l] and not info.max_reached[l]:
-                    value_next = 0.0
-                else:
-                    value_next = value_next_bootstrap
-
+                    value_next["extrinsic"] = 0.0
                 tmp_advantages = []
                 tmp_returns = []
                 for idx, name in enumerate(self.policy.reward_signals.keys()):
-                    if name == 'extrinsic':
-                        bootstrap_value = value_next
-                        if isinstance(bootstrap_value, dict):
-                            bootstrap_value = bootstrap_value[name]
-                    else:
-                        bootstrap_value = value_next_bootstrap[name]
+                    bootstrap_value = value_next[name]
 
                     local_rewards = self.training_buffer[agent_id][
                             '{}_rewards'.format(name)].get_batch()
@@ -386,10 +380,8 @@ class PPOTrainer(Trainer):
                         value_next=bootstrap_value,
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd'])
-                    if name == 'extrinsic':
-                        local_advantage *= 0.0
-                    local_return = local_advantage + self.training_buffer[agent_id][
-                            '{}_value_estimates'.format(name)].get_batch()
+                    local_return = local_advantage + local_value_estimates
+                    # This is later use as target for the different value estimates
                     self.training_buffer[agent_id]['{}_returns'.format(name)].set(local_return)
                     self.training_buffer[agent_id]['{}_advantage'.format(name)].set(local_advantage)
                     tmp_advantages.append(local_advantage)
