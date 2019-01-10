@@ -11,6 +11,12 @@ using Tensor = MLAgents.InferenceBrain.Tensor;
 
 namespace MLAgents
 {
+    public enum InferenceDevice
+    {
+        CPU = 0,
+        GPU = 1
+    }
+    
     /// <summary>
     /// The Learning Brain works differently if you are training it or not.
     /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
@@ -32,6 +38,10 @@ namespace MLAgents
         private ModelParamLoader _modelParamLoader;
 #endif
         public TextAsset model;
+
+        [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
+                 "(This field is not applicable for training).")]
+        public InferenceDevice inferenceDevice = InferenceDevice.CPU;
 
 #if ENABLE_TENSORFLOW
         private TFSharpInferenceEngine _engine;
@@ -95,8 +105,16 @@ namespace MLAgents
 #if ENABLE_BARRACUDA
             if (model != null)
             {
+                // Cleanup previous instance
+                if (_engine != null)
+                    _engine.Dispose();
+                
                 _barracudaModel = ModelLoader.Load(model.bytes);
-                _engine = BarracudaWorkerFactory.CreateWorker(BarracudaWorkerFactory.Type.CSharpFast, _barracudaModel, false);
+                var executionDevice = inferenceDevice == InferenceDevice.GPU
+                    ? BarracudaWorkerFactory.Type.ComputeFast
+                    : BarracudaWorkerFactory.Type.CSharpFast;
+                                       
+                _engine = BarracudaWorkerFactory.CreateWorker(executionDevice, _barracudaModel, false);
             }
             else
             {
@@ -175,30 +193,16 @@ namespace MLAgents
             
             // Prepare the input tensors to be feed into the engine
             _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
-            
-            // Prepare the output tensors to be feed into the engine
-            //_tensorGenerator.GenerateTensors(_inferenceOutputs, currentBatchSize, agentInfos);
 
-            var inputs = new Dictionary<string, Barracuda.Tensor>();
-            foreach (var inp in _inferenceInputs)
-            {        
-                inputs[inp.Name] = BarracudaUtils.ToBarracuda(inp);
-            }
+            var inputs = PrepareBarracudaInputs(_inferenceInputs);
 
             // Execute the Model
             Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
             _engine.Execute(inputs);
             Profiler.EndSample();
 
-            var outputs = new List<Tensor>();
-            foreach (var name in _outputNames)
-            {
-                var outp = _engine.Fetch(name);
-                outputs.Add(BarracudaUtils.FromBarracuda(outp, name));
-                outp.Dispose();
-            }
-
-            _inferenceOutputs = outputs;
+            _inferenceOutputs = FetchBarracudaOutputs(_outputNames);
+            CleanupBarracudaState(inputs);
 
             // Update the outputs
             _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
@@ -213,5 +217,45 @@ namespace MLAgents
 #endif
             agentInfos.Clear();
         }
+        
+#if ENABLE_BARRACUDA
+        protected Dictionary<string, Barracuda.Tensor> PrepareBarracudaInputs(IEnumerable<Tensor> infInputs)
+        {
+            var inputs = new Dictionary<string, Barracuda.Tensor>();
+            foreach (var inp in _inferenceInputs)
+            {        
+                inputs[inp.Name] = BarracudaUtils.ToBarracuda(inp);
+            }
+
+            return inputs;
+        }
+
+        protected List<Tensor> FetchBarracudaOutputs(string[] names)
+        {
+            var outputs = new List<Tensor>();
+            foreach (var name in names)
+            {
+                var outp = _engine.Fetch(name);
+                outputs.Add(BarracudaUtils.FromBarracuda(outp, name));
+                outp.Dispose();
+            }
+
+            return outputs;
+        }
+
+        protected void CleanupBarracudaState(Dictionary<string, Barracuda.Tensor> inputs)
+        {
+            foreach (var key in inputs.Keys)
+            {
+                inputs[key].Dispose();
+            }
+            inputs.Clear();
+        }
+
+        public void OnDestroy()
+        {
+            _engine?.Dispose();
+        }
+#endif
     }
 }
