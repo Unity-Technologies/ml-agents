@@ -1,8 +1,4 @@
-﻿using UnityEngine.MachineLearning.InferenceEngine;
-using System.Collections.Generic;
-using UnityEngine.MachineLearning.InferenceEngine.Util;
-using System.Linq;
-using System;
+﻿using System.Collections.Generic;
 
 namespace MLAgents.InferenceBrain
 {

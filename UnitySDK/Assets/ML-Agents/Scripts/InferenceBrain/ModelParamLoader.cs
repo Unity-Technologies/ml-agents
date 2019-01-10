@@ -1,5 +1,4 @@
-﻿using UnityEngine.MachineLearning.InferenceEngine;
-using UnityEngine;
+﻿#if ENABLE_TENSORFLOW
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace MLAgents.InferenceBrain
             Continuous
         }
         private const long ApiVersion = 1;
-        private InferenceEngine _engine;
+        private TFSharpInferenceEngine _engine;
         private BrainParameters _brainParameters;
         private List<string> _failedModelChecks = new List<string>();
 
@@ -32,7 +31,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="brainParameters"> The BrainParamters that are used verify the
         /// compatibility with the InferenceEngine</param>
         /// <returns></returns>
-        public static ModelParamLoader GetLoaderAndCheck(InferenceEngine engine,
+        public static ModelParamLoader GetLoaderAndCheck(TFSharpInferenceEngine engine,
             BrainParameters brainParameters)
         {
             ModelParamLoader modelParamLoader = new ModelParamLoader(engine, brainParameters);
@@ -40,7 +39,7 @@ namespace MLAgents.InferenceBrain
             return modelParamLoader;
         }
         
-        private ModelParamLoader(InferenceEngine engine, BrainParameters brainParameters)
+        private ModelParamLoader(TFSharpInferenceEngine engine, BrainParameters brainParameters)
         {
             _engine = engine;
             _brainParameters = brainParameters;
@@ -129,7 +128,7 @@ namespace MLAgents.InferenceBrain
             {
                 _engine.ExecuteGraph(new Tensor[0], outputs);
             }
-            catch (Exception e)
+            catch
             {
                 return -1;
             }
@@ -528,3 +527,4 @@ namespace MLAgents.InferenceBrain
         }
     }
 }
+#endif

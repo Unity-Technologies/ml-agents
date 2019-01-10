@@ -44,6 +44,20 @@ class UnityTimeOutException(UnityException):
                         "You can check the logfile for more information at {}".format(log_file_path))
             except:
                 logger.error("An error might have occured in the environment. "
-               "No UnitySDK.log file could be found.") 
+                             "No UnitySDK.log file could be found.")
         super(UnityTimeOutException, self).__init__(message)
 
+
+class UnityWorkerInUseException(UnityException):
+    """
+    This error occurs when the port for a certain worker ID is already reserved.
+    """
+
+    MESSAGE_TEMPLATE = (
+        "Couldn't start socket communication because worker number {} is still in use. "
+        "You may need to manually close a previously opened environment "
+        "or use a different worker number.")
+
+    def __init__(self, worker_id):
+        message = self.MESSAGE_TEMPLATE.format(str(worker_id))
+        super(UnityWorkerInUseException, self).__init__(message)

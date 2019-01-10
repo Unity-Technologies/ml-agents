@@ -3,7 +3,9 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
+import glob
 import logging
+import shutil
 
 import yaml
 import re
@@ -71,8 +73,16 @@ class TrainerController(object):
                 docker_target_name=docker_target_name,
                 run_id=run_id)
             if env_path is not None:
-                env_path = '/{docker_target_name}/{env_name}'.format(
-                    docker_target_name=docker_target_name, env_name=env_path)
+                """
+                Comments for future maintenance:
+                    Some OS/VM instances (e.g. COS GCP Image) mount filesystems 
+                    with COS flag which prevents execution of the Unity scene, 
+                    to get around this, we will copy the executable into the 
+                    container.
+                """
+                # Navigate in docker path and find env_path and copy it.
+                env_path = self._prepare_for_docker_run(docker_target_name,
+                                                        env_path)
             if curriculum_folder is not None:
                 self.curriculum_folder = \
                     '/{docker_target_name}/{curriculum_folder}'.format(
@@ -123,6 +133,26 @@ class TrainerController(object):
                                               'curriculum file has the same '
                                               'name as the Brain '
                                               'whose curriculum it defines.')
+
+    def _prepare_for_docker_run(self, docker_target_name, env_path):
+        for f in glob.glob('/{docker_target_name}/*'.format(
+                docker_target_name=docker_target_name)):
+            if env_path in f:
+                try:
+                    b = os.path.basename(f)
+                    if os.path.isdir(f):
+                        shutil.copytree(f,
+                                        '/ml-agents/{b}'.format(b=b))
+                    else:
+                        src_f = '/{docker_target_name}/{b}'.format(
+                            docker_target_name=docker_target_name, b=b)
+                        dst_f = '/ml-agents/{b}'.format(b=b)
+                        shutil.copyfile(src_f, dst_f)
+                        os.chmod(dst_f, 0o775)  # Make executable
+                except Exception as e:
+                    self.logger.info(e)
+        env_path = '/ml-agents/{env_name}'.format(env_name=env_path)
+        return env_path
 
     def _get_measure_vals(self):
         if self.meta_curriculum:

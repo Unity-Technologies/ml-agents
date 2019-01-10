@@ -330,8 +330,6 @@ class PPOTrainer(Trainer):
                         value_next=bootstrap_value,
                         gamma=self.trainer_parameters['gamma'],
                         lambd=self.trainer_parameters['lambd'])
-                    if name == 'extrinsic':
-                        local_advantage *= 0.0
                     local_return = local_advantage + self.training_buffer[agent_id][
                             '{}_value_estimates'.format(name)].get_batch()
                     self.training_buffer[agent_id]['{}_returns'.format(name)].set(local_return)

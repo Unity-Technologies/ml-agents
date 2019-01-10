@@ -3,6 +3,7 @@
 # Contains an implementation of Behavioral Cloning Algorithm
 
 import logging
+import copy
 
 from mlagents.trainers.bc.trainer import BCTrainer
 from mlagents.trainers.demo_loader import demo_to_buffer
@@ -40,9 +41,8 @@ class OfflineBCTrainer(BCTrainer):
         brain_params, self.demonstration_buffer = demo_to_buffer(
             trainer_parameters['demo_path'],
             self.policy.sequence_length)
-
-        policy_brain = brain.__dict__
-        expert_brain = brain_params.__dict__
+        policy_brain = copy.deepcopy(brain.__dict__)
+        expert_brain = copy.deepcopy(brain_params.__dict__)
         policy_brain.pop('brain_name')
         expert_brain.pop('brain_name')
         if expert_brain != policy_brain:
