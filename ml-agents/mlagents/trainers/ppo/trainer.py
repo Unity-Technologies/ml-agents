@@ -59,6 +59,7 @@ class PPOTrainer(Trainer):
         }
 
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
+        # used for reporting only
         self.collected_rewards = {'extrinsic': {}}
 
         if self.use_curiosity:
@@ -273,6 +274,7 @@ class PPOTrainer(Trainer):
             if stored_info is not None:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
+                assert idx == next_idx
                 if not stored_info.local_done[idx]:
                     for i, _ in enumerate(stored_info.visual_observations):
                         self.training_buffer[agent_id]["visual_obs%d" % i].append(
@@ -319,6 +321,7 @@ class PPOTrainer(Trainer):
                     self.training_buffer[agent_id]['done'].append(next_info.local_done[idx])
 
                     for name, reward in tmp_rewards_dict.items():
+                        # 0 because we use the scaled reward to train the agent
                         self.training_buffer[agent_id]['{}_rewards'.format(name)].append(
                             tmp_rewards_dict[name][0][next_idx])
                         self.training_buffer[agent_id]['{}_value_estimates'.format(name)]\
@@ -329,11 +332,12 @@ class PPOTrainer(Trainer):
                     for idx, (name, rewards) in enumerate(self.collected_rewards.items()):
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
+                        # We want to report the unscaled extrinsic reward but the scaled intrinsic reward
                         if name == 'extrinsic':
-                            unscaled = 1
+                            use_unscaled = 1
                         else:
-                            unscaled = 0
-                        rewards[agent_id] += tmp_rewards_dict[name][unscaled][next_idx]
+                            use_unscaled = 0
+                        rewards[agent_id] += tmp_rewards_dict[name][use_unscaled][next_idx]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -433,6 +437,7 @@ class PPOTrainer(Trainer):
     def update_policy(self):
         """
         Uses demonstration_buffer to update the policy.
+        The reward signal generators must be updated in this method at their own pace.
         """
         self.trainer_metrics.start_policy_update_timer(
             number_experiences=len(self.training_buffer.update_buffer["actions"]),

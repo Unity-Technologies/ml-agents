@@ -7,7 +7,7 @@ logger = logging.getLogger("mlagents.trainers")
 class RewardSignal(object):
     def evaluate(self, current_info, next_info):
         """
-        Returns the number of training steps the trainer has performed
-        :return: the intrinsic reward provided by the generator
+        Evaluates the reward for the agents present in current_info given the next_info
+        :return: a tuple of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         raise UnityTrainerException("The evaluate function was not implemented.")
