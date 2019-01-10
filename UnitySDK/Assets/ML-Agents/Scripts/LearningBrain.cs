@@ -31,7 +31,7 @@ namespace MLAgents
 #if ENABLE_TENSORFLOW
         private ModelParamLoader _modelParamLoader;
 #endif
-        public TextAsset model;
+        public NNModel model;
 
 #if ENABLE_TENSORFLOW
         private TFSharpInferenceEngine _engine;
@@ -95,7 +95,7 @@ namespace MLAgents
 #if ENABLE_BARRACUDA
             if (model != null)
             {
-                _barracudaModel = ModelLoader.Load(model.bytes);
+                _barracudaModel = ModelLoader.Load(model.Value);
                 _engine = BarracudaWorkerFactory.CreateWorker(BarracudaWorkerFactory.Type.CSharpFast, _barracudaModel, false);
             }
             else
