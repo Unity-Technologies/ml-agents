@@ -127,6 +127,10 @@ class CuriosityModel(object):
             tf.dynamic_partition(squared_difference, self.policy_model.mask, 2)[1])
 
     def create_loss(self, learning_rate):
+        """
+        Creates the loss node of the model as well as the update_batch optimizer to update the model.
+        :param learning_rate: The learning rate for the optimizer.
+        """
         self.loss = 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
