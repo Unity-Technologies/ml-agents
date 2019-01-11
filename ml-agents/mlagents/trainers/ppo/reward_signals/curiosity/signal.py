@@ -55,11 +55,12 @@ class CuriositySignal(RewardSignal):
         feed_dict = {self.policy.model.batch_size: num_sequences,
                      self.policy.model.sequence_length: self.policy.sequence_length,
                      self.policy.model.mask_input: mini_batch['masks'].flatten(),
-                     self.policy.model.returns_holder: mini_batch['discounted_returns'].flatten(),
-                     self.policy.model.old_value: mini_batch['value_estimates'].flatten(),
                      self.policy.model.advantage: mini_batch['advantages'].reshape([-1, 1]),
                      self.policy.model.all_old_log_probs: mini_batch['action_probs'].reshape(
                          [-1, sum(self.policy.model.act_size)])}
+        for i, name in enumerate(self.policy.reward_signals.keys()):
+            feed_dict[self.policy.model.returns_holders[i]] = mini_batch['{}_returns'.format(name)].flatten()
+            feed_dict[self.policy.model.old_values[i]] = mini_batch['{}_value_estimates'.format(name)].flatten()
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.output_pre] = mini_batch['actions_pre'].reshape(
                 [-1, self.policy.model.act_size[0]])
