@@ -53,7 +53,9 @@ class RpcCommunicator(Communicator):
             self.server = grpc.server(ThreadPoolExecutor(max_workers=10))
             self.unity_to_external = UnityToExternalServicerImplementation()
             add_UnityToExternalServicer_to_server(self.unity_to_external, self.server)
-            self.server.add_insecure_port('localhost:' + str(self.port))
+            # Using unspecified address, which means that grpc is communicating on all IPs
+            # This is so that the docker container can connect.
+            self.server.add_insecure_port('[::]:' + str(self.port))
             self.server.start()
             self.is_open = True
         except:

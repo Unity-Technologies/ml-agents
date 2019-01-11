@@ -411,8 +411,8 @@ namespace MLAgents.InferenceBrain
             var widthBp = resolutionBp.width;
             var heightBp = resolutionBp.height;
             var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;
-            var widthT = tensor.Shape[1];
-            var heightT = tensor.Shape[2];
+            var heightT = tensor.Shape[1];
+            var widthT = tensor.Shape[2];
             var pixelT = tensor.Shape[3];
             if  ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
