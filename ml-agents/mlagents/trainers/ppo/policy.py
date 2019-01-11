@@ -183,8 +183,8 @@ class PPOPolicy(Policy):
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
         :param idx: Index in BrainInfo of agent.
-        :return: The value estimate dictionary with key being the name of the reward signal and the key the
-        corresponding value estimate node.
+        :return: The value estimate dictionary with key being the name of the reward signal and the value the
+        corresponding value estimate.
         """
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
         for i in range(len(brain_info.visual_observations)):
