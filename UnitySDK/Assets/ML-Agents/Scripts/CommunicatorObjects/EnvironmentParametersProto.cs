@@ -26,22 +26,125 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CkVtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2Vudmlyb25t",
             "ZW50X3BhcmFtZXRlcnNfcHJvdG8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmpl",
-            "Y3RzIrUBChpFbnZpcm9ubWVudFBhcmFtZXRlcnNQcm90bxJfChBmbG9hdF9w",
-            "YXJhbWV0ZXJzGAEgAygLMkUuY29tbXVuaWNhdG9yX29iamVjdHMuRW52aXJv",
-            "bm1lbnRQYXJhbWV0ZXJzUHJvdG8uRmxvYXRQYXJhbWV0ZXJzRW50cnkaNgoU",
-            "RmxvYXRQYXJhbWV0ZXJzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIg",
-            "ASgCOgI4AUIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJv",
-            "dG8z"));
+            "Y3RzIhIKEEN1c3RvbVBhcmFtZXRlcnMi+AEKGkVudmlyb25tZW50UGFyYW1l",
+            "dGVyc1Byb3RvEl8KEGZsb2F0X3BhcmFtZXRlcnMYASADKAsyRS5jb21tdW5p",
+            "Y2F0b3Jfb2JqZWN0cy5FbnZpcm9ubWVudFBhcmFtZXRlcnNQcm90by5GbG9h",
+            "dFBhcmFtZXRlcnNFbnRyeRJBChFjdXN0b21fcGFyYW1ldGVycxgCIAEoCzIm",
+            "LmNvbW11bmljYXRvcl9vYmplY3RzLkN1c3RvbVBhcmFtZXRlcnMaNgoURmxv",
+            "YXRQYXJhbWV0ZXJzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgC",
+            "OgI4AUIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.EnvironmentParametersProto), global::MLAgents.CommunicatorObjects.EnvironmentParametersProto.Parser, new[]{ "FloatParameters" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomParameters), global::MLAgents.CommunicatorObjects.CustomParameters.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.EnvironmentParametersProto), global::MLAgents.CommunicatorObjects.EnvironmentParametersProto.Parser, new[]{ "FloatParameters", "CustomParameters" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
           }));
     }
     #endregion
 
   }
   #region Messages
+  public sealed partial class CustomParameters : pb::IMessage<CustomParameters> {
+    private static readonly pb::MessageParser<CustomParameters> _parser = new pb::MessageParser<CustomParameters>(() => new CustomParameters());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CustomParameters> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::MLAgents.CommunicatorObjects.EnvironmentParametersProtoReflection.Descriptor.MessageTypes[0]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CustomParameters() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CustomParameters(CustomParameters other) : this() {
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CustomParameters Clone() {
+      return new CustomParameters(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CustomParameters);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CustomParameters other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CustomParameters other) {
+      if (other == null) {
+        return;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+        }
+      }
+    }
+
+  }
+
   public sealed partial class EnvironmentParametersProto : pb::IMessage<EnvironmentParametersProto> {
     private static readonly pb::MessageParser<EnvironmentParametersProto> _parser = new pb::MessageParser<EnvironmentParametersProto>(() => new EnvironmentParametersProto());
     private pb::UnknownFieldSet _unknownFields;
@@ -50,7 +153,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.EnvironmentParametersProtoReflection.Descriptor.MessageTypes[0]; }
+      get { return global::MLAgents.CommunicatorObjects.EnvironmentParametersProtoReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -68,6 +171,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public EnvironmentParametersProto(EnvironmentParametersProto other) : this() {
       floatParameters_ = other.floatParameters_.Clone();
+      customParameters_ = other.customParameters_ != null ? other.customParameters_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -86,6 +190,17 @@ namespace MLAgents.CommunicatorObjects {
       get { return floatParameters_; }
     }
 
+    /// <summary>Field number for the "custom_parameters" field.</summary>
+    public const int CustomParametersFieldNumber = 2;
+    private global::MLAgents.CommunicatorObjects.CustomParameters customParameters_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.CommunicatorObjects.CustomParameters CustomParameters {
+      get { return customParameters_; }
+      set {
+        customParameters_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as EnvironmentParametersProto);
@@ -100,6 +215,7 @@ namespace MLAgents.CommunicatorObjects {
         return true;
       }
       if (!FloatParameters.Equals(other.FloatParameters)) return false;
+      if (!object.Equals(CustomParameters, other.CustomParameters)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -107,6 +223,7 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= FloatParameters.GetHashCode();
+      if (customParameters_ != null) hash ^= CustomParameters.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -121,6 +238,10 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       floatParameters_.WriteTo(output, _map_floatParameters_codec);
+      if (customParameters_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(CustomParameters);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -130,6 +251,9 @@ namespace MLAgents.CommunicatorObjects {
     public int CalculateSize() {
       int size = 0;
       size += floatParameters_.CalculateSize(_map_floatParameters_codec);
+      if (customParameters_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CustomParameters);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -142,6 +266,12 @@ namespace MLAgents.CommunicatorObjects {
         return;
       }
       floatParameters_.Add(other.floatParameters_);
+      if (other.customParameters_ != null) {
+        if (customParameters_ == null) {
+          customParameters_ = new global::MLAgents.CommunicatorObjects.CustomParameters();
+        }
+        CustomParameters.MergeFrom(other.CustomParameters);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -155,6 +285,13 @@ namespace MLAgents.CommunicatorObjects {
             break;
           case 10: {
             floatParameters_.AddEntriesFrom(input, _map_floatParameters_codec);
+            break;
+          }
+          case 18: {
+            if (customParameters_ == null) {
+              customParameters_ = new global::MLAgents.CommunicatorObjects.CustomParameters();
+            }
+            input.ReadMessage(customParameters_);
             break;
           }
         }

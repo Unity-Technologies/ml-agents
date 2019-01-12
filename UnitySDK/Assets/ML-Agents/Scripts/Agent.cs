@@ -81,6 +81,12 @@ namespace MLAgents
         public int id;
 
         /// <summary>
+        /// User-customizable object for sending structured output from Unity to Python in response
+        /// to an action in addition to a scalar reward.
+        /// </summary>
+        public CustomOutput customOutput;
+
+        /// <summary>
         /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
         /// </summary>
         /// <returns>The protobuf verison of the AgentInfo.</returns>
@@ -97,6 +103,7 @@ namespace MLAgents
                 MaxStepReached = maxStepReached,
                 Done = done,
                 Id = id,
+                CustomOutput = customOutput
             };
             if (memories != null)
             {
@@ -541,6 +548,7 @@ namespace MLAgents
                           * param.numStackedVectorObservations]);
 
             info.visualObservations = new List<Texture2D>();
+            info.customOutput = new CustomOutput();
         }
 
         /// <summary>
@@ -1077,6 +1085,10 @@ namespace MLAgents
             obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRT;
             RenderTexture.ReleaseTemporary(tempRT);
+        }
+
+        public CustomOutput GetCustomOutput() {
+            return info.customOutput;
         }
     }
 }

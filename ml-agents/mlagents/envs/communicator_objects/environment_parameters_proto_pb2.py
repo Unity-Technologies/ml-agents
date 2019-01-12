@@ -7,7 +7,6 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
-from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -19,10 +18,35 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/environment_parameters_proto.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\nEmlagents/envs/communicator_objects/environment_parameters_proto.proto\x12\x14\x63ommunicator_objects\"\xb5\x01\n\x1a\x45nvironmentParametersProto\x12_\n\x10\x66loat_parameters\x18\x01 \x03(\x0b\x32\x45.communicator_objects.EnvironmentParametersProto.FloatParametersEntry\x1a\x36\n\x14\x46loatParametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_options=_b('\252\002\034MLAgents.CommunicatorObjects'),
+  serialized_pb=_b('\nEmlagents/envs/communicator_objects/environment_parameters_proto.proto\x12\x14\x63ommunicator_objects\"\x12\n\x10\x43ustomParameters\"\xf8\x01\n\x1a\x45nvironmentParametersProto\x12_\n\x10\x66loat_parameters\x18\x01 \x03(\x0b\x32\x45.communicator_objects.EnvironmentParametersProto.FloatParametersEntry\x12\x41\n\x11\x63ustom_parameters\x18\x02 \x01(\x0b\x32&.communicator_objects.CustomParameters\x1a\x36\n\x14\x46loatParametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
+
+
+_CUSTOMPARAMETERS = _descriptor.Descriptor(
+  name='CustomParameters',
+  full_name='communicator_objects.CustomParameters',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=95,
+  serialized_end=113,
+)
 
 
 _ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY = _descriptor.Descriptor(
@@ -38,28 +62,28 @@ _ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='communicator_objects.EnvironmentParametersProto.FloatParametersEntry.value', index=1,
       number=2, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=_descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001')),
+  serialized_options=_b('8\001'),
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=223,
-  serialized_end=277,
+  serialized_start=310,
+  serialized_end=364,
 )
 
 _ENVIRONMENTPARAMETERSPROTO = _descriptor.Descriptor(
@@ -75,27 +99,43 @@ _ENVIRONMENTPARAMETERSPROTO = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='custom_parameters', full_name='communicator_objects.EnvironmentParametersProto.custom_parameters', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[_ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY, ],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=96,
-  serialized_end=277,
+  serialized_start=116,
+  serialized_end=364,
 )
 
 _ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY.containing_type = _ENVIRONMENTPARAMETERSPROTO
 _ENVIRONMENTPARAMETERSPROTO.fields_by_name['float_parameters'].message_type = _ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY
+_ENVIRONMENTPARAMETERSPROTO.fields_by_name['custom_parameters'].message_type = _CUSTOMPARAMETERS
+DESCRIPTOR.message_types_by_name['CustomParameters'] = _CUSTOMPARAMETERS
 DESCRIPTOR.message_types_by_name['EnvironmentParametersProto'] = _ENVIRONMENTPARAMETERSPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+CustomParameters = _reflection.GeneratedProtocolMessageType('CustomParameters', (_message.Message,), dict(
+  DESCRIPTOR = _CUSTOMPARAMETERS,
+  __module__ = 'mlagents.envs.communicator_objects.environment_parameters_proto_pb2'
+  # @@protoc_insertion_point(class_scope:communicator_objects.CustomParameters)
+  ))
+_sym_db.RegisterMessage(CustomParameters)
 
 EnvironmentParametersProto = _reflection.GeneratedProtocolMessageType('EnvironmentParametersProto', (_message.Message,), dict(
 
@@ -113,8 +153,6 @@ _sym_db.RegisterMessage(EnvironmentParametersProto)
 _sym_db.RegisterMessage(EnvironmentParametersProto.FloatParametersEntry)
 
 
-DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
-_ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY.has_options = True
-_ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001'))
+DESCRIPTOR._options = None
+_ENVIRONMENTPARAMETERSPROTO_FLOATPARAMETERSENTRY._options = None
 # @@protoc_insertion_point(module_scope)

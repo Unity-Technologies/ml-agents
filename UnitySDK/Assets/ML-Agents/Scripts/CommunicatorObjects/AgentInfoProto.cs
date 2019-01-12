@@ -25,24 +25,128 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjltbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2lu",
-            "Zm9fcHJvdG8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIpICCg5BZ2Vu",
-            "dEluZm9Qcm90bxIiChpzdGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgBIAMo",
-            "AhIbChN2aXN1YWxfb2JzZXJ2YXRpb25zGAIgAygMEhgKEHRleHRfb2JzZXJ2",
-            "YXRpb24YAyABKAkSHQoVc3RvcmVkX3ZlY3Rvcl9hY3Rpb25zGAQgAygCEhsK",
-            "E3N0b3JlZF90ZXh0X2FjdGlvbnMYBSABKAkSEAoIbWVtb3JpZXMYBiADKAIS",
-            "DgoGcmV3YXJkGAcgASgCEgwKBGRvbmUYCCABKAgSGAoQbWF4X3N0ZXBfcmVh",
-            "Y2hlZBgJIAEoCBIKCgJpZBgKIAEoBRITCgthY3Rpb25fbWFzaxgLIAMoCEIf",
-            "qgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "Zm9fcHJvdG8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIg4KDEN1c3Rv",
+            "bU91dHB1dCLNAgoOQWdlbnRJbmZvUHJvdG8SIgoac3RhY2tlZF92ZWN0b3Jf",
+            "b2JzZXJ2YXRpb24YASADKAISGwoTdmlzdWFsX29ic2VydmF0aW9ucxgCIAMo",
+            "DBIYChB0ZXh0X29ic2VydmF0aW9uGAMgASgJEh0KFXN0b3JlZF92ZWN0b3Jf",
+            "YWN0aW9ucxgEIAMoAhIbChNzdG9yZWRfdGV4dF9hY3Rpb25zGAUgASgJEhAK",
+            "CG1lbW9yaWVzGAYgAygCEg4KBnJld2FyZBgHIAEoAhIMCgRkb25lGAggASgI",
+            "EhgKEG1heF9zdGVwX3JlYWNoZWQYCSABKAgSCgoCaWQYCiABKAUSEwoLYWN0",
+            "aW9uX21hc2sYCyADKAgSOQoNY3VzdG9tX291dHB1dBgMIAEoCzIiLmNvbW11",
+            "bmljYXRvcl9vYmplY3RzLkN1c3RvbU91dHB1dEIfqgIcTUxBZ2VudHMuQ29t",
+            "bXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomOutput), global::MLAgents.CommunicatorObjects.CustomOutput.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "CustomOutput" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
+  public sealed partial class CustomOutput : pb::IMessage<CustomOutput> {
+    private static readonly pb::MessageParser<CustomOutput> _parser = new pb::MessageParser<CustomOutput>(() => new CustomOutput());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CustomOutput> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::MLAgents.CommunicatorObjects.AgentInfoProtoReflection.Descriptor.MessageTypes[0]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CustomOutput() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CustomOutput(CustomOutput other) : this() {
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CustomOutput Clone() {
+      return new CustomOutput(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CustomOutput);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CustomOutput other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CustomOutput other) {
+      if (other == null) {
+        return;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+        }
+      }
+    }
+
+  }
+
   public sealed partial class AgentInfoProto : pb::IMessage<AgentInfoProto> {
     private static readonly pb::MessageParser<AgentInfoProto> _parser = new pb::MessageParser<AgentInfoProto>(() => new AgentInfoProto());
     private pb::UnknownFieldSet _unknownFields;
@@ -51,7 +155,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.AgentInfoProtoReflection.Descriptor.MessageTypes[0]; }
+      get { return global::MLAgents.CommunicatorObjects.AgentInfoProtoReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -79,6 +183,7 @@ namespace MLAgents.CommunicatorObjects {
       maxStepReached_ = other.maxStepReached_;
       id_ = other.id_;
       actionMask_ = other.actionMask_.Clone();
+      customOutput_ = other.customOutput_ != null ? other.customOutput_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -203,6 +308,17 @@ namespace MLAgents.CommunicatorObjects {
       get { return actionMask_; }
     }
 
+    /// <summary>Field number for the "custom_output" field.</summary>
+    public const int CustomOutputFieldNumber = 12;
+    private global::MLAgents.CommunicatorObjects.CustomOutput customOutput_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.CommunicatorObjects.CustomOutput CustomOutput {
+      get { return customOutput_; }
+      set {
+        customOutput_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as AgentInfoProto);
@@ -227,6 +343,7 @@ namespace MLAgents.CommunicatorObjects {
       if (MaxStepReached != other.MaxStepReached) return false;
       if (Id != other.Id) return false;
       if(!actionMask_.Equals(other.actionMask_)) return false;
+      if (!object.Equals(CustomOutput, other.CustomOutput)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -244,6 +361,7 @@ namespace MLAgents.CommunicatorObjects {
       if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
       if (Id != 0) hash ^= Id.GetHashCode();
       hash ^= actionMask_.GetHashCode();
+      if (customOutput_ != null) hash ^= CustomOutput.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -286,6 +404,10 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteInt32(Id);
       }
       actionMask_.WriteTo(output, _repeated_actionMask_codec);
+      if (customOutput_ != null) {
+        output.WriteRawTag(98);
+        output.WriteMessage(CustomOutput);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -317,6 +439,9 @@ namespace MLAgents.CommunicatorObjects {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
       }
       size += actionMask_.CalculateSize(_repeated_actionMask_codec);
+      if (customOutput_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CustomOutput);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -351,6 +476,12 @@ namespace MLAgents.CommunicatorObjects {
         Id = other.Id;
       }
       actionMask_.Add(other.actionMask_);
+      if (other.customOutput_ != null) {
+        if (customOutput_ == null) {
+          customOutput_ = new global::MLAgents.CommunicatorObjects.CustomOutput();
+        }
+        CustomOutput.MergeFrom(other.CustomOutput);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -408,6 +539,13 @@ namespace MLAgents.CommunicatorObjects {
           case 90:
           case 88: {
             actionMask_.AddEntriesFrom(input, _repeated_actionMask_codec);
+            break;
+          }
+          case 98: {
+            if (customOutput_ == null) {
+              customOutput_ = new global::MLAgents.CommunicatorObjects.CustomOutput();
+            }
+            input.ReadMessage(customOutput_);
             break;
           }
         }

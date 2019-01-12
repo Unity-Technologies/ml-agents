@@ -3,6 +3,10 @@ syntax = "proto3";
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
+message CustomParameters {
+}
+
 message EnvironmentParametersProto {
     map<string, float> float_parameters = 1; 
+    CustomParameters custom_parameters = 2;
 }

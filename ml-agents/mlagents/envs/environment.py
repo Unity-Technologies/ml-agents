@@ -10,7 +10,7 @@ from .exception import UnityEnvironmentException, UnityActionException, UnityTim
 
 from .communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto, \
     EnvironmentParametersProto, UnityRLInitializationInput, UnityRLInitializationOutput, \
-    UnityInput, UnityOutput
+    UnityInput, UnityOutput, CustomParameters
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
@@ -222,7 +222,7 @@ class UnityEnvironment(object):
                                                    for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
+    def reset(self, config=None, train_mode=True, custom_config=None) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A data structure corresponding to the initial reset state of the environment.
@@ -244,7 +244,7 @@ class UnityEnvironment(object):
 
         if self._loaded:
             outputs = self.communicator.exchange(
-                self._generate_reset_input(train_mode, config)
+                self._generate_reset_input(train_mode, config, custom_config)
             )
             if outputs is None:
                 raise KeyboardInterrupt
@@ -477,12 +477,14 @@ class UnityEnvironment(object):
                 rl_in.command = 0
         return self.wrap_unity_input(rl_in)
 
-    def _generate_reset_input(self, training, config) -> UnityRLInput:
+    def _generate_reset_input(self, training, config, custom_config) -> UnityRLInput:
         rl_in = UnityRLInput()
         rl_in.is_training = training
         rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
         for key in config:
             rl_in.environment_parameters.float_parameters[key] = config[key]
+        if custom_config is not None:
+            rl_in.environment_parameters.custom_parameters.CopyFrom(custom_config)
         rl_in.command = 1
         return self.wrap_unity_input(rl_in)
 
