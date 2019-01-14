@@ -94,8 +94,18 @@ class GAILModel(object):
 
             if self.use_vail:
                 # Latent representation
-                self.z_mean = tf.layers.dense(hidden_2, self.z_size, reuse=reuse)
-                self.z_log_sigma_sq = tf.layers.dense(hidden_2, self.z_size, reuse=reuse)
+                self.z_mean = tf.layers.dense(
+                    hidden_2,
+                    self.z_size,
+                    reuse=reuse,
+                    name="z_mean",
+                    kernel_initializer=LearningModel.scaled_init(0.01))
+                self.z_log_sigma_sq = tf.layers.dense(
+                    hidden_2,
+                    self.z_size,
+                    reuse=reuse,
+                    name="z_log_sigma_sq",
+                    kernel_initializer=LearningModel.scaled_init(0.01))
                 self.z_sigma_sq = tf.exp(self.z_log_sigma_sq)
                 self.z_sigma = tf.sqrt(self.z_sigma_sq)
                 self.noise = tf.random_normal(shape=[self.z_size])
