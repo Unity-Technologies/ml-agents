@@ -37,7 +37,7 @@ namespace MLAgents
 #if ENABLE_TENSORFLOW
         private ModelParamLoader _modelParamLoader;
 #endif
-        public TextAsset model;
+        public NNModel model;
 
         [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
                  "(This field is not applicable for training).")]
@@ -116,7 +116,7 @@ namespace MLAgents
                 if (_engine != null)
                     _engine.Dispose();
                 
-                _barracudaModel = ModelLoader.Load(model.bytes);
+                _barracudaModel = ModelLoader.Load(model.Value);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
                     ? BarracudaWorkerFactory.Type.ComputeFast
                     : BarracudaWorkerFactory.Type.CSharpFast;
