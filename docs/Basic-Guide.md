@@ -25,30 +25,6 @@ Unity settings.
        Equivalent or .NET 4.x Equivalent)**
 6. Go to **File** > **Save Project**
 
-## Setting up TensorFlowSharp
-
-We provide pre-trained models (`.nn` files) for all the agents 
-in all our demo environments. To be able to run those models, you'll 
-first need to set-up TensorFlowSharp support. Consequently, you need to install 
-the TensorFlowSharp plugin to be able to run these models within the Unity 
-Editor. 
-
-1. Download the [TensorFlowSharp Plugin](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
-2. Import it into Unity by double clicking the downloaded file. You can check 
-if it was successfully imported by checking the
-TensorFlow files in the Project window under **Assets** > **ML-Agents** >
-**Plugins** > **Computer**.
-3. Go to **Edit** > **Project Settings** > **Player** and add `ENABLE_TENSORFLOW`
-to the `Scripting Define Symbols` for each type of device you want to use 
-(**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**).
-
-   ![Project Settings](images/project-settings.png)
-
-   **Note**: If you don't see anything under **Assets**, drag the
-   `UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
-
-   ![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
-
 ## Running a Pre-trained Model
 We've included pre-trained models for the 3D Ball example.
 

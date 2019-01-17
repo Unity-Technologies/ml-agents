@@ -41,9 +41,6 @@
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
-## Inference
-* [TensorFlowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
-
 ## Help
 
 * [Migrating from earlier versions of ML-Agents](Migrating.md)

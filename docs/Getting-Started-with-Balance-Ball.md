@@ -272,16 +272,6 @@ Either wait for the training process to close the window or press Ctrl+C at the
 command-line prompt. If you close the window manually, the `.nn` file 
 containing the trained model is not exported into the ml-agents folder.
 
-### Setting up TensorFlowSharp
-
-Because TensorFlowSharp support is still experimental, it is disabled by
-default. Please note that the `Learning` Brain inference can only be used with
-TensorFlowSharp.
- 
-To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
-within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the
-Basic Guide page.
-
 ### Embedding the trained model into Unity
 
 To embed the trained model into Unity, follow the later part of [Training the
