@@ -5,6 +5,11 @@ from mlagents.trainers.ppo.reward_signals import RewardSignal
 
 class ExtrinsicSignal(RewardSignal):
     def __init__(self, signal_strength):
+        """
+        The extrinsic reward generator. Returns the reward received by the environment
+        :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
+        reward multiplied by the strength parameter
+        """
         self.stat_name = 'Environment/Extrinsic Reward'
         self.value_name = 'Policy/Extrinsic Value Estimate'
         self.strength = signal_strength

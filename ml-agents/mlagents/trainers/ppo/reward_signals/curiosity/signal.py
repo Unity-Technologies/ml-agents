@@ -1,12 +1,20 @@
 import numpy as np
 from mlagents.trainers.ppo.reward_signals import RewardSignal
-from .model import CuriosityModel
+from mlagents.trainers.ppo.reward_signals.curiosity.model import CuriosityModel
+from mlagents.trainers.policy import Policy
 
 
 class CuriositySignal(RewardSignal):
-    def __init__(self, policy, encoding_size, strength):
+    def __init__(self, policy: Policy, encoding_size, signal_strength):
+        """
+        Creates the Curiosity reward generator
+        :param policy: The Learning Policy
+        :param encoding_size: The size of the Curiosity encoding
+        :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
+        reward multiplied by the strength parameter
+        """
         self.policy = policy
-        self.strength = strength
+        self.strength = signal_strength
         self.stat_name = 'Policy/Curiosity Reward'
         self.value_name = 'Policy/Curiosity Value Estimate'
         self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
@@ -15,12 +23,6 @@ class CuriositySignal(RewardSignal):
                             'update': self.model.update_batch}
 
     def evaluate(self, current_info, next_info):
-        """
-        Generates intrinsic reward used for Curiosity-based training.
-        :BrainInfo current_info: Current BrainInfo.
-        :BrainInfo next_info: Next BrainInfo.
-        :return: Intrinsic rewards for all agents.
-        """
         if len(current_info.agents) == 0:
             return []
 

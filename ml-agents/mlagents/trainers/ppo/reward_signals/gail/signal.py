@@ -1,12 +1,22 @@
 import numpy as np
 
 from mlagents.trainers.ppo.reward_signals import RewardSignal
+from mlagents.trainers.policy import Policy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
 class GAILSignal(RewardSignal):
-    def __init__(self, policy, h_size, lr, demo_path, signal_strength):
+    def __init__(self, policy: Policy, h_size, lr, demo_path, signal_strength):
+        """
+        The Gail Reward signal generator.
+        :param policy: The policy of the learning model
+        :param h_size: The size of the the hidden layers of the discriminator
+        :param lr: The Learning Rate
+        :param demo_path: The path to the demonstration file
+        :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
+        reward multiplied by the strength parameter
+        """
         super().__init__()
         self.policy = policy
         self.strength = signal_strength
