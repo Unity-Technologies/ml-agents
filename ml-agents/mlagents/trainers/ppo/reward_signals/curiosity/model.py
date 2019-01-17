@@ -38,7 +38,7 @@ class CuriosityModel(object):
                 # Note that these encoders are siamese.
                 encoded_visual = self.policy_model.create_visual_obs_encoder(
                     self.policy_model.visual_in[i],
-                    self.policy_model.curiosity_enc_size,
+                    self.encoding_size,
                     LearningModel.swish, 1,
                     "stream_{}_visual_obs_encoder"
                         .format(i), False)
