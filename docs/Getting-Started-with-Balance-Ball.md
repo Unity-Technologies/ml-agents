@@ -269,7 +269,7 @@ Once the training process completes, and the training process saves the model
 use it with Agents having a **Learning Brain**.
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
 Either wait for the training process to close the window or press Ctrl+C at the 
-command-line prompt. If you close the window manually, the `.bytes` file 
+command-line prompt. If you close the window manually, the `.nn` file 
 containing the trained model is not exported into the ml-agents folder.
 
 ### Setting up TensorFlowSharp

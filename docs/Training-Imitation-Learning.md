@@ -85,7 +85,7 @@ It is also possible to provide demonstrations in realtime during training, witho
    similarly to the demonstrations.
 9. Once the Student Agents are exhibiting the desired behavior, end the training
    process with `CTL+C` from the command line.
-10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
+10. Move the resulting `*.nn` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
     with `Learning` Brain.
 

@@ -54,7 +54,7 @@ To use a graph model:
    [import assets into Unity](https://docs.unity3d.com/Manual/ImportingAssets.html)
    in various ways. The easiest way is to simply drag the file into the
    **Project** window and drop it into an appropriate folder.
-3. Once the `model_name.bytes` file is imported, drag it from the **Project**
+3. Once the `model_name.nn` file is imported, drag it from the **Project**
    window to the **Model** field of the Brain component.
 
 If you are using a model produced by the ML-Agents `mlagents-learn` command, use
@@ -65,9 +65,9 @@ the default values for the other Learning Brain parameters.
 The default values of the TensorFlow graph parameters work with the model
 produced by the PPO and BC training code in the ML-Agents SDK. To use a default
 ML-Agents model, the only parameter that you need to set is the `Model`,
-which must be set to the `.bytes` file containing the trained model itself.
+which must be set to the `.nn` file containing the trained model itself.
 
-* `Model` : This must be the `.bytes` file corresponding to the pre-trained
+* `Model` : This must be the `.nn` file corresponding to the pre-trained
    TensorFlow graph. (You must first drag this file into your Project window 
    and then from the Resources folder into the inspector)
 

@@ -27,7 +27,7 @@ Unity settings.
 
 ## Setting up TensorFlowSharp
 
-We provide pre-trained models (`.bytes` files) for all the agents 
+We provide pre-trained models (`.nn` files) for all the agents 
 in all our demo environments. To be able to run those models, you'll 
 first need to set-up TensorFlowSharp support. Consequently, you need to install 
 the TensorFlowSharp plugin to be able to run these models within the Unity 
@@ -240,7 +240,7 @@ INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 10000. Mean Reward: 2
 ### After training
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<brain_name>.bytes` where
+`models/<run-identifier>/<brain_name>.nn` where
 `<brain_name>` is the name of the Brain corresponding to the model.
 (**Note:** There is a known bug on Windows that causes the saving of the model to
 fail when you early terminate the training, it's recommended to wait until Step
@@ -254,7 +254,7 @@ the steps described
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the  **3DBallLearning** Learning Brain from the Scene hierarchy.
-5. Drag the `<brain_name>.bytes` file from the Project window of
+5. Drag the `<brain_name>.nn` file from the Project window of
    the Editor to the **Model** placeholder in the **3DBallLearning**
    inspector window.
 6. Press the :arrow_forward: button at the top of the Editor.

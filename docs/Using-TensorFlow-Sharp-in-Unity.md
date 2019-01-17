@@ -35,7 +35,7 @@ Go to `Edit` -> `Player Settings` and add `ENABLE_TENSORFLOW` to the `Scripting
 Define Symbols` for each type of device you want to use (**`PC, Mac and Linux
 Standalone`**, **`iOS`** or **`Android`**).
 
-Set the Brain you used for training to `Learning`. Drag `your_name_graph.bytes`
+Set the Brain you used for training to `Learning`. Drag `your_name_graph.nn`
 into Unity and then drag it into The `Model` field in the Brain.
 
 ## iOS additional instructions for building
