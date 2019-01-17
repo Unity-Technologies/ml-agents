@@ -11,7 +11,7 @@ import tensorflow as tf
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.trainer import Trainer, UnityTrainerException
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -32,19 +32,22 @@ class PPOTrainer(Trainer):
         :param run_id: The The identifier of the current run
         """
         super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
-        self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units',
+        self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'hidden_units',
                            'lambd', 'learning_rate', 'max_steps', 'normalize', 'num_epoch',
                            'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
-                           'use_recurrent', 'summary_path', 'memory_size', 'use_curiosity',
-                           'curiosity_strength', 'curiosity_enc_size', 'model_path',
-                           'use_gail', 'demo_path', 'extrinsic_strength', 'use_entropy',
-                           'entropy_strength', 'gail_strength']
+                           'use_recurrent', 'summary_path', 'memory_size',
+                           'curiosity_enc_size', 'model_path',
+                           'demo_path', 'reward_signals', 'reward_strength', 'gammas']
+        self.valid_reward_signals = ['extrinsic', 'gail', 'entropy', 'curiosity']
 
         self.check_param_keys()
-        self.use_curiosity = bool(trainer_parameters["use_curiosity"])
-        self.use_gail = bool(trainer_parameters['use_gail'])
-        self.use_entropy = bool(trainer_parameters['use_entropy'])
-        self.reward_strength = float(trainer_parameters['extrinsic_strength'])
+        self.check_rewards_keys(trainer_parameters)
+        self.gamma_parameters = dict(zip(trainer_parameters['reward_signals'],
+                                         trainer_parameters['gammas']))
+        self.use_curiosity = 'curiosity' in self.gamma_parameters.keys()
+        self.use_gail = 'gail' in self.gamma_parameters.keys()
+        self.use_entropy = 'entropy' in self.gamma_parameters.keys()
+        self.use_extrinsic = 'extrinsic' in self.gamma_parameters.keys()
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
@@ -127,6 +130,25 @@ class PPOTrainer(Trainer):
         :return: the reward buffer.
         """
         return self._reward_buffer
+
+    def check_rewards_keys(self, trainer_parameters: dict):
+        """
+        Checks if the reward_signals, reward_strength and gammas hyperparamters have consistent length
+        and that the values of reward_signals are valid.
+        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
+        """
+        if len(trainer_parameters['reward_signals']) != len(trainer_parameters['reward_strength']):
+            raise UnityTrainerException(
+                "The length of the reward_signals Hyperparameter must be equal to the length of "
+                "the reward_strength Hyperparameter")
+        if len(trainer_parameters['reward_signals']) != len(trainer_parameters['gammas']):
+            raise UnityTrainerException(
+                "The length of the reward_signals Hyperparameter must be equal to the length of "
+                "the gammas Hyperparameter")
+        for signal_name in trainer_parameters['reward_signals']:
+            if signal_name not in self.valid_reward_signals:
+                raise UnityTrainerException(
+                    "Unknown reward signal {} was given as Hyperparameter. ".format(signal_name))
 
     def increment_step_and_update_last_reward(self):
         """
@@ -382,7 +404,7 @@ class PPOTrainer(Trainer):
                         rewards=local_rewards,
                         value_estimates=local_value_estimates,
                         value_next=bootstrap_value,
-                        gamma=self.trainer_parameters['gamma'],
+                        gamma=self.gamma_parameters[name],
                         lambd=self.trainer_parameters['lambd'])
                     local_return = local_advantage + local_value_estimates
                     # This is later use as target for the different value estimates

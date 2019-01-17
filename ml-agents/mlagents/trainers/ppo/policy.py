@@ -24,19 +24,10 @@ class PPOPolicy(Policy):
         """
         super().__init__(seed, brain, trainer_params)
         self.has_updated = False
-        self.use_curiosity = bool(trainer_params['use_curiosity'])
-        self.use_gail = bool(trainer_params['use_gail'])
-        self.use_entropy = bool(trainer_params['use_entropy'])
-        self.reward_signals = {'extrinsic': ExtrinsicSignal(
-            float(trainer_params['extrinsic_strength']))}
 
-        if self.use_curiosity:
-            self.reward_signals['curiosity'] = None
-        if self.use_gail:
-            self.reward_signals['gail'] = None
-        if self.use_entropy:
-            self.reward_signals['entropy'] = None
-
+        reward_strengths = dict(zip(trainer_params['reward_signals'],
+                                    trainer_params['reward_strength']))
+        self.reward_signals = {}
         with self.graph.as_default():
             self.model = PPOModel(brain,
                                   lr=float(trainer_params['learning_rate']),
@@ -48,26 +39,26 @@ class PPOPolicy(Policy):
                                   use_recurrent=trainer_params['use_recurrent'],
                                   num_layers=int(trainer_params['num_layers']),
                                   m_size=self.m_size,
-                                  use_curiosity=bool(trainer_params['use_curiosity']),
+                                  use_curiosity='curiosity' in reward_strengths.keys(),
                                   seed=seed,
-                                  stream_names=list(self.reward_signals.keys()))
+                                  stream_names=list(reward_strengths.keys()))
             self.model.create_ppo_optimizer()
 
-            if self.use_curiosity:
-                strength = float(trainer_params['curiosity_strength'])
+            if 'extrinsic' in reward_strengths.keys():
+                self.reward_signals['extrinsic'] = ExtrinsicSignal(reward_strengths['extrinsic'])
+            if 'curiosity' in reward_strengths.keys():
                 encoding_size = float(trainer_params['curiosity_enc_size'])
-                curiosity_signal = CuriositySignal(policy=self, strength=strength,
+                curiosity_signal = CuriositySignal(policy=self,
+                                                   signal_strength=reward_strengths['curiosity'],
                                                    encoding_size=encoding_size)
                 self.reward_signals['curiosity'] = curiosity_signal
-            if self.use_gail:
-                strength = float(trainer_params['gail_strength'])
+            if 'gail' in reward_strengths.keys():
                 gail_signal = GAILSignal(self, int(trainer_params['hidden_units']),
                                          float(trainer_params['learning_rate']),
-                                         trainer_params['demo_path'], strength)
+                                         trainer_params['demo_path'], reward_strengths['gail'])
                 self.reward_signals['gail'] = gail_signal
-            if self.use_entropy:
-                strength = float(trainer_params['entropy_strength'])
-                self.reward_signals['entropy'] = EntropySignal(self, strength)
+            if 'entropy' in reward_strengths.keys():
+                self.reward_signals['entropy'] = EntropySignal(self, reward_strengths['entropy'])
 
         if load:
             self._load_graph()
