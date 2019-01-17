@@ -3,7 +3,15 @@ from mlagents.trainers.models import LearningModel
 
 
 class GAILModel(object):
-    def __init__(self, policy_model, h_size, lr, encoding_size):
+    def __init__(self, policy_model: LearningModel, h_size, lr, encoding_size):
+        """
+        The GAIL reward generator.
+        https://arxiv.org/abs/1606.03476
+        :param policy_model: The policy of the learning algorithm
+        :param h_size: Size of the hidden layer for the discriminator
+        :param lr: The learning Rate for the discriminator
+        :param encoding_size: The encoding size for the encoder
+        """
         self.h_size = h_size
         self.z_size = 32
         self.beta = 0.1
@@ -13,9 +21,12 @@ class GAILModel(object):
         self.use_actions = True
         self.make_inputs()
         self.create_network()
-        self.create_loss(5e-5)
+        self.create_loss(lr)
 
     def make_inputs(self):
+        """
+        Creates the input layers for the discriminator
+        """
         self.done_expert = tf.placeholder(
             shape=[None, 1], dtype=tf.float32)
         self.done_policy = tf.placeholder(
@@ -78,6 +89,13 @@ class GAILModel(object):
         self.encoded_policy = tf.concat(encoded_policy_list, axis=1)
 
     def create_encoder(self, state_in, action_in, done_in, reuse):
+        """
+        Creates the encoder for the discriminator
+        :param state_in: The encoded observation input
+        :param action_in: The action input
+        :param done_in: The done flags input
+        :param reuse: If true, the weights will be shared with the previous encoder created
+        """
         with tf.variable_scope("model"):
             if self.use_actions:
                 concat_input = tf.concat([state_in, action_in, done_in], axis=1)
@@ -121,6 +139,9 @@ class GAILModel(object):
             return estimate
 
     def create_network(self):
+        """
+        Helper for creating the intrinsic reward nodes
+        """
         self.expert_estimate = self.create_encoder(
             self.encoded_expert, self.expert_action, self.done_expert, False)
         self.policy_estimate = self.create_encoder(
@@ -129,10 +150,19 @@ class GAILModel(object):
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
 
     def update_beta(self, kl_div):
+        """
+        Updates the Beta parameter with the latest kl_divergence value.
+        The larger Beta, the stronger the importance of the kl divergence in the loss function.
+        :param kl_div:
+        """
         self.beta = max(0, self.beta + 1e-5 * (kl_div - 0.5))
         # print(self.beta, kl_div)
 
     def create_loss(self, learning_rate):
+        """
+        Creates the loss and update nodes for the GAIL reward generator
+        :param learning_rate: The learning rate for the optimizer
+        """
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
 

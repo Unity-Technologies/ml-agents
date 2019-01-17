@@ -3,8 +3,13 @@ from mlagents.trainers.models import LearningModel
 
 
 class CuriosityModel(object):
-    def __init__(self, policy_model, encoding_size=128,
-                 learning_rate=1e-4):
+    def __init__(self, policy_model:LearningModel, encoding_size=128, learning_rate=1e-4):
+        """
+        Creates the curiosity model for the Curiosity reward Generator
+        :param policy_model: The model being used by the learning policy
+        :param encoding_size: The size of the encoding for the Curiosity module
+        :param learning_rate: The learning rate for the curiosity module
+        """
         self.encoding_size = encoding_size
         self.policy_model = policy_model
         encoded_state, encoded_next_state = self.create_curiosity_encoders()
