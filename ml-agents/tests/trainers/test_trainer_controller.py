@@ -37,9 +37,13 @@ def dummy_config():
             summary_freq: 1000
             use_recurrent: false
             memory_size: 8
-            use_curiosity: false
-            curiosity_strength: 0.0
             curiosity_enc_size: 1
+            reward_signals: 
+             - 'extrinsic'
+            reward_strength: 
+             - 1.0
+            gammas:
+             - 0.99
         ''')
 
 
@@ -68,8 +72,6 @@ def dummy_online_bc_config():
             summary_freq: 1000
             use_recurrent: false
             memory_size: 8
-            use_curiosity: false
-            curiosity_strength: 0.0
             curiosity_enc_size: 1
         ''')
 
@@ -100,8 +102,6 @@ def dummy_offline_bc_config():
             summary_freq: 1000
             use_recurrent: false
             memory_size: 8
-            use_curiosity: false
-            curiosity_strength: 0.0
             curiosity_enc_size: 1
         ''')
 

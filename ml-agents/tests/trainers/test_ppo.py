@@ -10,10 +10,13 @@ from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.envs import UnityEnvironment
 from tests.mock_communicator import MockCommunicator
+import os
 
 
 @pytest.fixture
 def dummy_config():
+    path_prefix = os.path.dirname(os.path.abspath(__file__))
+    demo_file = path_prefix+'/test.demo'
     return yaml.load(
         '''
         trainer: ppo
@@ -34,10 +37,24 @@ def dummy_config():
         summary_freq: 1000
         use_recurrent: false
         memory_size: 8
-        use_curiosity: false
-        curiosity_strength: 0.0
         curiosity_enc_size: 1
-        ''')
+        reward_signals: 
+         - 'extrinsic'
+         - 'entropy'
+         - 'curiosity'
+         - 'gail'
+        reward_strength: 
+         - 1.0
+         - 1.0
+         - 1.0
+         - 1.0
+        gammas:
+         - 0.99
+         - 0.7
+         - 0.7
+         - 0.6
+        demo_path: {}
+        '''.format(demo_file))
 
 
 @mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
