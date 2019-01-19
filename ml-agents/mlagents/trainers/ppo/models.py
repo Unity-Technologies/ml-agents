@@ -10,7 +10,7 @@ logger = logging.getLogger("mlagents.trainers")
 class PPOModel(LearningModel):
     def __init__(self, brain, lr=1e-4, h_size=128, epsilon=0.2, beta=1e-3, max_step=5e6,
                  normalize=False, use_recurrent=False, num_layers=2, m_size=None,
-                 use_curiosity=False, seed=0, stream_names=[]):
+                 seed=0, stream_names=None):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -26,8 +26,9 @@ class PPOModel(LearningModel):
         :param num_layers Number of hidden layers between encoded input and policy & value layers
         :param m_size: Size of brain memory.
         """
+        if stream_names is None:
+            stream_names = []
         LearningModel.__init__(self, m_size, normalize, use_recurrent, brain, seed, stream_names)
-        self.use_curiosity = use_curiosity
         if num_layers < 1:
             num_layers = 1
         self.last_reward, self.new_reward, self.update_reward = (

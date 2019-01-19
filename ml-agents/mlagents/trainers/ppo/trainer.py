@@ -37,7 +37,7 @@ class PPOTrainer(Trainer):
                            'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
                            'use_recurrent', 'summary_path', 'memory_size',
                            'curiosity_enc_size', 'model_path',
-                           'demo_path', 'reward_signals', 'reward_strength', 'gammas']
+                           'reward_signals', 'reward_strength', 'gammas']
         self.valid_reward_signals = ['extrinsic', 'gail', 'entropy', 'curiosity']
 
         self.check_param_keys()

@@ -4,18 +4,9 @@ from mlagents.trainers.models import LearningModel
 
 
 class BehavioralCloningModel(LearningModel):
-    def __init__(
-        self,
-        brain,
-        h_size=128,
-        lr=1e-4,
-        n_layers=2,
-        m_size=128,
-        normalize=False,
-        use_recurrent=False,
-        seed=0,
-    ):
-        LearningModel.__init__(self, m_size, normalize, use_recurrent, brain, seed)
+    def __init__(self, brain, h_size=128, lr=1e-4, n_layers=2, m_size=128,
+                 normalize=False, use_recurrent=False, seed=0):
+        LearningModel.__init__(self, m_size, normalize, use_recurrent, brain, seed, None)
         num_streams = 1
         hidden_streams = self.create_observation_streams(num_streams, h_size, n_layers)
         hidden = hidden_streams[0]

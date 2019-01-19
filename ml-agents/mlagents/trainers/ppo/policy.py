@@ -39,7 +39,6 @@ class PPOPolicy(Policy):
                                   use_recurrent=trainer_params['use_recurrent'],
                                   num_layers=int(trainer_params['num_layers']),
                                   m_size=self.m_size,
-                                  use_curiosity='curiosity' in reward_strengths.keys(),
                                   seed=seed,
                                   stream_names=list(reward_strengths.keys()))
             self.model.create_ppo_optimizer()
