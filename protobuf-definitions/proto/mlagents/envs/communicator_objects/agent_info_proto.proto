@@ -1,10 +1,9 @@
 syntax = "proto3";
 
+import "mlagents/envs/communicator_objects/custom_output.proto";
+
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
-
-message CustomOutput {
-}
 
 message AgentInfoProto {
     repeated float stacked_vector_observation = 1;

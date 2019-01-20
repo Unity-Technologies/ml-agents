@@ -12,6 +12,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from mlagents.envs.communicator_objects import custom_output_pb2 as mlagents_dot_envs_dot_communicator__objects_dot_custom__output__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -19,34 +20,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='communicator_objects',
   syntax='proto3',
   serialized_options=_b('\252\002\034MLAgents.CommunicatorObjects'),
-  serialized_pb=_b('\n9mlagents/envs/communicator_objects/agent_info_proto.proto\x12\x14\x63ommunicator_objects\"\x0e\n\x0c\x43ustomOutput\"\xcd\x02\n\x0e\x41gentInfoProto\x12\"\n\x1astacked_vector_observation\x18\x01 \x03(\x02\x12\x1b\n\x13visual_observations\x18\x02 \x03(\x0c\x12\x18\n\x10text_observation\x18\x03 \x01(\t\x12\x1d\n\x15stored_vector_actions\x18\x04 \x03(\x02\x12\x1b\n\x13stored_text_actions\x18\x05 \x01(\t\x12\x10\n\x08memories\x18\x06 \x03(\x02\x12\x0e\n\x06reward\x18\x07 \x01(\x02\x12\x0c\n\x04\x64one\x18\x08 \x01(\x08\x12\x18\n\x10max_step_reached\x18\t \x01(\x08\x12\n\n\x02id\x18\n \x01(\x05\x12\x13\n\x0b\x61\x63tion_mask\x18\x0b \x03(\x08\x12\x39\n\rcustom_output\x18\x0c \x01(\x0b\x32\".communicator_objects.CustomOutputB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
-)
+  serialized_pb=_b('\n9mlagents/envs/communicator_objects/agent_info_proto.proto\x12\x14\x63ommunicator_objects\x1a\x36mlagents/envs/communicator_objects/custom_output.proto\"\xcd\x02\n\x0e\x41gentInfoProto\x12\"\n\x1astacked_vector_observation\x18\x01 \x03(\x02\x12\x1b\n\x13visual_observations\x18\x02 \x03(\x0c\x12\x18\n\x10text_observation\x18\x03 \x01(\t\x12\x1d\n\x15stored_vector_actions\x18\x04 \x03(\x02\x12\x1b\n\x13stored_text_actions\x18\x05 \x01(\t\x12\x10\n\x08memories\x18\x06 \x03(\x02\x12\x0e\n\x06reward\x18\x07 \x01(\x02\x12\x0c\n\x04\x64one\x18\x08 \x01(\x08\x12\x18\n\x10max_step_reached\x18\t \x01(\x08\x12\n\n\x02id\x18\n \x01(\x05\x12\x13\n\x0b\x61\x63tion_mask\x18\x0b \x03(\x08\x12\x39\n\rcustom_output\x18\x0c \x01(\x0b\x32\".communicator_objects.CustomOutputB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  ,
+  dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_custom__output__pb2.DESCRIPTOR,])
 
 
-
-
-_CUSTOMOUTPUT = _descriptor.Descriptor(
-  name='CustomOutput',
-  full_name='communicator_objects.CustomOutput',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=83,
-  serialized_end=97,
-)
 
 
 _AGENTINFOPROTO = _descriptor.Descriptor(
@@ -152,21 +130,13 @@ _AGENTINFOPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=100,
-  serialized_end=433,
+  serialized_start=140,
+  serialized_end=473,
 )
 
-_AGENTINFOPROTO.fields_by_name['custom_output'].message_type = _CUSTOMOUTPUT
-DESCRIPTOR.message_types_by_name['CustomOutput'] = _CUSTOMOUTPUT
+_AGENTINFOPROTO.fields_by_name['custom_output'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_custom__output__pb2._CUSTOMOUTPUT
 DESCRIPTOR.message_types_by_name['AgentInfoProto'] = _AGENTINFOPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-CustomOutput = _reflection.GeneratedProtocolMessageType('CustomOutput', (_message.Message,), dict(
-  DESCRIPTOR = _CUSTOMOUTPUT,
-  __module__ = 'mlagents.envs.communicator_objects.agent_info_proto_pb2'
-  # @@protoc_insertion_point(class_scope:communicator_objects.CustomOutput)
-  ))
-_sym_db.RegisterMessage(CustomOutput)
 
 AgentInfoProto = _reflection.GeneratedProtocolMessageType('AgentInfoProto', (_message.Message,), dict(
   DESCRIPTOR = _AGENTINFOPROTO,

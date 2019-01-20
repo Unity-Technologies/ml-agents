@@ -2,6 +2,8 @@ from .agent_action_proto_pb2 import *
 from .agent_info_proto_pb2 import *
 from .brain_parameters_proto_pb2 import *
 from .command_proto_pb2 import *
+from .custom_output_pb2 import *
+from .custom_parameters_pb2 import *
 from .demonstration_meta_proto_pb2 import *
 from .engine_configuration_proto_pb2 import *
 from .environment_parameters_proto_pb2 import *
