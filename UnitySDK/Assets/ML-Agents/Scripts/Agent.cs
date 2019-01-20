@@ -548,7 +548,7 @@ namespace MLAgents
                           * param.numStackedVectorObservations]);
 
             info.visualObservations = new List<Texture2D>();
-            info.customOutput = new CustomOutput();
+            info.customOutput = null;
         }
 
         /// <summary>
@@ -689,7 +689,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action on branch 0</param>
         protected void SetActionMask(int actionIndex)
         {
-            actionMasker.SetActionMask(0, new int[1] {actionIndex});
+            actionMasker.SetActionMask(0, new int[1] { actionIndex });
         }
 
         /// <summary>
@@ -702,7 +702,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action</param>
         protected void SetActionMask(int branch, int actionIndex)
         {
-            actionMasker.SetActionMask(branch, new int[1] {actionIndex});
+            actionMasker.SetActionMask(branch, new int[1] { actionIndex });
         }
 
         /// <summary>
@@ -1087,8 +1087,14 @@ namespace MLAgents
             RenderTexture.ReleaseTemporary(tempRT);
         }
 
-        public CustomOutput GetCustomOutput() {
-            return info.customOutput;
+        public void SetCustomOutput(CustomOutput customOutput)
+        {
+            info.customOutput = customOutput;
         }
-    }
+
+        static public CustomOutput CreateCustomOutput()
+        {
+            return new CustomOutput();
+        }
+    }    
 }
