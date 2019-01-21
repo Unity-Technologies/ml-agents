@@ -1087,11 +1087,19 @@ namespace MLAgents
             RenderTexture.ReleaseTemporary(tempRT);
         }
 
+        /// <summary>
+        /// Sets the custom output for the agent for this episode.
+        /// </summary>
+        /// <param name="customOutput">New value of the agent's custom output.</param>
         public void SetCustomOutput(CustomOutput customOutput)
         {
             info.customOutput = customOutput;
         }
 
+        /// <summary>
+        /// Creates a new instance of a custom output object.
+        /// </summary>
+        /// <returns>A reference to a new CustomOutput object.</returns>
         static public CustomOutput CreateCustomOutput()
         {
             return new CustomOutput();
