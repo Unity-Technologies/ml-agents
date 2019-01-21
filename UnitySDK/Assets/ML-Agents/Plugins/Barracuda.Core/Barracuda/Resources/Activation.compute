@@ -1,6 +1,9 @@
 #pragma kernel Relu
 #pragma kernel Relu_CNyx
 #pragma kernel Relu_Nyxc
+#pragma kernel Relu6
+#pragma kernel Relu6_CNyx
+#pragma kernel Relu6_Nyxc
 #pragma kernel Tanh
 #pragma kernel Tanh_CNyx
 #pragma kernel Tanh_Nyxc
@@ -34,6 +37,11 @@ float _Alpha;
 float relu(float v)
 {
 	return 0.5f * (v + abs(v));
+}
+
+float relu6(float v)
+{
+	return min(max(0, v), 6);
 }
 
 float swish(float v)
@@ -86,6 +94,28 @@ void Relu(uint3 dispatchThreadID : SV_DispatchThreadID)
 	{
 		float v = X.Get(n, y, x, c);
 		v = relu(v);
+		O.Set(n, y, x, c, v);
+	}
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void Relu6(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+	DISPATCH_ARGS(O.channels, O.width, O.height);
+	TENSOR_ARGS2(X, O);
+
+	uint c = dispatchThreadID.x;
+	uint x = dispatchThreadID.y;
+	uint y = dispatchThreadID.z;
+
+	if (c >= O.channels) return;
+	if (x >= O.width) return;
+	if (y >= O.height) return;
+
+	for (uint n = 0; n < X.batch; ++n)
+	{
+		float v = X.Get(n, y, x, c);
+		v = relu6(v);
 		O.Set(n, y, x, c, v);
 	}
 }
@@ -260,6 +290,50 @@ void Relu_Nyxc(uint3 dispatchThreadID : SV_DispatchThreadID)
 
 	float v = X.Get(n, y, x, c);
 	v = relu(v);
+	O.Set(n, y, x, c, v);
+}
+
+NUMTHREADS((16,16,1), (16,8,1), (16,4,1))
+void Relu6_CNyx(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+	DISPATCH_ARGS(O.channels, O.batch * O.height * O.width, 1);
+	TENSOR_ARGS2(X, O);
+
+	uint c = dispatchThreadID.x;
+	uint nyx = dispatchThreadID.y;
+
+	uint x = nyx % X.width;
+	uint ny = nyx / X.width;
+	uint y = ny % X.height;
+	uint n = ny / X.height;
+
+	if (c >= X.channels) return;
+	if (n >= X.batch) return;
+
+	float v = X.Get(n, y, x, c);
+	v = relu6(v);
+	O.Set(n, y, x, c, v);
+}
+
+NUMTHREADS((512,1,1), (128,1,1), (64,1,1))
+void Relu6_Nyxc(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+	DISPATCH_ARGS(O.batch * O.height * O.width * O.channels, 1, 1)
+	TENSOR_ARGS2(X, O);
+
+	uint nyxc = dispatchThreadID.x;
+
+	uint c = nyxc % X.channels;
+	uint nyx = nyxc / X.channels;
+	uint x = nyx % X.width;
+	uint ny = nyx / X.width;
+	uint y = ny % X.height;
+	uint n = ny / X.height;
+
+	if (n >= X.batch) return;
+
+	float v = X.Get(n, y, x, c);
+	v = relu6(v);
 	O.Set(n, y, x, c, v);
 }
 

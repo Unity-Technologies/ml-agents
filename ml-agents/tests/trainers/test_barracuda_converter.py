@@ -3,7 +3,7 @@ import pytest
 import os
 import tempfile
 
-from mlagents.trainers.tensorflow_to_barracuda import ModelConverter
+import mlagents.trainers.tensorflow_to_barracuda as tf2bc
 
 
 def test_barracuda_converter():
@@ -13,8 +13,7 @@ def test_barracuda_converter():
     # make sure file doesn't exist before conversion
     assert (not os.path.isfile(tmpfile))
 
-    mc = ModelConverter()
-    mc.process(path_prefix+'/BasicLearning.pb', tmpfile)
+    tf2bc.convert(path_prefix+'/BasicLearning.pb', tmpfile)
 
     # test if file exists after conversion
     assert (os.path.isfile(tmpfile))

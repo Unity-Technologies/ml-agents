@@ -1,65 +1,400 @@
 from __future__ import print_function
 import numpy as np
 import struct # convert from Python values and C structs
-import re
 import tensorflow as tf
+import re
+#import barracuda
+#from barracuda import Struct
+from mlagents.trainers import barracuda
+from mlagents.trainers.barracuda import Struct
 from google.protobuf import descriptor
 from google.protobuf.json_format import MessageToJson
 
-from mlagents.trainers import barracuda
 
-'''
-[LSTM Full]
-- it = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Pi (.) Ct-1 + Wbi + Rbi)
-- ft = f(Xt*(Wf^T) + Ht-1*(Rf^T) + Pf (.) Ct-1 + Wbf + Rbf)
-- ct = g(Xt*(Wc^T) + Ht-1*(Rc^T) + Wbc + Rbc)
-- Ct = ft (.) Ct-1 + it (.) ct
-- ot = f(Xt*(Wo^T) + Ht-1*(Ro^T) + Po (.) Ct + Wbo + Rbo)
-- Ht = ot (.) h(Ct)
+if __name__ == '__main__':
+    # Handle command line argumengts
+    args = barracuda.parse_args(
+        description = 'Convert Tensorflow model to Barracuda binary',
+        source_extension = '.pb',
+        help = 'input Tensorflow serialized .pb file')
+    # Te following code can be used as an example of API used from another module
+    # convert() is the main entry point for converter
+    import tensorflow_to_barracuda as tf2bc
+    tf2bc.convert(args.source_file, args.target_file, args.trim_unused_by_output, args)
 
-[LSTM No peephole]
-- it = f(Xt * Wi.T + Ht_ * Ri.T + Wbi + Rbi)
-- ft = f(Xt * Wf.T + Ht_ * Rf.T + Wbf + Rbf)
-- ct = g(Xt * Wc.T + Ht_ * Rc.T + Wbc + Rbc)
-- Ct =   ft . Ct_  + it . ct
-- ot = f(Xt * Wo.T + Ht_ * Ro.T + Wbo + Rbo)
-- Ht =   ot . h(Ct)
-'''
 
 # TODO: support more than 1 LSTM layer per model - prepend scope to names and inputs
 # TODO: support different activation functions in LSTM
-# TODO: implement defaults for Dense, Conv, ScaleBias nodes
 # TODO: strip output Identity node, instead patch upstream layer names
 # TODO: use ScaleBias and Pow with alpha when input is constant Tensor
 # TODO: support all data format types (curretly only NHWC)
 # TODO: support all data types (currently only FLOAT, INT32, BOOL)
-# TODO: strip output Identity node, instead patch upstream layer names
-# TODO: implement layers DepthwiseConv2dNative, FusedResizeAndPadConv2D
+# TODO: implement FusedResizeAndPadConv2D
 
-# Definition of Barracuda supported layers
-class Struct:
-    "A structure that can have any fields defined."
-    def __init__(self, **entries): self.__dict__.update(entries)
+# Important ProtoBuf definitions:
+#    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/types.proto
+#    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/tensor.proto
+#    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/node_def.proto
+#
+# Node descriptions:
+#    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/ops/nn_ops.cc
+#    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/ops/math_ops.cc
+#    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/ops/random_ops.cc
+#
+# Class doc:
+#    https://www.tensorflow.org/api_docs/cc/
+#
+known_classes = {
+    'Dense': Struct(
+                    id = 1,
+                    out_shapes = lambda shapes: [
+                        [shapes[0][0], 1, 1, shapes[0][1]],  # W
+                        [1, 1, 1, shapes[-1][-1]]            # B
+                    ],
+                    patch_data = lambda data: [
+                        data[0],
+                        data[1]
+                    ]),
+    'MatMul': Struct(
+                    id = 1,
+                    out_shapes = lambda shapes: [
+                        [shapes[0][0], 1, 1, shapes[0][1]],  # W
+                        [1, 1, 1, shapes[0][1]]              # B
+                    ],
+                    patch_data = lambda data: [
+                        data[0],
+                        np.zeros(np.shape(data[1]))
+                    ]),
+    'BiasAdd': Struct(
+                    id = 51, # implemented as ScaleBias
+                    out_shapes = lambda shapes: [
+                        [1, 1, 1, shapes[0][0]],             # ONE
+                        [1, 1, 1, shapes[0][0]],             # B
+                    ],
+                    patch_data = lambda data: [
+                        np.ones(np.shape(data[0])),
+                        data[0]
+                    ]),
+
+    # TODO: NCHW
+    'Conv2D': Struct(
+                    id = 20,
+                    out_shapes = lambda shapes: [
+                        shapes[0],                           # K
+                        [1, 1, 1, shapes[-1][-1]]            # B
+                    ],
+                    patch_data = lambda data: [
+                        data[0],
+                        data[1]
+                    ]),
+    'DepthwiseConv2dNative': Struct( # DepthwiseConv2D
+                    id = 21,
+                    out_shapes = lambda s: [
+                        [s[0][0], s[0][1], s[0][3], s[0][2]], # K TF:[H, W, in_channels, channel_multiplier] => [H, W, 1, in_channels]
+                        [1, 1, 1, s[-1][-1]] if len(s) > 1 else
+                        [1, 1, 1, s[0][2]]                    # B
+                    ],
+                    patch_data = lambda data: [
+                        np.transpose(data[0], (0,1,3,2)),
+                        data[1]
+                    ]),
+    'Conv2DBackpropInput': Struct( # Conv2DTranspose
+                    id = 22,
+                    out_shapes = lambda shapes: [
+                        shapes[0],                           # K
+                        [1, 1, 1, shapes[-1][-1]]            # B
+                    ],
+                    patch_data = lambda data: [
+                        data[0],
+                        data[1]
+                    ]),
+
+    # TODO: 3D
+
+    'ResizeNearestNeighbor':
+                        23, # implemented as Upsample2D
+    'ResizeBilinear':   23, # implemented as Upsample2D
+    'ResizeBicubic':    23, # implemented as Upsample2D
+    'MaxPool':          25,
+    'AvgPool':          26,
+
+    'GlobalAveragePool':28,
+
+    'Activation':       50,
+
+    'BatchNormalization': Struct(
+                    id = 51, # after fusion implemented as ScaleBias
+                    out_shapes = lambda shapes: [
+                        [1, 1, 1, shapes[0][0]],             # S
+                        [1, 1, 1, shapes[0][0]],             # B
+                    ],
+                    patch_data = lambda data:
+                        # fuse [gamma, beta, mean, var, epsilon] => [scale, bias]
+                        # TODO: double-check if epsilon is the last data argument and not the 1st?
+                        barracuda.fuse_batchnorm_weights(data[0], data[1], data[2], data[3], data[4]) if len(data) == 5 else
+                        # fuse [ONE, beta, mean, var, epsilon] => [scale, bias]
+                        # TODO: double-check if epsilon is the last data argument and not the 1st?
+                        barracuda.fuse_batchnorm_weights(np.ones(np.shape(data[0])), data[0], data[1], data[2], data[3])
+                    ),
+    'FusedBatchNorm': Struct(
+                    id = 51, # after fusion implemented as ScaleBias
+                    out_shapes = lambda shapes: [
+                        [1, 1, 1, shapes[0][0]],             # S
+                        [1, 1, 1, shapes[0][0]],             # B
+                    ],
+                    patch_data = lambda data, layer:
+                        # fuse [gamma, beta, mean, var, epsilon] => [scale, bias]
+                        barracuda.fuse_batchnorm_weights(data[0], data[1], data[2], data[3], get_epsilon(layer))
+                    ),
+    'LRN':              53,
+
+    'RandomStandardNormal':
+                        64,
+    'RandomUniform':    65,
+    'Multinomial':      66,
+    'OneHot':           67,
+
+    # Broadcast ops
+    'Add':              100,
+    'Sub':              101,
+    'Mul':              102,
+    'RealDiv':          103,
+    'Pow':              104,
+    'Minimum':          110,
+    'Maximum':          111,
+
+    # Reduce ops
+    'Max':              124,
+    'Mean':             125,
+    'Min':              126,
+    'Prod':             127,
+    'Sum':              128,
+
+    'Flatten':          200,
+    'Reshape':          201,
+    #'Squeeze':          203,
+    #'Unsqueeze':        204,
+    'Concat':           210,
+    'StridedSlice':     211,
+}
+
+requires_runtime_flag = {
+    'Dropout' : 'DropoutRuntime',
+    'BatchNormalization' : 'BatchNormalizationRuntime',
+}
+
+known_activations = {
+    'Linear' : 0,
+    'Relu' : 1,
+    'Softmax' : 2,
+    'Tanh' : 3,
+    'Sigmoid' : 4,
+    'Elu' : 5,
+    'Relu6' : 6,
+    'LeakyRelu' : 7,
+    'Selu' : 8,
+    'Swish' : 9,
+
+    'LogSoftmax' : 10,
+    'Softplus' : 11,
+    'Softsign' : 12,
+
+    'Abs' : 100,
+    'Neg' : 101,
+    'Ceil' : 102,
+    'Floor' : 104,
+
+    'Sqrt' : 111,
+    'Exp' : 113,
+    'Log' : 114,
+
+    'Acos' : 200,
+    'Acosh' : 201,
+    'Asin' : 202,
+    'Asinh' : 203,
+    'Atan' : 204,
+    'Atanh' : 205,
+    'Cos' : 206,
+    'Cosh' : 207,
+    'Sin' : 208,
+    'Sinh' : 209,
+    'Tan' : 210
+}
+
+known_paddings = {
+	'VALID' : [0,0,0,0],
+    'SAME'  : [-1] # SameUpper
+}
+
+supported_data_formats = {
+    'NHWC'
+}
+
+known_patterns = {
+    # TODO: Flatten pattern using namespace regexp
+    repr(['Shape', 'StridedSlice', 'Pack', 'Reshape'])          : "Flatten",
+    repr(['Shape', 'StridedSlice', 'Prod', 'Pack', 'Reshape'])  : "Flatten",
+    repr(['Shape', 'Slice', 'Slice', 'Prod',
+        'ExpandDims', 'ConcatV2', 'Reshape'])                   : "Flatten",
+    repr(['Const', 'Reshape'])                                  : 'Reshape',
+
+    repr(['Add', 'Rsqrt', 'Mul', 'Mul', 'Sub', 'Add'])          : 'BatchNormalization',
+    repr(['Add', 'Rsqrt', 'Mul', 'Mul', 'Mul', 'Sub', 'Add'])   : 'BatchNormalization',
+
+    repr(['ConcatV2'])                                          : 'ConcatV2',
+    repr(['Mean'])                                              : 'Mean',
+    repr(['Multinomial'])                                       : 'Multinomial',
+    repr(['OneHot'])                                            : 'OneHot',
+    repr(['Square'])                                            : 'Square',
+
+    repr(['MatMul', 'BiasAdd'])                                 : 'Dense',
+    repr(['Conv2D', 'BiasAdd'])                                 : 'Conv2D',
+    repr(['DepthwiseConv2dNative', 'BiasAdd'])                  : 'DepthwiseConv2dNative',
+    repr(['Conv2DBackpropInput', 'BiasAdd'])                    : 'Conv2DBackpropInput',
 
 
-def fuse_batchnorm_weights(gamma, beta, mean, var):
-    # https://github.com/Tencent/ncnn/blob/master/src/layer/batchnorm.cpp
-    """ float sqrt_var = sqrt(var_data[i]);
-        a_data[i] = bias_data[i] - slope_data[i] * mean_data[i] / sqrt_var;
-        b_data[i] = slope_data[i] / sqrt_var;
-        ...
-        ptr[i] = b * ptr[i] + a;
-    """
-    scale = gamma / np.sqrt(var)
-    bias = beta - gamma * mean / np.sqrt(var)
-    return [scale, bias]
+    repr(['Pack', 'Reshape'])                                   : 'Flatten$',    # for now we assume that this combination is trivial Flatten
+                                                                                 # for exmaple it is used in ML-agents LSTM nets with sequence_length==1
 
+    repr(['StridedSlice', 'Reshape',
+        re.compile('^lstm/'),
+        'Reshape', 'ConcatV2', 'Identity'])                     : 'BasicLSTM',
+
+    repr([re.compile('^lstm/'),
+        'Reshape', 'ConcatV2', 'Identity'])                     : 'BasicLSTM',
+
+    repr(['Sigmoid', 'Mul'])  : "Swish",
+
+    # TODO: FusedResizeAndPadConv2D
+}
 
 def by_name(args, name):
     for a in args:
         if a.name.endswith(name):
             return a
 
+def by_op(args, op):
+    for a in args:
+        if a.op == op:
+            return a
+
+def order_by(args, names):
+    ordered = []
+    arg_count = len(args)
+    for name in names:
+        ordered += [a for a in args if a.endswith(name)]
+        args = [a for a in args if not a.endswith(name)]
+    ordered += args # append what is left
+    assert(len(ordered) == arg_count)
+    return ordered
+
+transform_patterns = {
+    'Flatten' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Flatten',
+            input = inputs
+        ),
+    'Flatten$' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Flatten',
+            input = [inputs[-1]] # take only the last input, assume all other arguments are trivial (like sequence_length==1 always in ML-agents LSTM nets)
+        ),
+    'Reshape' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Reshape',
+            input = inputs,
+            shape = [tensors[0].data[0], tensors[0].data[1], tensors[0].data[2], tensors[0].data[3]] if len(tensors[0].data) == 4 else
+                    [tensors[0].data[0], 1, tensors[0].data[1], tensors[0].data[2]] if len(tensors[0].data) == 3 else
+                    [tensors[0].data[0], 1, 1, tensors[0].data[1]]
+                    # tensor.name = 'shape'
+        ),
+    'Multinomial' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Multinomial',
+            input = inputs,
+            shape = [int(by_name(tensors, '/num_samples').data[0])],
+            #seed = get_attr(nodes[0], 'seed'),
+        ),
+    'OneHot' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'OneHot',
+            input = inputs,
+            shape = [int(by_name(tensors, '/depth').data[0])],
+            alpha = by_name(tensors, '/on_value').data[0],
+            beta  = by_name(tensors, '/off_value').data[0],
+        ),
+    'Square' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Mul',
+            input = [i for i in inputs] + [i for i in inputs], # input * input
+        ),
+    'ConcatV2' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Concat',
+            input = inputs,
+
+            # TEMPORARY: until we implemented rank detection and axis remapping (hopefully in exporter)
+            # HACK: assume Concat is always for last channel
+            axis = int(-1)
+            #axis = int(by_name(tensors, '/axis').data[0])
+        ),
+    'BatchNormalization' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'BatchNormalization',
+            input = [i for i in inputs] +
+                order_by([t.name for t in tensors], ['gamma', 'beta', 'mean', 'variance']),
+        ),
+    'Mean' : lambda nodes, inputs, tensors, _:
+        Struct(
+            # TODO: use data_frmt of the input instead of hardcoded [1,2] for HW
+            op    = 'GlobalAveragePool' if np.array_equal(tensors[0].data, [1,2]) else 'MeanWithUnsupportedReductionTensor',
+            input = [i for i in inputs],
+        ),
+    'Dense' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Dense',
+            input = [i for i in inputs] + [t.name for t in tensors],
+            data_frmt = get_attr(by_op(nodes, 'Dense') or by_op(nodes, 'MatMul'), 'data_format'),
+        ),
+    'Conv2D' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Conv2D',
+            input = [i for i in inputs] + [t.name for t in tensors],
+            padding = get_attr(by_op(nodes, 'Conv2D'), 'padding'),
+            strides = get_attr(by_op(nodes, 'Conv2D'), 'strides'),
+            dilations = get_attr(by_op(nodes, 'Conv2D'), 'dilations'),
+            data_frmt = get_attr(by_op(nodes, 'Conv2D'), 'data_format'),
+        ),
+    'DepthwiseConv2dNative' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'DepthwiseConv2dNative',
+            input = [i for i in inputs] + [t.name for t in tensors],
+            padding = get_attr(by_op(nodes, 'DepthwiseConv2dNative'), 'padding'),
+            strides = get_attr(by_op(nodes, 'DepthwiseConv2dNative'), 'strides'),
+            dilations = get_attr(by_op(nodes, 'DepthwiseConv2dNative'), 'dilations'),
+            data_frmt = get_attr(by_op(nodes, 'DepthwiseConv2dNative'), 'data_format'),
+        ),
+    'Conv2DBackpropInput' : lambda nodes, inputs, tensors, _:
+        Struct(
+            op    = 'Conv2DBackpropInput',
+            input = [i for i in inputs] + [t.name for t in tensors],
+            padding = get_attr(by_op(nodes, 'Conv2DBackpropInput'), 'padding'),
+            strides = get_attr(by_op(nodes, 'Conv2DBackpropInput'), 'strides'),
+            dilations = get_attr(by_op(nodes, 'Conv2DBackpropInput'), 'dilations'),
+            data_frmt = get_attr(by_op(nodes, 'Conv2DBackpropInput'), 'data_format'),
+        ),
+    'BasicLSTM' : lambda nodes, inputs, tensors, context:
+        basic_lstm(nodes, inputs, tensors, context),
+
+    'Swish' : lambda nodes, inputs, tensors, _:
+            Struct(
+                op    = 'Swish',
+                input = inputs
+            ),
+
+    # TODO:'Round'
+    # TODO:'Rsqrt'
+}
 
 # Parse
 def get_attr(node, attr_name, default=None):
@@ -67,13 +402,13 @@ def get_attr(node, attr_name, default=None):
         if hasattr(node, attr_name):
             return getattr(node, attr_name)
         else:
-            return None
+            return default
 
     # See: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/attr_value.proto
     val = node.attr[attr_name]
 
     if val.HasField("list"):
-        return val.list.i
+        return val.list.i 
         # NOTE: can't find way to identify type of list BUT it is almost always list(int)
         # except list(float) in FractionalAvg/MaxPool
     if val.HasField("b"):
@@ -90,7 +425,9 @@ def get_attr(node, attr_name, default=None):
         return val.tensor
     return default
 
-
+def get_epsilon(layer):
+    return get_attr(layer, 'epsilon', default=0.001) # default epsilon taken from tf.layers.batch_normalization
+    
 def get_layer_shape(layer):
     shape = get_attr(layer, 'shape')
     if not shape:
@@ -101,7 +438,6 @@ def get_layer_shape(layer):
     if len(shape) == 2:
         return [shape[0], 1, 1, shape[1]]
     return shape
-
 
 def get_tensor_dims(tensor):
     if isinstance(tensor, np.ndarray):
@@ -118,7 +454,6 @@ def get_tensor_dims(tensor):
         dims = np.shape(tensor.bool_val)
     return dims
 
-
 def get_tensor_dtype(tensor):
     if isinstance(tensor, np.ndarray):
         return tensor.dtype
@@ -132,7 +467,6 @@ def get_tensor_dtype(tensor):
 
     return dataType
 
-
 def get_tensor_data(tensor):
     if isinstance(tensor, np.ndarray):
         return tensor.astype(float)
@@ -144,11 +478,11 @@ def get_tensor_data(tensor):
         # TODO: support other types
         dataType = get_tensor_dtype(tensor)
         if dataType == "DT_FLOAT":
-            data = struct.unpack('<' + str(elems) + 'f', tensor.tensor_content)
+            data = struct.unpack('<'+str(elems)+'f', tensor.tensor_content)
         elif dataType == "DT_INT32":
-            data = struct.unpack('<' + str(elems) + 'i', tensor.tensor_content)
+            data = struct.unpack('<'+str(elems)+'i', tensor.tensor_content)
         elif dataType == "DT_BOOL":
-            data = struct.unpack('<' + str(elems) + '?', tensor.tensor_content)
+            data = struct.unpack('<'+str(elems)+'?', tensor.tensor_content)
         else:
             print('UNSUPPORTED: data type', dataType)
     if tensor.float_val:
@@ -159,22 +493,7 @@ def get_tensor_data(tensor):
         data = np.array(tensor.bool_val, dtype=float)
     return np.array(data).reshape(dims)
 
-
-def pool_to_HW(shape, data_frmt):
-    """ Convert from NHWC|NCHW => HW
-    """
-    if len(shape) != 4:
-        return shape  # Not NHWC|NCHW, return as is
-    if data_frmt == 'NCHW':
-        return [shape[2], shape[3]]
-    return [shape[1], shape[2]]
-
-
-def strides_to_HW(shape, format):
-    return pool_to_HW(shape, format)
-
-
-def flatten(items, enter=lambda x: isinstance(x, list)):
+def flatten(items,enter=lambda x:isinstance(x, list)):
     # http://stackoverflow.com/a/40857703
     # https://github.com/ctmakro/canton/blob/master/canton/misc.py
     """Yield items from any nested iterable; see REF."""
@@ -184,12 +503,10 @@ def flatten(items, enter=lambda x: isinstance(x, list)):
         else:
             yield x
 
-
 def replace_strings_in_list(array_of_strigs, replace_with_strings):
     "A value in replace_with_strings can be either single string or list of strings"
     potentially_nested_list = [replace_with_strings.get(s) or s for s in array_of_strigs]
     return list(flatten(potentially_nested_list))
-
 
 def remove_duplicates_from_list(array):
     "Preserves the order of elements in the list"
@@ -201,815 +518,517 @@ def remove_duplicates_from_list(array):
             output.append(a)
     return output
 
+#########################################################
 
-# Find global tensors
-def dims_to_barracuda_shape(dims):
-    shape = list(dims)
-    while len(shape) < 4:
-        shape = [1] + shape
-    return shape
+def pool_to_HW(shape, data_frmt):
+    """ Convert from NHWC|NCHW => HW
+    """
+    if len(shape) != 4:
+        return shape # Not NHWC|NCHW, return as is
+    if data_frmt == 'NCHW':
+        return [shape[2], shape[3]]
+    return [shape[1], shape[2]]
 
+def strides_to_HW(shape, format):
+    return pool_to_HW(shape, format)
 
-def match_node(node, pattern):
-    return node.op == pattern or (hasattr(pattern, 'match') and pattern.match(node.name))
+#########################################################
 
+def gru(nodes, inputs, tensors, context):
+    assert(len(inputs) == 2)
 
-class ModelConverter():
-    # Important ProtoBuf definitions:
-    #    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/types.proto
-    #    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/tensor.proto
-    #    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/node_def.proto
-    #
-    # Node descriptions:
-    #    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/ops/nn_ops.cc
-    #    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/ops/math_ops.cc
-    #
-    # Class doc:
-    #    https://www.tensorflow.org/api_docs/cc/
-    #
-    known_classes = {
+    def find_tensor_by_name(name, default=None):
+        nonlocal tensors
+        candidates = [t for t in tensors if t.name.endswith(name)]
+        return candidates[0].data if candidates else default
 
-        'Dense': Struct(
-            id=1,
-            out_shapes=lambda shapes: [
-                [shapes[0][0], 1, 1, shapes[0][1]],  # W
-                [1, 1, 1, shapes[-1][-1]]  # B
-            ],
-            patch_data=lambda data: [
-                data[0],
-                data[1]
-            ]),
-        'MatMul': Struct(
-            id=1,
-            out_shapes=lambda shapes: [
-                [shapes[0][0], 1, 1, shapes[0][1]],  # W
-                [1, 1, 1, shapes[0][1]]  # B
-            ],
-            patch_data=lambda data: [
-                data[0],
-                np.zeros(np.shape(data[1]))
-            ]),
-        'BiasAdd': Struct(
-            id=51,  # implemented as ScaleBias
-            out_shapes=lambda shapes: [
-                [1, 1, 1, shapes[0][0]],  # ONE
-                [1, 1, 1, shapes[0][0]],  # B
-            ],
-            patch_data=lambda data: [
-                np.ones(np.shape(data[0])),
-                data[0]
-            ]),
+    input = inputs[-1]
+    state = inputs[0]
+    gates_kernel = find_tensor_by_name('/gates/kernel')
+    gates_bias = find_tensor_by_name('/gates/bias', default=np.zeros(np.shape(gates_kernel)[-1]))
+    candidate_kernel = find_tensor_by_name('/candidate/kernel')
+    candidate_bias = find_tensor_by_name('/candidate/bias', default=np.zeros(np.shape(candidate_kernel)[-1]))
+    new_state = nodes[-1].name + '_h'
 
-        # NHWC
-        # TODO: NCHW
-        'Conv2D': Struct(
-            # TODO: implement defaults = add_zero_bias_as_2nd_arg from Keras exporter and get rid of separate Conv2D & ^Conv2D
-            id=20,
-            out_shapes=lambda shapes: [
-                shapes[0],  # K
-                [1, 1, 1, shapes[0][-1]]  # B
-            ],
-            patch_data=lambda data: [
-                data[0],
-                np.zeros(np.shape(data[1]))
-            ]),
-        '^Conv2D': Struct(
-            id=20,
-            out_shapes=lambda shapes: [
-                shapes[0],  # K
-                [1, 1, 1, shapes[-1][-1]]  # B
-            ],
-            patch_data=lambda data: [
-                data[0],
-                data[1]
-            ]),
-        'Conv2DBackpropInput': Struct(  # Conv2DTranspose
-            id=22,
-            out_shapes=lambda shapes: [
-                shapes[0],  # K
-                [1, 1, 1, shapes[0][-1]]  # B
-            ],
-            patch_data=lambda data: [
-                data[0],
-                np.zeros(np.shape(data[1]))
-            ]),
-        '^Conv2DBackpropInput': Struct(  # Conv2DTranspose
-            id=22,
-            out_shapes=lambda shapes: [
-                shapes[0],  # K
-                [1, 1, 1, shapes[-1][-1]]  # B
-            ],
-            patch_data=lambda data: [
-                data[0],
-                data[1]
-            ]),
+    assert(np.shape(gates_kernel)[-1] == np.shape(gates_bias)[-1])
+    assert(np.shape(candidate_kernel)[-1] == np.shape(candidate_bias)[-1])
 
-        # TODO: 3D
+    num_gates = 2
+    seq_length = 1
+    hidden_size = np.shape(gates_kernel)[-1] // num_gates
 
-        'ResizeNearestNeighbor':
-            23,  # implemented as Upsample2D
-        'ResizeBilinear': 23,  # implemented as Upsample2D
-        'ResizeBicubic': 23,  # implemented as Upsample2D
-        'MaxPool': 25,
-        'AvgPool': 26,
+    gate_kernels = np.split(gates_kernel, num_gates, axis=-1)
+    gate_biases = np.split(gates_bias, num_gates, axis=-1)
 
-        'GlobalAveragePool': 28,
+    context.model_tensors['kernel_r'] = gate_kernels[0]
+    context.model_tensors['kernel_u'] = gate_kernels[1]
+    context.model_tensors['kernel_c'] = candidate_kernel
+    context.model_tensors['bias_r'] = gate_biases[0]
+    context.model_tensors['bias_u'] = gate_biases[1]
+    context.model_tensors['bias_c'] = candidate_bias
 
-        'Activation': 50,
+    new_layers = barracuda.gru('gru', input, state,
+        'kernel_r', 'kernel_u', 'kernel_c',
+        'bias_r', 'bias_u', 'bias_c',
+        new_state)
 
-        'BatchNormalization': Struct(
-            id=51,  # after fusion implemented as ScaleBias
-            out_shapes=lambda shapes: [
-                [1, 1, 1, shapes[0][0]],  # S
-                [1, 1, 1, shapes[0][0]],  # B
-            ],
-            patch_data=lambda data:
-            # fuse [gamma, beta, mean, var] => [scale, bias]
-            fuse_batchnorm_weights(data[0], data[1], data[2], data[3]) if len(data) == 5 else
-            # fuse [ONE, beta, mean, var] => [scale, bias]
-            fuse_batchnorm_weights(np.ones(np.shape(data[0])), data[0], data[1], data[2] + data[3])
-        ),
-        'FusedBatchNorm': Struct(
-            id=51,  # after fusion implemented as ScaleBias
-            out_shapes=lambda shapes: [
-                [1, 1, 1, shapes[0][0]],  # S
-                [1, 1, 1, shapes[0][0]],  # B
-            ],
-            patch_data=lambda data:
-            # fuse [gamma, beta, mean, var] => [scale, bias]
-            fuse_batchnorm_weights(data[0], data[1], data[2], data[3])
-        ),
-        'LRN': 53,
+    state_shape = [1, 1, seq_length, hidden_size]
+    context.model_memories += [state_shape, state, new_state]
 
-        'RandomStandardNormal':
-            64,
-        'RandomUniform': 65,
-        'Multinomial': 66,
-        'OneHot': 67,
+    # map exptected output of the replaced pattern to output from our GRU cell
+    actual_output_node = nodes[-4]
+    assert(actual_output_node.op == 'Reshape')
+    context.map_ignored_layer_to_its_input[actual_output_node.name] = new_state
 
-        # Broadcast ops
-        'Add': 100,
-        'Sub': 101,
-        'Mul': 102,
-        'RealDiv': 103,
-        'Pow': 104,
-        'Minimum': 110,
-        'Maximum': 111,
+    return new_layers
 
-        # Reduce ops
-        'Max': 124,
-        'Mean': 125,
-        'Min': 126,
-        'Prod': 127,
-        'Sum': 128,
+def basic_lstm(nodes, inputs, tensors, context):
+    assert(len(inputs) == 2)
 
-        'Flatten': 200,
-        'Reshape': 201,
-        'Concat': 210,
-        'StridedSlice': 211,
-    }
+    def find_tensor_by_name(name, default=None):
+        nonlocal tensors
+        candidates = [t for t in tensors if t.name.endswith(name)]
+        return candidates[0].data if candidates else default
 
-    requires_runtime_flag = {
-        'Dropout': 'DropoutRuntime',
-        'BatchNormalization': 'BatchNormalizationRuntime',
-    }
+    def find_forget_bias():
+        nonlocal nodes
+        nonlocal tensors
+        # TODO: make it more fault-tolerant
+        # search for scalar float constant that is input to Add node
+        # and hope it is not a constant for some complex activation function
+        for t in tensors:
+            if np.prod(t.shape) == 1 and get_tensor_dtype(t.obj) == "DT_FLOAT":
+                for n in nodes:
+                    if n.op == 'Add' and t.name in n.input:
+                        return t.data
+        return np.zeros(1)
 
-    known_activations = {
-        'Linear': 0,
-        'Relu': 1,
-        'Softmax': 2,
-        'Tanh': 3,
-        'Sigmoid': 4,
-        'Elu': 5,
-        'Relu6': 6,
-        'LeakyRelu': 7,
-        'Selu': 8,
-        'Swish': 9,
+    input = inputs[-1]
+    state_c = inputs[0] + '_c'
+    state_h = inputs[0] + '_h'
+    kernel = find_tensor_by_name('/kernel')
+    bias = find_tensor_by_name('/bias', default=np.zeros(np.shape(kernel)[-1]))
+    forget_bias = find_forget_bias()
+    new_state_c = nodes[-1].name + '_c'
+    new_state_h = nodes[-1].name + '_h'
 
-        'LogSoftmax': 10,
-        'Softplus': 11,
-        'Softsign': 12,
+    assert(np.shape(kernel)[-1] == np.shape(bias)[-1])
 
-        'Abs': 100,
-        'Neg': 101,
-        'Ceil': 102,
-        'Floor': 104,
+    num_gates = 4
+    seq_length = 1
+    hidden_size = np.shape(kernel)[-1] // num_gates
 
-        'Sqrt': 111,
-        'Exp': 113,
-        'Log': 114,
+    kernels = np.split(kernel, num_gates, axis=-1)
+    biases = np.split(bias, num_gates, axis=-1)
 
-        'Acos': 200,
-        'Acosh': 201,
-        'Asin': 202,
-        'Asinh': 203,
-        'Atan': 204,
-        'Atanh': 205,
-        'Cos': 206,
-        'Cosh': 207,
-        'Sin': 208,
-        'Sinh': 209,
-        'Tan': 210
-    }
+    context.model_tensors['kernel_i'] = kernels[0]
+    context.model_tensors['kernel_j'] = kernels[1]
+    context.model_tensors['kernel_f'] = kernels[2]
+    context.model_tensors['kernel_o'] = kernels[3]
+    context.model_tensors['bias_i'] = biases[0]
+    context.model_tensors['bias_j'] = biases[1]
+    context.model_tensors['bias_f'] = biases[2] + forget_bias
+    context.model_tensors['bias_o'] = biases[3]
 
-    known_paddings = {
-        'VALID': lambda kernel: [0, 0, 0, 0],
-        'SAME': lambda kernel: np.array([np.array(kernel) // 2, np.array(kernel) // 2]).flatten().tolist()
-    }
+    new_layers = barracuda.lstm('lstm', input, state_c, state_h,
+        'kernel_i', 'kernel_j', 'kernel_f', 'kernel_o',
+        'bias_i', 'bias_j', 'bias_f', 'bias_o',
+        new_state_c, new_state_h)
 
-    supported_data_formats = {
-        'NHWC'
-    }
+    state_shape = [1, 1, seq_length, hidden_size]
+    context.model_memories += [state_shape, state_c, new_state_c]
+    context.model_memories += [state_shape, state_h, new_state_h]
 
-    known_patterns = {
-        # TODO: Flatten pattern using namespace regexp
-        repr(['Shape', 'StridedSlice', 'Pack', 'Reshape']): "Flatten",
-        repr(['Shape', 'StridedSlice', 'Prod', 'Pack', 'Reshape']): "Flatten",
-        repr(['Shape', 'Slice', 'Slice', 'Prod',
-              'ExpandDims', 'ConcatV2', 'Reshape']): "Flatten",
-        repr(['Const', 'Reshape']): 'Reshape',
+    # map expected output of the replaced pattern to output from our LSTM cell
+    actual_output_node = nodes[-4]
+    assert(actual_output_node.op == 'Reshape')
+    context.map_ignored_layer_to_its_input[actual_output_node.name] = new_state_h
 
-        repr(['Add', 'Rsqrt', 'Mul', 'Mul', 'Sub', 'Add']): 'BatchNormalization',
-        repr(['Add', 'Rsqrt', 'Mul', 'Mul', 'Mul', 'Sub', 'Add']): 'BatchNormalization',
+    return new_layers
 
-        repr(['ConcatV2']): 'ConcatV2',
-        repr(['Mean']): 'Mean',
-        repr(['Multinomial']): 'Multinomial',
-        repr(['OneHot']): 'OneHot',
-        repr(['Square']): 'Square',
+#########################################################
 
-        repr(['MatMul', 'BiasAdd']): 'Dense',
-        repr(['Conv2D', 'BiasAdd']): '^Conv2D',
-        repr(['Conv2DBackpropInput', 'BiasAdd']): '^Conv2DBackpropInput',
+def process_layer(layer, context, args):
+    model_tensors = context.model_tensors
+    input_shapes = context.input_shapes
+    map_ignored_layer_to_its_input = context.map_ignored_layer_to_its_input
 
-        repr(['Pack', 'Reshape']): 'Flatten$',  # for now we assume that this combination is trivial Flatten
-        # for exmaple it is used in ML-agents LSTM nets with sequence_length==1
+    name = layer.name
+    class_name = layer.op
+    inputs = layer.input # Tensorflow inputs are always explicit, but in case of Keras we had 'inputs = layer.input or [prev_layer_name]'
+    inputs = replace_strings_in_list(inputs, map_ignored_layer_to_its_input)
 
-        repr(['StridedSlice', 'Reshape',
-              re.compile('^lstm/'),
-              'Reshape', 'ConcatV2', 'Identity']): 'BasicLSTM',
+    if class_name == 'Const':
+        model_tensors[name] = layer.attr["value"].tensor
+        return
 
-        repr([re.compile('^lstm/'),
-              'Reshape', 'ConcatV2', 'Identity']): 'BasicLSTM',
+    if class_name == 'Placeholder':
+        assert(inputs == [])
+        map_ignored_layer_to_its_input[name] = inputs
+        input_shapes[name] = get_layer_shape(layer)
+        return
 
-        repr(['Sigmoid', 'Mul']): "Swish",
+    if class_name == 'Identity':
+        connected_to_const = len(inputs) == 1 and inputs[0] in model_tensors
+        if connected_to_const:
+            map_ignored_layer_to_its_input[name] = inputs
+            return
+        else:
+            # treat Identity layer that are connected to processing nodes
+            # as output from the network
+            class_name = 'Linear'
 
-        # TODO: FusedResizeAndPadConv2D
-    }
+    # TEMPORARY: until we implemented rank detection and StidedSlice at runtime
+    # HACK: skips trivial StridedSlices for rank=2 tensors
+    if class_name == 'StridedSlice' and get_attr(layer, 'begin_mask') == 1 and get_attr(layer, 'end_mask') == 1:
+        map_ignored_layer_to_its_input[name] = inputs[0]
+        return
 
+    if args.print_layers or args.verbose:
+        var_tensors = [i for i in inputs if i not in model_tensors]
+        const_tensors = [i for i in inputs if i in model_tensors]
+        print("'%s' %s Vars:%s Const:%s" % (name, class_name, var_tensors, const_tensors))
+
+    if class_name in known_activations:
+        activation = class_name
+        class_name = 'Activation'
+    else:
+        activation = 'Linear'
+
+    if not class_name in known_classes:
+        if class_name in requires_runtime_flag:
+            print('SKIP:', class_name, 'layer is used only for training')
+        else:
+            print('IGNORED:', class_name, 'unknown layer')
+        map_ignored_layer_to_its_input[name] = inputs
+        return
+
+    klass = known_classes[class_name]
+    if type(klass) == int:
+        klass = Struct(id = klass)
+
+    o_l = Struct()
+    o_l.type = klass.id
+    o_l.class_name = class_name
+    o_l.name = name
+
+    padding     = get_attr(layer, 'padding') # layer.attr['padding'].s.decode("utf-8")
+    strides     = get_attr(layer, 'strides') # layer.attr['strides'].list.i
+    dilations   = get_attr(layer, 'dilations') # layer.attr['dilations'].list.i
+    pool_size   = get_attr(layer, 'ksize') # layer.attr['ksize'].list.i
+    shape       = get_attr(layer, 'shape', default=[])
+    data_frmt   = get_attr(layer, 'data_format') # layer.attr['data_format'].s.decode("utf-8")
+    axis        = get_attr(layer, 'axis')
+    alpha       = get_attr(layer, 'alpha')
+    beta        = get_attr(layer, 'beta')
+
+    if activation and not activation in known_activations:
+        print('IGNORED: unknown activation', activation)
+    if padding and not padding in known_paddings:
+        print('IGNORED: unknown padding', padding)
+    if data_frmt and not data_frmt in supported_data_formats:
+        print('UNSUPPORTED: data format', data_frmt)
+
+    o_l.activation  = known_activations.get(activation) or 0
+    o_l.pads        = known_paddings.get(padding) or [0,0,0,0]
+    o_l.strides     = strides_to_HW(strides, data_frmt) if strides else []
+    o_l.pool_size   = pool_to_HW(pool_size, data_frmt) if pool_size else shape
+    o_l.axis        = axis or -1
+    o_l.alpha       = alpha or 1
+    o_l.beta        = beta or 0
+
+    tensor_names = [i for i in inputs if i in model_tensors]
+    o_l.tensors = [Struct(name = x, shape = get_tensor_dims(model_tensors[x]), data = get_tensor_data(model_tensors[x]))
+        for x in tensor_names]
+    # Patch shapes & data
+    layer_has_model_tensors = len(o_l.tensors) > 0
+    if hasattr(klass, 'out_shapes') and layer_has_model_tensors:
+        shapes = klass.out_shapes([x.shape for x in o_l.tensors])
+
+        # if we have more shapes than actual tensors,
+        # then create & fill missing tensors with zeros
+        in_tensor_num = len(o_l.tensors)
+        for index, new_shape in enumerate(shapes):
+            if index >= in_tensor_num:
+                new_tensor = Struct(name = ('%s/patch:%i') % (name, index-in_tensor_num),
+                    shape = new_shape,
+                    data = np.zeros(new_shape))
+                o_l.tensors.append(new_tensor)
+        assert(len(shapes) <= len(o_l.tensors))
+
+        if hasattr(klass, 'patch_data'):
+            data = [x.data for x in o_l.tensors]
+
+            patch_data_fn = klass.patch_data
+            patch_data_expected_arg_count = patch_data_fn.__code__.co_argcount
+            patch_data_args = (data, layer) if patch_data_expected_arg_count > 1 else (data,)
+            tensor_data = patch_data_fn(*patch_data_args)
+            o_l.tensors = o_l.tensors[:len(tensor_data)] # resize tensor array to match patched data - patching might reduce number of tensors
+            for x, data in zip(o_l.tensors, tensor_data):
+                x.data = data
+
+        # after this point we should have equal amount of shapes and tensors
+        assert(len(o_l.tensors) == len(shapes))
+
+        for x, shape in zip(o_l.tensors, shapes):
+            x.shape = shape
+
+        o_l.inputs = [i for i in inputs if i not in model_tensors]
+
+    else:
+        # no 'patch_data' lambda was specified, op does not require tensor args
+        o_l.tensors = []
+        o_l.inputs = inputs
+
+    # Force all tensors to float32
+    for x in o_l.tensors:
+        x.data = x.data.astype(np.float32)
+
+    # Layer is ready
+    context.layers.append(o_l)
+
+class ModelBuilderContext:
     def __init__(self):
-        self.transform_patterns = {
-            'Flatten': lambda nodes, inputs, tensors:
-            Struct(
-                op='Flatten',
-                input=inputs
-            ),
-            'Flatten$': lambda nodes, inputs, tensors:
-            Struct(
-                op='Flatten',
-                input=[inputs[-1]]
-                # take only the last input, assume all other arguments are trivial (like sequence_length==1 always in ML-agents LSTM nets)
-            ),
-            'Reshape': lambda nodes, inputs, tensors:
-            Struct(
-                op='Reshape',
-                input=inputs,
-                ksize=[tensors[0].data[0], tensors[0].data[1], tensors[0].data[2], tensors[0].data[3]]
-            ),
-            'Multinomial': lambda nodes, inputs, tensors:
-            Struct(
-                op='Multinomial',
-                input=inputs,
-                ksize=[int(tensors[0].data[0])],
-            ),
-            'OneHot': lambda nodes, inputs, tensors:
-            Struct(
-                op='OneHot',
-                input=inputs,
-                ksize=[int(by_name(tensors, '/depth').data[0])],
-                alpha=by_name(tensors, '/on_value').data[0],
-                beta=by_name(tensors, '/off_value').data[0],
-            ),
-            'Square': lambda nodes, inputs, tensors:
-            Struct(
-                op='Mul',
-                input=[i for i in inputs] + [i for i in inputs],  # input * input
-            ),
-            'ConcatV2': lambda nodes, inputs, tensors:
-            Struct(
-                op='Concat',
-                input=inputs,
-
-                # TEMPORARY: until we implemented rank detection and axis remapping (hopefully in exporter)
-                # HACK: assume Concat is always for last channel
-                axis=int(-1)
-                # axis = int(tensors[-1].data[0]) # expect last tensor to hold Axis index
-            ),
-            'BatchNormalization': lambda nodes, inputs, tensors:
-            Struct(
-                op='BatchNormalization',
-                input=[i for i in inputs] + [t.name for t in tensors],
-                data_frmt=get_attr(nodes[-2], 'data_format'),
-            ),
-            'Mean': lambda nodes, inputs, tensors:
-            Struct(
-                # TODO: use data_frmt of the input instead of hardcoded [1,2] for HW
-                op='GlobalAveragePool' if np.array_equal(tensors[0].data,
-                                                         [1, 2]) else 'MeanWithUnsupportedReductionTensor',
-                input=[i for i in inputs],
-            ),
-            'Dense': lambda nodes, inputs, tensors:
-            Struct(
-                op='Dense',
-                input=[i for i in inputs] + [t.name for t in tensors],
-                data_frmt=get_attr(nodes[-2], 'data_format'),
-            ),
-            '^Conv2D': lambda nodes, inputs, tensors:
-            Struct(
-                op='^Conv2D',
-                input=[i for i in inputs] + [t.name for t in tensors],
-                padding=get_attr(nodes[-2], 'padding'),
-                strides=get_attr(nodes[-2], 'strides'),
-                dilations=get_attr(nodes[-2], 'dilations'),
-                data_frmt=get_attr(nodes[-2], 'data_format'),
-            ),
-            '^Conv2DBackpropInput': lambda nodes, inputs, tensors:
-            Struct(
-                op='^Conv2DBackpropInput',
-                input=[i for i in inputs] + [t.name for t in tensors],
-                padding=get_attr(nodes[-2], 'padding'),
-                strides=get_attr(nodes[-2], 'strides'),
-                dilations=get_attr(nodes[-2], 'dilations'),
-                data_frmt=get_attr(nodes[-2], 'data_format'),
-            ),
-            'BasicLSTM': lambda nodes, inputs, tensors:
-            self.basic_lstm(nodes, inputs, tensors),
-
-            'Swish': lambda nodes, inputs, tensors:
-            Struct(
-                op='Swish',
-                input=inputs
-            ),
-
-            # TODO:'Round'
-            # TODO:'Rsqrt'
-        }
-
-        self.o_model = []
-        self.o_memories = []
-        self.o_globals = []
-        self.map_ignored_layer_to_its_input = {}
+        self.layers = []
         self.input_shapes = {}
         self.model_tensors = {}
+        self.model_memories = []
+        self.map_ignored_layer_to_its_input = {}
 
-    def basic_lstm(self, nodes, inputs, tensors):
-        assert (len(inputs) == 2)
+def process_model(model, args):
+    o_context = ModelBuilderContext()
 
-        def find_tensor_by_name(name):
-            nonlocal tensors
-            candidates = [t for t in tensors if t.name.endswith(name)]
-            return candidates[0] if candidates else None
+    # Find node patterns
+    nodes_as_array = [node for node in model.node]
 
-        def find_forget_bias(nodes, inputs, tensors):
-            # TODO: make it more fault-tolerant
-            # search for scalar float constant that is input to Add node
-            # and hope it is not a constant for some complex activation function
-            for t in tensors:
-                if np.prod(t.shape) == 1 and get_tensor_dtype(t.obj) == "DT_FLOAT":
-                    for n in nodes:
-                        if n.op == 'Add' and t.name in n.input:
-                            return t
-            return np.zeros(1)
+    node_index = 0
+    while node_index < len(nodes_as_array):
+        node = nodes_as_array[node_index]
+        match = False
+        for pattern_repr, pattern_name in known_patterns.items():
+            pattern = eval(pattern_repr)
+            if node_index + len(pattern) > len(nodes_as_array):
+                continue # pattern too long, skip
 
-        input = inputs[-1]
-        state_c = inputs[0] + '_c'
-        state_h = inputs[0] + '_h'
-        kernel = find_tensor_by_name('/kernel')
-        bias = find_tensor_by_name('/bias') or np.zeros(np.shape(kernel)[-1])
-        forget_bias = find_forget_bias(nodes, inputs, tensors)
-        new_state_c = nodes[-1].name + '_c'
-        new_state_h = nodes[-1].name + '_h'
+            require_exact_match = (pattern[0] == 'Const' or pattern[0] == 'Identity')
+            pattern_end = node_index
 
-        assert (np.shape(kernel)[-1] == np.shape(bias)[-1])
-        num_gates = 4
-        seq_length = 1
-        hidden_size = np.shape(kernel)[-1] // num_gates
+            def match_node(node, pattern):
+                return node.op == pattern or (hasattr(pattern, 'match') and pattern.match(node.name))
 
-        new_layers = self.basic_lstm_impl('lstm', input, state_c, state_h,
-                                     kernel.data, bias.data, forget_bias.data,
-                                     new_state_c, new_state_h, num_gates)
+            for p in pattern:
+                if not require_exact_match:
+                    while pattern_end < len(nodes_as_array) and nodes_as_array[pattern_end].op != p and (
+                        nodes_as_array[pattern_end].op == 'Const' or
+                        nodes_as_array[pattern_end].op == 'Identity'):
+                        pattern_end += 1
+                if pattern_end >= len(nodes_as_array):
+                    break
 
-        state_shape = [1, 1, seq_length, hidden_size]
-        self.o_memories += [state_shape, state_c, new_state_c]
-        self.o_memories += [state_shape, state_h, new_state_h]
+                match = False
+                if (hasattr(p, 'match')): # regexp
+                    while pattern_end < len(nodes_as_array) and p.match(nodes_as_array[pattern_end].name):
+                        match = True
+                        pattern_end += 1
+                else: # exact string
+                    match = nodes_as_array[pattern_end].op == p
+                    pattern_end += 1
 
-        # map exptected output of the replaced pattern to output from our LSTM cell
+                if not match:
+                    break
 
-        actual_output_node = nodes[-4]
-        assert (actual_output_node.op == 'Reshape')
-        self.map_ignored_layer_to_its_input[actual_output_node.name] = new_state_h
+            def get_tensors(pattern_nodes):
+                nonlocal o_context
+                map_ignored_layer_to_its_input = o_context.map_ignored_layer_to_its_input
 
-        return new_layers
+                # tensors <= all Const nodes within this pattern
+                tensor_nodes = [n for n in pattern_nodes if n.op == 'Const']
+                tensors = [Struct(name = n.name, obj = n.attr["value"].tensor, shape = get_tensor_dims(n.attr["value"].tensor), data = get_tensor_data(n.attr["value"].tensor))
+                    for n in tensor_nodes]
 
-    def basic_lstm_impl(self, name, input, state_c, state_h, kernel, bias, forget_bias, new_state_c, new_state_h,
-                        number_of_gates=4):
-        def concat(a, b, out):
-            return Struct(name=out, op='Concat', input=[a, b])
+                # TODO: unify / reuse code from process_layer
+                identity_nodes = [n for n in pattern_nodes if n.op == 'Identity']
+                for i in identity_nodes:
+                    inputs = replace_strings_in_list(i.input, map_ignored_layer_to_its_input)
+                    map_ignored_layer_to_its_input[i.name] = inputs
 
-        def mul(a, b, out):
-            return Struct(name=out, op='Mul', input=[a, b])
+                # gather inputs from Op nodes (not Const, not Identity)
+                op_nodes = [n for n in pattern_nodes if n not in tensor_nodes and n not in identity_nodes]
+                inputs_to_op_nodes = list(flatten([list(flatten(n.input)) for n in op_nodes]))
+                inputs_to_op_nodes = replace_strings_in_list(inputs_to_op_nodes, map_ignored_layer_to_its_input)
+                inputs_to_op_nodes = [i.split(':')[0] for i in inputs_to_op_nodes]
 
-        def add(a, b, out):
-            return Struct(name=out, op='Add', input=[a, b])
+                # filter only inputs that are coming from nodes that are outside this pattern
+                # preserve the order
+                pattern_nodes = [n.name for n in pattern_nodes]
+                #inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if nodes_by_name[i] not in pattern_nodes])
+                inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if i not in pattern_nodes])
 
-        def mad(x, kernel, bias, out):
-            return Struct(name=out, op='Dense', input=[x, kernel, bias])
+                return inputs_from_outside_pattern, tensors
 
-        def sigmoid(x, out):
-            return Struct(name=out, op='Sigmoid', input=[x])
+            if match:
+                nodes = nodes_as_array[node_index:pattern_end]
+                name = nodes[-1].name
+                var_tensors, const_tensors = get_tensors(nodes)
+                if args.print_patterns or args.verbose:
+                    print('PATTERN:', name, '~~', pattern_name, pattern, '<-', var_tensors, '+', [t.name for t in const_tensors])
+                for n in nodes:
+                    if n.op == 'Const' or n.op == 'Identity':
+                        process_layer(n, o_context, args)
 
-        def tanh(x, out):
-            return Struct(name=out, op='Tanh', input=[x])
+                new_layers = transform_patterns[pattern_name](nodes, var_tensors, const_tensors, o_context)
+                if not isinstance(new_layers, list):
+                    if not hasattr(new_layers, name): new_layers.name = name
+                    new_layers = [new_layers]
 
-        kernels = np.split(kernel, number_of_gates, axis=-1)
-        biases = np.split(bias, number_of_gates, axis=-1)
+                for l in new_layers:
+                    # TODO: prefix new layer names with scope, patch inputs
+                    #l.name = name + '/' + l.name
+                    process_layer(l, o_context, args)
 
-        self.model_tensors['kernel_i'] = kernels[0]
-        self.model_tensors['kernel_j'] = kernels[1]
-        self.model_tensors['kernel_f'] = kernels[2]
-        self.model_tensors['kernel_o'] = kernels[3]
-        self.model_tensors['bias_i'] = biases[0]
-        self.model_tensors['bias_j'] = biases[1]
-        self.model_tensors['bias_f'] = biases[2] + forget_bias
-        self.model_tensors['bias_o'] = biases[3]
+                node_index = pattern_end
+                break # pattern found & processed
 
-        # TODO: prepend scope to names and inputs
+        if not match:
+            # TODO: gather tensors in the same way as patterns do
+            process_layer(node, o_context, args)
+            node_index += 1
 
-        return [
-            concat(input, state_h, 'inputs'),
-            mad('inputs', 'kernel_i', 'bias_i', 'i'),
-            mad('inputs', 'kernel_j', 'bias_j', 'j'),
-            mad('inputs', 'kernel_f', 'bias_f', 'f'),
-            mad('inputs', 'kernel_o', 'bias_o', 'o'),
-            sigmoid('i', 'i_act'),
-            sigmoid('f', 'f_act'),
-            sigmoid('o', 'o_act'),
-            tanh('j', 'j_act'),
-            mul(state_c, 'f_act', 'temp_1'),
-            mul('i_act', 'j_act', 'temp_2'),
-            add('temp_1', 'temp_2', new_state_c),
-            tanh(new_state_c, 'new_c_act'),
-            mul('o_act', 'new_c_act', new_state_h),
-        ]
+    return o_context.layers, o_context.input_shapes, o_context.model_tensors, o_context.model_memories
+
+#########################################################
+
+def convert(source_file, target_file, trim_unused_by_output="", verbose=False, compress_f16=False):
+    """
+    Converts a TensorFlow model into a Barracuda model.
+    :param source_file: The TensorFlow Model
+    :param target_file: The name of the file the converted model will be saved to
+    :param trim_unused_by_output: The regexp to match output nodes to remain in the model. All other uconnected nodes will be removed.
+    :param verbose: If True, will display debug messages
+    :param compress_f16: If true, the float values will be converted to f16
+    :return:
+    """
+    if (type(verbose)==bool):
+        args = Struct()
+        args.verbose = verbose
+        args.print_layers = verbose
+        args.print_source_json = verbose
+        args.print_barracuda_json = verbose
+        args.print_layer_links = verbose
+        args.print_patterns = verbose
+        args.print_tensors = verbose
+    else:
+        args = verbose
+
+    # Load Tensorflow model
+    print("Converting %s to %s" % (source_file, target_file))
+    f = open(source_file, 'rb')
+    i_model = tf.GraphDef()
+    i_model.ParseFromString(f.read())
+
+    if args.verbose:
+        print('OP_TYPES:', {layer.op for layer in i_model.node})
+
+    if args.print_source_json or args.verbose:
+        for layer in i_model.node:
+            if not layer.op == 'Const':
+                print('MODEL:', MessageToJson(layer) + ",")
+
+    # Convert
+    o_model = barracuda.Model()
+    o_model.layers, o_input_shapes, o_model.tensors, o_model.memories = \
+        process_model(i_model, args)
 
     # Cleanup unconnected Identities (they might linger after processing complex node patterns like LSTM)
-    def cleanup_model(self, model):
-        all_layers = {l.name for l in self.o_model}
-        all_inputs = {i for l in self.o_model for i in l.inputs}
+    def cleanup_layers(layers):
+        all_layers = {l.name for l in layers}
+        all_inputs = {i for l in layers for i in l.inputs}
 
         def is_unconnected_identity(layer):
-            if layer.class_name == 'Activation' and layer.activation == 0:  # Identity
-                assert (len(layer.inputs) == 1)
+            if layer.class_name == 'Activation' and layer.activation == 0: # Identity
+                assert(len(layer.inputs) == 1)
                 if layer.inputs[0] not in all_layers and layer.name not in all_inputs:
-                    return True
-            return False
-
-        return [l for l in model if not is_unconnected_identity(l)]
-
-    def get_tensors(self, pattern_nodes):
-        # tensors <= all Const nodes within this pattern
-        tensor_nodes = [n for n in pattern_nodes if n.op == 'Const']
-        tensors = [Struct(name=n.name, obj=n.attr["value"].tensor, shape=get_tensor_dims(n.attr["value"].tensor),
-                          data=get_tensor_data(n.attr["value"].tensor))
-                   for n in tensor_nodes]
-
-        # TODO: unify / reuse code from process_layer
-        identity_nodes = [n for n in pattern_nodes if n.op == 'Identity']
-        for i in identity_nodes:
-            inputs = replace_strings_in_list(i.input, self.map_ignored_layer_to_its_input)
-            self.map_ignored_layer_to_its_input[i.name] = inputs
-
-        # gather inputs from Op nodes (not Const, not Identity)
-        op_nodes = [n for n in pattern_nodes if n not in tensor_nodes and n not in identity_nodes]
-        inputs_to_op_nodes = list(flatten([list(flatten(n.input)) for n in op_nodes]))
-        inputs_to_op_nodes = replace_strings_in_list(inputs_to_op_nodes, self.map_ignored_layer_to_its_input)
-        inputs_to_op_nodes = [i.split(':')[0] for i in inputs_to_op_nodes]
-
-        # filter only inputs that are coming from nodes that are outside this pattern
-        # preserve the order
-        pattern_nodes = [n.name for n in pattern_nodes]
-        # inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if nodes_by_name[i] not in pattern_nodes])
-        inputs_from_outside_pattern = remove_duplicates_from_list(
-            [i for i in inputs_to_op_nodes if i not in pattern_nodes])
-
-        return inputs_from_outside_pattern, tensors
-
-    def process_layer(self, layer, verbose):
-        name = layer.name
-        class_name = layer.op
-        inputs = layer.input  # Tensorflow inputs are always explicit, but in case of Keras we had 'inputs = layer.input or [prev_layer_name]'
-        inputs = replace_strings_in_list(inputs, self.map_ignored_layer_to_its_input)
-
-        if class_name == 'Const':
-            self.model_tensors[name] = layer.attr["value"].tensor
-            return
-
-        if class_name == 'Placeholder':
-            assert (inputs == [])
-            self.map_ignored_layer_to_its_input[name] = inputs
-            self.input_shapes[name] = get_layer_shape(layer)
-            return
-
-        if class_name == 'Identity':
-            connected_to_const = len(inputs) == 1 and inputs[0] in self.model_tensors
-            if connected_to_const:
-                self.map_ignored_layer_to_its_input[name] = inputs
-                return
-            else:
-                # treat Identity layer that are connected to processing nodes
-                # as output from the network
-                class_name = 'Linear'
-
-        # TEMPORARY: until we implemented rank detection and StidedSlice at runtime
-        # HACK: skips trivial StridedSlices for rank=2 tensors
-        if class_name == 'StridedSlice' and get_attr(layer, 'begin_mask') == 1 and get_attr(layer, 'end_mask') == 1:
-            self.map_ignored_layer_to_its_input[name] = inputs[0]
-            return
-
-        if verbose:
-            var_tensors = [i for i in inputs if i not in self.model_tensors]
-            const_tensors = [i for i in inputs if i in self.model_tensors]
-            print("'%s' %s Vars:%s Const:%s" % (name, class_name, var_tensors, const_tensors))
-
-        # if args.include_gan_layers and class_name in self.requires_runtime_flag:
-        #     class_name = self.requires_runtime_flag[class_name]
-
-        if class_name in self.known_activations:
-            activation = class_name
-            class_name = 'Activation'
-        else:
-            activation = 'Linear'
-
-        if not class_name in self.known_classes:
-            if class_name in self.requires_runtime_flag:
-                print('SKIP:', class_name,
-                      'layer is used only for training (use -gan flag to force inclusion in the model)')
-            else:
-                print('IGNORED:', class_name, 'unknown layer')
-                self.map_ignored_layer_to_its_input[name] = inputs
-            return
-
-        klass = self.known_classes[class_name]
-        if type(klass) == int:
-            klass = Struct(id=klass)
-
-        o_l = Struct()
-        o_l.type = klass.id
-        o_l.class_name = class_name
-        o_l.name = name
-
-        padding = get_attr(layer, 'padding')  # layer.attr['padding'].s.decode("utf-8")
-        strides = get_attr(layer, 'strides')  # layer.attr['strides'].list.i
-        dilations = get_attr(layer, 'dilations')  # layer.attr['dilations'].list.i
-        pool_size = get_attr(layer, 'ksize')  # layer.attr['ksize'].list.i
-        data_frmt = get_attr(layer, 'data_format')  # layer.attr['data_format'].s.decode("utf-8")
-        axis = get_attr(layer, 'axis')
-        alpha = get_attr(layer, 'alpha')
-        beta = get_attr(layer, 'beta')
-
-        if activation and not activation in self.known_activations:
-            print('IGNORED: unknown activation', activation)
-        if padding and not padding in self.known_paddings:
-            print('IGNORED: unknown padding', padding)
-        if data_frmt and not data_frmt in self.supported_data_formats:
-            print('UNSUPPORTED: data format', data_frmt)
-
-        o_l.activation = self.known_activations.get(activation) or 0
-        o_l.pads = []  # initialized later once kernel shape is known, keep it here for stable order in json output
-        o_l.strides = strides_to_HW(strides, data_frmt) if strides else []
-        o_l.pool_size = pool_to_HW(pool_size, data_frmt) if pool_size else []
-        o_l.axis = axis or -1
-        o_l.alpha = alpha or 1
-        o_l.beta = beta or 0
-
-        tensor_names = [i for i in inputs if i in self.model_tensors]
-        o_l.tensors = [Struct(name=x, shape=get_tensor_dims(self.model_tensors[x]), data=get_tensor_data(self.model_tensors[x]))
-                       for x in tensor_names]
-        # Patch shapes & data
-        layer_has_model_tensors = len(o_l.tensors) > 0
-        if hasattr(klass, 'out_shapes') and layer_has_model_tensors:
-            shapes = klass.out_shapes([x.shape for x in o_l.tensors])
-
-            # if we have more shapes than actual tensors,
-            # then create & fill missing tensors with zeros
-            in_tensor_num = len(o_l.tensors)
-            for index, new_shape in enumerate(shapes):
-                if index >= in_tensor_num:
-                    new_tensor = Struct(name=('%s/patch:%i') % (name, index - in_tensor_num),
-                                        shape=new_shape,
-                                        data=np.zeros(new_shape))
-                    o_l.tensors.append(new_tensor)
-            assert (len(shapes) <= len(o_l.tensors))
-
-            if hasattr(klass, 'patch_data'):
-                tensor_data = klass.patch_data([x.data for x in o_l.tensors])
-                o_l.tensors = o_l.tensors[:len(
-                    tensor_data)]  # resize tensor array to match patched data - patching might reduce number of tensors
-                for x, data in zip(o_l.tensors, tensor_data):
-                    x.data = data
-
-            # after this point we should have equal amount of shapes and tensors
-            assert (len(o_l.tensors) == len(shapes))
-
-            for x, shape in zip(o_l.tensors, shapes):
-                x.shape = shape
-
-            o_l.inputs = [i for i in inputs if i not in self.model_tensors]
-
-        else:
-            # no 'patch_data' lambda was specified, op does not require tensor args
-            o_l.tensors = []
-            o_l.inputs = inputs
-
-        # Force all tensors to float32
-        for x in o_l.tensors:
-            x.data = x.data.astype(np.float32)
-
-        # Calculate padding in pixels - kernel shape is known by now
-        padding = self.known_paddings.get(padding)
-        o_l.pads = padding(o_l.pool_size or o_l.tensors[0].shape[1::-1]) if padding else [0, 0, 0, 0]
-
-        # Layer is ready
-        self.o_model.append(o_l)
-
-    def is_output_layer(self, layer):
-        if layer.class_name == 'Const':  # Constants never count as global output even when unconnected
+                    return True;
             return False;
-        if layer.name not in self.all_inputs:  # this layer is not inputing to any other layer
+
+        return [l for l in layers if not is_unconnected_identity(l)]
+    o_model.layers = cleanup_layers(o_model.layers)
+
+    all_inputs = {i for l in o_model.layers for i in l.inputs}
+    embedded_tensors = {t.name for l in o_model.layers for t in l.tensors}
+
+    # Find global tensors
+    def dims_to_barracuda_shape(dims):
+        shape = list(dims)
+        while len(shape) < 4:
+            shape = [1] + shape
+        return shape
+    o_model.globals = [t for t in o_model.tensors if t not in all_inputs and t not in embedded_tensors]
+    #for x in global_tensors:
+    #    shape = dims_to_barracuda_shape(get_tensor_dims(o_model.tensors[x]))    
+    #    o_globals += [Struct(
+    #        name = x,
+    #        shape = shape,
+    #        data = np.reshape(get_tensor_data(o_model.tensors[x]), shape).astype(np.float32))]
+
+    # Trim
+    if trim_unused_by_output:
+        o_model.layers = barracuda.trim(o_model.layers, trim_unused_by_output, args.verbose)
+
+    # Create load layers for constants
+    const_tensors = [i for i in all_inputs if i in o_model.tensors]
+    const_tensors += o_model.globals
+    for x in const_tensors:
+        shape = dims_to_barracuda_shape(get_tensor_dims(o_model.tensors[x]))
+
+        o_l = Struct(
+            type        = 255,  # Load
+            class_name  = "Const",
+            name        = x,
+            pads        = [0,0,0,0],
+            strides     = [],
+            pool_size   = [],
+            axis        = -1,
+            alpha       = 1,
+            beta        = 0,
+            activation  = 0,
+            inputs      = [],
+            tensors     = [Struct(
+                name = x,
+                shape = shape,
+                data = np.reshape(get_tensor_data(o_model.tensors[x]), shape).astype(np.float32))]
+        )
+        o_model.layers.insert(0, o_l)
+
+    # Find model inputs & outputs
+    all_layers = {l.name for l in o_model.layers}
+    # global inputs => are inputs that are NOT connected to any layer in the network
+    # global outputs => are outputs that are NOT feeding any layer in the network OR are coming from Identity layers
+    o_model.inputs = {i:o_input_shapes[i] for l in o_model.layers for i in l.inputs if i not in all_layers and i not in o_model.memories}
+
+    def is_output_layer(layer):
+        if layer.class_name == 'Const': # Constants never count as global output even when unconnected
+            return False;
+        if layer.name not in all_inputs: # this layer is not inputing to any other layer
             return True
-        if layer.class_name == 'Activation' and layer.activation == 0:  # Identity marks global output
+        if layer.class_name == 'Activation' and layer.activation == 0: # Identity marks global output
             return True
         return False
+    o_model.outputs = [l.name for l in o_model.layers if is_output_layer(l)]
 
-    def process(self, source_file, target_file, trim_unused_by_output="TRIM_UNUSED_BY_OUTPUT", verbose=False, compress_f16=False):
-        """
-        Converts a TensorFlow model into a Barracuda model.
-        :param source_file: The TensorFlow Model
-        :param target_file: the name of the file the model will be saved to
-        :param trim_unused_by_output: If TRIM_UNUSED_BY_OUTPUT the nodes not necessary to compute the output will
-        be trimmed
-        :param verbose: If True, will display debug messages
-        :param compress_f16: If true, the float values will be converted to f16
-        :return:
-        """
-        f = open(source_file, 'rb')
-        model = tf.GraphDef()
-        model.ParseFromString(f.read())
-        if verbose:
-            print('OP_TYPES:', {layer.op for layer in model.node})
+    # Compress
+    if compress_f16:
+        o_model = barracuda.compress(o_model)
 
-        if verbose:
-            for layer in model.node:
-                if not layer.op == 'Const':
-                    print('MODEL:', MessageToJson(layer) + ",")
+    # Sort model so that layer inputs are always ready upfront
+    o_model.layers = barracuda.sort(o_model.layers, o_model.inputs, o_model.memories, args.verbose)
 
-        # Find node patterns
-        nodes_as_array = [node for node in model.node]
+    # Summary
+    barracuda.summary(o_model,
+        print_layer_links = args.print_layer_links or args.verbose,
+        print_barracuda_json = args.print_barracuda_json or args.verbose,
+        print_tensors = args.print_tensors or args.verbose)
 
-        node_index = 0
-        while node_index < len(nodes_as_array):
-            node = nodes_as_array[node_index]
-            match = False
-            for pattern_repr, pattern_name in self.known_patterns.items():
-                pattern = eval(pattern_repr)
-                if node_index + len(pattern) > len(nodes_as_array):
-                    continue # pattern too long, skip
-
-                require_exact_match = (pattern[0] == 'Const' or pattern[0] == 'Identity')
-                pattern_end = node_index
-                for p in pattern:
-                    if not require_exact_match:
-                        while pattern_end < len(nodes_as_array) and nodes_as_array[pattern_end].op != p and (
-                            nodes_as_array[pattern_end].op == 'Const' or
-                                nodes_as_array[pattern_end].op == 'Identity'):
-                            pattern_end += 1
-                    if pattern_end >= len(nodes_as_array):
-                        break
-
-                    match = False
-                    if hasattr(p, 'match'): # regexp
-                        while pattern_end < len(nodes_as_array) and p.match(nodes_as_array[pattern_end].name):
-                            match = True
-                            pattern_end += 1
-                    else: # exact string
-                        match = nodes_as_array[pattern_end].op == p
-                        pattern_end += 1
-
-                    if not match:
-                        break
-
-                if match:
-                    nodes = nodes_as_array[node_index:pattern_end]
-                    name = nodes[-1].name
-                    if verbose:
-                        print('PATTERN:', name, ' ~~ ', pattern_name, pattern)
-                    var_tensors, const_tensors = self.get_tensors(nodes)
-                    for n in nodes:
-                        if n.op == 'Const' or n.op == 'Identity':
-                            self.process_layer(n, verbose)
-
-                    new_layers = self.transform_patterns[pattern_name](nodes, var_tensors, const_tensors)
-                    if not isinstance(new_layers, list):
-                        if not hasattr(new_layers, name): new_layers.name = name
-                        new_layers = [new_layers]
-
-                    for l in new_layers:
-                        # TODO: prefix new layer names with scope, patch inputs
-                        #l.name = name + '/' + l.name
-                        self.process_layer(l, verbose)
-
-                    node_index = pattern_end
-                    break # pattern found & processed
-
-            if not match:
-                # TODO: gather tensors in the same way as patterns do
-                self.process_layer(node, verbose)
-                node_index += 1
-
-        o_model = self.cleanup_model(self.o_model)
-
-        self.all_inputs = {i for l in o_model for i in l.inputs}
-        embedded_tensors = {t.name for l in o_model for t in l.tensors}
-        global_tensors = [t for t in self.model_tensors if t not in self.all_inputs and t not in embedded_tensors]
-        o_globals = []
-        #for x in global_tensors:
-        #    shape = dims_to_barracuda_shape(get_tensor_dims(model_tensors[x]))
-        #    o_globals += [Struct(
-        #        name = x,
-        #        shape = shape,
-        #        data = np.reshape(get_tensor_data(model_tensors[x]), shape).astype(np.float32))]
-
-        # Trim
-        if trim_unused_by_output:
-            o_model = barracuda.trim(o_model, trim_unused_by_output, verbose)
-
-        # Find model inputs & outputs
-        const_tensors = [i for i in self.all_inputs if i in self.model_tensors]
-        const_tensors += global_tensors
-        for x in const_tensors:
-            shape = dims_to_barracuda_shape(get_tensor_dims(self.model_tensors[x]))
-
-            o_l = Struct(
-                type        = 255,  # Load
-                class_name  = "Const",
-                name        = x,
-                pads        = [0,0,0,0],
-                strides     = [],
-                pool_size   = [],
-                axis        = -1,
-                alpha       = 1,
-                beta        = 0,
-                activation  = 0,
-                inputs      = [],
-                tensors     = [Struct(
-                    name = x,
-                    shape = shape,
-                    data = np.reshape(get_tensor_data(self.model_tensors[x]), shape).astype(np.float32))]
-            )
-            o_model.insert(0, o_l)
-
-        # Inputs, outputs
-        all_layers = {l.name for l in o_model}
-        # global inputs => are inputs that are NOT connected to any layer in the network
-        # global outputs => are outputs that are NOT feeding any layer in the network OR are coming from Identity layers
-        o_inputs = {i:self.input_shapes[i] for l in o_model for i in l.inputs if i not in all_layers and i not in self.o_memories}
-
-        o_outputs = [l.name for l in o_model if self.is_output_layer(l)]
-
-        # Compress
-        if compress_f16:
-            model = barracuda.compress(model)
-
-        # Sort model so that layer inputs are always ready upfront
-        o_model = barracuda.sort(o_model, o_inputs, self.o_memories, verbose)
-
-        # Summary
-        barracuda.summary(o_model, o_inputs, o_outputs, self.o_memories,
-            global_tensors, #o_globals
-            print_layer_links = verbose,
-            print_barracuda_json = verbose,
-            print_tensors = verbose)
-
-        # Write to file
-        barracuda.write(o_model, o_inputs, o_outputs, self.o_memories, target_file)
-        print('DONE: wrote', target_file, 'file.')
-
-
-if __name__ == '__main__':
-    args = barracuda.parse_args(
-        description = 'Convert Tensorflow model to Barracuda binary',
-        source_extension = '.pb',
-        help='input Tensorflow serialized .pb file')
-    mc = ModelConverter()
-    mc.process(args.source_file, args.target_file, args.trim_unused_by_output, args.verbose, args.compress_f16)
-
+    # Write to file
+    barracuda.write(o_model, target_file)
+    print('DONE: wrote', target_file, 'file.')

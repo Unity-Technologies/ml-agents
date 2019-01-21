@@ -1,3 +1,4 @@
+#if EXPERIMENTAL_KERNELS_ENABLED
 #pragma kernel Dense
 #pragma kernel DenseTiled
 #pragma kernel Dense10x16
@@ -4276,6 +4277,6 @@ void Conv2DTrans_L1Cached64_Reg_Loop_safe(uint3 groupID : SV_GroupID, uint3 grou
 	#undef X_
 }
 */
-
+#endif
 
 

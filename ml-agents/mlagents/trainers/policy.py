@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from mlagents.trainers import UnityException
 from tensorflow.python.tools import freeze_graph
-from mlagents.trainers.tensorflow_to_barracuda import ModelConverter
+from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -180,8 +180,7 @@ class Policy(object):
                 restore_op_name='save/restore_all',
                 filename_tensor_name='save/Const:0')
 
-        mc = ModelConverter()
-        mc.process(self.model_path + '/frozen_graph_def.pb', self.model_path + '.nn')
+        tf2bc.convert(self.model_path + '/frozen_graph_def.pb', self.model_path + '.nn')
 
     def _process_graph(self):
         """

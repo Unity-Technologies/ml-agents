@@ -2,6 +2,8 @@
 #pragma kernel Conv2D_RegisterBlock4x2
 #pragma kernel Conv2D_L1Cached64_RegisterBlock4x4
 
+#pragma kernel DepthwiseConv2D
+
 #pragma kernel Conv2DTrans
 #pragma kernel Conv2DTrans_L1Cached64_RegisterBlock2x2
 
@@ -16,7 +18,7 @@ TENSOR_DECL_RW(O)
 uint4 _Pad;
 uint4 _Stride;
 
-[numthreads(16,4,4)]
+NUMTHREADS((16,4,4), (8,4,4), (4,4,4))
 void Conv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(K.kernelCount, O.width, O.height);
@@ -57,7 +59,7 @@ void Conv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 
 #define SIZE_W 4
 #define SIZE_H 2
-[numthreads(64, 2, 2)]
+NUMTHREADS((64, 2, 2), (32, 2, 2), (16, 2, 2))
 void Conv2D_RegisterBlock4x2(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(K.kernelCount, O.width, O.height);
@@ -178,6 +180,73 @@ void Conv2D_L1Cached64_RegisterBlock4x4(uint3 groupID : SV_GroupID, uint3 groupT
 	}
 
 	#undef X_
+}
+
+
+NUMTHREADS((16,4,4), (8,4,4), (4,4,4))
+void DepthwiseConv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+	DISPATCH_ARGS(K.kernelCount, O.width, O.height);
+	TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
+
+	uint k = dispatchThreadID.x;
+	uint x = dispatchThreadID.y;
+	uint y = dispatchThreadID.z;
+
+	if (k >= K.channels) return;
+	if (x >= O.width) return;
+	if (y >= O.height) return;
+
+	uint2 leftCorner = _Pad.xy;
+	uint2 rightCorner = uint2(X.width, X.height) + _Pad.xy;
+
+	uint2 leftKernelCorner = uint2(x, y) * _Stride.xy;
+	uint2 rightKernelCorner = leftKernelCorner + uint2(K.GetKernelWidth(), K.GetKernelHeight());
+
+	if (any(leftKernelCorner < leftCorner) || any(rightKernelCorner >= rightCorner))
+	{
+		// path with edge-cases checks
+		for (uint n = 0; n < O.batch; ++n)
+		{
+			float acc = B.Get(k);
+			for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
+				for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
+				{
+					uint2 pos = leftKernelCorner + uint2(dx, dy);
+					if (any(pos < leftCorner)) continue;
+					if (any(pos >= rightCorner)) continue;
+
+					acc = fastfma(
+						X.Get(n, pos.y - leftCorner.y, pos.x - leftCorner.x, k), 
+						K.Get(dy, dx, 0, k),
+						acc);
+				}
+
+			O.Set(n, y, x, k, acc);
+		}
+	}
+	else
+	{
+		// kernel is guaranteed to be within X,
+		// no need to check against edge-cases
+		leftKernelCorner -= leftCorner;
+		for (uint n = 0; n < O.batch; ++n)
+		{
+			float acc = B.Get(k);
+			for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
+				for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
+				{
+					uint2 pos = leftKernelCorner + uint2(dx, dy);
+
+					acc = fastfma(
+						X.Get(n, pos, k), 
+						K.Get(dy, dx, 0, k),
+						acc);
+				}
+
+			O.Set(n, y, x, k, acc);
+		}
+	}
 }
 
 

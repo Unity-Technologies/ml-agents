@@ -1,5 +1,6 @@
 ﻿#pragma kernel Dense
 #pragma kernel Conv2D
+#pragma kernel DepthwiseConv2D
 #pragma kernel Conv2DTrans
 #pragma kernel Upsample2D
 #pragma kernel Unstride2D
@@ -46,7 +47,7 @@ uint4 _Stride;
 float _Alpha;
 float _Seed;
 
-[numthreads(16,16,1)]
+[numthreads(8,8,1)]
 void Dense(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.flatWidth, O.flatHeight, 1);
@@ -65,7 +66,7 @@ void Dense(uint3 dispatchThreadID : SV_DispatchThreadID)
 	O.Set(y, x, acc);
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Relu(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -88,7 +89,7 @@ void Relu(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Swish(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -105,14 +106,12 @@ void Swish(uint3 dispatchThreadID : SV_DispatchThreadID)
 	for (uint n = 0; n < X.batch; ++n)
 	{
 		float v = X.Get(n, y, x, c);
-		
 		v = v / (1 + exp(-v));
-
 		O.Set(n, y, x, c, v);
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Tanh(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -129,7 +128,7 @@ void Tanh(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Sigmoid(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -146,7 +145,7 @@ void Sigmoid(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Relu6(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -163,7 +162,7 @@ void Relu6(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Elu(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -181,7 +180,7 @@ void Elu(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void LeakyRelu(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -198,7 +197,7 @@ void LeakyRelu(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Exp(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -225,7 +224,7 @@ float signed_pow(float f, float e)
 	return v * s;
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Pow(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -242,7 +241,7 @@ void Pow(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void BroadcastAdd(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -260,7 +259,7 @@ void BroadcastAdd(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void BroadcastSub(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -278,7 +277,7 @@ void BroadcastSub(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void BroadcastMul(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -296,7 +295,7 @@ void BroadcastMul(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void BroadcastDiv(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -314,7 +313,7 @@ void BroadcastDiv(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void BroadcastPow(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -332,7 +331,7 @@ void BroadcastPow(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void BroadcastMin(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -350,7 +349,7 @@ void BroadcastMin(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void BroadcastMax(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -368,7 +367,7 @@ void BroadcastMax(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Copy(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	// NOTE: dispatched over X (not O)
@@ -385,7 +384,7 @@ void Copy(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Dropout(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -405,7 +404,7 @@ void Dropout(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void ScaleBias(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -430,7 +429,7 @@ void ScaleBias(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(64,4,1)]
+[numthreads(16,4,1)]
 void Softmax(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.flatWidth, O.flatHeight, 1);
@@ -462,7 +461,7 @@ void Softmax(uint3 dispatchThreadID : SV_DispatchThreadID)
 	O.Set(y, x, v);
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void Upsample2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	// NOTE: dispatched over X (not O)
@@ -491,7 +490,7 @@ void Upsample2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void MaxPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -511,11 +510,8 @@ void MaxPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 		for (uint dy = 0; dy < _Pool.y; ++dy)
 			for (uint dx = 0; dx < _Pool.x; ++dx)
 			{
-				uint oy = y * _Stride.y + dy;
-				uint ox = x * _Stride.x + dx;
-
-				bool mask = (oy >= _Pad.y) && (ox >= _Pad.x) && (oy - _Pad.w < X.height) && (ox - _Pad.z < X.width);
-				float v = (mask)? X.Get(n, oy - _Pad.y, ox - _Pad.x, c): 0;
+				uint2 pos = uint2(x, y) * _Stride.xy + uint2(dx, dy);
+				float v = X.SafeGet(n, pos, c, _Pad.xy);
 				maxV = max(v, maxV);
 			}
 		
@@ -523,7 +519,7 @@ void MaxPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+[numthreads(4,4,4)]
 void AvgPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -537,6 +533,8 @@ void AvgPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 	if (x >= O.width) return;
 	if (y >= O.height) return;
 
+	uint2 leftCorner = _Pad.xy;
+	uint2 rightCorner = uint2(X.width, X.height) + _Pad.xy;
 	for (uint n = 0; n < X.batch; ++n)
 	{
 		float acc = 0;
@@ -544,11 +542,10 @@ void AvgPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 		for (uint dy = 0; dy < _Pool.y; ++dy)
 			for (uint dx = 0; dx < _Pool.x; ++dx)
 			{
-				uint oy = y * _Stride.y + dy;
-				uint ox = x * _Stride.x + dx;
+				uint2 pos = uint2(x, y) * _Stride.xy + uint2(dx, dy);
 
-				bool mask = (oy >= _Pad.y) && (ox >= _Pad.x) && (oy - _Pad.w < X.height) && (ox - _Pad.z < X.width);
-				acc += (mask)? X.Get(n, oy - _Pad.y, ox - _Pad.x, c): 0;
+				bool mask = all(pos >= leftCorner) && all(pos < rightCorner);
+				acc += (mask)? X.Get(n, pos.y - leftCorner.y, pos.x - leftCorner.x, c): 0;
 				counter += (mask)? 1: 0;
 			}
 		
@@ -653,7 +650,7 @@ void InstanceNorm(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(16,4,4)]
+[numthreads(4,4,4)]
 void Conv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(K.kernelCount, O.width, O.height);
@@ -674,14 +671,10 @@ void Conv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 		{
 			for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
 			{
+				uint2 pos = uint2(x, y) * _Stride.xy + uint2(dx, dy);
 				for (uint c = 0; c < X.channels; ++c)
 				{
-					uint oy = y * _Stride.y + dy;
-					uint ox = x * _Stride.x + dx;
-					// @TODO: investigate
-					// WARNING: had to implement mask operation instead of early branching - due to potential bug in Metal
-					bool mask = (oy >= _Pad.y) && (ox >= _Pad.x) && (oy - _Pad.w < X.height) && (ox - _Pad.z < X.width);
-					float v = (mask)? X.Get(n, oy - _Pad.y, ox - _Pad.x, c): 0;
+					float v = X.SafeGet(n, pos, c, _Pad.xy);
 					acc += v * K.Get(dy, dx, c, k);
 				}
 			}
@@ -691,7 +684,36 @@ void Conv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(4,8,8)]
+NUMTHREADS((16,4,4), (8,4,4), (4,4,4))
+void DepthwiseConv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+	DISPATCH_ARGS(K.kernelCount, O.width, O.height);
+	TENSOR_ARGS4(X, K, B, O);
+
+	uint k = dispatchThreadID.x;
+	uint x = dispatchThreadID.y;
+	uint y = dispatchThreadID.z;
+
+	if (k >= K.channels) return;
+	if (x >= O.width) return;
+	if (y >= O.height) return;
+
+	for (uint n = 0; n < O.batch; ++n)
+	{
+		float acc = B.Get(k);
+		for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
+			for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
+			{
+				uint2 pos = uint2(x, y) * _Stride.xy + uint2(dx, dy);
+				float v = X.SafeGet(n, pos, k, _Pad.xy);
+				acc += v * K.Get(dy, dx, 0, k);
+			}
+
+		O.Set(n, y, x, k, acc);
+	}
+}
+
+[numthreads(4,4,4)]
 void Unstride2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(O.channels, O.width, O.height);
@@ -724,7 +746,7 @@ void Unstride2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(16,4,4)]
+[numthreads(4,4,4)]
 void Conv2DTrans(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	DISPATCH_ARGS(K.kernelCount, O.width, O.height);
@@ -782,7 +804,7 @@ RWTexture2DArray<float4> Otex2DArray;
 bool _FlipY;
 
 // TODO: call TextureToTensor(v, dispatchThreadID) from Tex2DToTensor() { v = Xtex2D.SampleLevel }
-[numthreads(16,16,1)]
+[numthreads(8,8,1)]
 void TextureToTensor(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	TENSOR_ARG_RW(O);
@@ -823,7 +845,7 @@ void TextureToTensor(uint3 dispatchThreadID : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(16,16,1)]
+[numthreads(8,8,1)]
 void TensorToTexture(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
 	TENSOR_ARG(X);
