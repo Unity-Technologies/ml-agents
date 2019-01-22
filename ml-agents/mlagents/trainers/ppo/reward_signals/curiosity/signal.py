@@ -21,6 +21,7 @@ class CuriositySignal(RewardSignal):
         self.update_dict = {'forward_loss': self.model.forward_loss,
                             'inverse_loss': self.model.inverse_loss,
                             'update': self.model.update_batch}
+        self.has_updated = False
 
     def evaluate(self, current_info, next_info):
         if len(current_info.agents) == 0:
@@ -44,7 +45,7 @@ class CuriositySignal(RewardSignal):
         unscaled_reward = self.policy.sess.run(self.model.intrinsic_reward,
                                                feed_dict=feed_dict)
         scaled_reward = np.clip(
-            unscaled_reward * float(self.policy.has_updated) * self.strength, 0, 1)
+            unscaled_reward * float(self.has_updated) * self.strength, 0, 1)
         return scaled_reward, unscaled_reward
 
     def update(self, mini_batch, num_sequences):
@@ -60,9 +61,6 @@ class CuriositySignal(RewardSignal):
                      self.policy.model.advantage: mini_batch['advantages'].reshape([-1, 1]),
                      self.policy.model.all_old_log_probs: mini_batch['action_probs'].reshape(
                          [-1, sum(self.policy.model.act_size)])}
-        for i, name in enumerate(self.policy.reward_signals.keys()):
-            feed_dict[self.policy.model.returns_holders[i]] = mini_batch['{}_returns'.format(name)].flatten()
-            feed_dict[self.policy.model.old_values[i]] = mini_batch['{}_value_estimates'.format(name)].flatten()
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.output_pre] = mini_batch['actions_pre'].reshape(
                 [-1, self.policy.model.act_size[0]])
