@@ -48,6 +48,13 @@ class GAILSignal(RewardSignal):
         return scaled_reward, unscaled_reward
 
     def update(self, policy_buffer, n_sequences, max_batches):
+        """
+        Updates model using buffer.
+        :param policy_buffer: The policy buffer containing the trajectories for the current policy.
+        :param n_sequences: The number of sequences used in each mini batch.
+        :param max_batches: The maximum number of batches to use per update.
+        :return: The loss of the update.
+        """
         self.demonstration_buffer.update_buffer.shuffle()
         policy_buffer.update_buffer.shuffle()
         batch_losses = []
@@ -74,6 +81,12 @@ class GAILSignal(RewardSignal):
         return np.mean(batch_losses)
 
     def _update_batch(self, mini_batch_demo, mini_batch_policy):
+        """
+        Helper method for update.
+        :param mini_batch_demo: A mini batch of expert trajectories
+        :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
+        :return: Output from update process.
+        """
         feed_dict = {self.model.done_expert: mini_batch_demo['done'].reshape([-1, 1]),
                      self.model.done_policy: mini_batch_policy['done'].reshape([-1, 1])}
 
