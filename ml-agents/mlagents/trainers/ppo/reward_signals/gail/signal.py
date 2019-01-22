@@ -24,6 +24,7 @@ class GAILSignal(RewardSignal):
         self.value_name = 'Policy/GAIL Value Estimate'
         self.model = GAILModel(policy.model, h_size, lr, 64)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
+        self.has_updated = False
 
     def evaluate(self, current_info, next_info):
         if len(current_info.agents) == 0:
@@ -43,7 +44,7 @@ class GAILSignal(RewardSignal):
             feed_dict[self.policy.model.memory_in] = current_info.memories
         unscaled_reward = self.policy.sess.run(self.model.intrinsic_reward,
                                                feed_dict=feed_dict)
-        scaled_reward = unscaled_reward * float(self.policy.has_updated) * self.strength
+        scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
         return scaled_reward, unscaled_reward
 
     def update(self, policy_buffer, n_sequences, max_batches):
@@ -69,6 +70,7 @@ class GAILSignal(RewardSignal):
             run_out = self._update_batch(mini_batch_demo, mini_batch_policy)
             loss = run_out['gail_loss']
             batch_losses.append(loss)
+        self.has_updated = True
         return np.mean(batch_losses)
 
     def _update_batch(self, mini_batch_demo, mini_batch_policy):

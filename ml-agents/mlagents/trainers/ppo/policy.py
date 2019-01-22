@@ -23,7 +23,6 @@ class PPOPolicy(Policy):
         :param load: Whether a pre-trained model will be loaded or a new one created.
         """
         super().__init__(seed, brain, trainer_params)
-        self.has_updated = False
 
         reward_strengths = dict(zip(trainer_params['reward_signals'],
                                     trainer_params['reward_strength']))
@@ -164,7 +163,6 @@ class PPOPolicy(Policy):
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
-        self.has_updated = True
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
