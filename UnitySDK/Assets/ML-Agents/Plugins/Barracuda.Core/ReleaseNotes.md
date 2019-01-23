@@ -1,5 +1,30 @@
 # Release notes
 
+## 0.1.5
+- Added Transpose layer support for models coming from ONNX
+- Added BasicLSTM layer support for models coming from TF, now limited set LSTM networks should work
+- Added OneHot layer support for models coming from TF
+- Added MatMul and Identity layer support when converting models from ONNX
+- Added optimized path for Conv2D and Transpose layers with single batch executions
+- Fixed FMA performance issue on Metal GFX platforms
+- Added optimized path for Dense with single batch executions
+- Added fast optimized path for Sigmoid and Mul layers on CPU
+- Fixed issue when worker is executed with different batch sizes
+- Added ``pip`` requirements file for Python dependencies, check ``Tools/requirements.txt```
+- Added proof of concept Docker wrappers for running model conversion inside of Docker container. Check ``Tools/docker-tensorflow-to-barracuda.sh`` and ``Tools/docker-onnx-to-barracuda.sh``. Currently it was tested only on Mac host.
+- Fixed input shapes determination for Keras sequential model
+- Added metadata about input shapes to model. Look for ``Model.GetShapeByName()``
+- Added API to query constant Tensors embedded into network, look for ``Model.GetTensorByName()``
+- Added reference implementation for selu, abs, neg, ceil, floor, clip, rcp, log
+- Added support for Mean, Square, StridedSlice and Border2D layers
+- Added support for Swish activation, now it is automatically detected in models
+- Added support for DepthwiseConv2D, now most of the MobileNet nets should work
+- Fixed Tanh NaN issue when large argument is passed
+- RandomNormal and RandomUniform now supports either embedded shape constant OR previous tensor shape for input
+- Fixed Keras/TF/ONNX FusedBatchNorm/BatchNorm import and now it takes ``epsilon`` into account
+- Now Barracuda will fallback to CSharpFast if compute shaders are not supported on current platform
+- Improved compute kernel interop on Android 
+
 ## 0.1.4
 - Implemented fast Conv2DTrans. Useful for GAN type networks.
 - Fixed few ComputeBuffer handling issues.
