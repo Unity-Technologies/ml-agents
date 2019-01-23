@@ -83,6 +83,9 @@
 # VSCode hidden files
 *.vscode/
 
+# PyCharm hidden files
+*.idea/
+
 .DS_Store
 .ipynb_checkpoints
 
