@@ -1,15 +1,57 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using MLAgents;
 
 public class TennisArea : MonoBehaviour {
 
+    public static Queue<char> last1000BrainResults = new Queue<char>();
+    public static Queue<char> last1000AgentResults = new Queue<char>();
+    public static Queue<int> last1000Passes = new Queue<int>();
+
+    public static void AddPasses(int nbPasses){
+        last1000Passes.Enqueue(nbPasses);
+        if (last1000Passes.Count > 1000){
+            last1000Passes.Dequeue();
+        }
+    }
+
+    public static void AddResult(bool isLearnWinner, bool isAgentAWinner){
+        // Debug.Log("Add result learnIsWinner " + isLearnWinner + " AisWinner: " + isAgentAWinner);
+
+        if (isLearnWinner)
+            learningScore ++;
+        else
+            ghostScore++;
+
+        if (isAgentAWinner)
+            agentAScore++;
+        else  
+            agentBScore++;
+
+        last1000BrainResults.Enqueue(isLearnWinner ? 'L' : 'G');
+        if (last1000BrainResults.Count > 1000){
+            last1000BrainResults.Dequeue();
+        }
+
+        last1000AgentResults.Enqueue(isAgentAWinner ? 'A' : 'B');
+        if (last1000AgentResults.Count > 1000){
+            last1000AgentResults.Dequeue();
+        }
+    }
+    public static int agentAScore;
+    public static int agentBScore;
+    public static int ghostScore;
+    public static int learningScore;
+    public Brain learningBrain;
+    public Brain ghostBrain;
+
     public GameObject ball;
-    public GameObject agentA;
-    public GameObject agentB;
+    public TennisAgent agentA;
+    public TennisAgent agentB;
     private Rigidbody ballRb;
 
-    // Use this for initialization
+    private bool agentAIsLearning;
+
     void Start ()
     {
         ballRb = ball.GetComponent<Rigidbody>();
@@ -31,6 +73,11 @@ public class TennisArea : MonoBehaviour {
         ballRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.localScale = new Vector3(1, 1, 1);
         ball.GetComponent<HitWall>().lastAgentHit = -1;
+        bool agentAIsLearning = Random.Range(0,2) == 0f;
+        Brain agentABrain = agentAIsLearning ? learningBrain : ghostBrain;
+        Brain agentBBrain = agentAIsLearning ? ghostBrain : learningBrain;
+        agentA.SetBrain(agentABrain, agentAIsLearning);
+        agentB.SetBrain(agentBBrain, !agentAIsLearning);
     }
 
     void FixedUpdate() 

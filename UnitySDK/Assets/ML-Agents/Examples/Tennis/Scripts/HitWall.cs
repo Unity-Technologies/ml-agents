@@ -11,6 +11,8 @@ public class HitWall : MonoBehaviour
     private TennisAgent agentA;
     private TennisAgent agentB;
 
+    private int nbPasses = 0;
+
     // Use this for initialization
     void Start()
     {
@@ -23,16 +25,7 @@ public class HitWall : MonoBehaviour
     {
         if (other.name == "over")
         {
-            if (lastAgentHit == 0)
-            {
-                agentA.AddReward( 0.1f);
-            }
-            else
-            {
-                agentB.AddReward(0.1f);
-            }
-            lastAgentHit = 0;
-
+            nbPasses +=1;
         }
     }
 
@@ -44,81 +37,48 @@ public class HitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.AddReward( -0.01f);
-                    agentB.SetReward(0);
-                    agentB.score += 1;
+                    agentB.Score += 1;
                 }
                 else
                 {
-                    agentA.SetReward(0);
-                    agentB.AddReward(-0.01f);
-                    agentA.score += 1;
+                    agentA.Score += 1;
                 }
             }
             else if (collision.gameObject.name == "wallB")
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.AddReward( -0.01f);
-                    agentB.SetReward(0);
-                    agentB.score += 1;
+                    agentB.Score += 1;
                 }
                 else
                 {
-                    agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
-                    agentA.score += 1;
+                    agentA.Score += 1;
                 }
             }
             else if (collision.gameObject.name == "floorA")
             {
-                if (lastAgentHit == 0 || lastAgentHit == -1)
-                {
-                    agentA.AddReward( -0.01f);
-                    agentB.SetReward(0);
-                    agentB.score += 1;
-                }
-                else
-                {
-                    agentA.AddReward( -0.01f);
-                    agentB.SetReward(0);
-                    agentB.score += 1;
-
-                }
+                agentB.Score += 1;
             }
             else if (collision.gameObject.name == "floorB")
             {
-                if (lastAgentHit == 1 || lastAgentHit == -1)
-                {
-                    agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
-                    agentA.score += 1;
-                }
-                else
-                {
-                    agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
-                    agentA.score += 1;
-                }
+                agentA.Score += 1;
             }
             else if (collision.gameObject.name == "net")
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.AddReward( -0.01f);
-                    agentB.SetReward(0);
-                    agentB.score += 1;
+                    agentB.Score += 1;
                 }
                 else
                 {
-                    agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
-                    agentA.score += 1;
+                    agentA.Score += 1;
                 }
             }
             agentA.Done();
             agentB.Done();
             area.MatchReset();
+            TennisArea.AddPasses(nbPasses);
+            nbPasses = 0;
         }
 
         if (collision.gameObject.CompareTag("agent"))

@@ -8,36 +8,60 @@ public class TennisAgent : Agent
 {
     [Header("Specific to Tennis")]
     public GameObject ball;
+
+    private bool IsAgentA
+    {
+        get
+        {
+            return !invertX;
+        }
+    }
     public bool invertX;
-    public int score;
+
+    public bool isLearning;
+    public string matchState = "play";
+    private int score;
+    public int Score
+    {
+        get
+        {
+            return score;
+        }
+        set
+        {
+            int scoreChange = value - score;
+            if (scoreChange == 1)
+            {
+                matchState = "win";
+                opponent.matchState = "loss";
+                TennisArea.AddResult(isLearning, IsAgentA);
+            }
+            SetReward(1f);
+            score = value;
+        }
+    }
     public GameObject myArea;
 
-    private Text textComponent;
+    private TennisAgent opponent;
+
     private Rigidbody agentRb;
     private Rigidbody ballRb;
     private float invertMult;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
-    private const string CanvasName = "Canvas";
-    private const string ScoreBoardAName = "ScoreA";
-    private const string ScoreBoardBName = "ScoreB";
-
     public override void InitializeAgent()
     {
         agentRb = GetComponent<Rigidbody>();
         ballRb = ball.GetComponent<Rigidbody>();
-        var canvas = GameObject.Find(CanvasName);
-        GameObject scoreBoard;
-        if (invertX)
+        if (IsAgentA)
         {
-            scoreBoard = canvas.transform.Find(ScoreBoardBName).gameObject;
+            opponent = myArea.GetComponent<TennisArea>().agentB;
         }
         else
         {
-            scoreBoard = canvas.transform.Find(ScoreBoardAName).gameObject;
+            opponent = myArea.GetComponent<TennisArea>().agentA;
         }
-        textComponent = scoreBoard.GetComponent<Text>();
     }
 
     public override void CollectObservations()
@@ -51,6 +75,10 @@ public class TennisAgent : Agent
         AddVectorObs(ball.transform.position.y - myArea.transform.position.y);
         AddVectorObs(invertMult * ballRb.velocity.x);
         AddVectorObs(ballRb.velocity.y);
+
+        //Results of the match (opponent|play/win/loss)
+        SetTextObs(opponent.Id + "|" + matchState);
+        matchState = "play";
     }
 
 
@@ -58,7 +86,7 @@ public class TennisAgent : Agent
     {
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
-        
+
         if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
             agentRb.velocity = new Vector3(agentRb.velocity.x, 7f, 0f);
@@ -66,15 +94,13 @@ public class TennisAgent : Agent
 
         agentRb.velocity = new Vector3(moveX * 30f, agentRb.velocity.y, 0f);
 
-        if (invertX && transform.position.x - transform.parent.transform.position.x < -invertMult || 
+        if (invertX && transform.position.x - transform.parent.transform.position.x < -invertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -invertMult)
         {
-                transform.position = new Vector3(-invertMult + transform.parent.transform.position.x, 
-                                                            transform.position.y, 
+                transform.position = new Vector3(-invertMult + transform.parent.transform.position.x,
+                                                            transform.position.y,
                                                             transform.position.z);
         }
-
-        textComponent.text = score.ToString();
     }
 
     public override void AgentReset()
@@ -83,5 +109,11 @@ public class TennisAgent : Agent
 
         transform.position = new Vector3(-invertMult * Random.Range(6f, 8f), -1.5f, 0f) + transform.parent.transform.position;
         agentRb.velocity = new Vector3(0f, 0f, 0f);
+    }
+
+    public void SetBrain(Brain brain, bool isLearning)
+    {
+        this.brain = brain;
+        this.isLearning = isLearning;
     }
 }

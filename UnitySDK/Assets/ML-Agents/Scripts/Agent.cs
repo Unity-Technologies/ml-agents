@@ -310,6 +310,11 @@ namespace MLAgents
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         int id;
+        public int Id{
+            get{
+                return id;
+            }
+        }
 
         /// Keeps track of the actions that are masked at each step.
         private ActionMasker actionMasker;
