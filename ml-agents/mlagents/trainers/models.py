@@ -299,10 +299,10 @@ class LearningModel(object):
         mu = tf.layers.dense(hidden_policy, self.act_size[0], activation=None,
                              kernel_initializer=LearningModel.scaled_init(0.01))
 
-        log_sigma_sq = tf.get_variable("log_sigma_squared", [self.act_size[0]], dtype=tf.float32,
+        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [self.act_size[0]], dtype=tf.float32,
                                        initializer=tf.zeros_initializer())
 
-        sigma_sq = tf.exp(log_sigma_sq)
+        sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(shape=[None, self.act_size[0]], dtype=tf.float32,
                                       name='epsilon')
@@ -314,11 +314,11 @@ class LearningModel(object):
 
         # Compute probability of model output.
         all_probs = - 0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq \
-                    - 0.5 * tf.log(2.0 * np.pi) - 0.5 * log_sigma_sq
+                    - 0.5 * tf.log(2.0 * np.pi) - 0.5 * self.log_sigma_sq
 
         self.all_log_probs = tf.identity(all_probs, name='action_probs')
 
-        self.entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + log_sigma_sq)
+        self.entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + self.log_sigma_sq)
 
         self.create_value_heads(self.stream_names, hidden_value)
 
