@@ -475,6 +475,10 @@ if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the
 platform.
 
+Note that all of these environments make use of the `Done()` method, which manually
+terminates an episode when a termination condition is reached. This can be 
+called independently of the `Max Step` property.
+
 ## Agent Properties
 
 ![Agent Inspector](images/agent.png)

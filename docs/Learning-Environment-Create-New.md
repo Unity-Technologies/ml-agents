@@ -154,7 +154,8 @@ public class RollerAcademy : Academy { }
 
 The default settings for the Academy properties are also fine for this
 environment, so we don't need to change anything for the RollerAcademy component
-in the Inspector window.
+in the Inspector window. You may not have the RollerBrain in the Broadcast Hub yet, 
+more on that later. 
 
 ![The Academy properties](images/mlagents-NewTutAcademy.png)
 
@@ -546,6 +547,44 @@ has successfully *solved* the problem.
 you pass to the `mlagents-learn` command for each training run. If you use 
 the same id value, the statistics for multiple runs are combined and become 
 difficult to interpret.
+
+## Optional: Multiple Training Areas within the Same Scene
+
+In many of the [example environments](Learning-Environment-Examples.md), many copies of 
+the training area are instantiated in the scene. This generally speeds up training,
+allowing the environment to gather many experiences in parallel. This can be achieved
+simply by instantiating many Agents which share the same Brain. Use the following steps to
+parallelize your RollerBall environment.  
+
+### Instantiating Multiple Training Areas
+
+1. Right-click on your Project Hierarchy and create a new empty GameObject. 
+   Name it TrainingArea. 
+2. Reset the TrainingArea’s Transform so that it is at (0,0,0) with Rotation (0,0,0) 
+   and Scale (1,1,1). 
+3. Drag the Floor, Target, and RollerAgent GameObjects in the Hierarchy into the 
+   TrainingArea GameObject. 
+4. Drag the TrainingArea GameObject, along with its attached GameObjects, into your 
+   Assets browser, turning it into a prefab.
+5. You can now instantiate copies of the TrainingArea prefab. Drag them into your scene, 
+   positioning them so that they do not overlap. 
+
+### Editing the Scripts 
+
+You will notice that in the previous section, we wrote our scripts assuming that our 
+TrainingArea was at (0,0,0), performing checks such as `this.transform.position.y < 0` 
+to determine whether our agent has fallen off the platform. We will need to change 
+this if we are to use multiple TrainingAreas throughout the scene. 
+
+A quick way to adapt our current code is to use 
+localPosition rather than position, so that our position reference is in reference 
+to the prefab TrainingArea's location, and not global coordinates. 
+
+1. Replace all references of `this.transform.position` in RollerAgent.cs with `this.transform.localPosition`.
+2. Replace all references of `Target.position` in RollerAgent.cs with `Target.localPosition`.
+
+This is only one way to achieve this objective. Refer to the 
+[example environments](Learning-Environment-Examples.md) for other ways we can achieve relative positioning.
 
 ## Review: Scene Layout
 

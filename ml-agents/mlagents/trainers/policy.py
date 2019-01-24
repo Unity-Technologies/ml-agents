@@ -179,6 +179,7 @@ class Policy(object):
                 clear_devices=True, initializer_nodes='', input_saver='',
                 restore_op_name='save/restore_all',
                 filename_tensor_name='save/Const:0')
+            logger.info('Exported ' + self.model_path + '.bytes file')
 
         tf2bc.convert(self.model_path + '/frozen_graph_def.pb', self.model_path + '.nn')
 
