@@ -279,7 +279,7 @@ def trainer_controller_with_start_learning_mocks():
     tc.trainers = {'testbrain': trainer_mock}
     tc.take_step = MagicMock()
 
-    def take_step_sideeffect(env, curr_info, global_step):
+    def take_step_sideeffect(env, curr_info):
         tc.trainers['testbrain'].get_step += 1
         if tc.trainers['testbrain'].get_step > 10:
             raise KeyboardInterrupt
@@ -382,7 +382,7 @@ def test_take_step_resets_env_on_global_done():
     env_mock.reset = MagicMock(return_value=brain_info_mock)
     env_mock.global_done = True
 
-    tc.take_step(env_mock, brain_info_mock, 0)
+    tc.take_step(env_mock, brain_info_mock)
     env_mock.reset.assert_called_once()
 
 
@@ -407,7 +407,7 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     env_mock.reset = MagicMock(return_value=curr_info_mock)
     env_mock.global_done = False
 
-    tc.take_step(env_mock, curr_info_mock, 0)
+    tc.take_step(env_mock, curr_info_mock)
     env_mock.reset.assert_not_called()
     trainer_mock.take_action.assert_called_once_with(curr_info_mock)
     env_mock.step.assert_called_once_with(

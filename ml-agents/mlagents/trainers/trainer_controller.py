@@ -196,8 +196,7 @@ class TrainerController(object):
         for _, t in self.trainers.items():
             self.logger.info(t)
 
-        global_step = 0  # This is only for saving the model
-        curr_info = self._reset_env()
+        curr_info = self._reset_env(env)
         if self.train_model:
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters',
@@ -211,7 +210,7 @@ class TrainerController(object):
                   or not self.train_model:
                 new_info = self.take_step(env, curr_info)
                 self.global_step += 1
-                if global_step % self.save_freq == 0 and self.global_step != 0 \
+                if self.global_step % self.save_freq == 0 and self.global_step != 0 \
                         and self.train_model:
                     # Save Tensorflow model
                     self._save_model(steps=self.global_step)
