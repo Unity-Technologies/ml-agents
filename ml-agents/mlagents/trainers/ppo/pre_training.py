@@ -35,8 +35,7 @@ class PreTraining(object):
             "update": self.update_batch
         }
         if parameters["normalize"]:
-            self.out_dict['update_mean'] = self.policy_model.update_mean
-            self.out_dict['update_variance'] = self.policy_model.update_variance
+            self.out_dict['update_normalization'] = self.policy_model.update_normalization
             self.out_dict['increment_step'] = self.policy_model.increment_step
         # self.preprocess_returns()
         # raise("error")

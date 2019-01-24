@@ -83,10 +83,9 @@ class PPOPolicy(Policy):
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
-            self.inference_dict["memory_out"] = self.model.memory_out
-        if is_training and self.use_vec_obs and trainer_params["normalize"]:
-            self.inference_dict["update_mean"] = self.model.update_mean
-            self.inference_dict["update_variance"] = self.model.update_variance
+            self.inference_dict['memory_out'] = self.model.memory_out
+        if is_training and self.use_vec_obs and trainer_params['normalize'] and pre_trainer is None and not load:
+            self.inference_dict['update_mean'] = self.model.update_normalization
 
         self.update_dict = {'value_loss': self.model.value_loss,
                             'policy_loss': self.model.policy_loss,
