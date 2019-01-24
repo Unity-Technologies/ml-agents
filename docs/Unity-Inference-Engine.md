@@ -12,7 +12,7 @@ The Unity Inference Engine supposedly works on any Unity supported platform
 but we only tested for the following platforms :
 
 * Linux 64 bits
-* Mac OS X 64 bits
+* Mac OS X 64 bits (`OpenGLCore` Graphics API is not supported)
 * Windows 64 bits
 * iOS
 * Android
