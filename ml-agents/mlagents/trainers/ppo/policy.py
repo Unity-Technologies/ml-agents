@@ -7,6 +7,7 @@ from mlagents.trainers.ppo.reward_signals.gail import GAILSignal
 from mlagents.trainers.ppo.reward_signals.curiosity import CuriositySignal
 from mlagents.trainers.ppo.reward_signals.extrinsic import ExtrinsicSignal
 from mlagents.trainers.ppo.reward_signals.entropy import EntropySignal
+from mlagents.trainers.ppo.pre_training import PreTraining
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -58,10 +59,19 @@ class PPOPolicy(Policy):
             if 'entropy' in reward_strengths.keys():
                 self.reward_signals['entropy'] = EntropySignal(self, reward_strengths['entropy'])
 
+        pre_trainer = None
         if load:
             self._load_graph()
         else:
+            if trainer_params['pre_training']:
+                with self.graph.as_default():
+                    pre_trainer = PreTraining(self.sess,
+                                              self.model,
+                                              self.brain,
+                                              trainer_params)
             self._initialize_graph()
+        if pre_trainer:
+                pre_trainer.update_policy()
 
         self.inference_dict = {
             "action": self.model.output,
