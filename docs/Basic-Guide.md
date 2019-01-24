@@ -26,7 +26,11 @@ Unity settings.
 6. Go to **File** > **Save Project**
 
 ## Running a Pre-trained Model
-We've included pre-trained models for the 3D Ball example.
+
+We include pre-trained models for our agents (`.nn` files) and we use the 
+[Unity Inference Engine](Unity-Inference-Engine.md) to run these models 
+inside Unity. In this section, we will use the pre-trained model for the 
+3D Ball example.
 
 1. In the **Project** window, go to the `Assets/ML-Agents/Examples/3DBall/Scenes` folder
    and open the `3DBall` scene file.
@@ -50,7 +54,9 @@ We've included pre-trained models for the 3D Ball example.
    folder.
 7. Drag the `3DBallLearning` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
    folder to the **Model** field of the **3DBallLearning** Brain in the **Inspector** window. __Note__ : All of the brains should now have `3DBallLearning` as the TensorFlow model in the `Model` property 
-8. Click the **Play** button and you will see the platforms balance the balls
+8. Select the **InferenceDevice** to use for this model (CPU or GPU). 
+   _Note: CPU is faster for the majority of ML-Agents toolkit generated models_
+9. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
    ![Running a pretrained model](images/running-a-pretrained-model.gif)
@@ -69,7 +75,7 @@ More information and documentation is provided in the
 
 ## Training the Brain with Reinforcement Learning
 
-### Setting up the enviornment for training
+### Setting up the environment for training
 
 To set up the environment for training, you will need to specify which agents are contributing
 to the training and which Brain is being trained. You can only perform training with

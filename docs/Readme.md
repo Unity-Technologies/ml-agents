@@ -41,6 +41,10 @@
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
+## Inference
+
+* [Unity Inference Engine](Unity-Inference-Engine.md)
+
 ## Help
 
 * [Migrating from earlier versions of ML-Agents](Migrating.md)
