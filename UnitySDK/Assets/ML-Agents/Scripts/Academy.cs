@@ -97,6 +97,10 @@ namespace MLAgents
         
         private const string kApiVersion = "API-6";
 
+        /// Temporary storage for global gravity value
+        /// Used to restore oringal value when deriving Academy modifies it 
+        private Vector3 originalGravity;
+
         // Fields provided in the Inspector
 
         [SerializeField]
@@ -251,6 +255,8 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
+            originalGravity = Physics.gravity;
+            
             InitializeAcademy();
             Communicator communicator = null;
 
@@ -609,6 +615,14 @@ namespace MLAgents
         void FixedUpdate()
         {
             EnvironmentStep();
+        }
+
+        /// <summary>
+        /// Cleanup function
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            Physics.gravity = originalGravity;
         }
     }
 }
