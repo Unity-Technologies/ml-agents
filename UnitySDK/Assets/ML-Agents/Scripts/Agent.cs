@@ -84,7 +84,8 @@ namespace MLAgents
         /// User-customizable object for sending structured output from Unity to Python in response
         /// to an action in addition to a scalar reward.
         /// </summary>
-        public CustomOutput customOutput;
+        public CustomObservation customObservation;
+        public CustomActionResult customActionResult;
 
         /// <summary>
         /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
@@ -103,7 +104,8 @@ namespace MLAgents
                 MaxStepReached = maxStepReached,
                 Done = done,
                 Id = id,
-                CustomOutput = customOutput
+                CustomObservation = customObservation,
+                CustomActionResult = customActionResult
             };
             if (memories != null)
             {
@@ -136,6 +138,7 @@ namespace MLAgents
         public string textActions;
         public List<float> memories;
         public float value;
+        public CommunicatorObjects.CustomAction customAction;
     }
 
     /// <summary>
@@ -548,7 +551,8 @@ namespace MLAgents
                           * param.numStackedVectorObservations]);
 
             info.visualObservations = new List<Texture2D>();
-            info.customOutput = null;
+            info.customObservation = null;
+            info.customActionResult = null;
         }
 
         /// <summary>
@@ -825,6 +829,25 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Specifies the agent behavior at every step based on the provided
+        /// action.
+        /// </summary>
+        /// <param name="vectorAction">
+        /// Vector action. Note that for discrete actions, the provided array
+        /// will be of length 1.
+        /// </param>
+        /// <param name="textAction">Text action.</param>
+        /// <param name="customAction">
+        /// A custom action, defined by the user as custom protobuffer message. Useful if the action is hard to encode
+        /// as either a flat vector or a single string.
+        /// </param>
+        public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomAction customAction)
+        {
+            // We fall back to not using the custom action if the subclassed Agent doesn't override this method.
+            AgentAction(vectorAction, textAction);
+        }
+
+        /// <summary>
         /// Specifies the agent behavior when done and 
         /// <see cref="AgentParameters.resetOnDone"/> is false. This method can be
         /// used to remove the agent from the scene.
@@ -883,6 +906,15 @@ namespace MLAgents
         public void UpdateTextAction(string textActions)
         {
             action.textActions = textActions;
+        }
+
+        /// <summary>
+        /// Updates the custom action.
+        /// </summary>
+        /// <param name="customAction">Custom action.</param>
+        public void UpdateCustomAction(CommunicatorObjects.CustomAction customAction)
+        {
+            action.customAction = customAction;
         }
 
         /// <summary>
@@ -1014,7 +1046,7 @@ namespace MLAgents
             if ((requestAction) && (brain != null))
             {
                 requestAction = false;
-                AgentAction(action.vectorActions, action.textActions);
+                AgentAction(action.vectorActions, action.textActions, action.customAction);
             }
 
             if ((stepCount >= agentParameters.maxStep)
@@ -1088,21 +1120,17 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sets the custom output for the agent for this episode.
+        /// Sets the custom observation for the agent for this episode.
         /// </summary>
-        /// <param name="customOutput">New value of the agent's custom output.</param>
-        public void SetCustomOutput(CustomOutput customOutput)
+        /// <param name="customObservation">New value of the agent's custom observation.</param>
+        public void SetCustomObservation(CustomObservation customObservation)
         {
-            info.customOutput = customOutput;
+            info.customObservation = customObservation;
         }
 
-        /// <summary>
-        /// Creates a new instance of a custom output object.
-        /// </summary>
-        /// <returns>A reference to a new CustomOutput object.</returns>
-        static public CustomOutput CreateCustomOutput()
+        public void SetCustomActionResult(CustomActionResult actionResult)
         {
-            return new CustomOutput();
+            info.customActionResult = actionResult;
         }
     }    
 }
