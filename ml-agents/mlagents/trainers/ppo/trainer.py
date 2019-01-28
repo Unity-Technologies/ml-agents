@@ -224,7 +224,7 @@ class PPOTrainer(Trainer):
                             epsilons[idx])
                     else:
                         self.training_buffer[agent_id]['action_mask'].append(
-                            stored_info.action_masks[idx])
+                            stored_info.action_masks[idx], padding_value=1)
                     a_dist = stored_take_action_outputs['log_probs']
                     value = stored_take_action_outputs['value']
                     self.training_buffer[agent_id]['actions'].append(actions[idx])
