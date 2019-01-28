@@ -101,6 +101,14 @@ namespace MLAgents
         /// Used to restore oringal value when deriving Academy modifies it 
         private Vector3 originalGravity;
 
+        /// Temporary storage for global fixedDeltaTime value
+        /// Used to restore oringal value when deriving Academy modifies it 
+        private float originalFixedDeltaTime;
+        
+        /// Temporary storage for global maximumDeltaTime value
+        /// Used to restore oringal value when deriving Academy modifies it 
+        private float originalMaximumDeltaTime;
+
         // Fields provided in the Inspector
 
         [SerializeField]
@@ -256,6 +264,8 @@ namespace MLAgents
         private void InitializeEnvironment()
         {
             originalGravity = Physics.gravity;
+            originalFixedDeltaTime = Time.fixedDeltaTime;
+            originalMaximumDeltaTime = Time.maximumDeltaTime;
             
             InitializeAcademy();
             Communicator communicator = null;
@@ -623,6 +633,8 @@ namespace MLAgents
         protected virtual void OnDestroy()
         {
             Physics.gravity = originalGravity;
+            Time.fixedDeltaTime = originalFixedDeltaTime;
+            Time.maximumDeltaTime = originalMaximumDeltaTime;
         }
     }
 }
