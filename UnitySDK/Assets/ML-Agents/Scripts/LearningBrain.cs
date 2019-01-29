@@ -259,7 +259,7 @@ namespace MLAgents
             inputs.Clear();
         }
 
-        public void OnDestroy()
+        public void OnDisable()
         {
             _engine?.Dispose();
         }
