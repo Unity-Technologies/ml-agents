@@ -1,4 +1,5 @@
 #if EXPERIMENTAL_KERNELS_ENABLED
+/*
 #pragma kernel Dense
 #pragma kernel DenseTiled
 #pragma kernel Dense10x16
@@ -15,6 +16,7 @@
 #pragma kernel Softmax256x2
 #pragma kernel MaxPooling2D
 #pragma kernel MaxPooling2D16x4x4
+*/
 /*
 #pragma kernel Conv2D_Kernel3x3_32Channel
 #pragma kernel Conv2D_Kernel3x3_1Channel
@@ -38,8 +40,8 @@
 // DENSE_OUT (y,0,x,0) -> (y,0,0,x) --> (y,x)
 
 
-#pragma kernel Conv2D_Kmod16_Nmod8_KNY
-#pragma kernel Conv2D_Kernel3x3_64
+//#pragma kernel Conv2D_Kmod16_Nmod8_KNY
+//#pragma kernel Conv2D_Kernel3x3_64
 
 #define BOUNDS_CHECKS 0
 
@@ -4278,5 +4280,3 @@ void Conv2DTrans_L1Cached64_Reg_Loop_safe(uint3 groupID : SV_GroupID, uint3 grou
 }
 */
 #endif
-
-
