@@ -13,12 +13,13 @@ class GAILModel(object):
         :param encoding_size: The encoding size for the encoder
         """
         self.h_size = h_size
-        self.z_size = 32
+        self.z_size = 128
         self.beta = 0.1
+        self.mutual_information = 0.5
         self.policy_model = policy_model
         self.encoding_size = encoding_size
         self.use_vail = True
-        self.use_actions = True
+        self.use_actions = False # Not using actions
         self.make_inputs()
         self.create_network()
         self.create_loss(lr)
@@ -51,8 +52,9 @@ class GAILModel(object):
         if self.policy_model.vec_obs_size > 0:
             self.obs_in_expert = tf.placeholder(
                 shape=[None, self.policy_model.vec_obs_size], dtype=tf.float32)
-            encoded_expert_list.append(self.obs_in_expert)
-            encoded_policy_list.append(self.policy_model.vector_in)
+            # TODO : Experiment with normalization, the normalization could change with time
+            encoded_expert_list.append(self.policy_model.normalize_vector_obs(self.obs_in_expert))
+            encoded_policy_list.append(self.policy_model.normalize_vector_obs(self.policy_model.vector_in))
 
         if self.policy_model.vis_obs_size > 0:
             self.expert_visual_in = []
@@ -110,41 +112,40 @@ class GAILModel(object):
                 hidden_1, self.h_size, activation=tf.nn.elu,
                 name="d_hidden_2", reuse=reuse)
 
+            z_mean = None
             if self.use_vail:
                 # Latent representation
-                self.z_mean = tf.layers.dense(
+                z_mean = tf.layers.dense(
                     hidden_2,
                     self.z_size,
                     reuse=reuse,
                     name="z_mean",
                     kernel_initializer=LearningModel.scaled_init(0.01))
-                self.z_log_sigma_sq = tf.layers.dense(
-                    hidden_2,
-                    self.z_size,
-                    reuse=reuse,
-                    name="z_log_sigma_sq",
-                    kernel_initializer=LearningModel.scaled_init(0.01))
-                self.z_sigma_sq = tf.exp(self.z_log_sigma_sq)
-                self.z_sigma = tf.sqrt(self.z_sigma_sq)
+
                 self.noise = tf.random_normal(shape=[self.z_size])
 
                 # Sampled latent code
-                self.z = self.z_mean + self.z_sigma * self.noise
+                self.z = z_mean + self.z_sigma * self.noise
                 estimate_input = self.z
             else:
                 estimate_input = hidden_2
 
             estimate = tf.layers.dense(estimate_input, 1, activation=tf.nn.sigmoid,
                                        name="d_estimate", reuse=reuse)
-            return estimate
+            return estimate, z_mean
 
     def create_network(self):
         """
         Helper for creating the intrinsic reward nodes
         """
-        self.expert_estimate = self.create_encoder(
+        if self.use_vail:
+            self.z_sigma = tf.get_variable("sigma_vail", self.z_size, dtype=tf.float32,
+                                           initializer=tf.ones_initializer())
+            self.z_sigma_sq = self.z_sigma * self.z_sigma
+            self.z_log_sigma_sq = tf.log(self.z_sigma_sq + 1e-7)
+        self.expert_estimate, self.z_mean_expert = self.create_encoder(
             self.encoded_expert, self.expert_action, self.done_expert, False)
-        self.policy_estimate = self.create_encoder(
+        self.policy_estimate, self.z_mean_policy = self.create_encoder(
             self.encoded_policy, self.policy_model.selected_actions, self.done_policy, True)
         self.discriminator_score = tf.reshape(self.policy_estimate, [-1], name="GAIL_reward")
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
@@ -155,8 +156,7 @@ class GAILModel(object):
         The larger Beta, the stronger the importance of the kl divergence in the loss function.
         :param kl_div:
         """
-        self.beta = max(0, self.beta + 1e-5 * (kl_div - 0.5))
-        # print(self.beta, kl_div)
+        self.beta = max(1e-7, self.beta + 1e-3 * (kl_div - self.mutual_information))
 
     def create_loss(self, learning_rate):
         """
@@ -171,9 +171,10 @@ class GAILModel(object):
 
         if self.use_vail:
             # KL divergence loss (encourage latent representation to be normal)
-            self.kl_loss = tf.reduce_mean(-0.5 * tf.reduce_sum(
-                1 + self.z_log_sigma_sq - tf.square(self.z_mean) - tf.exp(self.z_log_sigma_sq), 1))
-            self.loss = self.beta * (self.kl_loss - 0.5) + self.disc_loss
+            self.kl_loss = tf.reduce_mean(- tf.reduce_sum(
+                1 + self.z_log_sigma_sq - 0.5*tf.square(self.z_mean_expert) -
+                0.5*tf.square(self.z_mean_policy) - tf.exp(self.z_log_sigma_sq), 1))
+            self.loss = self.beta * (self.kl_loss - self.mutual_information) + self.disc_loss
         else:
             self.loss = self.disc_loss
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
