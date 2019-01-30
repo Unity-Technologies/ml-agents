@@ -47,7 +47,7 @@ class GAILSignal(RewardSignal):
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
         return scaled_reward, unscaled_reward
 
-    def update(self, policy_buffer, n_sequences, max_batches):
+    def update(self, policy_buffer, n_sequences=1024, max_batches=100):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
@@ -63,21 +63,45 @@ class GAILSignal(RewardSignal):
             self.demonstration_buffer.update_buffer['actions']) // n_sequences
         possible_policy_batches = len(policy_buffer.update_buffer['actions']) // n_sequences
         possible_batches = min(possible_policy_batches, possible_demo_batches)
-        if max_batches == 0:
-            num_batches = possible_batches
-        else:
-            num_batches = min(possible_batches, max_batches)
-        for i in range(num_batches):
-            demo_update_buffer = self.demonstration_buffer.update_buffer
-            policy_update_buffer = policy_buffer.update_buffer
-            start = i * n_sequences
-            end = (i + 1) * n_sequences
-            mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
-            mini_batch_policy = policy_update_buffer.make_mini_batch(start, end)
-            run_out = self._update_batch(mini_batch_demo, mini_batch_policy)
-            loss = run_out['gail_loss']
-            batch_losses.append(loss)
+
+        # for reporting
+        kl_loss = []
+        pos=[]
+        pes=[]
+        zlss = []
+        zme=[]
+        zmp = []
+        # end for reporting
+        n_epoch = 3
+        for epoch in range(n_epoch):
+            if max_batches == 0:
+                num_batches = possible_batches
+            else:
+                num_batches = min(possible_batches, max_batches)
+            for i in range(num_batches):
+                demo_update_buffer = self.demonstration_buffer.update_buffer
+                policy_update_buffer = policy_buffer.update_buffer
+                start = i * n_sequences
+                end = (i + 1) * n_sequences
+                mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
+                mini_batch_policy = policy_update_buffer.make_mini_batch(start, end)
+                run_out = self._update_batch(mini_batch_demo, mini_batch_policy)
+                loss = run_out['gail_loss']
+                # for reporting
+                kl_loss.append(run_out['kl'])
+                pos.append(run_out['po'])
+                pes.append(run_out['pe'])
+                zlss.append(run_out['zlss'])
+                zmp.append(run_out['zmp'])
+                zme.append(run_out['zme'])
+                # end for reporting
+                batch_losses.append(loss)
         self.has_updated = True
+
+        # for reporting
+        print('n_epoch','beta', 'kl_loss', 'policy_estimate', 'expert_estimate', 'z_mean_expert', 'z_mean_policy', 'z_log_sig_sq')
+        print(n_epoch, self.model.beta, np.mean(kl_loss), np.mean(pos), np.mean(pes), np.mean(zme), np.mean(zmp), np.mean(zlss))
+        # end for reporting
         return np.mean(batch_losses)
 
     def _update_batch(self, mini_batch_demo, mini_batch_policy):
@@ -123,13 +147,20 @@ class GAILSignal(RewardSignal):
             feed_dict[self.model.obs_in_expert] = mini_batch_demo['vector_obs'].reshape(
                 [-1, self.policy.vec_obs_size])
 
+        # for reporting
+        po, pe, zlss, zme, zmp = None, None, None, None, None
+        kl_loss = None
+        # end for reporting
         if self.model.use_vail:
-            loss, _, kl_loss = self.policy.sess.run([self.model.loss, self.model.update_batch,
-                                                     self.model.kl_loss],
+            loss, _, kl_loss, po, pe, zlss, zme, zmp = self.policy.sess.run([self.model.loss, self.model.update_batch,
+                                                     self.model.kl_loss
+                                                        , self.model.policy_estimate, self.model.expert_estimate,
+                                                             self.model.z_log_sigma_sq, self.model.z_mean_expert, self.model.z_mean_policy],
                                                     feed_dict=feed_dict)
             self.model.update_beta(kl_loss)
         else:
-            loss, _ = self.policy.sess.run([self.model.loss, self.model.update_batch],
+            loss, _, po, pe = self.policy.sess.run([self.model.loss, self.model.update_batch
+                                            , self.model.policy_estimate, self.model.expert_estimate],
                                            feed_dict=feed_dict)
-        run_out = {'gail_loss': loss}
+        run_out = {'gail_loss': loss, 'po': po,'pe': pe, 'kl':kl_loss, "zlss":zlss, "zme":zme, 'zmp':zmp}
         return run_out
