@@ -2,23 +2,10 @@
     "name": "MacBLAS",
     "references": [],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
-    "excludePlatforms": [
-        "Android",
-        "iOS",
-        "LinuxStandalone32",
-        "LinuxStandalone64",
-        "LinuxStandaloneUniversal",
-        "Nintendo3DS",
-        "PS4",
-        "PSVita",
-        "Switch",
-        "tvOS",
-        "WSA",
-        "WebGL",
-        "WindowsStandalone32",
-        "WindowsStandalone64",
-        "XboxOne"
+    "includePlatforms": [
+        "Editor",
+        "macOSStandalone"
     ],
+    "excludePlatforms": [],
     "allowUnsafeCode": true
 }

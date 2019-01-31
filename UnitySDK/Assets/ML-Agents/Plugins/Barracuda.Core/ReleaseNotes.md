@@ -1,29 +1,36 @@
 # Release notes
 
+## 0.1.6
+- Added activation type print in verbose mode
+- Added fast and parallel CPU implementation for Swish, Relu, Add, Sub, Div, Min, Max, Tanh, Exp
+- Removed duplicate profiler blocks for ops
+- Improved scheduling on CPU for small batches of data
+- Fixed compatibility with Unity 2019.2.x
+
 ## 0.1.5
-- Added Transpose layer support for models coming from ONNX
-- Added BasicLSTM layer support for models coming from TF, now limited set LSTM networks should work
-- Added OneHot layer support for models coming from TF
-- Added MatMul and Identity layer support when converting models from ONNX
-- Added optimized path for Conv2D and Transpose layers with single batch executions
-- Fixed FMA performance issue on Metal GFX platforms
-- Added optimized path for Dense with single batch executions
-- Added fast optimized path for Sigmoid and Mul layers on CPU
-- Fixed issue when worker is executed with different batch sizes
-- Added ``pip`` requirements file for Python dependencies, check ``Tools/requirements.txt```
+- Added Transpose, MatMul and Indentity layer support for models exported from ONNX.
+- Added BasicLSTM layer support for models exported from TF. Limited set of LSTM networks should work now.
+- Added DepthwiseConv2D layer support. Most of the networks based on the MobileNet should work now.
+- Added OneHot layer support for models exported from TF.
+- Added optimized path for Conv2D, Dense and Transpose layers with single batch executions. Performance gain up to 100%.
+- Fixed FMA performance issue on Metal GFX platforms.
+- Added fast optimized path for Sigmoid and Mul layers on CPU.
+- Fixed issue when worker is executed with different batch sizes.
+- Added ``pip`` requirements file for Python dependencies, check ``Tools/requirements.txt```.
 - Added proof of concept Docker wrappers for running model conversion inside of Docker container. Check ``Tools/docker-tensorflow-to-barracuda.sh`` and ``Tools/docker-onnx-to-barracuda.sh``. Currently it was tested only on Mac host.
-- Fixed input shapes determination for Keras sequential model
-- Added metadata about input shapes to model. Look for ``Model.GetShapeByName()``
-- Added API to query constant Tensors embedded into network, look for ``Model.GetTensorByName()``
-- Added reference implementation for selu, abs, neg, ceil, floor, clip, rcp, log
-- Added support for Mean, Square, StridedSlice and Border2D layers
-- Added support for Swish activation, now it is automatically detected in models
-- Added support for DepthwiseConv2D, now most of the MobileNet nets should work
-- Fixed Tanh NaN issue when large argument is passed
-- RandomNormal and RandomUniform now supports either embedded shape constant OR previous tensor shape for input
-- Fixed Keras/TF/ONNX FusedBatchNorm/BatchNorm import and now it takes ``epsilon`` into account
-- Now Barracuda will fallback to CSharpFast if compute shaders are not supported on current platform
-- Improved compute kernel interop on Android 
+- Refactored model importers for easier integration with ML Agents.
+- Fixed input shape determination for Keras sequential model.
+- Added metadata about input shapes to model. Look for ``Model.GetShapeByName()``.
+- Added API to query constant Tensors embedded into network, look for ``Model.GetTensorByName()``.
+- Added reference implementations for Selu, Abs, Neg, Ceil, Floor, Clip, Rcp, Log layers.
+- Added support for Mean, Square, StridedSlice and Border2D layers.
+- Added support for Swish activation, now it is automatically detected in models.
+- Fixed Tanh NaN issue when large argument is passed.
+- RandomNormal and RandomUniform now supports either embedded shape constant OR previous tensor shape for input.
+- Fixed Keras/TF/ONNX FusedBatchNorm/BatchNorm import and now it takes ``epsilon`` into account.
+- Now Barracuda will fallback to CSharpFast if compute shaders are not supported on the current platform.
+- Improved compute kernel interop on Android.
+- Implemented Pix2Pix model (.pict) importer.
 
 ## 0.1.4
 - Implemented fast Conv2DTrans. Useful for GAN type networks.
@@ -40,7 +47,6 @@
 - Improved memory handling, now less GC allocations should be made per inference execution.
 
 ## 0.1.3
-
 - Improved Barracuda support for Unity Profiler.
 - Cleaned up Barracuda APIs.
 - Added direct ``Texture`` input support. Look for ``TextureAsTensorData``. The following types of texture supported as input: ``Texture2D``, ``Texture2DArray``, ``Texture3D``, ``RenderTexture``.
@@ -52,7 +58,6 @@
 - Added automated test for pix2pix GAN.
 
 ## 0.1.2
-
 - Barracuda now is also available as preview package. Look for ``com.unity.barracuda`` in https://staging-packages.unity.com registry.
 - Conv2D layers are now *up to 30x faster* with ``CSharpFast`` backend (``ComputeFast`` remains best backend for convolutional networks).
 - Added profiler sample for ``Fetch()``.

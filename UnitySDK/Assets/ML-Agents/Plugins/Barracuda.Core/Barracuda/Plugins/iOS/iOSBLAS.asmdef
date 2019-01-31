@@ -2,23 +2,10 @@
     "name": "iOSBLAS",
     "references": [],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
-    "excludePlatforms": [
-        "Android",
-        "LinuxStandalone32",
-        "LinuxStandalone64",
-        "LinuxStandaloneUniversal",
-        "macOSStandalone",
-        "Nintendo3DS",
-        "PS4",
-        "PSVita",
-        "Switch",
-        "tvOS",
-        "WSA",
-        "WebGL",
-        "WindowsStandalone32",
-        "WindowsStandalone64",
-        "XboxOne"
+    "includePlatforms": [
+        "Editor",
+        "iOS"
     ],
+    "excludePlatforms": [],
     "allowUnsafeCode": true
 }
