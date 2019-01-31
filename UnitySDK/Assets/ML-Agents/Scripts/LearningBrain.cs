@@ -35,18 +35,11 @@ namespace MLAgents
         private TensorGenerator _tensorGenerator;
         private TensorApplier _tensorApplier;
 #if ENABLE_TENSORFLOW
+        public TextAsset model;
         private ModelParamLoader _modelParamLoader;
-#endif
-        public NNModel model;
-
-        [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
-                 "(This field is not applicable for training).")]
-        public InferenceDevice inferenceDevice = InferenceDevice.CPU;
-
-#if ENABLE_TENSORFLOW
         private TFSharpInferenceEngine _engine;
-#endif
-#if ENABLE_BARRACUDA
+#elif ENABLE_BARRACUDA 
+        public NNModel model;
         private Model _barracudaModel;
         private IWorker _engine;
         private bool _verbose = false;
@@ -54,6 +47,9 @@ namespace MLAgents
         private BarracudaModelParamLoader _modelParamLoader;
         private string[] _outputNames;
 #endif
+        [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
+                 "(This field is not applicable for training).")]
+        public InferenceDevice inferenceDevice = InferenceDevice.CPU;
         
         private IEnumerable<Tensor> _inferenceInputs;
         private IEnumerable<Tensor> _inferenceOutputs;
@@ -101,9 +97,7 @@ namespace MLAgents
             _inferenceOutputs = _modelParamLoader.GetOutputTensors();
             _tensorGenerator = new TensorGenerator(brainParameters, seed);
             _tensorApplier = new TensorApplier(brainParameters, seed);
-#endif
-            
-#if ENABLE_BARRACUDA
+#elif ENABLE_BARRACUDA
             if (model != null)
             {
                 #if BARRACUDA_VERBOSE
@@ -225,7 +219,7 @@ namespace MLAgents
             agentInfos.Clear();
         }
         
-#if ENABLE_BARRACUDA
+#if ENABLE_BARRACUDA && !ENABLE_TENSORFLOW
         protected Dictionary<string, Barracuda.Tensor> PrepareBarracudaInputs(IEnumerable<Tensor> infInputs)
         {
             var inputs = new Dictionary<string, Barracuda.Tensor>();
