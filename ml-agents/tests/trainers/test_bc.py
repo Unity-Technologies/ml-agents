@@ -26,7 +26,7 @@ def dummy_config():
 
 @mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
 @mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
-def test_bc_policy_evaluate(mock_communicator, mock_launcher):
+def test_bc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0)
@@ -34,7 +34,7 @@ def test_bc_policy_evaluate(mock_communicator, mock_launcher):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
 
-    trainer_parameters = dummy_config()
+    trainer_parameters = dummy_config
     model_path = env.brain_names[0]
     trainer_parameters['model_path'] = model_path
     trainer_parameters['keep_checkpoints'] = 3

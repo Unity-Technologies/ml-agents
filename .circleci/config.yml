@@ -31,9 +31,10 @@ jobs:
           name: Run Tests
           command: |
             . venv/bin/activate
-            cd ml-agents/ && pytest tests/
+            cd ml-agents/ && pytest --cov=mlagents --cov-report xml tests/
             mkdir test-reports
             pytest --junitxml=test-reports/junit.xml
+            
 
       - store_test_results:
           path: ml-agents/test-reports
