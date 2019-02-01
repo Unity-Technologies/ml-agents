@@ -38,7 +38,8 @@ setup(
         'pyyaml',
         'protobuf>=3.6,<3.7',
         'grpcio>=1.11.0,<1.12.0', 
-        'pytest-cov==2.6.1'],
+        'pytest-cov==2.6.1', 
+        'codacy-coverage==1.3.11'],
 
     python_requires=">=3.6,<3.7",
 
