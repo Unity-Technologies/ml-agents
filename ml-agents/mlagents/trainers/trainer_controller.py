@@ -17,7 +17,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.tools import freeze_graph
 from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.exception import UnityEnvironmentException, UnityActionException
+from mlagents.envs.exception import UnityEnvironmentException
 
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -306,99 +306,96 @@ class TrainerController(object):
 
         tf.reset_default_graph()
 
+        # Prevent a single session from taking all GPU memory.
+        self._initialize_trainers(trainer_config)
+        for _, t in self.trainers.items():
+            self.logger.info(t)
+        curr_info = self._reset_env()
+        if self.train_model:
+            for brain_name, trainer in self.trainers.items():
+                trainer.write_tensorboard_text('Hyperparameters',
+                                               trainer.parameters)
+            if sys.platform.startswith('win'):
+                # Add the _win_handler function to the windows console's handler function list
+                win32api.SetConsoleCtrlHandler(self._win_handler, True)
         try:
-            # Prevent a single session from taking all GPU memory.
-            self._initialize_trainers(trainer_config)
-            for _, t in self.trainers.items():
-                self.logger.info(t)
-            curr_info = self._reset_env()
-            if self.train_model:
+            while any([t.get_step <= t.get_max_steps \
+                       for k, t in self.trainers.items()]) \
+                  or not self.train_model:
+                if self.meta_curriculum:
+                    # Get the sizes of the reward buffers.
+                    reward_buff_sizes = {k:len(t.reward_buffer) \
+                                        for (k,t) in self.trainers.items()}
+                    # Attempt to increment the lessons of the brains who
+                    # were ready.
+                    lessons_incremented = \
+                        self.meta_curriculum.increment_lessons(
+                            self._get_measure_vals(),
+                            reward_buff_sizes=reward_buff_sizes)
+
+                # If any lessons were incremented or the environment is
+                # ready to be reset
+                if (self.meta_curriculum
+                        and any(lessons_incremented.values())):
+                    curr_info = self._reset_env()
+                    for brain_name, trainer in self.trainers.items():
+                        trainer.end_episode()
+                    for brain_name, changed in lessons_incremented.items():
+                        if changed:
+                            self.trainers[brain_name].reward_buffer.clear()
+                elif self.env.global_done:
+                    curr_info = self._reset_env()
+                    for brain_name, trainer in self.trainers.items():
+                        trainer.end_episode()
+
+                # Decide and take an action
+                take_action_vector, \
+                take_action_memories, \
+                take_action_text, \
+                take_action_value, \
+                take_action_outputs \
+                    = {}, {}, {}, {}, {}
                 for brain_name, trainer in self.trainers.items():
-                    trainer.write_tensorboard_text('Hyperparameters',
-                                                   trainer.parameters)
-                if sys.platform.startswith('win'):
-                    # Add the _win_handler function to the windows console's handler function list
-                    win32api.SetConsoleCtrlHandler(self._win_handler, True)
-
-                while any([t.get_step <= t.get_max_steps \
-                           for k, t in self.trainers.items()]) \
-                      or not self.train_model:
-
-                    if self.meta_curriculum:
-                        # Get the sizes of the reward buffers.
-                        reward_buff_sizes = {k:len(t.reward_buffer) \
-                                            for (k,t) in self.trainers.items()}
-                        # Attempt to increment the lessons of the brains who
-                        # were ready.
-                        lessons_incremented = \
-                            self.meta_curriculum.increment_lessons(
-                                self._get_measure_vals(),
-                                reward_buff_sizes=reward_buff_sizes)
-
-                    # If any lessons were incremented or the environment is
-                    # ready to be reset
-                    if (self.meta_curriculum
-                            and any(lessons_incremented.values())):
-                        curr_info = self._reset_env()
-                        for brain_name, trainer in self.trainers.items():
-                            trainer.end_episode()
-                        for brain_name, changed in lessons_incremented.items():
-                            if changed:
-                                self.trainers[brain_name].reward_buffer.clear()
-                    elif self.env.global_done:
-                        curr_info = self._reset_env()
-                        for brain_name, trainer in self.trainers.items():
-                            trainer.end_episode()
-
-                    # Decide and take an action
-                    take_action_vector, \
-                    take_action_memories, \
-                    take_action_text, \
-                    take_action_value, \
-                    take_action_outputs \
-                        = {}, {}, {}, {}, {}
-                    for brain_name, trainer in self.trainers.items():
-                        (take_action_vector[brain_name],
-                         take_action_memories[brain_name],
-                         take_action_text[brain_name],
-                         take_action_value[brain_name],
-                         take_action_outputs[brain_name]) = \
-                            trainer.take_action(curr_info)
-                    new_info = self.env.step(vector_action=take_action_vector,
-                                             memory=take_action_memories,
-                                             text_action=take_action_text,
-                                             value=take_action_value)
-                    for brain_name, trainer in self.trainers.items():
-                        trainer.add_experiences(curr_info, new_info,
-                                                take_action_outputs[brain_name])
-                        trainer.process_experiences(curr_info, new_info)
-                        if trainer.is_ready_update() and self.train_model \
-                                and trainer.get_step <= trainer.get_max_steps:
-                            # Perform gradient descent with experience buffer
-                            trainer.update_policy()
-                        # Write training statistics to Tensorboard.
-                        if self.meta_curriculum is not None:
-                            trainer.write_summary(
-                                self.global_step,
-                                lesson_num=self.meta_curriculum
-                                    .brains_to_curriculums[brain_name]
-                                    .lesson_num)
-                        else:
-                            trainer.write_summary(self.global_step)
-                        if self.train_model \
-                                and trainer.get_step <= trainer.get_max_steps:
-                            trainer.increment_step_and_update_last_reward()
-                    self.global_step += 1
-                    if self.global_step % self.save_freq == 0 and self.global_step != 0 \
-                            and self.train_model:
-                        # Save Tensorflow model
-                        self._save_model(steps=self.global_step)
-                    curr_info = new_info
-                # Final save Tensorflow model
-                if self.global_step != 0 and self.train_model:
+                    (take_action_vector[brain_name],
+                     take_action_memories[brain_name],
+                     take_action_text[brain_name],
+                     take_action_value[brain_name],
+                     take_action_outputs[brain_name]) = \
+                        trainer.take_action(curr_info)
+                new_info = self.env.step(vector_action=take_action_vector,
+                                         memory=take_action_memories,
+                                         text_action=take_action_text,
+                                         value=take_action_value)
+                for brain_name, trainer in self.trainers.items():
+                    trainer.add_experiences(curr_info, new_info,
+                                            take_action_outputs[brain_name])
+                    trainer.process_experiences(curr_info, new_info)
+                    if trainer.is_ready_update() and self.train_model \
+                            and trainer.get_step <= trainer.get_max_steps:
+                        # Perform gradient descent with experience buffer
+                        trainer.update_policy()
+                    # Write training statistics to Tensorboard.
+                    if self.meta_curriculum is not None:
+                        trainer.write_summary(
+                            self.global_step,
+                            lesson_num=self.meta_curriculum
+                                .brains_to_curriculums[brain_name]
+                                .lesson_num)
+                    else:
+                        trainer.write_summary(self.global_step)
+                    if self.train_model \
+                            and trainer.get_step <= trainer.get_max_steps:
+                        trainer.increment_step_and_update_last_reward()
+                self.global_step += 1
+                if self.global_step % self.save_freq == 0 and self.global_step != 0 \
+                        and self.train_model:
+                    # Save Tensorflow model
                     self._save_model(steps=self.global_step)
-
-        except (KeyboardInterrupt, UnityActionException):
+                curr_info = new_info
+            # Final save Tensorflow model
+            if self.global_step != 0 and self.train_model:
+                self._save_model(steps=self.global_step)
+        except KeyboardInterrupt:
             if self.train_model:
                 self._save_model_when_interrupted(steps=self.global_step)
             pass
