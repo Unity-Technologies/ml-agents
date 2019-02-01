@@ -31,7 +31,7 @@ jobs:
           name: Run Tests
           command: |
             . venv/bin/activate
-            cd ml-agents/ && pytest --cov=mlagents --cov-report xml tests/
+            cd ml-agents/ && pytest --cov=mlagents --cov-report xml tests/ -p no:warnings
             mkdir test-reports
             pytest --junitxml=test-reports/junit.xml
             python-codacy-coverage -r coverage.xml
