@@ -862,6 +862,11 @@ namespace MLAgents
         {
             action.memories = memories;
         }
+        
+        public void AppendMemoriesAction(List<float> memories)
+        {
+            action.memories.AddRange(memories);
+        }
 
         /// <summary>
         /// Updates the text action.

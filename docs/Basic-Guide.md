@@ -25,32 +25,12 @@ Unity settings.
        Equivalent or .NET 4.x Equivalent)**
 6. Go to **File** > **Save Project**
 
-## Setting up TensorFlowSharp
-
-We provide pre-trained models (`.bytes` files) for all the agents 
-in all our demo environments. To be able to run those models, you'll 
-first need to set-up TensorFlowSharp support. Consequently, you need to install 
-the TensorFlowSharp plugin to be able to run these models within the Unity 
-Editor. 
-
-1. Download the [TensorFlowSharp Plugin](https://s3.amazonaws.com/unity-ml-agents/0.5/TFSharpPlugin.unitypackage)
-2. Import it into Unity by double clicking the downloaded file. You can check 
-if it was successfully imported by checking the
-TensorFlow files in the Project window under **Assets** > **ML-Agents** >
-**Plugins** > **Computer**.
-3. Go to **Edit** > **Project Settings** > **Player** and add `ENABLE_TENSORFLOW`
-to the `Scripting Define Symbols` for each type of device you want to use 
-(**`PC, Mac and Linux Standalone`**, **`iOS`** or **`Android`**).
-
-   ![Project Settings](images/project-settings.png)
-
-   **Note**: If you don't see anything under **Assets**, drag the
-   `UnitySDK/Assets/ML-Agents` folder under **Assets** within Project window.
-
-   ![Imported TensorFlowsharp](images/imported-tensorflowsharp.png)
-
 ## Running a Pre-trained Model
-We've included pre-trained models for the 3D Ball example.
+
+We include pre-trained models for our agents (`.nn` files) and we use the 
+[Unity Inference Engine](Unity-Inference-Engine.md) to run these models 
+inside Unity. In this section, we will use the pre-trained model for the 
+3D Ball example.
 
 1. In the **Project** window, go to the `Assets/ML-Agents/Examples/3DBall/Scenes` folder
    and open the `3DBall` scene file.
@@ -74,7 +54,9 @@ We've included pre-trained models for the 3D Ball example.
    folder.
 7. Drag the `3DBallLearning` model file from the `Assets/ML-Agents/Examples/3DBall/TFModels` 
    folder to the **Model** field of the **3DBallLearning** Brain in the **Inspector** window. __Note__ : All of the brains should now have `3DBallLearning` as the TensorFlow model in the `Model` property 
-8. Click the **Play** button and you will see the platforms balance the balls
+8. Select the **InferenceDevice** to use for this model (CPU or GPU). 
+   _Note: CPU is faster for the majority of ML-Agents toolkit generated models_
+9. Click the **Play** button and you will see the platforms balance the balls
    using the pretrained model.
 
    ![Running a pretrained model](images/running-a-pretrained-model.gif)
@@ -93,7 +75,7 @@ More information and documentation is provided in the
 
 ## Training the Brain with Reinforcement Learning
 
-### Setting up the enviornment for training
+### Setting up the environment for training
 
 To set up the environment for training, you will need to specify which agents are contributing
 to the training and which Brain is being trained. You can only perform training with
@@ -240,7 +222,7 @@ INFO:mlagents.trainers: first-run-0: 3DBallLearning: Step: 10000. Mean Reward: 2
 ### After training
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<brain_name>.bytes` where
+`models/<run-identifier>/<brain_name>.nn` where
 `<brain_name>` is the name of the Brain corresponding to the model.
 (**Note:** There is a known bug on Windows that causes the saving of the model to
 fail when you early terminate the training, it's recommended to wait until Step
@@ -254,7 +236,7 @@ the steps described
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the  **3DBallLearning** Learning Brain from the Scene hierarchy.
-5. Drag the `<brain_name>.bytes` file from the Project window of
+5. Drag the `<brain_name>.nn` file from the Project window of
    the Editor to the **Model** placeholder in the **3DBallLearning**
    inspector window.
 6. Press the :arrow_forward: button at the top of the Editor.

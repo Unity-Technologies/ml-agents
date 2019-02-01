@@ -1,0 +1,305 @@
+#pragma kernel Dense_L1Cached64
+#pragma kernel DenseTiled16x16
+//#pragma kernel DenseTiled32x32
+//#pragma kernel DenseTiled64x64
+
+#include "Tensor.cginc"
+
+TENSOR_DECL(X)
+TENSOR_DECL(W)
+TENSOR_DECL(B)
+TENSOR_DECL(WBK)
+TENSOR_DECL_RW(O)
+
+// NOTE: usually this path is used for <16 batches
+#undef CACHESIZE
+#define CACHESIZE 64
+groupshared float Dense_L1Cached64_X[CACHESIZE];
+[numthreads(CACHESIZE, 1, 1)]
+void Dense_L1Cached64(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+	DISPATCH_ARGS(O.flatWidth, O.flatHeight, 1);
+	TENSOR_SHARED2_ARGS4(X, W, B, WBK, O);
+
+	#define X_ Dense_L1Cached64_X
+
+	uint x = CACHESIZE * groupID.x + groupThreadID.x;
+	uint y = groupID.y;
+
+	uint wIndex = W.Index(0, x);
+
+	float acc = B.Get(x);
+	// loop over X columns (flatWidth) and W rows (height) in CACHESIZE steps
+	for (uint i = 0; i < X.GetFlatWidth(); i += CACHESIZE)
+	{
+		// Cache X
+		// coalescent reads
+		X_[groupThreadID.x] = X.SafeGet(y, i + groupThreadID.x);
+		GroupMemoryBarrierWithGroupSync();
+
+		// X * W
+		if (i + CACHESIZE <= X.GetFlatWidth())
+		{
+			[unroll]
+			for (uint di = 0; di < CACHESIZE; ++di)
+			{
+				acc = fastfma(X_[di], W.data[wIndex], acc);
+				wIndex += W.GetFlatWidth();
+			}
+		}
+		else
+		{
+			// handle remainder of the line < CACHESIZE
+			for (uint di = 0; i + di < X.GetFlatWidth(); ++di)
+			{
+				acc = fastfma(X_[di], W.data[wIndex], acc);
+				wIndex += W.GetFlatWidth();
+			}
+		}
+
+		GroupMemoryBarrierWithGroupSync();
+	}
+
+	// needed all threads to load matrix line, x might be out of the bounds for writing
+	if (x < O.GetFlatWidth())
+		O.Set(y, x, acc);
+
+	#undef X_
+}
+
+
+#undef TILE_WIDTH
+#define TILE_WIDTH NUMTHREAD(16,8,8)
+groupshared float DenseTiled_Xcache[TILE_WIDTH][TILE_WIDTH];
+groupshared float DenseTiled_Wcache[TILE_WIDTH][TILE_WIDTH];
+[numthreads(TILE_WIDTH,TILE_WIDTH,1)]
+void DenseTiled16x16(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+	DISPATCH_ARGS(O.flatWidth, O.flatHeight, 1);
+	TENSOR_SHARED2_ARGS4(X, W, B, WBK, O);
+
+	#define X_ DenseTiled_Xcache
+	#define W_ DenseTiled_Wcache
+
+	uint tx = groupThreadID.x;
+	uint ty = groupThreadID.y;
+	uint x = groupID.x*TILE_WIDTH + tx;
+	uint y = groupID.y*TILE_WIDTH + ty;
+
+	bool mask = (x < O.GetFlatWidth() && y < O.GetFlatHeight());
+
+	float v = B.Get(x);
+	for (uint m = 0; m < X.GetFlatWidth()/TILE_WIDTH; ++m)
+	{
+		if (mask)
+		{
+			X_[ty][tx] = X.Get(y, m*TILE_WIDTH + tx);
+			W_[ty][tx] = W.Get(m*TILE_WIDTH + ty, x);
+		}
+		else
+		{
+			X_[ty][tx] = 0;
+			W_[ty][tx] = 0;
+		}
+
+		GroupMemoryBarrierWithGroupSync();
+
+		[unroll]
+		for (uint i = 0; i < TILE_WIDTH; ++i)
+		{
+			v = fastfma(X_[ty][i], W_[i][tx], v);
+		}
+
+		GroupMemoryBarrierWithGroupSync();
+	}
+	
+	if (mask)
+		O.Set(y, x, v);
+
+	#undef X_
+	#undef W_
+}
+
+#undef TILE_WIDTH
+#define TILE_WIDTH NUMTHREAD(16,8,8) // 32 crashes on MacBookPro/AMD
+groupshared float DenseTiled_Xcache32[2*2][TILE_WIDTH][TILE_WIDTH];
+groupshared float DenseTiled_Wcache32[2*2][TILE_WIDTH][TILE_WIDTH];
+[numthreads(TILE_WIDTH,TILE_WIDTH,1)]
+void DenseTiled32x32(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+	DISPATCH_ARGS(O.flatWidth / 2, O.flatHeight / 2, 1);
+	TENSOR_SHARED2_ARGS4(X, W, B, WBK, O);
+
+	#define X_ DenseTiled_Xcache32
+	#define W_ DenseTiled_Wcache32
+
+	uint tx = groupThreadID.x;
+	uint ty = groupThreadID.y;
+	uint x = groupID.x*TILE_WIDTH + tx;
+	uint y = groupID.y*TILE_WIDTH + ty;
+
+	float b0 = B.Get(x*2+0);
+	float b1 = B.Get(x*2+1);
+	float4 v = float4(b0, b1,
+					  b0, b1);
+
+	for (uint m = 0; m < X.GetFlatWidth()/(TILE_WIDTH*2);)
+	{
+		float x0 = X.Get(y*2+0, m*TILE_WIDTH*2 + tx*2+0);
+		float x1 = X.Get(y*2+0, m*TILE_WIDTH*2 + tx*2+1);
+		float x2 = X.Get(y*2+1, m*TILE_WIDTH*2 + tx*2+0);
+		float x3 = X.Get(y*2+1, m*TILE_WIDTH*2 + tx*2+1);
+
+		float w0 = W.Get(m*TILE_WIDTH*2 + ty*2+0, x*2+0);
+		float w1 = W.Get(m*TILE_WIDTH*2 + ty*2+0, x*2+1);
+		float w2 = W.Get(m*TILE_WIDTH*2 + ty*2+1, x*2+0);
+		float w3 = W.Get(m*TILE_WIDTH*2 + ty*2+1, x*2+1);
+
+		++m;
+
+		X_[0][ty][tx] = x0;
+		X_[1][ty][tx] = x1;
+		X_[2][ty][tx] = x2;
+		X_[3][ty][tx] = x3;
+
+		W_[0][ty][tx] = w0;
+		W_[1][ty][tx] = w1;
+		W_[2][ty][tx] = w2;
+		W_[3][ty][tx] = w3;
+
+		GroupMemoryBarrierWithGroupSync();
+
+		[unroll]
+		for (uint i = 0; i < TILE_WIDTH; ++i)
+		{
+			float4 x =
+				float4(	X_[0][ty][i],
+						X_[1][ty][i],
+						X_[2][ty][i],
+						X_[3][ty][i]);
+			float4 w =
+				float4(	W_[0][i][tx],
+						W_[1][i][tx],
+						W_[2][i][tx],
+						W_[3][i][tx]);
+					
+			v.x = fastfma(w.x, x.x, v.x);
+			v.y = fastfma(w.y, x.x, v.y);
+			v.z = fastfma(w.x, x.z, v.z);
+			v.w = fastfma(w.y, x.z, v.w);
+
+			v.x = fastfma(w.z, x.y, v.x);
+			v.y = fastfma(w.w, x.y, v.y);
+			v.z = fastfma(w.z, x.w, v.z);
+			v.w = fastfma(w.w, x.w, v.w);
+		}
+		
+		GroupMemoryBarrierWithGroupSync();
+	}
+	
+	O.Set(y*2+0, x*2+0, v.x);
+	O.Set(y*2+0, x*2+1, v.y);
+	O.Set(y*2+1, x*2+0, v.z);
+	O.Set(y*2+1, x*2+1, v.w);
+
+	#undef X_
+	#undef W_
+}
+
+#undef TILE_WIDTH
+#define TILE_WIDTH NUMTHREAD(16,8,8)
+groupshared float DenseTiled_Xcache64[4*4][TILE_WIDTH*TILE_WIDTH];
+groupshared float DenseTiled_Wcache64[4*4][TILE_WIDTH*TILE_WIDTH];
+[numthreads(TILE_WIDTH,TILE_WIDTH,1)]
+void DenseTiled64x64(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+	DISPATCH_ARGS(O.flatWidth / 4, O.flatHeight / 4, 1);
+	TENSOR_SHARED2_ARGS4(X, W, B, WBK, O);
+
+	#define X_ DenseTiled_Xcache64
+	#define W_ DenseTiled_Wcache64
+
+	uint tx = groupThreadID.x;
+	uint ty = groupThreadID.y;
+	uint x = groupID.x*TILE_WIDTH + tx;
+	uint y = groupID.y*TILE_WIDTH + ty;
+
+	float b0 = B.Get(x*4+0);
+	float b1 = B.Get(x*4+1);
+	float b2 = B.Get(x*4+2);
+	float b3 = B.Get(x*4+3);
+	
+	float4 v0, v1, v2, v3;
+	v0 = v1 = v2 = v3 = float4(b0, b1, b2, b3);
+
+	for (uint m = 0; m < X.GetFlatWidth()/(TILE_WIDTH*4); ++m) 
+	{
+		for (uint yy = 0; yy < 4; ++yy)
+			for (uint xx = 0; xx < 4; ++xx)
+			{
+				X_[yy*4+xx][ty*TILE_WIDTH+tx] = X.Get(y*4+yy, (m*TILE_WIDTH + tx)*4+xx);
+				W_[yy*4+xx][ty*TILE_WIDTH+tx] = W.Get((m*TILE_WIDTH + ty)*4+yy, x*4+xx);
+			}
+		
+		GroupMemoryBarrierWithGroupSync();
+
+		for (uint i = 0; i < TILE_WIDTH; ++i)
+		{
+			[unroll]
+			for (uint q = 0; q < 4; ++q)
+			{
+				float x0 = X_[0*4+q][ty*TILE_WIDTH+i];
+				float x1 = X_[1*4+q][ty*TILE_WIDTH+i];
+				float x2 = X_[2*4+q][ty*TILE_WIDTH+i];
+				float x3 = X_[3*4+q][ty*TILE_WIDTH+i];
+				
+				float w0 = W_[q*4+0][i*TILE_WIDTH+tx];
+				float w1 = W_[q*4+1][i*TILE_WIDTH+tx];
+				float w2 = W_[q*4+2][i*TILE_WIDTH+tx];
+				float w3 = W_[q*4+3][i*TILE_WIDTH+tx];
+
+				v0.x = fastfma(x0, w0, v0.x); //--
+				v1.x = fastfma(x1, w0, v1.x);
+				v2.x = fastfma(x2, w0, v2.x);
+				v3.x = fastfma(x3, w0, v3.x);
+				v0.y = fastfma(x0, w1, v0.y); //--
+				v1.y = fastfma(x1, w1, v1.y);
+				v2.y = fastfma(x2, w1, v2.y);
+				v3.y = fastfma(x3, w1, v3.y);
+				v0.z = fastfma(x0, w2, v0.z); //--
+				v1.z = fastfma(x1, w2, v1.z);
+				v2.z = fastfma(x2, w2, v2.z);
+				v3.z = fastfma(x3, w2, v3.z);
+				v0.w = fastfma(x0, w3, v0.w); //--
+				v1.w = fastfma(x1, w3, v1.w);
+				v2.w = fastfma(x2, w3, v2.w);
+				v3.w = fastfma(x3, w3, v3.w);
+			}
+
+			GroupMemoryBarrierWithGroupSync();
+		}
+	}
+
+	O.Set(y*4+0, x*4+0, v0.x);
+	O.Set(y*4+0, x*4+1, v0.y);
+	O.Set(y*4+0, x*4+2, v0.z);
+	O.Set(y*4+0, x*4+3, v0.w);
+
+	O.Set(y*4+1, x*4+0, v1.x);
+	O.Set(y*4+1, x*4+1, v1.y);
+	O.Set(y*4+1, x*4+2, v1.z);
+	O.Set(y*4+1, x*4+3, v1.w);
+
+	O.Set(y*4+2, x*4+0, v2.x);
+	O.Set(y*4+2, x*4+1, v2.y);
+	O.Set(y*4+2, x*4+2, v2.z);
+	O.Set(y*4+2, x*4+3, v2.w);
+
+	O.Set(y*4+3, x*4+0, v3.x);
+	O.Set(y*4+3, x*4+1, v3.y);
+	O.Set(y*4+3, x*4+2, v3.z);
+	O.Set(y*4+3, x*4+3, v3.w);
+			  
+	#undef X_
+	#undef W_
+}

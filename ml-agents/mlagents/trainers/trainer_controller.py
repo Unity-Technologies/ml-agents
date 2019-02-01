@@ -105,7 +105,7 @@ class TrainerController(object):
 
     def _export_graph(self):
         """
-        Exports latest saved models to .bytes format for Unity embedding.
+        Exports latest saved models to .nn format for Unity embedding.
         """
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()

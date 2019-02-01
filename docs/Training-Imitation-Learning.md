@@ -112,7 +112,7 @@ without pre-recording a demonstration file. The steps to do this are as follows:
    similarly to the demonstrations.
 11. Once the Student Agents are exhibiting the desired behavior, end the training
    process with `CTL+C` from the command line.
-12. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
+12. Move the resulting `*.nn` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
     with `Learning` Brain.
 

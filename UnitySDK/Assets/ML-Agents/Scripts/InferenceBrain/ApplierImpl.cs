@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MLAgents.InferenceBrain.Utils;
+using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
@@ -12,7 +13,7 @@ namespace MLAgents.InferenceBrain
         public void Apply(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
         {
             var tensorDataAction = tensor.Data as float[,];
-            var actionSize = tensor.Shape[1];
+            var actionSize = tensor.Shape[tensor.Shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -95,6 +96,41 @@ namespace MLAgents.InferenceBrain
             }
         }
     }
+    
+    public class BarracudaMemoryOutputApplier : TensorApplier.Applier
+    {
+        private bool firstHalf = true;
+
+        public BarracudaMemoryOutputApplier(bool firstHalf)
+        {
+            this.firstHalf = firstHalf;
+        }
+        
+        public void Apply(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
+        {
+            var tensorDataMemory = tensor.Data as float[,];
+            var agentIndex = 0;
+            var memorySize = tensor.Shape[tensor.Shape.Length - 1];
+            foreach (var agent in agentInfo.Keys)
+            {
+                var memory = new List<float>();
+                for (var j = 0; j < memorySize; j++)
+                {
+                    memory.Add(tensorDataMemory[agentIndex, j]);
+                }
+
+                if (firstHalf)
+                {
+                    agent.UpdateMemoriesAction(memory);
+                }
+                else
+                {
+                    agent.AppendMemoriesAction(memory);
+                }
+                agentIndex++;
+            }
+        }
+    }
 
     /// <summary>
     /// The Applier for the Memory output tensor. Tensor is assumed to contain the new
@@ -106,7 +142,7 @@ namespace MLAgents.InferenceBrain
         {
             var tensorDataMemory = tensor.Data as float[,];
             var agentIndex = 0;
-            var memorySize = tensor.Shape[1];
+            var memorySize = tensor.Shape[tensor.Shape.Length - 1];
             foreach (var agent in agentInfo.Keys)
             {
                 var memory = new List<float>();
