@@ -91,15 +91,6 @@ class Trainer(object):
         raise UnityTrainerException(
             "The increment_step_and_update_last_reward method was not implemented.")
 
-    def take_action(self, all_brain_info: AllBrainInfo):
-        """
-        Decides actions given state/observation information, and takes them in environment.
-        :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
-        :return: a tuple containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        raise UnityTrainerException("The take_action method was not implemented.")
-
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
                         take_action_outputs):
         """
@@ -138,6 +129,12 @@ class Trainer(object):
         Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
+
+    def curriculum_lesson_changed(self) -> None:
+        """
+        Allows the trainer to update any intermediate state needed when a curriculum lesson changes.
+        """
+        pass
 
     def save_model(self):
         """

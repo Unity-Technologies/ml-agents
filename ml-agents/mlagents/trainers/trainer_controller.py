@@ -14,8 +14,9 @@ from typing import *
 import numpy as np
 import tensorflow as tf
 
-from mlagents.envs import BrainInfo
+from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.trainers import Trainer, Policy
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
@@ -52,7 +53,7 @@ class TrainerController(object):
         self.load_model = load
         self.train_model = train
         self.keep_checkpoints = keep_checkpoints
-        self.trainers = {}
+        self.trainers: Dict[str, Trainer] = {}
         self.global_step = 0
         self.meta_curriculum = meta_curriculum
         self.seed = training_seed
@@ -193,10 +194,10 @@ class TrainerController(object):
 
         # Prevent a single session from taking all GPU memory.
         self.initialize_trainers(trainer_config)
+        policies = {brain_name: trainer.policy for brain_name, trainer in self.trainers.items()}
         for _, t in self.trainers.items():
             self.logger.info(t)
 
-        curr_info = self._reset_env(env)
         if self.train_model:
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters',
@@ -205,10 +206,11 @@ class TrainerController(object):
                 # Add the _win_handler function to the windows console's handler function list
                 win32api.SetConsoleCtrlHandler(self._win_handler, True)
         try:
+            curr_info = self._reset_env(env)
             while any([t.get_step <= t.get_max_steps \
                        for k, t in self.trainers.items()]) \
                   or not self.train_model:
-                new_info = self.take_step(env, curr_info)
+                new_info = self.take_step(env, curr_info, policies)
                 self.global_step += 1
                 if self.global_step % self.save_freq == 0 and self.global_step != 0 \
                         and self.train_model:
@@ -227,10 +229,10 @@ class TrainerController(object):
         if self.train_model:
             self._export_graph()
 
-    def take_step(self, env, curr_info):
+    def take_step(self, env, curr_info: AllBrainInfo, policies: Dict[str, Policy]):
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
-            reward_buff_sizes = {k: len(t.reward_buffer) \
+            reward_buff_sizes = {k: len(t.reward_buffer)
                                  for (k, t) in self.trainers.items()}
             # Attempt to increment the lessons of the brains who
             # were ready.
@@ -238,6 +240,8 @@ class TrainerController(object):
                 self.meta_curriculum.increment_lessons(
                     self._get_measure_vals(),
                     reward_buff_sizes=reward_buff_sizes)
+        else:
+            lessons_incremented = {}
 
         # If any lessons were incremented or the environment is
         # ready to be reset
@@ -248,30 +252,32 @@ class TrainerController(object):
                 trainer.end_episode()
             for brain_name, changed in lessons_incremented.items():
                 if changed:
-                    self.trainers[brain_name].reward_buffer.clear()
+                    self.trainers[brain_name].curriculum_lesson_changed()
         elif env.global_done:
             curr_info = self._reset_env(env)
             for brain_name, trainer in self.trainers.items():
                 trainer.end_episode()
 
         # Decide and take an action
-        take_action_vector, \
-        take_action_memories, \
-        take_action_text, \
-        take_action_value, \
-        take_action_outputs \
-            = {}, {}, {}, {}, {}
-        for brain_name, trainer in self.trainers.items():
-            (take_action_vector[brain_name],
-             take_action_memories[brain_name],
-             take_action_text[brain_name],
-             take_action_value[brain_name],
-             take_action_outputs[brain_name]) = \
-                trainer.take_action(curr_info)
-        new_info = env.step(vector_action=take_action_vector,
-                            memory=take_action_memories,
-                            text_action=take_action_text,
-                            value=take_action_value)
+        take_action_vector = {}
+        take_action_memories = {}
+        take_action_text = {}
+        take_action_value = {}
+        take_action_outputs = {}
+        for brain_name, policy in policies.items():
+            action_info = policy.get_action(curr_info[brain_name])
+            take_action_vector[brain_name] = action_info.action
+            take_action_memories[brain_name] = action_info.memory
+            take_action_text[brain_name] = action_info.text
+            take_action_value[brain_name] = action_info.value
+            take_action_outputs[brain_name] = action_info.outputs
+        new_info = env.step(
+            vector_action=take_action_vector,
+            memory=take_action_memories,
+            text_action=take_action_text,
+            value=take_action_value
+        )
+
         for brain_name, trainer in self.trainers.items():
             trainer.add_experiences(curr_info, new_info,
                                     take_action_outputs[brain_name])
