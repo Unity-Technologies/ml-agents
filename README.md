@@ -4,6 +4,8 @@
 
 # Unity ML-Agents Toolkit (Beta)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4d17d396fd5147c6b50e8f0d061e5446)](https://app.codacy.com/app/xiaomaogy/ml-agents?utm_source=github.com&utm_medium=referral&utm_content=Unity-Technologies/ml-agents&utm_campaign=Badge_Grade_Dashboard)
+
 **The Unity Machine Learning Agents Toolkit** (ML-Agents) is an open-source
 Unity plugin that enables games and simulations to serve as environments for
 training intelligent agents. Agents can be trained using reinforcement learning,
