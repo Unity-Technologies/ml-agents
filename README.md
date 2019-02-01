@@ -6,6 +6,8 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2917c303f7fd46a68f0531edfad44434)](https://www.codacy.com/app/xiaomaogy/ml-agents?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Unity-Technologies/ml-agents&amp;utm_campaign=Badge_Grade)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/2917c303f7fd46a68f0531edfad44434)](https://www.codacy.com/app/xiaomaogy/ml-agents?utm_source=github.com&utm_medium=referral&utm_content=Unity-Technologies/ml-agents&utm_campaign=Badge_Coverage)
+
 
 
 **The Unity Machine Learning Agents Toolkit** (ML-Agents) is an open-source
