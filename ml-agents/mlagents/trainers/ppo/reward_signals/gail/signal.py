@@ -31,7 +31,8 @@ class GAILSignal(RewardSignal):
             return []
 
         feed_dict = {self.policy.model.batch_size: len(next_info.vector_observations),
-                     self.policy.model.sequence_length: 1}
+                     self.policy.model.sequence_length: 1,
+                     self.model.use_noise: [0]}
         feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
         feed_dict[self.model.done_policy] = np.reshape(next_info.local_done, [-1, 1])
         if self.policy.use_continuous_act:
@@ -112,7 +113,8 @@ class GAILSignal(RewardSignal):
         :return: Output from update process.
         """
         feed_dict = {self.model.done_expert: mini_batch_demo['done'].reshape([-1, 1]),
-                     self.model.done_policy: mini_batch_policy['done'].reshape([-1, 1])}
+                     self.model.done_policy: mini_batch_policy['done'].reshape([-1, 1]),
+                     self.model.use_noise: [1.0]}
 
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.selected_actions] = mini_batch_policy['actions'].reshape(

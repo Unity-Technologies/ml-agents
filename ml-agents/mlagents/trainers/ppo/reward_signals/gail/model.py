@@ -122,10 +122,10 @@ class GAILModel(object):
                     name="z_mean",
                     kernel_initializer=LearningModel.scaled_init(0.01))
 
-                self.noise = tf.random_normal(shape=[self.z_size])
+                self.noise = tf.random_normal(tf.shape(z_mean), dtype=tf.float32)
 
                 # Sampled latent code
-                self.z = z_mean + self.z_sigma * self.noise
+                self.z = z_mean + self.z_sigma * self.noise * self.use_noise
                 estimate_input = self.z
             else:
                 estimate_input = hidden_2
@@ -143,6 +143,7 @@ class GAILModel(object):
                                            initializer=tf.ones_initializer())
             self.z_sigma_sq = self.z_sigma * self.z_sigma
             self.z_log_sigma_sq = tf.log(self.z_sigma_sq + 1e-7)
+            self.use_noise = tf.placeholder(shape=[1], dtype=tf.float32, name="NoiseLevel")
         self.expert_estimate, self.z_mean_expert = self.create_encoder(
             self.encoded_expert, self.expert_action, self.done_expert, False)
         self.policy_estimate, self.z_mean_policy = self.create_encoder(
@@ -156,7 +157,7 @@ class GAILModel(object):
         The larger Beta, the stronger the importance of the kl divergence in the loss function.
         :param kl_div:
         """
-        self.beta = max(1e-7, self.beta + 1e-3 * (kl_div - self.mutual_information))
+        self.beta = max(1e-7, self.beta + 1e-4 * (kl_div - self.mutual_information))
 
     def create_loss(self, learning_rate):
         """
