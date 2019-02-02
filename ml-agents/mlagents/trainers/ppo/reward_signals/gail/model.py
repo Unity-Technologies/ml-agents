@@ -15,11 +15,12 @@ class GAILModel(object):
         self.h_size = h_size
         self.z_size = 128
         self.beta = 0.1
+        self.alpha = 0.05
         self.mutual_information = 0.5
         self.policy_model = policy_model
         self.encoding_size = encoding_size
         self.use_vail = True
-        self.use_actions = False # Not using actions
+        self.use_actions = True # Not using actions
         self.make_inputs()
         self.create_network()
         self.create_loss(lr)
@@ -53,8 +54,12 @@ class GAILModel(object):
             self.obs_in_expert = tf.placeholder(
                 shape=[None, self.policy_model.vec_obs_size], dtype=tf.float32)
             # TODO : Experiment with normalization, the normalization could change with time
-            encoded_expert_list.append(self.policy_model.normalize_vector_obs(self.obs_in_expert))
-            encoded_policy_list.append(self.policy_model.normalize_vector_obs(self.policy_model.vector_in))
+            if self.policy_model.normalize:
+                encoded_expert_list.append(self.policy_model.normalize_vector_obs(self.obs_in_expert))
+                encoded_policy_list.append(self.policy_model.normalize_vector_obs(self.policy_model.vector_in))
+            else:
+                encoded_expert_list.append(self.obs_in_expert)
+                encoded_policy_list.append(self.policy_model.vector_in)
 
         if self.policy_model.vis_obs_size > 0:
             self.expert_visual_in = []
@@ -157,7 +162,7 @@ class GAILModel(object):
         The larger Beta, the stronger the importance of the kl divergence in the loss function.
         :param kl_div:
         """
-        self.beta = max(1e-7, self.beta + 1e-4 * (kl_div - self.mutual_information))
+        self.beta = max(1e-7, self.beta + self.alpha * (kl_div - self.mutual_information))
 
     def create_loss(self, learning_rate):
         """
