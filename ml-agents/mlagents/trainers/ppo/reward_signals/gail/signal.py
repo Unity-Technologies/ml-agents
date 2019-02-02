@@ -48,7 +48,7 @@ class GAILSignal(RewardSignal):
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
         return scaled_reward, unscaled_reward
 
-    def update(self, policy_buffer, n_sequences=1024, max_batches=100):
+    def update(self, policy_buffer, n_sequences=32, max_batches=100):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
@@ -56,8 +56,6 @@ class GAILSignal(RewardSignal):
         :param max_batches: The maximum number of batches to use per update.
         :return: The loss of the update.
         """
-        self.demonstration_buffer.update_buffer.shuffle()
-        policy_buffer.update_buffer.shuffle()
         batch_losses = []
         n_sequences = n_sequences // 2
         possible_demo_batches = len(
@@ -75,6 +73,8 @@ class GAILSignal(RewardSignal):
         # end for reporting
         n_epoch = 3
         for epoch in range(n_epoch):
+            self.demonstration_buffer.update_buffer.shuffle()
+            policy_buffer.update_buffer.shuffle()
             if max_batches == 0:
                 num_batches = possible_batches
             else:

@@ -9,27 +9,41 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PreTraining(object):
+    sequence_length_name = 'sequence_length'
+    use_recurrent_name = 'use_recurrent'
+    memory_size = 'memory_size'
     # TODO : Implement recurrent
     # TODO : Implement Discrete Control
     # TODO : Pretrain the critic ? All of the critics ? Use a gradient gate ?
     # TODO : tune lambdas during the training process (start at 1 and slowly go to right value)
+    #  TODO : check the equality between brain and brain_params
+
     def __init__(self, sess, policy_model: LearningModel, brain, parameters):
         self.n_sequences = 128
         self.n_epoch = 50
-        self.sequence_length = 1# no recurrent
         self.batches_per_epoch = 10
+
+        self.use_recurrent = parameters[self.use_recurrent_name]
+        self.sequence_length = parameters[self.sequence_length_name]
+        self.m_size = parameters[self.memory_size]
 
         self.sess = sess
         self.policy_model = policy_model
         self.brain = brain
-        # todo : check the equality between brain and brain_params
+
         buffer_name = parameters["demo_path"]
         brain_params, self.demonstration_buffer = demo_to_buffer(
             buffer_name,
-            1)#self.policy.sequence_length)
+            self.sequence_length)
+
+        self.n_sequences = min(self.n_sequences, len(self.demonstration_buffer.update_buffer['actions']))
+        if self.use_recurrent and not self.brain.vector_action_space_type == "continuous":
+            # self.demonstration_buffer.update_buffer['prev_action'].set(
+            #     []+self.demonstration_buffer.update_buffer['actions'][:-1])
+            print(self.demonstration_buffer.update_buffer['actions'])
+            print(np.shape(self.demonstration_buffer.update_buffer['actions']))
 
         self._add_loss(0.005)
-        # self.policy._initialize_graph()
         self.out_dict = {
             "loss": self.loss,
             "update": self.update_batch
@@ -37,26 +51,32 @@ class PreTraining(object):
         if parameters["normalize"]:
             self.out_dict['update_normalization'] = self.policy_model.update_normalization
             self.out_dict['increment_step'] = self.policy_model.increment_step
-        # self.preprocess_returns()
-        # raise("error")
 
     def _add_loss(self, learning_rate):
         selected_action = self.policy_model.output
-        self.expert_action = tf.placeholder(shape=[None, self.policy_model.act_size[0]],
-                                            dtype=tf.float32,
-                                            name="teacher_action")
-        # self.true_return = tf.placeholder(shape=[None], dtype=tf.float32, name="teacher_return")
-        entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + self.policy_model.log_sigma_sq)
-        self.loss = tf.reduce_sum(tf.squared_difference(selected_action, self.expert_action)) / self.n_sequences \
-                    - 0.1*entropy #+  \
-                    # 0.5*tf.reduce_mean(tf.squared_difference(self.true_return, self.policy_model.value_heads['extrinsic']))
+        action_size = self.policy_model.act_size
+        if self.brain.vector_action_space_type == "continuous":
+            self.expert_action = tf.placeholder(shape=[None, action_size[0]],
+                                                dtype=tf.float32,
+                                                name="teacher_action")
+            entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + self.policy_model.log_sigma_sq)
+            self.loss = tf.reduce_sum(tf.squared_difference(selected_action, self.expert_action)) / self.n_sequences \
+                        - 0.1*entropy
+        else:
+            log_probs = self.policy_model.all_log_probs
+            self.expert_action = tf.placeholder(shape=[None, len(action_size)], dtype=tf.int32)
+            expert_action_oh = tf.concat([
+                tf.one_hot(self.expert_action[:, i], action_size[i]) for i in range(len(action_size))], axis=1)
+            action_idx = [0] + list(np.cumsum(action_size))
+            entropy = tf.reduce_sum((tf.stack([
+                tf.nn.softmax_cross_entropy_with_logits_v2(
+                    labels=tf.nn.softmax(log_probs[:, action_idx[i]:action_idx[i + 1]]),
+                    logits=log_probs[:, action_idx[i]:action_idx[i + 1]])
+                for i in range(len(action_size))], axis=1)), axis=1)
+            self.loss = -tf.reduce_sum(tf.log(tf.nn.softmax(log_probs)) * expert_action_oh) - 100 * entropy
 
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
-
-    def preprocess_returns(self):
-        print(self.demonstration_buffer.update_buffer['rewards'][:])
-        print(self.demonstration_buffer.update_buffer['done'][:])
 
     def update_policy(self):
         """
@@ -94,11 +114,11 @@ class PreTraining(object):
                 reshape([-1, self.brain.vector_action_space_size[0]])
             feed_dict[self.policy_model.epsilon] = np.random.normal(
                 size=(1, self.policy_model.act_size[0]))
-        # else:
-        #     feed_dict[self.policy_model.true_action] = mini_batch['actions'].reshape(
-        #         [-1, len(self.brain.vector_action_space_size)])
-        #     feed_dict[self.policy_model.action_masks] = np.ones(
-        #         (num_sequences, sum(self.brain.vector_action_space_size)))
+        else:
+            feed_dict[self.expert_action] = mini_batch['actions'].reshape(
+                [-1, len(self.brain.vector_action_space_size)])
+            feed_dict[self.policy_model.action_masks] = np.ones(
+                (num_sequences, sum(self.brain.vector_action_space_size)))
         if self.brain.vector_observation_space_size > 0:
             apparent_obs_size = self.brain.vector_observation_space_size * \
                                 self.brain.num_stacked_vector_observations
@@ -107,8 +127,14 @@ class PreTraining(object):
         for i, _ in enumerate(self.policy_model.visual_in):
             visual_obs = mini_batch['visual_obs%d' % i]
             feed_dict[self.policy_model.visual_in[i]] = visual_obs
-        # if self.policy.use_recurrent: #
-        #     feed_dict[self.policy.model.memory_in] = np.zeros([num_sequences, self.policy.m_size])
+        if self.use_recurrent:
+            feed_dict[self.policy_model.memory_in] = np.zeros([num_sequences, self.m_size])
+            if not self.brain.vector_action_space_type == "continuous":
+                print(mini_batch.keys())
+                # feed_dict[self.policy_model.prev_action] = mini_batch['prev_action'] \
+                #     .reshape([-1, len(self.policy_model.act_size)])
+                feed_dict[self.policy_model.prev_action] = np.zeros((num_sequences* self.sequence_length,
+                                                                     len(self.policy_model.act_size)))
 
         run_out = self.execute_model(feed_dict, self.out_dict)
         return run_out['loss']
