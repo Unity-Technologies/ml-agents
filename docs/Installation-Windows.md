@@ -153,6 +153,12 @@ pip install -e .
 This will complete the installation of all the required Python packages to run
 the ML-Agents toolkit.
 
+If you are stuck during this installation, you can try:
+
+```sh
+pip install -e . --no-cache-dir
+```
+
 ## (Optional) Step 4: GPU Training using The ML-Agents Toolkit
 
 GPU is not required for the ML-Agents toolkit and won't speed up the PPO
