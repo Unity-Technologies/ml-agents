@@ -20,7 +20,7 @@ class PreTraining(object):
 
     def __init__(self, sess, policy_model: LearningModel, brain, parameters):
         self.n_sequences = 128
-        self.n_epoch = 50
+        self.n_epoch = 500
         self.batches_per_epoch = 10
 
         self.use_recurrent = parameters[self.use_recurrent_name]
@@ -61,7 +61,7 @@ class PreTraining(object):
                                                 name="teacher_action")
             entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + self.policy_model.log_sigma_sq)
             self.loss = tf.reduce_sum(tf.squared_difference(selected_action, self.expert_action)) / self.n_sequences \
-                        - 0.1*entropy
+                        - tf.reduce_sum(entropy)
         else:
             log_probs = self.policy_model.all_log_probs
             self.expert_action = tf.placeholder(shape=[None, len(action_size)], dtype=tf.int32)
@@ -73,7 +73,7 @@ class PreTraining(object):
                     labels=tf.nn.softmax(log_probs[:, action_idx[i]:action_idx[i + 1]]),
                     logits=log_probs[:, action_idx[i]:action_idx[i + 1]])
                 for i in range(len(action_size))], axis=1)), axis=1)
-            self.loss = -tf.reduce_sum(tf.log(tf.nn.softmax(log_probs)) * expert_action_oh) - 100 * entropy
+            self.loss = -tf.reduce_sum(tf.log(tf.nn.softmax(log_probs)+ 0*1e-10) * expert_action_oh) - 1 * tf.reduce_sum(entropy)
 
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
