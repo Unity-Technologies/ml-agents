@@ -128,7 +128,7 @@ properties to use a continuous vector observation:
 * **Space Size** — The state size must match the length of your feature vector.
 
 The observation feature vector is a list of floating point numbers, which means
-you must convert any other data types to a float or a list of floats. 
+you must convert any other data types to a float or a list of floats.
 
 The `AddVectorObs` method provides a number of shortcuts for adding common types
 of data to your observation vector. You can add Integers and booleans directly to
