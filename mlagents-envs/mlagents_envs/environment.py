@@ -16,7 +16,7 @@ from .rpc_communicator import RpcCommunicator
 from sys import platform
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.mlagents_envs")
 
 
 class UnityEnvironment(object):

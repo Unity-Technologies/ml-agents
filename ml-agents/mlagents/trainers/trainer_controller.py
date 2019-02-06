@@ -12,10 +12,8 @@ if sys.platform.startswith('win'):
     import win32con
 
 import yaml
-import re
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.tools import freeze_graph
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 
@@ -96,7 +94,7 @@ class TrainerController(object):
             self.summaries_dir = '/{docker_target_name}/summaries'.format(
                 docker_target_name=docker_target_name)
 
-        self.logger = logging.getLogger('mlagents.envs')
+        self.logger = logging.getLogger('mlagents.mlagents_envs')
         self.run_id = run_id
         self.save_freq = save_freq
         self.lesson = lesson

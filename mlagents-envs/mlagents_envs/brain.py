@@ -5,7 +5,7 @@ import io
 from typing import Dict
 from PIL import Image
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.mlagents_envs")
 
 
 class BrainInfo:

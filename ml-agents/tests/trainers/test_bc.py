@@ -24,8 +24,8 @@ def dummy_config():
             ''')
 
 
-@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
 def test_bc_policy_evaluate(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
@@ -45,8 +45,8 @@ def test_bc_policy_evaluate(mock_communicator, mock_launcher):
     env.close()
 
 
-@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
 def test_cc_bc_model(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -67,8 +67,8 @@ def test_cc_bc_model(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
 def test_dc_bc_model(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -91,8 +91,8 @@ def test_dc_bc_model(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
 def test_visual_dc_bc_model(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -117,8 +117,8 @@ def test_visual_dc_bc_model(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
 def test_visual_cc_bc_model(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
