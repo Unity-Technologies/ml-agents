@@ -130,22 +130,10 @@ properties to use a continuous vector observation:
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
 
-Integers can be be added directly to the observation vector. You must explicitly
-convert Boolean values to a number:
-
-```csharp
-AddVectorObs(isTrueOrFalse ? 1 : 0);
-```
-
-For entities like positions and rotations, you can add their components to the
-feature list individually.  For example:
-
-```csharp
-Vector3 speed = ball.transform.GetComponent<Rigidbody>().velocity;
-AddVectorObs(speed.x);
-AddVectorObs(speed.y);
-AddVectorObs(speed.z);
-```
+The `AddVectorObs` method provides a number of overloads for adding common types
+of data to your observation vector. You can add Integers and booleans directly to
+the observation vector, as well as some common Unity data types such as `Vector2`,
+`Vector3`, and `Quaternion`.
 
 Type enumerations should be encoded in the _one-hot_ style. That is, add an
 element to the feature vector for each element of enumeration, setting the
@@ -163,6 +151,21 @@ public override void CollectObservations()
     {
         AddVectorObs((int)currentItem == ci ? 1.0f : 0.0f);
     }
+}
+```
+
+`AddVectorObs` also provides a two-argument version as a shortcut for _one-hot_
+style observations. The following example is identical to the previous one.
+
+```csharp
+enum CarriedItems { Sword, Shield, Bow, LastItem }
+const int NUM_ITEM_TYPES = (int)CarriedItems.LastItem;
+
+public override void CollectObservations()
+{
+    // The first argument is the selection index; the second is the
+    // number of possibilities
+    AddVectorObs((int)currentItem, NUM_ITEM_TYPES);
 }
 ```
 
