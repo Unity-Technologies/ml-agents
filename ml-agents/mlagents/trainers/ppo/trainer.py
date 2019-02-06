@@ -9,12 +9,12 @@ from collections import deque
 import numpy as np
 import tensorflow as tf
 
-from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents_envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer
 
-logger = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents_envs.trainers")
 
 
 class PPOTrainer(Trainer):

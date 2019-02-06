@@ -8,7 +8,7 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.envs import UnityEnvironment
+from mlagents_envs import UnityEnvironment
 from tests.mock_communicator import MockCommunicator
 
 
@@ -40,8 +40,8 @@ def dummy_config():
         ''')
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_policy_evaluate(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
@@ -60,8 +60,8 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher):
     env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -85,8 +85,8 @@ def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -112,8 +112,8 @@ def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -139,8 +139,8 @@ def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -163,8 +163,8 @@ def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -190,8 +190,8 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -216,8 +216,8 @@ def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_dc_vector_curio(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -243,8 +243,8 @@ def test_ppo_model_dc_vector_curio(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_cc_vector_curio(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -270,8 +270,8 @@ def test_ppo_model_cc_vector_curio(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_dc_visual_curio(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -302,8 +302,8 @@ def test_ppo_model_dc_visual_curio(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_ppo_model_cc_visual_curio(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:

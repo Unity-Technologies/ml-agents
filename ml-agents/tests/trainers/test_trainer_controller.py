@@ -9,7 +9,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents_envs.exception import UnityEnvironmentException
 from tests.mock_communicator import MockCommunicator
 
 
@@ -133,8 +133,8 @@ def dummy_bad_config():
         ''')
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=True, visual_inputs=1)
@@ -143,8 +143,8 @@ def test_initialization(mock_communicator, mock_launcher):
     assert (tc.env.brain_names[0] == 'RealFakeBrain')
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_load_config(mock_communicator, mock_launcher, dummy_config):
     open_name = 'mlagents.trainers.trainer_controller' + '.open'
     with mock.patch('yaml.load') as mock_load:
@@ -160,8 +160,8 @@ def test_load_config(mock_communicator, mock_launcher, dummy_config):
             assert (config['default']['trainer'] == "ppo")
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_initialize_trainers(mock_communicator, mock_launcher, dummy_config,
                              dummy_offline_bc_config, dummy_online_bc_config, dummy_bad_config):
     open_name = 'mlagents.trainers.trainer_controller' + '.open'
@@ -196,8 +196,8 @@ def test_initialize_trainers(mock_communicator, mock_launcher, dummy_config,
                 tc._initialize_trainers(config)
 
 
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.mlagents_envs.UnityEnvironment.get_communicator')
+@mock.patch('mlagents_envs.UnityEnvironment.executable_launcher')
+@mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_initialize_offline_trainers(mock_communicator, mock_launcher, dummy_config,
                              dummy_offline_bc_config, dummy_online_bc_config, dummy_bad_config):
     open_name = 'mlagents.trainers.trainer_controller' + '.open'

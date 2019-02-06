@@ -6,7 +6,7 @@ from .exception import CurriculumError
 
 import logging
 
-logger = logging.getLogger('mlagents.trainers')
+logger = logging.getLogger('mlagents_envs.trainers')
 
 
 class Curriculum(object):

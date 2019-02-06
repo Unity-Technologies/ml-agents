@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
-logger = logging.getLogger("mlagents.mlagents_envs")
+logger = logging.getLogger("mlagents_envs.mlagents_envs")
 
 
 class LearningModel(object):

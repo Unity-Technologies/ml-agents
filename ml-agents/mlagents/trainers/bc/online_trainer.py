@@ -5,10 +5,10 @@
 import logging
 import numpy as np
 
-from mlagents.envs import AllBrainInfo
+from mlagents_envs import AllBrainInfo
 from mlagents.trainers.bc.trainer import BCTrainer
 
-logger = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents_envs.trainers")
 
 
 class OnlineBCTrainer(BCTrainer):

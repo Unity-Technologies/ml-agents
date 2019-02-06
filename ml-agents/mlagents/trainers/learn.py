@@ -73,11 +73,11 @@ def main():
     except:
         print('\n\n\tUnity Technologies\n')
 
-    logger = logging.getLogger('mlagents.trainers')
+    logger = logging.getLogger('mlagents_envs.trainers')
     _USAGE = '''
     Usage:
-      mlagents-learn <trainer-config-path> [options]
-      mlagents-learn --help
+      mlagents_envs-learn <trainer-config-path> [options]
+      mlagents_envs-learn --help
 
     Options:
       --env=<file>               Name of the Unity executable [default: None].

@@ -7,7 +7,7 @@ from mlagents.trainers.models import LearningModel
 
 from tensorflow.python.tools import freeze_graph
 
-logger = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents_envs.trainers")
 
 
 class UnityPolicyException(UnityException):

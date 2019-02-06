@@ -8,12 +8,12 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from mlagents.envs import AllBrainInfo
+from mlagents_envs import AllBrainInfo
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import Trainer
 
-logger = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents_envs.trainers")
 
 
 class BCTrainer(Trainer):

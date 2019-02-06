@@ -14,8 +14,8 @@ if sys.platform.startswith('win'):
 import yaml
 import numpy as np
 import tensorflow as tf
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents_envs import UnityEnvironment
+from mlagents_envs.exception import UnityEnvironmentException
 
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -94,7 +94,7 @@ class TrainerController(object):
             self.summaries_dir = '/{docker_target_name}/summaries'.format(
                 docker_target_name=docker_target_name)
 
-        self.logger = logging.getLogger('mlagents.mlagents_envs')
+        self.logger = logging.getLogger('mlagents_envs.mlagents_envs')
         self.run_id = run_id
         self.save_freq = save_freq
         self.lesson = lesson

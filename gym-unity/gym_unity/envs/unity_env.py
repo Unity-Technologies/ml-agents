@@ -1,7 +1,7 @@
 import logging
 import gym
 import numpy as np
-from mlagents.envs import UnityEnvironment
+from mlagents_envs import UnityEnvironment
 from gym import error, spaces
 
 
