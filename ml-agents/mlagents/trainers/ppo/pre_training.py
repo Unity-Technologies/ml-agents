@@ -24,8 +24,11 @@ class PreTraining(object):
         self.batches_per_epoch = 10
 
         self.use_recurrent = parameters[self.use_recurrent_name]
-        self.sequence_length = parameters[self.sequence_length_name]
-        self.m_size = parameters[self.memory_size]
+        self.sequence_length = 1
+        self.m_size = 0
+        if self.use_recurrent:
+            self.sequence_length = parameters[self.sequence_length_name]
+            self.m_size = parameters[self.memory_size]
 
         self.sess = sess
         self.policy_model = policy_model
