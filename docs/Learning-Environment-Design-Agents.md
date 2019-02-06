@@ -130,7 +130,7 @@ properties to use a continuous vector observation:
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
 
-The `AddVectorObs` method provides a number of shortcuts for adding common types
+The `AddVectorObs` method provides a number of overloads for adding common types
 of data to your observation vector. You can add Integers and booleans directly to
 the observation vector, as well as some common Unity data types such as `Vector2`,
 `Vector3`, and `Quaternion`.
