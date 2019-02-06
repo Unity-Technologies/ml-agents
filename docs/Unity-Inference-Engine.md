@@ -8,6 +8,7 @@ to run the neural network within Unity.
 
 ## Supported devices
 
+Scripting Backends : The Unity Inference Engine is generally faster with __IL2CPP__ than with __Mono__ for Standalone builds.
 The Unity Inference Engine supposedly works on any Unity supported platform
 but we only tested for the following platforms :
 
