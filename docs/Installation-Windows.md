@@ -153,6 +153,14 @@ pip install -e .
 This will complete the installation of all the required Python packages to run
 the ML-Agents toolkit.
 
+Sometimes on Windows, when you use pip to install certain python packages, the pip will get stuck when trying to read the cache of the package. If you see this, you can try:
+
+```sh
+pip install -e . --no-cache-dir
+```
+
+This `--no-cache-dir` tells the pip to disable the cache.  
+
 ## (Optional) Step 4: GPU Training using The ML-Agents Toolkit
 
 GPU is not required for the ML-Agents toolkit and won't speed up the PPO
