@@ -10,7 +10,7 @@ from .communicator_objects import UnityToExternalServicer, add_UnityToExternalSe
 from .communicator_objects import UnityMessage, UnityInput, UnityOutput
 from .exception import UnityTimeOutException, UnityWorkerInUseException
 
-logger = logging.getLogger("mlagents_envs.mlagents_envs")
+logger = logging.getLogger("mlagents_envs")
 
 
 class UnityToExternalServicerImplementation(UnityToExternalServicer):

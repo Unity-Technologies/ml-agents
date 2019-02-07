@@ -9,7 +9,7 @@ from mlagents.trainers.bc.trainer import BCTrainer
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trainer import UnityTrainerException
 
-logger = logging.getLogger("mlagents_envs.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class OfflineBCTrainer(BCTrainer):

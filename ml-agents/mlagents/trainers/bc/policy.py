@@ -4,7 +4,7 @@ import numpy as np
 from mlagents.trainers.bc.models import BehavioralCloningModel
 from mlagents.trainers.policy import Policy
 
-logger = logging.getLogger("mlagents_envs.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class BCPolicy(Policy):

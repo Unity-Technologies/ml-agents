@@ -6,7 +6,7 @@ from mlagents.trainers.exception import MetaCurriculumError
 
 import logging
 
-logger = logging.getLogger('mlagents_envs.trainers')
+logger = logging.getLogger('mlagents.trainers')
 
 
 class MetaCurriculum(object):

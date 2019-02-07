@@ -6,7 +6,7 @@ import numpy as np
 
 from mlagents_envs import UnityException, AllBrainInfo
 
-logger = logging.getLogger("mlagents_envs.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class UnityTrainerException(UnityException):

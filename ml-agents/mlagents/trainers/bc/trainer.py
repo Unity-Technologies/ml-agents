@@ -13,7 +13,7 @@ from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import Trainer
 
-logger = logging.getLogger("mlagents_envs.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class BCTrainer(Trainer):

@@ -8,7 +8,7 @@ import numpy as np
 from mlagents_envs import AllBrainInfo
 from mlagents.trainers.bc.trainer import BCTrainer
 
-logger = logging.getLogger("mlagents_envs.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class OnlineBCTrainer(BCTrainer):

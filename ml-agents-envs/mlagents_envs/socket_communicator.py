@@ -7,7 +7,7 @@ from .communicator_objects import UnityMessage, UnityOutput, UnityInput
 from .exception import UnityTimeOutException
 
 
-logger = logging.getLogger("mlagents_envs.mlagents_envs")
+logger = logging.getLogger("mlagents_envs")
 
 
 class SocketCommunicator(Communicator):

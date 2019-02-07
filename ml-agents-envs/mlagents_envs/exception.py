@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger("mlagents_envs.mlagents_envs")
+logger = logging.getLogger("mlagents_envs")
 
 class UnityException(Exception):
     """

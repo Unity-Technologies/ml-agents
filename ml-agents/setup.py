@@ -28,7 +28,7 @@ setup(
     packages=find_packages(exclude=['tests', 'tests.*', '*.tests', '*.tests.*']),  # Required
 
     install_requires=[
-        'mlagents_envs>=0.6.0',
+        'mlagents_envs==0.6.0',
         'tensorflow>=1.7,<1.8',
         'Pillow>=4.2.1',
         'matplotlib',
