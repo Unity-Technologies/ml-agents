@@ -3,7 +3,6 @@ from .agent_info_proto_pb2 import *
 from .brain_parameters_proto_pb2 import *
 from .command_proto_pb2 import *
 from .custom_action_pb2 import *
-from .custom_action_result_pb2 import *
 from .custom_observation_pb2 import *
 from .custom_reset_parameters_pb2 import *
 from .demonstration_meta_proto_pb2 import *

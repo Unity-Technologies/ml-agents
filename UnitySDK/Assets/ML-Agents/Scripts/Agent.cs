@@ -85,7 +85,6 @@ namespace MLAgents
         /// to an action in addition to a scalar reward.
         /// </summary>
         public CustomObservation customObservation;
-        public CustomActionResult customActionResult;
 
         /// <summary>
         /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
@@ -104,8 +103,7 @@ namespace MLAgents
                 MaxStepReached = maxStepReached,
                 Done = done,
                 Id = id,
-                CustomObservation = customObservation,
-                CustomActionResult = customActionResult
+                CustomObservation = customObservation
             };
             if (memories != null)
             {
@@ -552,7 +550,6 @@ namespace MLAgents
 
             info.visualObservations = new List<Texture2D>();
             info.customObservation = null;
-            info.customActionResult = null;
         }
 
         /// <summary>
@@ -1128,9 +1125,9 @@ namespace MLAgents
             info.customObservation = customObservation;
         }
 
-        public void SetCustomActionResult(CustomActionResult actionResult)
+        public CustomObservation GetCustomObservation()
         {
-            info.customActionResult = actionResult;
+            return info.customObservation;
         }
     }    
 }
