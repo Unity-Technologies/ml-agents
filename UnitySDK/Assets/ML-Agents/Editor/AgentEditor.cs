@@ -28,9 +28,13 @@ namespace MLAgents
                 "agentParameters.onDemandDecision");
             SerializedProperty cameras = serializedAgent.FindProperty(
                 "agentParameters.agentCameras");
+            SerializedProperty renderTextures = serializedAgent.FindProperty(
+                "agentParameters.agentRenderTextures");
 
             EditorGUILayout.PropertyField(brain);
 
+            EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);
+            
             EditorGUILayout.LabelField("Agent Cameras");
             for (int i = 0; i < cameras.arraySize; i++)
             {
@@ -51,6 +55,28 @@ namespace MLAgents
             }
 
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.LabelField("Agent RenderTextures");
+            for (int i = 0; i < renderTextures.arraySize; i++)
+            {
+                EditorGUILayout.PropertyField(
+                    renderTextures.GetArrayElementAtIndex(i),
+                    new GUIContent("RenderTexture " + (i + 1).ToString() + ": "));
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add RenderTextures", EditorStyles.miniButton))
+            {
+                renderTextures.arraySize++;
+            }
+
+            if (GUILayout.Button("Remove RenderTextures", EditorStyles.miniButton))
+            {
+                renderTextures.arraySize--;
+            }
+
+            EditorGUILayout.EndHorizontal();
+
 
             EditorGUILayout.PropertyField(
                 maxSteps,
