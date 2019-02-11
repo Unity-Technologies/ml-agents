@@ -1105,41 +1105,23 @@ namespace MLAgents
         /// Converts a RenderTexture and correspinding resolution to a 2D texture.
         /// </summary>
         /// <returns>The 2D texture.</returns>
-        /// <param name="obsTexture">Camera.</param>
+        /// <param name="obsTexture">RenderTexture.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
         public static void ObservationToTexture(RenderTexture obsTexture, int width, int height, ref Texture2D texture2D)
         {
-//            Rect oldRec = obsTexture.rect;
-//            obsTexture.rect = new Rect(0f, 0f, 1f, 1f);
-//            var depth = 24;
-//            var format = RenderTextureFormat.Default;
-//            var readWrite = RenderTextureReadWrite.Default;
-
-//            var tempRT =
-//                RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-
             if (width != texture2D.width || height != texture2D.height)
             {
                 texture2D.Resize(width, height);
             }
 
             var prevActiveRT = RenderTexture.active;
-//            var prevCameraRT = obsTexture.targetTexture;
-
-            // render to offscreen texture (readonly from CPU side)
             RenderTexture.active = obsTexture;
-//            obsTexture.targetTexture = tempRT;
-
-//            obsTexture.Render();
 
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
             texture2D.Apply();
-//            obsTexture.targetTexture = prevCameraRT;
-//            obsTexture.rect = oldRec;
             RenderTexture.active = prevActiveRT;
-//            RenderTexture.ReleaseTemporary(tempRT);
         }
     }
 }
