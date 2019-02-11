@@ -23,7 +23,7 @@ namespace MLAgents.InferenceBrain
             Discrete,
             Continuous
         }
-        private const long ApiVersion = 1;
+        private const long ApiVersion = 2;
         private IWorker _engine;
         private Model _model;
         private BrainParameters _brainParameters;
