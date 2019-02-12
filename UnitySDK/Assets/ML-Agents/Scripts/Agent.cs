@@ -1115,6 +1115,13 @@ namespace MLAgents
             {
                 texture2D.Resize(width, height);
             }
+            
+            if(width != obsTexture.width || height != obsTexture.height)
+            {
+                throw new UnityAgentsException(string.Format(
+                    "RenderTexture {0} : width/height is {1}/{2} brain is expecting {3}/{4}.",
+                    obsTexture.name, obsTexture.width, obsTexture.height, width, height));
+            }
 
             var prevActiveRT = RenderTexture.active;
             RenderTexture.active = obsTexture;
