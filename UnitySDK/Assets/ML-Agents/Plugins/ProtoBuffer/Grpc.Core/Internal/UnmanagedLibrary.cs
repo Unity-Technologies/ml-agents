@@ -92,7 +92,7 @@ namespace Grpc.Core.Internal
                     return IntPtr.Zero;
                 }
             }
-#if !UNITY_WINDOWS
+#if !UNITY_STANDALONE_WIN
             if (PlatformApis.IsLinux)
             {
                 if (PlatformApis.IsMono)
@@ -137,6 +137,7 @@ namespace Grpc.Core.Internal
             {
                 return Windows.LoadLibrary(libraryPath);
             }
+#if !UNITY_STANDALONE_WIN
             if (PlatformApis.IsLinux)
             {
                 if (PlatformApis.IsMono)
@@ -153,6 +154,7 @@ namespace Grpc.Core.Internal
             {
                 return MacOSX.dlopen(libraryPath, RTLD_GLOBAL + RTLD_LAZY);
             }
+#endif
             throw new InvalidOperationException("Unsupported platform.");
         }
 
@@ -205,7 +207,7 @@ namespace Grpc.Core.Internal
         /// dlopen and dlsym from the current process as on Linux
         /// Mono sure is linked against these symbols.
         /// </summary>
-#if !UNITY_WINDOWS
+#if !UNITY_STANDALONE_WIN
         private static class Mono
         {
             [DllImport("__Internal")]
