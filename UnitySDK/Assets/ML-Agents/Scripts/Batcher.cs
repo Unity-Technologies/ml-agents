@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Google.Protobuf;
@@ -86,8 +87,9 @@ namespace MLAgents
                     },
                     out input);
             }
-            catch
+            catch(Exception ex)
             {
+                Debug.LogError(ex.ToString());
                 throw new UnityAgentsException(
                     "The Communicator was unable to connect. Please make sure the External " +
                     "process is ready to accept communication with Unity.");
