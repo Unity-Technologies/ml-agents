@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using AOT;
 
 namespace Grpc.Core.Internal
 {
@@ -51,6 +52,7 @@ namespace Grpc.Core.Internal
             }
         }
 
+        [MonoPInvokeCallback(typeof(GprLogDelegate))]
         private static void HandleWrite(IntPtr fileStringPtr, int line, ulong threadId, IntPtr severityStringPtr, IntPtr msgPtr)
         {
             try
