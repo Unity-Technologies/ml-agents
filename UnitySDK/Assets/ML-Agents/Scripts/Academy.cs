@@ -181,6 +181,10 @@ namespace MLAgents
         /// <see cref="AcademyReset"/>.
         int stepCount;
 
+        /// The number of total number of steps completed during the whole simulation. Incremented
+        /// each time a step is taken in the environment.
+        int totalStepCount;
+
         /// Flag that indicates whether the inference/training mode of the
         /// environment was switched by the external Brain. This impacts the
         /// engine settings at the next environment step.
@@ -485,14 +489,25 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current epside).
+        /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
-        /// Current episode number.
+        /// Current step count.
         /// </returns>
         public int GetStepCount()
         {
             return stepCount;
+        }
+
+        /// <summary>
+        /// Returns the total step counter.
+        /// </summary>
+        /// <returns>
+        /// Total step count.
+        /// </returns>
+        public int GetTotalStepCount()
+        {
+            return totalStepCount;
         }
 
         /// <summary>
@@ -605,6 +620,7 @@ namespace MLAgents
             AgentAct();
 
             stepCount += 1;
+            totalStepCount += 1;
         }
 
         /// <summary>
