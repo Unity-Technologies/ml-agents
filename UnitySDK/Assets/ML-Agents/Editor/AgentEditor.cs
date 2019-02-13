@@ -33,7 +33,10 @@ namespace MLAgents
 
             EditorGUILayout.PropertyField(brain);
 
-            EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);
+            if (cameras.arraySize > 0 && renderTextures.arraySize > 0)
+            {
+                EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);    
+            }
             
             EditorGUILayout.LabelField("Agent Cameras");
             for (int i = 0; i < cameras.arraySize; i++)
