@@ -243,7 +243,8 @@ match the resolution specified under **Brain Parameters** > **Visual Observation
 
 When using `RenderTexture` visual observations a handy feature for debugging, is 
 adding a `Canvas` with a `RawImage` with it's texture set to the `RenderTexture`, 
-in order to view the agent observation.
+in order to view the agent observation. The [GridWorld example](Learning-Environment-Examples.md#gridworld) 
+GridWorldRenderTexture scene uses a RenderTexure for debugging and observation.
 
 ![Agent RenderTexture Debug](images/visual-observation-debug.png)
 
