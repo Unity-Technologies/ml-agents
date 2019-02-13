@@ -47,7 +47,7 @@ class UnityEnvironment(object):
         self._version_ = "API-6"
         self._loaded = False  # If true, this means the environment was successfully loaded
         self.proc1 = None  # The process that is started. If None, no process was started
-        self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
+        self.communicator = RpcCommunicator(worker_id, base_port, timeout_wait)
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -208,10 +208,6 @@ class UnityEnvironment(object):
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               shell=True)
-
-    def get_communicator(self, worker_id, base_port, timeout_wait):
-        return RpcCommunicator(worker_id, base_port, timeout_wait)
-        # return SocketCommunicator(worker_id, base_port)
 
     def __str__(self):
         return '''Unity Academy name: {0}
