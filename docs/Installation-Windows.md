@@ -163,10 +163,137 @@ check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
 Currently for the ML-Agents toolkit, only CUDA v9.0 and cuDNN v7.0.5 is supported.
 
+>If yo prefere to know wich parts are needed continue reading. If you just want 
+to get installed as quick as posible see the Anadonca way of installing it [here](instal-tensorflow-gpu-via-anaconda).
+
+### Install individual parts
+#### Install Nvidia CUDA toolkit
+
+[Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the
+CUDA toolkit 9.0 from Nvidia's archive. The toolkit includes GPU-accelerated
+libraries, debugging and optimization tools, a C/C++ (Step Visual Studio 2017)
+compiler and a runtime library and is needed to run the ML-Agents toolkit. In
+this guide, we are using version
+[9.0.176](https://developer.nvidia.com/compute/cuda/9.0/Prod/network_installers/cuda_9.0.176_win10_network-exe)).
+
+Before installing, please make sure you __close any running instances of Unity
+or Visual Studio__.
+
+Run the installer and select the Express option. Note the directory where you
+installed the CUDA toolkit. In this guide, we installed in the directory
+`C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0`
+
+#### Install Nvidia cuDNN library
+
+[Download](https://developer.nvidia.com/cudnn) and install the cuDNN library
+from Nvidia. cuDNN is a GPU-accelerated library of primitives for deep neural
+networks. Before you can download, you will need to sign up for free to the
+Nvidia Developer Program.
+
+<p align="center">
+  <img src="images/cuDNN_membership_required.png"
+       alt="cuDNN membership required"
+       width="500" border="10" />
+</p>
+
+Once you've signed up, go back to the cuDNN
+[downloads page](https://developer.nvidia.com/cudnn).
+You may or may not be asked to fill out a short survey. When you get to the list
+cuDNN releases, __make sure you are downloading the right version for the CUDA
+toolkit you installed in Step 1.__ In this guide, we are using version 7.0.5 for
+CUDA toolkit version 9.0
+([direct link](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v7.0.5/prod/9.0_20171129/cudnn-9.0-windows10-x64-v7)).
+
+After you have downloaded the cuDNN files, you will need to extract the files
+into the CUDA toolkit directory. In the cuDNN zip file, there are three folders
+called `bin`, `include`, and `lib`.
+
+<p align="center">
+  <img src="images/cudnn_zip_files.PNG"
+       alt="cuDNN zip files"
+       width="500" border="10" />
+</p>
+
+Copy these three folders into the CUDA toolkit directory. The CUDA toolkit
+directory is located at
+`C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0`
+
+<p align="center">
+  <img src="images/cuda_toolkit_directory.PNG"
+       alt="cuda toolkit directory"
+       width="500" border="10" />
+</p>
+
+#### Set Environment Variables
+
+You will need to add one environment variable and two path variables.
+
+To set the environment variable, type `environment variables` in the search bar
+(this can be reached by hitting the Windows key or the bottom left Windows
+button). You should see an option called __Edit the system environment
+variables__.
+
+<p align="center">
+  <img src="images/edit_env_var.png"
+       alt="edit env variables"
+       width="250" border="10" />
+</p>
+
+From here, click the __Environment Variables__ button. Click __New__ to add a
+new system variable _(make sure you do this under __System variables__ and not
+User variables_.
+
+<p align="center">
+  <img src="images/new_system_variable.PNG"
+       alt="new system variable"
+       width="500" border="10" />
+</p>
+
+For __Variable Name__, enter `CUDA_HOME`. For the variable value, put the
+directory location for the CUDA toolkit. In this guide, the directory location
+is `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0`. Press __OK__ once.
+
+<p align="center">
+  <img src="images/system_variable_name_value.PNG"
+       alt="system variable names and values"
+       width="500" border="10" />
+</p>
+
+To set the two path variables, inside the same __Environment Variables__ window
+and under the second box called __System Variables__, find a variable called
+`Path` and click __Edit__. You will add two directories to the list. For this
+guide, the two entries would look like:
+
+```console
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\extras\CUPTI\libx64
+```
+
+Make sure to replace the relevant directory location with the one you have
+installed. _Please note that case sensitivity matters_.
+
+<p align="center">
+    <img src="images/path_variables.PNG"
+        alt="Path variables"
+        width="500" border="10" />
+</p>
+
+#### Install TensorFlow GPU
+
+Next, install `tensorflow-gpu` using `pip`. You'll need version 1.7.1. In an
+Anaconda Prompt with the Conda environment ml-agents activated, type in the
+following command to uninstall TensorFlow for cpu and install TensorFlow
+for gpu _(make sure you are connected to the internet)_:
+
+```sh
+pip uninstall tensorflow
+pip install tensorflow-gpu==1.7.1
+```
 
 ### Install TensorFlow GPU via Anaconda
+>If you chose install step by step skip this.
 
-Next, install `tensorflow-gpu` using `conda`. You'll need version 1.7.1. In an
+Next, install `tensorflow-gpu` using `conda`. In an
 Anaconda Prompt with the Conda environment ml-agents activated, type in the
 following command to uninstall TensorFlow for cpu and install TensorFlow
 for gpu _(make sure you are connected to the internet)_:
@@ -176,6 +303,9 @@ pip uninstall tensorflow
 conda install -c anaconda tensorflow-gpu 
 ```
 
+
+
+## Test your Install
 Lastly, you should test to see if everything installed properly and that
 TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the
 following command:
