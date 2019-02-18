@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Name: BasicPlayer
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 20
+    vectorObservationSize: 1
     numStackedVectorObservations: 1
-    vectorActionSize: 03000000
+    vectorActionSize: 03000000030000000300000003000000
     cameraResolutions: []
     vectorActionDescriptions:
-    - 
+    - 1
+    - 2
+    - 3
+    - 4
     vectorActionSpaceType: 0
   keyContinuousPlayerActions: []
   axisContinuousPlayerActions: []
@@ -25,6 +28,12 @@ MonoBehaviour:
   - key: 97
     branchIndex: 0
     value: 1
-  - key: 100
+  - key: 115
     branchIndex: 0
     value: 2
+  - key: 100
+    branchIndex: 0
+    value: 3
+  - key: 102
+    branchIndex: 0
+    value: 4

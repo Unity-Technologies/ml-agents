@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824862, g: 0.49827534, b: 0.57558274, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824904, g: 0.49827605, b: 0.57558316, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -156,6 +156,12 @@ Prefab:
       propertyPath: m_Name
       value: Game12
       objectReference: {fileID: 0}
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a0cd58e7f0764eea8952cb416295fd0,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
@@ -294,6 +300,12 @@ Prefab:
       propertyPath: m_Name
       value: Game13
       objectReference: {fileID: 0}
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a0cd58e7f0764eea8952cb416295fd0,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
@@ -608,6 +620,12 @@ Prefab:
       propertyPath: m_Name
       value: Game11
       objectReference: {fileID: 0}
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a0cd58e7f0764eea8952cb416295fd0,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
@@ -767,7 +785,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   broadcastHub:
     broadcastingBrains:
-    - {fileID: 11400000, guid: 383c589e8bb76464eadc2525b5b0f2c1, type: 2}
+    - {fileID: 11400000, guid: 3a0cd58e7f0764eea8952cb416295fd0, type: 2}
     _brainsToControl: []
   maxSteps: 0
   trainingConfiguration:
@@ -935,6 +953,12 @@ Prefab:
       propertyPath: m_Name
       value: Game14
       objectReference: {fileID: 0}
+    - target: {fileID: 114980646877373948, guid: ff026d63a00abdc48ad6ddcff89aba04,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a0cd58e7f0764eea8952cb416295fd0,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff026d63a00abdc48ad6ddcff89aba04, type: 2}
   m_IsPrefabParent: 0
