@@ -16,7 +16,7 @@ description of the timing of these method calls during a simulation.
 
 ## Initializing an Academy
 
-Initialization is performed once in an Academy object's lifecycle. Use the
+Initialization is performed once in an Academy object's life cycle. Use the
 `InitializeAcademy()` method for any logic you would normally perform in the
 standard Unity `Start()` or `Awake()` methods.
 

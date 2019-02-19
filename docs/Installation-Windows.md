@@ -287,7 +287,7 @@ installed. _Please note that case sensitivity matters_.
 Next, install `tensorflow-gpu` using `pip`. You'll need version 1.7.1. In an
 Anaconda Prompt with the Conda environment ml-agents activated, type in the
 following command to uninstall TensorFlow for cpu and install TensorFlow
-for gpu _(make sure you are connected to the internet)_:
+for gpu _(make sure you are connected to the Internet)_:
 
 ```sh
 pip uninstall tensorflow
@@ -310,7 +310,7 @@ You should see something similar to:
 Found device 0 with properties ...
 ```
 
-## Acknowledgements
+## Acknowledgments
 
 We would like to thank
 [Jason Weimann](https://unity3d.college/2017/10/25/machine-learning-in-unity3d-setting-up-the-environment-tensorflow-for-agentml-on-windows-10/)

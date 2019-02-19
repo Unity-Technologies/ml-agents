@@ -25,7 +25,7 @@ pip install .
 
 ## Using the Gym Wrapper
 
-The gym interface is available from `gym_unity.envs`. To launch an environmnent
+The gym interface is available from `gym_unity.envs`. To launch an environment
 from the root of the project repository use:
 
 ```python
