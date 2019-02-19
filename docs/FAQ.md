@@ -20,7 +20,7 @@ ENABLE_TENSORFLOW flag for your scripting define symbols, you will see the
 following error message:
 
 ```console
-UnityAgentsException: The brain 3DBallLearning was set to inference mode but the Tensorflow library is not present in the Unity project.
+UnityAgentsException: The brain 3DBallLearning was set to inference mode but the TensorFlow library is not present in the Unity project.
 ```
  This error message occurs because the TensorFlowSharp plugin won't be used
 without the ENABLE_TENSORFLOW flag, refer to [Setting Up The ML-Agents Toolkit
@@ -59,7 +59,7 @@ There may be a number of possible causes:
 
 * _Cause_: There may be no LearningBrain with `Control` option checked in the
   `Broadcast Hub` of the Academy. In this case, the environment will not attempt
-  to communicate with python. _Solution_: Click `Add New` in your Academy's
+  to communicate with Python. _Solution_: Click `Add New` in your Academy's
   `Broadcast Hub`, and drag your LearningBrain asset into the `Brains` field,
   and check the `Control` toggle. Also you need to assign this LearningBrain
   asset to all of the Agents you wish to do training on.

@@ -81,7 +81,7 @@ conda create -n ml-agents python=3.6
 ```
 
 You may be asked to install new packages. Type `y` and press enter _(make sure
-you are connected to the internet)_. You must install these required packages.
+you are connected to the Internet)_. You must install these required packages.
 The new Conda environment is called ml-agents and uses Python version 3.6.
 
 <p align="center">
@@ -102,7 +102,7 @@ Next, install `tensorflow`. Install this package using `pip` - which is a
 package management system used to install Python packages. Latest versions of
 TensorFlow won't work, so you will need to make sure that you install version
 1.7.1. In the same Anaconda Prompt, type in the following command _(make sure
-you are connected to the internet)_:
+you are connected to the Internet)_:
 
 ```sh
 pip install tensorflow==1.7.1
@@ -143,7 +143,7 @@ subdirectory inside the ml-agents directory:
 cd C:\Downloads\ml-agents\ml-agents
 ```
 
-Make sure you are connected to the internet and then type in the Anaconda
+Make sure you are connected to the Internet and then type in the Anaconda
 Prompt within `ml-agents` subdirectory:
 
 ```sh
@@ -153,7 +153,7 @@ pip install -e .
 This will complete the installation of all the required Python packages to run
 the ML-Agents toolkit.
 
-Sometimes on Windows, when you use pip to install certain python packages, the pip will get stuck when trying to read the cache of the package. If you see this, you can try:
+Sometimes on Windows, when you use pip to install certain Python packages, the pip will get stuck when trying to read the cache of the package. If you see this, you can try:
 
 ```sh
 pip install -e . --no-cache-dir
