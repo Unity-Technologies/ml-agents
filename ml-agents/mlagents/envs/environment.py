@@ -47,7 +47,7 @@ class UnityEnvironment(object):
         self._version_ = "API-6"
         self._loaded = False  # If true, this means the environment was successfully loaded
         self.proc1 = None  # The process that is started. If None, no process was started
-        self.communicator = RpcCommunicator(worker_id, base_port, timeout_wait)
+        self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -128,6 +128,10 @@ class UnityEnvironment(object):
     @property
     def external_brain_names(self):
         return self._external_brain_names
+
+    @staticmethod
+    def get_communicator(worker_id, base_port, timeout_wait):
+        return RpcCommunicator(worker_id, base_port, timeout_wait)
 
     def executable_launcher(self, file_name, docker_training, no_graphics):
         cwd = os.getcwd()
