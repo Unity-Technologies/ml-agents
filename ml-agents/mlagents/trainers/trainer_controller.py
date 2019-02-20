@@ -14,7 +14,8 @@ from typing import *
 import numpy as np
 import tensorflow as tf
 
-from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.envs import AllBrainInfo, BrainParameters
+from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer, Policy
 from mlagents.trainers.ppo.trainer import PPOTrainer
@@ -24,10 +25,18 @@ from mlagents.trainers.meta_curriculum import MetaCurriculum
 
 
 class TrainerController(object):
-    def __init__(self, model_path: str, summaries_dir: str,
-                 run_id: str, save_freq: int, meta_curriculum: Optional[MetaCurriculum],
-                 load: bool, train: bool, keep_checkpoints: int, lesson: Optional[int],
-                 external_brains: Dict[str, BrainInfo], training_seed: int):
+    def __init__(self,
+                 model_path: str,
+                 summaries_dir: str,
+                 run_id: str,
+                 save_freq: int,
+                 meta_curriculum: Optional[MetaCurriculum],
+                 load: bool,
+                 train: bool,
+                 keep_checkpoints: int,
+                 lesson: Optional[int],
+                 external_brains: Dict[str, BrainParameters],
+                 training_seed: int):
         """
         :param model_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
@@ -111,7 +120,7 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
 
-    def initialize_trainers(self, trainer_config):
+    def initialize_trainers(self, trainer_config: Dict[str, Dict[str, str]]):
         """
         Initialization of the trainers
         :param trainer_config: The configurations of the trainers
@@ -171,7 +180,7 @@ class TrainerController(object):
                                             'permissions are set correctly.'
                                             .format(model_path))
 
-    def _reset_env(self, env):
+    def _reset_env(self, env: BaseUnityEnvironment):
         """Resets the environment.
 
         Returns:
@@ -183,7 +192,7 @@ class TrainerController(object):
         else:
             return env.reset()
 
-    def start_learning(self, env, trainer_config):
+    def start_learning(self, env: BaseUnityEnvironment, trainer_config):
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         if self.meta_curriculum is not None:
@@ -228,7 +237,7 @@ class TrainerController(object):
         if self.train_model:
             self._export_graph()
 
-    def take_step(self, env, curr_info: AllBrainInfo):
+    def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {k: len(t.reward_buffer)

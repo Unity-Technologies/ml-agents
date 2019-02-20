@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import io
 
-from typing import Dict
+from typing import Dict, List
 from PIL import Image
 
 logger = logging.getLogger("mlagents.envs")
@@ -18,14 +18,27 @@ class BrainInfo:
         self.visual_observations = visual_observation
         self.vector_observations = vector_observation
         self.text_observations = text_observations
-        self.memories = memory
-        self.rewards = reward
-        self.local_done = local_done
-        self.max_reached = max_reached
-        self.agents = agents
-        self.previous_vector_actions = vector_action
-        self.previous_text_actions = text_action
-        self.action_masks = action_mask
+        self.memories = memory or [[]]
+        self.rewards = reward or []
+        self.local_done = local_done or []
+        self.max_reached = max_reached or []
+        self.agents = agents or []
+        self.previous_vector_actions = vector_action or [[]]
+        self.previous_text_actions = text_action or []
+        self.action_masks = action_mask or [[]]
+
+    def merge(self, other):
+        self.visual_observations.extend(other.visual_observations)
+        self.vector_observations.extend(other.vector_observations)
+        self.text_observations.extend(other.text_observations)
+        self.memories.extend(other.memories)
+        self.rewards.extend(other.rewards)
+        self.local_done.extend(other.local_done)
+        self.max_reached.extend(other.max_reached)
+        self.agents.extend(other.agents)
+        self.previous_vector_actions.extend(other.previous_vector_actions)
+        self.previous_text_actions.extend(other.previous_text_actions)
+        self.action_masks.extend(other.action_masks)
 
     @staticmethod
     def process_pixels(image_bytes, gray_scale):
@@ -54,7 +67,7 @@ class BrainInfo:
             obs = [BrainInfo.process_pixels(x.visual_observations[i],
                                             brain_params.camera_resolutions[i]['blackAndWhite'])
                    for x in agent_info_list]
-            vis_obs += [np.array(obs)]
+            vis_obs += [obs]
         if len(agent_info_list) == 0:
             memory_size = 0
         else:
@@ -78,16 +91,16 @@ class BrainInfo:
         brain_info = BrainInfo(
             visual_observation=vis_obs,
             vector_observation=np.nan_to_num(
-                np.array([x.stacked_vector_observation for x in agent_info_list])),
+                np.array([x.stacked_vector_observation for x in agent_info_list])).tolist(),
             text_observations=[x.text_observation for x in agent_info_list],
-            memory=memory,
+            memory=memory.tolist(),
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
             agents=[x.id for x in agent_info_list],
             local_done=[x.done for x in agent_info_list],
-            vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
-            text_action=[x.stored_text_actions for x in agent_info_list],
+            vector_action=[list(x.stored_vector_actions) for x in agent_info_list],
+            text_action=[list(x.stored_text_actions) for x in agent_info_list],
             max_reached=[x.max_step_reached for x in agent_info_list],
-            action_mask=mask_actions
+            action_mask=mask_actions.tolist()
         )
         return brain_info
 
@@ -97,9 +110,14 @@ AllBrainInfo = Dict[str, BrainInfo]
 
 
 class BrainParameters:
-    def __init__(self, brain_name, vector_observation_space_size, num_stacked_vector_observations,
-                 camera_resolutions, vector_action_space_size,
-                 vector_action_descriptions, vector_action_space_type):
+    def __init__(self,
+                 brain_name: str,
+                 vector_observation_space_size: int,
+                 num_stacked_vector_observations: int,
+                 camera_resolutions: List[Dict],
+                 vector_action_space_size: List[int],
+                 vector_action_descriptions: List[str],
+                 vector_action_space_type: int):
         """
         Contains all brain-specific parameters.
         """
@@ -143,7 +161,7 @@ class BrainParameters:
                                        brain_param_proto.vector_observation_size,
                                        brain_param_proto.num_stacked_vector_observations,
                                        resolution,
-                                       brain_param_proto.vector_action_size,
-                                       brain_param_proto.vector_action_descriptions,
+                                       list(brain_param_proto.vector_action_size),
+                                       list(brain_param_proto.vector_action_descriptions),
                                        brain_param_proto.vector_action_space_type)
         return brain_params

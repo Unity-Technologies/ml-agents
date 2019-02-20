@@ -126,6 +126,7 @@ class PPOTrainer(Trainer):
         agents = []
         prev_vector_actions = []
         prev_text_actions = []
+        action_masks = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
             if agent_brain_info is None:
@@ -146,11 +147,12 @@ class PPOTrainer(Trainer):
             agents.append(agent_brain_info.agents[agent_index])
             prev_vector_actions.append(agent_brain_info.previous_vector_actions[agent_index])
             prev_text_actions.append(agent_brain_info.previous_text_actions[agent_index])
+            action_masks.append(agent_brain_info.action_masks[agent_index])
         if self.policy.use_recurrent:
             memories = np.vstack(memories)
         curr_info = BrainInfo(visual_observations, vector_observations, text_observations,
                               memories, rewards, agents, local_dones, prev_vector_actions,
-                              prev_text_actions, max_reacheds)
+                              prev_text_actions, max_reacheds, action_masks)
         return curr_info
 
     def add_experiences(self, curr_all_info: AllBrainInfo, next_all_info: AllBrainInfo, take_action_outputs):
