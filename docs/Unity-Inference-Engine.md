@@ -9,6 +9,7 @@ to run the neural network within Unity.
 ## Supported devices
 
 Scripting Backends : The Unity Inference Engine is generally faster with __IL2CPP__ than with __Mono__ for Standalone builds.
+In the Editor, It is not possible to use the Unity Inference Engine with Graphics Emulation set to __OpenGL 3.0 emulation__.
 The Unity Inference Engine supposedly works on any Unity supported platform
 but we only tested for the following platforms :
 
