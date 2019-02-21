@@ -6,17 +6,32 @@ from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException
 from mock_communicator import MockCommunicator
 
-@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
-def test_gym_wrapper(mock_communicator, mock_launcher):
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=False, visual_inputs=0, stack=False, num_agents=1)
+@mock.patch('gym_unity.envs.unity_env.UnityEnvironment')
+def test_gym_wrapper(mock_env):
+    mock_env.return_value.academy_name = 'MockAcademy'
+    mock_brain = mock.Mock();
 
-    # Test for incorrect number of agents.
-    with pytest.raises(UnityGymException):
-        UnityEnv(' ', use_visual=False, multiagent=True)
+    # Create mock Brain
+    mock_brain.return_value.number_visual_observations = 0
+    mock_brain.return_value.num_stacked_vector_observations = 1
+    mock_brain.return_value.vector_action_space_type = 'continuous'
+    mock_brain.return_value.vector_observation_space_size = 3
+    mock_brain.return_value.vector_action_space_size = [2]
 
-    env = UnityEnv(' ', use_visual=False)
+    # Create mock BrainInfo
+    mock_braininfo = mock.Mock()
+    mock_braininfo.return_value.vector_observations = np.array([[1, 2, 3,]])
+    mock_braininfo.return_value.rewards = [1.0]
+    mock_braininfo.return_value.local_done = [False]
+    mock_braininfo.return_value.text_observations = ['']
+    mock_braininfo.return_value.agents = [0]
+
+    mock_env.return_value.brains = {'MockBrain':mock_brain()}
+    mock_env.return_value.external_brain_names = ['MockBrain']
+    mock_env.return_value.reset.return_value = {'MockBrain':mock_braininfo()}
+    mock_env.return_value.step.return_value = {'MockBrain':mock_braininfo()}
+
+    env = UnityEnv(' ', use_visual=False, multiagent=False)
     assert isinstance(env, UnityEnv)
     assert isinstance(env.reset(), np.ndarray)
     actions = env.action_space.sample()
@@ -27,11 +42,30 @@ def test_gym_wrapper(mock_communicator, mock_launcher):
     assert isinstance(done, bool)
     assert isinstance(info, dict)
 
-@mock.patch('mlagents.envs.UnityEnvironment.executable_launcher')
-@mock.patch('mlagents.envs.UnityEnvironment.get_communicator')
-def test_multi_agent(mock_communicator, mock_launcher):
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=False, visual_inputs=0, stack=False, num_agents=2)
+@mock.patch('gym_unity.envs.unity_env.UnityEnvironment')
+def test_multi_agent(mock_env):
+    mock_env.return_value.academy_name = 'MockAcademy'
+    mock_brain = mock.Mock();
+
+    # Create mock Brain
+    mock_brain.return_value.number_visual_observations = 0
+    mock_brain.return_value.num_stacked_vector_observations = 1
+    mock_brain.return_value.vector_action_space_type = 'continuous'
+    mock_brain.return_value.vector_observation_space_size = 3
+    mock_brain.return_value.vector_action_space_size = [2]
+
+    # Create mock BrainInfo
+    mock_braininfo = mock.Mock()
+    mock_braininfo.return_value.vector_observations = np.array([[1, 2, 3,],[1, 2, 3]])
+    mock_braininfo.return_value.rewards = [1.0, 1.0]
+    mock_braininfo.return_value.local_done = [False, False]
+    mock_braininfo.return_value.text_observations = ['', '']
+    mock_braininfo.return_value.agents = [0, 1]
+
+    mock_env.return_value.brains = {'MockBrain':mock_brain()}
+    mock_env.return_value.external_brain_names = ['MockBrain']
+    mock_env.return_value.reset.return_value = {'MockBrain':mock_braininfo()}
+    mock_env.return_value.step.return_value = {'MockBrain':mock_braininfo()}
 
     # Test for incorrect number of agents.
     with pytest.raises(UnityGymException):
@@ -49,6 +83,8 @@ def test_multi_agent(mock_communicator, mock_launcher):
 @mock.patch('gym_unity.envs.unity_env.UnityEnvironment')
 def test_branched_flatten(mock_env):
     mock_env.return_value.academy_name = 'MockAcademy'
+
+    # Create mock Brain
     mock_brain = mock.Mock();
     mock_brain.return_value.number_visual_observations = 0
     mock_brain.return_value.num_stacked_vector_observations = 1
