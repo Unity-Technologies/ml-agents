@@ -3,7 +3,7 @@
 //     source: mlagents/envs/communicator_objects/unity_to_external.proto
 // </auto-generated>
 
-# if UNITY_EDITOR ||  UNITY_STANDALONE_WINDOWSWINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+# if UNITY_EDITOR || UNITY_STANDALONE_WINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 
 #pragma warning disable 1591
 #region Designer generated code
