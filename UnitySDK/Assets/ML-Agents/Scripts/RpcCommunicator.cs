@@ -1,4 +1,6 @@
+# if UNITY_EDITOR || UNITY_STANDALONE_WINDOWSWINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 using Grpc.Core;
+#endif
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +43,7 @@ namespace MLAgents
         public UnityInput Initialize(UnityOutput unityOutput,
                                      out UnityInput unityInput)
         {
+# if UNITY_EDITOR  || UNITY_STANDALONE_WINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_isOpen = true;
             var channel = new Channel(
                 "localhost:"+m_communicatorParameters.port, 
@@ -57,6 +60,10 @@ namespace MLAgents
 #endif
 #endif
             return result.UnityInput;
+#else
+            throw new UnityAgentsException(
+                "You cannot perform training on this platform.");
+#endif
         }
 
         /// <summary>
