@@ -1,4 +1,4 @@
-# if UNITY_EDITOR || UNITY_STANDALONE_WINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 using Grpc.Core;
 #endif
 using System.IO;
@@ -18,7 +18,7 @@ namespace MLAgents
         /// If true, the communication is active.
         bool m_isOpen;
 
-# if UNITY_EDITOR || UNITY_STANDALONE_WINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client. 
         UnityToExternal.UnityToExternalClient m_client;
 #endif
@@ -72,7 +72,7 @@ namespace MLAgents
         /// </summary>
         public void Close()
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_isOpen)
             {
                 return;
@@ -100,7 +100,7 @@ namespace MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         public UnityInput Exchange(UnityOutput unityOutput)
         {
-# if UNITY_STANDALONE_WINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_isOpen)
             {
                 return null;
