@@ -167,7 +167,7 @@ MonoBehaviour:
       value: 1
   actorObjs: []
   players: 
-  trueAgent: {fileID: 2008405822}
+  trueAgent: {fileID: 1320343145}
   gridSize: 0
   camObject: {fileID: 99095112}
   agentPref: {fileID: 1657514749044530, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
@@ -535,6 +535,73 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1001 &604292163
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
+        type: 2}
+      propertyPath: agentParameters.agentCameras.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
+        type: 2}
+      propertyPath: agentParameters.agentRenderTextures.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
+        type: 2}
+      propertyPath: agentParameters.agentRenderTextures.Array.data[0]
+      value: 
+      objectReference: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
+    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 2c1d51b7167874f31beda0b0cf0af468,
+        type: 2}
+    - target: {fileID: 1657514749044530, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+      propertyPath: m_Name
+      value: trueAgent
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &742849316
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,7 +1052,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Texture: {fileID: 8400000, guid: bfcba1783205d4451829316c11f5fecd, type: 2}
+  m_Texture: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -999,6 +1066,11 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1305247359}
   m_CullTransparentMesh: 0
+--- !u!1 &1320343145 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1657514749044530, guid: 628960e910f094ad1909ecc88cc8016d,
+    type: 2}
+  m_PrefabInternal: {fileID: 604292163}
 --- !u!1 &1553342942
 GameObject:
   m_ObjectHideFlags: 0
@@ -1244,90 +1316,3 @@ Transform:
   m_Father: {fileID: 486401524}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!1001 &2008405821
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: agentParameters.agentCameras.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: agentParameters.agentRenderTextures.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4587181662868872, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_RootOrder
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1657514749044530, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-      propertyPath: m_Name
-      value: trueAgent
-      objectReference: {fileID: 0}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 2c1d51b7167874f31beda0b0cf0af468,
-        type: 2}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: agentParameters.agentCameras.Array.data[0]
-      value: 
-      objectReference: {fileID: 489340228}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: timeBetweenDecisionsAtInference
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: agentParameters.agentRenderTextures.Array.data[0]
-      value: 
-      objectReference: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: agentParameters.maxStep
-      value: 100
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
-  m_IsPrefabAsset: 0
---- !u!1 &2008405822 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1657514749044530, guid: 628960e910f094ad1909ecc88cc8016d,
-    type: 2}
-  m_PrefabInternal: {fileID: 2008405821}
