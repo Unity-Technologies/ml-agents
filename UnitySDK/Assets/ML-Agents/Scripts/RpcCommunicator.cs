@@ -44,7 +44,7 @@ namespace MLAgents
         public UnityInput Initialize(UnityOutput unityOutput,
                                      out UnityInput unityInput)
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WINDOWS || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_isOpen = true;
             var channel = new Channel(
                 "localhost:"+m_communicatorParameters.port, 
