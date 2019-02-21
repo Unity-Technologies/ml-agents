@@ -369,7 +369,6 @@ def test_take_step_resets_env_on_global_done():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
     brain_info_mock = MagicMock()
-    action_data_mock_out = [None, None, None, None, None]
     trainer_mock.add_experiences = MagicMock()
     trainer_mock.process_experiences = MagicMock()
     trainer_mock.update_policy = MagicMock()
