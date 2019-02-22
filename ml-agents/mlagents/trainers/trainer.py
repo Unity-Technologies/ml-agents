@@ -4,7 +4,8 @@ import logging
 import tensorflow as tf
 import numpy as np
 
-from mlagents.envs import UnityException, AllBrainInfo
+from mlagents.envs import UnityException, AllBrainInfo, BrainInfo
+from mlagents.trainers import ActionInfo
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -90,6 +91,14 @@ class Trainer(object):
         """
         raise UnityTrainerException(
             "The increment_step_and_update_last_reward method was not implemented.")
+
+    def get_action(self, curr_info: BrainInfo) -> ActionInfo:
+        """
+        Get an action using this trainer's current policy.
+        :param curr_info: Current BrainInfo.
+        :return: The ActionInfo given by the policy given the BrainInfo.
+        """
+        return self.policy.get_action(curr_info)
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
                         take_action_outputs):

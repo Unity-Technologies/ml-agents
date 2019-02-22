@@ -194,7 +194,6 @@ class TrainerController(object):
 
         # Prevent a single session from taking all GPU memory.
         self.initialize_trainers(trainer_config)
-        policies = {brain_name: trainer.policy for brain_name, trainer in self.trainers.items()}
         for _, t in self.trainers.items():
             self.logger.info(t)
 
@@ -210,7 +209,7 @@ class TrainerController(object):
             while any([t.get_step <= t.get_max_steps \
                        for k, t in self.trainers.items()]) \
                   or not self.train_model:
-                new_info = self.take_step(env, curr_info, policies)
+                new_info = self.take_step(env, curr_info)
                 self.global_step += 1
                 if self.global_step % self.save_freq == 0 and self.global_step != 0 \
                         and self.train_model:
@@ -229,7 +228,7 @@ class TrainerController(object):
         if self.train_model:
             self._export_graph()
 
-    def take_step(self, env, curr_info: AllBrainInfo, policies: Dict[str, Policy]):
+    def take_step(self, env, curr_info: AllBrainInfo):
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {k: len(t.reward_buffer)
@@ -264,8 +263,8 @@ class TrainerController(object):
         take_action_text = {}
         take_action_value = {}
         take_action_outputs = {}
-        for brain_name, policy in policies.items():
-            action_info = policy.get_action(curr_info[brain_name])
+        for brain_name, trainer in self.trainers.items():
+            action_info = trainer.get_action(curr_info[brain_name])
             take_action_vector[brain_name] = action_info.action
             take_action_memories[brain_name] = action_info.memory
             take_action_text[brain_name] = action_info.text
