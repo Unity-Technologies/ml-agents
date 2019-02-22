@@ -4,9 +4,9 @@ import numpy as np
 
 from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException
-from mock_communicator import MockCommunicator
 
 # Tests
+
 
 @mock.patch('gym_unity.envs.unity_env.UnityEnvironment')
 def test_gym_wrapper(mock_env):
@@ -24,6 +24,7 @@ def test_gym_wrapper(mock_env):
     assert isinstance(rew, float)
     assert isinstance(done, bool)
     assert isinstance(info, dict)
+
 
 @mock.patch('gym_unity.envs.unity_env.UnityEnvironment')
 def test_multi_agent(mock_env):
@@ -43,6 +44,7 @@ def test_multi_agent(mock_env):
     assert isinstance(done, list)
     assert isinstance(info, dict)
 
+
 @mock.patch('gym_unity.envs.unity_env.UnityEnvironment')
 def test_branched_flatten(mock_env):
     mock_brain = create_mock_brainparams(vector_action_space_type='discrete', vector_action_space_size=[2,2,3])
@@ -61,6 +63,7 @@ def test_branched_flatten(mock_env):
 
 # Helper methods
 
+
 def create_mock_brainparams(number_visual_observations=0, num_stacked_vector_observations=1,
                             vector_action_space_type='continuous', vector_observation_space_size=3,
                             vector_action_space_size=None):
@@ -78,6 +81,7 @@ def create_mock_brainparams(number_visual_observations=0, num_stacked_vector_obs
     mock_brain.return_value.vector_action_space_size = vector_action_space_size
     return mock_brain()
 
+
 def create_mock_vector_braininfo(num_agents = 1):
     """
     Creates a mock BrainInfo with vector observations. Imitates constant
@@ -92,6 +96,7 @@ def create_mock_vector_braininfo(num_agents = 1):
     mock_braininfo.return_value.text_observations = num_agents*['']
     mock_braininfo.return_value.agents = range(0,num_agents)
     return mock_braininfo()
+
 
 def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     """
