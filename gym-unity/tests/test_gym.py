@@ -61,11 +61,15 @@ def test_branched_flatten(mock_env):
 
 # Helper methods
 
-def create_mock_brainparams(number_visual_observations = 0, num_stacked_vector_observations = 1, 
-    vector_action_space_type = 'continuous', vector_observation_space_size = 3, vector_action_space_size = [2]):
+def create_mock_brainparams(number_visual_observations=0, num_stacked_vector_observations=1,
+                            vector_action_space_type='continuous', vector_observation_space_size=3,
+                            vector_action_space_size=None):
     """
     Creates a mock BrainParameters object with parameters.
     """
+    # Avoid using mutable object as default param
+    if vector_action_space_size is None:
+        vector_action_space_size = [2]
     mock_brain = mock.Mock();
     mock_brain.return_value.number_visual_observations = number_visual_observations
     mock_brain.return_value.num_stacked_vector_observations = num_stacked_vector_observations
@@ -77,9 +81,9 @@ def create_mock_brainparams(number_visual_observations = 0, num_stacked_vector_o
 def create_mock_vector_braininfo(num_agents = 1):
     """
     Creates a mock BrainInfo with vector observations. Imitates constant
-    vector observations, rewards, dones, and agents. 
+    vector observations, rewards, dones, and agents.
 
-    :int num_agents: Number of "agents" to imitate in your BrainInfo values. 
+    :int num_agents: Number of "agents" to imitate in your BrainInfo values.
     """
     mock_braininfo = mock.Mock()
     mock_braininfo.return_value.vector_observations = np.array([num_agents*[1, 2, 3,]])
@@ -94,7 +98,7 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     Takes in a mock UnityEnvironment and adds the appropriate properties, defined by the mock
     BrainParameters and BrainInfo.
 
-    :Mock mock_env: A mock UnityEnvironment, usually empty. 
+    :Mock mock_env: A mock UnityEnvironment, usually empty.
     :Mock mock_brain: A mock Brain object that specifies the params of this environment.
     :Mock mock_braininfo: A mock BrainInfo object that will be returned at each step and reset.
     """
