@@ -139,12 +139,6 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def curriculum_lesson_changed(self) -> None:
-        """
-        Allows the trainer to update any intermediate state needed when a curriculum lesson changes.
-        """
-        pass
-
     def save_model(self):
         """
         Saves the model

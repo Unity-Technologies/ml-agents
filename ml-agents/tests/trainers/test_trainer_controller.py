@@ -280,7 +280,7 @@ def trainer_controller_with_start_learning_mocks():
     tc.trainers = {'testbrain': trainer_mock}
     tc.take_step = MagicMock()
 
-    def take_step_sideeffect(env, curr_info, policies):
+    def take_step_sideeffect(env, curr_info):
         tc.trainers['testbrain'].get_step += 1
         if tc.trainers['testbrain'].get_step > 10:
             raise KeyboardInterrupt
@@ -381,11 +381,9 @@ def test_take_step_resets_env_on_global_done():
     env_mock.reset = MagicMock(return_value=brain_info_mock)
     env_mock.global_done = True
 
-    policy_mock = MagicMock()
-    policy_mock.get_action = MagicMock(return_value = ActionInfo(None, None, None, None, None))
-    mock_policies = {'testbrain': policy_mock}
+    trainer_mock.get_action = MagicMock(return_value = ActionInfo(None, None, None, None, None))
 
-    tc.take_step(env_mock, brain_info_mock, mock_policies)
+    tc.take_step(env_mock, brain_info_mock)
     env_mock.reset.assert_called_once()
 
 
@@ -404,7 +402,6 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     env_mock.reset = MagicMock(return_value=curr_info_mock)
     env_mock.global_done = False
 
-    policy_mock = MagicMock()
     action_output_mock = ActionInfo(
         'action',
         'memory',
@@ -412,12 +409,11 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
         'value',
         {'some': 'output'}
     )
-    policy_mock.get_action = MagicMock(return_value=action_output_mock)
-    mock_policies = {'testbrain': policy_mock}
+    trainer_mock.get_action = MagicMock(return_value=action_output_mock)
 
-    tc.take_step(env_mock, curr_info_mock, mock_policies)
+    tc.take_step(env_mock, curr_info_mock)
     env_mock.reset.assert_not_called()
-    policy_mock.get_action.assert_called_once_with(brain_info_mock)
+    trainer_mock.get_action.assert_called_once_with(brain_info_mock)
     env_mock.step.assert_called_once_with(
         vector_action={'testbrain': action_output_mock.action},
         memory={'testbrain': action_output_mock.memory},

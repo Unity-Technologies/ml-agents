@@ -338,12 +338,6 @@ class PPOTrainer(Trainer):
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
         self.training_buffer.reset_update_buffer()
 
-    def curriculum_lesson_changed(self) -> None:
-        """
-        Clear the reward buffer if a curriculum lesson changes.
-        """
-        self.reward_buffer.clear()
-
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
     """

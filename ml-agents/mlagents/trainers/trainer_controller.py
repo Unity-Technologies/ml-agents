@@ -251,7 +251,7 @@ class TrainerController(object):
                 trainer.end_episode()
             for brain_name, changed in lessons_incremented.items():
                 if changed:
-                    self.trainers[brain_name].curriculum_lesson_changed()
+                    self.trainers[brain_name].reward_buffer.clear()
         elif env.global_done:
             curr_info = self._reset_env(env)
             for brain_name, trainer in self.trainers.items():
