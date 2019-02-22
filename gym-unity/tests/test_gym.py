@@ -95,7 +95,7 @@ def create_mock_vector_braininfo(num_agents = 1):
 
 def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     """
-    Takes in a mock UnityEnvironment and adds the appropriate properties, defined by the mock
+    Takes a mock UnityEnvironment and adds the appropriate properties, defined by the mock
     BrainParameters and BrainInfo.
 
     :Mock mock_env: A mock UnityEnvironment, usually empty.
