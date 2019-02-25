@@ -58,8 +58,7 @@ From here, click the __Environment Variables__ button. Double click "Path" under
 __System variable__ to edit the "Path" variable, click __New__ to add the
 following new paths.
 
-```
-console
+```console
 %UserProfile%\Anaconda3\Scripts
 %UserProfile%\Anaconda3\Scripts\conda.exe
 %UserProfile%\Anaconda3
@@ -77,8 +76,7 @@ ML-Agents, you will need activate this Conda environment.
 To create a new Conda environment, open a new Anaconda Prompt (_Anaconda Prompt_
 in the search bar) and type in the following command:
 
-```
-sh
+```sh
 conda create -n ml-agents python=3.6
 ```
 
@@ -94,8 +92,7 @@ To use this environment, you must activate it. _(To use this environment In the
 future, you can run the same command)_. In the same Anaconda Prompt, type in the
 following command:
 
-```
-sh
+```sh
 activate ml-agents
 ```
 
@@ -107,8 +104,7 @@ TensorFlow won't work, so you will need to make sure that you install version
 1.7.1. In the same Anaconda Prompt, type in the following command _(make sure
 you are connected to the internet)_:
 
-```
-sh
+```sh
 pip install tensorflow==1.7.1
 ```
 
@@ -123,8 +119,7 @@ here](https://git-scm.com/download/win)) and running the following commands in
 an Anaconda Prompt _(if you open a new prompt, be sure to activate the ml-agents
 Conda environment by typing `activate ml-agents`)_:
 
-```
-sh
+```sh
 git clone https://github.com/Unity-Technologies/ml-agents.git
 ```
 
@@ -144,16 +139,14 @@ In our example, the files are located in `C:\Downloads`. After you have either
 cloned or downloaded the files, from the Anaconda Prompt, change to the ml-agents
 subdirectory inside the ml-agents directory:
 
-```
-console
+```console
 cd C:\Downloads\ml-agents\ml-agents
 ```
 
 Make sure you are connected to the internet and then type in the Anaconda
 Prompt within `ml-agents` subdirectory:
 
-```
-sh
+```sh
 pip install -e .
 ```
 
@@ -270,8 +263,7 @@ and under the second box called __System Variables__, find a variable called
 `Path` and click __Edit__. You will add two directories to the list. For this
 guide, the two entries would look like:
 
-```
-console
+```console
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\extras\CUPTI\libx64
 ```
@@ -292,8 +284,7 @@ Anaconda Prompt with the Conda environment ml-agents activated, type in the
 following command to uninstall TensorFlow for cpu and install TensorFlow
 for gpu _(make sure you are connected to the internet)_:
 
-```
-sh
+```sh
 pip uninstall tensorflow
 pip install tensorflow-gpu==1.7.1
 ```
@@ -302,7 +293,7 @@ Lastly, you should test to see if everything installed properly and that
 TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the
 following command:
 
-```
+```sh
 python
 
 import tensorflow as tf
