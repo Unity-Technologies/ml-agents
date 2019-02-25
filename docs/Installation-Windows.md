@@ -291,7 +291,7 @@ pip install tensorflow-gpu==1.7.1
 
 Lastly, you should test to see if everything installed properly and that
 TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the
-following command:
+following commands:
 
 ```sh
 python
