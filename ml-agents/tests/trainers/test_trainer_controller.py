@@ -5,6 +5,7 @@ from unittest.mock import *
 import yaml
 import pytest
 
+from mlagents.trainers import ActionInfo
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -368,8 +369,6 @@ def test_take_step_resets_env_on_global_done():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
     brain_info_mock = MagicMock()
-    action_data_mock_out = [None, None, None, None, None]
-    trainer_mock.take_action = MagicMock(return_value=action_data_mock_out)
     trainer_mock.add_experiences = MagicMock()
     trainer_mock.process_experiences = MagicMock()
     trainer_mock.update_policy = MagicMock()
@@ -382,6 +381,8 @@ def test_take_step_resets_env_on_global_done():
     env_mock.reset = MagicMock(return_value=brain_info_mock)
     env_mock.global_done = True
 
+    trainer_mock.get_action = MagicMock(return_value = ActionInfo(None, None, None, None, None))
+
     tc.take_step(env_mock, brain_info_mock)
     env_mock.reset.assert_called_once()
 
@@ -390,14 +391,8 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
     curr_info_mock = MagicMock()
-    trainer_action_output_mock = [
-        'action',
-        'memory',
-        'actiontext',
-        'value',
-        'output',
-    ]
-    trainer_mock.take_action = MagicMock(return_value=trainer_action_output_mock)
+    brain_info_mock = MagicMock()
+    curr_info_mock.__getitem__ = MagicMock(return_value=brain_info_mock)
     trainer_mock.is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
@@ -407,17 +402,26 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     env_mock.reset = MagicMock(return_value=curr_info_mock)
     env_mock.global_done = False
 
+    action_output_mock = ActionInfo(
+        'action',
+        'memory',
+        'actiontext',
+        'value',
+        {'some': 'output'}
+    )
+    trainer_mock.get_action = MagicMock(return_value=action_output_mock)
+
     tc.take_step(env_mock, curr_info_mock)
     env_mock.reset.assert_not_called()
-    trainer_mock.take_action.assert_called_once_with(curr_info_mock)
+    trainer_mock.get_action.assert_called_once_with(brain_info_mock)
     env_mock.step.assert_called_once_with(
-        vector_action={'testbrain': trainer_action_output_mock[0]},
-        memory={'testbrain': trainer_action_output_mock[1]},
-        text_action={'testbrain': trainer_action_output_mock[2]},
-        value={'testbrain': trainer_action_output_mock[3]}
+        vector_action={'testbrain': action_output_mock.action},
+        memory={'testbrain': action_output_mock.memory},
+        text_action={'testbrain': action_output_mock.text},
+        value={'testbrain': action_output_mock.value}
     )
     trainer_mock.add_experiences.assert_called_once_with(
-        curr_info_mock, env_step_output_mock, trainer_action_output_mock[4]
+        curr_info_mock, env_step_output_mock, action_output_mock.outputs
     )
     trainer_mock.process_experiences.assert_called_once_with(curr_info_mock, env_step_output_mock)
     trainer_mock.update_policy.assert_called_once()
