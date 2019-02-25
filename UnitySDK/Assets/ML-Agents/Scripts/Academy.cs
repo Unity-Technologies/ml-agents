@@ -213,6 +213,9 @@ namespace MLAgents
         // actions for their agents.
         public event System.Action BrainDecideAction;
 
+        // Signals to all the listeners that the academy is being destroyed
+        public event System.Action DestroyAction;
+
         // Signals to all the agents at each environment step along with the 
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
@@ -244,6 +247,12 @@ namespace MLAgents
         void Awake()
         {
             InitializeEnvironment();
+        }
+
+        private void OnDestroy()
+        {
+            // Signal to listeners that the academy is being destroyed now
+            DestroyAction();
         }
 
         // Used to read Python-provided environment parameters
