@@ -175,9 +175,6 @@ this guide, we are using version
 Before installing, please make sure you __close any running instances of Unity
 or Visual Studio__.
 
-WARNING: Installing Nvidia CUDA toolkit may overwrite your display drivers. This
-may affect applications such as Maya, Photoshop, or 3D Studio MAX.
-
 Run the installer and select the Express option. Note the directory where you
 installed the CUDA toolkit. In this guide, we installed in the directory
 `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0`
@@ -290,12 +287,16 @@ pip install tensorflow-gpu==1.7.1
 ```
 
 Lastly, you should test to see if everything installed properly and that
-TensorFlow can identify your GPU. In the same Anaconda Prompt, type in the
-following commands:
+TensorFlow can identify your GPU. In the same Anaconda Prompt, open Python 
+in the Prompt by calling:
 
 ```sh
 python
+```
 
+And then type the following commands:
+
+```python
 import tensorflow as tf
 
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
