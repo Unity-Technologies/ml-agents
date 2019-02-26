@@ -78,7 +78,8 @@ class RpcCommunicator(Communicator):
             raise UnityTimeOutException(
                 "The Unity environment took too long to respond. Make sure that :\n"
                 "\t The environment does not need user interaction to launch\n"
-                "\t The Academy and the External Brain(s) are attached to objects in the Scene\n"
+                "\t The Academy's Broadcast Hub is configured correctly\n"
+                "\t The Agents are linked to the appropriate Brains\n"
                 "\t The environment and the Python interface have compatible versions.")
         aca_param = self.unity_to_external.parent_conn.recv().unity_output
         message = UnityMessage()
