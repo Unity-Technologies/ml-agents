@@ -1,4 +1,5 @@
 import logging
+import itertools
 import gym
 import numpy as np
 from mlagents.envs import UnityEnvironment
@@ -23,13 +24,15 @@ class UnityEnv(gym.Env):
     https://github.com/openai/multiagent-particle-envs
     """
 
-    def __init__(self, environment_filename: str, worker_id=0, use_visual=False, multiagent=False):
+    def __init__(self, environment_filename: str, worker_id=0, use_visual=False, uint8_visual=False, multiagent=False, flatten_branched=False):
         """
         Environment initialization
         :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
         :param worker_id: Worker number for environment.
         :param use_visual: Whether to use visual observation or vector observation.
+        :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
+        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete.
         """
         self._env = UnityEnvironment(environment_filename, worker_id)
         self.name = self._env.academy_name
@@ -37,6 +40,8 @@ class UnityEnv(gym.Env):
         self._current_state = None
         self._n_agents = None
         self._multiagent = multiagent
+        self._flattener = None
+        self.game_over = False # Hidden flag used by Atari environments to determine if the game is over
 
         # Check brain configuration
         if len(self._env.brains) != 1:
@@ -50,6 +55,12 @@ class UnityEnv(gym.Env):
             raise UnityGymException("`use_visual` was set to True, however there are no"
                                     " visual observations as part of this environment.")
         self.use_visual = brain.number_visual_observations >= 1 and use_visual
+
+        if not use_visual and uint8_visual:
+            logger.warning("`uint8_visual was set to true, but visual observations are not in use. "
+                           "This setting will not have any effect.")
+        else:
+            self.uint8_visual = uint8_visual
 
         if brain.number_visual_observations > 1:
             logger.warning("The environment contains more than one visual observation. "
@@ -69,8 +80,16 @@ class UnityEnv(gym.Env):
             if len(brain.vector_action_space_size) == 1:
                 self._action_space = spaces.Discrete(brain.vector_action_space_size[0])
             else:
-                self._action_space = spaces.MultiDiscrete(brain.vector_action_space_size)
+                if flatten_branched:
+                    self._flattener = ActionFlattener(brain.vector_action_space_size)
+                    self._action_space = self._flattener.action_space
+                else:
+                    self._action_space = spaces.MultiDiscrete(brain.vector_action_space_size)
+
         else:
+            if flatten_branched:
+                logger.warning("The environment has a non-discrete action space. It will "
+                                "not be flattened.")
             high = np.array([1] * brain.vector_action_space_size[0])
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
         high = np.array([np.inf] * brain.vector_observation_space_size)
@@ -96,6 +115,7 @@ class UnityEnv(gym.Env):
         info = self._env.reset()[self.brain_name]
         n_agents = len(info.agents)
         self._check_agents(n_agents)
+        self.game_over = False
 
         if not self._multiagent:
             obs, reward, done, info = self._single_step(info)
@@ -126,7 +146,14 @@ class UnityEnv(gym.Env):
                 raise UnityGymException(
                     "The environment was expecting a list of {} actions.".format(self._n_agents))
             else:
+                if self._flattener is not None:
+                    # Action space is discrete and flattened - we expect a list of scalars
+                    action = [self._flattener.lookup_action(_act) for _act in action]
                 action = np.array(action)
+        else:
+            if self._flattener is not None:
+                # Translate action into list
+                action = self._flattener.lookup_action(action)
 
         info = self._env.step(action)[self.brain_name]
         n_agents = len(info.agents)
@@ -135,13 +162,15 @@ class UnityEnv(gym.Env):
 
         if not self._multiagent:
             obs, reward, done, info = self._single_step(info)
+            self.game_over = done
         else:
             obs, reward, done, info = self._multi_step(info)
+            self.game_over = all(done)
         return obs, reward, done, info
 
     def _single_step(self, info):
         if self.use_visual:
-            self.visual_obs = info.visual_observations[0][0, :, :, :]
+            self.visual_obs = self._preprocess_single(info.visual_observations[0][0, :, :, :])
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
@@ -150,15 +179,27 @@ class UnityEnv(gym.Env):
             "text_observation": info.text_observations[0],
             "brain_info": info}
 
+    def _preprocess_single(self, single_visual_obs):
+        if self.uint8_visual:
+            return (255.0*single_visual_obs).astype(np.uint8)
+        else:
+            return single_visual_obs
+
     def _multi_step(self, info):
         if self.use_visual:
-            self.visual_obs = info.visual_observations
+            self.visual_obs = self._preprocess_multi(info.visual_observations)
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations
         return list(default_observation), info.rewards, info.local_done, {
             "text_observation": info.text_observations,
             "brain_info": info}
+    
+    def _preprocess_multi(self, multiple_visual_obs):
+        if self.uint8_visual:
+            return [(255.0*_visual_obs).astype(np.uint8) for _visual_obs in multiple_visual_obs]
+        else:
+            return multiple_visual_obs
 
     def render(self, mode='rgb_array'):
         return self.visual_obs
@@ -219,3 +260,38 @@ class UnityEnv(gym.Env):
     @property
     def number_agents(self):
         return self._n_agents
+
+class ActionFlattener():
+    """
+    Flattens branched discrete action spaces into single-branch discrete action spaces.
+    """
+    def __init__(self,branched_action_space):
+        """
+        Initialize the flattener.
+        :param branched_action_space: A List containing the sizes of each branch of the action
+        space, e.g. [2,3,3] for three branches with size 2, 3, and 3 respectively.
+        """
+        self._action_shape = branched_action_space
+        self.action_lookup = self._create_lookup(self._action_shape)
+        self.action_space = spaces.Discrete(len(self.action_lookup))
+
+    @classmethod
+    def _create_lookup(self, branched_action_space):
+        """
+        Creates a Dict that maps discrete actions (scalars) to branched actions (lists).
+        Each key in the Dict maps to one unique set of branched actions, and each value
+        contains the List of branched actions.
+        """
+        possible_vals = [range(_num) for _num in branched_action_space]
+        all_actions = [list(_action) for _action in itertools.product(*possible_vals)]
+        # Dict should be faster than List for large action spaces
+        action_lookup = {_scalar: _action for (_scalar, _action) in enumerate(all_actions)}
+        return action_lookup
+
+    def lookup_action(self, action):
+        """
+        Convert a scalar discrete action into a unique set of branched actions.
+        :param: action: A scalar value representing one of the discrete actions.
+        :return: The List containing the branched actions.
+        """
+        return self.action_lookup[action]

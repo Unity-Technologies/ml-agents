@@ -71,7 +71,7 @@ namespace MLAgents
                 EditorGUILayout.PropertyField(
                     actionsPerDecision,
                     new GUIContent(
-                        "Decision Frequency",
+                        "Decision Interval",
                         "The agent will automatically request a decision every X" +
                         " steps and perform an action at every step."));
                 actionsPerDecision.intValue = Mathf.Max(1, actionsPerDecision.intValue);

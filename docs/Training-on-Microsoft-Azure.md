@@ -81,9 +81,9 @@ to identify your training run with.
 If you've selected to run on a N-Series VM with GPU support, you can verify that
 the GPU is being used by running `nvidia-smi` from the command line.
 
-## Monitoring your Training Run with Tensorboard
+## Monitoring your Training Run with TensorBoard
 
-Once you have started training, you can [use Tensorboard to observe the
+Once you have started training, you can [use TensorBoard to observe the
 training](Using-Tensorboard.md).  
 
 1. Start by [opening the appropriate port for web traffic to connect to your VM](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal).  

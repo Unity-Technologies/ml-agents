@@ -158,15 +158,16 @@ Brain assigned to this Agent must be set.
 
 You must also determine how an Agent finishes its task or times out. You can
 manually set an Agent to done in your `AgentAction()` function when the Agent
-has finished (or irrevocably failed) its task. You can also set the Agent's `Max
-Steps` property to a positive value and the Agent will consider itself done
-after it has taken that many steps. When the Academy reaches its own `Max Steps`
-count, it starts the next episode. If you set an Agent's `ResetOnDone` property
-to true, then the Agent can attempt its task several times in one episode. (Use
-the `Agent.AgentReset()` function to prepare the Agent to start again.)
+has finished (or irrevocably failed) its task by calling the `Done()` function. 
+You can also set the Agent's `Max Steps` property to a positive value and the 
+Agent will consider itself done after it has taken that many steps. When the 
+Academy reaches its own `Max Steps` count, it starts the next episode. If you 
+set an Agent's `ResetOnDone` property to true, then the Agent can attempt its 
+task several times in one episode. (Use the `Agent.AgentReset()` function to 
+prepare the Agent to start again.)
 
 See [Agents](Learning-Environment-Design-Agents.md) for detailed information
-about programing your own Agents.
+about programming your own Agents.
 
 ## Environments
 
