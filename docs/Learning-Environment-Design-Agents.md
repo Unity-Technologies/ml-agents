@@ -511,7 +511,7 @@ called independently of the `Max Step` property.
     * `RequestAction()` Signals that the Agent is requesting an action. The
         action provided to the Agent in this case is the same action that was
         provided the last time it requested a decision.
-* `Decision Frequency` - The number of steps between decision requests. Not used
+* `Decision Interval` - The number of steps between decision requests. Not used
   if `On Demand Decision`, is true.
 
 ## Monitoring Agents

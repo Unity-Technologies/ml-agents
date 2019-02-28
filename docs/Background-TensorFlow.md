@@ -33,6 +33,6 @@ training which can be helpful in both building intuitions for the different
 hyperparameters and setting the optimal values for your Unity environment. We
 provide more details on setting the hyperparameters in later parts of the
 documentation, but, in the meantime, if you are unfamiliar with TensorBoard we
-recommend our guide on [using Tensorboard with ML-Agents](Using-Tensorboard.md) or
+recommend our guide on [using TensorBoard with ML-Agents](Using-Tensorboard.md) or
 this [tutorial](https://github.com/dandelionmane/tf-dev-summit-tensorboard-tutorial).
 

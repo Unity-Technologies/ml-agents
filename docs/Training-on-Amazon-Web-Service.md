@@ -3,9 +3,9 @@
 This page contains instructions for setting up an EC2 instance on Amazon Web
 Service for training ML-Agents environments.
 
-## Preconfigured AMI
+## Pre-configured AMI
 
-We've prepared a preconfigured AMI for you with the ID: `ami-016ff5559334f8619` in the
+We've prepared a pre-configured AMI for you with the ID: `ami-016ff5559334f8619` in the
 `us-east-1` region. It was created as a modification of [Deep Learning AMI
 (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). The AMI has been 
 tested with p2.xlarge instance. Furthermore, if you want to train without 

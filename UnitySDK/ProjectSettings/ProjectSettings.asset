@@ -158,7 +158,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.Vince.Ball
+    Android: com.Company.ProductName
   buildNumber:
     iOS: 0
   AndroidBundleVersionCode: 1

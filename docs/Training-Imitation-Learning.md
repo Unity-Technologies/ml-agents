@@ -73,7 +73,7 @@ generated using the `Demonstration Recorder` as the dataset used to train a beha
    as the config parameter, and include the `--run-id` and `--train` as usual. 
    Provide your environment as the `--env` parameter if it has been compiled 
    as standalone, or omit to train in the editor.
-7. (Optional) Observe training performance using Tensorboard.
+7. (Optional) Observe training performance using TensorBoard.
 
 This will use the demonstration file to train a neural network driven agent 
 to directly imitate the actions provided in the demonstration. The environment 
