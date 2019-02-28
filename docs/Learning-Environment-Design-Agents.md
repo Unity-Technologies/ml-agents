@@ -237,7 +237,8 @@ of commands. In the **Discrete** vector action space type, the action parameter
 is an array of indices. The number of indices in the array is determined by the
 number of branches defined in the `Branches Size` property. Each branch
 corresponds to an action table, you can specify the size of each table by
-modifying the `Branches` property. Set the `Vector Action Space Size` and
+modifying the `Branches` property. The `Branch Descriptions` property holds the names
+for each available branch. Set the `Vector Action Space Size` and
 `Vector Action Space Type` properties on the Brain object assigned to the Agent
 (using the Unity Editor Inspector window).
 
