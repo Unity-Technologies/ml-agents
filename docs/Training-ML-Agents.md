@@ -146,6 +146,11 @@ environment, you can set the following command line options when invoking
   training doesn't involve visual observations (reading from Pixels). See
   [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more
   details.
+* `--debug` - Specify this option to run ML-Agents in debug mode and log Trainer
+  Metrics to a CSV stored in the `summaries` directory. The metrics  stored are:
+  brain name, Time to update policy, Time since start of training, Time for last experience collection, Number of experiences used for training, Mean return. This
+  option is not available currently for Imitation Learning.
+  `
 
 ### Training config file
 

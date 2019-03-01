@@ -3,6 +3,7 @@ from .buffer import *
 from .curriculum import *
 from .meta_curriculum import *
 from .models import *
+from .trainer_metrics import *
 from .trainer import *
 from .policy import *
 from .trainer_controller import *

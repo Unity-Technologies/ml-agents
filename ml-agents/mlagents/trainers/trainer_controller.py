@@ -13,6 +13,7 @@ from typing import *
 
 import numpy as np
 import tensorflow as tf
+from time import time
 
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.envs.exception import UnityEnvironmentException
@@ -57,6 +58,7 @@ class TrainerController(object):
         self.global_step = 0
         self.meta_curriculum = meta_curriculum
         self.seed = training_seed
+        self.training_start_time = time()
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
 
@@ -103,6 +105,14 @@ class TrainerController(object):
             sys.exit()
             return True
         return False
+
+    def _write_training_metrics(self):
+        """
+        Write all CSV metrics
+        :return:
+        """
+        for brain_name in self.trainers.keys():
+            self.trainers[brain_name].write_training_metrics()
 
     def _export_graph(self):
         """
@@ -152,7 +162,8 @@ class TrainerController(object):
                         .brains_to_curriculums[brain_name]
                         .min_lesson_length if self.meta_curriculum else 0,
                     trainer_parameters_dict[brain_name],
-                    self.train_model, self.load_model, self.seed, self.run_id)
+                    self.train_model, self.load_model, self.seed,
+                    self.run_id)
             else:
                 raise UnityEnvironmentException('The trainer config contains '
                                                 'an unknown trainer type for '
@@ -224,8 +235,8 @@ class TrainerController(object):
                 self._save_model_when_interrupted(steps=self.global_step)
             pass
         env.close()
-
         if self.train_model:
+            self._write_training_metrics()
             self._export_graph()
 
     def take_step(self, env, curr_info: AllBrainInfo):
@@ -286,14 +297,15 @@ class TrainerController(object):
                 # Perform gradient descent with experience buffer
                 trainer.update_policy()
             # Write training statistics to Tensorboard.
+            delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:
                 trainer.write_summary(
                     self.global_step,
-                    lesson_num=self.meta_curriculum
+                    delta_train_start, lesson_num=self.meta_curriculum
                         .brains_to_curriculums[brain_name]
                         .lesson_num)
             else:
-                trainer.write_summary(self.global_step)
+                trainer.write_summary(self.global_step, delta_train_start)
             if self.train_model \
                     and trainer.get_step <= trainer.get_max_steps:
                 trainer.increment_step_and_update_last_reward()
