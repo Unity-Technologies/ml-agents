@@ -3,6 +3,7 @@ import logging
 
 import tensorflow as tf
 import numpy as np
+from time import time
 
 from mlagents.envs import UnityException, AllBrainInfo, BrainInfo
 from mlagents.trainers import ActionInfo
@@ -32,10 +33,17 @@ class Trainer(object):
         self.brain_name = brain.brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
+        self.time_start_experience_collection = None
+        self.delta_last_experience_collection = None
+        self.cumulative_returns_since_policy_update = [0]
+        self.last_mean_return = None
+        self.last_buffer_length = 0
         self.is_training = training
         self.stats = {}
         self.summary_writer = None
+        self.training_metrics  = []
         self.policy = None
+
 
     def __str__(self):
         return '''{} Trainer'''.format(self.__class__)
@@ -98,6 +106,8 @@ class Trainer(object):
         :param curr_info: Current BrainInfo.
         :return: The ActionInfo given by the policy given the BrainInfo.
         """
+        if self.time_start_experience_collection is None:
+            self.time_start_experience_collection = time()
         return self.policy.get_action(curr_info)
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
@@ -151,6 +161,34 @@ class Trainer(object):
         """
         self.policy.export_model()
 
+    def write_training_metrics(self):
+        """
+        Write training metrics to a CSV  file
+        :return:
+        """
+        log_file = self.summary_path + '.csv'
+        with open(log_file, 'w') as f:
+            f.writelines('%s\n' % l for l in self.training_metrics)
+
+    def write_training_metric(self, delta_update_policy,
+                              delta_train_start):
+        logger.info("Time to update Policy: {:0.3f} s "
+                    "Time elapsed since training: {:0.3f} s "
+                    "Time for experience collection: {:0.3f} s "
+                    "Buffer Length: {} "
+                    "Returns : {:0.3f}"
+                    .format(delta_update_policy, delta_train_start,
+                            self.delta_last_experience_collection,
+                            self.last_buffer_length,
+                            self.last_mean_return)
+                    )
+        training_metric ='{:.3f}, {:.3f}, {:.3f}, {}, {:.3f}'.format(
+            delta_update_policy, delta_train_start,
+            self.delta_last_experience_collection,
+            self.last_buffer_length, self.last_mean_return)
+        self.training_metrics.append(training_metric)
+
+
     def write_summary(self, global_step, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
@@ -161,7 +199,10 @@ class Trainer(object):
             is_training = "Training." if self.is_training and self.get_step <= self.get_max_steps else "Not Training."
             if len(self.stats['Environment/Cumulative Reward']) > 0:
                 mean_reward = np.mean(self.stats['Environment/Cumulative Reward'])
-                logger.info(" {}: {}: Step: {}. Mean Reward: {:0.3f}. Std of Reward: {:0.3f}. {}"
+                logger.info(" {}: {}: Step: {}. "
+                            "Mean "
+                            "Reward: {"
+                            ":0.3f}. Std of Reward: {:0.3f}. {}"
                             .format(self.run_id, self.brain_name,
                                     min(self.get_step, self.get_max_steps),
                                     mean_reward, np.std(self.stats['Environment/Cumulative Reward']),

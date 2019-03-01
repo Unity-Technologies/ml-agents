@@ -13,6 +13,7 @@ from typing import *
 
 import numpy as np
 import tensorflow as tf
+from time import time
 
 from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
@@ -53,6 +54,7 @@ class TrainerController(object):
 
         self.model_path = model_path
         self.summaries_dir = summaries_dir
+        self.training_stats = []
         self.external_brains = external_brains
         self.external_brain_names = external_brains.keys()
         self.logger = logging.getLogger('mlagents.envs')
@@ -112,6 +114,14 @@ class TrainerController(object):
             sys.exit()
             return True
         return False
+
+    def _write_training_metrics(self):
+        """
+        Write all CSV metrics
+        :return:
+        """
+        for brain_name in self.trainers.keys():
+            self.trainers[brain_name].write_training_metrics()
 
     def _export_graph(self):
         """
@@ -195,6 +205,7 @@ class TrainerController(object):
     def start_learning(self, env: BaseUnityEnvironment, trainer_config):
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
+        self.training_start_time = time()
         if self.meta_curriculum is not None:
             self.meta_curriculum.set_all_curriculums_to_lesson_num(self.lesson)
         self._create_model_path(self.model_path)
@@ -233,8 +244,8 @@ class TrainerController(object):
                 self._save_model_when_interrupted(steps=self.global_step)
             pass
         env.close()
-
         if self.train_model:
+            self._write_training_metrics()
             self._export_graph()
 
     def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
@@ -293,16 +304,22 @@ class TrainerController(object):
             if trainer.is_ready_update() and self.train_model \
                     and trainer.get_step <= trainer.get_max_steps:
                 # Perform gradient descent with experience buffer
+                time_before_policy_update = time()
                 trainer.update_policy()
+                delta_update_policy = time() - time_before_policy_update
+                delta_train_start = time() - self.training_start_time
+                trainer.write_training_metric(delta_update_policy,
+                                              delta_train_start)
             # Write training statistics to Tensorboard.
+            delta = time() - self.training_start_time
             if self.meta_curriculum is not None:
                 trainer.write_summary(
-                    self.global_step,
+                    self.global_step, delta,
                     lesson_num=self.meta_curriculum
                         .brains_to_curriculums[brain_name]
                         .lesson_num)
             else:
-                trainer.write_summary(self.global_step)
+                trainer.write_summary(self.global_step, delta)
             if self.train_model \
                     and trainer.get_step <= trainer.get_max_steps:
                 trainer.increment_step_and_update_last_reward()

@@ -5,6 +5,7 @@
 import logging
 import os
 from collections import deque
+from time import time
 
 import numpy as np
 import tensorflow as tf
@@ -277,6 +278,8 @@ class PPOTrainer(Trainer):
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
+                    self.cumulative_returns_since_policy_update.append(self.
+                                                                cumulative_rewards.get(agent_id, 0))
                     self.stats['Environment/Cumulative Reward'].append(
                         self.cumulative_rewards.get(agent_id, 0))
                     self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
@@ -338,7 +341,14 @@ class PPOTrainer(Trainer):
         if self.use_curiosity:
             self.stats['Losses/Forward Loss'].append(np.mean(forward_total))
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
+        self.last_buffer_length = len(self.training_buffer.update_buffer['actions'])
         self.training_buffer.reset_update_buffer()
+        self.delta_last_experience_collection = time() - \
+                                                self.time_start_experience_collection
+        self.time_start_experience_collection = time()
+        self.last_mean_return = np.mean(self.
+                                        cumulative_returns_since_policy_update)
+        self.all_rewards_since_policy_update = [0]
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
