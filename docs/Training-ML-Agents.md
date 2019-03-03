@@ -85,7 +85,7 @@ And then opening the URL: [localhost:6006](http://localhost:6006).
 
 When training is finished, you can find the saved model in the `models` folder
 under the assigned run-id — in the cats example, the path to the model would be
-`models/cob_1/CatsOnBicycles_cob_1.bytes`.
+`models/cob_1/CatsOnBicycles_cob_1.nn`.
 
 While this example used the default training hyperparameters, you can edit the
 [training_config.yaml file](#training-config-file) with a text editor to set

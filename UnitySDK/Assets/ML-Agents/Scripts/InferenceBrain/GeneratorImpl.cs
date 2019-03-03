@@ -14,7 +14,7 @@ namespace MLAgents.InferenceBrain
     {
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            var shapeSecondAxis = tensor.Shape[1];
+            var shapeSecondAxis = tensor.Shape[tensor.Shape.Length - 1];
             tensor.Shape[0] = batchSize;
             if (tensor.ValueType == Tensor.TensorType.FloatingPoint)
             {
@@ -65,7 +65,7 @@ namespace MLAgents.InferenceBrain
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Shape[0] = batchSize;
-            var vecObsSizeT = tensor.Shape[1];
+            var vecObsSizeT = tensor.Shape[tensor.Shape.Length - 1];
             tensor.Data = new float[batchSize, vecObsSizeT];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -91,7 +91,7 @@ namespace MLAgents.InferenceBrain
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Shape[0] = batchSize;
-            var memorySize = tensor.Shape[1];
+            var memorySize = tensor.Shape[tensor.Shape.Length - 1];
             tensor.Data = new float[batchSize, memorySize];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -114,6 +114,49 @@ namespace MLAgents.InferenceBrain
             }
         }
     }
+    
+    public class BarracudaRecurrentInputGenerator : TensorGenerator.Generator
+    {
+        private bool firstHalf = true;
+        
+        public BarracudaRecurrentInputGenerator(bool firstHalf)
+        {
+            this.firstHalf = firstHalf;
+        }
+        
+        public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
+        {
+            tensor.Shape[0] = batchSize;
+            var memorySize = tensor.Shape[tensor.Shape.Length - 1];
+            tensor.Data = new float[batchSize, memorySize];
+            var agentIndex = 0;
+            foreach (var agent in agentInfo.Keys)
+            {
+                var memory = agentInfo[agent].memories;
+
+                int offset = 0;
+                if (!firstHalf)
+                {
+                    offset = memory.Count - (int)memorySize;
+                }
+                
+                if (memory == null)
+                {
+                    agentIndex++;
+                    continue;
+                }
+                for (var j = 0; j < memorySize; j++)
+                {
+                    if (j >= memory.Count)
+                    {
+                        break;
+                    }
+                    tensor.Data.SetValue(memory[j + offset], new int[2] {agentIndex, j});
+                }
+                agentIndex++;
+            }
+        }
+    }
 
     /// <summary>
     /// Generates the Tensor corresponding to the Previous Action input : Will be a two
@@ -125,14 +168,8 @@ namespace MLAgents.InferenceBrain
     {
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            if (tensor.ValueType != Tensor.TensorType.Integer)
-            {
-                throw new NotImplementedException(
-                    "Previous Action Inputs are only valid for discrete control");
-            }
-
             tensor.Shape[0] = batchSize;
-            var actionSize = tensor.Shape[1];
+            var actionSize = tensor.Shape[tensor.Shape.Length - 1];
             tensor.Data = new int[batchSize, actionSize];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -159,7 +196,7 @@ namespace MLAgents.InferenceBrain
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Shape[0] = batchSize;
-            var maskSize = tensor.Shape[1];
+            var maskSize = tensor.Shape[tensor.Shape.Length - 1];
             tensor.Data = new float[batchSize, maskSize];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -192,7 +229,7 @@ namespace MLAgents.InferenceBrain
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Shape[0] = batchSize;
-            var actionSize = tensor.Shape[1];
+            var actionSize = tensor.Shape[tensor.Shape.Length - 1];
             tensor.Data = new float[batchSize, actionSize];
             _randomNormal.FillTensor(tensor);
         }

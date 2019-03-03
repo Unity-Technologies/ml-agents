@@ -3,9 +3,8 @@ import numpy as np
 import tensorflow as tf
 
 from mlagents.trainers import UnityException
-from mlagents.trainers.models import LearningModel
-
 from tensorflow.python.tools import freeze_graph
+from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -165,8 +164,9 @@ class Policy(object):
 
     def export_model(self):
         """
-        Exports latest saved model to .tf format for Unity embedding.
+        Exports latest saved model to .nn format for Unity embedding.
         """
+
         with self.graph.as_default():
             target_nodes = ','.join(self._process_graph())
             ckpt = tf.train.get_checkpoint_state(self.model_path)
@@ -175,11 +175,13 @@ class Policy(object):
                 input_binary=True,
                 input_checkpoint=ckpt.model_checkpoint_path,
                 output_node_names=target_nodes,
-                output_graph=(self.model_path + '.bytes'),
+                output_graph=(self.model_path + '/frozen_graph_def.pb'),
                 clear_devices=True, initializer_nodes='', input_saver='',
                 restore_op_name='save/restore_all',
                 filename_tensor_name='save/Const:0')
-            logger.info('Exported ' + self.model_path + '.bytes file')
+
+        tf2bc.convert(self.model_path + '/frozen_graph_def.pb', self.model_path + '.nn')
+        logger.info('Exported ' + self.model_path + '.nn file')
 
     def _process_graph(self):
         """

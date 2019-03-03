@@ -16,7 +16,7 @@ description of the timing of these method calls during a simulation.
 
 ## Initializing an Academy
 
-Initialization is performed once in an Academy object's lifecycle. Use the
+Initialization is performed once in an Academy object's life cycle. Use the
 `InitializeAcademy()` method for any logic you would normally perform in the
 standard Unity `Start()` or `Awake()` methods.
 
@@ -60,7 +60,7 @@ logic for creating them in the `AcademyStep()` function.
 * `Configuration` - The engine-level settings which correspond to rendering
   quality and engine speed.
   * `Width` - Width of the environment window in pixels.
-  * `Height` - Width of the environment window in pixels.
+  * `Height` - Height of the environment window in pixels.
   * `Quality Level` - Rendering quality of environment. (Higher is better)
   * `Time Scale` - Speed at which environment is run. (Higher is faster)
   * `Target Frame Rate` - FPS engine attempts to maintain.

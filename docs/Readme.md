@@ -42,7 +42,8 @@
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Inference
-* [TensorFlowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
+
+* [Unity Inference Engine](Unity-Inference-Engine.md)
 
 ## Help
 
@@ -55,4 +56,4 @@
 
 * [API Reference](API-Reference.md)
 * [How to use the Python API](Python-API.md)
-* [Wrapping Learning Environment as a Gym](../gym-unity/README.md)
+* [Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)](../gym-unity/README.md)
