@@ -14,16 +14,27 @@ class GAILModel(object):
         """
         self.h_size = h_size
         self.z_size = 128
-        self.beta = 0.1
-        self.alpha = 0.05
+        self.alpha = 0.0005
         self.mutual_information = 0.5
         self.policy_model = policy_model
         self.encoding_size = encoding_size
         self.use_vail = True
-        self.use_actions = True # Not using actions
+        self.use_actions = False#True # Not using actions
+        self.make_beta()
         self.make_inputs()
         self.create_network()
         self.create_loss(lr)
+
+    def make_beta(self):
+        """
+        Creates the beta parameter and its updater for GAIL
+        """
+        self.beta = tf.get_variable("gail_beta", [],
+                                    trainable=False, dtype=tf.float32,
+                                    initializer=tf.ones_initializer())
+        self.kl_div_input = tf.placeholder(shape=[], dtype=tf.float32)
+        new_beta = tf.maximum(self.beta + self.alpha * (self.kl_div_input - self.mutual_information), 1e-7)
+        self.update_beta = tf.assign(self.beta, new_beta)
 
     def make_inputs(self):
         """
@@ -154,15 +165,9 @@ class GAILModel(object):
         self.policy_estimate, self.z_mean_policy = self.create_encoder(
             self.encoded_policy, self.policy_model.selected_actions, self.done_policy, True)
         self.discriminator_score = tf.reshape(self.policy_estimate, [-1], name="GAIL_reward")
-        self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
+        self.intrinsic_reward = - tf.log(1.0 - self.discriminator_score + 1e-7)
+        # +tf.log(self.discriminator_score + 1e-7)
 
-    def update_beta(self, kl_div):
-        """
-        Updates the Beta parameter with the latest kl_divergence value.
-        The larger Beta, the stronger the importance of the kl divergence in the loss function.
-        :param kl_div:
-        """
-        self.beta = max(1e-7, self.beta + self.alpha * (kl_div - self.mutual_information))
 
     def create_loss(self, learning_rate):
         """

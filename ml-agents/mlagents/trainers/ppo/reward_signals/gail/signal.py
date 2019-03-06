@@ -100,8 +100,9 @@ class GAILSignal(RewardSignal):
         self.has_updated = True
 
         # for reporting
+
         print('n_epoch','beta', 'kl_loss', 'policy_estimate', 'expert_estimate', 'z_mean_expert', 'z_mean_policy', 'z_log_sig_sq')
-        print(n_epoch, self.model.beta, np.mean(kl_loss), np.mean(pos), np.mean(pes), np.mean(zme), np.mean(zmp), np.mean(zlss))
+        print(n_epoch, self.policy.sess.run(self.model.beta), np.mean(kl_loss), np.mean(pos), np.mean(pes), np.mean(zme), np.mean(zmp), np.mean(zlss))
         # end for reporting
         return np.mean(batch_losses)
 
@@ -159,10 +160,19 @@ class GAILSignal(RewardSignal):
                                                         , self.model.policy_estimate, self.model.expert_estimate,
                                                              self.model.z_log_sigma_sq, self.model.z_mean_expert, self.model.z_mean_policy],
                                                     feed_dict=feed_dict)
-            self.model.update_beta(kl_loss)
+            self.update_beta(kl_loss)
         else:
             loss, _, po, pe = self.policy.sess.run([self.model.loss, self.model.update_batch
                                             , self.model.policy_estimate, self.model.expert_estimate],
                                            feed_dict=feed_dict)
         run_out = {'gail_loss': loss, 'po': po,'pe': pe, 'kl':kl_loss, "zlss":zlss, "zme":zme, 'zmp':zmp}
         return run_out
+
+    def update_beta(self, kl_div):
+        """
+        Updates the Beta parameter with the latest kl_divergence value.
+        The larger Beta, the stronger the importance of the kl divergence in the loss function.
+        :param kl_div: The KL divergence
+        """
+        self.policy.sess.run(self.model.update_beta, feed_dict={self.model.kl_div_input: kl_div})
+
