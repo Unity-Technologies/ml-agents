@@ -8,9 +8,8 @@ namespace MLAgents
     /// Ray 2D perception component. Attach this to agents to enable "local perception"
     /// via the use of ray casts directed outward from the agent. 
     /// </summary>
-    public class RayPerception2D : MonoBehaviour
+    public class RayPerception2D : RayPerception
     {
-        List<float> perceptionBuffer = new List<float>();
         Vector2 endPosition;
         RaycastHit2D hit;
 
@@ -72,12 +71,5 @@ namespace MLAgents
             return new Vector2(x, y);
         }
 
-        /// <summary>
-        /// Converts degrees to radians.
-        /// </summary>
-        public static float DegreeToRadian(float degree)
-        {
-            return degree * Mathf.PI / 180f;
-        }
     }
 }
