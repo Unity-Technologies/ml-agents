@@ -24,7 +24,7 @@ namespace MLAgents
             float[] rayAngles, string[] detectableObjects)					   
         {
             perceptionBuffer.Clear();
-            // For each ray sublist stores categorial information on detected object
+            // For each ray sublist stores categorical information on detected object
             // along with object distance.
             foreach (float angle in rayAngles)
             {
