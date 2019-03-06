@@ -19,16 +19,16 @@ namespace MLAgents
         /// </summary>
         /// <returns>The partial vector observation corresponding to the set of rays</returns>
         /// <param name="rayDistance">Radius of rays</param>
-        /// <param name="rayAngles">Anlges of rays (starting from (1,0) on unit circle).</param>
+        /// <param name="rayAngles">Angles of rays (starting from (1,0) on unit circle).</param>
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
-        /// <param name="startOffset">Starting heigh offset of ray from center of agent.</param>
+        /// <param name="startOffset">Starting height offset of ray from center of agent.</param>
         /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
         public List<float> Perceive(float rayDistance,
             float[] rayAngles, string[] detectableObjects,
             float startOffset, float endOffset)
         {
             perceptionBuffer.Clear();
-            // For each ray sublist stores categorial information on detected object
+            // For each ray sublist stores categorical information on detected object
             // along with object distance.
             foreach (float angle in rayAngles)
             {
