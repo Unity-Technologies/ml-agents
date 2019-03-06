@@ -28,7 +28,7 @@ public class BananaAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
-    private RayPerception rayPer;
+    private RayPerception3D rayPer;
     public bool useVectorObs;
 
     public override void InitializeAgent()
@@ -37,7 +37,7 @@ public class BananaAgent : Agent
         agentRb = GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
         myArea = area.GetComponent<BananaArea>();
-        rayPer = GetComponent<RayPerception>();
+        rayPer = GetComponent<RayPerception3D>();
         myAcademy = FindObjectOfType<BananaAcademy>();
     }
 
@@ -158,7 +158,7 @@ public class BananaAgent : Agent
         if (shoot)
         {
             myLaser.transform.localScale = new Vector3(1f, 1f, 1f);
-            Vector3 position = transform.TransformDirection(RayPerception.PolarToCartesian(25f, 90f));
+            Vector3 position = transform.TransformDirection(RayPerception3D.PolarToCartesian(25f, 90f));
             Debug.DrawRay(transform.position, position, Color.red, 0f, true);
             RaycastHit hit;
             if (Physics.SphereCast(transform.position, 2f, position, out hit, 25f))
