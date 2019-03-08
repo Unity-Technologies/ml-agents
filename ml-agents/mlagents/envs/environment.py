@@ -26,7 +26,8 @@ class UnityEnvironment(object):
 
     def __init__(self, file_name=None, worker_id=0,
                  base_port=5005, seed=0,
-                 docker_training=False, no_graphics=False):
+                 docker_training=False, no_graphics=False,
+                 timeout_wait=30):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -35,17 +36,18 @@ class UnityEnvironment(object):
         :string file_name: Name of Unity environment binary.
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
-        :param docker_training: Informs this class whether the process is being run within a container.
-        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
+        :bool docker_training: Informs this class whether the process is being run within a container.
+        :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
+        :int timeout_wait: Time (in seconds) to wait for connection from environment.
         """
 
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-6"
+        self._version_ = "API-7"
         self._loaded = False  # If true, this means the environment was successfully loaded
         self.proc1 = None  # The process that is started. If None, no process was started
-        self.communicator = self.get_communicator(worker_id, base_port)
+        self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -127,6 +129,10 @@ class UnityEnvironment(object):
     def external_brain_names(self):
         return self._external_brain_names
 
+    @staticmethod
+    def get_communicator(worker_id, base_port, timeout_wait):
+        return RpcCommunicator(worker_id, base_port, timeout_wait)
+
     def executable_launcher(self, file_name, docker_training, no_graphics):
         cwd = os.getcwd()
         file_name = (file_name.strip()
@@ -206,10 +212,6 @@ class UnityEnvironment(object):
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               shell=True)
-
-    def get_communicator(self, worker_id, base_port):
-        return RpcCommunicator(worker_id, base_port)
-        # return SocketCommunicator(worker_id, base_port)
 
     def __str__(self):
         return '''Unity Academy name: {0}

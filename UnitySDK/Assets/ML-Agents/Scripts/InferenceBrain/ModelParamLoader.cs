@@ -17,7 +17,7 @@ namespace MLAgents.InferenceBrain
             Discrete,
             Continuous
         }
-        private const long ApiVersion = 1;
+        private const long ApiVersion = 2;
         private TFSharpInferenceEngine _engine;
         private BrainParameters _brainParameters;
         private List<string> _failedModelChecks = new List<string>();

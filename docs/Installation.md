@@ -71,7 +71,7 @@ If you installed this correctly, you should be able to run
 - We do not currently support Python 3.7 or Python 3.5.
 - If you are using Anaconda and are having trouble with TensorFlow, please see
   the following
-  [note](https://www.tensorflow.org/install/install_mac#installing_with_anaconda)
+  [link](https://www.tensorflow.org/install/pip)
   on how to install TensorFlow in an Anaconda environment.
 
 ## Docker-based Installation

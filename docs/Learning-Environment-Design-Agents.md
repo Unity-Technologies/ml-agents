@@ -130,22 +130,10 @@ properties to use a continuous vector observation:
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
 
-Integers can be be added directly to the observation vector. You must explicitly
-convert Boolean values to a number:
-
-```csharp
-AddVectorObs(isTrueOrFalse ? 1 : 0);
-```
-
-For entities like positions and rotations, you can add their components to the
-feature list individually.  For example:
-
-```csharp
-Vector3 speed = ball.transform.GetComponent<Rigidbody>().velocity;
-AddVectorObs(speed.x);
-AddVectorObs(speed.y);
-AddVectorObs(speed.z);
-```
+The `AddVectorObs` method provides a number of overloads for adding common types
+of data to your observation vector. You can add Integers and booleans directly to
+the observation vector, as well as some common Unity data types such as `Vector2`,
+`Vector3`, and `Quaternion`.
 
 Type enumerations should be encoded in the _one-hot_ style. That is, add an
 element to the feature vector for each element of enumeration, setting the
@@ -163,6 +151,21 @@ public override void CollectObservations()
     {
         AddVectorObs((int)currentItem == ci ? 1.0f : 0.0f);
     }
+}
+```
+
+`AddVectorObs` also provides a two-argument version as a shortcut for _one-hot_
+style observations. The following example is identical to the previous one.
+
+```csharp
+enum CarriedItems { Sword, Shield, Bow, LastItem }
+const int NUM_ITEM_TYPES = (int)CarriedItems.LastItem;
+
+public override void CollectObservations()
+{
+    // The first argument is the selection index; the second is the
+    // number of possibilities
+    AddVectorObs((int)currentItem, NUM_ITEM_TYPES);
 }
 ```
 
@@ -258,7 +261,8 @@ of commands. In the **Discrete** vector action space type, the action parameter
 is an array of indices. The number of indices in the array is determined by the
 number of branches defined in the `Branches Size` property. Each branch
 corresponds to an action table, you can specify the size of each table by
-modifying the `Branches` property. Set the `Vector Action Space Size` and
+modifying the `Branches` property. The `Branch Descriptions` property holds the names
+for each available branch. Set the `Vector Action Space Size` and
 `Vector Action Space Type` properties on the Brain object assigned to the Agent
 (using the Unity Editor Inspector window).
 
@@ -499,6 +503,10 @@ if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the
 platform.
 
+Note that all of these environments make use of the `Done()` method, which manually
+terminates an episode when a termination condition is reached. This can be 
+called independently of the `Max Step` property.
+
 ## Agent Properties
 
 ![Agent Inspector](images/agent.png)
@@ -528,7 +536,7 @@ platform.
     * `RequestAction()` Signals that the Agent is requesting an action. The
         action provided to the Agent in this case is the same action that was
         provided the last time it requested a decision.
-* `Decision Frequency` - The number of steps between decision requests. Not used
+* `Decision Interval` - The number of steps between decision requests. Not used
   if `On Demand Decision`, is true.
 
 ## Monitoring Agents

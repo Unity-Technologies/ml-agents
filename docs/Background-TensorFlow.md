@@ -16,7 +16,7 @@ to TensorFlow-related tools that we leverage within the ML-Agents toolkit.
 performing computations using data flow graphs, the underlying representation of
 deep learning models. It facilitates training and inference on CPUs and GPUs in
 a desktop, server, or mobile device. Within the ML-Agents toolkit, when you
-train the behavior of an agent, the output is a TensorFlow model (.bytes) file
+train the behavior of an agent, the output is a TensorFlow model (.nn) file
 that you can then embed within a Learning Brain. Unless you implement a new
 algorithm, the use of TensorFlow is mostly abstracted away and behind the
 scenes.
@@ -33,21 +33,6 @@ training which can be helpful in both building intuitions for the different
 hyperparameters and setting the optimal values for your Unity environment. We
 provide more details on setting the hyperparameters in later parts of the
 documentation, but, in the meantime, if you are unfamiliar with TensorBoard we
-recommend our guide on [using Tensorboard with ML-Agents](Using-Tensorboard.md) or
+recommend our guide on [using TensorBoard with ML-Agents](Using-Tensorboard.md) or
 this [tutorial](https://github.com/dandelionmane/tf-dev-summit-tensorboard-tutorial).
 
-## TensorflowSharp
-
-One of the drawbacks of TensorFlow is that it does not provide a native C# API.
-This means that the Learning Brain is not natively supported since Unity scripts
-are written in C#. Consequently, to enable the Learning Brain, we leverage a
-third-party library
-[TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp) which
-provides .NET bindings to TensorFlow. Thus, when a Unity environment that
-contains a Learning Brain is built, inference is performed via TensorFlowSharp.
-We provide an additional in-depth overview of how to leverage
-[TensorFlowSharp within Unity](Using-TensorFlow-Sharp-in-Unity.md)
-which will become more
-relevant once you install and start training behaviors within the ML-Agents
-toolkit. Given the reliance on TensorFlowSharp, the Learning Brain is currently
-marked as experimental.
