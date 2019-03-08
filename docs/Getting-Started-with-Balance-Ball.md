@@ -224,6 +224,10 @@ The `--train` flag tells the ML-Agents toolkit to run in training mode.
 follow the instructions in
 [Using an Executable](Learning-Environment-Executable.md).
 
+**Note**: Re-running this command will start training from scratch again. To resume
+a previous training run, append the `--load` flag and give the same `--run-id` as the
+run you want to resume.
+
 ### Observing Training Progress
 
 Once you start training using `mlagents-learn` in the way described in the
@@ -269,18 +273,8 @@ Once the training process completes, and the training process saves the model
 use it with Agents having a **Learning Brain**.
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
 Either wait for the training process to close the window or press Ctrl+C at the 
-command-line prompt. If you close the window manually, the `.bytes` file 
+command-line prompt. If you close the window manually, the `.nn` file 
 containing the trained model is not exported into the ml-agents folder.
-
-### Setting up TensorFlowSharp
-
-Because TensorFlowSharp support is still experimental, it is disabled by
-default. Please note that the `Learning` Brain inference can only be used with
-TensorFlowSharp.
- 
-To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
-within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the
-Basic Guide page.
 
 ### Embedding the trained model into Unity
 

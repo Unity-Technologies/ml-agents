@@ -8,7 +8,7 @@ logger = logging.getLogger("mlagents.envs")
 
 
 class LearningModel(object):
-    _version_number_ = 1
+    _version_number_ = 2
 
     def __init__(self, m_size, normalize, use_recurrent, brain, seed):
         tf.set_random_seed(seed)

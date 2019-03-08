@@ -755,21 +755,11 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Adds a float array observation to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by size of array.
+        /// Adds a collection of float observations to the vector observations of the agent.
+        /// Increases the size of the agents vector observation by size of the collection.
         /// </summary>
         /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(float[] observation)
-        {
-            info.vectorObservation.AddRange(observation);
-        }
-
-        /// <summary>
-        /// Adds a float list observation to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by size of list.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(List<float> observation)
+        protected void AddVectorObs(IEnumerable<float> observation)
         {
             info.vectorObservation.AddRange(observation);
         }
@@ -871,6 +861,11 @@ namespace MLAgents
         public void UpdateMemoriesAction(List<float> memories)
         {
             action.memories = memories;
+        }
+        
+        public void AppendMemoriesAction(List<float> memories)
+        {
+            action.memories.AddRange(memories);
         }
 
         /// <summary>

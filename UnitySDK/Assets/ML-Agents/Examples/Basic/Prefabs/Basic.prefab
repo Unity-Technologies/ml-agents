@@ -282,7 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 624480a72e46148118ab2e2d89b537de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 1adbe3db6a2f94bf2b1e22a29b955387, type: 2}
+  brain: {fileID: 11400000, guid: e5cf0e35e16264ea483f8863e5115c3c, type: 2}
   agentParameters:
     agentCameras: []
     maxStep: 0

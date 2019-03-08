@@ -95,7 +95,19 @@ namespace MLAgents
         [SerializeField] 
         public BroadcastHub broadcastHub = new BroadcastHub();
         
-        private const string kApiVersion = "API-6";
+        private const string kApiVersion = "API-7";
+
+        /// Temporary storage for global gravity value
+        /// Used to restore oringal value when deriving Academy modifies it 
+        private Vector3 originalGravity;
+
+        /// Temporary storage for global fixedDeltaTime value
+        /// Used to restore oringal value when deriving Academy modifies it 
+        private float originalFixedDeltaTime;
+        
+        /// Temporary storage for global maximumDeltaTime value
+        /// Used to restore oringal value when deriving Academy modifies it 
+        private float originalMaximumDeltaTime;
 
         // Fields provided in the Inspector
 
@@ -168,6 +180,10 @@ namespace MLAgents
         /// each time a step is taken in the environment. Is reset to 0 during 
         /// <see cref="AcademyReset"/>.
         int stepCount;
+
+        /// The number of total number of steps completed during the whole simulation. Incremented
+        /// each time a step is taken in the environment.
+        int totalStepCount;
 
         /// Flag that indicates whether the inference/training mode of the
         /// environment was switched by the external Brain. This impacts the
@@ -251,6 +267,10 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
+            originalGravity = Physics.gravity;
+            originalFixedDeltaTime = Time.fixedDeltaTime;
+            originalMaximumDeltaTime = Time.maximumDeltaTime;
+            
             InitializeAcademy();
             Communicator communicator = null;
 
@@ -469,14 +489,25 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current epside).
+        /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
-        /// Current episode number.
+        /// Current step count.
         /// </returns>
         public int GetStepCount()
         {
             return stepCount;
+        }
+
+        /// <summary>
+        /// Returns the total step counter.
+        /// </summary>
+        /// <returns>
+        /// Total step count.
+        /// </returns>
+        public int GetTotalStepCount()
+        {
+            return totalStepCount;
         }
 
         /// <summary>
@@ -589,6 +620,7 @@ namespace MLAgents
             AgentAct();
 
             stepCount += 1;
+            totalStepCount += 1;
         }
 
         /// <summary>
@@ -609,6 +641,16 @@ namespace MLAgents
         void FixedUpdate()
         {
             EnvironmentStep();
+        }
+
+        /// <summary>
+        /// Cleanup function
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            Physics.gravity = originalGravity;
+            Time.fixedDeltaTime = originalFixedDeltaTime;
+            Time.maximumDeltaTime = originalMaximumDeltaTime;
         }
     }
 }
