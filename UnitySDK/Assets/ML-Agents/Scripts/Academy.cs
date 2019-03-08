@@ -249,12 +249,6 @@ namespace MLAgents
             InitializeEnvironment();
         }
 
-        private void OnDestroy()
-        {
-            // Signal to listeners that the academy is being destroyed now
-            DestroyAction();
-        }
-
         // Used to read Python-provided environment parameters
         private int ReadArgs()
         {
@@ -363,6 +357,7 @@ namespace MLAgents
             isInference = !isCommunicatorOn;
 
             BrainDecideAction += () => { };
+            DestroyAction += () => { };
             AgentSetStatus += (m, d, i) => { };
             AgentResetIfDone += () => { };
             AgentSendState += () => { };
@@ -660,6 +655,9 @@ namespace MLAgents
             Physics.gravity = originalGravity;
             Time.fixedDeltaTime = originalFixedDeltaTime;
             Time.maximumDeltaTime = originalMaximumDeltaTime;
+
+            // Signal to listeners that the academy is being destroyed now
+            DestroyAction();
         }
     }
 }
