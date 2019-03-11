@@ -108,7 +108,7 @@ public class SoccerFieldArea : MonoBehaviour
                 ps.agentScript.ChooseRandomTeam();
             }
 
-            if (scoredTeam == AgentSoccer.Team.red)
+            if (scoredTeam == AgentSoccer.Team.Red)
             {
                 StartCoroutine(GoalScoredSwapGroundMaterial(academy.redMaterial, 1));
             }
@@ -125,11 +125,11 @@ public class SoccerFieldArea : MonoBehaviour
 
     public void RewardOrPunishPlayer(PlayerState ps, float striker, float goalie)
     {
-        if (ps.agentScript.agentRole == AgentSoccer.AgentRole.striker)
+        if (ps.agentScript.agentRole == AgentSoccer.AgentRole.Striker)
         {
             ps.agentScript.AddReward(striker);
         }
-        if (ps.agentScript.agentRole == AgentSoccer.AgentRole.goalie)
+        if (ps.agentScript.agentRole == AgentSoccer.AgentRole.Goalie)
         {
             ps.agentScript.AddReward(goalie);
         }
