@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43668893, g: 0.4842832, b: 0.56452656, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.4842717, b: 0.56452394, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -1127,20 +1127,9 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
         type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: 8096722eb0a294871857e202e0032082,
-        type: 2}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
       propertyPath: agentParameters.agentCameras.Array.data[0]
       value: 
       objectReference: {fileID: 489340228}
-    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
-        type: 2}
-      propertyPath: timeBetweenDecisionsAtInference
-      value: 0.15
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
   m_IsPrefabParent: 0

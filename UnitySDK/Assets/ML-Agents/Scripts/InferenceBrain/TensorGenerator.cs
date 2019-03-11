@@ -44,6 +44,10 @@ namespace MLAgents.InferenceBrain
             _dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator();
             _dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator();
             _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator();
+            
+            _dict[TensorNames.RecurrentInPlaceholder_C] = new BarracudaRecurrentInputGenerator(true);
+            _dict[TensorNames.RecurrentInPlaceholder_H] = new BarracudaRecurrentInputGenerator(false);
+            
             _dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator();
             _dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator();
             _dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed);

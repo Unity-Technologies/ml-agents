@@ -109,27 +109,6 @@ class PPOTrainer(Trainer):
         self.policy.increment_step()
         self.step = self.policy.get_current_step()
 
-    def take_action(self, all_brain_info: AllBrainInfo):
-        """
-        Decides actions given observations information, and takes them in environment.
-        :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
-        :return: a tuple containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        curr_brain_info = all_brain_info[self.brain_name]
-        if len(curr_brain_info.agents) == 0:
-            return [], [], [], None, None
-
-        run_out = self.policy.evaluate(curr_brain_info)
-        self.stats['Policy/Value Estimate'].append(run_out['value'].mean())
-        self.stats['Policy/Entropy'].append(run_out['entropy'].mean())
-        self.stats['Policy/Learning Rate'].append(run_out['learning_rate'])
-        if self.policy.use_recurrent:
-            return run_out['action'], run_out['memory_out'], None, \
-                   run_out['value'], run_out
-        else:
-            return run_out['action'], None, None, run_out['value'], run_out
-
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
         Constructs a BrainInfo which contains the most recent previous experiences for all agents info
@@ -179,8 +158,14 @@ class PPOTrainer(Trainer):
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
         :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param take_action_outputs: The outputs of the take action method.
+        :param take_action_outputs: The outputs of the Policy's get_action method.
         """
+
+        if take_action_outputs:
+            self.stats['Policy/Value Estimate'].append(take_action_outputs['value'].mean())
+            self.stats['Policy/Entropy'].append(take_action_outputs['entropy'].mean())
+            self.stats['Policy/Learning Rate'].append(take_action_outputs['learning_rate'])
+
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
 
