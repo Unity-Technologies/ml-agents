@@ -19,7 +19,8 @@ logger = logging.getLogger("mlagents.trainers")
 class BCTrainer(Trainer):
     """The BCTrainer is an implementation of Behavioral Cloning."""
 
-    def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
+    def __init__(self, brain, trainer_parameters, training, load, seed,
+                 run_id, debug_flag):
         """
         Responsible for collecting experiences and training PPO model.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
@@ -27,8 +28,10 @@ class BCTrainer(Trainer):
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
+        :param debug_flag: Log debug statements
         """
-        super(BCTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super(BCTrainer, self).__init__(brain, trainer_parameters, training,
+                                        run_id, debug_flag)
         self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.n_sequences = 1
         self.cumulative_rewards = {}

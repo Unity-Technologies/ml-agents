@@ -49,6 +49,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     fast_simulation = not bool(run_options['--slow'])
     no_graphics = run_options['--no-graphics']
     trainer_config_path = run_options['<trainer-config-path>']
+    debug_flag = bool(run_options['--debug'])
 
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
@@ -86,7 +87,8 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     tc = TrainerController(model_path, summaries_dir, run_id + '-' + str(sub_id),
                            save_freq, maybe_meta_curriculum,
                            load_model, train_model,
-                           keep_checkpoints, lesson, env.external_brains, run_seed)
+                           keep_checkpoints, lesson, env.external_brains,
+                           run_seed, debug_flag)
 
     # Signal that environment has been launched.
     process_queue.put(True)
@@ -239,10 +241,13 @@ def main():
       --num-envs=<n>             Number of parallel environments to use for training [default: 1]
       --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
       --no-graphics              Whether to run the environment in no-graphics mode [default: False].
+      --debug                    Whether to run ML-Agents in debug mode (and store metrics) [default: False].
     '''
 
     options = docopt(_USAGE)
     logger.info(options)
+    if (options['--debug']):
+        logger.setLevel('DEBUG')
     num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
 

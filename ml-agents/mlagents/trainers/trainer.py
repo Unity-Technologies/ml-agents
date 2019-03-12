@@ -21,13 +21,15 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the base class for the mlagents.trainers"""
 
-    def __init__(self, brain, trainer_parameters, training, run_id):
+    def __init__(self, brain, trainer_parameters, training, run_id,
+                 debug_flag):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
         :dict trainer_parameters: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
         :int run_id: The identifier of the current run
+        :bool debug_flag: Checks debug_flag
         """
         self.param_keys = []
         self.brain_name = brain.brain_name
@@ -35,7 +37,7 @@ class Trainer(object):
         self.trainer_parameters = trainer_parameters
         self.time_start_experience_collection = None
         self.delta_last_experience_collection = None
-        self.cumulative_returns_since_policy_update = [0]
+        self.cumulative_returns_since_policy_update = []
         self.last_mean_return = None
         self.last_buffer_length = 0
         self.is_training = training
@@ -43,6 +45,8 @@ class Trainer(object):
         self.summary_writer = None
         self.training_metrics  = []
         self.policy = None
+        if debug_flag:
+            logger.setLevel('DEBUG')
 
 
     def __str__(self):
@@ -172,7 +176,13 @@ class Trainer(object):
 
     def write_training_metric(self, delta_update_policy,
                               delta_train_start):
-        logger.info("Time to update Policy: {:0.3f} s "
+        """
+        Write training  metrics to be eventually be persisted in a  CSV
+        :param delta_update_policy: Time (in seconds) to update policy
+        :param delta_train_start: Time (in  seconds) since training started.
+        :return:
+        """
+        logger.debug("Time to update Policy: {:0.3f} s "
                     "Time elapsed since training: {:0.3f} s "
                     "Time for experience collection: {:0.3f} s "
                     "Buffer Length: {} "
@@ -188,10 +198,10 @@ class Trainer(object):
             self.last_buffer_length, self.last_mean_return)
         self.training_metrics.append(training_metric)
 
-
-    def write_summary(self, global_step, lesson_num=0):
+    def write_summary(self, global_step, delta_train_start, lesson_num=0):
         """
         Saves training statistics to Tensorboard.
+        :param delta_train_start:  Time elapsed since training started.
         :param lesson_num: Current lesson number in curriculum.
         :param global_step: The number of steps the simulation has been going for
         """
@@ -200,11 +210,13 @@ class Trainer(object):
             if len(self.stats['Environment/Cumulative Reward']) > 0:
                 mean_reward = np.mean(self.stats['Environment/Cumulative Reward'])
                 logger.info(" {}: {}: Step: {}. "
+                            "Time Elapsed: {:0.3f} s "
                             "Mean "
                             "Reward: {"
                             ":0.3f}. Std of Reward: {:0.3f}. {}"
                             .format(self.run_id, self.brain_name,
                                     min(self.get_step, self.get_max_steps),
+                                    delta_train_start,
                                     mean_reward, np.std(self.stats['Environment/Cumulative Reward']),
                                     is_training))
             else:

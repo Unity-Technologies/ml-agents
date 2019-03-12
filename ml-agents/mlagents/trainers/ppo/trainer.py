@@ -21,7 +21,8 @@ logger = logging.getLogger("mlagents.trainers")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
+    def __init__(self, brain, reward_buff_cap, trainer_parameters, training,
+                 load, seed, run_id, debug_flag):
         """
         Responsible for collecting experiences and training PPO model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
@@ -29,8 +30,10 @@ class PPOTrainer(Trainer):
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
+        :param debug_flag: Log debug statements
         """
-        super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super(PPOTrainer, self).__init__(brain, trainer_parameters,
+                                         training, run_id, debug_flag)
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
@@ -348,7 +351,7 @@ class PPOTrainer(Trainer):
         self.time_start_experience_collection = time()
         self.last_mean_return = np.mean(self.
                                         cumulative_returns_since_policy_update)
-        self.all_rewards_since_policy_update = [0]
+        self.all_rewards_since_policy_update = []
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
