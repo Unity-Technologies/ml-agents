@@ -18,27 +18,32 @@ class BrainInfo:
         self.visual_observations = visual_observation
         self.vector_observations = vector_observation
         self.text_observations = text_observations
-        self.memories = memory or [[]]
-        self.rewards = reward or []
-        self.local_done = local_done or []
-        self.max_reached = max_reached or []
-        self.agents = agents or []
-        self.previous_vector_actions = vector_action or [[]]
-        self.previous_text_actions = text_action or []
-        self.action_masks = action_mask or [[]]
+        self.memories = memory
+        self.rewards = reward
+        self.local_done = local_done
+        self.max_reached = max_reached
+        self.agents = agents
+        self.previous_vector_actions = vector_action
+        self.previous_text_actions = text_action
+        self.action_masks = action_mask
 
     def merge(self, other):
-        self.visual_observations.extend(other.visual_observations)
-        self.vector_observations.extend(other.vector_observations)
+        for i in range(len(self.visual_observations)):
+            self.visual_observations[i].extend(other.visual_observations[i])
+        self.vector_observations = np.append(self.vector_observations, other.vector_observations, axis=0)
         self.text_observations.extend(other.text_observations)
-        self.memories.extend(other.memories)
+        if self.memories.shape[1] == 0 and other.memories.shape[1] != 0:
+            self.memories = np.zeros((self.memories.shape[0], other.memories.shape[1]))
+        elif self.memories.shape[1] != 0 and other.memories.shape[1] == 0:
+            other.memories = np.zeros((other.memories.shape[0], self.memories.shape[1]))
+        self.memories = np.append(self.memories, other.memories, axis=0)
         self.rewards.extend(other.rewards)
         self.local_done.extend(other.local_done)
         self.max_reached.extend(other.max_reached)
         self.agents.extend(other.agents)
-        self.previous_vector_actions.extend(other.previous_vector_actions)
+        self.previous_vector_actions = np.append(self.previous_vector_actions, other.previous_vector_actions, axis=0)
         self.previous_text_actions.extend(other.previous_text_actions)
-        self.action_masks.extend(other.action_masks)
+        self.action_masks = np.append(self.action_masks, other.action_masks, axis=0)
 
     @staticmethod
     def process_pixels(image_bytes, gray_scale):
@@ -73,10 +78,10 @@ class BrainInfo:
         else:
             memory_size = max([len(x.memories) for x in agent_info_list])
         if memory_size == 0:
-            memory = np.zeros((0, 0))
+            memory = [[]]
         else:
             [x.memories.extend([0] * (memory_size - len(x.memories))) for x in agent_info_list]
-            memory = np.array([x.memories for x in agent_info_list])
+            memory = [list(x.memories) for x in agent_info_list]
         total_num_actions = sum(brain_params.vector_action_space_size)
         mask_actions = np.ones((len(agent_info_list), total_num_actions))
         for agent_index, agent_info in enumerate(agent_info_list):
@@ -88,19 +93,27 @@ class BrainInfo:
             logger.warning("An agent had a NaN reward for brain " + brain_params.brain_name)
         if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
             logger.warning("An agent had a NaN observation for brain " + brain_params.brain_name)
+
+        if len(agent_info_list) == 0:
+            vector_obs = np.zeros(
+                (0, brain_params.vector_observation_space_size * brain_params.num_stacked_vector_observations)
+            )
+        else:
+            vector_obs = np.nan_to_num(
+                np.array([x.stacked_vector_observation for x in agent_info_list])
+            )
         brain_info = BrainInfo(
             visual_observation=vis_obs,
-            vector_observation=np.nan_to_num(
-                np.array([x.stacked_vector_observation for x in agent_info_list])).tolist(),
+            vector_observation=vector_obs,
             text_observations=[x.text_observation for x in agent_info_list],
-            memory=memory.tolist(),
+            memory=np.array(memory),
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
             agents=[x.id for x in agent_info_list],
             local_done=[x.done for x in agent_info_list],
-            vector_action=[list(x.stored_vector_actions) for x in agent_info_list],
+            vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
             text_action=[list(x.stored_text_actions) for x in agent_info_list],
             max_reached=[x.max_step_reached for x in agent_info_list],
-            action_mask=mask_actions.tolist()
+            action_mask=mask_actions
         )
         return brain_info
 
