@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RayPerception : MonoBehaviour {
+public abstract class RayPerception : MonoBehaviour {
 
 	protected List<float> perceptionBuffer = new List<float>();
 
