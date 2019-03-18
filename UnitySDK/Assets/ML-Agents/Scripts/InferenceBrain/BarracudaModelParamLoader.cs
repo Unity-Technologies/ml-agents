@@ -59,7 +59,7 @@ namespace MLAgents.InferenceBrain
         /// Generates the Tensor inputs that are expected to be present in the Model. 
         /// </summary>
         /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
-        public IEnumerable<Tensor> GetInputTensors()
+        public IReadOnlyList<Tensor> GetInputTensors()
         {
             List<Tensor> tensors = new List<Tensor>();
 
