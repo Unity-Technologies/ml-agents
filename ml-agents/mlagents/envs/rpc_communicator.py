@@ -67,7 +67,7 @@ class RpcCommunicator(Communicator):
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            s.bind(("localhost", port))
+            s.bind((socket.gethostname(), port))
         except socket.error:
             raise UnityWorkerInUseException(self.worker_id)
         finally:
