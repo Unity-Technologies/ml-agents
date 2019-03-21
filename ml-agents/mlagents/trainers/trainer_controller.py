@@ -37,8 +37,7 @@ class TrainerController(object):
                  keep_checkpoints: int,
                  lesson: Optional[int],
                  external_brains: Dict[str, BrainParameters],
-                 training_seed: int,
-                 debug_flag: bool):
+                 training_seed: int):
         """
         :param model_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
@@ -51,7 +50,6 @@ class TrainerController(object):
         :param lesson: Start learning from this lesson.
         :param external_brains: dictionary of external brain names to BrainInfo objects.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
-        :param debug_flag: Decides detailed metrics logging.
         """
 
         self.model_path = model_path
@@ -60,9 +58,6 @@ class TrainerController(object):
         self.external_brains = external_brains
         self.external_brain_names = external_brains.keys()
         self.logger = logging.getLogger('mlagents.envs')
-        self.debug_flag = debug_flag
-        if self.debug_flag:
-            self.logger.setLevel('DEBUG')
         self.run_id = run_id
         self.save_freq = save_freq
         self.lesson = lesson
@@ -163,12 +158,12 @@ class TrainerController(object):
                 self.trainers[brain_name] = OfflineBCTrainer(
                     self.external_brains[brain_name],
                     trainer_parameters_dict[brain_name], self.train_model,
-                    self.load_model, self.seed, self.run_id, self.debug_flag)
+                    self.load_model, self.seed, self.run_id)
             elif trainer_parameters_dict[brain_name]['trainer'] == 'online_bc':
                 self.trainers[brain_name] = OnlineBCTrainer(
                     self.external_brains[brain_name],
                     trainer_parameters_dict[brain_name], self.train_model,
-                    self.load_model, self.seed, self.run_id, self.debug_flag)
+                    self.load_model, self.seed, self.run_id)
             elif trainer_parameters_dict[brain_name]['trainer'] == 'ppo':
                 self.trainers[brain_name] = PPOTrainer(
                     self.external_brains[brain_name],
@@ -177,7 +172,7 @@ class TrainerController(object):
                         .min_lesson_length if self.meta_curriculum else 0,
                     trainer_parameters_dict[brain_name],
                     self.train_model, self.load_model, self.seed,
-                    self.run_id, self.debug_flag)
+                    self.run_id)
             else:
                 raise UnityEnvironmentException('The trainer config contains '
                                                 'an unknown trainer type for '
@@ -310,12 +305,7 @@ class TrainerController(object):
             if trainer.is_ready_update() and self.train_model \
                     and trainer.get_step <= trainer.get_max_steps:
                 # Perform gradient descent with experience buffer
-                time_before_policy_update = time()
                 trainer.update_policy()
-                delta_update_policy = time() - time_before_policy_update
-                delta_train_start = time() - self.training_start_time
-                trainer.write_training_metric(delta_update_policy,
-                                              delta_train_start)
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:

@@ -3,7 +3,6 @@
 # Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
 
 import logging
-import os
 from collections import deque
 from time import time
 
@@ -22,7 +21,7 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(self, brain, reward_buff_cap, trainer_parameters, training,
-                 load, seed, run_id, debug_flag):
+                 load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
@@ -30,10 +29,9 @@ class PPOTrainer(Trainer):
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
-        :param debug_flag: Log debug statements
         """
         super(PPOTrainer, self).__init__(brain, trainer_parameters,
-                                         training, run_id, debug_flag)
+                                         training, run_id)
         self.param_keys = ['batch_size', 'beta', 'buffer_size', 'epsilon', 'gamma', 'hidden_units', 'lambd',
                            'learning_rate', 'max_steps', 'normalize', 'num_epoch', 'num_layers',
                            'time_horizon', 'sequence_length', 'summary_freq', 'use_recurrent',
@@ -60,11 +58,6 @@ class PPOTrainer(Trainer):
         self.cumulative_rewards = {}
         self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
-        self.summary_path = trainer_parameters['summary_path']
-        if not os.path.exists(self.summary_path):
-            os.makedirs(self.summary_path)
-
-        self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
     def __str__(self):
         return '''Hyperparameters for the PPO Trainer of brain {0}: \n{1}'''.format(
@@ -321,13 +314,16 @@ class PPOTrainer(Trainer):
         """
         Uses demonstration_buffer to update the policy.
         """
+        self.trainer_metrics.end_experience_collection_timer()
+        self.trainer_metrics.start_policy_update_timer(number_experiences=len(self.training_buffer.update_buffer['actions']), 
+                                        mean_return = float(np.mean(self.cumulative_returns_since_policy_update)))
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
         self.training_buffer.update_buffer['advantages'].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10))
         num_epoch = self.trainer_parameters['num_epoch']
-        for k in range(num_epoch):
+        for _ in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
             buffer = self.training_buffer.update_buffer
             for l in range(len(self.training_buffer.update_buffer['actions']) // n_sequences):
@@ -344,15 +340,8 @@ class PPOTrainer(Trainer):
         if self.use_curiosity:
             self.stats['Losses/Forward Loss'].append(np.mean(forward_total))
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
-        self.last_buffer_length = len(self.training_buffer.update_buffer['actions'])
         self.training_buffer.reset_update_buffer()
-        self.delta_last_experience_collection = time() - \
-                                                self.time_start_experience_collection
-        self.time_start_experience_collection = time()
-        self.last_mean_return = np.mean(self.
-                                        cumulative_returns_since_policy_update)
-        self.all_rewards_since_policy_update = []
-
+        self.trainer_metrics.end_policy_update()
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
     """

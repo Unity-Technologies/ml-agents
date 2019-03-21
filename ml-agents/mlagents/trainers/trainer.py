@@ -1,6 +1,7 @@
 # # Unity ML-Agents Toolkit
 import logging
-
+import os
+import csv
 import tensorflow as tf
 import numpy as np
 from time import time
@@ -17,37 +18,106 @@ class UnityTrainerException(UnityException):
     """
     pass
 
+class TrainerMetrics(object):
+    """
+        Helper class to track, write training metrics. Tracks time since object
+        of this class is initialized.
+    """
+    def __init__(self, path:str, brain_name: str):
+        """
+        :str path: Fully qualified path where CSV is stored.
+        :str brain_name: Identifier for the Brain which we are training
+        """
+        self.path = path
+        self.brain_name = brain_name
+        self.FIELD_NAMES = ['Brain name', 'Time to update policy', 
+            'Time since start of training', 'Time for last experience collection',
+            'Number of experiences used for training', 'Mean return']
+        self.rows = []
+        self.time_start_experience_collection = None
+        self.time_training_start = time()
+
+    def start_experience_collection_timer(self):
+        """
+        Inform Metrics class that experience collection is starting. Intended to be idempotent
+        """
+        if self.time_start_experience_collection is None:
+            self.time_start_experience_collection = time()
+    
+    def end_experience_collection_timer(self):
+        """
+        Inform Metrics class that experience collection is done.
+        """
+        self.delta_last_experience_collection  = time() - self.time_start_experience_collection
+        self.time_start_experience_collection = None
+    
+    def start_policy_update_timer(self,  number_experiences: int, mean_return: float):
+        """
+        Inform Metrics class that policy update has started.
+        :int number_experiences: Number of experiences in Buffer at this point.
+        :float mean_return: Return averaged across all cumulative returns since last policy update
+        """
+        self.last_buffer_length = number_experiences
+        self.last_mean_return = mean_return
+        self.time_policy_update_start = time()
+    
+    def end_policy_update(self):
+        """
+        Inform Metrics class that policy update has started.
+        """
+        self.delta_policy_update = time() - self.time_policy_update_start
+        delta_train_start =  time() - self.time_training_start
+        logger.debug(" Policy Update Training Metrics for {}: "
+                    "\n\t\tTime to update Policy: {:0.3f} s \n"
+                    "\t\tTime elapsed since training: {:0.3f} s \n"
+                    "\t\tTime for experience collection: {:0.3f} s \n"
+                    "\t\tBuffer Length: {} \n"
+                    "\t\tReturns : {:0.3f}\n"
+                    .format(self.brain_name, self.delta_policy_update, delta_train_start, self.delta_last_experience_collection,
+                    self.last_buffer_length, self.last_mean_return))
+        row = [self.brain_name]
+        row.extend(format(c, '.3f') if type(c) is float else c
+            for c in [self.delta_policy_update, delta_train_start, self.delta_last_experience_collection, 
+                                                self.last_buffer_length, self.last_mean_return])
+        self.rows.append(row)
+
+    def write_training_metrics(self):
+        """
+        Write Training Metrics to CSV
+        """
+        with open(self.path, 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(self.FIELD_NAMES)
+            for r in self.rows:
+                writer.writerow(r)
 
 class Trainer(object):
     """This class is the base class for the mlagents.trainers"""
 
-    def __init__(self, brain, trainer_parameters, training, run_id,
-                 debug_flag):
+    def __init__(self, brain, trainer_parameters, training, run_id):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
         :dict trainer_parameters: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
         :int run_id: The identifier of the current run
-        :bool debug_flag: Checks debug_flag
         """
         self.param_keys = []
         self.brain_name = brain.brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
-        self.time_start_experience_collection = None
-        self.delta_last_experience_collection = None
+        self.summary_path = trainer_parameters['summary_path']
+        if not os.path.exists(self.summary_path):
+            os.makedirs(self.summary_path)
+        self.trainer_metrics = TrainerMetrics(path=self.summary_path + '.csv', 
+                                              brain_name=self.brain_name)
         self.cumulative_returns_since_policy_update = []
-        self.last_mean_return = None
-        self.last_buffer_length = 0
         self.is_training = training
         self.stats = {}
-        self.summary_writer = None
-        self.training_metrics  = []
-        self.policy = None
-        if debug_flag:
-            logger.setLevel('DEBUG')
 
+
+        self.summary_writer = tf.summary.FileWriter(self.summary_path)
+        self.policy = None
 
     def __str__(self):
         return '''{} Trainer'''.format(self.__class__)
@@ -110,8 +180,7 @@ class Trainer(object):
         :param curr_info: Current BrainInfo.
         :return: The ActionInfo given by the policy given the BrainInfo.
         """
-        if self.time_start_experience_collection is None:
-            self.time_start_experience_collection = time()
+        self.trainer_metrics.start_experience_collection_timer()
         return self.policy.get_action(curr_info)
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
@@ -170,33 +239,7 @@ class Trainer(object):
         Write training metrics to a CSV  file
         :return:
         """
-        log_file = self.summary_path + '.csv'
-        with open(log_file, 'w') as f:
-            f.writelines('%s\n' % l for l in self.training_metrics)
-
-    def write_training_metric(self, delta_update_policy,
-                              delta_train_start):
-        """
-        Write training  metrics to be eventually be persisted in a  CSV
-        :param delta_update_policy: Time (in seconds) to update policy
-        :param delta_train_start: Time (in  seconds) since training started.
-        :return:
-        """
-        logger.debug("Time to update Policy: {:0.3f} s "
-                    "Time elapsed since training: {:0.3f} s "
-                    "Time for experience collection: {:0.3f} s "
-                    "Buffer Length: {} "
-                    "Returns : {:0.3f}"
-                    .format(delta_update_policy, delta_train_start,
-                            self.delta_last_experience_collection,
-                            self.last_buffer_length,
-                            self.last_mean_return)
-                    )
-        training_metric ='{:.3f}, {:.3f}, {:.3f}, {}, {:.3f}'.format(
-            delta_update_policy, delta_train_start,
-            self.delta_last_experience_collection,
-            self.last_buffer_length, self.last_mean_return)
-        self.training_metrics.append(training_metric)
+        self.trainer_metrics.write_training_metrics()
 
     def write_summary(self, global_step, delta_train_start, lesson_num=0):
         """

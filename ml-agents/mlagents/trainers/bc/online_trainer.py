@@ -15,7 +15,7 @@ class OnlineBCTrainer(BCTrainer):
     """The OnlineBCTrainer is an implementation of Online Behavioral Cloning."""
 
     def __init__(self, brain, trainer_parameters, training, load, seed,
-                 run_id, debug_flag):
+                 run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
@@ -23,10 +23,9 @@ class OnlineBCTrainer(BCTrainer):
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
-        :param debug_flag: Log debug statements
         """
         super(OnlineBCTrainer, self).__init__(brain, trainer_parameters, training, load, seed,
-                                              run_id, debug_flag)
+                                              run_id)
 
         self.param_keys = ['brain_to_imitate', 'batch_size', 'time_horizon',
                            'summary_freq', 'max_steps',

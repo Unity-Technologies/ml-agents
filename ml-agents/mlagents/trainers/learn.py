@@ -88,7 +88,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
                            save_freq, maybe_meta_curriculum,
                            load_model, train_model,
                            keep_checkpoints, lesson, env.external_brains,
-                           run_seed, debug_flag)
+                           run_seed)
 
     # Signal that environment has been launched.
     process_queue.put(True)
@@ -219,7 +219,6 @@ def main():
     except:
         print('\n\n\tUnity Technologies\n')
 
-    logger = logging.getLogger('mlagents.trainers')
     _USAGE = '''
     Usage:
       mlagents-learn <trainer-config-path> [options]
@@ -241,13 +240,16 @@ def main():
       --num-envs=<n>             Number of parallel environments to use for training [default: 1]
       --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
       --no-graphics              Whether to run the environment in no-graphics mode [default: False].
-      --debug                    Whether to run ML-Agents in debug mode (and store metrics) [default: False].
+      --debug                    Whether to run ML-Agents in debug mode with detailed logging [default: False].
     '''
 
     options = docopt(_USAGE)
-    logger.info(options)
+    trainer_logger = logging.getLogger('mlagents.trainers')
+    env_logger = logging.getLogger('mlagents.envs')
+    trainer_logger.info(options)
     if (options['--debug']):
-        logger.setLevel('DEBUG')
+        trainer_logger.setLevel('DEBUG')
+        env_logger.setLevel('DEBUG')
     num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
 
