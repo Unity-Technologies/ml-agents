@@ -132,6 +132,8 @@ docker run --name 3DBallContainer.first.trial \
 For more detail on Docker mounts, check out
 [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
 
+**NOTE** If you are training using docker for environments that use visual observations, you may need to increase the default memory that Docker allocates for the container. For example, see [here](https://docs.docker.com/docker-for-mac/#advanced) for instructions for Docker for Mac.
+
 ### Stopping Container and Saving State
 
 If you are satisfied with the training progress, you can stop the Docker

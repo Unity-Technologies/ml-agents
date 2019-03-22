@@ -86,23 +86,6 @@ class BCTrainer(Trainer):
         self.policy.increment_step()
         return
 
-    def take_action(self, all_brain_info: AllBrainInfo):
-        """
-        Decides actions using policy given current brain info.
-        :param all_brain_info: AllBrainInfo from environment.
-        :return: a tuple containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        if len(all_brain_info[self.brain_name].agents) == 0:
-            return [], [], [], None, None
-
-        agent_brain = all_brain_info[self.brain_name]
-        run_out = self.policy.evaluate(agent_brain)
-        if self.policy.use_recurrent:
-            return run_out['action'], run_out['memory_out'], None, None, None
-        else:
-            return run_out['action'], None, None, None, None
-
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
                         take_action_outputs):
         """

@@ -246,10 +246,6 @@ training the Python API uses the observations it receives to learn a TensorFlow
 model. This model is then embedded within the Learning Brain during inference to
 generate the optimal actions for all Agents linked to that Brain. 
 
-**Note that our Learning Brain is currently experimental as it is limited to TensorFlow
-models and leverages the third-party
-[TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp) library.**
-
 The
 [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
 tutorial covers this training mode with the **3D Balance Ball** sample environment.

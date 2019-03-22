@@ -65,12 +65,31 @@ namespace MLAgents
         {
             if (!_isInitialized)
             {
-                FindObjectOfType<Academy>().BrainDecideAction += BrainDecideAction;
-                Initialize();
-                _isInitialized = true;
+                var academy = FindObjectOfType<Academy>();
+                if (academy)
+                {
+                    academy.BrainDecideAction += BrainDecideAction;
+                    academy.DestroyAction += Shutdown;
+                    Initialize();
+                    _isInitialized = true;
+                }
             }
         }
         
+        /// <summary>
+        /// Called by the Academy when it shuts down. This ensures that the Brain cleans up properly
+        /// after scene changes.
+        /// </summary>
+        private void Shutdown()
+        {
+            if (_isInitialized)
+            {
+                agentInfos.Clear();
+                
+                _isInitialized = false;
+            }
+        }
+
         /// <summary>
         /// Calls the DecideAction method that the concrete brain implements.
         /// </summary>

@@ -201,7 +201,7 @@ INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 10000. Mean Reward: 2
 ```
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<brain_name>.bytes`, which corresponds
+`models/<run-identifier>/<brain_name>.nn`, which corresponds
 to your model's latest checkpoint. (**Note:** There is a known bug on Windows
 that causes the saving of the model to fail when you early terminate the
 training, it's recommended to wait until Step has reached the max_steps
@@ -212,7 +212,7 @@ into your Learning Brain by following the steps below:
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the **Ball3DLearning** object from the Project window.
-5. Drag the `<brain_name>.bytes` file from the Project window of
+5. Drag the `<brain_name>.nn` file from the Project window of
    the Editor to the **Model** placeholder in the **Ball3DLearning**
    inspector window.
 6. Remove the **Ball3DLearning** from the Academy's `Broadcast Hub`

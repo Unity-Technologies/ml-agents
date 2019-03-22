@@ -73,7 +73,7 @@ generated using the `Demonstration Recorder` as the dataset used to train a beha
    as the config parameter, and include the `--run-id` and `--train` as usual. 
    Provide your environment as the `--env` parameter if it has been compiled 
    as standalone, or omit to train in the editor.
-7. (Optional) Observe training performance using Tensorboard.
+7. (Optional) Observe training performance using TensorBoard.
 
 This will use the demonstration file to train a neural network driven agent 
 to directly imitate the actions provided in the demonstration. The environment 
@@ -112,7 +112,7 @@ without pre-recording a demonstration file. The steps to do this are as follows:
    similarly to the demonstrations.
 11. Once the Student Agents are exhibiting the desired behavior, end the training
    process with `CTL+C` from the command line.
-12. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
+12. Move the resulting `*.nn` file into the `TFModels` subdirectory of the
     Assets folder (or a subdirectory within Assets of your choosing) , and use
     with `Learning` Brain.
 
