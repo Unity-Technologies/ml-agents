@@ -38,8 +38,8 @@ jobs:
             python-codacy-coverage -r coverage.xml
 
       - store_test_results:
-          path: ml-agents/test-reports
+          path: test-reports
 
       - store_artifacts:
-          path: ml-agents/test-reports
-          destination: ml-agents/test-reports
+          path: test-reports
+          destination: test-reports
