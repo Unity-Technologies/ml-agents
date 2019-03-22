@@ -4,7 +4,6 @@
 
 import logging
 from collections import deque
-from time import time
 
 import numpy as np
 import tensorflow as tf
@@ -290,7 +289,7 @@ class PPOTrainer(Trainer):
 
     def end_episode(self):
         """
-        A signal that the Episode has ended. The buffer must be reset. 
+        A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
         self.training_buffer.reset_local_buffers()
@@ -315,7 +314,7 @@ class PPOTrainer(Trainer):
         Uses demonstration_buffer to update the policy.
         """
         self.trainer_metrics.end_experience_collection_timer()
-        self.trainer_metrics.start_policy_update_timer(number_experiences=len(self.training_buffer.update_buffer['actions']), 
+        self.trainer_metrics.start_policy_update_timer(number_experiences=len(self.training_buffer.update_buffer['actions']),
                                         mean_return = float(np.mean(self.cumulative_returns_since_policy_update)))
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []

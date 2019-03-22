@@ -76,7 +76,7 @@ class TrainerMetrics(object):
                     .format(self.brain_name, self.delta_policy_update, delta_train_start, self.delta_last_experience_collection,
                     self.last_buffer_length, self.last_mean_return))
         row = [self.brain_name]
-        row.extend(format(c, '.3f') if type(c) is float else c
+        row.extend(format(c, '.3f') if isinstance(c) is float else c
             for c in [self.delta_policy_update, delta_train_start, self.delta_last_experience_collection, 
                                                 self.last_buffer_length, self.last_mean_return])
         self.rows.append(row)
