@@ -14,7 +14,7 @@ By default, the Python API sends actions to Unity in the form of a floating-poin
 
 You can define a custom action type to replace or augment this by adding fields to the `CustomAction` message, which you can do by editing the file "protobuf-definitions/proto/mlagents/envs/communicator_objects/custom_action.proto". 
 
-Instances of custom actions are set via the `custom_action` parameter of `environment.step`. An agent receives a custom action by defining a method with the signature
+Instances of custom actions are set via the `custom_action` parameter of `env.step`. An agent receives a custom action by defining a method with the signature
 
 ```csharp
 public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomAction customAction)
@@ -161,7 +161,7 @@ Then in Python, the custom field would be accessed like
 ```python
 ...
 result = env.step(...)
-result[brain_name].custom_observations[0].customField.
+result[brain_name].custom_observations[0].customField
 ```
 
 where `brain_name` is the name of the brain attached to the agent.
