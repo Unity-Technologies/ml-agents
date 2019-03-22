@@ -22,6 +22,7 @@ jobs:
             . venv/bin/activate
             cd ml-agents && pip install -e .
             pip install pytest-cov==2.6.1 codacy-coverage==1.3.11
+            cd ../gym_unity && pip install -e .
 
       - save_cache:
           paths:
@@ -29,12 +30,11 @@ jobs:
           key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
         
       - run:
-          name: Run Tests
+          name: Run Tests for ml-agents and gym_unity
           command: |
             . venv/bin/activate
-            cd ml-agents/ 
             mkdir test-reports
-            pytest --cov=mlagents --cov-report xml tests/ --junitxml=test-reports/junit.xml -p no:warnings
+            pytest --cov=mlagents --cov-report xml --junitxml=test-reports/junit.xml -p no:warnings
             python-codacy-coverage -r coverage.xml
 
       - store_test_results:
