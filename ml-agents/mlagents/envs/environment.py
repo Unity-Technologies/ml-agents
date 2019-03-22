@@ -265,6 +265,7 @@ class UnityEnvironment(object):
         :param vector_action: Agent's vector action. Can be a scalar or vector of int/floats.
         :param memory: Vector corresponding to memory used for recurrent policies.
         :param text_action: Text action to send to environment for.
+        :param custom_action: Optional instance of a CustomAction protobuf message.
         :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
         vector_action = {} if vector_action is None else vector_action
