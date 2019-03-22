@@ -22,7 +22,7 @@ jobs:
             . venv/bin/activate
             cd ml-agents && pip install -e .
             pip install pytest-cov==2.6.1 codacy-coverage==1.3.11
-            cd ../gym_unity && pip install -e .
+            cd ../gym-unity && pip install -e .
 
       - save_cache:
           paths:
