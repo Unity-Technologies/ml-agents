@@ -66,14 +66,15 @@ namespace MLAgents.InferenceBrain
         {
             tensor.Shape[0] = batchSize;
             var vecObsSizeT = tensor.Shape[tensor.Shape.Length - 1];
-            tensor.Data = new float[batchSize, vecObsSizeT];
+            var floatArray = new float[batchSize, vecObsSizeT];
+            tensor.Data = floatArray;
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
                 var vectorObs = agentInfo[agent].stackedVectorObservation;
                 for (var j = 0; j < vecObsSizeT; j++)
                 {
-                    tensor.Data.SetValue(vectorObs[j], new int[2] {agentIndex, j});
+                    floatArray[agentIndex, j] = vectorObs[j];
                 }
                 agentIndex++;
             }
@@ -92,7 +93,8 @@ namespace MLAgents.InferenceBrain
         {
             tensor.Shape[0] = batchSize;
             var memorySize = tensor.Shape[tensor.Shape.Length - 1];
-            tensor.Data = new float[batchSize, memorySize];
+            var floatArray = new float[batchSize, memorySize];
+            tensor.Data = floatArray;
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -108,7 +110,7 @@ namespace MLAgents.InferenceBrain
                     {
                         break;
                     }
-                    tensor.Data.SetValue(memory[j], new int[2] {agentIndex, j});
+                    floatArray[agentIndex, j] = memory[j];
                 }
                 agentIndex++;
             }
@@ -170,14 +172,15 @@ namespace MLAgents.InferenceBrain
         {
             tensor.Shape[0] = batchSize;
             var actionSize = tensor.Shape[tensor.Shape.Length - 1];
-            tensor.Data = new int[batchSize, actionSize];
+            var intArray = new int[batchSize, actionSize];
+            tensor.Data = intArray;
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
                 var pastAction = agentInfo[agent].storedVectorActions;
                 for (var j = 0; j < actionSize; j++)
                 {
-                    tensor.Data.SetValue((int) pastAction[j], new int[2] {agentIndex, j});
+                    intArray[agentIndex, j] = (int) pastAction[j];
                 }
 
                 agentIndex++;
@@ -197,7 +200,8 @@ namespace MLAgents.InferenceBrain
         {
             tensor.Shape[0] = batchSize;
             var maskSize = tensor.Shape[tensor.Shape.Length - 1];
-            tensor.Data = new float[batchSize, maskSize];
+            var floatArray = new float[batchSize, maskSize];
+            tensor.Data = floatArray;
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -205,7 +209,7 @@ namespace MLAgents.InferenceBrain
                 for (var j = 0; j < maskSize; j++)
                 {
                     var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
-                    tensor.Data.SetValue(isUnmasked, new int[2] {agentIndex, j});
+                    floatArray[agentIndex, j] = isUnmasked;
                 }
                 agentIndex++;
             }
