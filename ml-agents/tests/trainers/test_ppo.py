@@ -9,7 +9,7 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents_envs import UnityEnvironment
-from tests.mock_communicator import MockCommunicator
+from mlagents_envs.mock_communicator import MockCommunicator
 
 
 @pytest.fixture

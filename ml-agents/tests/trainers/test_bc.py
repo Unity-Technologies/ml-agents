@@ -8,7 +8,7 @@ import yaml
 from mlagents.trainers.bc.models import BehavioralCloningModel
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents_envs import UnityEnvironment
-from tests.mock_communicator import MockCommunicator
+from mlagents_envs.mock_communicator import MockCommunicator
 
 
 @pytest.fixture

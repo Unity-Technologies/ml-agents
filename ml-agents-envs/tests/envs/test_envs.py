@@ -5,7 +5,7 @@ import numpy as np
 
 from mlagents_envs import UnityEnvironment, UnityEnvironmentException, UnityActionException, \
     BrainInfo
-from tests.mock_communicator import MockCommunicator
+from mlagents_envs.mock_communicator import MockCommunicator
 
 @mock.patch('mlagents_envs.UnityEnvironment.get_communicator')
 def test_handles_bad_filename(get_communicator):

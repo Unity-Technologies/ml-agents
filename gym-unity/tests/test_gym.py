@@ -5,8 +5,6 @@ import numpy as np
 from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException
 
-# Tests
-
 
 @mock.patch('gym_unity.envs.unity_env.UnityEnvironment')
 def test_gym_wrapper(mock_env):
@@ -73,7 +71,7 @@ def create_mock_brainparams(number_visual_observations=0, num_stacked_vector_obs
     # Avoid using mutable object as default param
     if vector_action_space_size is None:
         vector_action_space_size = [2]
-    mock_brain = mock.Mock();
+    mock_brain = mock.Mock()
     mock_brain.return_value.number_visual_observations = number_visual_observations
     mock_brain.return_value.num_stacked_vector_observations = num_stacked_vector_observations
     mock_brain.return_value.vector_action_space_type = vector_action_space_type
