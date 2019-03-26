@@ -141,7 +141,7 @@ You can define a custom observation message to supplement that. To do so, add fi
 
 Then in your agent, create an instance of a custom observation via `new CommunicatorObjects.CustomObservation`. Then in `CollectObservations`, call `SetCustomObservation` with the custom observation instance as the parameter.
 
-In Python, the custom observation can be accessed by calling `env.step` or `env.reset`  and accessing ` custom_observations` property of the return value. There will be one entry per agent.
+In Python, the custom observation can be accessed by calling `env.step` or `env.reset` and accessing the `custom_observations` property of the return value. It will contain a list with one `CustomObservation` instance per agent.
 
 For example, if you have added a field called `customField` to the `CustomObservation` message, you would program your agent like
 
