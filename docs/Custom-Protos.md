@@ -1,6 +1,6 @@
 # Creating custom protobuffer messages
 
-Unity and Python communicate by sending protobuffer messages to and from each other. You can create custom protobuffer messages if you want to exchange structured data beyond is included by default. 
+Unity and Python communicate by sending protobuffer messages to and from each other. You can create custom protobuffer messages if you want to exchange structured data beyond what is included by default. 
 
 Whenever you change the fields of a custom message, you must run `protobuf-definitions/make.bat` to create C# and Python files corresponding to the new message. Follow the directions in that file for guidance. After running it, reinstall the Python package by running `pip install ml-agents` and make sure your Unity project is using the newly-generated version of `UnitySDK`.
 
@@ -12,7 +12,7 @@ There are three custom message types currently supported, described below. In ea
 
 By default, the Python API sends actions to Unity in the form of a floating-point list per agent and an optional string-valued text action. 
 
-You can define a custom action type to replace or augment this by adding fields to the `CustomAction` message, which you can do by editing the file "protobuf-definitions/proto/mlagents/envs/communicator_objects/custom_action.proto". 
+You can define a custom action type to replace or augment this by adding fields to the `CustomAction` message, which you can do by editing the file `protobuf-definitions/proto/mlagents/envs/communicator_objects/custom_action.proto`. 
 
 Instances of custom actions are set via the `custom_action` parameter of `env.step`. An agent receives a custom action by defining a method with the signature
 
@@ -139,9 +139,9 @@ By default, Unity returns observations to Python in the form of a floating-point
 
 You can define a custom observation message to supplement that. To do so, add fields to the `CustomObservation` protobuffer message in `custom_observation.proto`. 
 
-Then in your agent, create an instance of a custom observation via `new CommunicatorObjects.CustomObservation`. Then in `CollectObservations`, call `SetCustomObservation` wit the custom observation instance as the parameter.
+Then in your agent, create an instance of a custom observation via `new CommunicatorObjects.CustomObservation`. Then in `CollectObservations`, call `SetCustomObservation` with the custom observation instance as the parameter.
 
-In Python, the custom observation can be accessed in the return of `env.step` as ` custom_observations` property (one entry per agent).
+In Python, the custom observation can be accessed by calling `env.step` or `env.reset`  and accessing ` custom_observations` property of the return value. There will be one entry per agent.
 
 For example, if you have added a field called `customField` to the `CustomObservation` message, you would program your agent like
 

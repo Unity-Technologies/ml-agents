@@ -1124,14 +1124,5 @@ namespace MLAgents
         {
             info.customObservation = customObservation;
         }
-
-        /// <summary>
-        /// Get the custom observation that has previously been set for this agent during this episode.
-        /// </summary>
-        /// <returns> An instance of a CustomObservation message.</returns>
-        public CustomObservation GetCustomObservation()
-        {
-            return info.customObservation;
-        }
     }    
 }
