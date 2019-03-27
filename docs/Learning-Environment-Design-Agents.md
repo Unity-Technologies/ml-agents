@@ -211,6 +211,7 @@ are useful when the state is difficult to describe numerically. However, they
 are also typically less efficient and slower to train, and sometimes don't 
 succeed at all.
 
+Visual observations can be derived from Cameras or RenderTextures within your scene. 
 To add a visual observation to an Agent, either click on the `Add Camera` or 
 `Add RenderTexture` button in the Agent inspector. Then drag the camera or 
 render texture you want to add to the `Camera` or `RenderTexture` field. 
@@ -228,23 +229,28 @@ the Brain inspector, under **Brain Parameters** > **Visual Observations**,
 specify the number of Resolutions the Agent is using for its visual observations.
 For each visual observation, set the width and height of the image (in pixels)
 and whether or not the observation is color or grayscale (when `Black And White`
-is checked). If a combination of `Cameras` and `RenderTextures` is used, all 
-cameras are captured first, then all render textures will be added, both in the
-order they appear in the editor. With 2 cameras and 1 render texture of say twice 
-the size, 3 **Visual Observations** have to be added to the **Brain Parameters**,
-2 with the base resolution and 1 with doubled dimensions. Then the two cameras
-and the render texture, have to be added under `Cameras` and `RenderTextures` on
-the agent.
+is checked). 
+
+For instance, if you are using two cameras and one render texture on your Agent,
+three **Visual Observations** have to be added to the **Brain Parameters**. 
+During runtime, if a combination of `Cameras` and `RenderTextures` is used, all 
+cameras are captured first, then all render textures will be added, in the
+order they appear in the editor. 
 
 ![Agent Camera and RenderTexture combination](images/visual-observation-combination.png)
 
-RenderTexture observations will throw an `Exception` if the width/height, doesn't 
+RenderTexture observations will throw an `Exception` if the width/height doesn't 
 match the resolution specified under **Brain Parameters** > **Visual Observations**.
 
-When using `RenderTexture` visual observations a handy feature for debugging, is 
-adding a `Canvas` with a `RawImage` with it's texture set to the `RenderTexture`, 
-in order to view the agent observation. The [GridWorld example](Learning-Environment-Examples.md#gridworld) 
-GridWorldRenderTexture scene uses a RenderTexure for debugging and observation.
+When using `RenderTexture` visual observations, a handy feature for debugging is 
+adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent's 
+`RenderTexture`. This will render the agent observation on the game screen. 
+
+![RenderTexture with Raw Image](images/visual-observation-rawimage.png)
+
+A variant of the [GridWorld example](Learning-Environment-Examples.md#gridworld) 
+(GridWorldRenderTexture scene) is provided as an example on how to use
+a RenderTexure for both debugging and observation.
 
 ![Agent RenderTexture Debug](images/visual-observation-debug.png)
 
