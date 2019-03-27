@@ -18,7 +18,8 @@ setup(
         'Programming Language :: Python :: 3.6'
     ],
 
-    packages=find_packages(exclude=['tests', 'tests.*', '*.tests', '*.tests.*']),  # Required
+    packages=['mlagents.envs'],  # Required
+    zip_safe=False,
 
     install_requires=[
         'Pillow>=4.2.1,<=5.4.1',

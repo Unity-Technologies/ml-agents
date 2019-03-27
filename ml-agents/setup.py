@@ -25,7 +25,8 @@ setup(
         'Programming Language :: Python :: 3.6'
     ],
 
-    packages=find_packages(exclude=['tests', 'tests.*', '*.tests', '*.tests.*']),  # Required
+    packages=['mlagents.trainers'],  # Required
+    zip_safe=False,
 
     install_requires=[
         'mlagents_envs==0.7.0',

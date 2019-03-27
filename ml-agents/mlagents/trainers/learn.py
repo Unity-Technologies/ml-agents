@@ -15,8 +15,8 @@ from typing import Optional
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
-from mlagents_envs import UnityEnvironment
-from mlagents_envs.exception import UnityEnvironmentException
+from mlagents.envs import UnityEnvironment
+from mlagents.envs.exception import UnityEnvironmentException
 
 
 def run_training(sub_id: int, run_seed: int, run_options, process_queue):

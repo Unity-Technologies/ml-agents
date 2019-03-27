@@ -5,7 +5,7 @@ import tensorflow as tf
 from mlagents.trainers import ActionInfo, UnityException
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
-from mlagents_envs import BrainInfo
+from mlagents.envs import BrainInfo
 
 logger = logging.getLogger("mlagents.trainers")
 

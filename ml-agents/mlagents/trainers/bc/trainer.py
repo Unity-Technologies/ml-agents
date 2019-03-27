@@ -8,7 +8,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from mlagents_envs import AllBrainInfo
+from mlagents.envs import AllBrainInfo
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import Trainer

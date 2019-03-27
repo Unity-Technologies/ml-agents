@@ -9,11 +9,11 @@ jobs:
     steps:
       - checkout
 
-      # - restore_cache:
-      #     keys:
-      #     - v1-dependencies-{{ checksum "ml-agents/setup.py" }}
-      #     # fallback to using the latest cache if no exact match is found
-      #     - v1-dependencies-
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "ml-agents/setup.py" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
 
       - run:
           name: Install Dependencies
@@ -25,10 +25,10 @@ jobs:
             pip install pytest-cov==2.6.1 codacy-coverage==1.3.11
             cd ../gym-unity && pip install -e .
 
-      # - save_cache:
-      #     paths:
-      #       - ./venv
-      #     key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
         
       - run:
           name: Run Tests for ml-agents and gym_unity

@@ -2,8 +2,8 @@ import pathlib
 import logging
 import os
 from mlagents.trainers.buffer import Buffer
-from mlagents_envs.brain import BrainParameters, BrainInfo
-from mlagents_envs.communicator_objects import *
+from mlagents.envs.brain import BrainParameters, BrainInfo
+from mlagents.envs.communicator_objects import *
 from google.protobuf.internal.decoder import _DecodeVarint32
 
 logger = logging.getLogger("mlagents.trainers")

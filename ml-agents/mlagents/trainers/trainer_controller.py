@@ -14,8 +14,8 @@ from typing import *
 import numpy as np
 import tensorflow as tf
 
-from mlagents_envs import AllBrainInfo, BrainInfo
-from mlagents_envs.exception import UnityEnvironmentException
+from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer, Policy
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer

@@ -1,6 +1,6 @@
 import numpy as np
 
-from mlagents_envs.exception import UnityException
+from mlagents.envs.exception import UnityException
 
 
 class BufferException(UnityException):

@@ -5,7 +5,7 @@
 import logging
 import numpy as np
 
-from mlagents_envs import AllBrainInfo
+from mlagents.envs import AllBrainInfo
 from mlagents.trainers.bc.trainer import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")
