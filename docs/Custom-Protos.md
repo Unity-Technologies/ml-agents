@@ -1,8 +1,8 @@
-# Creating custom protobuffer messages
+# Creating custom protobuf messages
 
-Unity and Python communicate by sending protobuffer messages to and from each other. You can create custom protobuffer messages if you want to exchange structured data beyond what is included by default. 
+Unity and Python communicate by sending protobuf messages to and from each other. You can create custom protobuf messages if you want to exchange structured data beyond what is included by default. 
 
-Whenever you change the fields of a custom message, you must run `protobuf-definitions/make.bat` to create C# and Python files corresponding to the new message. Follow the directions in that file for guidance. After running it, reinstall the Python package by running `pip install ml-agents` and make sure your Unity project is using the newly-generated version of `UnitySDK`.
+Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT. Whenever you change the fields of a custom message, you must run `$MLAGENTS_ROOT/protobuf-definitions/make.bat` to create C# and Python files corresponding to the new message. Follow the directions in that file for guidance. After running it, reinstall the Python package by running `pip install $MLAGENTS_ROOT/ml-agents` and make sure your Unity project is using the newly-generated version of `$MLAGENTS_ROOT/UnitySDK`.
 
 ## Custom message types
 
@@ -34,8 +34,8 @@ message CustomAction {
     enum Direction {
         NORTH=0;
         SOUTH=1;
-        EAST=1;
-        WEST=1;
+        EAST=2;
+        WEST=3;
     }
     float walkAmount = 1;    
     Direction direction = 2;
@@ -46,7 +46,7 @@ In your Python file, create an instance of a custom action:
 
 ```python
 from mlagents.envs.communicator_objects import CustomAction
-env = mlagents.UnityEnvironment(...)
+env = mlagents.envs.UnityEnvironment(...)
 ...
 action = CustomAction(direction=CustomAction.NORTH, walkAmount=2.0)
 env.step(custom_action=action)
@@ -78,7 +78,7 @@ Note that the protobuffer compiler automatically configures the capitalization s
 
 By default, you can configure an environment `env ` in the Python API by specifying a `config` parameter that is a dictionary mapping strings to floats. 
 
-You can also configure an environment using a custom protobuf message. To do so, add fields to the `CustomResetParameters` protobuffer message in `custom_reset_parameters.proto`, analogously to `CustomAction` above. Then pass an instance of the message to `env.reset` via the `custom_reset_parameters` keyword parameter.
+You can also configure an environment using a custom protobuf message. To do so, add fields to the `CustomResetParameters` protobuf message in `custom_reset_parameters.proto`, analogously to `CustomAction` above. Then pass an instance of the message to `env.reset` via the `custom_reset_parameters` keyword parameter.
 
 In Unity, you can then access the `customResetParameters` field of your academy to accesss the values set in your Python script.
 
@@ -137,7 +137,7 @@ env.reset(custom_reset_parameters=params)
 
 By default, Unity returns observations to Python in the form of a floating-point vector. 
 
-You can define a custom observation message to supplement that. To do so, add fields to the `CustomObservation` protobuffer message in `custom_observation.proto`. 
+You can define a custom observation message to supplement that. To do so, add fields to the `CustomObservation` protobuf message in `custom_observation.proto`. 
 
 Then in your agent, create an instance of a custom observation via `new CommunicatorObjects.CustomObservation`. Then in `CollectObservations`, call `SetCustomObservation` with the custom observation instance as the parameter.
 
