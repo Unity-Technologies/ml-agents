@@ -323,7 +323,7 @@ class UnityEnvironment(object):
                     raise UnityActionException(
                         "There are no external brains in the environment, "
                         "step cannot take a value input")
-            
+
             if isinstance(custom_action, CustomAction):
                 if self._num_external_brains == 1:
                     custom_action = {self._external_brain_names[0]: custom_action}
