@@ -65,9 +65,10 @@ To install the dependencies and `mlagents` Python package, run from the command 
 pip3 install mlagents
 ```
 
+Note that this will install `ml-agents` from PyPi, _not_ from the cloned repo. 
 If you installed this correctly, you should be able to run
-`mlagents-learn --help`. Note that this will install `ml-agents` from PyPi, 
-_not_ from the cloned repo. 
+`mlagents-learn --help`, after which you will see the Unity logo and the command line
+parameters you can use with `mlagents-learn`. 
 
 **Notes:**
 
