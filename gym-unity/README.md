@@ -4,7 +4,7 @@ A common way in which machine learning researchers interact with simulation
 environments is via a wrapper provided by OpenAI called `gym`. For more
 information on the gym interface, see [here](https://github.com/openai/gym).
 
-We provide a a gym wrapper, and instructions for using it with existing machine
+We provide a gym wrapper and instructions for using it with existing machine
 learning algorithms which utilize gyms. Both wrappers provide interfaces on top
 of our `UnityEnvironment` class, which is the default way of interfacing with a
 Unity environment via Python.
