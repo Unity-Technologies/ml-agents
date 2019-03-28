@@ -152,6 +152,13 @@ namespace MLAgents
         /// observations.
         /// </summary>
         public List<Camera> agentCameras = new List<Camera>();
+        
+        /// <summary>
+        /// The list of the RenderTextures the agent uses for visual
+        /// observations.
+        /// </summary>
+        public List<RenderTexture> agentRenderTextures = new List<RenderTexture>();
+
 
         /// <summary>
         /// The maximum number of steps the agent takes before being done. 
@@ -320,8 +327,9 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            textureArray = new Texture2D[agentParameters.agentCameras.Count];
-            for (int i = 0; i < agentParameters.agentCameras.Count; i++)
+            var textureCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;
+            textureArray = new Texture2D[textureCount];
+            for (int i = 0; i < textureCount; i++)
             {
                 textureArray[i] = new Texture2D(1, 1, TextureFormat.RGB24, false);
             }
@@ -600,22 +608,36 @@ namespace MLAgents
             info.stackedVectorObservation.AddRange(info.vectorObservation);
 
             info.visualObservations.Clear();
-            if (param.cameraResolutions.Length > agentParameters.agentCameras.Count)
+            var visualObservationCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;
+            if (param.cameraResolutions.Length > visualObservationCount)
             {
                 throw new UnityAgentsException(string.Format(
-                    "Not enough cameras for agent {0} : Bain {1} expecting at " +
-                    "least {2} cameras but only {3} were present.",
+                    "Not enough cameras/renderTextures for agent {0} : Brain {1} expecting at " +
+                    "least {2} cameras/renderTextures but only {3} were present.",
                     gameObject.name, brain.name,
                     brain.brainParameters.cameraResolutions.Length,
-                    agentParameters.agentCameras.Count));
+                    visualObservationCount));
             }
 
-            for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
+            //First add all cameras
+            for (int i = 0; i < agentParameters.agentCameras.Count; i++)
             {
                 ObservationToTexture(
                     agentParameters.agentCameras[i],
                     param.cameraResolutions[i].width,
                     param.cameraResolutions[i].height,
+                    ref textureArray[i]);
+                info.visualObservations.Add(textureArray[i]);
+            }
+            
+            //Then add all renderTextures
+            var camCount = agentParameters.agentCameras.Count;
+            for (int i = 0; i < agentParameters.agentRenderTextures.Count; i++)
+            {
+                ObservationToTexture(
+                    agentParameters.agentRenderTextures[i],
+                    param.cameraResolutions[camCount+i].width,
+                    param.cameraResolutions[camCount+i].height,
                     ref textureArray[i]);
                 info.visualObservations.Add(textureArray[i]);
             }
@@ -1114,6 +1136,36 @@ namespace MLAgents
             obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRT;
             RenderTexture.ReleaseTemporary(tempRT);
+        }
+        
+        /// <summary>
+        /// Converts a RenderTexture and correspinding resolution to a 2D texture.
+        /// </summary>
+        /// <returns>The 2D texture.</returns>
+        /// <param name="obsTexture">RenderTexture.</param>
+        /// <param name="width">Width of resulting 2D texture.</param>
+        /// <param name="height">Height of resulting 2D texture.</param>
+        /// <param name="texture2D">Texture2D to render to.</param>
+        public static void ObservationToTexture(RenderTexture obsTexture, int width, int height, ref Texture2D texture2D)
+        {
+            if (width != texture2D.width || height != texture2D.height)
+            {
+                texture2D.Resize(width, height);
+            }
+            
+            if(width != obsTexture.width || height != obsTexture.height)
+            {
+                throw new UnityAgentsException(string.Format(
+                    "RenderTexture {0} : width/height is {1}/{2} brain is expecting {3}/{4}.",
+                    obsTexture.name, obsTexture.width, obsTexture.height, width, height));
+            }
+
+            var prevActiveRT = RenderTexture.active;
+            RenderTexture.active = obsTexture;
+
+            texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
+            texture2D.Apply();
+            RenderTexture.active = prevActiveRT;
         }
 
         /// <summary>
