@@ -10,7 +10,7 @@ from .exception import UnityEnvironmentException, UnityActionException, UnityTim
 
 from .communicator_objects import UnityRLInput, UnityRLOutput, AgentActionProto, \
     EnvironmentParametersProto, UnityRLInitializationInput, UnityRLInitializationOutput, \
-    UnityInput, UnityOutput
+    UnityInput, UnityOutput, CustomResetParameters, CustomAction
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
@@ -224,7 +224,7 @@ class UnityEnvironment(object):
                                                    for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
+    def reset(self, config=None, train_mode=True, custom_reset_parameters=None) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A data structure corresponding to the initial reset state of the environment.
@@ -246,7 +246,7 @@ class UnityEnvironment(object):
 
         if self._loaded:
             outputs = self.communicator.exchange(
-                self._generate_reset_input(train_mode, config)
+                self._generate_reset_input(train_mode, config, custom_reset_parameters)
             )
             if outputs is None:
                 raise KeyboardInterrupt
@@ -259,7 +259,7 @@ class UnityEnvironment(object):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
-    def step(self, vector_action=None, memory=None, text_action=None, value=None) -> AllBrainInfo:
+    def step(self, vector_action=None, memory=None, text_action=None, value=None, custom_action=None) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly,
         and returns observation, state, and reward information to the agent.
@@ -267,12 +267,14 @@ class UnityEnvironment(object):
         :param vector_action: Agent's vector action. Can be a scalar or vector of int/floats.
         :param memory: Vector corresponding to memory used for recurrent policies.
         :param text_action: Text action to send to environment for.
+        :param custom_action: Optional instance of a CustomAction protobuf message.
         :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
         vector_action = {} if vector_action is None else vector_action
         memory = {} if memory is None else memory
         text_action = {} if text_action is None else text_action
         value = {} if value is None else value
+        custom_action = {} if custom_action is None else custom_action
 
         # Check that environment is loaded, and episode is currently running.
         if self._loaded and not self._global_done and self._global_done is not None:
@@ -324,6 +326,18 @@ class UnityEnvironment(object):
                         "There are no external brains in the environment, "
                         "step cannot take a value input")
 
+            if isinstance(custom_action, CustomAction):
+                if self._num_external_brains == 1:
+                    custom_action = {self._external_brain_names[0]: custom_action}
+                elif self._num_external_brains > 1:
+                    raise UnityActionException(
+                        "You have {0} brains, you need to feed a dictionary of brain names as keys "
+                        "and CustomAction instances as values".format(self._num_brains))
+                else:
+                    raise UnityActionException(
+                        "There are no external brains in the environment, "
+                        "step cannot take a custom_action input")
+
             for brain_name in list(vector_action.keys()) + list(memory.keys()) + list(
                     text_action.keys()):
                 if brain_name not in self._external_brain_names:
@@ -357,6 +371,13 @@ class UnityEnvironment(object):
                         text_action[brain_name] = [""] * n_agent
                     if isinstance(text_action[brain_name], str):
                         text_action[brain_name] = [text_action[brain_name]] * n_agent
+                if brain_name not in custom_action:
+                    custom_action[brain_name] = [None] * n_agent
+                else:
+                    if custom_action[brain_name] is None:
+                        custom_action[brain_name] = [None] * n_agent
+                    if isinstance(custom_action[brain_name], CustomAction):
+                        custom_action[brain_name] = [custom_action[brain_name]] * n_agent
 
                 number_text_actions = len(text_action[brain_name])
                 if not ((number_text_actions == n_agent) or number_text_actions == 0):
@@ -391,7 +412,7 @@ class UnityEnvironment(object):
                                     str(vector_action[brain_name])))
 
             outputs = self.communicator.exchange(
-                self._generate_step_input(vector_action, memory, text_action, value))
+                self._generate_step_input(vector_action, memory, text_action, value, custom_action))
             if outputs is None:
                 raise KeyboardInterrupt
             rl_output = outputs.rl_output
@@ -458,7 +479,7 @@ class UnityEnvironment(object):
                                                            self.brains[brain_name])
         return _data, global_done
 
-    def _generate_step_input(self, vector_action, memory, text_action, value) -> UnityRLInput:
+    def _generate_step_input(self, vector_action, memory, text_action, value, custom_action) -> UnityRLInput:
         rl_in = UnityRLInput()
         for b in vector_action:
             n_agents = self._n_agents[b]
@@ -471,6 +492,7 @@ class UnityEnvironment(object):
                     vector_actions=vector_action[b][i * _a_s: (i + 1) * _a_s],
                     memories=memory[b][i * _m_s: (i + 1) * _m_s],
                     text_actions=text_action[b][i],
+                    custom_action=custom_action[b][i]
                 )
                 if b in value:
                     if value[b] is not None:
@@ -479,12 +501,14 @@ class UnityEnvironment(object):
                 rl_in.command = 0
         return self.wrap_unity_input(rl_in)
 
-    def _generate_reset_input(self, training, config) -> UnityRLInput:
+    def _generate_reset_input(self, training, config, custom_reset_parameters) -> UnityRLInput:
         rl_in = UnityRLInput()
         rl_in.is_training = training
         rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
         for key in config:
             rl_in.environment_parameters.float_parameters[key] = config[key]
+        if custom_reset_parameters is not None:
+            rl_in.environment_parameters.custom_reset_parameters.CopyFrom(custom_reset_parameters)
         rl_in.command = 1
         return self.wrap_unity_input(rl_in)
 

@@ -15,14 +15,14 @@ namespace MLAgents.CommunicatorObjects {
   {
     static readonly string __ServiceName = "communicator_objects.UnityToExternal";
 
-    static readonly grpc::Marshaller<global::MLAgents.CommunicatorObjects.UnityMessage> __Marshaller_UnityMessage = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.CommunicatorObjects.UnityMessage.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::MLAgents.CommunicatorObjects.UnityMessage> __Marshaller_communicator_objects_UnityMessage = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::MLAgents.CommunicatorObjects.UnityMessage.Parser.ParseFrom);
 
     static readonly grpc::Method<global::MLAgents.CommunicatorObjects.UnityMessage, global::MLAgents.CommunicatorObjects.UnityMessage> __Method_Exchange = new grpc::Method<global::MLAgents.CommunicatorObjects.UnityMessage, global::MLAgents.CommunicatorObjects.UnityMessage>(
         grpc::MethodType.Unary,
         __ServiceName,
         "Exchange",
-        __Marshaller_UnityMessage,
-        __Marshaller_UnityMessage);
+        __Marshaller_communicator_objects_UnityMessage,
+        __Marshaller_communicator_objects_UnityMessage);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor

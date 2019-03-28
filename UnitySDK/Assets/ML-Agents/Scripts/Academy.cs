@@ -144,6 +144,7 @@ namespace MLAgents
         [Tooltip("List of custom parameters that can be changed in the " +
                  "environment when it resets.")]
         public ResetParameters resetParameters;
+        public CommunicatorObjects.CustomResetParameters customResetParameters;
 
         // Fields not provided in the Inspector.
 
@@ -379,6 +380,7 @@ namespace MLAgents
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
+                customResetParameters = newResetParameters.CustomResetParameters;
             }
         }
 
