@@ -3,6 +3,8 @@
 <img src="docs/images/image-banner.png" align="middle" width="3000"/>
 
 # Unity ML-Agents Toolkit (Beta)
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](docs/Readme.md)
+[![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
 **The Unity Machine Learning Agents Toolkit** (ML-Agents) is an open-source
 Unity plugin that enables games and simulations to serve as environments for

@@ -49,7 +49,7 @@ namespace MLAgents.InferenceBrain
         /// Generates the Tensor inputs that are expected to be present in the Model. 
         /// </summary>
         /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
-        public IEnumerable<Tensor> GetInputTensors()
+        public IReadOnlyList<Tensor> GetInputTensors()
         {
             return _engine?.InputFeatures();
         }
@@ -58,7 +58,7 @@ namespace MLAgents.InferenceBrain
         /// Generates the Tensor outputs that are expected to be present in the Model. 
         /// </summary>
         /// <returns>Tensor IEnumerable with the expected Tensor outputs</returns>
-        public IEnumerable<Tensor> GetOutputTensors()
+        public IReadOnlyList<Tensor> GetOutputTensors()
         {
             var tensorList = new List<Tensor>();
             if (_brainParameters.vectorActionSpaceType == SpaceType.continuous)

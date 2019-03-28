@@ -144,6 +144,7 @@ namespace MLAgents
         [Tooltip("List of custom parameters that can be changed in the " +
                  "environment when it resets.")]
         public ResetParameters resetParameters;
+        public CommunicatorObjects.CustomResetParameters customResetParameters;
 
         // Fields not provided in the Inspector.
 
@@ -212,6 +213,9 @@ namespace MLAgents
         // Signals to all the Brains at each environment step so they can decide 
         // actions for their agents.
         public event System.Action BrainDecideAction;
+
+        // Signals to all the listeners that the academy is being destroyed
+        public event System.Action DestroyAction;
 
         // Signals to all the agents at each environment step along with the 
         // Academy's maxStepReached, done and stepCount values. The agents rely
@@ -354,6 +358,7 @@ namespace MLAgents
             isInference = !isCommunicatorOn;
 
             BrainDecideAction += () => { };
+            DestroyAction += () => { };
             AgentSetStatus += (m, d, i) => { };
             AgentResetIfDone += () => { };
             AgentSendState += () => { };
@@ -375,6 +380,7 @@ namespace MLAgents
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
+                customResetParameters = newResetParameters.CustomResetParameters;
             }
         }
 
@@ -651,6 +657,9 @@ namespace MLAgents
             Physics.gravity = originalGravity;
             Time.fixedDeltaTime = originalFixedDeltaTime;
             Time.maximumDeltaTime = originalMaximumDeltaTime;
+
+            // Signal to listeners that the academy is being destroyed now
+            DestroyAction();
         }
     }
 }
