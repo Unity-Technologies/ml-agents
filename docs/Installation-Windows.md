@@ -130,8 +130,8 @@ The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)
 to help you get started.
 
-The `ml-agents` subdirectory contains a Python package which provides RL
-trainers.
+The `ml-agents` subdirectory contains a Python package which provides deep reinforcement 
+learning trainers to use with Unity environments.
 
 The `ml-agents-envs` subdirectory contains a Python API to interface with Unity, which
 the `ml-agents` package depends on. 
