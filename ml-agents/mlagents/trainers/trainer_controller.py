@@ -55,6 +55,7 @@ class TrainerController(object):
         self.train_model = train
         self.keep_checkpoints = keep_checkpoints
         self.trainers: Dict[str, Trainer] = {}
+        self.trainer_metrics: Dict[str, TrainerMetrics] = {}
         self.global_step = 0
         self.meta_curriculum = meta_curriculum
         self.seed = training_seed
@@ -112,7 +113,8 @@ class TrainerController(object):
         :return:
         """
         for brain_name in self.trainers.keys():
-            self.trainers[brain_name].write_training_metrics()
+            if brain_name in self.trainer_metrics:
+                self.trainers[brain_name].write_training_metrics()
 
     def _export_graph(self):
         """
@@ -127,7 +129,6 @@ class TrainerController(object):
         :param trainer_config: The configurations of the trainers
         """
         trainer_parameters_dict = {}
-
         for brain_name in self.external_brains:
             trainer_parameters = trainer_config['default'].copy()
             trainer_parameters['summary_path'] = '{basedir}/{name}'.format(
@@ -164,6 +165,7 @@ class TrainerController(object):
                     trainer_parameters_dict[brain_name],
                     self.train_model, self.load_model, self.seed,
                     self.run_id)
+                self.trainer_metrics[brain_name] = self.trainers[brain_name].trainer_metrics
             else:
                 raise UnityEnvironmentException('The trainer config contains '
                                                 'an unknown trainer type for '
@@ -281,20 +283,24 @@ class TrainerController(object):
             take_action_text[brain_name] = action_info.text
             take_action_value[brain_name] = action_info.value
             take_action_outputs[brain_name] = action_info.outputs
+        time_start_step = time()
         new_info = env.step(
             vector_action=take_action_vector,
             memory=take_action_memories,
             text_action=take_action_text,
             value=take_action_value
         )
-
+        delta_time_step = time() - time_start_step
         for brain_name, trainer in self.trainers.items():
+            if brain_name in self.trainer_metrics:
+                self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
             trainer.add_experiences(curr_info, new_info,
                                     take_action_outputs[brain_name])
             trainer.process_experiences(curr_info, new_info)
             if trainer.is_ready_update() and self.train_model \
                     and trainer.get_step <= trainer.get_max_steps:
                 # Perform gradient descent with experience buffer
+
                 trainer.update_policy()
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time

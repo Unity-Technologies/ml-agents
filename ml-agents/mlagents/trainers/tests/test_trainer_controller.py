@@ -6,6 +6,7 @@ import yaml
 import pytest
 
 from mlagents.trainers import ActionInfo
+from mlagents.trainers import TrainerMetrics
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -181,6 +182,7 @@ def assert_bc_trainer_constructed(trainer_cls, input_config, tc, expected_brain_
 def assert_ppo_trainer_constructed(input_config, tc, expected_brain_info,
                                    expected_config, expected_reward_buff_cap=0):
     def mock_constructor(self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
+        self.trainer_metrics = TrainerMetrics('', '')
         assert(brain == expected_brain_info)
         assert(trainer_parameters == expected_config)
         assert(reward_buff_cap == expected_reward_buff_cap)

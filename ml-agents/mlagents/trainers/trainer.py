@@ -35,12 +35,11 @@ class Trainer(object):
         self.summary_path = trainer_parameters['summary_path']
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
-        self.trainer_metrics = TrainerMetrics(path=self.summary_path + '.csv',
-                                              brain_name=self.brain_name)
         self.cumulative_returns_since_policy_update = []
         self.is_training = training
         self.stats = {}
-
+        self.trainer_metrics = TrainerMetrics(path=self.summary_path + '.csv',
+                                              brain_name=self.brain_name)
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self.policy = None
 
@@ -111,7 +110,9 @@ class Trainer(object):
         :return: The ActionInfo given by the policy given the BrainInfo.
         """
         self.trainer_metrics.start_experience_collection_timer()
-        return self.policy.get_action(curr_info)
+        action = self.policy.get_action(curr_info)
+        self.trainer_metrics.end_experience_collection_timer()
+        return action
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
                         take_action_outputs):

@@ -148,9 +148,8 @@ environment, you can set the following command line options when invoking
   details.
 * `--debug` - Specify this option to run ML-Agents in debug mode and log Trainer
   Metrics to a CSV stored in the `summaries` directory. The metrics  stored are:
-  brain name, Time to update policy, Time since start of training, Time for last experience collection, Number of experiences used for training, Mean return. This
+  brain name, time to update policy, time since start of training, time for last experience collection, number of experiences used for training, mean return. This
   option is not available currently for Imitation Learning.
-  `
 
 ### Training config file
 

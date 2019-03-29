@@ -13,6 +13,7 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer
 
+
 logger = logging.getLogger("mlagents.trainers")
 
 
@@ -156,7 +157,7 @@ class PPOTrainer(Trainer):
         :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
-
+        self.trainer_metrics.start_experience_collection_timer()
         if take_action_outputs:
             self.stats['Policy/Value Estimate'].append(take_action_outputs['value'].mean())
             self.stats['Policy/Entropy'].append(take_action_outputs['entropy'].mean())
@@ -229,6 +230,7 @@ class PPOTrainer(Trainer):
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
+        self.trainer_metrics.end_experience_collection_timer()
 
     def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
         """
@@ -237,7 +239,7 @@ class PPOTrainer(Trainer):
         :param current_info: Dictionary of all current brains and corresponding BrainInfo.
         :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
-
+        self.trainer_metrics.start_experience_collection_timer()
         info = new_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]['actions']
@@ -284,6 +286,7 @@ class PPOTrainer(Trainer):
                         self.stats['Policy/Curiosity Reward'].append(
                             self.intrinsic_rewards.get(agent_id, 0))
                         self.intrinsic_rewards[agent_id] = 0
+        self.trainer_metrics.end_experience_collection_timer()
 
     def end_episode(self):
         """
@@ -311,9 +314,9 @@ class PPOTrainer(Trainer):
         """
         Uses demonstration_buffer to update the policy.
         """
-        self.trainer_metrics.end_experience_collection_timer()
-        self.trainer_metrics.start_policy_update_timer(number_experiences=len(self.training_buffer.update_buffer['actions']),
-                                        mean_return = float(np.mean(self.cumulative_returns_since_policy_update)))
+        self.trainer_metrics.start_policy_update_timer(
+            number_experiences=len(self.training_buffer.update_buffer['actions']),
+            mean_return=float(np.mean(self.cumulative_returns_since_policy_update)))
         n_sequences = max(int(self.trainer_parameters['batch_size'] / self.policy.sequence_length), 1)
         value_total, policy_total, forward_total, inverse_total = [], [], [], []
         advantages = self.training_buffer.update_buffer['advantages'].get_batch()
