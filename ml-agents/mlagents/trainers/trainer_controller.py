@@ -46,7 +46,7 @@ class TrainerController(object):
         self.summaries_dir = summaries_dir
         self.external_brains = external_brains
         self.external_brain_names = external_brains.keys()
-        self.logger = logging.getLogger('mlagents_envs')
+        self.logger = logging.getLogger('mlagents.envs')
         self.run_id = run_id
         self.save_freq = save_freq
         self.lesson = lesson
