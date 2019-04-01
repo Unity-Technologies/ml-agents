@@ -67,7 +67,7 @@ public class AgentSoccer : Agent
 
         var playerState = new PlayerState
         {
-            agentRB = GetComponent<Rigidbody>(), 
+            agentRB = agentRb, 
             startingPos = transform.position, 
             agentScript = this,
         };
@@ -203,8 +203,7 @@ public class AgentSoccer : Agent
             JoinBlueTeam(agentRole);
             transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
-        transform.position = area.GetRandomSpawnPos(team.ToString(),
-                                                    agentRole.ToString());
+        transform.position = area.GetRandomSpawnPos(agentRole, team);
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
         area.ResetBall();
