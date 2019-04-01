@@ -5,10 +5,12 @@
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 
-#pragma warning disable 1591
+#pragma warning disable 0414, 1591
 #region Designer generated code
 
 using grpc = global::Grpc.Core;
+
+
 
 namespace MLAgents.CommunicatorObjects {
   public static partial class UnityToExternal
@@ -132,5 +134,4 @@ namespace MLAgents.CommunicatorObjects {
 }
 #endregion
 
-#endif 
-
+#endif

@@ -8,7 +8,7 @@
 
 SRC_DIR=proto/mlagents/envs/communicator_objects
 DST_DIR_C=../UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects
-DST_DIR_P=../ml-agents
+DST_DIR_P=../ml-agents-envs
 PROTO_PATH=proto
 
 PYTHON_PACKAGE=mlagents/envs/communicator_objects

@@ -168,7 +168,7 @@ namespace MLAgents.CommunicatorObjects {
       floatParameters_.Add(other.floatParameters_);
       if (other.customResetParameters_ != null) {
         if (customResetParameters_ == null) {
-          customResetParameters_ = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
+          CustomResetParameters = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
         }
         CustomResetParameters.MergeFrom(other.CustomResetParameters);
       }
@@ -189,9 +189,9 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 18: {
             if (customResetParameters_ == null) {
-              customResetParameters_ = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
+              CustomResetParameters = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
             }
-            input.ReadMessage(customResetParameters_);
+            input.ReadMessage(CustomResetParameters);
             break;
           }
         }

@@ -217,7 +217,7 @@ namespace MLAgents.CommunicatorObjects {
       agentActions_.Add(other.agentActions_);
       if (other.environmentParameters_ != null) {
         if (environmentParameters_ == null) {
-          environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+          EnvironmentParameters = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
         }
         EnvironmentParameters.MergeFrom(other.EnvironmentParameters);
       }
@@ -244,9 +244,9 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 18: {
             if (environmentParameters_ == null) {
-              environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+              EnvironmentParameters = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
             }
-            input.ReadMessage(environmentParameters_);
+            input.ReadMessage(EnvironmentParameters);
             break;
           }
           case 24: {
@@ -254,7 +254,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 32: {
-            command_ = (global::MLAgents.CommunicatorObjects.CommandProto) input.ReadEnum();
+            Command = (global::MLAgents.CommunicatorObjects.CommandProto) input.ReadEnum();
             break;
           }
         }

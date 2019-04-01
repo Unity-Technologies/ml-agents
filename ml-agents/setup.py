@@ -25,9 +25,11 @@ setup(
         'Programming Language :: Python :: 3.6'
     ],
 
-    packages=find_packages(exclude=['tests', 'tests.*', '*.tests', '*.tests.*']),  # Required
+    packages=['mlagents.trainers'],  # Required
+    zip_safe=False,
 
     install_requires=[
+        'mlagents_envs==0.7.0',
         'tensorflow>=1.7,<1.8',
         'Pillow>=4.2.1',
         'matplotlib',
