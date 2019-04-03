@@ -111,13 +111,13 @@ class SubprocessUnityEnvironment(BaseUnityEnvironment):
                 if worker_id > 0:
                     start_ind = agent_counts_cum[brain_name][worker_id - 1]
                 end_ind = agent_counts_cum[brain_name][worker_id]
-                if vector_action[brain_name] is not None:
+                if vector_action.get(brain_name) is not None:
                     env_actions[brain_name] = vector_action[brain_name][start_ind:end_ind]
-                if memory and memory[brain_name] is not None:
+                if memory and memory.get(brain_name) is not None:
                     env_memory[brain_name] = memory[brain_name][start_ind:end_ind]
-                if text_action and text_action[brain_name] is not None:
+                if text_action and text_action.get(brain_name) is not None:
                     env_text_action[brain_name] = text_action[brain_name][start_ind:end_ind]
-                if value and value[brain_name] is not None:
+                if value and value.get(brain_name) is not None:
                     env_value[brain_name] = value[brain_name][start_ind:end_ind]
 
             env.send('step', (env_actions, env_memory, env_text_action, env_value))
