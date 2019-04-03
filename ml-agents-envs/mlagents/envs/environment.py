@@ -4,7 +4,9 @@ import logging
 import numpy as np
 import os
 import subprocess
+from typing import *
 
+from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from .brain import AllBrainInfo, BrainInfo, BrainParameters
 from .exception import UnityEnvironmentException, UnityActionException, UnityTimeOutException
 
@@ -19,15 +21,20 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mlagents.envs")
 
 
-class UnityEnvironment(object):
+class UnityEnvironment(BaseUnityEnvironment):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
     SINGLE_BRAIN_TEXT_TYPES = (str, list, np.ndarray)
 
-    def __init__(self, file_name=None, worker_id=0,
-                 base_port=5005, seed=0,
-                 docker_training=False, no_graphics=False,
-                 timeout_wait=30):
+    def __init__(self,
+                 file_name: Optional[str] = None,
+                 worker_id: int = 0,
+                 base_port: int = 5005,
+                 seed: int = 0,
+                 docker_training: bool = False,
+                 no_graphics: bool = False,
+                 timeout_wait: int = 30,
+                 train_mode: bool = True):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -39,6 +46,7 @@ class UnityEnvironment(object):
         :bool docker_training: Informs this class whether the process is being run within a container.
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
+        :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
         """
 
         atexit.register(self._close)
@@ -48,6 +56,7 @@ class UnityEnvironment(object):
         self._loaded = False  # If true, this means the environment was successfully loaded
         self.proc1 = None  # The process that is started. If None, no process was started
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
+        self._train_mode = train_mode
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -73,6 +82,7 @@ class UnityEnvironment(object):
         # TODO : think of a better way to expose the academyParameters
         self._unity_version = aca_params.version
         if self._unity_version != self._version_:
+            self._close()
             raise UnityEnvironmentException(
                 "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
                 "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
@@ -132,6 +142,17 @@ class UnityEnvironment(object):
     @staticmethod
     def get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
+
+    @property
+    def external_brains(self):
+        external_brains = {}
+        for brain_name in self.external_brain_names:
+            external_brains[brain_name] = self.brains[brain_name]
+        return external_brains
+
+    @property
+    def reset_parameters(self):
+        return self._resetParameters
 
     def executable_launcher(self, file_name, docker_training, no_graphics):
         cwd = os.getcwd()
@@ -224,7 +245,7 @@ class UnityEnvironment(object):
                                                    for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-    def reset(self, config=None, train_mode=True, custom_reset_parameters=None) -> AllBrainInfo:
+    def reset(self, config=None, train_mode=None, custom_reset_parameters=None) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A data structure corresponding to the initial reset state of the environment.
@@ -243,6 +264,11 @@ class UnityEnvironment(object):
             else:
                 raise UnityEnvironmentException(
                     "The parameter '{0}' is not a valid parameter.".format(k))
+
+        if train_mode is None:
+            train_mode = self._train_mode
+        else:
+            self._train_mode = train_mode
 
         if self._loaded:
             outputs = self.communicator.exchange(
@@ -447,7 +473,7 @@ class UnityEnvironment(object):
             self.proc1.kill()
 
     @classmethod
-    def _flatten(cls, arr):
+    def _flatten(cls, arr) -> List[float]:
         """
         Converts arrays to list.
         :param arr: numpy vector.
@@ -518,7 +544,8 @@ class UnityEnvironment(object):
         inputs.rl_initialization_input.CopyFrom(init_parameters)
         return self.communicator.initialize(inputs).rl_initialization_output
 
-    def wrap_unity_input(self, rl_input: UnityRLInput) -> UnityOutput:
+    @staticmethod
+    def wrap_unity_input(rl_input: UnityRLInput) -> UnityOutput:
         result = UnityInput()
         result.rl_input.CopyFrom(rl_input)
         return result
