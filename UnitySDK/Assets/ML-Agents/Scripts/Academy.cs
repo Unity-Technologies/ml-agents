@@ -9,7 +9,7 @@ using UnityEditor;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
- * 
+ *
  * The ML-Agents toolkit contains five entities: Academy, Brain, Agent, Communicator and
  * Python API. The academy, and all its brains and connected agents live within
  * a learning environment (herin called Environment), while the communicator
@@ -46,7 +46,7 @@ namespace MLAgents
         [Tooltip("Frames per second (FPS) engine attempts to maintain.")]
         public int targetFrameRate;
 
-        /// Initializes a new instance of the 
+        /// Initializes a new instance of the
         /// <see cref="EnvironmentConfiguration"/> class.
         /// <param name="width">Width of environment window (pixels).</param>
         /// <param name="height">Height of environment window (pixels).</param>
@@ -73,9 +73,9 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// An Academy is where Agent objects go to train their behaviors. More 
+    /// An Academy is where Agent objects go to train their behaviors. More
     /// specifically, an academy is a collection of Brain objects and each agent
-    /// in a scene is attached to one brain (a single brain may be attached to 
+    /// in a scene is attached to one brain (a single brain may be attached to
     /// multiple agents). Currently, this class is expected to be extended to
     /// implement the desired academy behavior.
     /// </summary>
@@ -92,21 +92,21 @@ namespace MLAgents
              "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        [SerializeField] 
+        [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
-        
-        private const string kApiVersion = "API-7";
+
+        private const string kApiVersion = "API-8";
 
         /// Temporary storage for global gravity value
-        /// Used to restore oringal value when deriving Academy modifies it 
+        /// Used to restore oringal value when deriving Academy modifies it
         private Vector3 originalGravity;
 
         /// Temporary storage for global fixedDeltaTime value
-        /// Used to restore oringal value when deriving Academy modifies it 
+        /// Used to restore oringal value when deriving Academy modifies it
         private float originalFixedDeltaTime;
-        
+
         /// Temporary storage for global maximumDeltaTime value
-        /// Used to restore oringal value when deriving Academy modifies it 
+        /// Used to restore oringal value when deriving Academy modifies it
         private float originalMaximumDeltaTime;
 
         // Fields provided in the Inspector
@@ -137,8 +137,8 @@ namespace MLAgents
         /// <summary/>
         /// <remarks>
         /// Default reset parameters are specified in the academy Editor, and can
-        /// be modified when training with an external Brain by passinga config 
-        /// dictionary at reset. 
+        /// be modified when training with an external Brain by passinga config
+        /// dictionary at reset.
         /// </remarks>
         [SerializeField]
         [Tooltip("List of custom parameters that can be changed in the " +
@@ -158,7 +158,7 @@ namespace MLAgents
         /// the same message is not used multiple times.
         private ulong lastCommunicatorMessageNumber;
 
-        /// If true, the Academy will use inference settings. This field is 
+        /// If true, the Academy will use inference settings. This field is
         /// initialized in <see cref="Awake"/> depending on the presence
         /// or absence of a communicator. Furthermore, it can be modified by an
         /// external Brain during reset via <see cref="SetIsInference"/>.
@@ -173,12 +173,12 @@ namespace MLAgents
         /// current episode.
         bool maxStepReached;
 
-        /// The number of episodes completed by the environment. Incremented 
+        /// The number of episodes completed by the environment. Incremented
         /// each time the environment is reset.
         int episodeCount;
 
         /// The number of steps completed within the current episide. Incremented
-        /// each time a step is taken in the environment. Is reset to 0 during 
+        /// each time a step is taken in the environment. Is reset to 0 during
         /// <see cref="AcademyReset"/>.
         int stepCount;
 
@@ -207,24 +207,24 @@ namespace MLAgents
         // The Academy uses a series of events to communicate with agents and
         // brains to facilitate synchronization. More specifically, it ensure
         // that all the agents performs their steps in a consistent order (i.e. no
-        // agent can act based on a decision before another agent has had a chance 
+        // agent can act based on a decision before another agent has had a chance
         // to request a decision).
 
-        // Signals to all the Brains at each environment step so they can decide 
+        // Signals to all the Brains at each environment step so they can decide
         // actions for their agents.
         public event System.Action BrainDecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
         public event System.Action DestroyAction;
 
-        // Signals to all the agents at each environment step along with the 
+        // Signals to all the agents at each environment step along with the
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
         // in addition to aligning on the step count of the global episode.
         public event System.Action<bool, bool, int> AgentSetStatus;
 
         // Signals to all the agents at each environment step so they can reset
-        // if their flag has been set to done (assuming the agent has requested a 
+        // if their flag has been set to done (assuming the agent has requested a
         // decision).
         public event System.Action AgentResetIfDone;
 
@@ -274,7 +274,7 @@ namespace MLAgents
             originalGravity = Physics.gravity;
             originalFixedDeltaTime = Time.fixedDeltaTime;
             originalMaximumDeltaTime = Time.maximumDeltaTime;
-            
+
             InitializeAcademy();
             Communicator communicator = null;
 
@@ -285,7 +285,7 @@ namespace MLAgents
             {
                 brain.SetToControlledExternally();
             }
-            
+
             // Try to launch the communicator by usig the arguments passed at launch
             try
             {
@@ -547,7 +547,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Forces the full reset. The done flags are not affected. Is either 
+        /// Forces the full reset. The done flags are not affected. Is either
         /// called the first reset at inference and every external reset
         /// at training.
         /// </summary>
