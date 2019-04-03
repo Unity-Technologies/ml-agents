@@ -20,6 +20,7 @@ def basic_options():
         '--slow': False,
         '--no-graphics': False,
         '<trainer-config-path>': 'basic_path',
+        '--debug': False,
     }
 
 

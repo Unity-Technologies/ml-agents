@@ -46,7 +46,6 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     fast_simulation = not bool(run_options['--slow'])
     no_graphics = run_options['--no-graphics']
     trainer_config_path = run_options['<trainer-config-path>']
-
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
         model_path = './models/{run_id}'.format(run_id=run_id)
@@ -79,7 +78,8 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     tc = TrainerController(model_path, summaries_dir, run_id + '-' + str(sub_id),
                            save_freq, maybe_meta_curriculum,
                            load_model, train_model,
-                           keep_checkpoints, lesson, external_brains, run_seed)
+                           keep_checkpoints, lesson, external_brains,
+                           run_seed)
 
     # Signal that environment has been launched.
     process_queue.put(True)
@@ -155,9 +155,9 @@ def init_environment(env_path, docker_target_name, no_graphics, worker_id, fast_
     if docker_training and env_path is not None:
             """
             Comments for future maintenance:
-                Some OS/VM instances (e.g. COS GCP Image) mount filesystems 
-                with COS flag which prevents execution of the Unity scene, 
-                to get around this, we will copy the executable into the 
+                Some OS/VM instances (e.g. COS GCP Image) mount filesystems
+                with COS flag which prevents execution of the Unity scene,
+                to get around this, we will copy the executable into the
                 container.
             """
             # Navigate in docker path and find env_path and copy it.
@@ -175,7 +175,7 @@ def init_environment(env_path, docker_target_name, no_graphics, worker_id, fast_
 def main():
     try:
         print('''
-    
+
                         ▄▄▄▓▓▓▓
                    ╓▓▓▓▓▓▓█▓▓▓▓▓
               ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
@@ -193,7 +193,6 @@ def main():
     except:
         print('\n\n\tUnity Technologies\n')
 
-    logger = logging.getLogger('mlagents.trainers')
     _USAGE = '''
     Usage:
       mlagents-learn <trainer-config-path> [options]
@@ -206,7 +205,7 @@ def main():
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
       --run-id=<path>            The directory name for model and summary statistics [default: ppo].
-      --num-runs=<n>             Number of concurrent training sessions [default: 1]. 
+      --num-runs=<n>             Number of concurrent training sessions [default: 1].
       --save-freq=<n>            Frequency at which to save model [default: 50000].
       --seed=<n>                 Random seed used for training [default: -1].
       --slow                     Whether to run the game at training speed [default: False].
@@ -214,10 +213,16 @@ def main():
       --worker-id=<n>            Number to add to communication port (5005) [default: 0].
       --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
       --no-graphics              Whether to run the environment in no-graphics mode [default: False].
+      --debug                    Whether to run ML-Agents in debug mode with detailed logging [default: False].
     '''
 
     options = docopt(_USAGE)
-    logger.info(options)
+    trainer_logger = logging.getLogger('mlagents.trainers')
+    env_logger = logging.getLogger('mlagents.envs')
+    trainer_logger.info(options)
+    if options['--debug']:
+        trainer_logger.setLevel('DEBUG')
+        env_logger.setLevel('DEBUG')
     num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
 
