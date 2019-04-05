@@ -14,10 +14,9 @@ namespace MLAgents
 	
 	public class Builder
 	{
-		[MenuItem("ML-Agents/Run PreExport Method")]
+//		[MenuItem("ML-Agents/Run PreExport Method")]
 		public static void PreExport()
 		{
-			Environment.SetEnvironmentVariable("SCENE_PATH", "Assets/ML-Agents/Examples/BananaCollectors/Scenes/Banana.unity");
 			var scenePath = Environment.GetEnvironmentVariable("SCENE_PATH"); 
 			SwitchAllLearningBrainToControlMode();
 			PutSceneToBuild(scenePath);
@@ -39,7 +38,7 @@ namespace MLAgents
 			EditorBuildSettings.scenes = scenes.ToArray();
 		}
 		
-		[MenuItem("ML-Agents/Switch All Learning Brain To Control Mode")]
+//		[MenuItem("ML-Agents/Switch All Learning Brain To Control Mode")]
 		protected static void SwitchAllLearningBrainToControlMode()
 		{
 			string[] scenePaths = Directory.GetFiles("Assets/ML-Agents/Examples/", "*.unity", SearchOption.AllDirectories);
