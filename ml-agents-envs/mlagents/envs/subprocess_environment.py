@@ -34,6 +34,7 @@ class UnityEnvWorker(NamedTuple):
         return response
 
     def close(self):
+        self.conn.send(EnvironmentCommand("close"))
         self.process.join()
 
 
