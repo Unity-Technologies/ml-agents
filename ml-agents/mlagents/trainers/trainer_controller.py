@@ -6,9 +6,6 @@ import os
 import logging
 import shutil
 import sys
-if sys.platform.startswith('win'):
-    import win32api
-    import win32con
 from typing import *
 
 import numpy as np
@@ -103,18 +100,6 @@ class TrainerController(object):
         self.logger.info('Learning was interrupted. Please wait '
                          'while the graph is generated.')
         self._save_model(steps)
-
-    def _win_handler(self, event):
-        """
-        This function gets triggered after ctrl-c or ctrl-break is pressed
-        under Windows platform.
-        """
-        if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):
-            self._save_model_when_interrupted(self.global_step)
-            self._export_graph()
-            sys.exit()
-            return True
-        return False
 
     def _write_training_metrics(self):
         """
@@ -223,9 +208,6 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters',
                                                trainer.parameters)
-            if sys.platform.startswith('win'):
-                # Add the _win_handler function to the windows console's handler function list
-                win32api.SetConsoleCtrlHandler(self._win_handler, True)
         try:
             curr_info = self._reset_env(env)
             while any([t.get_step <= t.get_max_steps \

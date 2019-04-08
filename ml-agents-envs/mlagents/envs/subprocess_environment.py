@@ -27,15 +27,24 @@ class UnityEnvWorker(NamedTuple):
     conn: Connection
 
     def send(self, name: str, payload=None):
-        cmd = EnvironmentCommand(name, payload)
-        self.conn.send(cmd)
+        try:
+            cmd = EnvironmentCommand(name, payload)
+            self.conn.send(cmd)
+        except (BrokenPipeError, EOFError):
+            raise KeyboardInterrupt
 
     def recv(self) -> EnvironmentResponse:
-        response: EnvironmentResponse = self.conn.recv()
-        return response
+        try:
+            response: EnvironmentResponse = self.conn.recv()
+            return response
+        except (BrokenPipeError, EOFError):
+            raise KeyboardInterrupt
 
     def close(self):
-        self.conn.send(EnvironmentCommand("close"))
+        try:
+            self.conn.send(EnvironmentCommand('close'))
+        except (BrokenPipeError, EOFError):
+            pass
         self.process.join()
 
 
@@ -87,10 +96,10 @@ class SubprocessUnityEnvironment(BaseUnityEnvironment):
             env_factory: Callable[[int], BaseUnityEnvironment]
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
+
         # Need to use cloudpickle for the env factory function since function objects aren't picklable
         # on Windows as of Python 3.6.
         pickled_env_factory = cloudpickle.dumps(env_factory)
-
         child_process = Process(target=worker, args=(child_conn, pickled_env_factory, worker_id))
         child_process.start()
         return UnityEnvWorker(child_process, worker_id, parent_conn)
