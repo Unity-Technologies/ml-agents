@@ -34,6 +34,7 @@ class UnityEnvWorker(NamedTuple):
         return response
 
     def close(self):
+        self.conn.send(EnvironmentCommand("close"))
         self.process.join()
 
 
@@ -61,7 +62,6 @@ def worker(parent_conn: Connection, env_factory: Callable[[int], UnityEnvironmen
             elif cmd.name == 'global_done':
                 _send_response('global_done', env.global_done)
             elif cmd.name == 'close':
-                env.close()
                 break
     except KeyboardInterrupt:
         print('UnityEnvironment worker: keyboard interrupt')
