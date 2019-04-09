@@ -346,10 +346,13 @@ namespace MLAgents
                 Random.InitState(pythonParameters.Seed);
                 Application.logMessageReceived += HandleLog;
                 logPath = Path.GetFullPath(".") + "/UnitySDK.log";
-                logWriter = new StreamWriter(logPath, false);
-                logWriter.WriteLine(System.DateTime.Now.ToString());
-                logWriter.WriteLine(" ");
-                logWriter.Close();
+                using (var fs = File.Open(logPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+                {
+                    logWriter = new StreamWriter(fs);
+                    logWriter.WriteLine(System.DateTime.Now.ToString());
+                    logWriter.WriteLine(" ");
+                    logWriter.Close();
+                }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
@@ -386,11 +389,14 @@ namespace MLAgents
 
         void HandleLog(string logString, string stackTrace, LogType type)
         {
-            logWriter = new StreamWriter(logPath, true);
-            logWriter.WriteLine(type.ToString());
-            logWriter.WriteLine(logString);
-            logWriter.WriteLine(stackTrace);
-            logWriter.Close();
+            using (var fs = File.Open(logPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            {
+                logWriter = new StreamWriter(fs);
+                logWriter.WriteLine(type.ToString());
+                logWriter.WriteLine(logString);
+                logWriter.WriteLine(stackTrace);
+                logWriter.Close();
+            }
         }
 
         /// <summary>
