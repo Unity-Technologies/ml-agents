@@ -1,6 +1,7 @@
 from typing import *
 import copy
 import numpy as np
+import cloudpickle
 
 from mlagents.envs import UnityEnvironment
 from multiprocessing import Process, Pipe
@@ -38,7 +39,8 @@ class UnityEnvWorker(NamedTuple):
         self.process.join()
 
 
-def worker(parent_conn: Connection, env_factory: Callable[[int], UnityEnvironment], worker_id: int):
+def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
+    env_factory: Callable[[int], UnityEnvironment] = cloudpickle.loads(pickled_env_factory)
     env = env_factory(worker_id)
 
     def _send_response(cmd_name, payload):
@@ -85,7 +87,11 @@ class SubprocessUnityEnvironment(BaseUnityEnvironment):
             env_factory: Callable[[int], BaseUnityEnvironment]
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
-        child_process = Process(target=worker, args=(child_conn, env_factory, worker_id))
+        # Need to use cloudpickle for the env factory function since function objects aren't picklable
+        # on Windows as of Python 3.6.
+        pickled_env_factory = cloudpickle.dumps(env_factory)
+
+        child_process = Process(target=worker, args=(child_conn, pickled_env_factory, worker_id))
         child_process.start()
         return UnityEnvWorker(child_process, worker_id, parent_conn)
 
