@@ -4,7 +4,7 @@ As part of release v0.8, we enabled developers to run concurrent, parallel insta
 
 ## How to Run Concurrent Unity Instances During Training
 
-Please refer to the general instructions on [Training ML-Agents](Training-ML-Agents.md).  In order to run concurrent Unity instances during training, set number of enviornments using the command line option `--num-envs=<n>` when you invoke `mlagents-learn`.
+Please refer to the general instructions on [Training ML-Agents](Training-ML-Agents.md).  In order to run concurrent Unity instances during training, set number of enviornments using the command line option `--num-envs=<n>` when you invoke `mlagents-learn`. Optionally, you can also set the `--base-port`, which is the starting port used for the concurrent Unity instances.
 
 ## Considerations
 
