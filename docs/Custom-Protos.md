@@ -1,14 +1,14 @@
-# Creating custom protobuf messages
+# Creating Custom Protobuf Messages
 
 Unity and Python communicate by sending protobuf messages to and from each other. You can create custom protobuf messages if you want to exchange structured data beyond what is included by default. 
 
 Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT. Whenever you change the fields of a custom message, you must run `$MLAGENTS_ROOT/protobuf-definitions/make.bat` to create C# and Python files corresponding to the new message. Follow the directions in [this file](../protobuf-definitions/README.md) for guidance. After running it, reinstall the Python package by running `pip install $MLAGENTS_ROOT/ml-agents` and make sure your Unity project is using the newly-generated version of `$MLAGENTS_ROOT/UnitySDK`.
 
-## Custom message types
+## Custom Message Types
 
 There are three custom message types currently supported, described below. In each case, `env` is an instance of a `UnityEnvironment` in Python. `CustomAction` is described most thoroughly; usage of the  other custom messages follows a similar template. 
 
-### Custom actions
+### Custom Actions
 
 By default, the Python API sends actions to Unity in the form of a floating-point list per agent and an optional string-valued text action. 
 
@@ -74,7 +74,7 @@ class MyAgent : Agent {
 
 Note that the protobuffer compiler automatically configures the capitalization scheme of the C# version of the custom field names you defined in the `CustomAction` message to match C# conventions - "NORTH" becomes "North", "walkAmount" becomes "WalkAmount", etc.
 
-### Custom reset parameters
+### Custom Reset Parameters
 
 By default, you can configure an environment `env ` in the Python API by specifying a `config` parameter that is a dictionary mapping strings to floats. 
 
@@ -133,7 +133,7 @@ params = CustomResetParameters(initialPos=pos, color=color)
 env.reset(custom_reset_parameters=params)
 ```
 
-### Custom observations
+### Custom Observations
 
 By default, Unity returns observations to Python in the form of a floating-point vector. 
 
