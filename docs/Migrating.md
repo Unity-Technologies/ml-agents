@@ -7,7 +7,7 @@
 
 #### Steps to Migrate
 * If you are installing via PyPI, there is no change.
-* If you intend to make modifications to `ml-agents` or `ml-agents-envs` please check the Installing for Development in the (Installation documentation)[Installation.md].
+* If you intend to make modifications to `ml-agents` or `ml-agents-envs` please check the Installing for Development in the [Installation documentation](Installation.md).
 
 #### Steps to Migrate
 * Make sure to remove the `ENABLE_TENSORFLOW` flag in your Unity project settings
