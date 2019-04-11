@@ -134,7 +134,7 @@ environment, you can set the following command line options when invoking
   [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
 * `--train` – Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
-* `--num-envs` - Specifies the number of parallel environments to collect
+* `--num-envs=<n>` - Specifies the number of parallel environments to collect
   experiences from when training. Defaults to 1.
 * `--base-port` - Specifies the starting port for environment workers. Each Unity
   environment will use the port `(base_port + worker_id)`, where the worker ID
