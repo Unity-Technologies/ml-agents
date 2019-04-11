@@ -152,14 +152,15 @@ def basic_trainer_controller(brain_info):
         keep_checkpoints=False,
         lesson=None,
         external_brains={'testbrain': brain_info},
-        training_seed=99
+        training_seed=99,
+        fast_simulation=True
     )
 
 @patch('numpy.random.seed')
 @patch('tensorflow.set_random_seed')
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
-    TrainerController('', '', '1', 1, None, True, False, False, None, {}, seed)
+    TrainerController('', '', '1', 1, None, True, False, False, None, {}, seed, True)
     numpy_random_seed.assert_called_with(seed)
     tensorflow_set_seed.assert_called_with(seed)
 
