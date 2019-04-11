@@ -29,6 +29,7 @@
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 * [Using the Monitor](Feature-Monitor.md)
 * [Using an Executable Environment](Learning-Environment-Executable.md)
+* [Creating Custom Protobuf Messages](Creating-Custom-Protobuf-Messages.md)
 
 ## Training
 
