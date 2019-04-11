@@ -4,7 +4,22 @@ As part of release v0.8, we enabled developers to run concurrent, parallel insta
 
 ## How to Run Concurrent Unity Instances During Training
 
-Please refer to the general instructions on (Training ML-Agents)[Training-ML-Agents.md].  In order to run concurrent Unity instances during training, set number of enviornments using the command line option `--num-envs=<n>` when you invoke `mlagents-learn`.
+Please refer to the general instructions on [Training ML-Agents](Training-ML-Agents.md).  In order to run concurrent Unity instances during training, set number of enviornments using the command line option `--num-envs=<n>` when you invoke `mlagents-learn`.
 
 ## Considerations
 
+### Buffer Size
+
+If you are having trouble getting an agent to train, even with multiple concurrent Unity instances, you could increase  `buffer_size` in the `config/trainer_config.yaml` file. A common practice is to multiply `buffer_size` by `num-envs`.
+
+### Resource Constraints
+
+Invoking concurrent Unity instances is constrained by the resources on the machine.  Please use discretion when setting `--num-envs=<n>`.
+
+### Using num-runs and num-envs
+
+If you set `--num-runs=<n>` to than 1 and are also invoking concurrent Unity instances using `--num-envs=<n>`, then the number of concurrent Unity instances is equal to `num-runs` times `num-envs`.
+
+### Result Variation Using Concurrent Unity Instances
+
+If you keep all the hyperparameters the same, but change `--num-envs=<n>`, the results and model would likely change.
