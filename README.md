@@ -34,6 +34,8 @@ developer communities.
 * Visualizing network outputs within the environment
 * Simplified set-up with Docker
 * Wrap learning environments as a gym
+* Utilizes the Unity Inference Engine
+* Train using concurrent Unity environment instances
 
 ## Documentation
 
