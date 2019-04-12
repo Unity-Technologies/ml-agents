@@ -267,7 +267,7 @@ If you would like to contribute environments, please see our
     the jump.
   * Visual Observations: None.
 * Reset Parameters: None.
-* Benchmark Mean Reward: 2.5
+* Benchmark Mean Reward: 10
 
 ## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
 
