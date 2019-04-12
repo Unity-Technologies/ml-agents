@@ -82,8 +82,7 @@ parameters you can use with `mlagents-learn`.
 
 If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install 
 the packages from the cloned repo rather than from PyPi. To do this, you will need to install
- `ml-agents` and `ml-agents-envs` separately. Do this by running (starting from the repo's main
- directory):
+ `ml-agents` and `ml-agents-envs` separately. From the repo's root directory, run:
 
 ```sh
 cd ml-agents-envs
@@ -97,7 +96,6 @@ Running pip with the `-e` flag will let you make changes to the Python files dir
 reflected when you run `mlagents-learn`. It is important to install these packages in this order as the
 `mlagents` package depends on `mlagents_envs`, and installing it in the other 
 order will download `mlagents_envs` from PyPi. 
-
 
 ## Docker-based Installation
 

@@ -1,5 +1,22 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.7 to v0.8
+
+### Important Changes
+* We have split the Python packges into two seperate packages `ml-agents` and `ml-agents-envs`
+
+#### Steps to Migrate
+* If you are installing via PyPI, there is no change.
+* If you intend to make modifications to `ml-agents` or `ml-agents-envs` please check the Installing for Development in the [Installation documentation](Installation.md).
+
+## Migrating from ML-Agents toolkit v0.6 to v0.7
+
+### Important Changes
+* We no longer support TFS and are now using the [Unity Inference Engine](Unity-Inference-Engine.md)
+
+#### Steps to Migrate
+* Make sure to remove the `ENABLE_TENSORFLOW` flag in your Unity Project settings
+
 ## Migrating from ML-Agents toolkit v0.5 to v0.6
 
 ### Important Changes

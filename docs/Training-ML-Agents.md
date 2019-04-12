@@ -134,12 +134,9 @@ environment, you can set the following command line options when invoking
   [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
 * `--train` – Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
-* `--num-envs` - Specifies the number of parallel environments to collect
+* `--num-envs=<n>` - Specifies the number of concurrent Unity environment instances to collect
   experiences from when training. Defaults to 1.
-* `--base-port` - Specifies the starting port for environment workers. Each Unity
-  environment will use the port `(base_port + worker_id)`, where the worker ID
-  are sequential IDs given to each environment from 0 to `num_envs - 1`.
-  Defaults to 5005.
+* `--base-port` - Specifies the starting port. Each concurrent Unity environment instance will get assigned a port sequentially, starting from the `base-port`.  Each instance will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs given to each instance from 0 to `num_envs - 1`. Default is 5005.
 * `--docker-target-name=<dt>` – The Docker Volume on which to store curriculum,
   executable and model files. See [Using Docker](Using-Docker.md).
 * `--no-graphics` - Specify this option to run the Unity executable in
