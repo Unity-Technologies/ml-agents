@@ -51,7 +51,8 @@ def test_run_training(load_config, create_environment_factory, subproc_env_mock)
                 5,
                 0,
                 subproc_env_mock.return_value.external_brains,
-                0
+                0,
+                True
             )
 
 

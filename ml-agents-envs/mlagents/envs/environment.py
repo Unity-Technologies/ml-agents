@@ -33,8 +33,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                  seed: int = 0,
                  docker_training: bool = False,
                  no_graphics: bool = False,
-                 timeout_wait: int = 30,
-                 train_mode: bool = True):
+                 timeout_wait: int = 30):
         """
         Starts a new unity environment and establishes a connection with the environment.
         Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
@@ -56,7 +55,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._loaded = False  # If true, this means the environment was successfully loaded
         self.proc1 = None  # The process that is started. If None, no process was started
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
-        self._train_mode = train_mode
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -245,7 +243,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                                                    for k in self._resetParameters])) + '\n' + \
                '\n'.join([str(self._brains[b]) for b in self._brains])
 
-    def reset(self, config=None, train_mode=None, custom_reset_parameters=None) -> AllBrainInfo:
+    def reset(self, config=None, train_mode=True, custom_reset_parameters=None) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A data structure corresponding to the initial reset state of the environment.
@@ -264,11 +262,6 @@ class UnityEnvironment(BaseUnityEnvironment):
             else:
                 raise UnityEnvironmentException(
                     "The parameter '{0}' is not a valid parameter.".format(k))
-
-        if train_mode is None:
-            train_mode = self._train_mode
-        else:
-            self._train_mode = train_mode
 
         if self._loaded:
             outputs = self.communicator.exchange(

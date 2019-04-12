@@ -76,8 +76,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         docker_target_name,
         no_graphics,
         run_seed,
-        base_port + (sub_id * num_envs),
-        fast_simulation
+        base_port + (sub_id * num_envs)
     )
     env = SubprocessUnityEnvironment(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
@@ -87,7 +86,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
                            save_freq, maybe_meta_curriculum,
                            load_model, train_model,
                            keep_checkpoints, lesson, env.external_brains,
-                           run_seed)
+                           run_seed, fast_simulation)
 
     # Signal that environment has been launched.
     process_queue.put(True)
@@ -156,8 +155,7 @@ def create_environment_factory(
         docker_target_name: str,
         no_graphics: bool,
         seed: Optional[int],
-        start_port: int,
-        fast_simulation: bool
+        start_port: int
 ) -> Callable[[int], BaseUnityEnvironment]:
     if env_path is not None:
         # Strip out executable extensions if passed
@@ -191,8 +189,7 @@ def create_environment_factory(
             seed=env_seed,
             docker_training=docker_training,
             no_graphics=no_graphics,
-            base_port=start_port,
-            train_mode=(not fast_simulation)
+            base_port=start_port
         )
     return create_unity_environment
 
