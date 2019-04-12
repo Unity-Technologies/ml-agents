@@ -1,25 +1,43 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.7 to v0.8
+
+### Important Changes
+* We have split the Python packges into two seperate packages `ml-agents` and `ml-agents-envs`.
+* `--worker-id` option of `learn.py` has been removed, use `--base-port` instead if you'd like to run multiple instances of `learn.py`.
+
+#### Steps to Migrate
+* If you are installing via PyPI, there is no change.
+* If you intend to make modifications to `ml-agents` or `ml-agents-envs` please check the Installing for Development in the [Installation documentation](Installation.md).
+
+## Migrating from ML-Agents toolkit v0.6 to v0.7
+
+### Important Changes
+* We no longer support TFS and are now using the [Unity Inference Engine](Unity-Inference-Engine.md)
+
+#### Steps to Migrate
+* Make sure to remove the `ENABLE_TENSORFLOW` flag in your Unity Project settings
+
 ## Migrating from ML-Agents toolkit v0.5 to v0.6
 
 ### Important Changes
 
-* Brains are now Scriptable Objects instead of MonoBehaviors. 
+* Brains are now Scriptable Objects instead of MonoBehaviors.
 * You can no longer modify the type of a Brain. If you want to switch
   between `PlayerBrain` and `LearningBrain` for multiple agents,
   you will need to assign a new Brain to each agent separately.
-  __Note:__ You can pass the same Brain to multiple agents in a scene by 
+  __Note:__ You can pass the same Brain to multiple agents in a scene by
 leveraging Unity's prefab system or look for all the agents in a scene
 using the search bar of the `Hierarchy` window with the word `Agent`.
 
 * We replaced the **Internal** and **External** Brain with **Learning Brain**.
   When you need to train a model, you need to drag it into the `Broadcast Hub`
   inside the `Academy` and check the `Control` checkbox.
-* We removed the `Broadcast` checkbox of the Brain, to use the broadcast 
+* We removed the `Broadcast` checkbox of the Brain, to use the broadcast
   functionality, you need to drag the Brain into the `Broadcast Hub`.
-* When training multiple Brains at the same time, each model is now stored 
+* When training multiple Brains at the same time, each model is now stored
   into a separate model file rather than in the same file under different
-  graph scopes. 
+  graph scopes.
 * The **Learning Brain** graph scope, placeholder names, output names and custom
   placeholders can no longer be modified.
 
@@ -36,9 +54,9 @@ using the search bar of the `Hierarchy` window with the word `Agent`.
   * Agents have a `Brain` field in the Inspector, you need to drag the
     appropriate Brain ScriptableObject in it.
   * The Academy has a `Broadcast Hub` field in the inspector, which is
-    list of brains used in the scene.  To train or control your Brain 
-    from the `mlagents-learn` Python script, you need to drag the relevant 
-    `LearningBrain` ScriptableObjects used in your scene into entries 
+    list of brains used in the scene.  To train or control your Brain
+    from the `mlagents-learn` Python script, you need to drag the relevant
+    `LearningBrain` ScriptableObjects used in your scene into entries
     into this list.
 
 ## Migrating from ML-Agents toolkit v0.4 to v0.5

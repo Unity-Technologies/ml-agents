@@ -6,9 +6,6 @@ import os
 import logging
 import shutil
 import sys
-if sys.platform.startswith('win'):
-    import win32api
-    import win32con
 from typing import *
 
 import numpy as np
@@ -18,7 +15,7 @@ from time import time
 from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.trainers import Trainer, Policy
+from mlagents.trainers import Trainer
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
@@ -37,7 +34,8 @@ class TrainerController(object):
                  keep_checkpoints: int,
                  lesson: Optional[int],
                  external_brains: Dict[str, BrainParameters],
-                 training_seed: int):
+                 training_seed: int,
+                 fast_simulation: bool):
         """
         :param model_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
@@ -69,6 +67,7 @@ class TrainerController(object):
         self.meta_curriculum = meta_curriculum
         self.seed = training_seed
         self.training_start_time = time()
+        self.fast_simulation = fast_simulation
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
 
@@ -103,18 +102,6 @@ class TrainerController(object):
         self.logger.info('Learning was interrupted. Please wait '
                          'while the graph is generated.')
         self._save_model(steps)
-
-    def _win_handler(self, event):
-        """
-        This function gets triggered after ctrl-c or ctrl-break is pressed
-        under Windows platform.
-        """
-        if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT):
-            self._save_model_when_interrupted(self.global_step)
-            self._export_graph()
-            sys.exit()
-            return True
-        return False
 
     def _write_training_metrics(self):
         """
@@ -201,9 +188,9 @@ class TrainerController(object):
             environment.
         """
         if self.meta_curriculum is not None:
-            return env.reset(config=self.meta_curriculum.get_config())
+            return env.reset(train_mode=self.fast_simulation, config=self.meta_curriculum.get_config())
         else:
-            return env.reset()
+            return env.reset(train_mode=self.fast_simulation)
 
     def start_learning(self, env: BaseUnityEnvironment, trainer_config):
         # TODO: Should be able to start learning at different lesson numbers
@@ -223,9 +210,6 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text('Hyperparameters',
                                                trainer.parameters)
-            if sys.platform.startswith('win'):
-                # Add the _win_handler function to the windows console's handler function list
-                win32api.SetConsoleCtrlHandler(self._win_handler, True)
         try:
             curr_info = self._reset_env(env)
             while any([t.get_step <= t.get_max_steps \

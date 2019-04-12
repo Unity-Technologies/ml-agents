@@ -51,7 +51,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     trainer_config_path = run_options['<trainer-config-path>']
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
-        model_path = './models/{run_id}'.format(run_id=run_id)
+        model_path = './models/{run_id}-{sub_id}'.format(run_id=run_id, sub_id=sub_id)
         summaries_dir = './summaries'
     else:
         trainer_config_path = \
@@ -63,9 +63,10 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
                 '/{docker_target_name}/{curriculum_folder}'.format(
                     docker_target_name=docker_target_name,
                     curriculum_folder=curriculum_folder)
-        model_path = '/{docker_target_name}/models/{run_id}'.format(
+        model_path = '/{docker_target_name}/models/{run_id}-{sub_id}'.format(
             docker_target_name=docker_target_name,
-            run_id=run_id)
+            run_id=run_id,
+            sub_id=sub_id)
         summaries_dir = '/{docker_target_name}/summaries'.format(
             docker_target_name=docker_target_name)
 
@@ -75,8 +76,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         docker_target_name,
         no_graphics,
         run_seed,
-        base_port + (sub_id * num_envs),
-        fast_simulation
+        base_port + (sub_id * num_envs)
     )
     env = SubprocessUnityEnvironment(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
@@ -86,7 +86,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
                            save_freq, maybe_meta_curriculum,
                            load_model, train_model,
                            keep_checkpoints, lesson, env.external_brains,
-                           run_seed)
+                           run_seed, fast_simulation)
 
     # Signal that environment has been launched.
     process_queue.put(True)
@@ -155,8 +155,7 @@ def create_environment_factory(
         docker_target_name: str,
         no_graphics: bool,
         seed: Optional[int],
-        start_port: int,
-        fast_simulation: bool
+        start_port: int
 ) -> Callable[[int], BaseUnityEnvironment]:
     if env_path is not None:
         # Strip out executable extensions if passed
@@ -190,8 +189,7 @@ def create_environment_factory(
             seed=env_seed,
             docker_training=docker_training,
             no_graphics=no_graphics,
-            base_port=start_port,
-            train_mode=(not fast_simulation)
+            base_port=start_port
         )
     return create_unity_environment
 
@@ -273,6 +271,14 @@ def main():
             # Wait for signal that environment has successfully launched
             while process_queue.get() is not True:
                 continue
+
+    # Wait for jobs to complete.  Otherwise we'll have an extra
+    # unhandled KeyboardInterrupt if we end early.
+    try:
+        for job in jobs:
+            job.join()
+    except KeyboardInterrupt:
+        pass
 
 # For python debugger to directly run this script
 if __name__ == "__main__":
