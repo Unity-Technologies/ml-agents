@@ -6,7 +6,9 @@ from mlagents.envs import AllBrainInfo, BrainParameters
 
 class BaseUnityEnvironment(ABC):
     @abstractmethod
-    def step(self, vector_action=None, memory=None, text_action=None, value=None) -> AllBrainInfo:
+    def step(
+        self, vector_action=None, memory=None, text_action=None, value=None
+    ) -> AllBrainInfo:
         pass
 
     @abstractmethod

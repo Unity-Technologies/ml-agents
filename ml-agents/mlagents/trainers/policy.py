@@ -14,6 +14,7 @@ class UnityPolicyException(UnityException):
     """
     Related to errors with the Trainer.
     """
+
     pass
 
 
@@ -22,10 +23,17 @@ class Policy(object):
     Contains a learning model, and the necessary
     functions to interact with it to perform evaluate and updating.
     """
-    possible_output_nodes = ['action', 'value_estimate',
-                             'action_probs', 'recurrent_out', 'memory_size',
-                             'version_number', 'is_continuous_control',
-                             'action_output_shape']
+
+    possible_output_nodes = [
+        "action",
+        "value_estimate",
+        "action_probs",
+        "recurrent_out",
+        "memory_size",
+        "version_number",
+        "is_continuous_control",
+        "action_output_shape",
+    ]
 
     def __init__(self, seed, brain, trainer_parameters):
         """
@@ -42,7 +50,7 @@ class Policy(object):
         self.seed = seed
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
-        self.use_continuous_act = (brain.vector_action_space_type == "continuous")
+        self.use_continuous_act = brain.vector_action_space_type == "continuous"
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
@@ -54,13 +62,17 @@ class Policy(object):
             self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
             if self.m_size == 0:
-                raise UnityPolicyException("The memory size for brain {0} is 0 even "
-                                           "though the trainer uses recurrent."
-                                           .format(brain.brain_name))
+                raise UnityPolicyException(
+                    "The memory size for brain {0} is 0 even "
+                    "though the trainer uses recurrent.".format(brain.brain_name)
+                )
             elif self.m_size % 4 != 0:
-                raise UnityPolicyException("The memory size for brain {0} is {1} "
-                                           "but it must be divisible by 4."
-                                           .format(brain.brain_name, self.m_size))
+                raise UnityPolicyException(
+                    "The memory size for brain {0} is {1} "
+                    "but it must be divisible by 4.".format(
+                        brain.brain_name, self.m_size
+                    )
+                )
 
     def _initialize_graph(self):
         with self.graph.as_default():
@@ -71,13 +83,14 @@ class Policy(object):
     def _load_graph(self):
         with self.graph.as_default():
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-            logger.info('Loading Model for brain {}'.format(self.brain.brain_name))
+            logger.info("Loading Model for brain {}".format(self.brain.brain_name))
             ckpt = tf.train.get_checkpoint_state(self.model_path)
             if ckpt is None:
-                logger.info('The model {0} could not be found. Make '
-                            'sure you specified the right '
-                            '--run-id'
-                            .format(self.model_path))
+                logger.info(
+                    "The model {0} could not be found. Make "
+                    "sure you specified the right "
+                    "--run-id".format(self.model_path)
+                )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
     def evaluate(self, brain_info: BrainInfo):
@@ -100,11 +113,11 @@ class Policy(object):
 
         run_out = self.evaluate(brain_info)
         return ActionInfo(
-            action=run_out.get('action'),
-            memory=run_out.get('memory_out'),
+            action=run_out.get("action"),
+            memory=run_out.get("memory_out"),
             text=None,
-            value=run_out.get('value'),
-            outputs=run_out
+            value=run_out.get("value"),
+            outputs=run_out,
         )
 
     def update(self, mini_batch, num_sequences):
@@ -177,10 +190,11 @@ class Policy(object):
         :return:
         """
         with self.graph.as_default():
-            last_checkpoint = self.model_path + '/model-' + str(steps) + '.cptk'
+            last_checkpoint = self.model_path + "/model-" + str(steps) + ".cptk"
             self.saver.save(self.sess, last_checkpoint)
-            tf.train.write_graph(self.graph, self.model_path,
-                                 'raw_graph_def.pb', as_text=False)
+            tf.train.write_graph(
+                self.graph, self.model_path, "raw_graph_def.pb", as_text=False
+            )
 
     def export_model(self):
         """
@@ -188,20 +202,23 @@ class Policy(object):
         """
 
         with self.graph.as_default():
-            target_nodes = ','.join(self._process_graph())
+            target_nodes = ",".join(self._process_graph())
             ckpt = tf.train.get_checkpoint_state(self.model_path)
             freeze_graph.freeze_graph(
-                input_graph=self.model_path + '/raw_graph_def.pb',
+                input_graph=self.model_path + "/raw_graph_def.pb",
                 input_binary=True,
                 input_checkpoint=ckpt.model_checkpoint_path,
                 output_node_names=target_nodes,
-                output_graph=(self.model_path + '/frozen_graph_def.pb'),
-                clear_devices=True, initializer_nodes='', input_saver='',
-                restore_op_name='save/restore_all',
-                filename_tensor_name='save/Const:0')
+                output_graph=(self.model_path + "/frozen_graph_def.pb"),
+                clear_devices=True,
+                initializer_nodes="",
+                input_saver="",
+                restore_op_name="save/restore_all",
+                filename_tensor_name="save/Const:0",
+            )
 
-        tf2bc.convert(self.model_path + '/frozen_graph_def.pb', self.model_path + '.nn')
-        logger.info('Exported ' + self.model_path + '.nn file')
+        tf2bc.convert(self.model_path + "/frozen_graph_def.pb", self.model_path + ".nn")
+        logger.info("Exported " + self.model_path + ".nn file")
 
     def _process_graph(self):
         """
@@ -210,9 +227,9 @@ class Policy(object):
         """
         all_nodes = [x.name for x in self.graph.as_graph_def().node]
         nodes = [x for x in all_nodes if x in self.possible_output_nodes]
-        logger.info('List of nodes to export for brain :' + self.brain.brain_name)
+        logger.info("List of nodes to export for brain :" + self.brain.brain_name)
         for n in nodes:
-            logger.info('\t' + n)
+            logger.info("\t" + n)
         return nodes
 
     @property

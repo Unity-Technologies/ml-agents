@@ -4,15 +4,22 @@ import csv
 from time import time
 
 LOGGER = logging.getLogger("mlagents.trainers")
-FIELD_NAMES = ['Brain name', 'Time to update policy',
-               'Time since start of training', 'Time for last experience collection',
-               'Number of experiences used for training', 'Mean return']
+FIELD_NAMES = [
+    "Brain name",
+    "Time to update policy",
+    "Time since start of training",
+    "Time for last experience collection",
+    "Number of experiences used for training",
+    "Mean return",
+]
+
 
 class TrainerMetrics:
     """
         Helper class to track, write training metrics. Tracks time since object
         of this class is initialized.
     """
+
     def __init__(self, path: str, brain_name: str):
         """
         :str path: Fully qualified path where CSV is stored.
@@ -69,10 +76,16 @@ class TrainerMetrics:
 
     def _add_row(self, delta_train_start):
         row = [self.brain_name]
-        row.extend(format(c, '.3f') if isinstance(c, float) else c
-                   for c in [self.delta_policy_update, delta_train_start,
-                             self.delta_last_experience_collection,
-                             self.last_buffer_length, self.last_mean_return])
+        row.extend(
+            format(c, ".3f") if isinstance(c, float) else c
+            for c in [
+                self.delta_policy_update,
+                delta_train_start,
+                self.delta_last_experience_collection,
+                self.last_buffer_length,
+                self.last_mean_return,
+            ]
+        )
         self.delta_last_experience_collection = None
         self.rows.append(row)
 
@@ -85,22 +98,28 @@ class TrainerMetrics:
         else:
             self.delta_policy_update = 0
         delta_train_start = time() - self.time_training_start
-        LOGGER.debug(" Policy Update Training Metrics for {}: "
-                     "\n\t\tTime to update Policy: {:0.3f} s \n"
-                     "\t\tTime elapsed since training: {:0.3f} s \n"
-                     "\t\tTime for experience collection: {:0.3f} s \n"
-                     "\t\tBuffer Length: {} \n"
-                     "\t\tReturns : {:0.3f}\n"
-                     .format(self.brain_name, self.delta_policy_update,
-                             delta_train_start, self.delta_last_experience_collection,
-                             self.last_buffer_length, self.last_mean_return))
+        LOGGER.debug(
+            " Policy Update Training Metrics for {}: "
+            "\n\t\tTime to update Policy: {:0.3f} s \n"
+            "\t\tTime elapsed since training: {:0.3f} s \n"
+            "\t\tTime for experience collection: {:0.3f} s \n"
+            "\t\tBuffer Length: {} \n"
+            "\t\tReturns : {:0.3f}\n".format(
+                self.brain_name,
+                self.delta_policy_update,
+                delta_train_start,
+                self.delta_last_experience_collection,
+                self.last_buffer_length,
+                self.last_mean_return,
+            )
+        )
         self._add_row(delta_train_start)
 
     def write_training_metrics(self):
         """
         Write Training Metrics to CSV
         """
-        with open(self.path, 'w') as file:
+        with open(self.path, "w") as file:
             writer = csv.writer(file)
             writer.writerow(FIELD_NAMES)
             for row in self.rows:
