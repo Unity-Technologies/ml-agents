@@ -70,9 +70,9 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityMessage(UnityMessage other) : this() {
-      Header = other.header_ != null ? other.Header.Clone() : null;
-      UnityOutput = other.unityOutput_ != null ? other.UnityOutput.Clone() : null;
-      UnityInput = other.unityInput_ != null ? other.UnityInput.Clone() : null;
+      header_ = other.header_ != null ? other.header_.Clone() : null;
+      unityOutput_ = other.unityOutput_ != null ? other.unityOutput_.Clone() : null;
+      unityInput_ = other.unityInput_ != null ? other.unityInput_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -194,19 +194,19 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.header_ != null) {
         if (header_ == null) {
-          header_ = new global::MLAgents.CommunicatorObjects.Header();
+          Header = new global::MLAgents.CommunicatorObjects.Header();
         }
         Header.MergeFrom(other.Header);
       }
       if (other.unityOutput_ != null) {
         if (unityOutput_ == null) {
-          unityOutput_ = new global::MLAgents.CommunicatorObjects.UnityOutput();
+          UnityOutput = new global::MLAgents.CommunicatorObjects.UnityOutput();
         }
         UnityOutput.MergeFrom(other.UnityOutput);
       }
       if (other.unityInput_ != null) {
         if (unityInput_ == null) {
-          unityInput_ = new global::MLAgents.CommunicatorObjects.UnityInput();
+          UnityInput = new global::MLAgents.CommunicatorObjects.UnityInput();
         }
         UnityInput.MergeFrom(other.UnityInput);
       }
@@ -223,23 +223,23 @@ namespace MLAgents.CommunicatorObjects {
             break;
           case 10: {
             if (header_ == null) {
-              header_ = new global::MLAgents.CommunicatorObjects.Header();
+              Header = new global::MLAgents.CommunicatorObjects.Header();
             }
-            input.ReadMessage(header_);
+            input.ReadMessage(Header);
             break;
           }
           case 18: {
             if (unityOutput_ == null) {
-              unityOutput_ = new global::MLAgents.CommunicatorObjects.UnityOutput();
+              UnityOutput = new global::MLAgents.CommunicatorObjects.UnityOutput();
             }
-            input.ReadMessage(unityOutput_);
+            input.ReadMessage(UnityOutput);
             break;
           }
           case 26: {
             if (unityInput_ == null) {
-              unityInput_ = new global::MLAgents.CommunicatorObjects.UnityInput();
+              UnityInput = new global::MLAgents.CommunicatorObjects.UnityInput();
             }
-            input.ReadMessage(unityInput_);
+            input.ReadMessage(UnityInput);
             break;
           }
         }

@@ -15,7 +15,8 @@ logger = logging.getLogger("mlagents.trainers")
 class OfflineBCTrainer(BCTrainer):
     """The OfflineBCTrainer is an implementation of Offline Behavioral Cloning."""
 
-    def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
+    def __init__(self, brain, trainer_parameters, training, load, seed,
+                 run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param  trainer_parameters: The parameters for the trainer (dictionary).

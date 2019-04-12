@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
 using Barracuda;
 using UnityEngine;
 using Tensor = MLAgents.InferenceBrain.Tensor;
@@ -59,7 +58,7 @@ namespace MLAgents.InferenceBrain
         /// Generates the Tensor inputs that are expected to be present in the Model. 
         /// </summary>
         /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
-        public IEnumerable<Tensor> GetInputTensors()
+        public IReadOnlyList<Tensor> GetInputTensors()
         {
             List<Tensor> tensors = new List<Tensor>();
 
@@ -531,7 +530,7 @@ namespace MLAgents.InferenceBrain
 
 public class BarracudaUtils
 {
-    private static Array LinearizeArray(Array src)
+    private static Array LinearizeArray(Array src)  
     {
         var elementType = src.GetType().GetElementType();
         var elementSize = Marshal.SizeOf(elementType);

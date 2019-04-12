@@ -25,14 +25,17 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjttbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2Fj",
-            "dGlvbl9wcm90by5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiYQoQQWdl",
-            "bnRBY3Rpb25Qcm90bxIWCg52ZWN0b3JfYWN0aW9ucxgBIAMoAhIUCgx0ZXh0",
-            "X2FjdGlvbnMYAiABKAkSEAoIbWVtb3JpZXMYAyADKAISDQoFdmFsdWUYBCAB",
-            "KAJCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "dGlvbl9wcm90by5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMaNm1sYWdl",
+            "bnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvY3VzdG9tX2FjdGlvbi5w",
+            "cm90byKcAQoQQWdlbnRBY3Rpb25Qcm90bxIWCg52ZWN0b3JfYWN0aW9ucxgB",
+            "IAMoAhIUCgx0ZXh0X2FjdGlvbnMYAiABKAkSEAoIbWVtb3JpZXMYAyADKAIS",
+            "DQoFdmFsdWUYBCABKAISOQoNY3VzdG9tX2FjdGlvbhgFIAEoCzIiLmNvbW11",
+            "bmljYXRvcl9vYmplY3RzLkN1c3RvbUFjdGlvbkIfqgIcTUxBZ2VudHMuQ29t",
+            "bXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CustomActionReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentActionProto), global::MLAgents.CommunicatorObjects.AgentActionProto.Parser, new[]{ "VectorActions", "TextActions", "Memories", "Value" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentActionProto), global::MLAgents.CommunicatorObjects.AgentActionProto.Parser, new[]{ "VectorActions", "TextActions", "Memories", "Value", "CustomAction" }, null, null, null)
           }));
     }
     #endregion
@@ -68,6 +71,7 @@ namespace MLAgents.CommunicatorObjects {
       textActions_ = other.textActions_;
       memories_ = other.memories_.Clone();
       value_ = other.value_;
+      customAction_ = other.customAction_ != null ? other.customAction_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -118,6 +122,17 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "custom_action" field.</summary>
+    public const int CustomActionFieldNumber = 5;
+    private global::MLAgents.CommunicatorObjects.CustomAction customAction_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.CommunicatorObjects.CustomAction CustomAction {
+      get { return customAction_; }
+      set {
+        customAction_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as AgentActionProto);
@@ -135,6 +150,7 @@ namespace MLAgents.CommunicatorObjects {
       if (TextActions != other.TextActions) return false;
       if(!memories_.Equals(other.memories_)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Value, other.Value)) return false;
+      if (!object.Equals(CustomAction, other.CustomAction)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -145,6 +161,7 @@ namespace MLAgents.CommunicatorObjects {
       if (TextActions.Length != 0) hash ^= TextActions.GetHashCode();
       hash ^= memories_.GetHashCode();
       if (Value != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Value);
+      if (customAction_ != null) hash ^= CustomAction.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -168,6 +185,10 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(37);
         output.WriteFloat(Value);
       }
+      if (customAction_ != null) {
+        output.WriteRawTag(42);
+        output.WriteMessage(CustomAction);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -183,6 +204,9 @@ namespace MLAgents.CommunicatorObjects {
       size += memories_.CalculateSize(_repeated_memories_codec);
       if (Value != 0F) {
         size += 1 + 4;
+      }
+      if (customAction_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CustomAction);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -202,6 +226,12 @@ namespace MLAgents.CommunicatorObjects {
       memories_.Add(other.memories_);
       if (other.Value != 0F) {
         Value = other.Value;
+      }
+      if (other.customAction_ != null) {
+        if (customAction_ == null) {
+          CustomAction = new global::MLAgents.CommunicatorObjects.CustomAction();
+        }
+        CustomAction.MergeFrom(other.CustomAction);
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -230,6 +260,13 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 37: {
             Value = input.ReadFloat();
+            break;
+          }
+          case 42: {
+            if (customAction_ == null) {
+              CustomAction = new global::MLAgents.CommunicatorObjects.CustomAction();
+            }
+            input.ReadMessage(CustomAction);
             break;
           }
         }

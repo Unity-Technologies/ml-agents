@@ -60,6 +60,8 @@ namespace MLAgents.InferenceBrain.Utils
                 throw new ArgumentException("Batch size for input and output data is different!");
             }
 
+            float[] cdf = new float[input_data.GetLength(1)];
+
             for (int batch = 0; batch < input_data.GetLength(0); ++batch)
             {
                 // Find the class maximum
@@ -71,7 +73,6 @@ namespace MLAgents.InferenceBrain.Utils
                 
                 // Sum the log probabilities and compute CDF
                 float sumProb = 0.0f;
-                float[] cdf = new float[input_data.GetLength(1)];
                 for (int cls = 0; cls < input_data.GetLength(1); ++cls)
                 {
                     sumProb += Mathf.Exp(input_data[batch, cls] - maxProb);

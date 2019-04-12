@@ -3,7 +3,6 @@
 # Contains an implementation of Behavioral Cloning Algorithm
 
 import logging
-import os
 
 import numpy as np
 import tensorflow as tf
@@ -19,7 +18,8 @@ logger = logging.getLogger("mlagents.trainers")
 class BCTrainer(Trainer):
     """The BCTrainer is an implementation of Behavioral Cloning."""
 
-    def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
+    def __init__(self, brain, trainer_parameters, training, load, seed,
+                 run_id):
         """
         Responsible for collecting experiences and training PPO model.
         :param  trainer_parameters: The parameters for the trainer (dictionary).
@@ -28,7 +28,8 @@ class BCTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super(BCTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super(BCTrainer, self).__init__(brain, trainer_parameters, training,
+                                        run_id)
         self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.n_sequences = 1
         self.cumulative_rewards = {}
@@ -36,14 +37,11 @@ class BCTrainer(Trainer):
         self.stats = {'Losses/Cloning Loss': [], 'Environment/Episode Length': [],
                       'Environment/Cumulative Reward': []}
 
-        self.summary_path = trainer_parameters['summary_path']
         self.batches_per_epoch = trainer_parameters['batches_per_epoch']
-        if not os.path.exists(self.summary_path):
-            os.makedirs(self.summary_path)
+
 
         self.demonstration_buffer = Buffer()
         self.evaluation_buffer = Buffer()
-        self.summary_writer = tf.summary.FileWriter(self.summary_path)
 
     @property
     def parameters(self):
@@ -85,23 +83,6 @@ class BCTrainer(Trainer):
         """
         self.policy.increment_step()
         return
-
-    def take_action(self, all_brain_info: AllBrainInfo):
-        """
-        Decides actions using policy given current brain info.
-        :param all_brain_info: AllBrainInfo from environment.
-        :return: a tuple containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        if len(all_brain_info[self.brain_name].agents) == 0:
-            return [], [], [], None, None
-
-        agent_brain = all_brain_info[self.brain_name]
-        run_out = self.policy.evaluate(agent_brain)
-        if self.policy.use_recurrent:
-            return run_out['action'], run_out['memory_out'], None, None, None
-        else:
-            return run_out['action'], None, None, None, None
 
     def add_experiences(self, curr_info: AllBrainInfo, next_info: AllBrainInfo,
                         take_action_outputs):
@@ -152,7 +133,7 @@ class BCTrainer(Trainer):
 
     def end_episode(self):
         """
-        A signal that the Episode has ended. The buffer must be reset. 
+        A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
         self.evaluation_buffer.reset_local_buffers()

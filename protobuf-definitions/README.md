@@ -4,7 +4,7 @@ Contains relevant definitions needed to generate probobuf files used in [ML-Agen
 
 ## Requirements
 
-* grpc 1.10.1
+* grpc 1.14.1
 * protobuf 3.6.0
 
 ## Set-up & Installation

@@ -70,6 +70,8 @@ Within `Basics`, be sure to set `env_name` to the name of the Unity executable
 if you want to [use an executable](Learning-Environment-Executable.md) or to
 `None` if you want to interact with the current scene in the Unity Editor.
 
+Before building the environment or interacting with it in the editor, select `Ball3DAcademy` in the **Hierarchy** window of the Unity editor and make sure `Control` checkbox is checked under `Ball 3D Academy` component. 
+
 More information and documentation is provided in the
 [Python API](Python-API.md) page.
 

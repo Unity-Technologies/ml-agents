@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOModel(LearningModel):

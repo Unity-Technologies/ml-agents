@@ -2,9 +2,10 @@ import logging
 import numpy as np
 import tensorflow as tf
 
-from mlagents.trainers import UnityException
+from mlagents.trainers import ActionInfo, UnityException
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
+from mlagents.envs import BrainInfo
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -79,13 +80,32 @@ class Policy(object):
                             .format(self.model_path))
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
-    def evaluate(self, brain_info):
+    def evaluate(self, brain_info: BrainInfo):
         """
         Evaluates policy for the agent experiences provided.
         :param brain_info: BrainInfo input to network.
         :return: Output from policy based on self.inference_dict.
         """
         raise UnityPolicyException("The evaluate function was not implemented.")
+
+    def get_action(self, brain_info: BrainInfo) -> ActionInfo:
+        """
+        Decides actions given observations information, and takes them in environment.
+        :param brain_info: A dictionary of brain names and BrainInfo from environment.
+        :return: an ActionInfo containing action, memories, values and an object
+        to be passed to add experiences
+        """
+        if len(brain_info.agents) == 0:
+            return ActionInfo([], [], [], None, None)
+
+        run_out = self.evaluate(brain_info)
+        return ActionInfo(
+            action=run_out.get('action'),
+            memory=run_out.get('memory_out'),
+            text=None,
+            value=run_out.get('value'),
+            outputs=run_out
+        )
 
     def update(self, mini_batch, num_sequences):
         """

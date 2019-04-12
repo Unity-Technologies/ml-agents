@@ -51,8 +51,8 @@ namespace MLAgents
                  "(This field is not applicable for training).")]
         public InferenceDevice inferenceDevice = InferenceDevice.CPU;
         
-        private IEnumerable<Tensor> _inferenceInputs;
-        private IEnumerable<Tensor> _inferenceOutputs;
+        private IReadOnlyList<Tensor> _inferenceInputs;
+        private IReadOnlyList<Tensor> _inferenceOutputs;
 
         [NonSerialized]
         private bool _isControlled;

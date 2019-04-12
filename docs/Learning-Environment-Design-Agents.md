@@ -66,14 +66,14 @@ state of the world. A state observation can take the following forms:
 
 * **Vector Observation** — a feature vector consisting of an array of floating
   point numbers.
-* **Visual Observations** — one or more camera images.
+* **Visual Observations** — one or more camera images and/or render textures.
 
 When you use vector observations for an Agent, implement the
 `Agent.CollectObservations()` method to create the feature vector. When you use
-**Visual Observations**, you only need to identify which Unity Camera objects
-will provide images and the base Agent class handles the rest. You do not need
-to implement the `CollectObservations()` method when your Agent uses visual
-observations (unless it also uses vector observations).
+**Visual Observations**, you only need to identify which Unity Camera objects 
+or RenderTextures will provide images and the base Agent class handles the rest. 
+You do not need to implement the `CollectObservations()` method when your Agent 
+uses visual observations (unless it also uses vector observations).
 
 ### Vector Observation Space: Feature Vectors
 
@@ -200,29 +200,62 @@ used in your normalization formula.
 
 ### Multiple Visual Observations
 
-Camera observations use rendered textures from one or more cameras in a scene.
-The Brain vectorizes the textures into a 3D Tensor which can be fed into a
-convolutional neural network (CNN). For more information on CNNs, see [this
-guide](http://cs231n.github.io/convolutional-networks/). You can use camera
-observations along side vector observations.
+Visual observations use rendered textures directly or from one or more 
+cameras in a scene. The Brain vectorizes the textures into a 3D Tensor which 
+can be fed into a convolutional neural network (CNN). For more information on 
+CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You 
+can use visual observations along side vector observations.
 
-Agents using camera images can capture state of arbitrary complexity and are
-useful when the state is difficult to describe numerically. However, they are
-also typically less efficient and slower to train, and sometimes don't succeed
-at all.  
+Agents using visual observations can capture state of arbitrary complexity and 
+are useful when the state is difficult to describe numerically. However, they 
+are also typically less efficient and slower to train, and sometimes don't 
+succeed at all.
 
-To add a visual observation to an Agent, click on the `Add Camera` button in the
-Agent inspector. Then drag the camera you want to add to the `Camera` field. You
-can have more than one camera attached to an Agent.
+Visual observations can be derived from Cameras or RenderTextures within your scene. 
+To add a visual observation to an Agent, either click on the `Add Camera` or 
+`Add RenderTexture` button in the Agent inspector. Then drag the camera or 
+render texture you want to add to the `Camera` or `RenderTexture` field. 
+You can have more than one camera or render texture and even use a combination 
+of both attached to an Agent.
 
 ![Agent Camera](images/visual-observation.png)
 
+or
+
+![Agent RenderTexture](images/visual-observation-rendertexture.png)
+
 In addition, make sure that the Agent's Brain expects a visual observation. In
 the Brain inspector, under **Brain Parameters** > **Visual Observations**,
-specify the number of Cameras the Agent is using for its visual observations.
+specify the number of Resolutions the Agent is using for its visual observations.
 For each visual observation, set the width and height of the image (in pixels)
 and whether or not the observation is color or grayscale (when `Black And White`
-is checked).
+is checked). 
+
+For instance, if you are using two cameras and one render texture on your Agent,
+three **Visual Observations** have to be added to the **Brain Parameters**. 
+During runtime, if a combination of `Cameras` and `RenderTextures` is used, all 
+cameras are captured first, then all render textures will be added, in the
+order they appear in the editor. 
+
+![Agent Camera and RenderTexture combination](images/visual-observation-combination.png)
+
+RenderTexture observations will throw an `Exception` if the width/height doesn't 
+match the resolution specified under **Brain Parameters** > **Visual Observations**.
+
+When using `RenderTexture` visual observations, a handy feature for debugging is 
+adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent's 
+`RenderTexture`. This will render the agent observation on the game screen. 
+
+![RenderTexture with Raw Image](images/visual-observation-rawimage.png)
+
+The [GridWorld environment](Learning-Environment-Examples.md#gridworld) 
+is an example on how to use a RenderTexure for both debugging and observation. Note 
+that in this example, a Camera is rendered to a RenderTexture, which is then used for 
+observations and debugging. To update the RenderTexture, the Camera must be asked to 
+render every time a decision is requested within the game code. When using Cameras 
+as observations directly, this is done automatically by the Agent.
+
+![Agent RenderTexture Debug](images/visual-observation-debug.png)
 
 ## Vector Actions
 
@@ -237,7 +270,8 @@ of commands. In the **Discrete** vector action space type, the action parameter
 is an array of indices. The number of indices in the array is determined by the
 number of branches defined in the `Branches Size` property. Each branch
 corresponds to an action table, you can specify the size of each table by
-modifying the `Branches` property. Set the `Vector Action Space Size` and
+modifying the `Branches` property. The `Branch Descriptions` property holds the names
+for each available branch. Set the `Vector Action Space Size` and
 `Vector Action Space Type` properties on the Brain object assigned to the Agent
 (using the Unity Editor Inspector window).
 
@@ -488,8 +522,8 @@ called independently of the `Max Step` property.
 
 * `Brain` - The Brain to register this Agent to. Can be dragged into the
   inspector using the Editor.
-* `Visual Observations` - A list of `Cameras` which will be used to generate
-  observations.
+* `Visual Observations` - A list of `Cameras` or `RenderTextures` which will 
+  be used to generate observations.
 * `Max Step` - The per-agent maximum number of steps. Once this number is
   reached, the Agent will be reset if `Reset On Done` is checked.
 * `Reset On Done` - Whether the Agent's `AgentReset()` function should be called

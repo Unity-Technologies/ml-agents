@@ -20,7 +20,10 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            cd ml-agents && pip install -e .
+            cd ml-agents-envs && pip install -e .
+            cd ../ml-agents && pip install -e .
+            pip install pytest-cov==2.6.1 codacy-coverage==1.3.11
+            cd ../gym-unity && pip install -e .
 
       - save_cache:
           paths:
@@ -28,16 +31,16 @@ jobs:
           key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
         
       - run:
-          name: Run Tests
+          name: Run Tests for ml-agents and gym_unity
           command: |
             . venv/bin/activate
-            cd ml-agents/ && pytest tests/
             mkdir test-reports
-            pytest --junitxml=test-reports/junit.xml
+            pytest --cov=mlagents --cov-report xml --junitxml=test-reports/junit.xml -p no:warnings
+            python-codacy-coverage -r coverage.xml
 
       - store_test_results:
-          path: ml-agents/test-reports
+          path: test-reports
 
       - store_artifacts:
-          path: ml-agents/test-reports
-          destination: ml-agents/test-reports
+          path: test-reports
+          destination: test-reports

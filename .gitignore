@@ -59,6 +59,9 @@
 /UnitySDK/Assets/ML-Agents/Plugins/System.Numerics*
 /UnitySDK/Assets/ML-Agents/Plugins/System.ValueTuple*
 
+# Plugins
+/UnitySDK/Assets/ML-Agents/VideoRecorder*
+
 # Generated doc folders
 /docs/html
 

@@ -9,7 +9,7 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
-from typing import Optional
+from typing import Optional, Callable
 
 
 from mlagents.trainers.trainer_controller import TrainerController
@@ -17,6 +17,8 @@ from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
 
 
 def run_training(sub_id: int, run_seed: int, run_options, process_queue):
@@ -39,17 +41,17 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     train_model = run_options['--train']
     save_freq = int(run_options['--save-freq'])
     keep_checkpoints = int(run_options['--keep-checkpoints'])
-    worker_id = int(run_options['--worker-id'])
+    base_port = int(run_options['--base-port'])
+    num_envs = int(run_options['--num-envs'])
     curriculum_folder = (run_options['--curriculum']
                          if run_options['--curriculum'] != 'None' else None)
     lesson = int(run_options['--lesson'])
     fast_simulation = not bool(run_options['--slow'])
     no_graphics = run_options['--no-graphics']
     trainer_config_path = run_options['<trainer-config-path>']
-
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
-        model_path = './models/{run_id}'.format(run_id=run_id)
+        model_path = './models/{run_id}-{sub_id}'.format(run_id=run_id, sub_id=sub_id)
         summaries_dir = './summaries'
     else:
         trainer_config_path = \
@@ -61,25 +63,30 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
                 '/{docker_target_name}/{curriculum_folder}'.format(
                     docker_target_name=docker_target_name,
                     curriculum_folder=curriculum_folder)
-        model_path = '/{docker_target_name}/models/{run_id}'.format(
+        model_path = '/{docker_target_name}/models/{run_id}-{sub_id}'.format(
             docker_target_name=docker_target_name,
-            run_id=run_id)
+            run_id=run_id,
+            sub_id=sub_id)
         summaries_dir = '/{docker_target_name}/summaries'.format(
             docker_target_name=docker_target_name)
 
     trainer_config = load_config(trainer_config_path)
-    env = init_environment(env_path, docker_target_name, no_graphics, worker_id + sub_id, fast_simulation, run_seed)
+    env_factory = create_environment_factory(
+        env_path,
+        docker_target_name,
+        no_graphics,
+        run_seed,
+        base_port + (sub_id * num_envs)
+    )
+    env = SubprocessUnityEnvironment(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
-
-    external_brains = {}
-    for brain_name in env.external_brain_names:
-        external_brains[brain_name] = env.brains[brain_name]
 
     # Create controller and begin training.
     tc = TrainerController(model_path, summaries_dir, run_id + '-' + str(sub_id),
                            save_freq, maybe_meta_curriculum,
                            load_model, train_model,
-                           keep_checkpoints, lesson, external_brains, run_seed)
+                           keep_checkpoints, lesson, env.external_brains,
+                           run_seed, fast_simulation)
 
     # Signal that environment has been launched.
     process_queue.put(True)
@@ -88,14 +95,14 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     tc.start_learning(env, trainer_config)
 
 
-def try_create_meta_curriculum(curriculum_folder: Optional[str], env: UnityEnvironment) -> Optional[MetaCurriculum]:
+def try_create_meta_curriculum(curriculum_folder: Optional[str], env: BaseUnityEnvironment) -> Optional[MetaCurriculum]:
     if curriculum_folder is None:
         return None
     else:
-        meta_curriculum = MetaCurriculum(curriculum_folder, env._resetParameters)
+        meta_curriculum = MetaCurriculum(curriculum_folder, env.reset_parameters)
         if meta_curriculum:
             for brain_name in meta_curriculum.brains_to_curriculums.keys():
-                if brain_name not in env.external_brain_names:
+                if brain_name not in env.external_brains.keys():
                     raise MetaCurriculumError('One of the curricula '
                                               'defined in ' +
                                               curriculum_folder + ' '
@@ -143,7 +150,13 @@ def load_config(trainer_config_path):
                                         .format(trainer_config_path))
 
 
-def init_environment(env_path, docker_target_name, no_graphics, worker_id, fast_simulation, seed):
+def create_environment_factory(
+        env_path: str,
+        docker_target_name: str,
+        no_graphics: bool,
+        seed: Optional[int],
+        start_port: int
+) -> Callable[[int], BaseUnityEnvironment]:
     if env_path is not None:
         # Strip out executable extensions if passed
         env_path = (env_path.strip()
@@ -155,27 +168,36 @@ def init_environment(env_path, docker_target_name, no_graphics, worker_id, fast_
     if docker_training and env_path is not None:
             """
             Comments for future maintenance:
-                Some OS/VM instances (e.g. COS GCP Image) mount filesystems 
-                with COS flag which prevents execution of the Unity scene, 
-                to get around this, we will copy the executable into the 
+                Some OS/VM instances (e.g. COS GCP Image) mount filesystems
+                with COS flag which prevents execution of the Unity scene,
+                to get around this, we will copy the executable into the
                 container.
             """
             # Navigate in docker path and find env_path and copy it.
             env_path = prepare_for_docker_run(docker_target_name,
                                               env_path)
-    return UnityEnvironment(
-        file_name=env_path,
-        worker_id=worker_id,
-        seed=seed,
-        docker_training=docker_training,
-        no_graphics=no_graphics
-    )
+    seed_count = 10000
+    seed_pool = [np.random.randint(0, seed_count) for _ in range(seed_count)]
+
+    def create_unity_environment(worker_id: int) -> UnityEnvironment:
+        env_seed = seed
+        if not env_seed:
+            env_seed = seed_pool[worker_id % len(seed_pool)]
+        return UnityEnvironment(
+            file_name=env_path,
+            worker_id=worker_id,
+            seed=env_seed,
+            docker_training=docker_training,
+            no_graphics=no_graphics,
+            base_port=start_port
+        )
+    return create_unity_environment
 
 
 def main():
     try:
         print('''
-    
+
                         ▄▄▄▓▓▓▓
                    ╓▓▓▓▓▓▓█▓▓▓▓▓
               ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
@@ -193,7 +215,6 @@ def main():
     except:
         print('\n\n\tUnity Technologies\n')
 
-    logger = logging.getLogger('mlagents.trainers')
     _USAGE = '''
     Usage:
       mlagents-learn <trainer-config-path> [options]
@@ -206,18 +227,25 @@ def main():
       --lesson=<n>               Start learning from this lesson [default: 0].
       --load                     Whether to load the model or randomly initialize [default: False].
       --run-id=<path>            The directory name for model and summary statistics [default: ppo].
-      --num-runs=<n>             Number of concurrent training sessions [default: 1]. 
+      --num-runs=<n>             Number of concurrent training sessions [default: 1].
       --save-freq=<n>            Frequency at which to save model [default: 50000].
       --seed=<n>                 Random seed used for training [default: -1].
       --slow                     Whether to run the game at training speed [default: False].
       --train                    Whether to train model, or only run inference [default: False].
-      --worker-id=<n>            Number to add to communication port (5005) [default: 0].
+      --base-port=<n>            Base port for environment communication [default: 5005].
+      --num-envs=<n>             Number of parallel environments to use for training [default: 1]
       --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
       --no-graphics              Whether to run the environment in no-graphics mode [default: False].
+      --debug                    Whether to run ML-Agents in debug mode with detailed logging [default: False].
     '''
 
     options = docopt(_USAGE)
-    logger.info(options)
+    trainer_logger = logging.getLogger('mlagents.trainers')
+    env_logger = logging.getLogger('mlagents.envs')
+    trainer_logger.info(options)
+    if options['--debug']:
+        trainer_logger.setLevel('DEBUG')
+        env_logger.setLevel('DEBUG')
     num_runs = int(options['--num-runs'])
     seed = int(options['--seed'])
 
@@ -243,6 +271,14 @@ def main():
             # Wait for signal that environment has successfully launched
             while process_queue.get() is not True:
                 continue
+
+    # Wait for jobs to complete.  Otherwise we'll have an extra
+    # unhandled KeyboardInterrupt if we end early.
+    try:
+        for job in jobs:
+            job.join()
+    except KeyboardInterrupt:
+        pass
 
 # For python debugger to directly run this script
 if __name__ == "__main__":
