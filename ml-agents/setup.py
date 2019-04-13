@@ -25,7 +25,7 @@ setup(
         'Programming Language :: Python :: 3.6'
     ],
 
-    packages=['mlagents.trainers'],  # Required
+    packages=['mlagents.trainers', 'mlagents.trainers.bc', 'mlagents.trainers.ppo'],  # Required
     zip_safe=False,
 
     install_requires=[
