@@ -19,8 +19,11 @@ The `mlagents_envs` Python package contains one sub package:
 Install the `mlagents_envs` package with:
 
 ```sh
-pip install mlagents_envs
+cd `ml-agents-envs`
+pip install -e .
 ```
+**NOTE** Please install as per above instructions and not from pypi.
+
 
 ## Usage & More Information
 

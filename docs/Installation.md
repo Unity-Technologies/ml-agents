@@ -59,29 +59,7 @@ If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install the dependencies and `mlagents` Python package, run from the command line:
-
-```sh
-pip3 install mlagents
-```
-
-Note that this will install `ml-agents` from PyPi, _not_ from the cloned repo. 
-If you installed this correctly, you should be able to run
-`mlagents-learn --help`, after which you will see the Unity logo and the command line
-parameters you can use with `mlagents-learn`. 
-
-**Notes:**
-
-- We do not currently support Python 3.7 or Python 3.5.
-- If you are using Anaconda and are having trouble with TensorFlow, please see
-  the following
-  [link](https://www.tensorflow.org/install/pip)
-  on how to install TensorFlow in an Anaconda environment.
-
-### Installing for Development
-
-If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install 
-the packages from the cloned repo rather than from PyPi. To do this, you will need to install
+To install the dependencies and `mlagents` Python package, you will need to install
  `ml-agents` and `ml-agents-envs` separately. From the repo's root directory, run:
 
 ```sh
@@ -96,6 +74,15 @@ Running pip with the `-e` flag will let you make changes to the Python files dir
 reflected when you run `mlagents-learn`. It is important to install these packages in this order as the
 `mlagents` package depends on `mlagents_envs`, and installing it in the other 
 order will download `mlagents_envs` from PyPi. 
+
+**Notes:**
+
+- We do not currently support Python 3.7 or Python 3.5.
+- If you are using Anaconda and are having trouble with TensorFlow, please see
+  the following
+  [link](https://www.tensorflow.org/install/pip)
+  on how to install TensorFlow in an Anaconda environment.
+
 
 ## Docker-based Installation
 

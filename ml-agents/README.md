@@ -21,11 +21,13 @@ The `mlagents` Python package contains two sub packages:
 
 ## Installation
 
-Install the `mlagents` package with:
+First install `ml-agents-envs` per instructions [here](https://github.com/Unity-Technologies/ml-agents/blob/master/ml-agents-envs/README.md) and then install the `mlagents` package:
 
 ```sh
+cd mlagents
 pip install mlagents
 ```
+**NOTE** Please install as per above instructions and not from pypi.
 
 ## Usage & More Information
 

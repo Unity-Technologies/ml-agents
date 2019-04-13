@@ -139,29 +139,7 @@ the `ml-agents` package depends on.
 The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
 
 Keep in mind where the files were downloaded, as you will need the 
-trainer config files in this directory when running `mlagents-learn`.
-Make sure you are connected to the Internet and then type in the Anaconda
-Prompt:
-
-```console
-pip install mlagents
-```
-
-This will complete the installation of all the required Python packages to run
-the ML-Agents toolkit.
-
-Sometimes on Windows, when you use pip to install certain Python packages, the pip will get stuck when trying to read the cache of the package. If you see this, you can try:
-
-```console
-pip install mlagents --no-cache-dir
-```
-
-This `--no-cache-dir` tells the pip to disable the cache.  
-
-### Installing for Development
-
-If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install 
-the packages from the cloned repo rather than from PyPi. To do this, you will need to install
+trainer config files in this directory when running `mlagents-learn`. You will need to install
  `ml-agents` and `ml-agents-envs` separately. 
  
 In our example, the files are located in `C:\Downloads`. After you have either
