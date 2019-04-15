@@ -10,5 +10,5 @@ setup(name='gym_unity',
       author_email='ML-Agents@unity3d.com',
       url='https://github.com/Unity-Technologies/ml-agents',
       packages=find_packages(),
-      install_requires=['gym', 'mlagents_envs==0.8.0']
+      install_requires=['gym', 'mlagents_envs==0.8.1']
       )
