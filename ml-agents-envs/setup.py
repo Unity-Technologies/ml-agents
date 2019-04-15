@@ -5,7 +5,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='mlagents_envs',
-    version='0.8.0',
+    version='0.8.1',
     description='Unity Machine Learning Agents Interface',
     url='https://github.com/Unity-Technologies/ml-agents',
     author='Unity Technologies',
@@ -18,7 +18,7 @@ setup(
         'Programming Language :: Python :: 3.6'
     ],
 
-    packages=['mlagents.envs'],  # Required
+    packages=['mlagents.envs', 'mlagents.envs.communicator_objects'],  # Required
     zip_safe=False,
 
     install_requires=[
