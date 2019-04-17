@@ -1,9 +1,9 @@
-﻿#if UNITY_CLOUD_BUILD
+﻿//#if UNITY_CLOUD_BUILD
 
 namespace MLAgents
 {
 
-	public class Builder
+	public static class Builder
 	{
 		public static void PreExport()
 		{
@@ -12,4 +12,4 @@ namespace MLAgents
 	}
 }
 
-#endif
+//#endif

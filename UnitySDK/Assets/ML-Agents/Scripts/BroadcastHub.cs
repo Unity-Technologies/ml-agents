@@ -13,7 +13,7 @@ namespace MLAgents
         [SerializeField]
         public List<Brain> broadcastingBrains = new List<Brain>();
         [SerializeField]
-        public List<Brain> _brainsToControl = new List<Brain>();
+        private List<Brain> _brainsToControl = new List<Brain>();
 
         /// <summary>
         /// The number of Brains inside the BroadcastingHub.

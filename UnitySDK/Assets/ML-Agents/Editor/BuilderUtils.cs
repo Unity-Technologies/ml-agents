@@ -6,7 +6,7 @@ using System.IO;
 
 namespace MLAgents
 {
-	public class BuilderUtils
+	public static class BuilderUtils
 	{
 		public static void SwitchAllLearningBrainToControlMode()
 		{
@@ -27,7 +27,7 @@ namespace MLAgents
 						if (!aca.broadcastHub.IsControlled(brain))
 						{
 							Debug.Log("Switched brain in scene " + scenePath);
-							aca.broadcastHub._brainsToControl.Add(brain);
+							aca.broadcastHub.SetControlled(brain, true);
 						}
 					}
 					EditorSceneManager.SaveScene(curScene);
