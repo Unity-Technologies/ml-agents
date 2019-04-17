@@ -1,12 +1,25 @@
 from .communicator import Communicator
-from .communicator_objects import UnityOutput, UnityInput, \
-    ResolutionProto, BrainParametersProto, UnityRLInitializationOutput, \
-    AgentInfoProto, UnityRLOutput
+from .communicator_objects import (
+    UnityOutput,
+    UnityInput,
+    ResolutionProto,
+    BrainParametersProto,
+    UnityRLInitializationOutput,
+    AgentInfoProto,
+    UnityRLOutput,
+)
 
 
 class MockCommunicator(Communicator):
-    def __init__(self, discrete_action=False, visual_inputs=0, stack=True, num_agents=3,
-                 brain_name="RealFakeBrain", vec_obs_size=3):
+    def __init__(
+        self,
+        discrete_action=False,
+        visual_inputs=0,
+        stack=True,
+        num_agents=3,
+        brain_name="RealFakeBrain",
+        vec_obs_size=3,
+    ):
         """
         Python side of the grpc communication. Python is the client and Unity the server
 
@@ -26,10 +39,10 @@ class MockCommunicator(Communicator):
             self.num_stacks = 1
 
     def initialize(self, inputs: UnityInput) -> UnityOutput:
-        resolutions = [ResolutionProto(
-            width=30,
-            height=40,
-            gray_scale=False) for i in range(self.visual_inputs)]
+        resolutions = [
+            ResolutionProto(width=30, height=40, gray_scale=False)
+            for i in range(self.visual_inputs)
+        ]
         bp = BrainParametersProto(
             vector_observation_size=self.vec_obs_size,
             num_stacked_vector_observations=self.num_stacks,
@@ -38,17 +51,12 @@ class MockCommunicator(Communicator):
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),
             brain_name=self.brain_name,
-            is_training=True
+            is_training=True,
         )
         rl_init = UnityRLInitializationOutput(
-            name="RealFakeAcademy",
-            version="API-8",
-            log_path="",
-            brain_parameters=[bp]
+            name="RealFakeAcademy", version="API-8", log_path="", brain_parameters=[bp]
         )
-        return UnityOutput(
-            rl_initialization_output=rl_init
-        )
+        return UnityOutput(rl_initialization_output=rl_init)
 
     def exchange(self, inputs: UnityInput) -> UnityOutput:
         dict_agent_info = {}
@@ -73,23 +81,20 @@ class MockCommunicator(Communicator):
                     memories=[],
                     done=(i == 2),
                     max_step_reached=False,
-                    id=i
-                ))
-        dict_agent_info["RealFakeBrain"] = \
-            UnityRLOutput.ListAgentInfoProto(value=list_agent_info)
+                    id=i,
+                )
+            )
+        dict_agent_info["RealFakeBrain"] = UnityRLOutput.ListAgentInfoProto(
+            value=list_agent_info
+        )
         global_done = False
         try:
             fake_brain = inputs.rl_input.agent_actions["RealFakeBrain"]
-            global_done = (fake_brain.value[0].vector_actions[0] == -1)
+            global_done = fake_brain.value[0].vector_actions[0] == -1
         except:
             pass
-        result = UnityRLOutput(
-            global_done=global_done,
-            agentInfos=dict_agent_info
-        )
-        return UnityOutput(
-            rl_output=result
-        )
+        result = UnityRLOutput(global_done=global_done, agentInfos=dict_agent_info)
+        return UnityOutput(rl_output=result)
 
     def close(self):
         """

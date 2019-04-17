@@ -32,4 +32,3 @@ class Communicator(object):
         """
         Sends a shutdown signal to the unity environment, and closes the connection.
         """
-
