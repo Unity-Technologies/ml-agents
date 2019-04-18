@@ -12,7 +12,7 @@ namespace MLAgents
             string sceneName = Environment.GetEnvironmentVariable("SCENE_NAME");
             SwitchScene(sceneName);
         }
-
+        
         private void SwitchScene(string sceneName)
         {
             if (sceneName == null)
