@@ -11,7 +11,17 @@ namespace MLAgents
         {   
             string sceneName = Environment.GetEnvironmentVariable("SCENE_NAME");
             string controlMode = Environment.GetEnvironmentVariable("CONTROL_MODE");
-            if (sceneName != null)
+            SwitchScene(sceneName);
+            SwitchControlMode(controlMode);
+        }
+
+        private void SwitchScene(string sceneName)
+        {
+            if (sceneName == null)
+            {
+                throw new ArgumentException("You didn't specified the SCENE_NAME environment variable");
+            }
+            else
             {
                 if (SceneUtility.GetBuildIndexByScenePath(sceneName) >= 0) {
                     SceneManager.LoadSceneAsync(sceneName);
@@ -21,34 +31,25 @@ namespace MLAgents
                     throw new ArgumentException("The scene " + sceneName.ToString() + " doesn't exist within your build. ");
                 }
             }
-            else
+        }
+
+        private void SwitchControlMode(string controlMode)
+        {
+            bool controlModeBoolean = controlMode != null || controlMode.ToLower() == "true";
+            Debug.Log("CONTROL_MODE=" + controlMode);
+            var aca = FindObjectOfType<Academy>();
+            if (aca != null)
             {
-                throw new ArgumentException("You didn't specified the SCENE_NAME environment variable");
-            }
-            if (controlMode != null && controlMode.ToLower() == "true")
-            {
-                Debug.Log("CONTROL_MODE=true");
-                var aca = FindObjectOfType<Academy>();
-                if (aca != null)
+                var learningBrains = aca.broadcastHub.broadcastingBrains.Where(
+                    x => x != null && x is LearningBrain);
+                foreach (Brain brain in learningBrains)
                 {
-                    var learningBrains = aca.broadcastHub.broadcastingBrains.Where(
-                        x => x != null && x is LearningBrain);
-                    foreach (Brain brain in learningBrains)
-                    {
-                        if (!aca.broadcastHub.IsControlled(brain))
-                        {
-                            aca.broadcastHub.SetControlled(brain, true);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("The current scene doesn't have a Academy in it");
+                    aca.broadcastHub.SetControlled(brain, controlModeBoolean);
                 }
             }
             else
             {
-                Debug.Log("CONTROL_MODE=false");
+                throw new ArgumentException("The current scene doesn't have a Academy in it");
             }
         }
     }
