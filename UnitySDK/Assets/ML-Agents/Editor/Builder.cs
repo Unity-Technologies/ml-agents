@@ -2,7 +2,6 @@
 
 namespace MLAgents
 {
-
     public static class Builder
     {
         public static void PreExport()
