@@ -10,9 +10,7 @@ namespace MLAgents
         void Awake()
         {   
             string sceneName = Environment.GetEnvironmentVariable("SCENE_NAME");
-            string controlMode = Environment.GetEnvironmentVariable("CONTROL_MODE");
             SwitchScene(sceneName);
-            SwitchControlMode(controlMode);
         }
 
         private void SwitchScene(string sceneName)
@@ -30,26 +28,6 @@ namespace MLAgents
                 {
                     throw new ArgumentException("The scene " + sceneName.ToString() + " doesn't exist within your build. ");
                 }
-            }
-        }
-
-        private void SwitchControlMode(string controlMode)
-        {
-            bool controlModeBoolean = controlMode != null || controlMode.ToLower() == "true";
-            Debug.Log("CONTROL_MODE=" + controlMode);
-            var aca = FindObjectOfType<Academy>();
-            if (aca != null)
-            {
-                var learningBrains = aca.broadcastHub.broadcastingBrains.Where(
-                    x => x != null && x is LearningBrain);
-                foreach (Brain brain in learningBrains)
-                {
-                    aca.broadcastHub.SetControlled(brain, controlModeBoolean);
-                }
-            }
-            else
-            {
-                throw new ArgumentException("The current scene doesn't have a Academy in it");
             }
         }
     }
