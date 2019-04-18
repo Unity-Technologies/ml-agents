@@ -19,16 +19,11 @@ namespace MLAgents
             {
                 throw new ArgumentException("You didn't specified the SCENE_NAME environment variable");
             }
-            else
+            if (SceneUtility.GetBuildIndexByScenePath(sceneName) < 0)
             {
-                if (SceneUtility.GetBuildIndexByScenePath(sceneName) >= 0) {
-                    SceneManager.LoadSceneAsync(sceneName);
-                }
-                else
-                {
-                    throw new ArgumentException("The scene " + sceneName + " doesn't exist within your build. ");
-                }
+                throw new ArgumentException("The scene " + sceneName + " doesn't exist within your build. ");
             }
+            SceneManager.LoadSceneAsync(sceneName);
         }
     }
 }

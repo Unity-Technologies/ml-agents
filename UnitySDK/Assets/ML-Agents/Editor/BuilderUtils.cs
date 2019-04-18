@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿#if UNITY_CLOUD_BUILD
+
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -38,3 +40,5 @@ namespace MLAgents
         }
     }
 }
+    
+#endif
