@@ -13,7 +13,7 @@ namespace MLAgents
             SwitchScene(sceneName);
         }
         
-        private void SwitchScene(string sceneName)
+        private static void SwitchScene(string sceneName)
         {
             if (sceneName == null)
             {
@@ -26,7 +26,7 @@ namespace MLAgents
                 }
                 else
                 {
-                    throw new ArgumentException("The scene " + sceneName.ToString() + " doesn't exist within your build. ");
+                    throw new ArgumentException("The scene " + sceneName + " doesn't exist within your build. ");
                 }
             }
         }
