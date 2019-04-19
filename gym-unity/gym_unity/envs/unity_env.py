@@ -60,6 +60,11 @@ class UnityEnv(gym.Env):
                 "There can only be one brain in a UnityEnvironment "
                 "if it is wrapped in a gym."
             )
+        if len(self._env.external_brain_names) <= 0:
+            raise UnityGymException(
+                "There are any external brain in the UnityEnvironment"
+            )
+
         self.brain_name = self._env.external_brain_names[0]
         brain = self._env.brains[self.brain_name]
 
@@ -204,8 +209,11 @@ class UnityEnv(gym.Env):
 
     def _single_step(self, info):
         if self.use_visual:
+            visual_obs = info.visual_observations
+            if isinstance(visual_obs, list):
+                visual_obs = np.array(visual_obs)
             self.visual_obs = self._preprocess_single(
-                info.visual_observations[0][0, :, :, :]
+                visual_obs[0][0, :, :, :]
             )
             default_observation = self.visual_obs
         else:
