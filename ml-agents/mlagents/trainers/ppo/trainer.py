@@ -42,12 +42,18 @@ class PPOTrainer(Trainer):
 
         self.check_param_keys()
         self.check_rewards_keys(trainer_parameters)
+        self.use_curiosity = 'curiosity' in trainer_parameters['reward_signals']
+        self.use_gail = 'gail' in trainer_parameters['reward_signals']
+        self.use_entropy = 'entropy' in trainer_parameters['reward_signals']
+        self.use_extrinsic = 'extrinsic' in trainer_parameters['reward_signals']
+        # We always want to record the extrinsic reward. If it wasn't specified,
+        # add the extrinsic reward signal with strength 0. 
+        if not self.use_extrinsic:
+            trainer_parameters['reward_signals'].append("extrinsic")
+            trainer_parameters['gammas'].append(0.0)
+            trainer_parameters['reward_strength'].append(0.0)
         self.gamma_parameters = dict(zip(trainer_parameters['reward_signals'],
-                                         trainer_parameters['gammas']))
-        self.use_curiosity = 'curiosity' in self.gamma_parameters.keys()
-        self.use_gail = 'gail' in self.gamma_parameters.keys()
-        self.use_entropy = 'entropy' in self.gamma_parameters.keys()
-        self.use_extrinsic = 'extrinsic' in self.gamma_parameters.keys()
+                                    trainer_parameters['gammas']))
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
