@@ -40,7 +40,7 @@ class PPOPolicy(Policy):
             )
 
         if load:
-            self._load_graph()
+            self.load_graph()
         else:
             self._initialize_graph()
 
@@ -249,3 +249,17 @@ class PPOPolicy(Policy):
         self.sess.run(
             self.model.update_reward, feed_dict={self.model.new_reward: new_reward}
         )
+
+    def get_elo_rating(self):
+        """
+        Gets current elo rating.
+        :return: current elo rating.
+        """
+        elo_rating = self.sess.run(self.model.elo_rating)
+        return elo_rating
+
+    def increment_elo_rating(self, rating_change):
+        """
+        Increments elo rating.
+        """
+        self.sess.run(self.model.increment_elo_rating, feed_dict={self.model.rating_change: rating_change})

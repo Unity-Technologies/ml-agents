@@ -42,6 +42,9 @@ class PPOModel(LearningModel):
         """
         LearningModel.__init__(self, m_size, normalize, use_recurrent, brain, seed)
         self.use_curiosity = use_curiosity
+
+        self.elo_rating, self.rating_change, self.increment_elo_rating = self.create_elo_rating()
+
         if num_layers < 1:
             num_layers = 1
         self.last_reward, self.new_reward, self.update_reward = (
@@ -68,6 +71,14 @@ class PPOModel(LearningModel):
             lr,
             max_step,
         )
+
+    @staticmethod
+    def create_elo_rating():
+        elo_rating = tf.Variable(1200, name="elo_rating", trainable=False, dtype=tf.float32)
+        rating_change = tf.placeholder(shape=[], name="rating_change", dtype=tf.float32)
+
+        increment_elo_rating = tf.assign(elo_rating, tf.add(elo_rating, rating_change))
+        return elo_rating, rating_change, increment_elo_rating
 
     @staticmethod
     def create_reward_encoder():

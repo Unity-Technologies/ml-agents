@@ -17,6 +17,7 @@ class BrainInfo:
         memory=None,
         reward=None,
         agents=None,
+        agent_ids=None,
         local_done=None,
         vector_action=None,
         text_action=None,
@@ -35,6 +36,7 @@ class BrainInfo:
         self.local_done = local_done
         self.max_reached = max_reached
         self.agents = agents
+        self.agent_ids = agent_ids
         self.previous_vector_actions = vector_action
         self.previous_text_actions = text_action
         self.action_masks = action_mask
@@ -164,6 +166,7 @@ class BrainInfo:
             memory=memory,
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
             agents=[x.id for x in agent_info_list],
+            agent_ids=[x.id for x in agent_info_list],
             local_done=[x.done for x in agent_info_list],
             vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
             text_action=[list(x.stored_text_actions) for x in agent_info_list],
@@ -171,6 +174,21 @@ class BrainInfo:
             custom_observations=[x.custom_observation for x in agent_info_list],
             action_mask=mask_actions,
         )
+        return brain_info
+
+    def get_agent_brain_info(self, agent):
+        agent_idx = self.agent_ids.index(agent)
+        brain_info = BrainInfo(None, None, None)
+        for key in self.__dict__:
+            array_or_list = self.__dict__[key]
+            if type(array_or_list) is np.ndarray:
+                brain_info.__dict__[key] = np.array([]) if array_or_list is None or array_or_list.size == 0 \
+                    else np.array([array_or_list[agent_idx]])
+            elif type(array_or_list) is list:
+                brain_info.__dict__[key] = [] if not array_or_list else [array_or_list[agent_idx]]
+            else:
+                raise Exception('The get_agent_brain_info function can only handle list and numpy arrays '
+                                'but the type of {0} was {1}'.format(key, type(array_or_list)))
         return brain_info
 
 

@@ -38,6 +38,7 @@ class Trainer(object):
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
         self.cumulative_returns_since_policy_update = []
+        self.use_elo_rating = bool(trainer_parameters['use_elo_rating'])
         self.is_training = training
         self.stats = {}
         self.trainer_metrics = TrainerMetrics(
@@ -198,13 +199,14 @@ class Trainer(object):
                     "Time Elapsed: {:0.3f} s "
                     "Mean "
                     "Reward: {"
-                    ":0.3f}. Std of Reward: {:0.3f}. {}".format(
+                    ":0.3f}. Std of Reward: {:0.3f}. {} {}".format(
                         self.run_id,
                         self.brain_name,
                         min(self.get_step, self.get_max_steps),
                         delta_train_start,
                         mean_reward,
                         np.std(self.stats["Environment/Cumulative Reward"]),
+                        'Elo Rating: {:0.1f}'.format(self.get_elo_rating()) if self.use_elo_rating else '',
                         is_training,
                     )
                 )
@@ -246,3 +248,6 @@ class Trainer(object):
                 "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
             )
             pass
+
+    def get_elo_rating(self):
+        return self.policy.get_elo_rating()

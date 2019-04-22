@@ -18,6 +18,7 @@ default:
     summary_freq: 1000
     use_recurrent: false
     use_curiosity: false
+    use_elo_rating: false
     curiosity_strength: 0.01
     curiosity_enc_size: 128
 
@@ -143,6 +144,14 @@ VisualPyramidsLearning:
 TennisLearning:
     normalize: true
     max_steps: 2e5
+    use_elo_rating: true
+
+TennisGhost:
+    trainer: ghost
+    ghost_master_brain: TennisLearning
+    ghost_num_policies: 3
+    ghost_recent_ckpts_threshold: 10
+    ghost_prob_sample_only_recent: 0.5
 
 CrawlerStaticLearning:
     normalize: true

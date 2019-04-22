@@ -208,7 +208,7 @@ class SubprocessUnityEnvironment(BaseUnityEnvironment):
             for brain_name, brain_info in all_brain_info.items():
                 for i in range(len(brain_info.agents)):
                     brain_info.agents[i] = (
-                        str(env_step.worker_id) + "-" + str(brain_info.agents[i])
+                        str(env_step.worker_id) + "-" + str(brain_info.agent_ids[i])
                     )
                 if accumulated_brain_info:
                     accumulated_brain_info[brain_name].merge(brain_info)

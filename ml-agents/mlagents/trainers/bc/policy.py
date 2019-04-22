@@ -31,7 +31,7 @@ class BCPolicy(Policy):
                 )
 
         if load:
-            self._load_graph()
+            self.load_graph()
         else:
             self._initialize_graph()
 

@@ -71,6 +71,9 @@ class PPOTrainer(Trainer):
             "Losses/Policy Loss": [],
             "Policy/Learning Rate": [],
         }
+
+        if self.use_elo_rating:
+            stats['Policy/Elo Rating'] = []
         if self.use_curiosity:
             stats["Losses/Forward Loss"] = []
             stats["Losses/Inverse Loss"] = []
@@ -126,6 +129,14 @@ class PPOTrainer(Trainer):
         :return: the reward buffer.
         """
         return self._reward_buffer
+
+    @staticmethod
+    def should_update_elo_rating():
+        """
+        Should the elo rating be updated
+        :return: True if not ghost else False
+        """
+        return True
 
     def increment_step_and_update_last_reward(self):
         """
@@ -222,6 +233,8 @@ class PPOTrainer(Trainer):
             self.stats["Policy/Learning Rate"].append(
                 take_action_outputs["learning_rate"]
             )
+        if self.use_elo_rating:
+            self.stats['Policy/Elo Rating'].append(self.get_elo_rating())
 
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]

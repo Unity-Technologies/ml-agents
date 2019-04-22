@@ -17,9 +17,11 @@ from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer
 from mlagents.trainers.ppo.trainer import PPOTrainer
+from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.elo_rating import EloTracker
 
 
 class TrainerController(object):
@@ -70,6 +72,7 @@ class TrainerController(object):
         self.seed = training_seed
         self.training_start_time = time()
         self.fast_simulation = fast_simulation
+        self.elo_tracker = EloTracker(self.run_id)
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
 
@@ -125,6 +128,16 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
 
+    def add_brain_parameters(self, current_parameters, trainer_config: Dict[str, Dict[str, str]], brain_name):
+        result_parameters = current_parameters.copy()
+        if brain_name in trainer_config:
+            _brain_key = brain_name
+            while not isinstance(trainer_config[_brain_key], dict):
+                _brain_key = trainer_config[_brain_key]
+            for k in trainer_config[_brain_key]:
+                result_parameters[k] = trainer_config[_brain_key][k]
+        return result_parameters
+
     def initialize_trainers(self, trainer_config: Dict[str, Dict[str, str]]):
         """
         Initialization of the trainers
@@ -140,13 +153,17 @@ class TrainerController(object):
                 basedir=self.model_path, name=brain_name
             )
             trainer_parameters["keep_checkpoints"] = self.keep_checkpoints
-            if brain_name in trainer_config:
-                _brain_key = brain_name
-                while not isinstance(trainer_config[_brain_key], dict):
-                    _brain_key = trainer_config[_brain_key]
-                for k in trainer_config[_brain_key]:
-                    trainer_parameters[k] = trainer_config[_brain_key][k]
+            trainer_parameters = trainer_config['default'].copy()
+            trainer_parameters['summary_path'] = '{basedir}/{name}'.format(
+                basedir=self.summaries_dir,
+                name=str(self.run_id) + '_' + brain_name)
+            trainer_parameters['model_path'] = '{basedir}/{name}'.format(
+                basedir=self.model_path,
+                name=brain_name)
+            trainer_parameters['keep_checkpoints'] = self.keep_checkpoints
+            trainer_parameters = self.add_brain_parameters(trainer_parameters, trainer_config, brain_name)
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
+
         for brain_name in self.external_brains:
             if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
                 self.trainers[brain_name] = OfflineBCTrainer(
@@ -183,6 +200,26 @@ class TrainerController(object):
                 self.trainer_metrics[brain_name] = self.trainers[
                     brain_name
                 ].trainer_metrics
+            elif trainer_parameters_dict[brain_name]['trainer'] == 'ghost':
+                try:
+                    master_trainer_parameters = trainer_parameters_dict[trainer_parameters_dict[brain_name]['ghost_master_brain']]
+                except Exception as e:
+                    if 'ghost_master_brain' not in trainer_parameters_dict[brain_name]:
+                        raise UnityEnvironmentException("You need to specify the ghost_master_brain hyperparameter for the brain: '{}'".format(brain_name))
+                    elif trainer_parameters_dict[brain_name]['ghost_master_brain'] not in trainer_parameters_dict:
+                        raise UnityEnvironmentException("Didn't find the master_brain '{}' for ghost brain '{}'".format(trainer_parameters_dict[brain_name]['ghost_master_brain'], brain_name))
+                    else:
+                        raise e
+
+                trainer_parameters_dict[brain_name] = self.add_brain_parameters(master_trainer_parameters, trainer_config, brain_name)
+
+                self.trainers[brain_name] = GhostTrainer(
+                    self.external_brains[brain_name],
+                    self.meta_curriculum
+                        .brains_to_curriculums[brain_name]
+                        .min_lesson_length if self.meta_curriculum else 0,
+                    trainer_parameters_dict[brain_name],
+                    self.seed, self.run_id)
             else:
                 raise UnityEnvironmentException(
                     "The trainer config contains "
@@ -305,6 +342,7 @@ class TrainerController(object):
             take_action_value[brain_name] = action_info.value
             take_action_outputs[brain_name] = action_info.outputs
         time_start_step = time()
+        self.elo_tracker.update_elo_ratings(curr_info, self.trainers)
         new_info = env.step(
             vector_action=take_action_vector,
             memory=take_action_memories,

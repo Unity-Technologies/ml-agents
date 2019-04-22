@@ -80,18 +80,20 @@ class Policy(object):
             init = tf.global_variables_initializer()
             self.sess.run(init)
 
-    def _load_graph(self):
+    def load_graph(self, checkpoint_path=None):
         with self.graph.as_default():
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             logger.info("Loading Model for brain {}".format(self.brain.brain_name))
-            ckpt = tf.train.get_checkpoint_state(self.model_path)
-            if ckpt is None:
-                logger.info(
-                    "The model {0} could not be found. Make "
-                    "sure you specified the right "
-                    "--run-id".format(self.model_path)
-                )
-            self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+            if checkpoint_path is None:
+                ckpt = tf.train.get_checkpoint_state(self.model_path)
+                if ckpt is None:
+                    logger.info(
+                        "The model {0} could not be found. Make "
+                        "sure you specified the right "
+                        "--run-id".format(self.model_path)
+                    )
+                checkpoint_path = ckpt.checkpoint_path
+            self.saver.restore(self.sess, checkpoint_path)
 
     def evaluate(self, brain_info: BrainInfo):
         """
