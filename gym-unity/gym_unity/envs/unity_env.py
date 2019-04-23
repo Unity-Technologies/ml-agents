@@ -62,7 +62,7 @@ class UnityEnv(gym.Env):
             )
         if len(self._env.external_brain_names) <= 0:
             raise UnityGymException(
-                "There are any external brain in the UnityEnvironment"
+                "There are not any external brain in the UnityEnvironment"
             )
 
         self.brain_name = self._env.external_brain_names[0]
