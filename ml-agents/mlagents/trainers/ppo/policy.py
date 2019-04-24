@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 
+from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.ppo.reward_signals.gail import GAILSignal
@@ -72,7 +73,7 @@ class PPOPolicy(Policy):
         self.inference_dict = {
             "action": self.model.output,
             "log_probs": self.model.all_log_probs,
-            "value": self.model.value,
+            "value": self.model.value_heads,
             "entropy": self.model.entropy,
             "learning_rate": self.model.learning_rate,
         }
@@ -196,8 +197,29 @@ class PPOPolicy(Policy):
             feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[
                 idx
             ].reshape([-1, len(self.model.act_size)])
-        value_estimate = self.sess.run(self.model.value, feed_dict)
-        return value_estimate
+        value_estimates = self.sess.run(self.model.value_heads, feed_dict)
+        return value_estimates
+    
+    def get_action(self, brain_info: BrainInfo) -> ActionInfo:
+        """
+        Decides actions given observations information, and takes them in environment.
+        :param brain_info: A dictionary of brain names and BrainInfo from environment.
+        :return: an ActionInfo containing action, memories, values and an object
+        to be passed to add experiences
+        """
+        if len(brain_info.agents) == 0:
+            return ActionInfo([], [], [], None, None)
+
+        run_out = self.evaluate(brain_info)
+        mean_values = np.mean(np.array(list(run_out.get("value").values())), axis=0).flatten()
+
+        return ActionInfo(
+            action=run_out.get("action"),
+            memory=run_out.get("memory_out"),
+            text=None,
+            value=mean_values,
+            outputs=run_out,
+        )
 
     def get_last_reward(self):
         """

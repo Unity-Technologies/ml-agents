@@ -191,8 +191,8 @@ class Trainer(object):
                 if self.is_training and self.get_step <= self.get_max_steps
                 else "Not Training."
             )
-            if len(self.stats["Environment/Cumulative Reward"]) > 0:
-                mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
+            if len(self.stats["Environment/Extrinsic Reward"]) > 0:
+                mean_reward = np.mean(self.stats["Environment/Extrinsic Reward"])
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
@@ -204,7 +204,7 @@ class Trainer(object):
                         min(self.get_step, self.get_max_steps),
                         delta_train_start,
                         mean_reward,
-                        np.std(self.stats["Environment/Cumulative Reward"]),
+                        np.std(self.stats["Environment/Extrinsic Reward"]),
                         is_training,
                     )
                 )

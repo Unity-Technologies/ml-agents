@@ -37,7 +37,7 @@ class PPOTrainer(Trainer):
                            'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
                            'use_recurrent', 'summary_path', 'memory_size',
                            'curiosity_enc_size', 'model_path',
-                           'reward_signals', 'reward_strength', 'gammas', 'pre_training']
+                           'reward_signals', 'reward_strength', 'gammas']
         self.valid_reward_signals = ['extrinsic', 'gail', 'entropy', 'curiosity', 'bc']
 
         self.check_param_keys()
@@ -61,9 +61,9 @@ class PPOTrainer(Trainer):
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         stats = {
-            "Environment/Cumulative Reward": [],
+            "Environment/Extrinsic Reward": [],
             "Environment/Episode Length": [],
-            "Policy/Value Estimate": [],
+            "Policy/Extrinsic Value Estimate": [],
             "Policy/Entropy": [],
             "Losses/Value Loss": [],
             "Losses/Policy Loss": [],
@@ -284,13 +284,12 @@ class PPOTrainer(Trainer):
         """
         self.trainer_metrics.start_experience_collection_timer()
         if take_action_outputs:
-            self.stats["Policy/Value Estimate"].append(
-                take_action_outputs["value"].mean()
-            )
             self.stats["Policy/Entropy"].append(take_action_outputs["entropy"].mean())
             self.stats["Policy/Learning Rate"].append(
                 take_action_outputs["learning_rate"]
             )
+            for name, signal in self.policy.reward_signals.items():
+                self.stats[signal.value_name].append(np.mean(take_action_outputs['value'][name]))
 
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]

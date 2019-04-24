@@ -501,9 +501,16 @@ class LearningModel(object):
                 tf.one_hot(self.action_holder[:, i], self.act_size[i])
                 for i in range(len(self.act_size))
             ],
+            axis=1,
         )
         self.selected_actions = tf.stop_gradient(self.action_oh)
-
+        
+        self.all_old_log_probs = tf.placeholder(
+            shape=[None, sum(self.act_size)], dtype=tf.float32, name="old_probabilities"
+        )
+        _, old_normalized_logits = self.create_discrete_action_masking_layer(
+            self.all_old_log_probs, self.action_masks, self.act_size
+        )
 
         action_idx = [0] + list(np.cumsum(self.act_size))
 

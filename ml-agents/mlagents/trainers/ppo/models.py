@@ -58,7 +58,7 @@ class PPOModel(LearningModel):
         Creates training-specific Tensorflow ops for PPO models.
         :param probs: Current policy probabilities
         :param old_probs: Past policy probabilities
-        :param value: Current value estimate
+        :param value_streams: Current value estimates from each value stream
         :param beta: Entropy regularization strength
         :param entropy: Current policy entropy
         :param epsilon: Value for policy-divergence threshold
