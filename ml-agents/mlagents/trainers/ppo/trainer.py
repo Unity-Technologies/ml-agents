@@ -38,14 +38,17 @@ class PPOTrainer(Trainer):
                            'use_recurrent', 'summary_path', 'memory_size',
                            'curiosity_enc_size', 'model_path',
                            'reward_signals', 'reward_strength', 'gammas', 'pre_training']
-        self.valid_reward_signals = ['extrinsic', 'gail', 'entropy', 'curiosity']
+        self.valid_reward_signals = ['extrinsic', 'gail', 'entropy', 'curiosity', 'bc']
 
         self.check_param_keys()
         self.check_rewards_keys(trainer_parameters)
+        self.check_demo_keys(trainer_parameters)
         self.use_curiosity = 'curiosity' in trainer_parameters['reward_signals']
         self.use_gail = 'gail' in trainer_parameters['reward_signals']
         self.use_entropy = 'entropy' in trainer_parameters['reward_signals']
         self.use_extrinsic = 'extrinsic' in trainer_parameters['reward_signals']
+        self.use_bc = 'bc' in trainer_parameters['reward_signals']
+
         # We always want to record the extrinsic reward. If it wasn't specified,
         # add the extrinsic reward signal with strength 0. 
         if not self.use_extrinsic:
@@ -86,6 +89,9 @@ class PPOTrainer(Trainer):
             stats['Policy/Entropy Reward'] = []
             stats['Policy/Entropy Value Estimate'] = []
             self.collected_rewards['entropy'] = {}
+        if self.use_bc:
+            stats['Policy/BC Reward'] = []
+            stats['Policy/BC Value Estimate'] = []
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -155,6 +161,16 @@ class PPOTrainer(Trainer):
             if signal_name not in self.valid_reward_signals:
                 raise UnityTrainerException(
                     "Unknown reward signal {} was given as Hyperparameter. ".format(signal_name))
+
+    def check_demo_keys(self, trainer_parameters: dict):
+        """
+        Checks if the demonstration-aided parameters are set properly. 
+        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
+        """
+        if 'demo_aided' in trainer_parameters and trainer_parameters['demo_aided'] is True:
+            if 'demo_path' not in trainer_parameters or 'demo_weight' not in trainer_parameters:
+                raise UnityTrainerException(
+                    "demo_aided was specified but either demo_path or demo_weight was not given.")
 
     def increment_step_and_update_last_reward(self):
         """
@@ -506,6 +522,8 @@ class PPOTrainer(Trainer):
         if self.use_gail:
             gail_loss = self.policy.reward_signals['gail'].update(self.training_buffer)
             self.stats['Losses/GAIL Loss'].append(gail_loss)
+        if self.use_bc:
+            _bc_loss = self.policy.reward_signals['bc'].update(self.training_buffer)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 

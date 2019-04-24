@@ -7,6 +7,7 @@ from mlagents.trainers.ppo.reward_signals.gail import GAILSignal
 from mlagents.trainers.ppo.reward_signals.curiosity import CuriositySignal
 from mlagents.trainers.ppo.reward_signals.extrinsic import ExtrinsicSignal
 from mlagents.trainers.ppo.reward_signals.entropy import EntropySignal
+from mlagents.trainers.ppo.reward_signals.bc import BCSignal
 from mlagents.trainers.ppo.pre_training import PreTraining
 
 
@@ -58,20 +59,15 @@ class PPOPolicy(Policy):
                 self.reward_signals['gail'] = gail_signal
             if 'entropy' in reward_strengths.keys():
                 self.reward_signals['entropy'] = EntropySignal(self, reward_strengths['entropy'])
+            if 'bc' in reward_strengths.keys():
+                self.reward_signals['bc'] = BCSignal(self, float(trainer_params['learning_rate']),
+                                            trainer_params['demo_path'], reward_strengths['bc'])
 
-        pre_trainer = None
+        self.bc_trainer = None
         if load:
             self._load_graph()
         else:
-            if trainer_params['pre_training']:
-                with self.graph.as_default():
-                    pre_trainer = PreTraining(self.sess,
-                                              self.model,
-                                              self.brain,
-                                              trainer_params)
             self._initialize_graph()
-        if pre_trainer:
-                pre_trainer.update_policy()
 
         self.inference_dict = {
             "action": self.model.output,
@@ -84,11 +80,13 @@ class PPOPolicy(Policy):
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
-        if is_training and self.use_vec_obs and trainer_params['normalize'] and pre_trainer is None and not load:
+        if is_training and self.use_vec_obs and trainer_params['normalize'] and bc_trainer is None and not load:
             self.inference_dict['update_mean'] = self.model.update_normalization
 
+        self.total_policy_loss = self.model.policy_loss
+
         self.update_dict = {'value_loss': self.model.value_loss,
-                            'policy_loss': self.model.policy_loss,
+                            'policy_loss': self.total_policy_loss,
                             'update_batch': self.model.update_batch}
 
     def evaluate(self, brain_info):
