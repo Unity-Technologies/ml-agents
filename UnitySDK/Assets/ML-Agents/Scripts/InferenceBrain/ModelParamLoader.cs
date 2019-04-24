@@ -17,7 +17,7 @@ namespace MLAgents.InferenceBrain
             Discrete,
             Continuous
         }
-        private const long ApiVersion = 1;
+        private const long ApiVersion = 2;
         private TFSharpInferenceEngine _engine;
         private BrainParameters _brainParameters;
         private List<string> _failedModelChecks = new List<string>();
@@ -49,7 +49,7 @@ namespace MLAgents.InferenceBrain
         /// Generates the Tensor inputs that are expected to be present in the Model. 
         /// </summary>
         /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
-        public IEnumerable<Tensor> GetInputTensors()
+        public IReadOnlyList<Tensor> GetInputTensors()
         {
             return _engine?.InputFeatures();
         }
@@ -58,7 +58,7 @@ namespace MLAgents.InferenceBrain
         /// Generates the Tensor outputs that are expected to be present in the Model. 
         /// </summary>
         /// <returns>Tensor IEnumerable with the expected Tensor outputs</returns>
-        public IEnumerable<Tensor> GetOutputTensors()
+        public IReadOnlyList<Tensor> GetOutputTensors()
         {
             var tensorList = new List<Tensor>();
             if (_brainParameters.vectorActionSpaceType == SpaceType.continuous)
@@ -411,8 +411,8 @@ namespace MLAgents.InferenceBrain
             var widthBp = resolutionBp.width;
             var heightBp = resolutionBp.height;
             var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;
-            var widthT = tensor.Shape[1];
-            var heightT = tensor.Shape[2];
+            var heightT = tensor.Shape[1];
+            var widthT = tensor.Shape[2];
             var pixelT = tensor.Shape[3];
             if  ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {

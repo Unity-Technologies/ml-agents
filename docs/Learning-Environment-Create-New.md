@@ -435,7 +435,7 @@ setting the Brain properties so that they are compatible with our Agent code.
     window.
 3. Drag the Brain **RollerBallPlayer** from the Project window to the 
     RollerAgent **Brain** field.
-4. Change **Decision Frequency** from `1` to `10`.
+4. Change **Decision Interval** from `1` to `10`.
 5. Drag the Target GameObject from the Hierarchy window to the RollerAgent
     Target field.
 
@@ -463,7 +463,7 @@ the RollerAgent only has an `Action Size` of two, we will use one key to specify
 positive values and one to specify negative values for each action, for a total
 of four keys.
 
-1. Select the `RollerBallPlayer` Aset to view its properties in the Inspector.
+1. Select the `RollerBallPlayer` Asset to view its properties in the Inspector.
 2. Expand the **Key Continuous Player Actions** dictionary (only visible when using
     a **PlayerBrain**).
 3. Set **Size** to 4.

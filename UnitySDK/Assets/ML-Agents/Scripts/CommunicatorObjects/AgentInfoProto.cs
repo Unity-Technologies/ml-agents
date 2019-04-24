@@ -25,18 +25,21 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjltbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2lu",
-            "Zm9fcHJvdG8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIpICCg5BZ2Vu",
-            "dEluZm9Qcm90bxIiChpzdGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgBIAMo",
-            "AhIbChN2aXN1YWxfb2JzZXJ2YXRpb25zGAIgAygMEhgKEHRleHRfb2JzZXJ2",
-            "YXRpb24YAyABKAkSHQoVc3RvcmVkX3ZlY3Rvcl9hY3Rpb25zGAQgAygCEhsK",
-            "E3N0b3JlZF90ZXh0X2FjdGlvbnMYBSABKAkSEAoIbWVtb3JpZXMYBiADKAIS",
-            "DgoGcmV3YXJkGAcgASgCEgwKBGRvbmUYCCABKAgSGAoQbWF4X3N0ZXBfcmVh",
-            "Y2hlZBgJIAEoCBIKCgJpZBgKIAEoBRITCgthY3Rpb25fbWFzaxgLIAMoCEIf",
-            "qgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "Zm9fcHJvdG8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjttbGFnZW50",
+            "cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2N1c3RvbV9vYnNlcnZhdGlv",
+            "bi5wcm90byLXAgoOQWdlbnRJbmZvUHJvdG8SIgoac3RhY2tlZF92ZWN0b3Jf",
+            "b2JzZXJ2YXRpb24YASADKAISGwoTdmlzdWFsX29ic2VydmF0aW9ucxgCIAMo",
+            "DBIYChB0ZXh0X29ic2VydmF0aW9uGAMgASgJEh0KFXN0b3JlZF92ZWN0b3Jf",
+            "YWN0aW9ucxgEIAMoAhIbChNzdG9yZWRfdGV4dF9hY3Rpb25zGAUgASgJEhAK",
+            "CG1lbW9yaWVzGAYgAygCEg4KBnJld2FyZBgHIAEoAhIMCgRkb25lGAggASgI",
+            "EhgKEG1heF9zdGVwX3JlYWNoZWQYCSABKAgSCgoCaWQYCiABKAUSEwoLYWN0",
+            "aW9uX21hc2sYCyADKAgSQwoSY3VzdG9tX29ic2VydmF0aW9uGAwgASgLMicu",
+            "Y29tbXVuaWNhdG9yX29iamVjdHMuQ3VzdG9tT2JzZXJ2YXRpb25CH6oCHE1M",
+            "QWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CustomObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "CustomObservation" }, null, null, null)
           }));
     }
     #endregion
@@ -79,6 +82,7 @@ namespace MLAgents.CommunicatorObjects {
       maxStepReached_ = other.maxStepReached_;
       id_ = other.id_;
       actionMask_ = other.actionMask_.Clone();
+      customObservation_ = other.customObservation_ != null ? other.customObservation_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -203,6 +207,17 @@ namespace MLAgents.CommunicatorObjects {
       get { return actionMask_; }
     }
 
+    /// <summary>Field number for the "custom_observation" field.</summary>
+    public const int CustomObservationFieldNumber = 12;
+    private global::MLAgents.CommunicatorObjects.CustomObservation customObservation_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.CommunicatorObjects.CustomObservation CustomObservation {
+      get { return customObservation_; }
+      set {
+        customObservation_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as AgentInfoProto);
@@ -227,6 +242,7 @@ namespace MLAgents.CommunicatorObjects {
       if (MaxStepReached != other.MaxStepReached) return false;
       if (Id != other.Id) return false;
       if(!actionMask_.Equals(other.actionMask_)) return false;
+      if (!object.Equals(CustomObservation, other.CustomObservation)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -244,6 +260,7 @@ namespace MLAgents.CommunicatorObjects {
       if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
       if (Id != 0) hash ^= Id.GetHashCode();
       hash ^= actionMask_.GetHashCode();
+      if (customObservation_ != null) hash ^= CustomObservation.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -286,6 +303,10 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteInt32(Id);
       }
       actionMask_.WriteTo(output, _repeated_actionMask_codec);
+      if (customObservation_ != null) {
+        output.WriteRawTag(98);
+        output.WriteMessage(CustomObservation);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -317,6 +338,9 @@ namespace MLAgents.CommunicatorObjects {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
       }
       size += actionMask_.CalculateSize(_repeated_actionMask_codec);
+      if (customObservation_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CustomObservation);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -351,6 +375,12 @@ namespace MLAgents.CommunicatorObjects {
         Id = other.Id;
       }
       actionMask_.Add(other.actionMask_);
+      if (other.customObservation_ != null) {
+        if (customObservation_ == null) {
+          CustomObservation = new global::MLAgents.CommunicatorObjects.CustomObservation();
+        }
+        CustomObservation.MergeFrom(other.CustomObservation);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -408,6 +438,13 @@ namespace MLAgents.CommunicatorObjects {
           case 90:
           case 88: {
             actionMask_.AddEntriesFrom(input, _repeated_actionMask_codec);
+            break;
+          }
+          case 98: {
+            if (customObservation_ == null) {
+              CustomObservation = new global::MLAgents.CommunicatorObjects.CustomObservation();
+            }
+            input.ReadMessage(CustomObservation);
             break;
           }
         }

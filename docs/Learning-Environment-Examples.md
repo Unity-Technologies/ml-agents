@@ -246,6 +246,7 @@ If you would like to contribute environments, please see our
     `VisualHallway` scene.
 * Reset Parameters: None.
 * Benchmark Mean Reward: 0.7
+  * To speed up training, you can enable curiosity by adding `use_curiosity: true` in `config/trainer_config.yaml`
 * Optional Imitation Learning scene: `HallwayIL`.
 
 ## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
@@ -267,7 +268,7 @@ If you would like to contribute environments, please see our
     the jump.
   * Visual Observations: None.
 * Reset Parameters: None.
-* Benchmark Mean Reward: 2.5
+* Benchmark Mean Reward: 10
 
 ## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
 

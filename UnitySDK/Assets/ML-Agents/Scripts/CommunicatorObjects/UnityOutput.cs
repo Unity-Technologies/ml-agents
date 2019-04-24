@@ -69,8 +69,8 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityOutput(UnityOutput other) : this() {
-      RlOutput = other.rlOutput_ != null ? other.RlOutput.Clone() : null;
-      RlInitializationOutput = other.rlInitializationOutput_ != null ? other.RlInitializationOutput.Clone() : null;
+      rlOutput_ = other.rlOutput_ != null ? other.rlOutput_.Clone() : null;
+      rlInitializationOutput_ = other.rlInitializationOutput_ != null ? other.rlInitializationOutput_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -172,13 +172,13 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.rlOutput_ != null) {
         if (rlOutput_ == null) {
-          rlOutput_ = new global::MLAgents.CommunicatorObjects.UnityRLOutput();
+          RlOutput = new global::MLAgents.CommunicatorObjects.UnityRLOutput();
         }
         RlOutput.MergeFrom(other.RlOutput);
       }
       if (other.rlInitializationOutput_ != null) {
         if (rlInitializationOutput_ == null) {
-          rlInitializationOutput_ = new global::MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
+          RlInitializationOutput = new global::MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
         }
         RlInitializationOutput.MergeFrom(other.RlInitializationOutput);
       }
@@ -195,16 +195,16 @@ namespace MLAgents.CommunicatorObjects {
             break;
           case 10: {
             if (rlOutput_ == null) {
-              rlOutput_ = new global::MLAgents.CommunicatorObjects.UnityRLOutput();
+              RlOutput = new global::MLAgents.CommunicatorObjects.UnityRLOutput();
             }
-            input.ReadMessage(rlOutput_);
+            input.ReadMessage(RlOutput);
             break;
           }
           case 18: {
             if (rlInitializationOutput_ == null) {
-              rlInitializationOutput_ = new global::MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
+              RlInitializationOutput = new global::MLAgents.CommunicatorObjects.UnityRLInitializationOutput();
             }
-            input.ReadMessage(rlInitializationOutput_);
+            input.ReadMessage(RlInitializationOutput);
             break;
           }
         }

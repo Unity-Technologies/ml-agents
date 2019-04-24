@@ -50,7 +50,4 @@ PR explaining the nature of the environment and task.
 
 ## Style Guide
 
-When performing changes to the codebase, ensure that you follow the style guide
-of the file you're modifying. For Python, we follow
-[PEP 8](https://www.python.org/dev/peps/pep-0008/).
-For C#, we will soon be adding a formal style guide for our repository.
+When performing changes to the codebase, please ensure that all python code is reformatted using the [black](https://github.com/ambv/black) formatter. For C#, we will soon be requirements for style and formatting.

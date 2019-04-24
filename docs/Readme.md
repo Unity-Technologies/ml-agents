@@ -29,6 +29,7 @@
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 * [Using the Monitor](Feature-Monitor.md)
 * [Using an Executable Environment](Learning-Environment-Executable.md)
+* [Creating Custom Protobuf Messages](Creating-Custom-Protobuf-Messages.md)
 
 ## Training
 
@@ -39,10 +40,12 @@
 * [Training with LSTM](Feature-Memory.md)
 * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
+* [Training Using Concurrent Unity Instances](Training-Using-Concurrent-Unity-Instances.md)
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Inference
-* [TensorFlowSharp in Unity (Experimental)](Using-TensorFlow-Sharp-in-Unity.md)
+
+* [Unity Inference Engine](Unity-Inference-Engine.md)
 
 ## Help
 
@@ -55,4 +58,5 @@
 
 * [API Reference](API-Reference.md)
 * [How to use the Python API](Python-API.md)
-* [Wrapping Learning Environment as a Gym](../gym-unity/README.md)
+* [Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)](../gym-unity/README.md)
+* [Creating custom protobuf messages](Creating-Custom-Protobuf-Messages.md)

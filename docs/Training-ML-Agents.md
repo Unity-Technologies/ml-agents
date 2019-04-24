@@ -85,7 +85,7 @@ And then opening the URL: [localhost:6006](http://localhost:6006).
 
 When training is finished, you can find the saved model in the `models` folder
 under the assigned run-id — in the cats example, the path to the model would be
-`models/cob_1/CatsOnBicycles_cob_1.bytes`.
+`models/cob_1/CatsOnBicycles_cob_1.nn`.
 
 While this example used the default training hyperparameters, you can edit the
 [training_config.yaml file](#training-config-file) with a text editor to set
@@ -134,11 +134,9 @@ environment, you can set the following command line options when invoking
   [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
 * `--train` – Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
-* `--worker-id=<n>` – When you are running more than one training environment at
-  the same time, assign each a unique worker-id number. The worker-id is added
-  to the communication port opened between the current instance of
-  `mlagents-learn` and the ExternalCommunicator object in the Unity environment.
-  Defaults to 0.
+* `--num-envs=<n>` - Specifies the number of concurrent Unity environment instances to collect
+  experiences from when training. Defaults to 1.
+* `--base-port` - Specifies the starting port. Each concurrent Unity environment instance will get assigned a port sequentially, starting from the `base-port`.  Each instance will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs given to each instance from 0 to `num_envs - 1`. Default is 5005.
 * `--docker-target-name=<dt>` – The Docker Volume on which to store curriculum,
   executable and model files. See [Using Docker](Using-Docker.md).
 * `--no-graphics` - Specify this option to run the Unity executable in
@@ -146,6 +144,10 @@ environment, you can set the following command line options when invoking
   training doesn't involve visual observations (reading from Pixels). See
   [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more
   details.
+* `--debug` - Specify this option to run ML-Agents in debug mode and log Trainer
+  Metrics to a CSV stored in the `summaries` directory. The metrics  stored are:
+  brain name, time to update policy, time since start of training, time for last experience collection, number of experiences used for training, mean return. This
+  option is not available currently for Imitation Learning.
 
 ### Training config file
 

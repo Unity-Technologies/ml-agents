@@ -333,7 +333,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 48: {
-            vectorActionSpaceType_ = (global::MLAgents.CommunicatorObjects.SpaceTypeProto) input.ReadEnum();
+            VectorActionSpaceType = (global::MLAgents.CommunicatorObjects.SpaceTypeProto) input.ReadEnum();
             break;
           }
           case 58: {

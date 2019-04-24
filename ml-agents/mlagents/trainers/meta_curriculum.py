@@ -6,7 +6,7 @@ from mlagents.trainers.exception import MetaCurriculumError
 
 import logging
 
-logger = logging.getLogger('mlagents.trainers')
+logger = logging.getLogger("mlagents.trainers")
 
 
 class MetaCurriculum(object):
@@ -30,27 +30,34 @@ class MetaCurriculum(object):
 
         try:
             for curriculum_filename in os.listdir(curriculum_folder):
-                brain_name = curriculum_filename.split('.')[0]
-                curriculum_filepath = \
-                    os.path.join(curriculum_folder, curriculum_filename)
-                curriculum = Curriculum(curriculum_filepath,
-                                        default_reset_parameters)
+                brain_name = curriculum_filename.split(".")[0]
+                curriculum_filepath = os.path.join(
+                    curriculum_folder, curriculum_filename
+                )
+                curriculum = Curriculum(curriculum_filepath, default_reset_parameters)
 
                 # Check if any two curriculums use the same reset params.
-                if any([(parameter in curriculum.get_config().keys())
-                    for parameter in used_reset_parameters]):
-                    logger.warning('Two or more curriculums will '
-                                'attempt to change the same reset '
-                                'parameter. The result will be '
-                                'non-deterministic.')
+                if any(
+                    [
+                        (parameter in curriculum.get_config().keys())
+                        for parameter in used_reset_parameters
+                    ]
+                ):
+                    logger.warning(
+                        "Two or more curriculums will "
+                        "attempt to change the same reset "
+                        "parameter. The result will be "
+                        "non-deterministic."
+                    )
 
                 used_reset_parameters.update(curriculum.get_config().keys())
                 self._brains_to_curriculums[brain_name] = curriculum
         except NotADirectoryError:
-            raise MetaCurriculumError(curriculum_folder + ' is not a '
-                                      'directory. Refer to the ML-Agents '
-                                      'curriculum learning docs.')
-
+            raise MetaCurriculumError(
+                curriculum_folder + " is not a "
+                "directory. Refer to the ML-Agents "
+                "curriculum learning docs."
+            )
 
     @property
     def brains_to_curriculums(self):
@@ -85,8 +92,9 @@ class MetaCurriculum(object):
             Whether the curriculum of the specified brain should attempt to
             increment its lesson.
         """
-        return reward_buff_size >= (self.brains_to_curriculums[brain_name]
-                                        .min_lesson_length)
+        return reward_buff_size >= (
+            self.brains_to_curriculums[brain_name].min_lesson_length
+        )
 
     def increment_lessons(self, measure_vals, reward_buff_sizes=None):
         """Attempts to increments all the lessons of all the curriculums in this
@@ -110,14 +118,15 @@ class MetaCurriculum(object):
             for brain_name, buff_size in reward_buff_sizes.items():
                 if self._lesson_ready_to_increment(brain_name, buff_size):
                     measure_val = measure_vals[brain_name]
-                    ret[brain_name] = (self.brains_to_curriculums[brain_name]
-                                           .increment_lesson(measure_val))
+                    ret[brain_name] = self.brains_to_curriculums[
+                        brain_name
+                    ].increment_lesson(measure_val)
         else:
             for brain_name, measure_val in measure_vals.items():
-                ret[brain_name] = (self.brains_to_curriculums[brain_name]
-                                       .increment_lesson(measure_val))
+                ret[brain_name] = self.brains_to_curriculums[
+                    brain_name
+                ].increment_lesson(measure_val)
         return ret
-
 
     def set_all_curriculums_to_lesson_num(self, lesson_num):
         """Sets all the curriculums in this meta curriculum to a specified
@@ -129,7 +138,6 @@ class MetaCurriculum(object):
         """
         for _, curriculum in self.brains_to_curriculums.items():
             curriculum.lesson_num = lesson_num
-
 
     def get_config(self):
         """Get the combined configuration of all curriculums in this
