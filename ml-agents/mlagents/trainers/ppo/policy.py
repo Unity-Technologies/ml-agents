@@ -4,11 +4,11 @@ import numpy as np
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.ppo.reward_signals.gail import GAILSignal
-from mlagents.trainers.ppo.reward_signals.curiosity import CuriositySignal
-from mlagents.trainers.ppo.reward_signals.extrinsic import ExtrinsicSignal
-from mlagents.trainers.ppo.reward_signals.entropy import EntropySignal
-from mlagents.trainers.ppo.reward_signals.bc import BCTrainer
+from mlagents.trainers.ppo.components.gail import GAILSignal
+from mlagents.trainers.ppo.components.curiosity import CuriositySignal
+from mlagents.trainers.ppo.components.extrinsic import ExtrinsicSignal
+from mlagents.trainers.ppo.components.entropy import EntropySignal
+from mlagents.trainers.ppo.components.bc import BCTrainer
 from mlagents.trainers.ppo.pre_training import PreTraining
 
 

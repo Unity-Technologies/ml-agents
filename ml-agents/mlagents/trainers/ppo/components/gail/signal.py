@@ -1,6 +1,6 @@
 import numpy as np
 
-from mlagents.trainers.ppo.reward_signals import RewardSignal
+from mlagents.trainers.ppo.components import RewardSignal
 from mlagents.trainers.policy import Policy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer

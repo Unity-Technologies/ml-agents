@@ -1,4 +1,4 @@
-from mlagents.trainers.ppo.reward_signals import RewardSignal
+from mlagents.trainers.ppo.components import RewardSignal
 from mlagents.trainers.policy import Policy
 
 

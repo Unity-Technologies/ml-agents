@@ -1,6 +1,6 @@
 import numpy as np
-from mlagents.trainers.ppo.reward_signals import RewardSignal
-from mlagents.trainers.ppo.reward_signals.curiosity.model import CuriosityModel
+from mlagents.trainers.ppo.components import RewardSignal
+from mlagents.trainers.ppo.components.curiosity.model import CuriosityModel
 from mlagents.trainers.policy import Policy
 
 
