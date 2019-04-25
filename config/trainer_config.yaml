@@ -48,12 +48,21 @@ PushBlockLearning:
     batch_size: 128
     buffer_size: 2048
     beta: 1.0e-2
-    beta: 0.0
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 64
     num_layers: 2
-    demo_path: None
+    demo_path: ./UnitySDK/Assets/Demonstrations/ImperfectPushBlock.demo 
+    demo_aided:
+     demo_path: ./UnitySDK/Assets/Demonstrations/ImperfectPushBlock.demo 
+     demo_strength: 0.2
+     demo_steps: 10000
+    reward_signals: 
+     - 'extrinsic'
+    reward_strength: 
+     - 1.0
+    gammas:
+     - 0.99
 
 SmallWallJumpLearning: 
     max_steps: 1.0e6

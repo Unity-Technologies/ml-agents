@@ -1,16 +1,14 @@
 import numpy as np
 
-from mlagents.trainers.ppo.reward_signals import RewardSignal
 from mlagents.trainers.policy import Policy
 from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.ppo.pre_training import PreTraining
 
-
-class BCSignal(RewardSignal):
-    def __init__(self, policy: Policy, lr, demo_path, signal_strength):
+class BCTrainer():
+    def __init__(self, policy: Policy, lr, demo_path, anneal_steps):
         """
-        The Gail Reward signal generator.
+        A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
         :param h_size: The size of the the hidden layers of the discriminator
         :param lr: The Learning Rate
@@ -20,10 +18,7 @@ class BCSignal(RewardSignal):
         """
         super().__init__()
         self.policy = policy
-        self.strength = signal_strength
-        self.stat_name = 'Policy/BC Reward'
-        self.value_name = 'Policy/BC Value Estimate'
-        self.model = BCModel(policy.model, 0, lr, 64, 10000, 0.2)
+        self.model = BCModel(policy.model, lr, anneal_steps)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.n_sequences = min(128, len(self.demonstration_buffer.update_buffer['actions']))
         self.has_updated = False
@@ -37,7 +32,6 @@ class BCSignal(RewardSignal):
         :return: The loss of the update.
         """
         batch_losses = []
-        n_sequences = n_sequences // 2
         possible_demo_batches = len(
              self.demonstration_buffer.update_buffer['actions']) // n_sequences
         possible_policy_batches = len(policy_buffer.update_buffer['actions']) // n_sequences
@@ -71,42 +65,6 @@ class BCSignal(RewardSignal):
         unscaled_reward = np.array(next_info.rewards)
         scaled_reward = 0.0 * unscaled_reward
         return scaled_reward, unscaled_reward
-
-    def _update_batch2(self, mini_batch_demo):
-        """
-        Helper method for update.
-        :param mini_batch_demo: A mini batch of expert trajectories
-        :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
-        :return: Output from update process.
-        """
-        feed_dict = {self.model.done_expert: mini_batch_demo['done'].reshape([-1, 1])}
-
-        if self.policy.use_continuous_act:
-            feed_dict[self.model.action_in_expert] = mini_batch_demo['actions'].reshape(
-                [-1, self.policy.model.act_size[0]])
-        else:
-            feed_dict[self.model.action_in_expert] = mini_batch_demo['actions'].reshape(
-                [-1, len(self.policy.model.act_size)])
-
-        if self.policy.use_vis_obs > 0:
-            for i in range(len(self.policy.model.visual_in)):
-                demo_obs = mini_batch_demo['visual_obs%d' % i]
-                if self.policy.sequence_length > 1 and self.policy.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = demo_obs.shape
-                    feed_dict[self.model.expert_visual_in[i]] = demo_obs.reshape(
-                        [-1, _w, _h, _c])
-                else:
-                    feed_dict[self.model.expert_visual_in[i]] = demo_obs
-        if self.policy.use_vec_obs:
-            feed_dict[self.model.obs_in_expert] = mini_batch_demo['vector_obs'].reshape(
-                [-1, self.policy.vec_obs_size])
-
-        # for reporting
-        # end for reporting
-        loss, _ = self.policy.sess.run([self.strength*self.model.loss, self.model.update_batch],
-                                        feed_dict=feed_dict)
-        run_out = {'bc_loss': loss}
-        return run_out
     
     def _update_batch(self, mini_batch_demo, n_sequences):
         feed_dict = {#self.policy.model.dropout_rate: self.update_rate,

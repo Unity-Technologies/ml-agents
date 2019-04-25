@@ -8,7 +8,7 @@ from mlagents.trainers.ppo.reward_signals.gail import GAILSignal
 from mlagents.trainers.ppo.reward_signals.curiosity import CuriositySignal
 from mlagents.trainers.ppo.reward_signals.extrinsic import ExtrinsicSignal
 from mlagents.trainers.ppo.reward_signals.entropy import EntropySignal
-from mlagents.trainers.ppo.reward_signals.bc import BCSignal
+from mlagents.trainers.ppo.reward_signals.bc import BCTrainer
 from mlagents.trainers.ppo.pre_training import PreTraining
 
 
@@ -45,6 +45,7 @@ class PPOPolicy(Policy):
                                   stream_names=list(reward_strengths.keys()))
             self.model.create_ppo_optimizer()
 
+            # Initialize Components
             if 'extrinsic' in reward_strengths.keys():
                 self.reward_signals['extrinsic'] = ExtrinsicSignal(reward_strengths['extrinsic'])
             if 'curiosity' in reward_strengths.keys():
@@ -60,11 +61,11 @@ class PPOPolicy(Policy):
                 self.reward_signals['gail'] = gail_signal
             if 'entropy' in reward_strengths.keys():
                 self.reward_signals['entropy'] = EntropySignal(self, reward_strengths['entropy'])
-            if 'bc' in reward_strengths.keys():
-                self.reward_signals['bc'] = BCSignal(self, float(trainer_params['learning_rate']),
-                                            trainer_params['demo_path'], reward_strengths['bc'])
+            # BC trainer is not a reward signal
+            if 'demo_aided' in trainer_params:
+                self.bc_trainer = BCTrainer(self, float(trainer_params['demo_aided']['demo_strength']*trainer_params['learning_rate']),
+                                            trainer_params['demo_aided']['demo_path'], trainer_params['demo_aided']['demo_steps'])
 
-        self.bc_trainer = None
         if load:
             self._load_graph()
         else:
@@ -81,7 +82,7 @@ class PPOPolicy(Policy):
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict['memory_out'] = self.model.memory_out
-        if is_training and self.use_vec_obs and trainer_params['normalize'] and bc_trainer is None and not load:
+        if is_training and self.use_vec_obs and trainer_params['normalize'] and not load:
             self.inference_dict['update_mean'] = self.model.update_normalization
 
         self.total_policy_loss = self.model.policy_loss

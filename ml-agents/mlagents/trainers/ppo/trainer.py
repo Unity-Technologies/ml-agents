@@ -37,8 +37,8 @@ class PPOTrainer(Trainer):
                            'num_layers', 'time_horizon', 'sequence_length', 'summary_freq',
                            'use_recurrent', 'summary_path', 'memory_size',
                            'curiosity_enc_size', 'model_path',
-                           'reward_signals', 'reward_strength', 'gammas']
-        self.valid_reward_signals = ['extrinsic', 'gail', 'entropy', 'curiosity', 'bc']
+                           'reward_signals', 'reward_strength', 'gammas', 'demo_aided']
+        self.valid_reward_signals = ['extrinsic', 'gail', 'entropy', 'curiosity']
 
         self.check_param_keys()
         self.check_rewards_keys(trainer_parameters)
@@ -47,7 +47,7 @@ class PPOTrainer(Trainer):
         self.use_gail = 'gail' in trainer_parameters['reward_signals']
         self.use_entropy = 'entropy' in trainer_parameters['reward_signals']
         self.use_extrinsic = 'extrinsic' in trainer_parameters['reward_signals']
-        self.use_bc = 'bc' in trainer_parameters['reward_signals']
+        self.use_bc = 'demo_aided' in trainer_parameters
 
         # We always want to record the extrinsic reward. If it wasn't specified,
         # add the extrinsic reward signal with strength 0. 
@@ -90,8 +90,7 @@ class PPOTrainer(Trainer):
             stats['Policy/Entropy Value Estimate'] = []
             self.collected_rewards['entropy'] = {}
         if self.use_bc:
-            stats['Policy/BC Reward'] = []
-            stats['Policy/BC Value Estimate'] = []
+            stats['Losses/BC Loss'] = []
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -167,10 +166,12 @@ class PPOTrainer(Trainer):
         Checks if the demonstration-aided parameters are set properly. 
         :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
         """
-        if 'demo_aided' in trainer_parameters and trainer_parameters['demo_aided'] is True:
-            if 'demo_path' not in trainer_parameters or 'demo_weight' not in trainer_parameters:
+        if 'demo_aided' in trainer_parameters:
+            if 'demo_path' not in trainer_parameters['demo_aided'] or \
+                'demo_strength' not in trainer_parameters['demo_aided'] or \
+                'demo_steps' not in trainer_parameters['demo_aided']:
                 raise UnityTrainerException(
-                    "demo_aided was specified but either demo_path or demo_weight was not given.")
+                    "demo_aided was specified but either demo_path, demo_strength, or demo_steps was not given.")
 
     def increment_step_and_update_last_reward(self):
         """
@@ -181,30 +182,6 @@ class PPOTrainer(Trainer):
             self.policy.update_reward(mean_reward)
         self.policy.increment_step()
         self.step = self.policy.get_current_step()
-
-    def take_action(self, all_brain_info: AllBrainInfo):
-        """
-        Decides actions given observations information, and takes them in environment.
-        :param all_brain_info: A dictionary of brain names and BrainInfo from environment.
-        :return: a tuple containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        curr_brain_info = all_brain_info[self.brain_name]
-        if len(curr_brain_info.agents) == 0:
-            return [], [], [], None, None
-
-        run_out = self.policy.evaluate(curr_brain_info)
-
-        for name, signal in self.policy.reward_signals.items():
-            self.stats[signal.value_name].append(np.mean(run_out['value'][name]))
-        self.stats['Policy/Entropy'].append(run_out['entropy'].mean())
-        self.stats['Policy/Learning Rate'].append(run_out['learning_rate'])
-        mean_values = np.mean(np.array(list(run_out['value'].values())), axis=0).flatten()
-        if self.policy.use_recurrent:
-            return run_out['action'], run_out['memory_out'], None, \
-                   mean_values, run_out
-        else:
-            return run_out['action'], None, None, mean_values, run_out
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
@@ -289,7 +266,8 @@ class PPOTrainer(Trainer):
                 take_action_outputs["learning_rate"]
             )
             for name, signal in self.policy.reward_signals.items():
-                self.stats[signal.value_name].append(np.mean(take_action_outputs['value'][name]))
+                if signal.value_name in self.stats:
+                    self.stats[signal.value_name].append(np.mean(take_action_outputs['value'][name]))
 
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
@@ -451,9 +429,10 @@ class PPOTrainer(Trainer):
                         self.episode_steps.get(agent_id, 0))
                     self.episode_steps[agent_id] = 0
                     for name, rewards in self.collected_rewards.items():
-                        self.stats[self.policy.reward_signals[name].stat_name].append(
-                            rewards.get(agent_id, 0))
-                        rewards[agent_id] = 0
+                        if self.policy.reward_signals[name].stat_name in self.stats:
+                            self.stats[self.policy.reward_signals[name].stat_name].append(
+                                rewards.get(agent_id, 0))
+                            rewards[agent_id] = 0
 
     def end_episode(self):
         """
@@ -522,7 +501,8 @@ class PPOTrainer(Trainer):
             gail_loss = self.policy.reward_signals['gail'].update(self.training_buffer)
             self.stats['Losses/GAIL Loss'].append(gail_loss)
         if self.use_bc:
-            _bc_loss = self.policy.reward_signals['bc'].update(self.training_buffer)
+            _bc_loss = self.policy.bc_trainer.update(self.training_buffer, self.trainer_parameters["batch_size"])
+            self.stats['Losses/BC Loss'].append(_bc_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 

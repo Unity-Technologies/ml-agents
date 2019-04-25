@@ -1,1 +1,1 @@
-from .signal import BCSignal
+from .signal import BCTrainer
