@@ -70,13 +70,13 @@ class CuriosityModel(object):
                                                  dtype=tf.float32,
                                                  name='next_vector_observation')
 
-            encoded_vector_obs = self.policy_model.create_vector_obs_encoder(
+            encoded_vector_obs = self.policy_model.create_vector_observation_encoder(
                 self.policy_model.vector_in,
                 self.encoding_size,
                 LearningModel.swish, 2,
                 "vector_obs_encoder",
                 False)
-            encoded_next_vector_obs = self.policy_model.create_vector_obs_encoder(
+            encoded_next_vector_obs = self.policy_model.create_vector_observation_encoder(
                 self.next_vector_in,
                 self.encoding_size,
                 LearningModel.swish, 2,
