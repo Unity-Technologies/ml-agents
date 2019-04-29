@@ -433,7 +433,7 @@ setting the Brain properties so that they are compatible with our Agent code.
     Brains to the **Broadcast Hub**.
 2. Select the **RollerAgent** GameObject to show its properties in the Inspector
     window.
-3. Drag the Brain **RollerBallPlayer** from the Project window to the 
+3. Drag the Brain **RollerBallBrain** from the Project window to the 
     RollerAgent **Brain** field.
 4. Change **Decision Interval** from `1` to `10`.
 5. Drag the Target GameObject from the Hierarchy window to the RollerAgent
