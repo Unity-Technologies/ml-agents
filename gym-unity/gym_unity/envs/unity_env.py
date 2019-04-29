@@ -212,9 +212,7 @@ class UnityEnv(gym.Env):
             visual_obs = info.visual_observations
             if isinstance(visual_obs, list):
                 visual_obs = np.array(visual_obs)
-            self.visual_obs = self._preprocess_single(
-                visual_obs[0][0, :, :, :]
-            )
+            self.visual_obs = self._preprocess_single(visual_obs[0][0, :, :, :])
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
