@@ -33,6 +33,7 @@ class UnityEnv(gym.Env):
         uint8_visual=False,
         multiagent=False,
         flatten_branched=False,
+        no_graphics=False
     ):
         """
         Environment initialization
@@ -42,8 +43,9 @@ class UnityEnv(gym.Env):
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
         :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete.
+        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         """
-        self._env = UnityEnvironment(environment_filename, worker_id)
+        self._env = UnityEnvironment(environment_filename, worker_id, no_graphics=no_graphics)
         self.name = self._env.academy_name
         self.visual_obs = None
         self._current_state = None
