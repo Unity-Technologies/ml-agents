@@ -22,15 +22,28 @@ namespace MLAgents
         {
             if (Application.isEditor && record)
             {
-                recordingAgent = GetComponent<Agent>();
-                demoStore = new DemonstrationStore();
-                demonstrationName = SanitizeName(demonstrationName);
-                demoStore.Initialize(
-                    demonstrationName, 
-                    recordingAgent.brain.brainParameters, 
-                    recordingAgent.brain.name);            
-                Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
+                InitializeDemoStore();
             }
+        }
+
+        private void Update()
+        {
+            if (Application.isEditor && record && demoStore == null)
+            {
+                InitializeDemoStore();
+            }
+        }
+
+        private void InitializeDemoStore()
+        {
+            recordingAgent = GetComponent<Agent>();
+            demoStore = new DemonstrationStore();
+            demonstrationName = SanitizeName(demonstrationName);
+            demoStore.Initialize(
+                demonstrationName, 
+                recordingAgent.brain.brainParameters, 
+                recordingAgent.brain.name);            
+            Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
         }
 
         /// <summary>
