@@ -15,9 +15,6 @@ namespace MLAgents
         private string filePath;
         private DemonstrationStore demoStore;
 
-        /// <summary>
-        /// Initializes Demonstration store.
-        /// </summary>
         private void Start()
         {
             if (Application.isEditor && record)
@@ -34,6 +31,9 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Creates demonstration store for use in recording.
+        /// </summary>
         private void InitializeDemoStore()
         {
             recordingAgent = GetComponent<Agent>();
