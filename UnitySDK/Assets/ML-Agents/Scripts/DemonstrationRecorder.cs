@@ -14,6 +14,7 @@ namespace MLAgents
         private Agent recordingAgent;
         private string filePath;
         private DemonstrationStore demoStore;
+        private int maxNameLength = 16;
 
         /// <summary>
         /// Initializes Demonstration store.
@@ -24,7 +25,7 @@ namespace MLAgents
             {
                 recordingAgent = GetComponent<Agent>();
                 demoStore = new DemonstrationStore();
-                demonstrationName = SanitizeName(demonstrationName);
+                demonstrationName = SanitizeName(demonstrationName, maxNameLength);
                 demoStore.Initialize(
                     demonstrationName, 
                     recordingAgent.brain.brainParameters, 
@@ -36,10 +37,16 @@ namespace MLAgents
         /// <summary>
         /// Removes all characters except alphanumerics from demonstration name.
         /// </summary>
-        public static string SanitizeName(string demoName)
+        public static string SanitizeName(string demoName, int maxNameLength = 16)
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
+
+            // If the string is too long, it will overflow the metadata. 
+            if (demoName.Length > maxNameLength)
+            {
+                demoName = demoName.Substring(0, maxNameLength);
+            }
             return demoName;
         }
 
