@@ -41,7 +41,6 @@ namespace MLAgents
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
-
             // If the string is too long, it will overflow the metadata. 
             if (demoName.Length > maxNameLength)
             {
