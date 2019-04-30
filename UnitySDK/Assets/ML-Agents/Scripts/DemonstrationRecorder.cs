@@ -36,6 +36,7 @@ namespace MLAgents
 
         /// <summary>
         /// Removes all characters except alphanumerics from demonstration name.
+        /// Shorten name if it is too long for the metadata header.
         /// </summary>
         public static string SanitizeName(string demoName, int maxNameLength = 16)
         {
