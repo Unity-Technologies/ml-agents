@@ -133,6 +133,7 @@ namespace MLAgents
     public struct AgentAction
     {
         public float[] vectorActions;
+        public float[] lastActions;
         public string textActions;
         public List<float> memories;
         public float value;
@@ -531,6 +532,7 @@ namespace MLAgents
 
             BrainParameters param = brain.brainParameters;
             actionMasker = new ActionMasker(param);
+            action.lastActions = action.vectorActions;
             if (param.vectorActionSpaceType == SpaceType.continuous)
             {
                 action.vectorActions = new float[param.vectorActionSize[0]];
@@ -584,7 +586,15 @@ namespace MLAgents
             }
 
             info.memories = action.memories;
-            info.storedVectorActions = action.vectorActions;
+            if(done)
+            {
+                info.storedVectorActions = action.lastActions;
+            }
+            else
+            {
+                info.storedVectorActions = action.vectorActions;
+            }
+            
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
             actionMasker.ResetMask();
