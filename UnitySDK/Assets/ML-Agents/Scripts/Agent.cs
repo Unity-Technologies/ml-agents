@@ -594,7 +594,7 @@ namespace MLAgents
             {
                 info.storedVectorActions = action.vectorActions;
             }
-            
+
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
             actionMasker.ResetMask();
@@ -1021,6 +1021,8 @@ namespace MLAgents
                             // as it is done
                             _AgentReset();
                             hasAlreadyReset = true;
+                            requestDecision = false;
+                            requestAction = false;
                         }
                     }
                     else if (requestDecision)
