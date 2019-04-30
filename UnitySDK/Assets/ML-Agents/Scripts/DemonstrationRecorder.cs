@@ -69,7 +69,7 @@ namespace MLAgents
         /// </summary>
         private void OnApplicationQuit()
         {
-            if (Application.isEditor && record)
+            if (Application.isEditor && record && demoStore != null)
             {
                 demoStore.Close();
             }
