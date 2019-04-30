@@ -532,6 +532,8 @@ namespace MLAgents
 
             BrainParameters param = brain.brainParameters;
             actionMasker = new ActionMasker(param);
+            // Store the last action taken, so that when we call SendInfoToBrain after reset
+            // it will record the last action and not the newly zero'ed action.vectorActions.
             action.lastActions = action.vectorActions;
             if (param.vectorActionSpaceType == SpaceType.continuous)
             {
