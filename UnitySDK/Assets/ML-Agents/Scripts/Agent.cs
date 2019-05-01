@@ -133,7 +133,6 @@ namespace MLAgents
     public struct AgentAction
     {
         public float[] vectorActions;
-        public float[] lastActions;
         public string textActions;
         public List<float> memories;
         public float value;
@@ -532,18 +531,21 @@ namespace MLAgents
 
             BrainParameters param = brain.brainParameters;
             actionMasker = new ActionMasker(param);
-            // Store the last action taken, so that when we call SendInfoToBrain after reset
-            // it will record the last action and not the newly zero'ed action.vectorActions.
-            action.lastActions = action.vectorActions;
-            if (param.vectorActionSpaceType == SpaceType.continuous)
+            // If we haven't initialized vectorActions, initialize to 0. This should only
+            // happen during the creation of the Agent. In subsequent episodes, vectorAction
+            // should stay the previous action before the Done(), so that it is properly recorded. 
+            if (action.vectorActions == null)
             {
-                action.vectorActions = new float[param.vectorActionSize[0]];
-                info.storedVectorActions = new float[param.vectorActionSize[0]];
-            }
-            else
-            {
-                action.vectorActions = new float[param.vectorActionSize.Length];
-                info.storedVectorActions = new float[param.vectorActionSize.Length];
+                if (param.vectorActionSpaceType == SpaceType.continuous)
+                {
+                    action.vectorActions = new float[param.vectorActionSize[0]];
+                    info.storedVectorActions = new float[param.vectorActionSize[0]];
+                }
+                else
+                {
+                    action.vectorActions = new float[param.vectorActionSize.Length];
+                    info.storedVectorActions = new float[param.vectorActionSize.Length];
+                }
             }
 
             if (info.textObservation == null)
@@ -588,15 +590,7 @@ namespace MLAgents
             }
 
             info.memories = action.memories;
-            if(done)
-            {
-                info.storedVectorActions = action.lastActions;
-            }
-            else
-            {
-                info.storedVectorActions = action.vectorActions;
-            }
-            
+            info.storedVectorActions = action.vectorActions;
             info.storedTextActions = action.textActions;
             info.vectorObservation.Clear();
             actionMasker.ResetMask();
