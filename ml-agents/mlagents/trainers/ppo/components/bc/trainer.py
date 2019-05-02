@@ -57,7 +57,7 @@ class BCTrainer():
         self.has_updated = True
 
         # for reporting
-        print("Loss %f"%np.mean(batch_losses))
+        #print("Loss %f"%np.mean(batch_losses))
         # end for reporting
         return np.mean(batch_losses)
 
