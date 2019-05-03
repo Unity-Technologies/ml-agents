@@ -41,14 +41,14 @@ class CuriosityModel(object):
 
                 # Create the encoder ops for current and next visual input.
                 # Note that these encoders are siamese.
-                encoded_visual = self.policy_model.create_visual_obs_encoder(
+                encoded_visual = self.policy_model.create_visual_observation_encoder(
                     self.policy_model.visual_in[i],
                     self.encoding_size,
                     LearningModel.swish, 1,
                     "stream_{}_visual_obs_encoder"
                         .format(i), False)
 
-                encoded_next_visual = self.policy_model.create_visual_obs_encoder(
+                encoded_next_visual = self.policy_model.create_visual_observation_encoder(
                     self.next_visual_in[i],
                     self.encoding_size,
                     LearningModel.swish, 1,
