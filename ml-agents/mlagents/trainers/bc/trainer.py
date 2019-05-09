@@ -35,7 +35,7 @@ class BCTrainer(Trainer):
         self.stats = {
             "Losses/Cloning Loss": [],
             "Environment/Episode Length": [],
-            "Environment/Cumulative Reward": [],
+            "Environment/Extrinsic Reward": [],
         }
 
         self.batches_per_epoch = trainer_parameters["batches_per_epoch"]
@@ -72,8 +72,8 @@ class BCTrainer(Trainer):
         Returns the last reward the trainer has had
         :return: the new last reward
         """
-        if len(self.stats["Environment/Cumulative Reward"]) > 0:
-            return np.mean(self.stats["Environment/Cumulative Reward"])
+        if len(self.stats["Environment/Extrinsic Reward"]) > 0:
+            return np.mean(self.stats["Environment/Extrinsic Reward"])
         else:
             return 0
 
@@ -125,7 +125,7 @@ class BCTrainer(Trainer):
         for l in range(len(info_student.agents)):
             if info_student.local_done[l]:
                 agent_id = info_student.agents[l]
-                self.stats["Environment/Cumulative Reward"].append(
+                self.stats["Environment/Extrinsic Reward"].append(
                     self.cumulative_rewards.get(agent_id, 0)
                 )
                 self.stats["Environment/Episode Length"].append(
@@ -164,6 +164,8 @@ class BCTrainer(Trainer):
             len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences,
             self.batches_per_epoch,
         )
+        print(len(self.demonstration_buffer.update_buffer["actions"]))
+        print(num_batches)
         for i in range(num_batches):
             update_buffer = self.demonstration_buffer.update_buffer
             start = i * self.n_sequences

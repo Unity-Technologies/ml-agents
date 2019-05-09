@@ -501,7 +501,7 @@ class PPOTrainer(Trainer):
             gail_loss = self.policy.reward_signals['gail'].update(self.training_buffer)
             self.stats['Losses/GAIL Loss'].append(gail_loss)
         if self.use_bc:
-            _bc_loss = self.policy.bc_trainer.update(self.training_buffer, self.trainer_parameters["batch_size"])
+            _bc_loss = self.policy.bc_trainer.update(self.training_buffer)
             self.stats['Losses/BC Loss'].append(_bc_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()

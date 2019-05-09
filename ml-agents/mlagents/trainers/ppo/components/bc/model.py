@@ -58,8 +58,8 @@ class BCModel(object):
             #                                     dtype=tf.float32,
             #                                     name="teacher_action")
             entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + self.policy_model.log_sigma_sq)
-            self.loss = tf.reduce_mean(tf.squared_difference(selected_action, self.expert_action)) / self.n_sequences \
-                        - tf.reduce_mean(entropy)
+            self.loss = tf.reduce_mean(tf.squared_difference(selected_action, self.expert_action)) #/ self.policy_model.n_sequences \
+                        #- tf.reduce_mean(entropy)
         else:
             log_probs = self.policy_model.all_log_probs
             # self.expert_action = tf.placeholder(shape=[None, len(action_size)], dtype=tf.int32)

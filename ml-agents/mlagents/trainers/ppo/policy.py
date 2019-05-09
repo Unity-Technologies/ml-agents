@@ -27,44 +27,65 @@ class PPOPolicy(Policy):
         """
         super().__init__(seed, brain, trainer_params)
 
-        reward_strengths = dict(zip(trainer_params['reward_signals'],
-                                    trainer_params['reward_strength']))
+        reward_strengths = dict(
+            zip(trainer_params["reward_signals"], trainer_params["reward_strength"])
+        )
         self.reward_signals = {}
         with self.graph.as_default():
-            self.model = PPOModel(brain,
-                                  lr=float(trainer_params['learning_rate']),
-                                  h_size=int(trainer_params['hidden_units']),
-                                  epsilon=float(trainer_params['epsilon']),
-                                  beta=float(trainer_params['beta']),
-                                  max_step=float(trainer_params['max_steps']),
-                                  normalize=trainer_params['normalize'],
-                                  use_recurrent=trainer_params['use_recurrent'],
-                                  num_layers=int(trainer_params['num_layers']),
-                                  m_size=self.m_size,
-                                  seed=seed,
-                                  stream_names=list(reward_strengths.keys()))
+            self.model = PPOModel(
+                brain,
+                lr=float(trainer_params["learning_rate"]),
+                h_size=int(trainer_params["hidden_units"]),
+                epsilon=float(trainer_params["epsilon"]),
+                beta=float(trainer_params["beta"]),
+                max_step=float(trainer_params["max_steps"]),
+                normalize=trainer_params["normalize"],
+                use_recurrent=trainer_params["use_recurrent"],
+                num_layers=int(trainer_params["num_layers"]),
+                m_size=self.m_size,
+                seed=seed,
+                stream_names=list(reward_strengths.keys()),
+            )
             self.model.create_ppo_optimizer()
 
             # Initialize Components
-            if 'extrinsic' in reward_strengths.keys():
-                self.reward_signals['extrinsic'] = ExtrinsicSignal(reward_strengths['extrinsic'])
-            if 'curiosity' in reward_strengths.keys():
-                encoding_size = float(trainer_params['curiosity_enc_size'])
-                curiosity_signal = CuriositySignal(policy=self,
-                                                   signal_strength=reward_strengths['curiosity'],
-                                                   encoding_size=encoding_size)
-                self.reward_signals['curiosity'] = curiosity_signal
-            if 'gail' in reward_strengths.keys():
-                gail_signal = GAILSignal(self, int(trainer_params['hidden_units']),
-                                         float(trainer_params['learning_rate']),
-                                         trainer_params['demo_path'], reward_strengths['gail'])
-                self.reward_signals['gail'] = gail_signal
-            if 'entropy' in reward_strengths.keys():
-                self.reward_signals['entropy'] = EntropySignal(self, reward_strengths['entropy'])
+            if "extrinsic" in reward_strengths.keys():
+                self.reward_signals["extrinsic"] = ExtrinsicSignal(
+                    reward_strengths["extrinsic"]
+                )
+            if "curiosity" in reward_strengths.keys():
+                encoding_size = float(trainer_params["curiosity_enc_size"])
+                curiosity_signal = CuriositySignal(
+                    policy=self,
+                    signal_strength=reward_strengths["curiosity"],
+                    encoding_size=encoding_size,
+                )
+                self.reward_signals["curiosity"] = curiosity_signal
+            if "gail" in reward_strengths.keys():
+                gail_signal = GAILSignal(
+                    self,
+                    int(trainer_params["hidden_units"]),
+                    float(trainer_params["learning_rate"]),
+                    trainer_params["demo_path"],
+                    reward_strengths["gail"],
+                )
+                self.reward_signals["gail"] = gail_signal
+            if "entropy" in reward_strengths.keys():
+                self.reward_signals["entropy"] = EntropySignal(
+                    self, reward_strengths["entropy"]
+                )
             # BC trainer is not a reward signal
-            if 'demo_aided' in trainer_params:
-                self.bc_trainer = BCTrainer(self, float(trainer_params['demo_aided']['demo_strength']*trainer_params['learning_rate']),
-                                            trainer_params['demo_aided']['demo_path'], trainer_params['demo_aided']['demo_steps'])
+            if "demo_aided" in trainer_params:
+                self.bc_trainer = BCTrainer(
+                    self,
+                    float(
+                        trainer_params["demo_aided"]["demo_strength"]
+                        * trainer_params["learning_rate"]
+                    ),
+                    trainer_params["demo_aided"]["demo_path"],
+                    trainer_params["demo_aided"]["demo_steps"],
+                    trainer_params["batch_size"],
+                )
 
         if load:
             self._load_graph()
@@ -81,15 +102,22 @@ class PPOPolicy(Policy):
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
-            self.inference_dict['memory_out'] = self.model.memory_out
-        if is_training and self.use_vec_obs and trainer_params['normalize'] and not load:
-            self.inference_dict['update_mean'] = self.model.update_normalization
+            self.inference_dict["memory_out"] = self.model.memory_out
+        if (
+            is_training
+            and self.use_vec_obs
+            and trainer_params["normalize"]
+            and not load
+        ):
+            self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.total_policy_loss = self.model.policy_loss
 
-        self.update_dict = {'value_loss': self.model.value_loss,
-                            'policy_loss': self.total_policy_loss,
-                            'update_batch': self.model.update_batch}
+        self.update_dict = {
+            "value_loss": self.model.value_loss,
+            "policy_loss": self.total_policy_loss,
+            "update_batch": self.model.update_batch,
+        }
 
     def evaluate(self, brain_info):
         """
@@ -130,15 +158,22 @@ class PPOPolicy(Policy):
         :param mini_batch: Experience batch.
         :return: Output from update process.
         """
-        feed_dict = {self.model.batch_size: num_sequences,
-                     self.model.sequence_length: self.sequence_length,
-                     self.model.mask_input: mini_batch['masks'].flatten(),
-                     self.model.advantage: mini_batch['advantages'].reshape([-1, 1]),
-                     self.model.all_old_log_probs: mini_batch['action_probs'].reshape(
-                         [-1, sum(self.model.act_size)])}
+        feed_dict = {
+            self.model.batch_size: num_sequences,
+            self.model.sequence_length: self.sequence_length,
+            self.model.mask_input: mini_batch["masks"].flatten(),
+            self.model.advantage: mini_batch["advantages"].reshape([-1, 1]),
+            self.model.all_old_log_probs: mini_batch["action_probs"].reshape(
+                [-1, sum(self.model.act_size)]
+            ),
+        }
         for i, name in enumerate(self.reward_signals.keys()):
-            feed_dict[self.model.returns_holders[i]] = mini_batch['{}_returns'.format(name)].flatten()
-            feed_dict[self.model.old_values[i]] = mini_batch['{}_value_estimates'.format(name)].flatten()
+            feed_dict[self.model.returns_holders[i]] = mini_batch[
+                "{}_returns".format(name)
+            ].flatten()
+            feed_dict[self.model.old_values[i]] = mini_batch[
+                "{}_value_estimates".format(name)
+            ].flatten()
 
         if self.use_continuous_act:
             feed_dict[self.model.output_pre] = mini_batch["actions_pre"].reshape(
@@ -159,8 +194,9 @@ class PPOPolicy(Policy):
                 [-1, sum(self.brain.vector_action_space_size)]
             )
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = mini_batch['vector_obs'].reshape(
-                [-1, self.vec_obs_size])
+            feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
+                [-1, self.vec_obs_size]
+            )
         if self.model.vis_obs_size > 0:
             for i, _ in enumerate(self.model.visual_in):
                 _obs = mini_batch["visual_obs%d" % i]
@@ -200,7 +236,7 @@ class PPOPolicy(Policy):
             ].reshape([-1, len(self.model.act_size)])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
         return value_estimates
-    
+
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
@@ -212,7 +248,9 @@ class PPOPolicy(Policy):
             return ActionInfo([], [], [], None, None)
 
         run_out = self.evaluate(brain_info)
-        mean_values = np.mean(np.array(list(run_out.get("value").values())), axis=0).flatten()
+        mean_values = np.mean(
+            np.array(list(run_out.get("value").values())), axis=0
+        ).flatten()
 
         return ActionInfo(
             action=run_out.get("action"),

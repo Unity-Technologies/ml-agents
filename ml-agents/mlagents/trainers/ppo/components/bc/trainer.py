@@ -6,7 +6,7 @@ from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.ppo.pre_training import PreTraining
 
 class BCTrainer():
-    def __init__(self, policy: Policy, lr, demo_path, anneal_steps):
+    def __init__(self, policy: Policy, lr, demo_path, anneal_steps, batch_size):
         """
         A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
@@ -20,10 +20,10 @@ class BCTrainer():
         self.policy = policy
         self.model = BCModel(policy.model, lr, anneal_steps)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
-        self.n_sequences = min(128, len(self.demonstration_buffer.update_buffer['actions']))
+        self.n_sequences = min(batch_size, len(self.demonstration_buffer.update_buffer['actions']))
         self.has_updated = False
 
-    def update(self, policy_buffer,n_sequences=32, max_batches=10):
+    def update(self, policy_buffer, max_batches=10):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
@@ -33,24 +33,22 @@ class BCTrainer():
         """
         batch_losses = []
         possible_demo_batches = len(
-             self.demonstration_buffer.update_buffer['actions']) // n_sequences
-        possible_policy_batches = len(policy_buffer.update_buffer['actions']) // n_sequences
-        possible_batches = min(possible_policy_batches, possible_demo_batches)
+             self.demonstration_buffer.update_buffer['actions']) // self.n_sequences
+        possible_batches = possible_demo_batches
 
-        n_epoch = 1
+        n_epoch = 3
         for epoch in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
             if max_batches == 0:
                 num_batches = possible_batches
             else:
                 num_batches = min(possible_batches, max_batches)
-
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
-                start = i * n_sequences
-                end = (i + 1) * n_sequences
+                start = i * self.n_sequences
+                end = (i + 1) * self.n_sequences
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
-                run_out = self._update_batch(mini_batch_demo, n_sequences)
+                run_out = self._update_batch(mini_batch_demo, self.n_sequences)
                 loss = run_out['loss']
                 # end for reporting
                 batch_losses.append(loss)
