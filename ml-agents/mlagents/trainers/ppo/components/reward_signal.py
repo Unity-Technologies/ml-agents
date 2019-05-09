@@ -1,5 +1,6 @@
 import logging
 from mlagents.trainers.trainer import UnityTrainerException
+import tensorflow as tf
 
 logger = logging.getLogger("mlagents.trainers")
 

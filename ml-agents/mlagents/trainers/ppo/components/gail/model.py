@@ -1,9 +1,10 @@
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
+from mlagents.trainers.ppo.components import RewardModel
 
 
-class GAILModel(object):
-    def __init__(self, policy_model: LearningModel, h_size, lr, encoding_size):
+class GAILModel(RewardModel):
+    def __init__(self, policy_model: LearningModel, h_size, lr, encoding_size, normalize_reward = False):
         """
         The GAIL reward generator.
         https://arxiv.org/abs/1606.03476
@@ -22,6 +23,7 @@ class GAILModel(object):
         self.use_actions = False#True # Not using actions
         self.make_beta()
         self.make_inputs()
+        self.normalize_reward = normalize_reward
         self.create_network()
         self.create_loss(lr)
 
@@ -83,14 +85,14 @@ class GAILModel(object):
                     name="visual_observation_" + str(i))
                 self.expert_visual_in.append(visual_input)
 
-                encoded_policy_visual = self.policy_model.create_visual_obs_encoder(
+                encoded_policy_visual = self.policy_model.create_visual_observation_encoder(
                     self.policy_model.visual_in[i],
                     self.encoding_size,
                     LearningModel.swish, 1,
                     "stream_{}_visual_obs_encoder"
                         .format(i), False)
 
-                encoded_expert_visual = self.policy_model.create_visual_obs_encoder(
+                encoded_expert_visual = self.policy_model.create_visual_observation_encoder(
                     self.expert_visual_in[i],
                     self.encoding_size,
                     LearningModel.swish, 1,
@@ -166,6 +168,8 @@ class GAILModel(object):
             self.encoded_policy, self.policy_model.selected_actions, self.done_policy, True)
         self.discriminator_score = tf.reshape(self.policy_estimate, [-1], name="GAIL_reward")
         self.intrinsic_reward = - tf.log(1.0 - self.discriminator_score + 1e-7)
+        if self.normalize_reward:
+            self.intrinsic_reward = self.create_normalizer(self.intrinsic_reward, "gail")
         # +tf.log(self.discriminator_score + 1e-7)
 
 
