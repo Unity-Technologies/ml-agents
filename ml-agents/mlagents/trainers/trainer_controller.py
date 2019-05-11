@@ -17,6 +17,7 @@ from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer
 from mlagents.trainers.ppo.trainer import PPOTrainer
+from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -168,6 +169,23 @@ class TrainerController(object):
                 )
             elif trainer_parameters_dict[brain_name]["trainer"] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(
+                    self.external_brains[brain_name],
+                    self.meta_curriculum.brains_to_curriculums[
+                        brain_name
+                    ].min_lesson_length
+                    if self.meta_curriculum
+                    else 0,
+                    trainer_parameters_dict[brain_name],
+                    self.train_model,
+                    self.load_model,
+                    self.seed,
+                    self.run_id,
+                )
+                self.trainer_metrics[brain_name] = self.trainers[
+                    brain_name
+                ].trainer_metrics
+            elif trainer_parameters_dict[brain_name]["trainer"] == "sac":
+                self.trainers[brain_name] = SACTrainer(
                     self.external_brains[brain_name],
                     self.meta_curriculum.brains_to_curriculums[
                         brain_name

@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 from mlagents.envs.exception import UnityException
 
@@ -216,6 +217,26 @@ class Buffer(dict):
             for key in self:
                 mini_batch[key] = np.array(self[key][start:end])
             return mini_batch
+        
+        # SAC HAC
+        def sample_mini_batch(self, batch_size):
+            """
+            Creates a mini-batch from a random start and end. 
+            : param batch_size: number of elements to withdraw.
+            """
+            mini_batch_lists = {}
+            mini_batch = {}
+            idxes = [random.randint(0, len(self["actions"]) - 1) for _ in range(batch_size)]
+            for i in idxes:
+                for key in self:
+                    if key in mini_batch_lists:
+                        mini_batch_lists[key].append(self[key][i])
+                    else:
+                        mini_batch_lists[key] = [self[key][i]]
+            for key in mini_batch_lists:
+                mini_batch[key] = np.array(mini_batch_lists[key])
+            return mini_batch
+
 
     def __init__(self):
         self.update_buffer = self.AgentBuffer()
@@ -239,6 +260,15 @@ class Buffer(dict):
         Resets the update buffer
         """
         self.update_buffer.reset_agent()
+    
+    # SAC HAC
+    def truncate_update_buffer(self, max_length):
+        """ 
+        Truncates the update buffer to a certain length.
+        VERY SLOWWWW
+        """
+        if len(self.update_buffer) > max_length:
+            self.update_buffer = self.update_buffer[len(self.update_buffer)-max_length:]
 
     def reset_local_buffers(self):
         """
