@@ -58,7 +58,7 @@ class SACTrainer(Trainer):
         self.gamma_parameters = dict(zip(trainer_parameters['reward_signals'],
                                     trainer_parameters['gammas']))
         self.step = 0
-        self.train_frequency = 1000
+        self.train_frequency = 1
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         stats = {
@@ -401,17 +401,17 @@ class SACTrainer(Trainer):
                             '{}_rewards'.format(name)].get_batch()
                     local_value_estimates = self.training_buffer[agent_id][
                             '{}_value_estimates'.format(name)].get_batch()
-                    local_return = get_discounted_returns(
-                        rewards=local_rewards,
-                        gamma=self.gamma_parameters[name],
-                        lambd=self.trainer_parameters['lambd'])
-                    # This is later use as target for the different value estimates
-                    self.training_buffer[agent_id]['{}_returns'.format(name)].set(local_return)
-                    # self.training_buffer[agent_id]['{}_advantage'.format(name)].set(local_advantage)
-                    tmp_returns.append(local_return)
+                    # local_return = get_discounted_returns(
+                    #     rewards=local_rewards,
+                    #     gamma=self.gamma_parameters[name],
+                    #     lambd=self.trainer_parameters['lambd'])
+                    # # This is later use as target for the different value estimates
+                    # self.training_buffer[agent_id]['{}_returns'.format(name)].set(local_return)
+                    # # self.training_buffer[agent_id]['{}_advantage'.format(name)].set(local_advantage)
+                    # tmp_returns.append(local_return)
 
-                global_returns = list(np.mean(np.array(tmp_returns), axis=0))
-                self.training_buffer[agent_id]['discounted_returns'].set(global_returns)
+                # global_returns = list(np.mean(np.array(tmp_returns), axis=0))
+                # self.training_buffer[agent_id]['discounted_returns'].set(global_returns)
 
                 self.training_buffer.append_update_buffer(
                     agent_id,
@@ -469,17 +469,16 @@ class SACTrainer(Trainer):
         num_epoch = self.trainer_parameters["num_epoch"]
         for _ in range(num_epoch):
             buffer = self.training_buffer.update_buffer
-            for l in range(
-                len(self.training_buffer.update_buffer["actions"]) // n_sequences
-            ):
+            if len(self.training_buffer.update_buffer["actions"]) >= self.trainer_parameters["batch_size"]:
+                sampled_minibatch = buffer.sample_mini_batch(self.trainer_parameters["batch_size"])
                 run_out = self.policy.update(
-                    buffer.sample_mini_batch(self.trainer_parameters["batch_size"]), n_sequences
+                    sampled_minibatch, n_sequences
                 )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(np.abs(run_out["policy_loss"]))
                 if self.use_curiosity:
                     run_out_curio = self.policy.reward_signals['curiosity'].update(
-                        buffer.make_mini_batch(start, end), n_sequences)
+                        sampled_minibatch, n_sequences)
                     inverse_total.append(run_out_curio['inverse_loss'])
                     forward_total.append(run_out_curio['forward_loss'])
         self.training_buffer.truncate_update_buffer(1000000)
@@ -530,5 +529,5 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
 
-def get_discounted_returns(rewards, gamma=0.99, lambd=0.95):
-    return discount_rewards(r=rewards, gamma=gamma * lambd)
+# def get_discounted_returns(rewards, gamma=0.99, lambd=0.95):
+#     return discount_rewards(r=rewards, gamma=gamma * lambd)

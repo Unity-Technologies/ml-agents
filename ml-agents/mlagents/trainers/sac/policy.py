@@ -164,8 +164,8 @@ class SACPolicy(Policy):
             self.model.mask_input: mini_batch["masks"].flatten()
         }
         for i, name in enumerate(self.reward_signals.keys()):
-            feed_dict[self.model.returns_holders[i]] = mini_batch[
-                "{}_returns".format(name)
+            feed_dict[self.model.rewards_holders[i]] = mini_batch[
+                "{}_rewards".format(name)
             ].flatten()
 
         if self.use_continuous_act:

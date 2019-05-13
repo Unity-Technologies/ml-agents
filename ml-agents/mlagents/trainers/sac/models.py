@@ -82,13 +82,13 @@ class SACNetwork(LearningModel):
         hidden_policy = self.create_vector_observation_encoder(
             hidden_policy, self.h_size, self.swish, self.num_layers, scope, False
         )
-        hidden_policy = tf.Print(hidden_policy,[hidden_policy], name="HiddenPoicy" )
+        # hidden_policy = tf.Print(hidden_policy,[hidden_policy], name="HiddenPoicy" )
         with tf.variable_scope(scope):
             mu = tf.layers.dense(
                 hidden_policy,
                 self.act_size[0],
-                activation=None,
-                kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
+                activation=None
+                # kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
             )
 
             # Policy-dependent log_sigma_sq
@@ -96,7 +96,7 @@ class SACNetwork(LearningModel):
                 hidden_policy,
                 self.act_size[0],
                 activation=None,
-                kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
+                # kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
             )
 
             self.log_sigma_sq = tf.clip_by_value(log_sigma_sq, LOG_STD_MIN, LOG_STD_MAX)
@@ -105,8 +105,6 @@ class SACNetwork(LearningModel):
             #                                initializer=tf.zeros_initializer())
 
             sigma_sq = tf.exp(self.log_sigma_sq)
-
-            sigma_sq = tf.Print(sigma_sq, [sigma_sq])
 
             # Do the reparameterization trick
             policy_ = mu + tf.random_normal(tf.shape(mu)) * sigma_sq
@@ -117,7 +115,6 @@ class SACNetwork(LearningModel):
                 + np.log(2 * np.pi)
             )
             all_probs = tf.reduce_sum(_gauss_pre, axis=1)
-            all_probs = tf.Print(all_probs, [all_probs])
 
             # Squash probabilities
             # Keep deterministic around in case we want to use it.
@@ -125,12 +122,15 @@ class SACNetwork(LearningModel):
             self.output_pre = tf.tanh(policy_)
 
             # Squash correction
-            all_probs -= tf.reduce_sum(tf.log(1 - policy_ ** 2 + EPSILON), axis=1)
+            all_probs -= tf.reduce_sum(tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1)
 
             # Clip and scale output to ensure actions are always within [-1, 1] range.
             output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
             self.output = tf.identity(output_post, name="action")
             self.selected_actions = tf.stop_gradient(output_post)
+
+            # self.output = tf.Print(self.selected_actions, [all_probs, 1 - policy_ ** 2 + EPSILON], message = "log probs")
+
 
             self.all_log_probs = tf.identity(all_probs, name="action_probs")
 
@@ -154,7 +154,6 @@ class SACNetwork(LearningModel):
         value_hidden = self.create_vector_observation_encoder(
             hidden_input, h_size, self.swish, num_layers, scope, False
         )
-        print(value_hidden)
         with tf.variable_scope(scope):
             value = tf.layers.dense(
                     value_hidden,
@@ -164,7 +163,6 @@ class SACNetwork(LearningModel):
                     name="hidden_value",
                     kernel_initializer=c_layers.variance_scaling_initializer(1.0),
                 )
-        print(value)
         return value
 
     def create_q_heads(self, stream_names, hidden_input, num_layers, h_size, scope):
@@ -324,21 +322,21 @@ class SACModel(LearningModel):
 
         self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
 
-        self.returns_holders = []
+        self.rewards_holders = []
         self.old_values = []
         for i in range(len(q1_streams)):
             returns_holder = tf.placeholder(
                 shape=[None],
                 dtype=tf.float32,
-                name="{}_returns".format(stream_names[i]),
+                name="{}_rewards".format(stream_names[i]),
             )
-            old_value = tf.placeholder(
-                shape=[None],
-                dtype=tf.float32,
-                name="{}_value_estimate".format(stream_names[i]),
-            )
-            self.returns_holders.append(returns_holder)
-            self.old_values.append(old_value)
+            # old_value = tf.placeholder(
+            #     shape=[None],
+            #     dtype=tf.float32,
+            #     name="{}_value_estimate".format(stream_names[i]),
+            # )
+            self.rewards_holders.append(returns_holder)
+            # self.old_values.append(old_value)
         self.advantage = tf.placeholder(
             shape=[None, 1], dtype=tf.float32, name="advantages"
         )
@@ -358,11 +356,11 @@ class SACModel(LearningModel):
         # Multiple q losses per stream
         for i, name in enumerate(stream_names):
             q1_loss = 0.5 * tf.squared_difference(
-                self.returns_holders[i], tf.reduce_sum(q1_streams[name], axis=1)
+                self.rewards_holders[i], tf.reduce_sum(q1_streams[name], axis=1)
             )
             q1_losses.append(q1_loss)
             q2_loss = 0.5 * tf.squared_difference(
-                self.returns_holders[i], tf.reduce_sum(q2_streams[name], axis=1)
+                self.rewards_holders[i], tf.reduce_sum(q2_streams[name], axis=1)
             )
             q2_losses.append(q2_loss)
             # clipped_value_estimate = self.old_values[i] + tf.clip_by_value(
@@ -371,10 +369,10 @@ class SACModel(LearningModel):
             #     decay_epsilon,
             # )
             # v_opt_a = tf.squared_difference(
-            #     self.returns_holders[i], tf.reduce_sum(value_streams[name], axis=1)
+            #     self.rewards_holders[i], tf.reduce_sum(value_streams[name], axis=1)
             # )
             # v_opt_b = tf.squared_difference(
-            #     self.returns_holders[i], clipped_value_estimate
+            #     self.rewards_holders[i], clipped_value_estimate
             # )
         self.q1_loss = tf.reduce_mean(q1_losses)
         self.q2_loss = tf.reduce_mean(q2_losses)
@@ -391,10 +389,6 @@ class SACModel(LearningModel):
 
         # Only one value head, only one value loss
         v_backup = tf.stop_gradient(self.min_policy_q - self.ent_coef * self.policy_network.all_log_probs)
-        print(self.min_policy_q)
-        print( self.policy_network.all_log_probs)
-        print(self.ent_coef)
-        print(v_backup)
         self.value_loss = 0.5 * tf.reduce_mean(tf.squared_difference(self.policy_network.value, v_backup))
 
         self.total_value_loss = self.q1_loss + self.q2_loss + self.value_loss
