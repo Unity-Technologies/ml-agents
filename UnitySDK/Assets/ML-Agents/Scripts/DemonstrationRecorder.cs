@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Text.RegularExpressions;
 
 namespace MLAgents
@@ -16,22 +16,35 @@ namespace MLAgents
         private DemonstrationStore demoStore;
         public const int MAX_NAME_LENGTH = 16;
 
-        /// <summary>
-        /// Initializes Demonstration store.
-        /// </summary>
         private void Start()
         {
             if (Application.isEditor && record)
             {
-                recordingAgent = GetComponent<Agent>();
-                demoStore = new DemonstrationStore();
-                demonstrationName = SanitizeName(demonstrationName, MAX_NAME_LENGTH);
-                demoStore.Initialize(
-                    demonstrationName, 
-                    recordingAgent.brain.brainParameters, 
-                    recordingAgent.brain.name);            
-                Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
+                InitializeDemoStore();
             }
+        }
+
+        private void Update()
+        {
+            if (Application.isEditor && record && demoStore == null)
+            {
+                InitializeDemoStore();
+            }
+        }
+
+        /// <summary>
+        /// Creates demonstration store for use in recording.
+        /// </summary>
+        private void InitializeDemoStore()
+        {
+            recordingAgent = GetComponent<Agent>();
+            demoStore = new DemonstrationStore();
+            demonstrationName = SanitizeName(demonstrationName);
+            demoStore.Initialize(
+                demonstrationName, 
+                recordingAgent.brain.brainParameters, 
+                recordingAgent.brain.name);            
+            Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
         }
 
         /// <summary>
@@ -63,7 +76,7 @@ namespace MLAgents
         /// </summary>
         private void OnApplicationQuit()
         {
-            if (Application.isEditor && record)
+            if (Application.isEditor && record && demoStore != null)
             {
                 demoStore.Close();
             }
