@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Text.RegularExpressions;
 
 namespace MLAgents
@@ -14,6 +14,7 @@ namespace MLAgents
         private Agent recordingAgent;
         private string filePath;
         private DemonstrationStore demoStore;
+        public const int MAX_NAME_LENGTH = 16;
 
         private void Start()
         {
@@ -48,11 +49,17 @@ namespace MLAgents
 
         /// <summary>
         /// Removes all characters except alphanumerics from demonstration name.
+        /// Shorten name if it is longer than the maxNameLength.
         /// </summary>
-        public static string SanitizeName(string demoName)
+        public static string SanitizeName(string demoName, int maxNameLength)
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
+            // If the string is too long, it will overflow the metadata. 
+            if (demoName.Length > maxNameLength)
+            {
+                demoName = demoName.Substring(0, maxNameLength);
+            }
             return demoName;
         }
 
