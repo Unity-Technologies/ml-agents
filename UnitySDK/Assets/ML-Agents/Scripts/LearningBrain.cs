@@ -112,8 +112,8 @@ namespace MLAgents
                 
                 _barracudaModel = ModelLoader.Load(model.Value);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
-                    ? BarracudaWorkerFactory.Type.ComputeFast
-                    : BarracudaWorkerFactory.Type.CSharpFast;
+                    ? BarracudaWorkerFactory.Type.ComputePrecompiled
+                    : BarracudaWorkerFactory.Type.CSharp;
                                        
                 _engine = BarracudaWorkerFactory.CreateWorker(executionDevice, _barracudaModel, _verbose);
             }
@@ -236,9 +236,8 @@ namespace MLAgents
             var outputs = new List<Tensor>();
             foreach (var name in names)
             {
-                var outp = _engine.Fetch(name);
+                var outp = _engine.Peek(name);
                 outputs.Add(BarracudaUtils.FromBarracuda(outp, name));
-                outp.Dispose();
             }
 
             return outputs;
