@@ -58,7 +58,7 @@ class SACTrainer(Trainer):
         self.gamma_parameters = dict(zip(trainer_parameters['reward_signals'],
                                     trainer_parameters['gammas']))
         self.step = 0
-        self.train_frequency = 1
+        self.train_interval = trainer_parameters['train_interval'] if 'train_interval' in trainer_parameters else 1
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         stats = {
@@ -66,6 +66,9 @@ class SACTrainer(Trainer):
             "Environment/Episode Length": [],
             "Policy/Extrinsic Value Estimate": [],
             "Policy/Entropy": [],
+            "Policy/Entropy Coeff": [],
+            "Losses/Q1 Loss":[],
+            "Losses/Q2 Loss":[],
             "Losses/Value Loss": [],
             "Losses/Policy Loss": [],
             "Policy/Learning Rate": [],
@@ -262,7 +265,7 @@ class SACTrainer(Trainer):
         """
         self.trainer_metrics.start_experience_collection_timer()
         if take_action_outputs:
-            # self.stats["Policy/Entropy"].append(take_action_outputs["entropy"].mean())
+            self.stats["Policy/Entropy"].append(take_action_outputs["entropy"].mean())
             self.stats["Policy/Learning Rate"].append(
                 take_action_outputs["learning_rate"]
             )
@@ -389,18 +392,18 @@ class SACTrainer(Trainer):
                 else:
                     bootstrapping_info = info
                     idx = l
-                value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
-                if info.local_done[l] and not info.max_reached[l]:
-                    value_next = 0.0
-                tmp_advantages = []
-                tmp_returns = []
-                for idx, name in enumerate(self.policy.reward_signals.keys()):
-                    bootstrap_value = value_next
+                # value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
+                # if info.local_done[l] and not info.max_reached[l]:
+                #     value_next = 0.0
+                # tmp_advantages = []
+                # tmp_returns = []
+                # for idx, name in enumerate(self.policy.reward_signals.keys()):
+                #     bootstrap_value = value_next
 
-                    local_rewards = self.training_buffer[agent_id][
-                            '{}_rewards'.format(name)].get_batch()
-                    local_value_estimates = self.training_buffer[agent_id][
-                            '{}_value_estimates'.format(name)].get_batch()
+                #     local_rewards = self.training_buffer[agent_id][
+                #             '{}_rewards'.format(name)].get_batch()
+                #     local_value_estimates = self.training_buffer[agent_id][
+                #             '{}_value_estimates'.format(name)].get_batch()
                     # local_return = get_discounted_returns(
                     #     rewards=local_rewards,
                     #     gamma=self.gamma_parameters[name],
@@ -447,7 +450,7 @@ class SACTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return self.step % self.train_frequency == 0
+        return len(self.training_buffer.update_buffer["actions"]) >= self.trainer_parameters["batch_size"] and self.step % self.train_interval == 0
 
     def update_policy(self):
         """
@@ -461,7 +464,7 @@ class SACTrainer(Trainer):
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        value_total, policy_total, forward_total, inverse_total = [], [], [], []
+        value_total, policy_total, forward_total, inverse_total, entcoeff_total, q1loss_total, q2loss_total = [], [], [], [], [], [], []
         # advantages = self.training_buffer.update_buffer["advantages"].get_batch()
         # self.training_buffer.update_buffer["advantages"].set(
         #     (advantages - advantages.mean()) / (advantages.std() + 1e-10)
@@ -475,7 +478,10 @@ class SACTrainer(Trainer):
                     sampled_minibatch, n_sequences
                 )
                 value_total.append(run_out["value_loss"])
-                policy_total.append(np.abs(run_out["policy_loss"]))
+                policy_total.append(run_out["policy_loss"])
+                q1loss_total.append(run_out["q1_loss"])
+                q2loss_total.append(run_out["q2_loss"])
+                entcoeff_total.append(run_out["entropy_coef"])
                 if self.use_curiosity:
                     run_out_curio = self.policy.reward_signals['curiosity'].update(
                         sampled_minibatch, n_sequences)
@@ -485,6 +491,9 @@ class SACTrainer(Trainer):
 
         self.stats['Losses/Value Loss'].append(np.mean(value_total))
         self.stats['Losses/Policy Loss'].append(np.mean(policy_total))
+        self.stats['Losses/Q1 Loss'].append(np.mean(q1loss_total))
+        self.stats['Losses/Q2 Loss'].append(np.mean(q2loss_total))
+        self.stats['Policy/Entropy Coeff'].append(np.mean(entcoeff_total))
         if self.use_curiosity:
             self.stats['Losses/Forward Loss'].append(np.mean(forward_total))
             self.stats['Losses/Inverse Loss'].append(np.mean(inverse_total))
@@ -496,38 +505,6 @@ class SACTrainer(Trainer):
             self.stats['Losses/BC Loss'].append(_bc_loss)
 
         self.trainer_metrics.end_policy_update()
-
-
-def discount_rewards(r, gamma=0.99, value_next=0.0):
-    """
-    Computes discounted sum of future rewards for use in updating value estimate.
-    :param r: List of rewards.
-    :param gamma: Discount factor.
-    :param value_next: T+1 value estimate for returns calculation.
-    :return: discounted sum of future rewards as list.
-    """
-    discounted_r = np.zeros_like(r)
-    running_add = value_next
-    for t in reversed(range(0, r.size)):
-        running_add = running_add * gamma + r[t]
-        discounted_r[t] = running_add
-    return discounted_r
-
-
-def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
-    """
-    Computes generalized advantage estimate for use in updating policy.
-    :param rewards: list of rewards for time-steps t to T.
-    :param value_next: Value estimate for time-step T+1.
-    :param value_estimates: list of value estimates for time-steps t to T.
-    :param gamma: Discount factor.
-    :param lambd: GAE weighing factor.
-    :return: list of advantage estimates for time-steps t to T.
-    """
-    value_estimates = np.asarray(value_estimates.tolist() + [value_next])
-    delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
-    advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
-    return advantage
 
 # def get_discounted_returns(rewards, gamma=0.99, lambd=0.95):
 #     return discount_rewards(r=rewards, gamma=gamma * lambd)
