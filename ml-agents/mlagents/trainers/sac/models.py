@@ -33,7 +33,7 @@ class SACNetwork(LearningModel):
         self.num_layers = num_layers
         self.stream_names = stream_names
         self.h_size = h_size
-        self.activ_fn = tf.nn.relu
+        self.activ_fn = self.swish
         if is_target:
             with tf.variable_scope("target_network"):
                 hidden_streams = self.create_observation_streams(
