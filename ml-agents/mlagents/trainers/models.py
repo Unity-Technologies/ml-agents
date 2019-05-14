@@ -294,8 +294,7 @@ class LearningModel(object):
         """
         brain = self.brain
         activation_fn = self.swish
-        if stream_scopes is not None:
-            name_scopes = True
+        name_scopes = stream_scopes is not None
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):
