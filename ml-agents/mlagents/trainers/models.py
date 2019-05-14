@@ -119,32 +119,55 @@ class LearningModel(object):
             return self.vector_in
 
     def normalize_vector_obs(self, vector_obs):
-        normalized_state = tf.clip_by_value((vector_obs - self.running_mean) / tf.sqrt(
-            self.running_variance / (tf.cast(self.normalization_steps, tf.float32) + 1)), -5, 5,
-                                                 name="normalized_state")
+        normalized_state = tf.clip_by_value(
+            (vector_obs - self.running_mean)
+            / tf.sqrt(
+                self.running_variance
+                / (tf.cast(self.normalization_steps, tf.float32) + 1)
+            ),
+            -5,
+            5,
+            name="normalized_state",
+        )
         return normalized_state
 
     def create_normalizer(self, vector_obs):
-        self.normalization_steps = tf.get_variable("normalization_steps", [],
-                                            trainable=False, dtype=tf.int32,
-                                            initializer=tf.ones_initializer())
-        self.running_mean = tf.get_variable("running_mean", [self.vec_obs_size],
-                                            trainable=False, dtype=tf.float32,
-                                            initializer=tf.zeros_initializer())
-        self.running_variance = tf.get_variable("running_variance", [self.vec_obs_size],
-                                                trainable=False, dtype=tf.float32,
-                                                initializer=tf.ones_initializer())
+        self.normalization_steps = tf.get_variable(
+            "normalization_steps",
+            [],
+            trainable=False,
+            dtype=tf.int32,
+            initializer=tf.ones_initializer(),
+        )
+        self.running_mean = tf.get_variable(
+            "running_mean",
+            [self.vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initializer=tf.zeros_initializer(),
+        )
+        self.running_variance = tf.get_variable(
+            "running_variance",
+            [self.vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initializer=tf.ones_initializer(),
+        )
         self.update_normalization = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
         mean_current_observation = tf.reduce_mean(vector_input, axis=0)
-        new_mean = self.running_mean + (mean_current_observation - self.running_mean) / \
-                   tf.cast(tf.add(self.normalization_steps, 1), tf.float32)
-        new_variance = self.running_variance + (mean_current_observation - new_mean) * \
-                       (mean_current_observation - self.running_mean)
+        new_mean = self.running_mean + (
+            mean_current_observation - self.running_mean
+        ) / tf.cast(tf.add(self.normalization_steps, 1), tf.float32)
+        new_variance = self.running_variance + (mean_current_observation - new_mean) * (
+            mean_current_observation - self.running_mean
+        )
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
-        update_norm_step = tf.assign(self.normalization_steps, self.normalization_steps + 1)
+        update_norm_step = tf.assign(
+            self.normalization_steps, self.normalization_steps + 1
+        )
         return tf.group([update_mean, update_variance, update_norm_step])
 
     @staticmethod
@@ -258,16 +281,21 @@ class LearningModel(object):
             ),
         )
 
-    def create_observation_streams(self, num_streams, h_size, num_layers):
+    def create_observation_streams(
+        self, num_streams, h_size, num_layers, stream_scopes=None
+    ):
         """
         Creates encoding stream for observations.
         :param num_streams: Number of streams to create.
         :param h_size: Size of hidden linear layers in stream.
         :param num_layers: Number of hidden linear layers in stream.
+        :param stream_scopes: List of strings (length == num_streams), which contains the scopes for each of the streams. None if all under the same TF scope. 
         :return: List of encoded streams.
         """
         brain = self.brain
         activation_fn = self.swish
+        if stream_scopes is not None:
+            name_scopes = True
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):
@@ -281,6 +309,7 @@ class LearningModel(object):
         for i in range(num_streams):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
+            _scope_add = stream_scopes[i] if name_scopes else ""
             if self.vis_obs_size > 0:
                 for j in range(brain.number_visual_observations):
                     encoded_visual = self.create_visual_observation_encoder(
@@ -288,7 +317,7 @@ class LearningModel(object):
                         h_size,
                         activation_fn,
                         num_layers,
-                        "main_graph_{}_encoder{}".format(i, j),
+                        _scope_add + "/main_graph_{}_encoder{}".format(i, j),
                         False,
                     )
                     visual_encoders.append(encoded_visual)
@@ -299,7 +328,7 @@ class LearningModel(object):
                     h_size,
                     activation_fn,
                     num_layers,
-                    "main_graph_{}".format(i),
+                    _scope_add + "main_graph_{}".format(i),
                     False,
                 )
             if hidden_state is not None and hidden_visual is not None:
@@ -353,7 +382,7 @@ class LearningModel(object):
         """
         self.value_heads = {}
         for name in stream_names:
-            value = tf.layers.dense(hidden_input, 1, name='{}_value'.format(name))
+            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
@@ -397,8 +426,12 @@ class LearningModel(object):
             kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
         )
 
-        self.log_sigma_sq = tf.get_variable("log_sigma_squared", [self.act_size[0]], dtype=tf.float32,
-                                       initializer=tf.zeros_initializer())
+        self.log_sigma_sq = tf.get_variable(
+            "log_sigma_squared",
+            [self.act_size[0]],
+            dtype=tf.float32,
+            initializer=tf.zeros_initializer(),
+        )
 
         sigma_sq = tf.exp(self.log_sigma_sq)
 
@@ -412,12 +445,17 @@ class LearningModel(object):
         self.selected_actions = tf.stop_gradient(output_post)
 
         # Compute probability of model output.
-        all_probs = - 0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq \
-                    - 0.5 * tf.log(2.0 * np.pi) - 0.5 * self.log_sigma_sq
+        all_probs = (
+            -0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq
+            - 0.5 * tf.log(2.0 * np.pi)
+            - 0.5 * self.log_sigma_sq
+        )
 
         self.all_log_probs = tf.identity(all_probs, name="action_probs")
 
-        self.entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + self.log_sigma_sq)
+        self.entropy = 0.5 * tf.reduce_mean(
+            tf.log(2 * np.pi * np.e) + self.log_sigma_sq
+        )
 
         self.create_value_heads(self.stream_names, hidden_value)
 
@@ -504,7 +542,7 @@ class LearningModel(object):
             axis=1,
         )
         self.selected_actions = tf.stop_gradient(self.action_oh)
-        
+
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="old_probabilities"
         )

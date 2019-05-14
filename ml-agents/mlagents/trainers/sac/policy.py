@@ -46,7 +46,7 @@ class SACPolicy(Policy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_strengths.keys()),
-                gammas=trainer_params["gammas"]
+                gammas=trainer_params["gammas"],
             )
             self.model.create_sac_optimizers()
 
@@ -117,13 +117,13 @@ class SACPolicy(Policy):
         self.update_dict = {
             "value_loss": self.model.total_value_loss,
             "policy_loss": self.model.policy_loss,
-            "q1_loss" : self.model.q1_loss,
-            "q2_loss" : self.model.q2_loss,
+            "q1_loss": self.model.q1_loss,
+            "q2_loss": self.model.q2_loss,
             "entropy_coef": self.model.ent_coef,
             "entropy": self.model.entropy,
             "update_batch": self.model.update_batch_policy,
             "update_value": self.model.update_batch_value,
-            "update_entropy": self.model.update_batch_entropy
+            "update_entropy": self.model.update_batch_entropy,
         }
 
     def evaluate(self, brain_info):
@@ -156,7 +156,7 @@ class SACPolicy(Policy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    def update(self, mini_batch, num_sequences, update_target = True):
+    def update(self, mini_batch, num_sequences, update_target=True):
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
@@ -166,7 +166,7 @@ class SACPolicy(Policy):
         feed_dict = {
             self.model.batch_size: num_sequences,
             self.model.sequence_length: self.sequence_length,
-            self.model.mask_input: mini_batch["masks"].flatten()
+            self.model.mask_input: mini_batch["masks"].flatten(),
         }
         for i, name in enumerate(self.reward_signals.keys()):
             feed_dict[self.model.rewards_holders[i]] = mini_batch[
@@ -178,8 +178,7 @@ class SACPolicy(Policy):
                 [-1, self.model.act_size[0]]
             )
         else:
-            raise UnityTrainerException(
-                "SAC with discrete not implemented yet")
+            raise UnityTrainerException("SAC with discrete not implemented yet")
         if self.use_vec_obs:
             feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
                 [-1, self.vec_obs_size]
@@ -195,12 +194,14 @@ class SACPolicy(Policy):
                     feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
                 else:
                     feed_dict[self.model.visual_in[i]] = _obs
-                    
+
             for i, _ in enumerate(self.model.next_visual_in):
                 _obs = mini_batch["next_visual_obs%d" % i]
                 if self.sequence_length > 1 and self.use_recurrent:
                     (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.next_visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
+                    feed_dict[self.model.next_visual_in[i]] = _obs.reshape(
+                        [-1, _w, _h, _c]
+                    )
                 else:
                     feed_dict[self.model.next_visual_in[i]] = _obs
         if self.use_recurrent:
