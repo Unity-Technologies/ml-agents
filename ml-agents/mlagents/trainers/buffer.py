@@ -227,6 +227,7 @@ class Buffer(dict):
             mini_batch_lists = {}
             mini_batch = {}
             idxes = [random.randint(0, len(self["actions"]) - 1) for _ in range(batch_size)]
+
             for i in idxes:
                 for key in self:
                     if key in mini_batch_lists:
@@ -267,7 +268,7 @@ class Buffer(dict):
         Truncates the update buffer to a certain length.
         VERY SLOWWWW
         """
-        if len(self.update_buffer) > max_length:
+        if len(self.update_buffer["actions"]) > max_length:
             self.update_buffer = self.update_buffer[len(self.update_buffer)-max_length:]
 
     def reset_local_buffers(self):

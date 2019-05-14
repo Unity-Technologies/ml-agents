@@ -92,7 +92,6 @@ class SACPolicy(Policy):
         if load:
             self._load_graph()
         else:
-            tf.summary.FileWriter("./", self.sess.graph)
             self._initialize_graph()
             self.sess.run(self.model.target_init_op)
 
