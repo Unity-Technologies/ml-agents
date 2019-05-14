@@ -595,7 +595,7 @@ public class BarracudaUtils
         var elementType = src.GetType().GetElementType();
         var elementSize = Marshal.SizeOf(elementType);
         var dest = Array.CreateInstance(elementType, shape);
-        Buffer.BlockCopy(src, 0, dest, 0, src.Length * elementSize);
+        Buffer.BlockCopy(src, 0, dest, 0, dest.Length * elementSize);
         return dest;
     }
     
