@@ -22,7 +22,8 @@ class GAILSignal(RewardSignal):
         self.strength = signal_strength
         self.stat_name = 'Policy/GAIL Reward'
         self.value_name = 'Policy/GAIL Value Estimate'
-        self.model = GAILModel(policy.model, h_size, lr, 64)
+        self.normalize_reward = False
+        self.model = GAILModel(policy.model, h_size, lr, 64, self.normalize_reward)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
@@ -43,12 +44,16 @@ class GAILSignal(RewardSignal):
             if current_info.memories.shape[1] == 0:
                 current_info.memories = self.policy.make_empty_memory(len(current_info.agents))
             feed_dict[self.policy.model.memory_in] = current_info.memories
-        unscaled_reward = self.policy.sess.run(self.model.intrinsic_reward,
-                                               feed_dict=feed_dict)
+        if self.normalize_reward:
+            unscaled_reward,_ = self.policy.sess.run([self.model.intrinsic_reward, self.model.update_normalization],
+                                                feed_dict=feed_dict)
+        else:
+            unscaled_reward = self.policy.sess.run(self.model.intrinsic_reward,
+                                                feed_dict=feed_dict)
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
         return scaled_reward, unscaled_reward
 
-    def update(self, policy_buffer, n_sequences=32, max_batches=100):
+    def update(self, policy_buffer, n_sequences=32, max_batches=16):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.

@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import tensorflow as tf
 
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.sac.models import SACModel
@@ -45,6 +46,7 @@ class SACPolicy(Policy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_strengths.keys()),
+                gammas=trainer_params["gammas"]
             )
             self.model.create_sac_optimizers()
 
@@ -90,6 +92,7 @@ class SACPolicy(Policy):
         if load:
             self._load_graph()
         else:
+            tf.summary.FileWriter("./", self.sess.graph)
             self._initialize_graph()
             self.sess.run(self.model.target_init_op)
 
@@ -97,6 +100,7 @@ class SACPolicy(Policy):
             "action": self.model.output,
             "log_probs": self.model.all_log_probs,
             "value": self.model.value,
+            "entropy": self.model.entropy,
             "learning_rate": self.model.learning_rate,
         }
         # if self.use_continuous_act:
@@ -111,11 +115,13 @@ class SACPolicy(Policy):
         ):
             self.inference_dict["update_mean"] = self.model.update_normalization
 
-        self.total_policy_loss = self.model.policy_loss
-
         self.update_dict = {
             "value_loss": self.model.total_value_loss,
-            "policy_loss": self.total_policy_loss,
+            "policy_loss": self.model.policy_loss,
+            "q1_loss" : self.model.q1_loss,
+            "q2_loss" : self.model.q2_loss,
+            "entropy_coef": self.model.ent_coef,
+            "entropy": self.model.entropy,
             "update_batch": self.model.update_batch_policy,
             "update_value": self.model.update_batch_value,
             "update_entropy": self.model.update_batch_entropy
@@ -131,7 +137,7 @@ class SACPolicy(Policy):
             self.model.batch_size: len(brain_info.vector_observations),
             self.model.sequence_length: 1,
         }
-        epsilon = None
+        # epsilon = None
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[
@@ -142,10 +148,10 @@ class SACPolicy(Policy):
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
-        if self.use_continuous_act:
-            epsilon = np.random.normal(
-                size=(len(brain_info.vector_observations), self.model.act_size[0])
-            )
+        # if self.use_continuous_act:
+        #     epsilon = np.random.normal(
+        #         size=(len(brain_info.vector_observations), self.model.act_size[0])
+        #     )
 
         feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)
@@ -201,6 +207,7 @@ class SACPolicy(Policy):
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
+        feed_dict[self.model.dones_holder] = mini_batch["done"].flatten()
         run_out = self._execute_model(feed_dict, self.update_dict)
         # for key in feed_dict.keys():
         #     print(np.isnan(feed_dict[key]).any())
@@ -246,9 +253,6 @@ class SACPolicy(Policy):
             return ActionInfo([], [], [], None, None)
 
         run_out = self.evaluate(brain_info)
-        # mean_values = np.mean(
-        #     np.array(list(run_out.get("value").values())), axis=0
-        # ).flatten()
 
         return ActionInfo(
             action=run_out.get("action"),
