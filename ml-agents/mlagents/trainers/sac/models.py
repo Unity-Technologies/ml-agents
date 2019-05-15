@@ -213,7 +213,7 @@ class SACNetwork(LearningModel):
                 [branch for branch in policy_branches], axis=1, name="action_probs"
             )
 
-            # self.all_log_probs = tf.reduce_sum(all_probs, axis=1, keepdims=True)
+            self.all_log_probs = tf.reduce_sum(all_probs, axis=1, keepdims=True)
 
             # self.all_log_probs = tf.Print(self.all_log_probs, [all_probs, self.all_log_probs])
 
@@ -222,7 +222,7 @@ class SACNetwork(LearningModel):
             )
 
             output, normalized_logits = self.create_discrete_action_masking_layer(
-                self.all_log_probs, self.action_masks, self.act_size
+                all_probs, self.action_masks, self.act_size
             )
 
             self.output = tf.identity(output)
@@ -244,7 +244,7 @@ class SACNetwork(LearningModel):
 
             action_idx = [0] + list(np.cumsum(self.act_size))
 
-            self.entropy = self.all_log_probs = tf.reduce_sum(
+            self.entropy = tf.reduce_sum(
                 (
                     tf.stack(
                         [
