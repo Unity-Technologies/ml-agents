@@ -57,9 +57,9 @@ launches our environment executable. This means:
    * In the File dialog, navigate to your ML-Agents directory.
    * Assign a file name and click **Save**.
    * (For Windows）With Unity 2018.1, it will ask you to select a folder instead
-     of a file name. Create a subfolder within the ML-Agents folder and select
+     of a file name. Create a subfolder within the root directory and select
      that folder to build. In the following steps you will refer to this
-     subfolder's name as `env_name`.
+     subfolder's name as `env_name`. You cannot create builds in the Assets folder
 
 ![Build Window](images/mlagents-BuildWindow.png)
 
