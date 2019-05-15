@@ -39,7 +39,10 @@ class SACNetwork(LearningModel):
                 hidden_streams = self.create_observation_streams(
                     1, self.h_size, 0, ["target_network/critic"]
                 )
-            self.create_cc_critic(hidden_streams[0], "target_network", create_qs=False)
+            if brain.vector_action_space_type == "continuous":
+                self.create_cc_critic(hidden_streams[0], "target_network", create_qs=False)
+            else:
+                self.create_dc_critic(hidden_streams[0], "target_network", create_qs=False)
         else:
             with tf.variable_scope("policy_network"):
                 hidden_streams = self.create_observation_streams(
@@ -50,9 +53,11 @@ class SACNetwork(LearningModel):
                 )
             if brain.vector_action_space_type == "continuous":
                 self.create_cc_actor(hidden_streams[0], "policy_network")
+                self.create_cc_critic(hidden_streams[1], "policy_network")
+
             else:
                 self.create_dc_actor(hidden_streams[0], "policy_network")
-            self.create_cc_critic(hidden_streams[1], "policy_network")
+                self.create_dc_critic(hidden_streams[1], "policy_network")
 
     def get_vars(self, scope):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
@@ -81,6 +86,38 @@ class SACNetwork(LearningModel):
                 self.h_size,
                 scope + "/q",
                 reuse=True,
+            )
+            self.q_vars = self.get_vars(scope)
+        self.critic_vars = self.get_vars(scope)
+
+    def create_dc_critic(self, hidden_value, scope, create_qs=True):
+        """
+        Creates just the critic network
+        """
+        scope = scope + "/critic"
+        self.value = self.create_sac_value_head(
+            hidden_value, self.num_layers, self.h_size, scope + "/value"
+        )
+
+        self.value_vars = self.get_vars(scope + "/value")
+
+        if create_qs:
+            self.q1_heads, self.q2_heads, self.q1, self.q2 = self.create_q_heads(
+                self.stream_names,
+                hidden_value,
+                self.num_layers,
+                self.h_size,
+                scope + "/q",
+                num_outputs=sum(self.act_size),
+            )
+            self.q1_pheads, self.q2_pheads, self.q1_p, self.q2_p = self.create_q_heads(
+                self.stream_names,
+                hidden_value,
+                self.num_layers,
+                self.h_size,
+                scope + "/q",
+                reuse=True,
+                num_outputs=sum(self.act_size),
             )
             self.q_vars = self.get_vars(scope)
         self.critic_vars = self.get_vars(scope)
@@ -162,7 +199,7 @@ class SACNetwork(LearningModel):
 
         # Get all policy vars
         self.policy_vars = self.get_vars(scope)
-    
+
     def create_dc_actor(self, hidden_policy, scope):
         """
         Creates Discrete control actor for SAC.
@@ -174,7 +211,7 @@ class SACNetwork(LearningModel):
             hidden_policy, self.h_size, self.activ_fn, self.num_layers, scope, False
         )
         with tf.variable_scope(scope):
-            if self.use_recurrent: # Not sure if works
+            if self.use_recurrent:  # Not sure if works
                 self.prev_action = tf.placeholder(
                     shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
                 )
@@ -208,12 +245,10 @@ class SACNetwork(LearningModel):
                         ),
                     )
                 )
-
+            print(policy_branches)
             all_probs = tf.concat(
                 [branch for branch in policy_branches], axis=1, name="action_probs"
             )
-
-            self.all_log_probs = tf.reduce_sum(all_probs, axis=1, keepdims=True)
 
             # self.all_log_probs = tf.Print(self.all_log_probs, [all_probs, self.all_log_probs])
 
@@ -226,9 +261,17 @@ class SACNetwork(LearningModel):
             )
 
             self.output = tf.identity(output)
-            self.normalized_logits = self.output_pre = tf.identity(normalized_logits, name="action")
 
-            self.create_value_heads(self.stream_names, hidden_policy)
+            # self.output_pre = tf.concat(
+            #     [
+            #         tf.one_hot(self.output[:, i], self.act_size[i])
+            #         for i in range(len(self.act_size))
+            #     ],
+            #     axis=1,
+            # )
+
+            self.all_log_probs = normalized_logits
+            self.normalized_logits = tf.identity(normalized_logits, name="action")
 
             # Create action input (discrete)
             self.action_holder = tf.placeholder(
@@ -252,9 +295,7 @@ class SACNetwork(LearningModel):
                                 labels=tf.nn.softmax(
                                     all_probs[:, action_idx[i] : action_idx[i + 1]]
                                 ),
-                                logits=all_probs[
-                                    :, action_idx[i] : action_idx[i + 1]
-                                ],
+                                logits=all_probs[:, action_idx[i] : action_idx[i + 1]],
                             )
                             for i in range(len(self.act_size))
                         ],
@@ -265,8 +306,8 @@ class SACNetwork(LearningModel):
             )
 
         self.policy_vars = self.get_vars(scope)
-        
-    def create_sac_value_head(self, hidden_input, num_layers, h_size, scope):
+
+    def create_sac_value_head(self, hidden_input, num_layers, h_size, scope, num_outputs=1):
         """
         Creates one value estimator head for each reward signal in stream_names.
         Also creates the node corresponding to the mean of all the value heads in self.value.
@@ -280,11 +321,18 @@ class SACNetwork(LearningModel):
             hidden_input, h_size, self.activ_fn, num_layers, scope, False
         )
         with tf.variable_scope(scope):
-            value = tf.layers.dense(value_hidden, 1, reuse=False, name="hidden_value")
+            value = tf.layers.dense(value_hidden, num_outputs, reuse=False, name="hidden_value")
         return value
 
     def create_q_heads(
-        self, stream_names, hidden_input, num_layers, h_size, scope, reuse=False
+        self,
+        stream_names,
+        hidden_input,
+        num_layers,
+        h_size,
+        scope,
+        reuse=False,
+        num_outputs=1,
     ):
         """
         Creates two q heads for each reward signal in stream_names.
@@ -293,6 +341,11 @@ class SACNetwork(LearningModel):
         :param stream_names: The list of reward signal names
         :param hidden_input: The last layer of the Critic. The heads will consist of one dense hidden layer on top
         of the hidden input.
+        :param num_layers: Number of hidden layers for Q network
+        :param h_size: size of hidden layers for Q network
+        :param scope: TF scope for Q network.
+        :param reuse: Whether or not to reuse variables. Useful for creating Q of policy.
+        :param num_outputs: Number of outputs of each Q function. If discrete, equal to number of actions. 
         """
         with tf.variable_scope(scope + "/" + "q1_encoding", reuse=reuse):
             q1_hidden = self.create_vector_observation_encoder(
@@ -300,7 +353,7 @@ class SACNetwork(LearningModel):
             )
             q1_heads = {}
             for name in stream_names:
-                _q1 = tf.layers.dense(q1_hidden, 1, name="{}_q1".format(name))
+                _q1 = tf.layers.dense(q1_hidden, num_outputs, name="{}_q1".format(name))
                 q1_heads[name] = _q1
         with tf.variable_scope(scope + "/" + "q2_encoding", reuse=reuse):
             q2_hidden = self.create_vector_observation_encoder(
@@ -308,7 +361,7 @@ class SACNetwork(LearningModel):
             )
             q2_heads = {}
             for name in stream_names:
-                _q2 = tf.layers.dense(q2_hidden, 1, name="{}_q2".format(name))
+                _q2 = tf.layers.dense(q2_hidden, num_outputs, name="{}_q2".format(name))
                 q2_heads[name] = _q2
         q1 = tf.reduce_mean(list(q1_heads.values()), axis=0)
         q2 = tf.reduce_mean(list(q2_heads.values()), axis=0)
@@ -367,7 +420,7 @@ class SACModel(LearningModel):
         self.last_reward, self.new_reward, self.update_reward = (
             self.create_reward_encoder()
         )
-       
+
         self.policy_network = SACNetwork(
             brain=brain,
             m_size=m_size,
@@ -472,13 +525,6 @@ class SACModel(LearningModel):
             lr, self.global_step, max_step, 1e-10, power=1.0
         )
 
-        decay_epsilon = tf.train.polynomial_decay(
-            epsilon, self.global_step, max_step, 0.1, power=1.0
-        )
-        decay_beta = tf.train.polynomial_decay(
-            beta, self.global_step, max_step, 1e-5, power=1.0
-        )
-
         q1_losses = []
         q2_losses = []
         # Multiple q losses per stream
@@ -531,7 +577,7 @@ class SACModel(LearningModel):
         self.policy_loss = tf.reduce_mean(
             self.ent_coef * self.policy_network.all_log_probs - self.policy_network.q1_p
         )
-        print(self.policy_network.all_log_probs, self.policy_network.q1_p)
+        print("Checking dims", self.policy_network.all_log_probs, self.policy_network.q1_p)
 
         # Only one value head, only one value loss
         v_backup = tf.stop_gradient(
