@@ -48,7 +48,10 @@ class SACNetwork(LearningModel):
                     0,
                     ["policy_network/policy", "policy_network/critic"],
                 )
-            self.create_cc_actor(hidden_streams[0], "policy_network")
+            if brain.vector_action_space_type == "continuous":
+                self.create_cc_actor(hidden_streams[0], "policy_network")
+            else:
+                self.create_dc_actor(hidden_streams[0], "policy_network")
             self.create_cc_critic(hidden_streams[1], "policy_network")
 
     def get_vars(self, scope):
@@ -66,10 +69,7 @@ class SACNetwork(LearningModel):
         self.value_vars = self.get_vars(scope + "/value")
 
         if create_qs:
-            self.action_holder = tf.placeholder(
-                shape=[None, self.act_size[0]], dtype=tf.float32, name="action_holder"
-            )
-            hidden_q = tf.concat([hidden_value, self.action_holder], axis=-1)
+            hidden_q = tf.concat([hidden_value, self.external_action_in], axis=-1)
             hidden_qp = tf.concat([hidden_value, self.output_pre], axis=-1)
             self.q1_heads, self.q2_heads, self.q1, self.q2 = self.create_q_heads(
                 self.stream_names, hidden_q, self.num_layers, self.h_size, scope + "/q"
@@ -87,10 +87,16 @@ class SACNetwork(LearningModel):
 
     def create_cc_actor(self, hidden_policy, scope):
         """
-        Creates Continuous control actor-critic model.
-        :param h_size: Size of hidden linear layers.
-        :param num_layers: Number of hidden linear layers.
+        Creates Continuous control actor for SAC.
+        :param hidden_policy: Output of feature extractor (i.e. the input for vector obs, output of CNN for visual obs).
+        :param num_layers: TF scope to assign whatever is created in this block.
         """
+        # Create action input (continuous)
+        self.action_holder = tf.placeholder(
+            shape=[None, self.act_size[0]], dtype=tf.float32, name="action_holder"
+        )
+        self.external_action_in = self.action_holder
+
         scope = scope + "/policy"
         hidden_policy = self.create_vector_observation_encoder(
             hidden_policy, self.h_size, self.activ_fn, self.num_layers, scope, False
@@ -156,7 +162,110 @@ class SACNetwork(LearningModel):
 
         # Get all policy vars
         self.policy_vars = self.get_vars(scope)
+    
+    def create_dc_actor(self, hidden_policy, scope):
+        """
+        Creates Discrete control actor for SAC.
+        :param hidden_policy: Output of feature extractor (i.e. the input for vector obs, output of CNN for visual obs).
+        :param num_layers: TF scope to assign whatever is created in this block.
+        """
+        scope = scope + "/policy"
+        hidden_policy = self.create_vector_observation_encoder(
+            hidden_policy, self.h_size, self.activ_fn, self.num_layers, scope, False
+        )
+        with tf.variable_scope(scope):
+            if self.use_recurrent: # Not sure if works
+                self.prev_action = tf.placeholder(
+                    shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
+                )
+                prev_action_oh = tf.concat(
+                    [
+                        tf.one_hot(self.prev_action[:, i], self.act_size[i])
+                        for i in range(len(self.act_size))
+                    ],
+                    axis=1,
+                )
+                hidden_policy = tf.concat([hidden_policy, prev_action_oh], axis=1)
 
+                self.memory_in = tf.placeholder(
+                    shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+                )
+                hidden_policy, memory_out = self.create_recurrent_encoder(
+                    hidden_policy, self.memory_in, self.sequence_length
+                )
+                self.memory_out = tf.identity(memory_out, name="recurrent_out")
+
+            policy_branches = []
+            for size in self.act_size:
+                policy_branches.append(
+                    tf.layers.dense(
+                        hidden_policy,
+                        size,
+                        activation=None,
+                        use_bias=False,
+                        kernel_initializer=c_layers.variance_scaling_initializer(
+                            factor=0.01
+                        ),
+                    )
+                )
+
+            all_probs = tf.concat(
+                [branch for branch in policy_branches], axis=1, name="action_probs"
+            )
+
+            # self.all_log_probs = tf.reduce_sum(all_probs, axis=1, keepdims=True)
+
+            # self.all_log_probs = tf.Print(self.all_log_probs, [all_probs, self.all_log_probs])
+
+            self.action_masks = tf.placeholder(
+                shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
+            )
+
+            output, normalized_logits = self.create_discrete_action_masking_layer(
+                self.all_log_probs, self.action_masks, self.act_size
+            )
+
+            self.output = tf.identity(output)
+            self.normalized_logits = self.output_pre = tf.identity(normalized_logits, name="action")
+
+            self.create_value_heads(self.stream_names, hidden_policy)
+
+            # Create action input (discrete)
+            self.action_holder = tf.placeholder(
+                shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
+            )
+            self.external_action_in = tf.concat(
+                [
+                    tf.one_hot(self.action_holder[:, i], self.act_size[i])
+                    for i in range(len(self.act_size))
+                ],
+                axis=1,
+            )
+
+            action_idx = [0] + list(np.cumsum(self.act_size))
+
+            self.entropy = self.all_log_probs = tf.reduce_sum(
+                (
+                    tf.stack(
+                        [
+                            tf.nn.softmax_cross_entropy_with_logits_v2(
+                                labels=tf.nn.softmax(
+                                    all_probs[:, action_idx[i] : action_idx[i + 1]]
+                                ),
+                                logits=all_probs[
+                                    :, action_idx[i] : action_idx[i + 1]
+                                ],
+                            )
+                            for i in range(len(self.act_size))
+                        ],
+                        axis=1,
+                    )
+                ),
+                axis=1,
+            )
+
+        self.policy_vars = self.get_vars(scope)
+        
     def create_sac_value_head(self, hidden_input, num_layers, h_size, scope):
         """
         Creates one value estimator head for each reward signal in stream_names.
@@ -247,6 +356,7 @@ class SACModel(LearningModel):
         """
         self.tau = 0.005
         self.gammas = gammas
+        self.brain = brain
         if stream_names is None:
             stream_names = []
         LearningModel.__init__(
@@ -257,32 +367,29 @@ class SACModel(LearningModel):
         self.last_reward, self.new_reward, self.update_reward = (
             self.create_reward_encoder()
         )
-        if brain.vector_action_space_type == "continuous":
-            self.policy_network = SACNetwork(
-                brain=brain,
-                m_size=m_size,
-                h_size=h_size,
-                normalize=normalize,
-                use_recurrent=use_recurrent,
-                num_layers=num_layers,
-                seed=seed,
-                stream_names=stream_names,
-                is_target=False,
-            )
-            self.target_network = SACNetwork(
-                brain=brain,
-                m_size=m_size,
-                h_size=h_size,
-                normalize=normalize,
-                use_recurrent=use_recurrent,
-                num_layers=num_layers,
-                seed=seed,
-                stream_names=stream_names,
-                is_target=True,
-            )
-
-        else:
-            self.create_dc_actor_critic(h_size, num_layers)
+       
+        self.policy_network = SACNetwork(
+            brain=brain,
+            m_size=m_size,
+            h_size=h_size,
+            normalize=normalize,
+            use_recurrent=use_recurrent,
+            num_layers=num_layers,
+            seed=seed,
+            stream_names=stream_names,
+            is_target=False,
+        )
+        self.target_network = SACNetwork(
+            brain=brain,
+            m_size=m_size,
+            h_size=h_size,
+            normalize=normalize,
+            use_recurrent=use_recurrent,
+            num_layers=num_layers,
+            seed=seed,
+            stream_names=stream_names,
+            is_target=True,
+        )
         self.create_inputs()
         self.create_losses(
             self.policy_network.q1_heads,
@@ -319,6 +426,8 @@ class SACModel(LearningModel):
         self.next_vector_in = self.target_network.vector_in
         self.next_visual_in = self.target_network.visual_in
         self.action_holder = self.policy_network.action_holder
+        if self.brain.vector_action_space_type == "discrete":
+            self.action_masks = self.policy_network.action_masks
 
         self.output = self.policy_network.output
         self.value = self.policy_network.value

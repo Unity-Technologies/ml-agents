@@ -178,7 +178,16 @@ class SACPolicy(Policy):
                 [-1, self.model.act_size[0]]
             )
         else:
-            raise UnityTrainerException("SAC with discrete not implemented yet")
+            feed_dict[self.model.action_holder] = mini_batch["actions"].reshape(
+                [-1, len(self.model.act_size)]
+            )
+            if self.use_recurrent:
+                feed_dict[self.model.prev_action] = mini_batch["prev_action"].reshape(
+                    [-1, len(self.model.act_size)]
+                )
+            feed_dict[self.model.action_masks] = mini_batch["action_mask"].reshape(
+                [-1, sum(self.brain.vector_action_space_size)]
+            )
         if self.use_vec_obs:
             feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
                 [-1, self.vec_obs_size]
