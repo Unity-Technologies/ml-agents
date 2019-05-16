@@ -40,9 +40,13 @@ class SACNetwork(LearningModel):
                     1, self.h_size, 0, ["target_network/critic"]
                 )
             if brain.vector_action_space_type == "continuous":
-                self.create_cc_critic(hidden_streams[0], "target_network", create_qs=False)
+                self.create_cc_critic(
+                    hidden_streams[0], "target_network", create_qs=False
+                )
             else:
-                self.create_dc_critic(hidden_streams[0], "target_network", create_qs=False)
+                self.create_cc_critic(
+                    hidden_streams[0], "target_network", create_qs=False
+                )
         else:
             with tf.variable_scope("policy_network"):
                 hidden_streams = self.create_observation_streams(
@@ -246,7 +250,7 @@ class SACNetwork(LearningModel):
                     )
                 )
             print(policy_branches)
-            all_probs = tf.concat(
+            all_logits = tf.concat(
                 [branch for branch in policy_branches], axis=1, name="action_probs"
             )
 
@@ -256,11 +260,27 @@ class SACNetwork(LearningModel):
                 shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
             )
 
+            # gumbeldist = tf.contrib.distributions.RelaxedOneHotCategorical(0.05, probs=act_probs)
+
             output, normalized_logits = self.create_discrete_action_masking_layer(
-                all_probs, self.action_masks, self.act_size
+                all_logits, self.action_masks, self.act_size
             )
 
-            self.output = tf.identity(output)
+            self.action_probs = normalized_logits
+            self.all_log_probs = tf.log(normalized_logits)
+
+            print(output)
+
+            print(all_probs)
+
+            # output = tf.concat(
+            #     [
+            #         tf.multinomial(tf.log(act_probs[k]), 1)
+            #         for k in range(len(self.act_size))
+            #     ],
+            #     axis=1,
+            # )
+            self.output = output
 
             # self.output_pre = tf.concat(
             #     [
@@ -270,8 +290,11 @@ class SACNetwork(LearningModel):
             #     axis=1,
             # )
 
-            self.all_log_probs = normalized_logits
-            self.normalized_logits = tf.identity(normalized_logits, name="action")
+            # self.output_pre = gumbeldist.sample(tf.shape(act_probs)[0])[0]
+            # act_probs = tf.Print(act_probs, [act_probs, gumbeldist.sample(3)[0]])
+            # self.all_log_probs = normalized_logits
+            # self.all_log_probs = tf.reduce_sum(tf.log(act_probs+EPSILON), axis=1)
+            # self.normalized_logits = tf.identity(normalized_logits, name="action")
 
             # Create action input (discrete)
             self.action_holder = tf.placeholder(
@@ -285,29 +308,33 @@ class SACNetwork(LearningModel):
                 axis=1,
             )
 
-            action_idx = [0] + list(np.cumsum(self.act_size))
+            # action_idx = [0] + list(np.cumsum(self.act_size))
 
-            self.entropy = tf.reduce_sum(
-                (
-                    tf.stack(
-                        [
-                            tf.nn.softmax_cross_entropy_with_logits_v2(
-                                labels=tf.nn.softmax(
-                                    all_probs[:, action_idx[i] : action_idx[i + 1]]
-                                ),
-                                logits=all_probs[:, action_idx[i] : action_idx[i + 1]],
-                            )
-                            for i in range(len(self.act_size))
-                        ],
-                        axis=1,
-                    )
-                ),
-                axis=1,
-            )
+            self.entropy = self.all_log_probs
+
+            # self.entropy = tf.reduce_sum(
+            #     (
+            #         tf.stack(
+            #             [
+            #                 tf.nn.softmax_cross_entropy_with_logits_v2(
+            #                     labels=tf.nn.softmax(
+            #                         all_probs[:, action_idx[i] : action_idx[i + 1]]
+            #                     ),
+            #                     logits=all_probs[:, action_idx[i] : action_idx[i + 1]],
+            #                 )
+            #                 for i in range(len(self.act_size))
+            #             ],
+            #             axis=1,
+            #         )
+            #     ),
+            #     axis=1,
+            # )
 
         self.policy_vars = self.get_vars(scope)
 
-    def create_sac_value_head(self, hidden_input, num_layers, h_size, scope, num_outputs=1):
+    def create_sac_value_head(
+        self, hidden_input, num_layers, h_size, scope, num_outputs=1
+    ):
         """
         Creates one value estimator head for each reward signal in stream_names.
         Also creates the node corresponding to the mean of all the value heads in self.value.
@@ -321,7 +348,9 @@ class SACNetwork(LearningModel):
             hidden_input, h_size, self.activ_fn, num_layers, scope, False
         )
         with tf.variable_scope(scope):
-            value = tf.layers.dense(value_hidden, num_outputs, reuse=False, name="hidden_value")
+            value = tf.layers.dense(
+                value_hidden, num_outputs, reuse=False, name="hidden_value"
+            )
         return value
 
     def create_q_heads(
@@ -452,6 +481,7 @@ class SACModel(LearningModel):
             lr,
             max_step,
             stream_names,
+            discrete=self.brain.vector_action_space_type == "discrete",
         )
         if normalize:
             target_update_norm = self.target_network.copy_normalization(
@@ -490,7 +520,15 @@ class SACModel(LearningModel):
         )
 
     def create_losses(
-        self, q1_streams, q2_streams, beta, epsilon, lr, max_step, stream_names
+        self,
+        q1_streams,
+        q2_streams,
+        beta,
+        epsilon,
+        lr,
+        max_step,
+        stream_names,
+        discrete=False,
     ):
         """
         Creates training-specific Tensorflow ops for PPO models.
@@ -506,10 +544,19 @@ class SACModel(LearningModel):
         self.min_policy_q = tf.minimum(
             self.policy_network.q1_p, self.policy_network.q2_p
         )
+
+        if discrete:
+            self.min_policy_q = tf.reduce_sum(
+                self.min_policy_q * self.policy_network.external_action_in, axis=1
+            )
+
         print(self.policy_network.q1_p)
         print(self.min_policy_q)
 
-        self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
+        if discrete and False:
+            self.target_entropy = 0.5 * np.log(sum(self.act_size)).astype(np.float32)
+        else:
+            self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
         print(self.target_entropy)
 
         self.rewards_holders = []
@@ -531,23 +578,44 @@ class SACModel(LearningModel):
         expanded_dones = tf.expand_dims(self.dones_holder, axis=-1)
         for i, name in enumerate(stream_names):
             _expanded_rewards = tf.expand_dims(self.rewards_holders[i], axis=-1)
+
             q_backup = tf.stop_gradient(
                 _expanded_rewards
                 + (1.0 - expanded_dones) * self.gammas[i] * self.target_network.value
             )
+
+            if discrete:
+                # Only look at the q value that corresponds to the action taken
+                q1_stream = tf.reduce_sum(
+                    self.policy_network.external_action_in * q1_streams[name], axis=1
+                )
+                q2_stream = tf.reduce_sum(
+                    self.policy_network.external_action_in * q2_streams[name], axis=1
+                )
+            else:
+                q1_stream = q1_streams[name]
+                q2_stream = q2_streams[name]
+
             # q_backup = tf.Print(q_backup, [_expanded_rewards, expanded_dones, self.target_network.value], summarize = 10)
 
             # q_backup = tf.Print(q_backup, [self.target_network.value,  (1.0-self.dones_holder),  self.policy_network.output_pre], message="Qbackup", summarize=10)
-
             _q1_loss = 0.5 * tf.reduce_mean(
                 tf.squared_difference(q_backup, q1_streams[name])
             )
 
-            q1_losses.append(_q1_loss)
             _q2_loss = 0.5 * tf.reduce_mean(
                 tf.squared_difference(q_backup, q2_streams[name])
             )
-            print(q1_streams[name], q2_streams[name])
+            # else:
+            #     _q1_loss = 0.5 * tf.reduce_mean(
+            #         tf.squared_difference(q_backup, tf.reduce(meanq1_streams[name])
+            #     )
+
+            #     _q2_loss = 0.5 * tf.reduce_mean(
+            #         tf.squared_difference(q_backup, tf.exp(self.policy_network.all_log_probs)* q2_streams[name])
+            #     )
+
+            q1_losses.append(_q1_loss)
             q2_losses.append(_q2_loss)
             # clipped_value_estimate = self.old_values[i] + tf.clip_by_value(
             #     tf.reduce_sum(value_streams[name], axis=1) - self.old_values[i],
@@ -574,15 +642,33 @@ class SACModel(LearningModel):
             * tf.stop_gradient(self.policy_network.all_log_probs + self.target_entropy)
         )
 
-        self.policy_loss = tf.reduce_mean(
-            self.ent_coef * self.policy_network.all_log_probs - self.policy_network.q1_p
+        if not discrete or True:
+            self.policy_loss = tf.reduce_mean(
+                self.ent_coef * self.policy_network.all_log_probs
+                - self.policy_network.q1_p
+            )
+
+        else:
+            self.policy_loss = tf.reduce_mean(
+                tf.reduce_sum(
+                    self.policy_network.action_probs
+                    * (self.policy_network.all_log_probs - self.policy_network.q1_p)
+                )
+            )
+            # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
+            # self.policy_loss = tf.Print(self.policy_loss,[self.policy_network.q1_p])
+
+        v_backup = tf.stop_gradient(
+            self.min_policy_q
+            - tf.reduce_sum(self.ent_coef * self.policy_network.all_log_probs, axis=1)
         )
-        print("Checking dims", self.policy_network.all_log_probs, self.policy_network.q1_p)
+
+        print(
+            "Checking dims", self.policy_network.all_log_probs, self.policy_network.q1_p
+        )
 
         # Only one value head, only one value loss
-        v_backup = tf.stop_gradient(
-            self.min_policy_q - self.ent_coef * self.policy_network.all_log_probs
-        )
+
         # v_backup = tf.Print(v_backup, [v_backup], message="vbackup", summarize=10)
         self.value_loss = 0.5 * tf.reduce_mean(
             tf.squared_difference(self.policy_network.value, v_backup)

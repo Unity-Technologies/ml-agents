@@ -316,7 +316,7 @@ class LearningModel(object):
                         h_size,
                         activation_fn,
                         num_layers,
-                        _scope_add + "/main_graph_{}_encoder{}".format(i, j),
+                        _scope_add + "main_graph_{}_encoder{}".format(i, j),
                         False,
                     )
                     visual_encoders.append(encoded_visual)
