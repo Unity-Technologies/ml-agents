@@ -1,5 +1,18 @@
 # Release notes
 
+## 0.2.1
+- TF importer: fixed ResizeNearestNeighbor aka Upsample2D scaling factor detection.
+- TF importer: optimized node sorting. Should be faster than 0.2.0.
+- TF importer: made detection of actual output node from LSTM/GRU pattern more bullet proof by skipping Const nodes.
+- TF importer: improved InstanceNormalization handling.
+- TF importer: fixed SquareDifference pattern.
+- TF importer: fixed Conv2DBackpropInput (transpose convolution) import. 
+- Fixed Conv2D performance regression on some GPUs.
+- Fixed TextureAsTensorData.Download() to work properly with InterpretDepthAs.Channels.
+- Fixed bug when identity/nop layers would reuse input as an output and later causing premature release of that tensor as part of intermediate data cleanup.
+- Added scale + bias to TenstorToRenderTexture interface, usefull for adjusting network output scale + bias on the fly.
+- Fixed double Dispose issue when worker gets garbage collected.
+
 ## 0.2.0
 - Version bumped to 0.2.0 as it brings breaking API changes, for details look below. 
 - Significantly reduced temporary memory allocations by introducing internal allocator support. Now memory is re-used between layer execution as much as possible.
@@ -103,3 +116,13 @@
 
 ## 0.1.0
 - First internal build. Due some bugs encountered wasn't published.
+
+#Contributors
+- Renaldas (ReJ) Zioma
+- Mantas Puida
+- Vladimir Oster
+- Martin Sternevald
+- Valdemar Bučilko
+- Kuba Cupisz
+- Povilas Kanapickas
+- Paulius Puodžiūnas

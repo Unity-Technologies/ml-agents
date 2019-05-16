@@ -1,6 +1,7 @@
 #pragma kernel Conv2D
 #pragma kernel Conv2D_RegisterBlock4x2
 #pragma kernel Conv2D_L1Cached64_RegisterBlock4x4
+#pragma kernel Conv2D_L1Cached32_RegisterBlock4x4
 
 #pragma kernel DepthwiseConv2D
 
@@ -106,81 +107,76 @@ void Conv2D_RegisterBlock4x2(uint3 dispatchThreadID : SV_DispatchThreadID)
 #undef SIZE_W
 #undef SIZE_H
 
-#undef L1CACHESIZE
-#define L1CACHESIZE 64
-#undef SIZE
-#define SIZE 4
-groupshared float Conv2D_L1Cached64_Reg_Loop_safe_X[SIZE*SIZE][L1CACHESIZE];
-[numthreads(L1CACHESIZE, 1, 1)]
-void Conv2D_L1Cached64_RegisterBlock4x4(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
-{
-    DISPATCH_ARGS(K.kernelCount, O.width, O.height);
-    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
-
-    #define X_ Conv2D_L1Cached64_Reg_Loop_safe_X
-
-    uint k = L1CACHESIZE * groupID.x + groupThreadID.x;
-    uint x = groupID.y;
-    uint y = groupID.z;
-
-    // need all threads to load channels, thus will do late check against kernel count
-    if (x*SIZE >= O.width) return;
-    if (y*SIZE >= O.height) return;
-
-    for (uint n = 0; n < O.batch; ++n)
-    {
-        float acc[SIZE*SIZE];
-        [unroll]
-        for (uint q = 0; q < SIZE*SIZE; ++q)
-            acc[q] = B.SafeGet(k);
-
-        for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
-        {
-            for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
-            {
-                uint2 pos[SIZE*SIZE];
-                [unroll]
-                for (uint q = 0; q < SIZE*SIZE; ++q)
-                    pos[q] = uint2(x*SIZE+(q%SIZE), y*SIZE+(q/SIZE)) * _Stride.xy + uint2(dx, dy);
-
-                for (uint c = 0; c < X.channels; c += L1CACHESIZE)
-                {
-                    // Cache X
-                    uint dc = groupThreadID.x;
-                    [unroll]
-                    for (q = 0; q < SIZE*SIZE; ++q)
-                        X_[q][dc] = X.SafeGet(n, pos[q], c + dc, _Pad.xy);
-                    GroupMemoryBarrierWithGroupSync();
-
-                    // X * K
-                    if (k < K.channels) // need all threads to load channels, thus late check against kernel count
-                    {
-                        uint kIndex = K.Index(dy, dx, c, k);
-                        for (dc = 0; dc < L1CACHESIZE && (c + dc) < K.GetKernelDepth(); ++dc)
-                        {
-                            [unroll]
-                            for (q = 0; q < SIZE*SIZE; ++q)
-                                acc[q] = fastfma(X_[q][dc], K.data[kIndex], acc[q]);
-                            kIndex += K.channels;
-                        }
-                    }
-                    GroupMemoryBarrierWithGroupSync();
-                }
-            }
-        }
-
-        uint remainderW = (O.width - x*SIZE);
-        uint remainderH = (O.height - y*SIZE);
-
-        if (k < K.channels) // need all threads to load channels, thus late check against kernel count
-            [unroll]
-            for (q = 0; q < SIZE*SIZE; ++q)
-                if (q/SIZE < remainderH && q%SIZE < remainderW)
-                    O.Set(n, y*SIZE+(q/SIZE), x*SIZE+(q%SIZE), k, acc[q]);
-    }
-
-    #undef X_
+#define CONV2D_L1CACHED(L1CACHESIZE, SIZE, FMA) \
+groupshared float Conv2D_L1Cached##L1CACHESIZE##_Reg_Loop_safe_X[SIZE*SIZE][L1CACHESIZE];\
+[numthreads(L1CACHESIZE, 1, 1)]\
+void Conv2D_L1Cached##L1CACHESIZE##_RegisterBlock##SIZE##x##SIZE(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)\
+{\
+    DISPATCH_ARGS(K.kernelCount, O.width, O.height);\
+    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);\
+\
+    uint k = L1CACHESIZE * groupID.x + groupThreadID.x;\
+    uint x = groupID.y;\
+    uint y = groupID.z;\
+\
+    if (x*SIZE >= O.width) return;\
+    if (y*SIZE >= O.height) return;\
+\
+    for (uint n = 0; n < O.batch; ++n)\
+    {\
+        float acc[SIZE*SIZE];\
+        [unroll]\
+        for (uint q = 0; q < SIZE*SIZE; ++q)\
+            acc[q] = B.SafeGet(k);\
+\
+        for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)\
+        {\
+            for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)\
+            {\
+                uint2 pos[SIZE*SIZE];\
+                [unroll]\
+                for (uint q = 0; q < SIZE*SIZE; ++q)\
+                    pos[q] = uint2(x*SIZE+(q%SIZE), y*SIZE+(q/SIZE)) * _Stride.xy + uint2(dx, dy);\
+\
+                for (uint c = 0; c < X.channels; c += L1CACHESIZE)\
+                {\
+                    uint dc = groupThreadID.x;\
+                    [unroll]\
+                    for (q = 0; q < SIZE*SIZE; ++q)\
+                        Conv2D_L1Cached##L1CACHESIZE##_Reg_Loop_safe_X[q][dc] = X.SafeGet(n, pos[q], c + dc, _Pad.xy);\
+                    GroupMemoryBarrierWithGroupSync();\
+\
+                    if (k < K.channels)\
+                    {\
+                        uint kIndex = K.Index(dy, dx, c, k);\
+                        for (dc = 0; dc < L1CACHESIZE; ++dc)\
+                        {\
+                            [unroll]\
+                            for (q = 0; q < SIZE*SIZE; ++q)\
+                                acc[q] = FMA(Conv2D_L1Cached##L1CACHESIZE##_Reg_Loop_safe_X[q][dc], K.data[kIndex], acc[q]);\
+                            kIndex += K.channels;\
+                        }\
+                    }\
+                    GroupMemoryBarrierWithGroupSync();\
+                }\
+            }\
+        }\
+\
+        uint remainderW = (O.width - x*SIZE);\
+        uint remainderH = (O.height - y*SIZE);\
+\
+        if (k < K.channels)\
+            [unroll]\
+            for (q = 0; q < SIZE*SIZE; ++q)\
+                if (q/SIZE < remainderH && q%SIZE < remainderW)\
+                    O.Set(n, y*SIZE+(q/SIZE), x*SIZE+(q%SIZE), k, acc[q]);\
+    }\
+\
 }
+
+CONV2D_L1CACHED(64,4, fastfma)
+CONV2D_L1CACHED(32,4, fastfma)
+
 
 
 NUMTHREADS((16,4,4), (8,4,4), (4,4,4))

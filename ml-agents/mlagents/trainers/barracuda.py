@@ -152,8 +152,6 @@ def sort(model, inputs, memories, verbose):
     assert(len(find_missing_inputs(new_model, inputs_and_memories)) == 0)
     return new_model
 
-
-
 # Trim
 def trim(model, criteria_regexp_string, verbose):
     if hasattr(model, 'layers'):
@@ -194,6 +192,17 @@ def trim(model, criteria_regexp_string, verbose):
         model = trim_model(model, preserve_outputs)
     else:
         print("WARNING: Trim couldn't find any layers to match:", criteria_regexp_string)
+    return model
+
+# Fuse
+def fuse(model, verbose):
+    i = 0
+    while i < len(model) - 1:
+        if model[i].type == model[i+1].type and model[i].type == 255: # Load
+            model[i].tensors += model[i+1].tensors
+            del model[i+1]
+        else:
+            i += 1
     return model
 
 def compress(model):
