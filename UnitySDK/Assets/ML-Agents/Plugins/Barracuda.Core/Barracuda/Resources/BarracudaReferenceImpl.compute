@@ -51,6 +51,7 @@ uint4 _Pad;
 uint4 _Pool;
 uint4 _Stride;
 float _Alpha;
+float _Beta;
 float _Seed;
 
 [numthreads(8,8,1)]
@@ -990,23 +991,22 @@ void TensorToTexture(uint3 dispatchThreadID : SV_DispatchThreadID)
     if (X.channels - c == 1)
     {
         // broadcast to all channels
-        v = X.Get(b, y, x, c);
+        v = _Alpha * X.Get(b, y, x, c) + _Beta;
     }
     else if (X.channels - c == 3)
     {
-        v.r = X.Get(b, y, x, c+0);
-        v.g = X.Get(b, y, x, c+1);
-        v.b = X.Get(b, y, x, c+2);
+        v.r = _Alpha * X.Get(b, y, x, c+0) + _Beta;
+        v.g = _Alpha * X.Get(b, y, x, c+1) + _Beta;
+        v.b = _Alpha * X.Get(b, y, x, c+2) + _Beta;
         v.a = 1;
     }
     else if (X.channels - c >= 4)
     {
-        v.r = X.Get(b, y, x, c+0);
-        v.g = X.Get(b, y, x, c+1);
-        v.b = X.Get(b, y, x, c+2);
-        v.a = X.Get(b, y, x, c+3);
+        v.r = _Alpha * X.Get(b, y, x, c+0) + _Beta;
+        v.g = _Alpha * X.Get(b, y, x, c+1) + _Beta;
+        v.b = _Alpha * X.Get(b, y, x, c+2) + _Beta;
+        v.a = _Alpha * X.Get(b, y, x, c+3) + _Beta;
     }
-
 
     Otex2D[dispatchThreadID.xy] = v;
 }
