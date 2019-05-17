@@ -193,7 +193,7 @@ class SACNetwork(LearningModel):
             all_probs -= tf.reduce_sum(
                 tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
             )
-            # all_probs = tf.Print(all_probs, [all_probs])
+            #all_probs = tf.Print(all_probs, [all_probs])
             self.all_log_probs = all_probs
 
             self.output = tf.identity(self.output_pre, name="action")
@@ -266,12 +266,11 @@ class SACNetwork(LearningModel):
                 all_logits, self.action_masks, self.act_size
             )
 
-            self.action_probs = normalized_logits
-            self.all_log_probs = tf.log(normalized_logits)
+            self.action_probs = tf.nn.softmax(normalized_logits)
+            # normalized_logits = tf.Print(normalized_logits, [normalized_logits])
+            self.all_log_probs = tf.log(self.action_probs)
 
-            print(output)
 
-            print(all_probs)
 
             # output = tf.concat(
             #     [
@@ -282,13 +281,13 @@ class SACNetwork(LearningModel):
             # )
             self.output = output
 
-            # self.output_pre = tf.concat(
-            #     [
-            #         tf.one_hot(self.output[:, i], self.act_size[i])
-            #         for i in range(len(self.act_size))
-            #     ],
-            #     axis=1,
-            # )
+            self.output_oh = tf.concat(
+                [
+                    tf.one_hot(self.output[:, i], self.act_size[i])
+                    for i in range(len(self.act_size))
+                ],
+                axis=1,
+            )
 
             # self.output_pre = gumbeldist.sample(tf.shape(act_probs)[0])[0]
             # act_probs = tf.Print(act_probs, [act_probs, gumbeldist.sample(3)[0]])
@@ -308,27 +307,27 @@ class SACNetwork(LearningModel):
                 axis=1,
             )
 
-            # action_idx = [0] + list(np.cumsum(self.act_size))
+            action_idx = [0] + list(np.cumsum(self.act_size))
 
-            self.entropy = self.all_log_probs
+            # self.entropy = self.all_log_probs
 
-            # self.entropy = tf.reduce_sum(
-            #     (
-            #         tf.stack(
-            #             [
-            #                 tf.nn.softmax_cross_entropy_with_logits_v2(
-            #                     labels=tf.nn.softmax(
-            #                         all_probs[:, action_idx[i] : action_idx[i + 1]]
-            #                     ),
-            #                     logits=all_probs[:, action_idx[i] : action_idx[i + 1]],
-            #                 )
-            #                 for i in range(len(self.act_size))
-            #             ],
-            #             axis=1,
-            #         )
-            #     ),
-            #     axis=1,
-            # )
+            self.entropy = tf.reduce_sum(
+                (
+                    tf.stack(
+                        [
+                            tf.nn.softmax_cross_entropy_with_logits_v2(
+                                labels=tf.nn.softmax(
+                                    all_logits[:, action_idx[i] : action_idx[i + 1]]
+                                ),
+                                logits=all_logits[:, action_idx[i] : action_idx[i + 1]],
+                            )
+                            for i in range(len(self.act_size))
+                        ],
+                        axis=1,
+                    )
+                ),
+                axis=1,
+            )
 
         self.policy_vars = self.get_vars(scope)
 
@@ -547,14 +546,14 @@ class SACModel(LearningModel):
 
         if discrete:
             self.min_policy_q = tf.reduce_sum(
-                self.min_policy_q * self.policy_network.external_action_in, axis=1
+                self.min_policy_q*self.policy_network.output_oh, axis=1
             )
 
         print(self.policy_network.q1_p)
         print(self.min_policy_q)
 
-        if discrete and False:
-            self.target_entropy = 0.5 * np.log(sum(self.act_size)).astype(np.float32)
+        if discrete:
+            self.target_entropy = 0.2*np.log(sum(self.act_size)).astype(np.float32)
         else:
             self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
         print(self.target_entropy)
@@ -596,15 +595,15 @@ class SACModel(LearningModel):
                 q1_stream = q1_streams[name]
                 q2_stream = q2_streams[name]
 
-            # q_backup = tf.Print(q_backup, [_expanded_rewards, expanded_dones, self.target_network.value], summarize = 10)
-
+            # q_backup = tf.Print(q_backup, [q1_stream, self.policy_network.external_action_in, self.policy_network.output_oh,  q1_streams[name]], summarize = 6)
+                
             # q_backup = tf.Print(q_backup, [self.target_network.value,  (1.0-self.dones_holder),  self.policy_network.output_pre], message="Qbackup", summarize=10)
             _q1_loss = 0.5 * tf.reduce_mean(
-                tf.squared_difference(q_backup, q1_streams[name])
+                tf.squared_difference(q_backup, q1_stream)
             )
 
             _q2_loss = 0.5 * tf.reduce_mean(
-                tf.squared_difference(q_backup, q2_streams[name])
+                tf.squared_difference(q_backup, q2_stream)
             )
             # else:
             #     _q1_loss = 0.5 * tf.reduce_mean(
@@ -637,12 +636,14 @@ class SACModel(LearningModel):
         )
         self.ent_coef = tf.exp(self.log_ent_coef)
 
+        # self.ent_coef = tf.Print(self.ent_coef, [self.policy_network.all_log_probs, self.vector_in])
+
         self.entropy_loss = -tf.reduce_mean(
             self.log_ent_coef
             * tf.stop_gradient(self.policy_network.all_log_probs + self.target_entropy)
         )
 
-        if not discrete or True:
+        if not discrete:
             self.policy_loss = tf.reduce_mean(
                 self.ent_coef * self.policy_network.all_log_probs
                 - self.policy_network.q1_p
@@ -652,7 +653,7 @@ class SACModel(LearningModel):
             self.policy_loss = tf.reduce_mean(
                 tf.reduce_sum(
                     self.policy_network.action_probs
-                    * (self.policy_network.all_log_probs - self.policy_network.q1_p)
+                    * (self.policy_network.all_log_probs - tf.stop_gradient(self.policy_network.q1_p))
                 )
             )
             # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
@@ -669,7 +670,7 @@ class SACModel(LearningModel):
 
         # Only one value head, only one value loss
 
-        # v_backup = tf.Print(v_backup, [v_backup], message="vbackup", summarize=10)
+        # v_backup = tf.Print(v_backup, [self.policy_network.q1_p, v_backup], message="vbackup", summarize=3)
         self.value_loss = 0.5 * tf.reduce_mean(
             tf.squared_difference(self.policy_network.value, v_backup)
         )
