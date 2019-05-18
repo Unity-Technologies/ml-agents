@@ -393,6 +393,8 @@ class SACNetwork(LearningModel):
                 q2_heads[name] = _q2
         q1 = tf.reduce_mean(list(q1_heads.values()), axis=0)
         q2 = tf.reduce_mean(list(q2_heads.values()), axis=0)
+        # q1 = next(iter(q1_heads.values()))
+        # q2 = next(iter(q2_heads.values()))
 
         return q1_heads, q2_heads, q1, q2
 
@@ -544,16 +546,17 @@ class SACModel(LearningModel):
             self.policy_network.q1_p, self.policy_network.q2_p
         )
 
+        print(self.min_policy_q, self.policy_network.output_oh)
         if discrete:
             self.min_policy_q = tf.reduce_sum(
-                self.min_policy_q*self.policy_network.output_oh, axis=1
+                self.min_policy_q*self.policy_network.action_probs, axis=1, keep_dims=True
             )
 
         print(self.policy_network.q1_p)
         print(self.min_policy_q)
 
         if discrete:
-            self.target_entropy = 0.2*np.log(sum(self.act_size)).astype(np.float32)
+            self.target_entropy = -0.2*np.log(sum(self.act_size)).astype(np.float32)
         else:
             self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
         print(self.target_entropy)
@@ -577,27 +580,32 @@ class SACModel(LearningModel):
         expanded_dones = tf.expand_dims(self.dones_holder, axis=-1)
         for i, name in enumerate(stream_names):
             _expanded_rewards = tf.expand_dims(self.rewards_holders[i], axis=-1)
+            print(_expanded_rewards)
 
             q_backup = tf.stop_gradient(
                 _expanded_rewards
+                # tf.expand_dims(self.policy_network.external_action_in[:,2] - self.policy_network.external_action_in[:,1], axis = -1)
                 + (1.0 - expanded_dones) * self.gammas[i] * self.target_network.value
             )
+            print("in",self.policy_network.external_action_in)
 
+            # q_backup = tf.Print(q_backup, [
+            #     self.policy_network.external_action_in[0,2] - self.policy_network.external_action_in[0,1],
+            #     (_expanded_rewards[0])
+            #     ])
             if discrete:
                 # Only look at the q value that corresponds to the action taken
                 q1_stream = tf.reduce_sum(
-                    self.policy_network.external_action_in * q1_streams[name], axis=1
+                    self.policy_network.external_action_in * q1_streams[name], axis=1, keep_dims=True
                 )
                 q2_stream = tf.reduce_sum(
-                    self.policy_network.external_action_in * q2_streams[name], axis=1
+                    self.policy_network.external_action_in * q2_streams[name], axis=1, keep_dims=True
                 )
             else:
                 q1_stream = q1_streams[name]
                 q2_stream = q2_streams[name]
-
-            # q_backup = tf.Print(q_backup, [q1_stream, self.policy_network.external_action_in, self.policy_network.output_oh,  q1_streams[name]], summarize = 6)
-                
-            # q_backup = tf.Print(q_backup, [self.target_network.value,  (1.0-self.dones_holder),  self.policy_network.output_pre], message="Qbackup", summarize=10)
+            print("q1steram", q1_streams[name], q1_stream)                
+            # q_backup = tf.Print(q_backup, [self.policy_network.external_action_in, _expanded_rewards, q1_streams[name]], message="Qbackup", summarize=10)
             _q1_loss = 0.5 * tf.reduce_mean(
                 tf.squared_difference(q_backup, q1_stream)
             )
@@ -631,16 +639,22 @@ class SACModel(LearningModel):
         self.q2_loss = tf.reduce_mean(q2_losses)
 
         # Learn entropy coefficient
+
+        if discrete:
+            init_logent = 0.2
+        else:
+            init_logent = 1.0
         self.log_ent_coef = tf.get_variable(
-            "log_ent_coef", dtype=tf.float32, initializer=np.log(1.0).astype(np.float32)
+            "log_ent_coef", dtype=tf.float32, initializer=np.log(init_logent).astype(np.float32)
         )
         self.ent_coef = tf.exp(self.log_ent_coef)
+        # self.ent_coef = tf.Variable(0.2, tf.float32)
 
         # self.ent_coef = tf.Print(self.ent_coef, [self.policy_network.all_log_probs, self.vector_in])
 
         self.entropy_loss = -tf.reduce_mean(
             self.log_ent_coef
-            * tf.stop_gradient(self.policy_network.all_log_probs + self.target_entropy)
+            * tf.stop_gradient(tf.reduce_sum(self.policy_network.all_log_probs, axis=1, keep_dims=True) + self.target_entropy)
         )
 
         if not discrete:
@@ -650,27 +664,34 @@ class SACModel(LearningModel):
             )
 
         else:
+            print (self.policy_network.all_log_probs, self.policy_network.q1_p)
             self.policy_loss = tf.reduce_mean(
                 tf.reduce_sum(
                     self.policy_network.action_probs
-                    * (self.policy_network.all_log_probs - tf.stop_gradient(self.policy_network.q1_p))
+                    * (self.ent_coef*self.policy_network.all_log_probs - self.policy_network.q1_p),axis=1
                 )
             )
             # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
             # self.policy_loss = tf.Print(self.policy_loss,[self.policy_network.q1_p])
 
-        v_backup = tf.stop_gradient(
-            self.min_policy_q
-            - tf.reduce_sum(self.ent_coef * self.policy_network.all_log_probs, axis=1)
-        )
+        if not discrete:
+            v_backup = tf.stop_gradient(
+                self.min_policy_q
+                - tf.reduce_sum(self.ent_coef * self.policy_network.action_probs * self.policy_network.all_log_probs, axis=1)
+            )
+        else:
+            v_backup = tf.stop_gradient(
+                self.min_policy_q
+#- tf.reduce_sum(self.ent_coef * self.policy_network.action_probs * self.policy_network.all_log_probs, axis=1)
+            )
 
         print(
-            "Checking dims", self.policy_network.all_log_probs, self.policy_network.q1_p
+            "Checking dims", self.min_policy_q, self.policy_network.value
         )
 
         # Only one value head, only one value loss
 
-        # v_backup = tf.Print(v_backup, [self.policy_network.q1_p, v_backup], message="vbackup", summarize=3)
+        # v_backup = tf.Print(v_backup, [self.policy_network.action_probs, self.policy_network.q1_p, self.policy_network.value], message="vbackup", summarize=3)
         self.value_loss = 0.5 * tf.reduce_mean(
             tf.squared_difference(self.policy_network.value, v_backup)
         )
