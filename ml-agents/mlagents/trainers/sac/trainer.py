@@ -551,7 +551,7 @@ class SACTrainer(Trainer):
                     )
                     inverse_total.append(run_out_curio["inverse_loss"])
                     forward_total.append(run_out_curio["forward_loss"])
-        # self.training_buffer.truncate_update_buffer(1000000)
+        self.training_buffer.truncate_update_buffer(self.trainer_parameters['buffer_size'], int(self.trainer_parameters['buffer_size']*0.2))
 
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
