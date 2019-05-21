@@ -37,8 +37,7 @@ class SACPolicy(Policy):
                 brain,
                 lr=float(trainer_params["learning_rate"]),
                 h_size=int(trainer_params["hidden_units"]),
-                epsilon=float(trainer_params["epsilon"]),
-                beta=float(trainer_params["beta"]),
+                init_entcoef=float(trainer_params["init_entcoef"])
                 max_step=float(trainer_params["max_steps"]),
                 normalize=trainer_params["normalize"],
                 use_recurrent=trainer_params["use_recurrent"],
@@ -46,7 +45,7 @@ class SACPolicy(Policy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_strengths.keys()),
-                tau=trainer_params["tau"],
+                tau=float(trainer_params["tau"]),
                 gammas=trainer_params["gammas"],
             )
             self.model.create_sac_optimizers()

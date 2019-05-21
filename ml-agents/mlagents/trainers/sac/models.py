@@ -412,8 +412,7 @@ class SACModel(LearningModel):
         brain,
         lr=1e-4,
         h_size=128,
-        epsilon=0.2,
-        beta=1e-3,
+        init_entcoef=0.1,
         max_step=5e6,
         normalize=False,
         use_recurrent=False,
@@ -430,13 +429,13 @@ class SACModel(LearningModel):
         :param brain: BrainInfo used to generate specific network graph.
         :param lr: Learning rate.
         :param h_size: Size of hidden layers
-        :param epsilon: Value for policy-divergence threshold.
-        :param beta: Strength of entropy regularization.
+        :param init_entcoef: Initial value for entropy coefficient. Set lower to learn faster, set higher to explore more. .
         :return: a sub-class of PPOAgent tailored to the environment.
         :param max_step: Total number of training steps.
         :param normalize: Whether to normalize vector observation input.
         :param use_recurrent: Whether to use an LSTM layer in the network.
         :param num_layers Number of hidden layers between encoded input and policy & value layers
+        :param tau Strength of soft-Q update. 
         :param m_size: Size of brain memory.
         """
         self.tau = tau
@@ -567,7 +566,7 @@ class SACModel(LearningModel):
             )
 
         if discrete:
-            self.target_entropy = [0.2*np.log(i).astype(np.float32) for i in self.act_size]
+            self.target_entropy = [0.1*np.log(i).astype(np.float32) for i in self.act_size]
         else:
             self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
 

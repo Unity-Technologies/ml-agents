@@ -34,12 +34,10 @@ class SACTrainer(Trainer):
         super(SACTrainer, self).__init__(brain, trainer_parameters, training, run_id)
         self.param_keys = [
             "batch_size",
-            "beta",
             "buffer_size",
-            "epsilon",
             "hidden_units",
-            "lambd",
             "learning_rate",
+            "init_entcoef"
             "max_steps",
             "normalize",
             "num_epoch",
