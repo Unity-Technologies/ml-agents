@@ -37,7 +37,7 @@ class SACPolicy(Policy):
                 brain,
                 lr=float(trainer_params["learning_rate"]),
                 h_size=int(trainer_params["hidden_units"]),
-                init_entcoef=float(trainer_params["init_entcoef"])
+                init_entcoef=float(trainer_params["init_entcoef"]),
                 max_step=float(trainer_params["max_steps"]),
                 normalize=trainer_params["normalize"],
                 use_recurrent=trainer_params["use_recurrent"],

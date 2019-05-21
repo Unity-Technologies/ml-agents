@@ -37,7 +37,7 @@ class SACTrainer(Trainer):
             "buffer_size",
             "hidden_units",
             "learning_rate",
-            "init_entcoef"
+            "init_entcoef",
             "max_steps",
             "normalize",
             "num_epoch",

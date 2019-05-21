@@ -162,10 +162,6 @@ class SACNetwork(LearningModel):
             )
 
             self.log_sigma_sq = tf.clip_by_value(log_sigma_sq, LOG_STD_MIN, LOG_STD_MAX)
-            # self.log_sigma_sq = tf.Print(self.log_sigma_sq, [self.log_sigma_sq], message="Log Std")
-
-            # self.log_sigma_sq = tf.get_variable("log_sigma_squared", [self.act_size[0]], dtype=tf.float32,
-            #                                initializer=tf.zeros_initializer())
 
             sigma_sq = tf.exp(self.log_sigma_sq)
 
@@ -441,6 +437,7 @@ class SACModel(LearningModel):
         self.tau = tau
         self.gammas = gammas
         self.brain = brain
+        self.init_entcoef = init_entcoef
         if stream_names is None:
             stream_names = []
         LearningModel.__init__(
@@ -478,8 +475,6 @@ class SACModel(LearningModel):
         self.create_losses(
             self.policy_network.q1_heads,
             self.policy_network.q2_heads,
-            beta,
-            epsilon,
             lr,
             max_step,
             stream_names,
@@ -525,8 +520,6 @@ class SACModel(LearningModel):
         self,
         q1_streams,
         q2_streams,
-        beta,
-        epsilon,
         lr,
         max_step,
         stream_names,
@@ -633,50 +626,29 @@ class SACModel(LearningModel):
             _q1_loss = 0.5 * tf.reduce_mean(tf.squared_difference(q_backup, q1_stream))
 
             _q2_loss = 0.5 * tf.reduce_mean(tf.squared_difference(q_backup, q2_stream))
-            # else:
-            #     _q1_loss = 0.5 * tf.reduce_mean(
-            #         tf.squared_difference(q_backup, tf.reduce(meanq1_streams[name])
-            #     )
-
-            #     _q2_loss = 0.5 * tf.reduce_mean(
-            #         tf.squared_difference(q_backup, tf.exp(self.policy_network.all_log_probs)* q2_streams[name])
-            #     )
 
             q1_losses.append(_q1_loss)
             q2_losses.append(_q2_loss)
-            # clipped_value_estimate = self.old_values[i] + tf.clip_by_value(
-            #     tf.reduce_sum(value_streams[name], axis=1) - self.old_values[i],
-            #     -decay_epsilon,
-            #     decay_epsilon,
-            # )
-            # v_opt_a = tf.squared_difference(
-            #     self.rewards_holders[i], tf.reduce_sum(value_streams[name], axis=1)
-            # )
-            # v_opt_b = tf.squared_difference(
-            #     self.rewards_holders[i], clipped_value_estimate
-            # )
+
         self.q1_loss = tf.reduce_mean(q1_losses)
         self.q2_loss = tf.reduce_mean(q2_losses)
 
         # Learn entropy coefficient
         if discrete:
-            init_logent = 0.1
-
             # Create a log_ent_coef for each branch
             self.log_ent_coef = tf.get_variable(
                 "log_ent_coef",
                 dtype=tf.float32,
-                initializer=np.log([init_logent] * len(self.act_size)).astype(
+                initializer=np.log([self.init_entcoef] * len(self.act_size)).astype(
                     np.float32
                 ),
                 trainable=True,
             )
         else:
-            init_logent = 1.0
             self.log_ent_coef = tf.get_variable(
                 "log_ent_coef",
                 dtype=tf.float32,
-                initializer=np.log(init_logent).astype(np.float32),
+                initializer=np.log(self.init_entcoef).astype(np.float32),
                 trainable=True,
             )
         print(self.log_ent_coef)
