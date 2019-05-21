@@ -193,7 +193,7 @@ class SACNetwork(LearningModel):
             all_probs -= tf.reduce_sum(
                 tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
             )
-            #all_probs = tf.Print(all_probs, [all_probs])
+            # all_probs = tf.Print(all_probs, [all_probs])
             self.all_log_probs = all_probs
 
             self.output = tf.identity(self.output_pre, name="action")
@@ -268,9 +268,9 @@ class SACNetwork(LearningModel):
 
             self.action_probs = tf.nn.softmax(normalized_logits)
             # normalized_logits = tf.Print(normalized_logits, [normalized_logits])
-            self.all_log_probs = tf.log(self.action_probs)
 
-
+            # Really, this is entropy, but it has an analogous purpose to the log probs in the continuous case.
+            self.all_log_probs = self.action_probs * tf.log(self.action_probs)
 
             # output = tf.concat(
             #     [
@@ -545,21 +545,15 @@ class SACModel(LearningModel):
         self.min_policy_q = tf.minimum(
             self.policy_network.q1_p, self.policy_network.q2_p
         )
-
-        print(self.min_policy_q, self.policy_network.output_oh)
         if discrete:
-            self.min_policy_q = tf.reduce_sum(
-                self.min_policy_q*self.policy_network.action_probs, axis=1, keep_dims=True
-            )
-
-        print(self.policy_network.q1_p)
-        print(self.min_policy_q)
+            _broken_mpq = self.apply_as_branches(self.min_policy_q * self.policy_network.action_probs)
+            broken_mpq = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq])
+            self.min_policy_q = tf.reduce_mean(broken_mpq, axis=0)
 
         if discrete:
-            self.target_entropy = -0.2*np.log(sum(self.act_size)).astype(np.float32)
+            self.target_entropy = [-0.1*np.log(i).astype(np.float32) for i in self.act_size]
         else:
             self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
-        print(self.target_entropy)
 
         self.rewards_holders = []
         for i in range(len(q1_streams)):
@@ -580,39 +574,50 @@ class SACModel(LearningModel):
         expanded_dones = tf.expand_dims(self.dones_holder, axis=-1)
         for i, name in enumerate(stream_names):
             _expanded_rewards = tf.expand_dims(self.rewards_holders[i], axis=-1)
-            print(_expanded_rewards)
 
             q_backup = tf.stop_gradient(
                 _expanded_rewards
                 # tf.expand_dims(self.policy_network.external_action_in[:,2] - self.policy_network.external_action_in[:,1], axis = -1)
                 + (1.0 - expanded_dones) * self.gammas[i] * self.target_network.value
             )
-            print("in",self.policy_network.external_action_in)
+            print("in", self.policy_network.external_action_in)
 
             # q_backup = tf.Print(q_backup, [
             #     self.policy_network.external_action_in[0,2] - self.policy_network.external_action_in[0,1],
             #     (_expanded_rewards[0])
             #     ])
             if discrete:
-                # Only look at the q value that corresponds to the action taken
-                q1_stream = tf.reduce_sum(
-                    self.policy_network.external_action_in * q1_streams[name], axis=1, keep_dims=True
+                # We need to break up the Q functions by branch, and update them individually.
+                broken_q1_stream = self.apply_as_branches(
+                    self.policy_network.external_action_in * q1_streams[name]
                 )
-                q2_stream = tf.reduce_sum(
-                    self.policy_network.external_action_in * q2_streams[name], axis=1, keep_dims=True
+                broken_q2_stream = self.apply_as_branches(
+                    self.policy_network.external_action_in * q2_streams[name]
                 )
+
+                # Reduce each branch into scalar
+                broken_q1_stream = [
+                    tf.reduce_sum(_branch, axis=1, keep_dims=True)
+                    for _branch in broken_q1_stream
+                ]
+                broken_q2_stream = [
+                    tf.reduce_sum(_branch, axis=1, keep_dims=True)
+                    for _branch in broken_q2_stream
+                ]
+
+                q1_stream = tf.reduce_mean(broken_q1_stream, axis=0)
+                q2_stream = tf.reduce_mean(broken_q2_stream, axis=0)
+                # q1_stream = tf.reduce_mean(self.apply_as_branches(q1_stream), axis=0)
+                # q2_stream = tf.reduce_mean(self.apply_as_branches(q2_stream), axis=0)
+                print("q1_stream", broken_q1_stream, q1_stream)
             else:
                 q1_stream = q1_streams[name]
                 q2_stream = q2_streams[name]
-            print("q1steram", q1_streams[name], q1_stream)                
             # q_backup = tf.Print(q_backup, [self.policy_network.external_action_in, _expanded_rewards, q1_streams[name]], message="Qbackup", summarize=10)
-            _q1_loss = 0.5 * tf.reduce_mean(
-                tf.squared_difference(q_backup, q1_stream)
-            )
 
-            _q2_loss = 0.5 * tf.reduce_mean(
-                tf.squared_difference(q_backup, q2_stream)
-            )
+            _q1_loss = 0.5 * tf.reduce_mean(tf.squared_difference(q_backup, q1_stream))
+
+            _q2_loss = 0.5 * tf.reduce_mean(tf.squared_difference(q_backup, q2_stream))
             # else:
             #     _q1_loss = 0.5 * tf.reduce_mean(
             #         tf.squared_difference(q_backup, tf.reduce(meanq1_streams[name])
@@ -639,65 +644,116 @@ class SACModel(LearningModel):
         self.q2_loss = tf.reduce_mean(q2_losses)
 
         # Learn entropy coefficient
-
         if discrete:
-            init_logent = 0.2
+            init_logent = 1.0
+
+            # Create a log_ent_coef for each branch
+            self.log_ent_coef = tf.get_variable(
+                "log_ent_coef",
+                dtype=tf.float32,
+                initializer=np.log([init_logent] * len(self.act_size)).astype(
+                    np.float32
+                ),
+                trainable=True,
+            )
         else:
             init_logent = 1.0
-        self.log_ent_coef = tf.get_variable(
-            "log_ent_coef", dtype=tf.float32, initializer=np.log(init_logent).astype(np.float32)
-        )
+            self.log_ent_coef = tf.get_variable(
+                "log_ent_coef",
+                dtype=tf.float32,
+                initializer=np.log(init_logent).astype(np.float32),
+                trainable=True,
+            )
+        print(self.log_ent_coef)
         self.ent_coef = tf.exp(self.log_ent_coef)
         # self.ent_coef = tf.Variable(0.2, tf.float32)
 
-        # self.ent_coef = tf.Print(self.ent_coef, [self.policy_network.all_log_probs, self.vector_in])
+        # self.ent_coef = tf.Print(self.ent_coef, [self.ent_coef, self.policy_network.action_probs, tf.reduce_mean(tf.reduce_sum(self.policy_network.all_log_probs, axis=1, keep_dims=True))])
+        if discrete:
+            # We also have to do a different entropy and target_entropy per branch.
+            broken_log_probs = self.apply_as_branches(self.policy_network.all_log_probs)
+            broken_ent_sums = tf.stack(
+                [
+                    tf.reduce_sum(_lp + _te, axis=1, keep_dims=True)
+                    for _lp, _te in zip(broken_log_probs, self.target_entropy)
+                ]
+            )
+            self.entropy_loss = -tf.reduce_mean(self.log_ent_coef * broken_ent_sums)
 
-        self.entropy_loss = -tf.reduce_mean(
-            self.log_ent_coef
-            * tf.stop_gradient(tf.reduce_sum(self.policy_network.all_log_probs, axis=1, keep_dims=True) + self.target_entropy)
-        )
+            # Same with policy loss, we have to do the loss per branch and average them, so that larger branches don't get more weight.
+            # The equivalent KL divergence is also pi*log(pi) - Q
+            broken_q_term = self.apply_as_branches(
+                self.policy_network.action_probs * self.policy_network.q1_p
+            )
 
-        if not discrete:
+            broken_policy_loss = tf.stack(
+                [
+                    tf.reduce_sum(self.ent_coef[i] * _lp - _qt, axis=1, keep_dims=True)
+                    for i, (_lp, _qt) in enumerate(zip(broken_log_probs, broken_q_term))
+                ]
+            )
+            print(broken_policy_loss)
+            self.policy_loss = tf.reduce_mean(broken_policy_loss)
+
+            # Do vbackup entropy bonus per branch as well.
+            broken_ent_bonus = tf.stack(
+                [
+                    tf.reduce_sum(self.ent_coef[i] * _lp, axis=1, keep_dims=True)
+                    for i, _lp in enumerate(broken_log_probs)
+                ]
+            )
+            v_backup = tf.stop_gradient(
+                self.min_policy_q - tf.reduce_mean(broken_ent_bonus, axis=0)
+            )
+            # v_backup = tf.Print(v_backup,[v_backup,tf.reduce_mean(broken_ent_bonus, axis=0)])
+        else:
+            self.entropy_loss = -tf.reduce_mean(
+                self.log_ent_coef
+                * tf.stop_gradient(
+                    tf.reduce_sum(
+                        self.policy_network.all_log_probs + self.target_entropy,
+                        axis=1,
+                        keep_dims=True,
+                    )
+                )
+            )
+
             self.policy_loss = tf.reduce_mean(
                 self.ent_coef * self.policy_network.all_log_probs
                 - self.policy_network.q1_p
             )
 
-        else:
-            print (self.policy_network.all_log_probs, self.policy_network.q1_p)
-            self.policy_loss = tf.reduce_mean(
-                tf.reduce_sum(
-                    self.policy_network.action_probs
-                    * (self.ent_coef*self.policy_network.all_log_probs - self.policy_network.q1_p),axis=1
+            v_backup = tf.stop_gradient(
+                self.min_policy_q
+                - tf.reduce_sum(
+                    self.ent_coef * self.policy_network.all_log_probs, axis=1
                 )
             )
             # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
             # self.policy_loss = tf.Print(self.policy_loss,[self.policy_network.q1_p])
 
-        if not discrete:
-            v_backup = tf.stop_gradient(
-                self.min_policy_q
-                - tf.reduce_sum(self.ent_coef * self.policy_network.action_probs * self.policy_network.all_log_probs, axis=1)
-            )
-        else:
-            v_backup = tf.stop_gradient(
-                self.min_policy_q
-#- tf.reduce_sum(self.ent_coef * self.policy_network.action_probs * self.policy_network.all_log_probs, axis=1)
-            )
+        print("Checking dims", self.min_policy_q, self.policy_network.value)
 
-        print(
-            "Checking dims", self.min_policy_q, self.policy_network.value
-        )
-
-        # Only one value head, only one value loss
-
-        # v_backup = tf.Print(v_backup, [self.policy_network.action_probs, self.policy_network.q1_p, self.policy_network.value], message="vbackup", summarize=3)
+        # Only one value head, only one value loss 
+        # TODO: multiple value heads per stream
         self.value_loss = 0.5 * tf.reduce_mean(
             tf.squared_difference(self.policy_network.value, v_backup)
         )
 
         self.total_value_loss = self.q1_loss + self.q2_loss + self.value_loss
         self.entropy = self.policy_network.entropy
+
+    def apply_as_branches(self, concat_logits):
+        """
+        Takes in a concatenated set of logits and breaks it up into a list of non-concatenated logits, one per
+        action branch
+        """
+        action_idx = [0] + list(np.cumsum(self.act_size))
+        branches_logits = [
+            concat_logits[:, action_idx[i] : action_idx[i + 1]]
+            for i in range(len(self.act_size))
+        ]
+        return branches_logits
 
     def create_sac_optimizers(self):
         policy_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
@@ -737,10 +793,10 @@ class SACModel(LearningModel):
             )
 
             # Add entropy coefficient optimization operation if needed
-            with tf.control_dependencies([self.update_batch_value]):
-                self.update_batch_entropy = entropy_optimizer.minimize(
-                    self.entropy_loss, var_list=self.log_ent_coef
-                )
+        with tf.control_dependencies([self.update_batch_value]):
+            self.update_batch_entropy = entropy_optimizer.minimize(
+                self.entropy_loss, var_list=self.log_ent_coef
+            )
 
     def print_all_vars(self, variables):
         for _var in variables:

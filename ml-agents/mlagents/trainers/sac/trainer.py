@@ -82,6 +82,7 @@ class SACTrainer(Trainer):
             if "train_interval" in trainer_parameters
             else 1
         )
+        self.target_update_interval = 1
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         stats = {
@@ -538,7 +539,7 @@ class SACTrainer(Trainer):
                 sampled_minibatch = buffer.sample_mini_batch(
                     self.trainer_parameters["batch_size"]
                 )
-                run_out = self.policy.update(sampled_minibatch, n_sequences)
+                run_out = self.policy.update(sampled_minibatch, n_sequences, update_target=self.step%self.target_update_interval==0)
                 value_total.append(run_out["value_loss"])
                 policy_total.append(run_out["policy_loss"])
                 q1loss_total.append(run_out["q1_loss"])
