@@ -262,16 +262,15 @@ class SACNetwork(LearningModel):
 
             # gumbeldist = tf.contrib.distributions.RelaxedOneHotCategorical(0.05, probs=act_probs)
 
-            output, normalized_logits = self.create_discrete_action_masking_layer(
+            output, normalized_probs, normalized_logprobs = self.create_discrete_action_masking_layer(
                 all_logits, self.action_masks, self.act_size
             )
 
-            self.action_probs = tf.nn.softmax(normalized_logits)
+            self.action_probs = normalized_probs
             # normalized_logits = tf.Print(normalized_logits, [normalized_logits])
 
             # Really, this is entropy, but it has an analogous purpose to the log probs in the continuous case.
-            self.all_log_probs = self.action_probs * tf.log(self.action_probs)
-
+            self.all_log_probs = self.action_probs * normalized_logprobs
             # output = tf.concat(
             #     [
             #         tf.multinomial(tf.log(act_probs[k]), 1)
@@ -542,13 +541,27 @@ class SACModel(LearningModel):
         :param lr: Learning rate
         :param max_step: Total number of training steps.
         """
-        self.min_policy_q = tf.minimum(
-            self.policy_network.q1_p, self.policy_network.q2_p
-        )
+        # self.min_policy_q = tf.minimum(
+        #     self.policy_network.q1_p, self.policy_network.q2_p
+        # )
         if discrete:
-            _broken_mpq = self.apply_as_branches(self.min_policy_q * self.policy_network.action_probs)
-            broken_mpq = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq])
-            self.min_policy_q = tf.reduce_mean(broken_mpq, axis=0)
+            _broken_mpq1 = self.apply_as_branches(self.policy_network.q1_p * self.policy_network.action_probs)
+            broken_mpq1 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq1])
+            _q1_p_mean = tf.reduce_mean(broken_mpq1, axis=0)
+
+            _broken_mpq2 = self.apply_as_branches(self.policy_network.q2_p* self.policy_network.action_probs)
+            broken_mpq2 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq2])
+            _q2_p_mean = tf.reduce_mean(broken_mpq2, axis=0)
+
+            self.min_policy_q = tf.minimum(
+                _q1_p_mean, _q2_p_mean
+            )
+
+            # self.min_policy_q = tf.Print(self.min_policy_q, [self.policy_network.action_probs], summarize = 11)
+        else:
+            self.min_policy_q = tf.minimum(
+                self.policy_network.q1_p, self.policy_network.q2_p
+            )
 
         if discrete:
             self.target_entropy = [-0.1*np.log(i).astype(np.float32) for i in self.act_size]
@@ -645,7 +658,7 @@ class SACModel(LearningModel):
 
         # Learn entropy coefficient
         if discrete:
-            init_logent = 1.0
+            init_logent = 0.1
 
             # Create a log_ent_coef for each branch
             self.log_ent_coef = tf.get_variable(
@@ -674,11 +687,11 @@ class SACModel(LearningModel):
             broken_log_probs = self.apply_as_branches(self.policy_network.all_log_probs)
             broken_ent_sums = tf.stack(
                 [
-                    tf.reduce_sum(_lp + _te, axis=1, keep_dims=True)
+                    tf.reduce_sum(_lp, axis=1, keep_dims=True) + self.target_entropy
                     for _lp, _te in zip(broken_log_probs, self.target_entropy)
                 ]
             )
-            self.entropy_loss = -tf.reduce_mean(self.log_ent_coef * broken_ent_sums)
+            self.entropy_loss = -tf.reduce_mean(self.log_ent_coef * tf.stop_gradient(broken_ent_sums))
 
             # Same with policy loss, we have to do the loss per branch and average them, so that larger branches don't get more weight.
             # The equivalent KL divergence is also pi*log(pi) - Q
@@ -688,7 +701,7 @@ class SACModel(LearningModel):
 
             broken_policy_loss = tf.stack(
                 [
-                    tf.reduce_sum(self.ent_coef[i] * _lp - _qt, axis=1, keep_dims=True)
+                    tf.reduce_sum( self.ent_coef[i]*_lp - _qt, axis=1, keep_dims=True)
                     for i, (_lp, _qt) in enumerate(zip(broken_log_probs, broken_q_term))
                 ]
             )

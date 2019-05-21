@@ -244,7 +244,8 @@ class LearningModel(object):
         :param all_logits: The concatenated unnormalized action probabilities for all branches
         :param action_masks: The mask for the logits. Must be of dimension [None x total_number_of_action]
         :param action_size: A list containing the number of possible actions for each branch
-        :return: The action output dimension [batch_size, num_branches] and the concatenated normalized logits
+        :return: The action output dimension [batch_size, num_branches], the concatenated normalized probs (after softmax) 
+        and the concatenated normalized log probs
         """
         action_idx = [0] + list(np.cumsum(action_size))
         branches_logits = [
@@ -272,6 +273,7 @@ class LearningModel(object):
         )
         return (
             output,
+            tf.concat([normalized_probs[k] for k in range(len(action_size))], axis=1),
             tf.concat(
                 [
                     tf.log(normalized_probs[k] + 1.0e-10)
@@ -521,7 +523,7 @@ class LearningModel(object):
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
         )
-        output, normalized_logits = self.create_discrete_action_masking_layer(
+        output, _, normalized_logits = self.create_discrete_action_masking_layer(
             self.all_log_probs, self.action_masks, self.act_size
         )
 
@@ -545,7 +547,7 @@ class LearningModel(object):
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="old_probabilities"
         )
-        _, old_normalized_logits = self.create_discrete_action_masking_layer(
+        _, _, old_normalized_logits = self.create_discrete_action_masking_layer(
             self.all_old_log_probs, self.action_masks, self.act_size
         )
 
