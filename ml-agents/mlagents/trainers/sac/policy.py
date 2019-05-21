@@ -46,6 +46,7 @@ class SACPolicy(Policy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_strengths.keys()),
+                tau=trainer_params["tau"],
                 gammas=trainer_params["gammas"],
             )
             self.model.create_sac_optimizers()

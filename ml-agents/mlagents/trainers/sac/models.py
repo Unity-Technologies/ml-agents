@@ -328,6 +328,8 @@ class SACNetwork(LearningModel):
                 axis=1,
             )
 
+            self.entropy = -self.all_log_probs
+
         self.policy_vars = self.get_vars(scope)
 
     def create_sac_value_head(
@@ -419,6 +421,7 @@ class SACModel(LearningModel):
         m_size=None,
         seed=0,
         stream_names=None,
+        tau=0.005,
         gammas=None,
     ):
         """
@@ -436,7 +439,7 @@ class SACModel(LearningModel):
         :param num_layers Number of hidden layers between encoded input and policy & value layers
         :param m_size: Size of brain memory.
         """
-        self.tau = 0.005
+        self.tau = tau
         self.gammas = gammas
         self.brain = brain
         if stream_names is None:
@@ -564,7 +567,7 @@ class SACModel(LearningModel):
             )
 
         if discrete:
-            self.target_entropy = [-0.1*np.log(i).astype(np.float32) for i in self.act_size]
+            self.target_entropy = [0.2*np.log(i).astype(np.float32) for i in self.act_size]
         else:
             self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
 

@@ -47,6 +47,8 @@ class SACTrainer(Trainer):
             "time_horizon",
             "sequence_length",
             "summary_freq",
+            "target_update_steps",
+            "tau",
             "use_recurrent",
             "summary_path",
             "memory_size",
@@ -82,7 +84,7 @@ class SACTrainer(Trainer):
             if "train_interval" in trainer_parameters
             else 1
         )
-        self.target_update_interval = 1
+        self.target_update_interval = trainer_parameters["target_update_steps"]
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         stats = {
@@ -127,7 +129,7 @@ class SACTrainer(Trainer):
         self.episode_steps = {}
 
     def __str__(self):
-        return """Hyperparameters for the PPO Trainer of brain {0}: \n{1}""".format(
+        return """Hyperparameters for the SAC Trainer of brain {0}: \n{1}""".format(
             self.brain_name,
             "\n".join(
                 [
@@ -539,7 +541,11 @@ class SACTrainer(Trainer):
                 sampled_minibatch = buffer.sample_mini_batch(
                     self.trainer_parameters["batch_size"]
                 )
-                run_out = self.policy.update(sampled_minibatch, n_sequences, update_target=self.step%self.target_update_interval==0)
+                run_out = self.policy.update(
+                    sampled_minibatch,
+                    n_sequences,
+                    update_target=self.step % self.target_update_interval == 0,
+                )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(run_out["policy_loss"])
                 q1loss_total.append(run_out["q1_loss"])
@@ -551,7 +557,16 @@ class SACTrainer(Trainer):
                     )
                     inverse_total.append(run_out_curio["inverse_loss"])
                     forward_total.append(run_out_curio["forward_loss"])
-        self.training_buffer.truncate_update_buffer(self.trainer_parameters['buffer_size'], int(self.trainer_parameters['buffer_size']*0.2))
+
+        # Truncate update buffer if neccessary. Truncate more than we need to to avoid truncating
+        # a large buffer at each update.
+        if (
+            len(self.training_buffer.update_buffer["actions"])
+            > self.trainer_parameters["buffer_size"]
+        ):
+            self.training_buffer.truncate_update_buffer(
+                int(self.trainer_parameters["buffer_size"] * 0.8)
+            )
 
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
