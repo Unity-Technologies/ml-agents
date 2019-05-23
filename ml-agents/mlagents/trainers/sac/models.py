@@ -37,14 +37,14 @@ class SACNetwork(LearningModel):
         if is_target:
             with tf.variable_scope("target_network"):
                 hidden_streams = self.create_observation_streams(
-                    1, self.h_size, 0, ["target_network/critic"]
+                    1, self.h_size, 0, ["critic/value/"]
                 )
             if brain.vector_action_space_type == "continuous":
                 self.create_cc_critic(
                     hidden_streams[0], "target_network", create_qs=False
                 )
             else:
-                self.create_cc_critic(
+                self.create_dc_critic(
                     hidden_streams[0], "target_network", create_qs=False
                 )
         else:
@@ -53,7 +53,7 @@ class SACNetwork(LearningModel):
                     2,
                     self.h_size,
                     0,
-                    ["policy_network/policy", "policy_network/critic"],
+                    ["policy/", "critic/value/"],
                 )
             if brain.vector_action_space_type == "continuous":
                 self.create_cc_actor(hidden_streams[0], "policy_network")
@@ -91,7 +91,7 @@ class SACNetwork(LearningModel):
                 scope + "/q",
                 reuse=True,
             )
-            self.q_vars = self.get_vars(scope)
+            self.q_vars = self.get_vars(scope + "/q")
         self.critic_vars = self.get_vars(scope)
 
     def create_dc_critic(self, hidden_value, scope, create_qs=True):
@@ -759,6 +759,8 @@ class SACModel(LearningModel):
         self.print_all_vars(self.target_network.value_vars)
         print("critic_vars")
         self.print_all_vars(self.policy_network.critic_vars)
+        print("q_vars")
+        self.print_all_vars(self.policy_network.q_vars)
         print("policy_vars")
         self.print_all_vars(self.policy_network.policy_vars)
 

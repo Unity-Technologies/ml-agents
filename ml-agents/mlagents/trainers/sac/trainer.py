@@ -35,6 +35,7 @@ class SACTrainer(Trainer):
         self.param_keys = [
             "batch_size",
             "buffer_size",
+            "buffer_init_steps",
             "hidden_units",
             "learning_rate",
             "init_entcoef",
@@ -502,6 +503,7 @@ class SACTrainer(Trainer):
             len(self.training_buffer.update_buffer["actions"])
             >= self.trainer_parameters["batch_size"]
             and self.step % self.train_interval == 0
+            and self.step >= self.trainer_parameters["buffer_init_steps"]
         )
 
     def update_policy(self):
