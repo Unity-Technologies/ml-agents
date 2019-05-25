@@ -288,7 +288,7 @@ class TrainerController(object):
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
             trainer.add_experiences(curr_info, new_info,
-                                    take_action_outputs[brain_name])
+                                take_action_outputs[brain_name])
             trainer.process_experiences(curr_info, new_info)
             if trainer.is_ready_update() and self.train_model \
                     and trainer.get_step <= trainer.get_max_steps:
@@ -305,7 +305,6 @@ class TrainerController(object):
                         .lesson_num)
             else:
                 trainer.write_summary(self.global_step, delta_train_start)
-            if self.train_model \
-                    and trainer.get_step <= trainer.get_max_steps:
+            if trainer.get_step <= trainer.get_max_steps:
                 trainer.increment_step_and_update_last_reward()
         return new_info
