@@ -250,13 +250,12 @@ class PPOTrainer(Trainer):
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
                 if not stored_info.local_done[idx]:
-                    for i, _ in enumerate(stored_info.visual_observations):
-                        self.training_buffer[agent_id]["visual_obs%d" % i].append(
-                            stored_info.visual_observations[i][idx]
-                        )
-                        self.training_buffer[agent_id]["next_visual_obs%d" % i].append(
-                            next_info.visual_observations[i][next_idx]
-                        )
+                    if self.is_training:
+                        for i, _ in enumerate(stored_info.visual_observations):
+                            self.training_buffer[agent_id]['visual_obs%d' % i].append(
+                                stored_info.visual_observations[i][idx])
+                            self.training_buffer[agent_id]['next_visual_obs%d' % i].append(
+                                next_info.visual_observations[i][next_idx])
                     if self.policy.use_vec_obs:
                         self.training_buffer[agent_id]["vector_obs"].append(
                             stored_info.vector_observations[idx]
