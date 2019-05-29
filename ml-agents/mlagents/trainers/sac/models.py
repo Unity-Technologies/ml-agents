@@ -33,6 +33,7 @@ class SACNetwork(LearningModel):
         self.num_layers = num_layers
         self.stream_names = stream_names
         self.h_size = h_size
+        self.share_ac_cnn = False
         self.activ_fn = self.swish
         if is_target:
             with tf.variable_scope("target_network"):
@@ -48,20 +49,38 @@ class SACNetwork(LearningModel):
                     hidden_streams[0], "target_network", create_qs=False
                 )
         else:
-            with tf.variable_scope("policy_network"):
-                hidden_streams = self.create_observation_streams(
-                    2,
-                    self.h_size,
-                    0,
-                    ["policy/", "critic/value/"],
-                )
+            if self.share_ac_cnn:
+                with tf.variable_scope("policy_network"):
+                    hidden_streams = self.create_observation_streams(
+                        1,
+                        self.h_size,
+                        0,
+                        ["critic/value/"],
+                    )
+                hidden_policy = hidden_streams[0]
+                hidden_critic = hidden_streams[0]
+            else:
+                with tf.variable_scope("policy_network"):
+                    hidden_streams = self.create_observation_streams(
+                        2,
+                        self.h_size,
+                        0,
+                        ["policy/", "critic/value/"],
+                    )
+                hidden_policy = hidden_streams[0]
+                hidden_critic = hidden_streams[1]
+                
             if brain.vector_action_space_type == "continuous":
-                self.create_cc_actor(hidden_streams[0], "policy_network")
-                self.create_cc_critic(hidden_streams[1], "policy_network")
+                self.create_cc_actor(hidden_policy, "policy_network")
+                self.create_cc_critic(hidden_critic, "policy_network")
 
             else:
-                self.create_dc_actor(hidden_streams[0], "policy_network")
-                self.create_dc_critic(hidden_streams[1], "policy_network")
+                self.create_dc_actor(hidden_policy, "policy_network")
+                self.create_dc_critic(hidden_critic, "policy_network")
+            
+            if self.share_ac_cnn:
+                # Make sure that the policy also contains the CNN
+                self.policy_vars += self.get_vars("policy_network/critic/value/main_graph_0_encoder0")
 
     def get_vars(self, scope):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
@@ -780,12 +799,11 @@ class SACModel(LearningModel):
             self.update_batch_value = value_optimizer.minimize(
                 self.total_value_loss, var_list=self.policy_network.critic_vars
             )
-
-            # Add entropy coefficient optimization operation if needed
-        with tf.control_dependencies([self.update_batch_value]):
-            self.update_batch_entropy = entropy_optimizer.minimize(
-                self.entropy_loss, var_list=self.log_ent_coef
-            )
+            # Add entropy coefficient optimization operation
+            with tf.control_dependencies([self.update_batch_value]):
+                self.update_batch_entropy = entropy_optimizer.minimize(
+                    self.entropy_loss, var_list=self.log_ent_coef
+                )
 
     def print_all_vars(self, variables):
         for _var in variables:
