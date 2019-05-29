@@ -2,19 +2,21 @@ default:
     trainer: sac
     batch_size: 256
     buffer_size: 10240
+    buffer_init_steps: 0
     hidden_units: 128
     init_entcoef: 1.0
     learning_rate: 3.0e-4
     max_steps: 5.0e4
     memory_size: 256
     normalize: false
-    num_epoch: 3
+    num_epoch: 1
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
     summary_freq: 1000
     tau: 0.005
     target_update_steps: 1
+    train_interval: 1
     use_recurrent: false
     curiosity_enc_size: 128
     demo_path: None
@@ -210,7 +212,6 @@ VisualPyramidsLearning:
     num_epoch: 3
 
 3DBallLearning:
-    trainer: sac
     normalize: false
     demo_path: ./demos/ExpertBall.demo
     batch_size: 256
@@ -219,9 +220,8 @@ VisualPyramidsLearning:
     time_horizon: 1000
     hidden_units: 64
     num_epoch: 1
-    lambd: 0.99
+    init_entcoef: 0.5
     max_steps: 5.0e5
-    beta: 0.001
 
 3DBallHardLearning:
     normalize: true
@@ -240,10 +240,11 @@ CrawlerStaticLearning:
     normalize: true
     demo_path: ./demos/CrawlerDemo2.demo
     num_epoch: 1
+    init_entcoef: 0.5
     time_horizon: 1000
     batch_size: 256
     train_interval: 1
-    buffer_size: 20240
+    buffer_size: 500000
     max_steps: 1e6
     summary_freq: 3000
     num_layers: 2
@@ -328,30 +329,28 @@ VisualPushBlockLearning:
     time_horizon: 64
 
 GridWorldLearning:
-    batch_size: 32
+    batch_size: 128
     normalize: false
     num_layers: 1
-    hidden_units: 256
-    beta: 1.0e-3
-    gamma: 0.9
-    buffer_size: 256
+    hidden_units: 128
+    init_entcoef: 0.01
+    buffer_size: 50000
     max_steps: 5.0e5
     summary_freq: 2000
     time_horizon: 5
-    demo_path: ./demos/GridWorld.demo
+    train_interval: 1
+    target_update_steps: 1
+    buffer_init_steps: 10000
     # demo_aided:
     #    demo_path: ./demos/GridWorld.demo
     #    demo_strength: 0.1
     #    demo_steps: 10000
     reward_signals: 
      - 'extrinsic'
-     - 'gail'
     reward_strength: 
      - 1.0
-     - 0.01
     gammas:
      - 0.99
-     - 0.9
 
 BasicLearning:
     trainer: sac
