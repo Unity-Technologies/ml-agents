@@ -241,7 +241,8 @@ the steps described
 5. Drag the `<brain_name>.nn` file from the Project window of
    the Editor to the **Model** placeholder in the **3DBallLearning**
    inspector window.
-6. Press the :arrow_forward: button at the top of the Editor.
+6. Select Ball3DAcademy in the scene and toggle off Control, each platform's brain now regains control.
+7. Press the :arrow_forward: button at the top of the Editor.
 
 ## Next Steps
 
