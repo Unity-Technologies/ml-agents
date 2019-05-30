@@ -79,11 +79,11 @@ class PPOPolicy(Policy):
                 self.bc_trainer = BCTrainer(
                     self,
                     float(
-                        trainer_params["pretraining"]["demo_strength"]
+                        trainer_params["pretraining"]["pretraining_strength"]
                         * trainer_params["learning_rate"]
                     ),
                     trainer_params["pretraining"]["demo_path"],
-                    trainer_params["pretraining"]["demo_steps"],
+                    trainer_params["pretraining"]["pretraining_steps"],
                     trainer_params["batch_size"],
                 )
 
