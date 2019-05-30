@@ -225,8 +225,8 @@ class GAILModel(object):
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
 
         self.disc_loss = -tf.reduce_mean(
-            tf.log(self.expert_estimate + 1e-10)
-            + tf.log(1.0 - self.policy_estimate + 1e-10)
+            tf.log(self.expert_estimate + 1e-7)
+            + tf.log(1.0 - self.policy_estimate + 1e-7)
         )
 
         if self.use_vail:
