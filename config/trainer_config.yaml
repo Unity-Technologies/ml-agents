@@ -53,10 +53,10 @@ PushBlockLearning:
     time_horizon: 64
     num_layers: 2
     demo_path: ./UnitySDK/Assets/Demonstrations/ImperfectPushBlock.demo 
-    demo_aided:
+    pretraining:
      demo_path: ./UnitySDK/Assets/Demonstrations/ImperfectPushBlock.demo 
-     demo_strength: 0.2
-     demo_steps: 10000
+     pretraining_strength: 0.2
+     pretraining_steps: 10000
     reward_signals: 
      - 'extrinsic'
     reward_strength: 
@@ -127,19 +127,19 @@ PyramidsLearning:
     demo_path: ./demos/ExpertPyramid.demo
     reward_signals: 
      - 'extrinsic'
-     - 'entropy'
-     - 'curiosity'
+    #  - 'entropy'
+    #  - 'curiosity'
      - 'gail'
     reward_strength: 
      - 1.0
-     - 0.001
-     - 0.001
-     - 0
+    #  - 0.001
+    #  - 0.001
+     - 0.2
     gammas:
      - 0.99
-     - 0.7
-     - 0.7
-     - 0.6
+    #  - 0.7
+    #  - 0.7
+     - 0.9
 
 VisualPyramidsLearning:
     curiosity_enc_size: 256
@@ -178,7 +178,8 @@ TennisLearning:
 CrawlerStaticLearning:
     normalize: true
     extrinsic_strength: 0.0
-    demo_path: ./demos/CrawlerDemo2.demo
+    demo_path: ./UnitySDK/Assets/Demonstrations/Crawler100x.demo 
+    #demo_path: ./demos/CrawlerDemo.demo 
     num_epoch: 3
     time_horizon: 1000
     batch_size: 1024
@@ -187,6 +188,19 @@ CrawlerStaticLearning:
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    # demo_aided:
+    #     demo_path: ./UnitySDK/Assets/Demonstrations/Crawler100x.demo 
+    #     demo_strength: 0.2
+    #     demo_steps: 10000
+    reward_signals: 
+     - 'extrinsic'
+     - 'gail'
+    reward_strength: 
+     - 0.0
+     - 0.2
+    gammas:
+     - 0.99
+     - 0.9
 
 CrawlerDynamicLearning:
     normalize: true
@@ -278,6 +292,15 @@ GridWorldLearning:
     summary_freq: 2000
     time_horizon: 5
     demo_path: ./demos/GridDemo.demo
+    reward_signals: 
+     - 'extrinsic'
+     - 'gail'
+    reward_strength: 
+     - 1.0
+     - 0.2
+    gammas:
+     - 0.99
+     - 0.9
 
 BasicLearning:
     batch_size: 32

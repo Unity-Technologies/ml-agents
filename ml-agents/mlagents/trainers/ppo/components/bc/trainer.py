@@ -11,11 +11,10 @@ class BCTrainer:
         """
         A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
-        :param h_size: The size of the the hidden layers of the discriminator
         :param lr: The Learning Rate
         :param demo_path: The path to the demonstration file
-        :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
-        reward multiplied by the strength parameter
+        :param anneal_steps: The number of steps to anneal BC training over. 0 for continuous training.
+        :param batch_size: The batch size to use during BC training. 
         """
         super().__init__()
         self.policy = policy

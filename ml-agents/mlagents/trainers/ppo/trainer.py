@@ -65,7 +65,7 @@ class PPOTrainer(Trainer):
         self.use_gail = "gail" in trainer_parameters["reward_signals"]
         self.use_entropy = "entropy" in trainer_parameters["reward_signals"]
         self.use_extrinsic = "extrinsic" in trainer_parameters["reward_signals"]
-        self.use_bc = "demo_aided" in trainer_parameters
+        self.use_bc = "pretraining" in trainer_parameters
 
         # We always want to record the extrinsic reward. If it wasn't specified,
         # add the extrinsic reward signal with strength 0.
@@ -191,17 +191,17 @@ class PPOTrainer(Trainer):
 
     def check_demo_keys(self, trainer_parameters: dict):
         """
-        Checks if the demonstration-aided parameters are set properly. 
+        Checks if the demonstration pretraining parameters are set properly. 
         :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
         """
-        if "demo_aided" in trainer_parameters:
+        if "pretraining" in trainer_parameters:
             if (
-                "demo_path" not in trainer_parameters["demo_aided"]
-                or "demo_strength" not in trainer_parameters["demo_aided"]
-                or "demo_steps" not in trainer_parameters["demo_aided"]
+                "demo_path" not in trainer_parameters["pretraining"]
+                or "pretraining_strength" not in trainer_parameters["pretraining"]
+                or "pretraining_steps" not in trainer_parameters["pretraining"]
             ):
                 raise UnityTrainerException(
-                    "demo_aided was specified but either demo_path, demo_strength, or demo_steps was not given."
+                    "pretraining was specified but either demo_path, pretraining_strength, or pretraining_steps was not given."
                 )
 
     def increment_step_and_update_last_reward(self):

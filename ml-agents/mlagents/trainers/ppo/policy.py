@@ -75,15 +75,15 @@ class PPOPolicy(Policy):
                     self, reward_strengths["entropy"]
                 )
             # BC trainer is not a reward signal
-            if "demo_aided" in trainer_params:
+            if "pretraining" in trainer_params:
                 self.bc_trainer = BCTrainer(
                     self,
                     float(
-                        trainer_params["demo_aided"]["demo_strength"]
+                        trainer_params["pretraining"]["demo_strength"]
                         * trainer_params["learning_rate"]
                     ),
-                    trainer_params["demo_aided"]["demo_path"],
-                    trainer_params["demo_aided"]["demo_steps"],
+                    trainer_params["pretraining"]["demo_path"],
+                    trainer_params["pretraining"]["demo_steps"],
                     trainer_params["batch_size"],
                 )
 
