@@ -18,6 +18,7 @@ class BCTrainer():
         """
         super().__init__()
         self.policy = policy
+        self.current_lr = lr
         self.model = BCModel(policy.model, lr, anneal_steps)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.n_sequences = min(batch_size, len(self.demonstration_buffer.update_buffer['actions']))
@@ -31,6 +32,10 @@ class BCTrainer():
         :param max_batches: The maximum number of batches to use per update.
         :return: The loss of the update.
         """
+        # Don't continue training if the learning rate has reached 0, for performance.
+        if self.current_lr <= 0:
+            return 0
+
         batch_losses = []
         possible_demo_batches = len(
              self.demonstration_buffer.update_buffer['actions']) // self.n_sequences
@@ -50,6 +55,7 @@ class BCTrainer():
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
                 run_out = self._update_batch(mini_batch_demo, self.n_sequences)
                 loss = run_out['loss']
+                self.current_lr = run_out['learning_rate']
                 # end for reporting
                 batch_losses.append(loss)
         self.has_updated = True
@@ -98,7 +104,8 @@ class BCTrainer():
         #                                                              len(self.policy_model.act_size)))
         self.out_dict = {
             "loss": self.model.loss,
-            "update": self.model.update_batch
+            "update": self.model.update_batch,
+            "learning_rate": self.model.annealed_learning_rate
         }
         network_out = self.policy.sess.run(list(self.out_dict.values()), feed_dict=feed_dict)
         run_out = dict(zip(list(self.out_dict.keys()), network_out))
