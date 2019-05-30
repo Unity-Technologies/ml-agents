@@ -228,7 +228,7 @@ class UnityEnv(gym.Env):
                 self.visual_obs = visual_obs_list
             else:
                 self.visual_obs = self._preprocess_single(visual_obs[0][0, :, :, :])
-           
+
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]
