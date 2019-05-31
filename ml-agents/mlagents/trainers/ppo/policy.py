@@ -28,7 +28,7 @@ class PPOPolicy(Policy):
         super().__init__(seed, brain, trainer_params)
 
         reward_strengths = dict(
-            zip(trainer_params["reward_signals"], trainer_params["reward_strength"])
+            zip(trainer_params["reward_signals"], trainer_params["reward_strengths"])
         )
         self.reward_signals = {}
         with self.graph.as_default():

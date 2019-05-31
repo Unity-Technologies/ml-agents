@@ -53,7 +53,7 @@ class PPOTrainer(Trainer):
             "curiosity_enc_size",
             "model_path",
             "reward_signals",
-            "reward_strength",
+            "reward_strengths",
             "gammas",
         ]
         self.valid_reward_signals = ["extrinsic", "gail", "entropy", "curiosity"]
@@ -72,7 +72,7 @@ class PPOTrainer(Trainer):
         if not self.use_extrinsic:
             trainer_parameters["reward_signals"].append("extrinsic")
             trainer_parameters["gammas"].append(0.0)
-            trainer_parameters["reward_strength"].append(0.0)
+            trainer_parameters["reward_strengths"].append(0.0)
         self.gamma_parameters = dict(
             zip(trainer_parameters["reward_signals"], trainer_parameters["gammas"])
         )
@@ -163,16 +163,16 @@ class PPOTrainer(Trainer):
 
     def check_rewards_keys(self, trainer_parameters: dict):
         """
-        Checks if the reward_signals, reward_strength and gammas hyperparamters have consistent length
+        Checks if the reward_signals, reward_strengths and gammas hyperparamters have consistent length
         and that the values of reward_signals are valid.
         :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
         """
         if len(trainer_parameters["reward_signals"]) != len(
-            trainer_parameters["reward_strength"]
+            trainer_parameters["reward_strengths"]
         ):
             raise UnityTrainerException(
                 "The length of the reward_signals Hyperparameter must be equal to the length of "
-                "the reward_strength Hyperparameter"
+                "the reward_strengths Hyperparameter"
             )
         if len(trainer_parameters["reward_signals"]) != len(
             trainer_parameters["gammas"]

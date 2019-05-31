@@ -331,9 +331,9 @@ class LearningModel(object):
         memory_in = tf.reshape(memory_in[:, :], [-1, m_size])
         half_point = int(m_size / 2)
         with tf.variable_scope(name):
-            rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
+            rnn_cell = tf.contrib.rnn.BasicLSTMCell(half_point)
             lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(
-                memory_in[:, :_half_point], memory_in[:, _half_point:]
+                memory_in[:, :half_point], memory_in[:, half_point:]
             )
             recurrent_output, lstm_state_out = tf.nn.dynamic_rnn(
                 rnn_cell, lstm_input_state, initial_state=lstm_vector_in
