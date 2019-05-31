@@ -3,7 +3,6 @@ import numpy as np
 from mlagents.trainers.policy import Policy
 from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
-from mlagents.trainers.ppo.pre_training import PreTraining
 
 
 class BCTrainer:
