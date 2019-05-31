@@ -433,12 +433,6 @@ class SACTrainer(Trainer):
                 or len(agent_actions) > self.trainer_parameters["time_horizon"]
             ) and len(agent_actions) > 0:
                 agent_id = info.agents[l]
-                if info.max_reached[l]:
-                    bootstrapping_info = self.training_buffer[agent_id].last_brain_info
-                    idx = bootstrapping_info.agents.index(agent_id)
-                else:
-                    bootstrapping_info = info
-                    idx = l
                 # value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
                 # if info.local_done[l] and not info.max_reached[l]:
                 #     value_next = 0.0
@@ -527,10 +521,6 @@ class SACTrainer(Trainer):
             [],
             [],
         )
-        # advantages = self.training_buffer.update_buffer["advantages"].get_batch()
-        # self.training_buffer.update_buffer["advantages"].set(
-        #     (advantages - advantages.mean()) / (advantages.std() + 1e-10)
-        # )
         num_epoch = self.trainer_parameters["num_epoch"]
         for _ in range(num_epoch):
             buffer = self.training_buffer.update_buffer
@@ -584,7 +574,3 @@ class SACTrainer(Trainer):
             self.stats["Losses/BC Loss"].append(_bc_loss)
 
         self.trainer_metrics.end_policy_update()
-
-
-# def get_discounted_returns(rewards, gamma=0.99, lambd=0.95):
-#     return discount_rewards(r=rewards, gamma=gamma * lambd)
