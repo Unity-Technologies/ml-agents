@@ -432,9 +432,13 @@ to display the cumulative reward received by an Agent. You can even use a Player
 Brain to control the Agent while watching how it accumulates rewards.
 
 Allocate rewards to an Agent by calling the `AddReward()` method in the
-`AgentAction()` function. The reward assigned in any step should be in the range
-[-1,1].  Values outside this range can lead to unstable training. The `reward`
-value is reset to zero at every step.
+`AgentAction()` function. The reward assigned between each decision
+should be in the range [-1,1]. Values outside this range can lead to
+unstable training. The `reward` value is reset to zero when the agent receives a
+new decision. If there are multiple calls to `AddReward()` for a single agent
+decision, the rewards will be summed together to evaluate how good the previous
+decision was. There is a method called `SetReward()` that will override all
+previous rewards given to an agent since the previous decision.
 
 ### Examples
 

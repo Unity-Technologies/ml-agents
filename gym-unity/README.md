@@ -53,16 +53,22 @@ env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multia
 *  `flatten_branched` will flatten a branched discrete action space into a Gym Discrete. 
    Otherwise, it will be converted into a MultiDiscrete. Defaults to `False`.
 
+*  `allow_multiple_visual_obs` will return a list of observation instead of only
+   one if disabled. Defaults to `False`.
+
 The returned environment `env` will function as a gym.
 
 For more on using the gym interface, see our
 [Jupyter Notebook tutorial](../notebooks/getting-started-gym.ipynb).
 
-## Limitation
+## Limitations
 
 * It is only possible to use an environment with a single Brain.
-* By default the first visual observation is provided as the `observation`, if
-  present. Otherwise vector observations are provided.
+* By default, the first visual observation is provided as the `observation`, if 
+  present. Otherwise, vector observations are provided. You can receive all visual
+  observations by using the `allow_multiple_visual_obs=True` option in the gym
+  parameters. If set to `True`, you will receive a list of `observation` instead
+  of only the first one.
 * All `BrainInfo` output from the environment can still be accessed from the
   `info` provided by `env.step(action)`.
 * Stacked vector observations are not supported.

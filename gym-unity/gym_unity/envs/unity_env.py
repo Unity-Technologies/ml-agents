@@ -33,6 +33,8 @@ class UnityEnv(gym.Env):
         uint8_visual=False,
         multiagent=False,
         flatten_branched=False,
+        no_graphics=False,
+        allow_multiple_visual_obs=False,
     ):
         """
         Environment initialization
@@ -42,8 +44,12 @@ class UnityEnv(gym.Env):
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
         :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete.
+        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
+        :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
         """
-        self._env = UnityEnvironment(environment_filename, worker_id)
+        self._env = UnityEnvironment(
+            environment_filename, worker_id, no_graphics=no_graphics
+        )
         self.name = self._env.academy_name
         self.visual_obs = None
         self._current_state = None
@@ -53,6 +59,7 @@ class UnityEnv(gym.Env):
         self.game_over = (
             False
         )  # Hidden flag used by Atari environments to determine if the game is over
+        self._allow_multiple_visual_obs = allow_multiple_visual_obs
 
         # Check brain configuration
         if len(self._env.brains) != 1:
@@ -83,10 +90,11 @@ class UnityEnv(gym.Env):
         else:
             self.uint8_visual = uint8_visual
 
-        if brain.number_visual_observations > 1:
+        if brain.number_visual_observations > 1 and not self._allow_multiple_visual_obs:
             logger.warning(
                 "The environment contains more than one visual observation. "
-                "Please note that only the first will be provided in the observation."
+                "You must define allow_multiple_visual_obs=True to received them all. "
+                "Otherwise, please note that only the first will be provided in the observation."
             )
 
         if brain.num_stacked_vector_observations != 1:
@@ -212,9 +220,15 @@ class UnityEnv(gym.Env):
             visual_obs = info.visual_observations
             if isinstance(visual_obs, list):
                 visual_obs = np.array(visual_obs)
-            self.visual_obs = self._preprocess_single(
-                visual_obs[0][0, :, :, :]
-            )
+
+            if self._allow_multiple_visual_obs:
+                visual_obs_list = []
+                for obs in visual_obs:
+                    visual_obs_list.append(self._preprocess_single(obs[0, :, :, :]))
+                self.visual_obs = visual_obs_list
+            else:
+                self.visual_obs = self._preprocess_single(visual_obs[0][0, :, :, :])
+
             default_observation = self.visual_obs
         else:
             default_observation = info.vector_observations[0, :]

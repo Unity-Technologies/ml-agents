@@ -394,30 +394,6 @@ def trainer_controller_with_take_step_mocks():
     return tc, trainer_mock
 
 
-def test_take_step_resets_env_on_global_done():
-    tc, trainer_mock = trainer_controller_with_take_step_mocks()
-
-    brain_info_mock = MagicMock()
-    trainer_mock.add_experiences = MagicMock()
-    trainer_mock.process_experiences = MagicMock()
-    trainer_mock.update_policy = MagicMock()
-    trainer_mock.write_summary = MagicMock()
-    trainer_mock.trainer.increment_step_and_update_last_reward = MagicMock()
-    env_mock = MagicMock()
-    step_data_mock_out = MagicMock()
-    env_mock.step = MagicMock(return_value=step_data_mock_out)
-    env_mock.close = MagicMock()
-    env_mock.reset = MagicMock(return_value=brain_info_mock)
-    env_mock.global_done = True
-
-    trainer_mock.get_action = MagicMock(
-        return_value=ActionInfo(None, None, None, None, None)
-    )
-
-    tc.take_step(env_mock, brain_info_mock)
-    env_mock.reset.assert_called_once()
-
-
 def test_take_step_adds_experiences_to_trainer_and_trains():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
