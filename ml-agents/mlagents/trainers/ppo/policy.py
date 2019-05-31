@@ -4,13 +4,11 @@ import numpy as np
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.ppo.components.gail import GAILSignal
-from mlagents.trainers.ppo.components.curiosity import CuriositySignal
-from mlagents.trainers.ppo.components.extrinsic import ExtrinsicSignal
-from mlagents.trainers.ppo.components.entropy import EntropySignal
-from mlagents.trainers.ppo.components.bc import BCTrainer
-from mlagents.trainers.ppo.pre_training import PreTraining
-
+from mlagents.trainers.components.gail import GAILSignal
+from mlagents.trainers.components.curiosity import CuriositySignal
+from mlagents.trainers.components.extrinsic import ExtrinsicSignal
+from mlagents.trainers.components.entropy import EntropySignal
+from mlagents.trainers.components.bc import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -28,7 +26,7 @@ class PPOPolicy(Policy):
         super().__init__(seed, brain, trainer_params)
 
         reward_strengths = dict(
-            zip(trainer_params["reward_signals"], trainer_params["reward_strength"])
+            zip(trainer_params["reward_signals"], trainer_params["reward_strengths"])
         )
         self.reward_signals = {}
         with self.graph.as_default():
@@ -75,15 +73,15 @@ class PPOPolicy(Policy):
                     self, reward_strengths["entropy"]
                 )
             # BC trainer is not a reward signal
-            if "demo_aided" in trainer_params:
+            if "pretraining" in trainer_params:
                 self.bc_trainer = BCTrainer(
                     self,
                     float(
-                        trainer_params["demo_aided"]["demo_strength"]
+                        trainer_params["pretraining"]["pretraining_strength"]
                         * trainer_params["learning_rate"]
                     ),
-                    trainer_params["demo_aided"]["demo_path"],
-                    trainer_params["demo_aided"]["demo_steps"],
+                    trainer_params["pretraining"]["demo_path"],
+                    trainer_params["pretraining"]["pretraining_steps"],
                     trainer_params["batch_size"],
                 )
 

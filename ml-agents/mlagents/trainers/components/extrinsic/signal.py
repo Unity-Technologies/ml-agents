@@ -1,6 +1,6 @@
 import numpy as np
 
-from mlagents.trainers.ppo.components import RewardSignal
+from mlagents.trainers.components import RewardSignal
 
 
 class ExtrinsicSignal(RewardSignal):

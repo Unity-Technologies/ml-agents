@@ -73,9 +73,9 @@ class BCModel(object):
 
         #self.loss = tf.train.polynomial_decay(self.loss, self.policy_model.global_step, max_step*decay_duration, 0.0, power=1.0)
         if anneal_steps > 0:
-            annealed_learning_rate = tf.train.polynomial_decay(learning_rate, self.policy_model.global_step, anneal_steps, 0.0, power=1.0)
+            self.annealed_learning_rate = tf.train.polynomial_decay(learning_rate, self.policy_model.global_step, anneal_steps, 0.0, power=1.0)
         else:
-            annealed_learning_rate = learning_rate
+            self.annealed_learning_rate = learning_rate
 
-        optimizer = tf.train.AdamOptimizer(learning_rate=annealed_learning_rate)
+        optimizer = tf.train.AdamOptimizer(learning_rate=self.annealed_learning_rate)
         self.update_batch = optimizer.minimize(self.loss)

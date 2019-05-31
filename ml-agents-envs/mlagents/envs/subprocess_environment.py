@@ -62,7 +62,10 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 vector_action, memory, text_action, value = cmd.payload
-                all_brain_info = env.step(vector_action, memory, text_action, value)
+                if env.global_done:
+                    all_brain_info = env.reset()
+                else:
+                    all_brain_info = env.step(vector_action, memory, text_action, value)
                 _send_response("step", all_brain_info)
             elif cmd.name == "external_brains":
                 _send_response("external_brains", env.external_brains)

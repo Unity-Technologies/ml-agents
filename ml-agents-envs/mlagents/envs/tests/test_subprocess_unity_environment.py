@@ -1,5 +1,5 @@
 import unittest.mock as mock
-from unittest.mock import MagicMock
+from unittest.mock import Mock, MagicMock
 import unittest
 
 from mlagents.envs.subprocess_environment import *
@@ -94,3 +94,30 @@ class SubprocessEnvironmentTest(unittest.TestCase):
             [[1.0, 2.0], [1.0, 2.0], [3.0, 4.0]],
         )
         self.assertEqual(combined_braininfo.agents, ["0-1", "0-2", "1-3"])
+
+    def test_step_resets_on_global_done(self):
+        env_mock = Mock()
+        env_mock.reset = Mock(return_value="reset_data")
+        env_mock.global_done = True
+
+        def mock_global_done_env_factory(worker_id: int):
+            return env_mock
+
+        mock_parent_connection = Mock()
+        step_command = EnvironmentCommand("step", (None, None, None, None))
+        close_command = EnvironmentCommand("close")
+        mock_parent_connection.recv = Mock()
+        mock_parent_connection.recv.side_effect = [step_command, close_command]
+        mock_parent_connection.send = Mock()
+
+        worker(
+            mock_parent_connection, cloudpickle.dumps(mock_global_done_env_factory), 0
+        )
+
+        # recv called twice to get step and close command
+        self.assertEqual(mock_parent_connection.recv.call_count, 2)
+
+        # worker returns the data from the reset
+        mock_parent_connection.send.assert_called_with(
+            EnvironmentResponse("step", 0, "reset_data")
+        )
