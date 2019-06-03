@@ -257,7 +257,7 @@ class LearningModel(object):
             for i in range(len(action_size))
         ]
         raw_probs = [
-            tf.multiply(tf.nn.softmax(branches_logits[k]) + 1.0e-10, branch_masks[k])
+            tf.multiply(tf.nn.softmax(branches_logits[k]) + 1.0e-7, branch_masks[k])
             for k in range(len(action_size))
         ]
         normalized_probs = [
@@ -266,7 +266,7 @@ class LearningModel(object):
         ]
         output = tf.concat(
             [
-                tf.multinomial(tf.log(normalized_probs[k]), 1)
+                tf.multinomial(tf.log(normalized_probs[k] + 1.0e-7), 1)
                 for k in range(len(action_size))
             ],
             axis=1,
@@ -276,7 +276,7 @@ class LearningModel(object):
             tf.concat([normalized_probs[k] for k in range(len(action_size))], axis=1),
             tf.concat(
                 [
-                    tf.log(normalized_probs[k] + 1.0e-10)
+                    tf.log(normalized_probs[k] + 1.0e-7)
                     for k in range(len(action_size))
                 ],
                 axis=1,
