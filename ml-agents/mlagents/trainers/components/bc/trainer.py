@@ -15,7 +15,6 @@ class BCTrainer:
         :param anneal_steps: The number of steps to anneal BC training over. 0 for continuous training.
         :param batch_size: The batch size to use during BC training. 
         """
-        super().__init__()
         self.policy = policy
         self.current_lr = lr
         self.model = BCModel(policy.model, lr, anneal_steps)
@@ -25,11 +24,9 @@ class BCTrainer:
         )
         self.has_updated = False
 
-    def update(self, policy_buffer, max_batches=10):
+    def update(self, max_batches=10):
         """
         Updates model using buffer.
-        :param policy_buffer: The policy buffer containing the trajectories for the current policy.
-        :param n_sequences: The number of sequences used in each mini batch.
         :param max_batches: The maximum number of batches to use per update.
         :return: The loss of the update.
         """
@@ -62,11 +59,6 @@ class BCTrainer:
                 batch_losses.append(loss)
         self.has_updated = True
         return np.mean(batch_losses)
-
-    def evaluate(self, current_info, next_info):
-        unscaled_reward = np.array(next_info.rewards)
-        scaled_reward = 0.0 * unscaled_reward
-        return scaled_reward, unscaled_reward
 
     def _update_batch(self, mini_batch_demo, n_sequences):
         """
