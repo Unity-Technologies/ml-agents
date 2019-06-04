@@ -367,6 +367,7 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
@@ -374,9 +375,9 @@ MonoBehaviour:
   ball: {fileID: 1114726487}
   invertX: 0
   score: 0
-  scoreText: {fileID: 2073469450}
   myArea: {fileID: 74527003}
-  opponent: {fileID: 1894084401}
+  angle: 0
+  scale: 0
 --- !u!65 &348265184
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -892,7 +893,13 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: angle
+      value: 55
+    - key: scale
+      value: 1
+    - key: gravity
+      value: 9.81
 --- !u!1 &1114726487
 GameObject:
   m_ObjectHideFlags: 0
@@ -1672,6 +1679,7 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 1674996276be448c2ad51fb139e21e05, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
@@ -1679,9 +1687,9 @@ MonoBehaviour:
   ball: {fileID: 1114726487}
   invertX: 1
   score: 0
-  scoreText: {fileID: 1871669621}
   myArea: {fileID: 74527003}
-  opponent: {fileID: 348265181}
+  angle: 0
+  scale: 0
 --- !u!65 &1894084404
 BoxCollider:
   m_ObjectHideFlags: 0

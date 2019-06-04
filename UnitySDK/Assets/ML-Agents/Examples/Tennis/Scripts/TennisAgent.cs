@@ -11,11 +11,14 @@ public class TennisAgent : Agent
     public bool invertX;
     public int score;
     public GameObject myArea;
+    public float angle;
+    public float scale;
 
     private Text textComponent;
     private Rigidbody agentRb;
     private Rigidbody ballRb;
     private float invertMult;
+    private ResetParameters resetParams;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
@@ -29,6 +32,8 @@ public class TennisAgent : Agent
         ballRb = ball.GetComponent<Rigidbody>();
         var canvas = GameObject.Find(CanvasName);
         GameObject scoreBoard;
+        var academy = Object.FindObjectOfType<Academy>() as Academy;
+        resetParams = academy.resetParameters;
         if (invertX)
         {
             scoreBoard = canvas.transform.Find(ScoreBoardBName).gameObject;
@@ -38,6 +43,7 @@ public class TennisAgent : Agent
             scoreBoard = canvas.transform.Find(ScoreBoardAName).gameObject;
         }
         textComponent = scoreBoard.GetComponent<Text>();
+        ResetParameters();
     }
 
     public override void CollectObservations()
@@ -83,5 +89,31 @@ public class TennisAgent : Agent
 
         transform.position = new Vector3(-invertMult * Random.Range(6f, 8f), -1.5f, 0f) + transform.parent.transform.position;
         agentRb.velocity = new Vector3(0f, 0f, 0f);
+
+        ResetParameters();
+    }
+
+    public void SetRacket()
+    {
+        angle = resetParams["angle"];
+        //agentRb.transform.Rotate(0f, 0f, invertMult * angle, Space.World);
+        gameObject.transform.eulerAngles = new Vector3(
+                                                gameObject.transform.eulerAngles.x,
+                                                gameObject.transform.eulerAngles.y,
+                                                invertMult * angle
+                                            );
+    }
+      
+    public void SetBall()
+    {
+        scale = resetParams["scale"];
+        ball.transform.localScale = new Vector3(scale, scale, scale);
+    }
+
+    public void ResetParameters()
+    {
+        SetRacket();
+        SetBall();
+        Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
     }
 }
