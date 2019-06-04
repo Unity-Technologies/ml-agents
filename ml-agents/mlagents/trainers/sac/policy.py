@@ -5,13 +5,11 @@ import tensorflow as tf
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.sac.components.gail import GAILSignal
-from mlagents.trainers.sac.components.curiosity import CuriositySignal
-from mlagents.trainers.sac.components.extrinsic import ExtrinsicSignal
-from mlagents.trainers.sac.components.entropy import EntropySignal
-from mlagents.trainers.sac.components.bc import BCTrainer
-from mlagents.trainers.sac.pre_training import PreTraining
-
+from mlagents.trainers.components.gail import GAILSignal
+from mlagents.trainers.components.curiosity import CuriositySignal
+from mlagents.trainers.components.extrinsic import ExtrinsicSignal
+from mlagents.trainers.components.entropy import EntropySignal
+from mlagents.trainers.components.bc import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")
 
