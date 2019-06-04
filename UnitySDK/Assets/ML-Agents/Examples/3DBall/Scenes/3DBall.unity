@@ -789,6 +789,8 @@ MonoBehaviour:
       value: 1
     - key: scale
       value: 1
+    - key: gravity
+      value: 9.81
 --- !u!1 &1746325439
 GameObject:
   m_ObjectHideFlags: 0

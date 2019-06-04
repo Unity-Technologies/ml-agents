@@ -83,5 +83,6 @@ public class Ball3DAgent : Agent
     public void ResetParameters()
     {
         SetBall();
+        Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
     }
 }
