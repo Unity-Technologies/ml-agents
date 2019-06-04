@@ -64,7 +64,7 @@ public class TennisAgent : Agent
     {
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
-        
+
         if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
             agentRb.velocity = new Vector3(agentRb.velocity.x, 7f, 0f);
@@ -72,12 +72,12 @@ public class TennisAgent : Agent
 
         agentRb.velocity = new Vector3(moveX * 30f, agentRb.velocity.y, 0f);
 
-        if (invertX && transform.position.x - transform.parent.transform.position.x < -invertMult || 
+        if (invertX && transform.position.x - transform.parent.transform.position.x < -invertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -invertMult)
         {
-                transform.position = new Vector3(-invertMult + transform.parent.transform.position.x, 
-                                                            transform.position.y, 
-                                                            transform.position.z);
+            transform.position = new Vector3(-invertMult + transform.parent.transform.position.x,
+                                                        transform.position.y,
+                                                        transform.position.z);
         }
 
         textComponent.text = score.ToString();
@@ -103,7 +103,7 @@ public class TennisAgent : Agent
                                                 invertMult * angle
                                             );
     }
-      
+
     public void SetBall()
     {
         scale = resetParams["scale"];
