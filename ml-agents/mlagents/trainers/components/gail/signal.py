@@ -120,26 +120,26 @@ class GAILSignal(RewardSignal):
 
         # for reporting
 
-        print(
-            "n_epoch",
-            "beta",
-            "kl_loss",
-            "policy_estimate",
-            "expert_estimate",
-            "z_mean_expert",
-            "z_mean_policy",
-            "z_log_sig_sq",
-        )
-        print(
-            n_epoch,
-            self.policy.sess.run(self.model.beta),
-            np.mean(kl_loss),
-            np.mean(pos),
-            np.mean(pes),
-            np.mean(zme),
-            np.mean(zmp),
-            np.mean(zlss),
-        )
+        # print(
+        #     "n_epoch",
+        #     "beta",
+        #     "kl_loss",
+        #     "policy_estimate",
+        #     "expert_estimate",
+        #     "z_mean_expert",
+        #     "z_mean_policy",
+        #     "z_log_sig_sq",
+        # )
+        # print(
+        #     n_epoch,
+        #     self.policy.sess.run(self.model.beta),
+        #     np.mean(kl_loss),
+        #     np.mean(pos),
+        #     np.mean(pes),
+        #     np.mean(zme),
+        #     np.mean(zmp),
+        #     np.mean(zlss),
+        # )
         # end for reporting
         return np.mean(batch_losses)
 
