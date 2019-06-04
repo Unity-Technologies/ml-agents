@@ -91,7 +91,7 @@ class SACNetwork(LearningModel):
         """
         scope = scope + "/critic"
         self.value = self.create_sac_value_head(
-            hidden_value, self.num_layers, self.h_size, scope + "/value"
+            self.stream_names, hidden_value, self.num_layers, self.h_size, scope + "/value"
         )
 
         self.value_vars = self.get_vars(scope + "/value")
@@ -119,7 +119,7 @@ class SACNetwork(LearningModel):
         """
         scope = scope + "/critic"
         self.value = self.create_sac_value_head(
-            hidden_value, self.num_layers, self.h_size, scope + "/value"
+            self.stream_names, hidden_value, self.num_layers, self.h_size, scope + "/value"
         )
 
         self.value_vars = self.get_vars(scope + "/value")
@@ -302,7 +302,7 @@ class SACNetwork(LearningModel):
                 ],
                 axis=1,
             )
-
+            self.selected_actions = self.output_oh
             # self.output_pre = gumbeldist.sample(tf.shape(act_probs)[0])[0]
             # act_probs = tf.Print(act_probs, [act_probs, gumbeldist.sample(3)[0]])
             # self.all_log_probs = normalized_logits
@@ -348,7 +348,7 @@ class SACNetwork(LearningModel):
         self.policy_vars = self.get_vars(scope)
 
     def create_sac_value_head(
-        self, hidden_input, num_layers, h_size, scope, num_outputs=1
+        self, stream_names, hidden_input, num_layers, h_size, scope
     ):
         """
         Creates one value estimator head for each reward signal in stream_names.
@@ -357,15 +357,21 @@ class SACNetwork(LearningModel):
         :param stream_names: The list of reward signal names
         :param hidden_input: The last layer of the Critic. The heads will consist of one dense hidden layer on top
         of the hidden input.
+        :param num_layers: Number of hidden layers for value network
+        :param h_size: size of hidden layers for value network
+        :param scope: TF scope for value network.
         """
 
         value_hidden = self.create_vector_observation_encoder(
             hidden_input, h_size, self.activ_fn, num_layers, scope, False
         )
+        self.value_heads = {}
         with tf.variable_scope(scope):
-            value = tf.layers.dense(
-                value_hidden, num_outputs, reuse=False, name="hidden_value"
-            )
+            for name in stream_names:
+                self.value_heads[name] = tf.layers.dense(
+                    value_hidden, 1, reuse=False, name="{}_value".format(name)
+                )
+        value = tf.reduce_mean(list(self.value_heads.values()), 0)
         return value
 
     def create_q_heads(
@@ -499,6 +505,7 @@ class SACModel(LearningModel):
             stream_names,
             discrete=self.brain.vector_action_space_type == "discrete",
         )
+        self.selected_actions = self.policy_network.selected_actions #For GAIL and other reward signals
         if normalize:
             target_update_norm = self.target_network.copy_normalization(
                 self.policy_network.running_mean,
@@ -508,6 +515,9 @@ class SACModel(LearningModel):
             self.update_normalization = tf.group(
                 [self.policy_network.update_normalization, target_update_norm]
             )
+            self.running_mean = self.policy_network.running_mean
+            self.running_variance = self.policy_network.running_variance
+            self.normalization_steps = self.policy_network.normalization_steps
 
     @staticmethod
     def create_reward_encoder():
@@ -545,51 +555,53 @@ class SACModel(LearningModel):
         discrete=False,
     ):
         """
-        Creates training-specific Tensorflow ops for PPO models.
-        :param probs: Current policy probabilities
-        :param old_probs: Past policy probabilities
-        :param value_streams: Current value estimates from each value stream
-        :param beta: Entropy regularization strength
-        :param entropy: Current policy entropy
-        :param epsilon: Value for policy-divergence threshold
+        Creates training-specific Tensorflow ops for SAC models.
+        :param q1_streams: Q1 streams from policy network
+        :param q1_streams: Q2 streams from policy network
         :param lr: Learning rate
         :param max_step: Total number of training steps.
+        :param stream_names: List of reward stream names.
+        :param discrete: Whether or not to use discrete action losses.
         """
         # self.min_policy_q = tf.minimum(
         #     self.policy_network.q1_p, self.policy_network.q2_p
         # )
-        if discrete:
-            _broken_mpq1 = self.apply_as_branches(self.policy_network.q1_p * self.policy_network.action_probs)
-            broken_mpq1 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq1])
-            _q1_p_mean = tf.reduce_mean(broken_mpq1, axis=0)
 
-            _broken_mpq2 = self.apply_as_branches(self.policy_network.q2_p* self.policy_network.action_probs)
-            broken_mpq2 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq2])
-            _q2_p_mean = tf.reduce_mean(broken_mpq2, axis=0)
-
-            self.min_policy_q = tf.minimum(
-                _q1_p_mean, _q2_p_mean
-            )
-
-            # self.min_policy_q = tf.Print(self.min_policy_q, [self.policy_network.action_probs], summarize = 11)
-        else:
-            self.min_policy_q = tf.minimum(
-                self.policy_network.q1_p, self.policy_network.q2_p
-            )
-
+        
         if discrete:
             self.target_entropy = [0.1*np.log(i).astype(np.float32) for i in self.act_size]
         else:
             self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
+        
+        self.rewards_holders = {}
+        self.min_policy_qs = {}
 
-        self.rewards_holders = []
-        for i in range(len(q1_streams)):
+        for i,name in enumerate(stream_names):
+            if discrete:
+                _broken_mpq1 = self.apply_as_branches(self.policy_network.q1_pheads[name] * self.policy_network.action_probs)
+                broken_mpq1 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq1])
+                _q1_p_mean = tf.reduce_mean(broken_mpq1, axis=0)
+
+                _broken_mpq2 = self.apply_as_branches(self.policy_network.q2_pheads[name]* self.policy_network.action_probs)
+                broken_mpq2 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq2])
+                _q2_p_mean = tf.reduce_mean(broken_mpq2, axis=0)
+
+                self.min_policy_qs[name] = tf.minimum(
+                    _q1_p_mean, _q2_p_mean
+                )
+
+                # self.min_policy_q = tf.Print(self.min_policy_q, [self.policy_network.action_probs], summarize = 11)
+            else:
+                self.min_policy_qs[name] = tf.minimum(
+                    self.policy_network.q1_p, self.policy_network.q2_p
+                )
+
             rewards_holder = tf.placeholder(
                 shape=[None],
                 dtype=tf.float32,
-                name="{}_rewards".format(stream_names[i]),
+                name="{}_rewards".format(name),
             )
-            self.rewards_holders.append(rewards_holder)
+            self.rewards_holders[name] = rewards_holder
             # self.old_values.append(old_value)
         self.learning_rate = tf.train.polynomial_decay(
             lr, self.global_step, max_step, 1e-10, power=1.0
@@ -600,7 +612,7 @@ class SACModel(LearningModel):
         # Multiple q losses per stream
         expanded_dones = tf.expand_dims(self.dones_holder, axis=-1)
         for i, name in enumerate(stream_names):
-            _expanded_rewards = tf.expand_dims(self.rewards_holders[i], axis=-1)
+            _expanded_rewards = tf.expand_dims(self.rewards_holders[name], axis=-1)
 
             q_backup = tf.stop_gradient(
                 _expanded_rewards
@@ -729,23 +741,20 @@ class SACModel(LearningModel):
                 - self.policy_network.q1_p
             )
 
+            # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
+            # self.policy_loss = tf.Print(self.policy_loss,[self.policy_network.q1_p])
+        value_losses = []
+        for name in stream_names:
             v_backup = tf.stop_gradient(
-                self.min_policy_q
+                self.min_policy_qs[name]
                 - tf.reduce_sum(
                     self.ent_coef * self.policy_network.all_log_probs, axis=1
                 )
             )
-            # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
-            # self.policy_loss = tf.Print(self.policy_loss,[self.policy_network.q1_p])
-
-        print("Checking dims", self.min_policy_q, self.policy_network.value)
-
-        # Only one value head, only one value loss 
-        # TODO: multiple value heads per stream
-        self.value_loss = 0.5 * tf.reduce_mean(
-            tf.squared_difference(self.policy_network.value, v_backup)
-        )
-
+            value_losses.append(0.5 * tf.reduce_mean(
+                tf.squared_difference(self.policy_network.value_heads[name], v_backup))
+            )
+        self.value_loss = tf.reduce_mean(value_losses)
         self.total_value_loss = self.q1_loss + self.q2_loss + self.value_loss
         self.entropy = self.policy_network.entropy
 

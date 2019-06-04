@@ -62,12 +62,14 @@ class SACPolicy(Policy):
                 )
                 self.reward_signals["curiosity"] = curiosity_signal
             if "gail" in reward_strengths.keys():
+                _gail_batch_size = trainer_params["gail_batch_size"] if "gail_batch_size" in trainer_params else trainer_params["batch_size"]
                 gail_signal = GAILSignal(
                     self,
                     int(trainer_params["hidden_units"]),
                     float(trainer_params["learning_rate"]),
                     trainer_params["demo_path"],
                     reward_strengths["gail"],
+                    _gail_batch_size,
                 )
                 self.reward_signals["gail"] = gail_signal
             if "entropy" in reward_strengths.keys():
@@ -167,7 +169,7 @@ class SACPolicy(Policy):
             self.model.mask_input: mini_batch["masks"].flatten(),
         }
         for i, name in enumerate(self.reward_signals.keys()):
-            feed_dict[self.model.rewards_holders[i]] = mini_batch[
+            feed_dict[self.model.rewards_holders[name]] = mini_batch[
                 "{}_rewards".format(name)
             ].flatten()
 

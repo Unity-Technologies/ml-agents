@@ -567,7 +567,10 @@ class SACTrainer(Trainer):
             self.stats["Losses/Forward Loss"].append(np.mean(forward_total))
             self.stats["Losses/Inverse Loss"].append(np.mean(inverse_total))
         if self.use_gail:
-            gail_loss = self.policy.reward_signals["gail"].update(self.training_buffer)
+            sampled_minibatch = buffer.sample_mini_batch(
+                    self.trainer_parameters["batch_size"]
+                )
+            gail_loss = self.policy.reward_signals["gail"].update(sampled_minibatch)
             self.stats["Losses/GAIL Loss"].append(gail_loss)
         if self.use_bc:
             _bc_loss = self.policy.bc_trainer.update(self.training_buffer)

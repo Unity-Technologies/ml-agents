@@ -555,7 +555,7 @@ class PPOTrainer(Trainer):
             self.stats["Losses/Forward Loss"].append(np.mean(forward_total))
             self.stats["Losses/Inverse Loss"].append(np.mean(inverse_total))
         if self.use_gail:
-            gail_loss = self.policy.reward_signals["gail"].update(self.training_buffer)
+            gail_loss = self.policy.reward_signals["gail"].update(self.training_buffer.update_buffer)
             self.stats["Losses/GAIL Loss"].append(gail_loss)
         if self.use_bc:
             _bc_loss = self.policy.bc_trainer.update(self.training_buffer)

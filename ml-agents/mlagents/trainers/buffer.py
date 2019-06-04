@@ -225,7 +225,7 @@ class Buffer(dict):
             : param batch_size: number of elements to withdraw.
             """
             mini_batch_lists = {}
-            mini_batch = {}
+            mini_batch = Buffer.AgentBuffer()
             idxes = [random.randint(0, len(self["actions"]) - 1) for _ in range(batch_size)]
 
             for i in idxes:

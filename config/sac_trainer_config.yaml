@@ -249,6 +249,17 @@ CrawlerStaticLearning:
     summary_freq: 3000
     num_layers: 2
     hidden_units: 128
+    reward_signals: 
+     - 'extrinsic'
+     - 'gail'
+    #  - 'curiosity'
+    reward_strength: 
+     - 1.0
+     - 0.1
+    #  - 0.01
+    gammas:
+     - 0.99
+     - 0.9
 
 CrawlerDynamicLearning:
     normalize: true
