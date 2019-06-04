@@ -47,6 +47,8 @@ public class CrawlerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
+    private ResetParameters resetParams;
+
     public override void InitializeAgent()
     {
         jdController = GetComponent<JointDriveController>();
@@ -62,6 +64,12 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
+
+        var academy = Object.FindObjectOfType<Academy>() as Academy;
+        resetParams = academy.resetParameters;
+
+        SetResetParameters();
+
     }
 
     /// <summary>
@@ -265,5 +273,11 @@ public class CrawlerAgent : Agent
 
         isNewDecisionStep = true;
         currentDecisionStep = 1;
+        SetResetParameters();
+    }
+
+    public void SetResetParameters()
+    {
+        Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
     }
 }

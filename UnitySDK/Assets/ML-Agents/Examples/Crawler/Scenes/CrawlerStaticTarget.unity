@@ -1967,4 +1967,6 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: -1
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: gravity
+      value: 9.81
