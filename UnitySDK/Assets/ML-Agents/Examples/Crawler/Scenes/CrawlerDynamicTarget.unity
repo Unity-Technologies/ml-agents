@@ -1692,7 +1692,9 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: gravity
+      value: 9.81
 --- !u!114 &2095421681
 MonoBehaviour:
   m_ObjectHideFlags: 0
