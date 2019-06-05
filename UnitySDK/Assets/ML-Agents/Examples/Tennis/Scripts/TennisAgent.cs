@@ -43,7 +43,7 @@ public class TennisAgent : Agent
             scoreBoard = canvas.transform.Find(ScoreBoardAName).gameObject;
         }
         textComponent = scoreBoard.GetComponent<Text>();
-        ResetParameters();
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -90,7 +90,7 @@ public class TennisAgent : Agent
         transform.position = new Vector3(-invertMult * Random.Range(6f, 8f), -1.5f, 0f) + transform.parent.transform.position;
         agentRb.velocity = new Vector3(0f, 0f, 0f);
 
-        ResetParameters();
+        SetResetParameters();
     }
 
     public void SetRacket()
@@ -110,7 +110,7 @@ public class TennisAgent : Agent
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 
-    public void ResetParameters()
+    public void SetResetParameters()
     {
         SetRacket();
         SetBall();
