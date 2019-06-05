@@ -16,7 +16,7 @@ public class Ball3DAgent : Agent
         ballRb = ball.GetComponent<Rigidbody>();
         var academy = Object.FindObjectOfType<Academy>() as Academy;
         resetParams = academy.resetParameters;
-        ResetParameters();
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -69,7 +69,7 @@ public class Ball3DAgent : Agent
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f))
                                       + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
-        ResetParameters();
+        SetResetParameters();
     }
 
     public void SetBall()
@@ -80,7 +80,7 @@ public class Ball3DAgent : Agent
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 
-    public void ResetParameters()
+    public void SetResetParameters()
     {
         SetBall();
         Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
