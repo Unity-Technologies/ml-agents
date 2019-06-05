@@ -551,6 +551,18 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 4514806330078592, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.7800003
+      objectReference: {fileID: 0}
+    - target: {fileID: 4319696987700124, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.7800003
+      objectReference: {fileID: 0}
+    - target: {fileID: 4650975627733420, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.7800003
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 2}
   m_IsPrefabParent: 0
@@ -1695,6 +1707,10 @@ MonoBehaviour:
     resetParameters:
     - key: gravity
       value: 9.81
+    - key: forelegScale
+      value: 0.780001
+    - key: upperlegScale
+      value: 0.4800002
 --- !u!114 &2095421681
 MonoBehaviour:
   m_ObjectHideFlags: 0
