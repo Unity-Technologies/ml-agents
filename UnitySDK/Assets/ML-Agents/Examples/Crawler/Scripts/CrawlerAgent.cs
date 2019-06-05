@@ -218,7 +218,7 @@ public class CrawlerAgent : Agent
         }
 
         if (rewardFacingTarget)
-        {
+        { 
             RewardFunctionFacingTarget();
         }
 
@@ -276,8 +276,31 @@ public class CrawlerAgent : Agent
         SetResetParameters();
     }
 
+    public void SetForeLegSize()
+    {
+        leg0Lower.localScale = new Vector3(leg0Lower.localScale.x, resetParams["forelegScale"], leg0Lower.localScale.z);
+        leg1Lower.localScale = new Vector3(leg1Lower.localScale.x, resetParams["forelegScale"], leg1Lower.localScale.z);
+        leg2Lower.localScale = new Vector3(leg2Lower.localScale.x, resetParams["forelegScale"], leg2Lower.localScale.z);
+        leg3Lower.localScale = new Vector3(leg3Lower.localScale.x, resetParams["forelegScale"], leg3Lower.localScale.z);
+    }
+
+    public void SetUpperLegSize()
+    {
+        leg0Upper.localScale = new Vector3(leg0Upper.localScale.x, resetParams["upperlegScale"], leg0Upper.localScale.z);
+        leg1Upper.localScale = new Vector3(leg1Upper.localScale.x, resetParams["upperlegScale"], leg1Upper.localScale.z);
+        leg2Upper.localScale = new Vector3(leg2Upper.localScale.x, resetParams["upperlegScale"], leg2Upper.localScale.z);
+        leg3Upper.localScale = new Vector3(leg3Upper.localScale.x, resetParams["upperlegScale"], leg3Upper.localScale.z);
+    }
+
+    public void SetLegSize()
+    {
+        SetForeLegSize();
+        SetUpperLegSize();
+    }
+
     public void SetResetParameters()
     {
         Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
+        SetLegSize();
     }
 }
