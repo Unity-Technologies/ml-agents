@@ -20,7 +20,7 @@ default:
     demo_path: None
     reward_signals: 
      - 'extrinsic'
-    reward_strength: 
+    reward_strengths: 
      - 1.0
     gammas:
      - 0.99
@@ -59,7 +59,7 @@ PushBlockLearning:
      pretraining_steps: 10000
     reward_signals: 
      - 'extrinsic'
-    reward_strength: 
+    reward_strengths: 
      - 1.0
     gammas:
      - 0.99
@@ -125,21 +125,26 @@ PyramidsLearning:
     num_epoch: 3
     sequence_length: 32
     demo_path: ./demos/ExpertPyramid.demo
+    use_recurrent: true
+    pretraining:
+        demo_path: ./demos/ExpertPyramid.demo 
+        pretraining_strength: 1.0
+        pretraining_steps: 10000000
     reward_signals: 
      - 'extrinsic'
     #  - 'entropy'
     #  - 'curiosity'
-     - 'gail'
-    reward_strength: 
-     - 1.0
+    #  - 'gail'
+    reward_strengths: 
+     - 0.0
     #  - 0.001
     #  - 0.001
-     - 0.2
+    #  - 0.0
     gammas:
      - 0.99
     #  - 0.7
     #  - 0.7
-     - 0.9
+    #  - 0.9
 
 VisualPyramidsLearning:
     curiosity_enc_size: 256
@@ -195,7 +200,7 @@ CrawlerStaticLearning:
     reward_signals: 
      - 'extrinsic'
      - 'gail'
-    reward_strength: 
+    reward_strengths: 
      - 0.0
      - 0.2
     gammas:
@@ -295,7 +300,7 @@ GridWorldLearning:
     reward_signals: 
      - 'extrinsic'
      - 'gail'
-    reward_strength: 
+    reward_strengths: 
      - 1.0
      - 0.2
     gammas:
