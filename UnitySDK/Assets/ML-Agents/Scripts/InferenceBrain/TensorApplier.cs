@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#define ENABLE_BARRACUDA
+using System.Collections.Generic;
 
 namespace MLAgents.InferenceBrain
 {    
@@ -37,7 +38,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="bp"> The BrainParameters used to determine what Appliers will be
         /// used</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
-        public TensorApplier(BrainParameters bp, int seed)
+        public TensorApplier(BrainParameters bp, int seed, object barracudaModel = null)
         {
             _dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
             if (bp.vectorActionSpaceType == SpaceType.continuous)
@@ -51,8 +52,14 @@ namespace MLAgents.InferenceBrain
             }
             _dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
             
-            _dict[TensorNames.RecurrentOutput_C] = new BarracudaMemoryOutputApplier(true);
-            _dict[TensorNames.RecurrentOutput_H] = new BarracudaMemoryOutputApplier(false);
+            #if ENABLE_BARRACUDA
+            Barracuda.Model model = (Barracuda.Model) barracudaModel;
+
+            for (var i = 0; i < model?.memories.Length; i++)
+            {
+                _dict[model.memories[i].output] = new BarracudaMemoryOutputApplier(model.memories.Length, i);
+            }
+            #endif
         }
 
         /// <summary>

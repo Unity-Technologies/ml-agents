@@ -918,6 +918,11 @@ namespace MLAgents
             action.memories.AddRange(memories);
         }
 
+        public List<float> GetMemoriesAction()
+        {
+            return action.memories;
+        }
+
         /// <summary>
         /// Updates the text action.
         /// </summary>
