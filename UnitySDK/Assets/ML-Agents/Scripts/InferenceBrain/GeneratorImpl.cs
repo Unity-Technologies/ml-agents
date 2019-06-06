@@ -260,6 +260,7 @@ namespace MLAgents.InferenceBrain
             var textures = agentInfo.Keys.Select(
                 agent => agentInfo[agent].visualObservations[_index]).ToList();
             tensor.Data = Utilities.TextureToFloatArray(textures, _grayScale);
+            tensor.Shape[0] = textures.Count;
         } 
     } 
 }
