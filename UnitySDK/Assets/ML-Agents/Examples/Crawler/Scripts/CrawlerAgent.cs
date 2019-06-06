@@ -298,9 +298,25 @@ public class CrawlerAgent : Agent
         SetUpperLegSize();
     }
 
+    public void SetAgentStartingHeight()
+    {
+        float newHeight = leg0Upper.localScale.y + leg0Lower.localScale.y + 2;
+
+        body.position = new Vector3(body.position.x, newHeight, body.position.z);
+        leg0Upper.position = new Vector3(leg0Upper.position.x, newHeight, leg0Upper.position.z);
+        leg0Lower.position = new Vector3(leg0Lower.position.x, newHeight, leg0Lower.position.z);
+        leg1Upper.position = new Vector3(leg1Upper.position.x, newHeight, leg1Upper.position.z);
+        leg1Lower.position = new Vector3(leg1Lower.position.x, newHeight, leg1Lower.position.z);
+        leg2Upper.position = new Vector3(leg2Upper.position.x, newHeight, leg2Upper.position.z);
+        leg2Lower.position = new Vector3(leg2Lower.position.x, newHeight, leg2Lower.position.z);
+        leg3Lower.position = new Vector3(leg3Lower.position.x, newHeight, leg3Lower.position.z);
+        leg3Upper.position = new Vector3(leg3Upper.position.x, newHeight, leg3Upper.position.z);
+    }
+
     public void SetResetParameters()
     {
         Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
         SetLegSize();
+        SetAgentStartingHeight();
     }
 }
