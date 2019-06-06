@@ -83,7 +83,7 @@ class PPOPolicy(Policy):
                     trainer_params["pretraining"]["demo_path"],
                     trainer_params["pretraining"]["pretraining_steps"],
                     trainer_params["batch_size"],
-                    trainer_params["use_recurrent"]
+                    trainer_params["use_recurrent"],
                 )
 
         if load:
