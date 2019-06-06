@@ -174,8 +174,9 @@ void MaxPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
                 uint oy = y * _Stride.y + dy;
                 uint ox = x * _Stride.x + dx;
 
-                bool mask = (oy >= _Pad.y) && (ox >= _Pad.x) && (oy - _Pad.w < X.height) && (ox - _Pad.z < X.width);
+                bool mask = (oy >= _Pad.y) && (ox >= _Pad.x) && (oy - _Pad.y < X.height) && (ox - _Pad.x < X.width);
                 float v = (mask)? X.Get(n, oy - _Pad.y, ox - _Pad.x, c): 0;
+                
                 maxV = max(v, maxV);
             }
         
@@ -207,7 +208,7 @@ void AvgPool2D(uint3 dispatchThreadID : SV_DispatchThreadID)
                 uint oy = y * _Stride.y + dy;
                 uint ox = x * _Stride.x + dx;
 
-                bool mask = (oy >= _Pad.y) && (ox >= _Pad.x) && (oy - _Pad.w < X.height) && (ox - _Pad.z < X.width);
+                bool mask = (oy >= _Pad.y) && (ox >= _Pad.x) && (oy - _Pad.y < X.height) && (ox - _Pad.x < X.width);
                 acc += (mask)? X.Get(n, oy - _Pad.y, ox - _Pad.x, c): 0;
                 counter += (mask)? 1: 0;
             }

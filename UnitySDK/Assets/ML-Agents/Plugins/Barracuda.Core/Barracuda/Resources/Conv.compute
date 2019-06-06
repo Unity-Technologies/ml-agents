@@ -1,7 +1,7 @@
 #pragma kernel Conv2D
 #pragma kernel Conv2D_RegisterBlock4x2
-//#pragma kernel Conv2D_L1Cached64_RegisterBlock4x4
-//#pragma kernel Conv2D_L1Cached32_RegisterBlock4x4
+#pragma kernel Conv2D_L1Cached64_RegisterBlock4x4
+#pragma kernel Conv2D_L1Cached32_RegisterBlock4x4
 
 #pragma kernel DepthwiseConv2D
 

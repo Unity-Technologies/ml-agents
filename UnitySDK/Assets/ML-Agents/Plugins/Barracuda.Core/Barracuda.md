@@ -166,8 +166,92 @@ python tensorflow_to_barracuda.py Models/3DBall-tf-model.pb Destination/3DBall-b
 Trim will first remove outputs that do not match regular expression from the graph. In this case only output that ends with `action` will be left.
 Next trim will strip all nodes that do not participate in the evaluation of the output.
 
+You could pass `--print-supported-ops` to get approximate list of supported operations/activations for specific converter.
 
-P.S. Python 3.5 or 3.6 is recommended
+## Approximate list of supported layers/operations for TensorFlow converter
+```
+Activation
+Add
+AvgPool
+BatchNormalization
+BatchNormalizationRuntime
+BiasAdd
+Concat
+Conv2D
+Conv2DBackpropInput
+Dense
+DepthwiseConv2dNative
+Flatten
+FusedBatchNorm
+GlobalAveragePool
+GlobalAvgPool
+InstanceNormalization
+LRN
+MatMul
+Max
+MaxPool
+Maximum
+Mean
+Min
+Minimum
+Mul
+Multinomial
+Nop
+OneHot
+Pad
+Pow
+Prod
+RandomStandardNormal
+RandomUniform
+RealDiv
+Reshape
+ResizeBicubic
+ResizeBilinear
+ResizeNearestNeighbor
+StridedSlice
+Sub
+Sum
 
-P.P.S. We plan to migrate Tensorflow and ONNX converters from Python to C# in the future.
+```
+
+## Approximate list of supported activations for TensorFlow converter
+```
+Abs
+Acos
+Acosh
+Asin
+Asinh
+Atan
+Atanh
+Ceil
+Cos
+Cosh
+Elu
+Exp
+Floor
+LeakyRelu
+Linear
+Log
+LogSoftmax
+Neg
+Relu
+Relu6
+Selu
+Sigmoid
+Sin
+Sinh
+Softmax
+Softplus
+Softsign
+Sqrt
+Swish
+Tan
+Tanh
+```
+
+P.S. some of these operations are under limited support and not all configurations are properly supported 
+
+P.P.S. Python 3.5 or 3.6 is recommended
+
+P.P.P.S. We plan to migrate Tensorflow and ONNX converters from Python to C# in the future.
 

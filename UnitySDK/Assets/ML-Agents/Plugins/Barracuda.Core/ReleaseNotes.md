@@ -1,5 +1,14 @@
 # Release notes
 
+## 0.2.2
+- Added support for --print-supported-ops flag for model converters, now it will print approximate list of supported operations. List of supported ops depends on converter.
+- Added Keras converter as part of distribution.
+- Now compute shaders are loaded only if GPU worker is requested.
+- Fixed bug in MaxPool and AvgPool padding. Issue discovered by Yolo faces network.
+- Fixed bug in Transpose convolution support for C# backend.
+- Fixed TF model conversion with two LSTM cells.
+- Fixed case when strided slice end overflows to zero and thus producing negative range.
+
 ## 0.2.1
 - TF importer: fixed ResizeNearestNeighbor aka Upsample2D scaling factor detection.
 - TF importer: optimized node sorting. Should be faster than 0.2.0.
