@@ -19,9 +19,7 @@ class BCModel(object):
         self.policy_model = policy_model
         self.expert_visual_in = self.policy_model.visual_in
         self.obs_in_expert = self.policy_model.vector_in
-        # self.make_beta()
         self.make_inputs()
-        # self.create_network()
         self.create_loss(lr, anneal_steps)
 
     def make_inputs(self):
@@ -69,7 +67,7 @@ class BCModel(object):
                     labels=tf.nn.softmax(log_probs[:, action_idx[i]:action_idx[i + 1]]),
                     logits=log_probs[:, action_idx[i]:action_idx[i + 1]])
                 for i in range(len(action_size))], axis=1)), axis=1)
-            self.loss = tf.reduce_mean(-tf.log(tf.nn.softmax(log_probs)+ 0*1e-10) * self.expert_action) #- 1 * tf.reduce_sum(entropy)
+            self.loss = tf.reduce_mean(-tf.log(tf.nn.softmax(log_probs)+ 1e-7) * self.expert_action) #- 1 * tf.reduce_sum(entropy)
 
         #self.loss = tf.train.polynomial_decay(self.loss, self.policy_model.global_step, max_step*decay_duration, 0.0, power=1.0)
         if anneal_steps > 0:

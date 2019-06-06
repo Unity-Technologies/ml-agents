@@ -29,6 +29,9 @@ def make_demo_buffer(brain_infos, brain_params, sequence_length):
                 current_brain_info.vector_observations[0]
             )
         demo_buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
+        demo_buffer[0]["prev_action"].append(
+            current_brain_info.previous_vector_actions[0]
+        )
         if next_brain_info.local_done[0]:
             demo_buffer.append_update_buffer(
                 0, batch_size=None, training_length=sequence_length
