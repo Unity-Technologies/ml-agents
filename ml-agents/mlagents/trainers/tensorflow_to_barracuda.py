@@ -300,6 +300,8 @@ known_patterns = {
     repr([re.compile('^lstm/'),
         'Reshape', 'ConcatV2', 'Identity'])                     : 'BasicLSTM',
 
+    repr(['Reshape', re.compile('^lstm_[a-z]*/'),'Reshape', 'ConcatV2'])   : 'BasicLSTM',
+
     repr(['Sigmoid', 'Mul'])                                    : "Swish",
     repr(['Mul', 'Abs', 'Mul', 'Add'])                          : "LeakyRelu",
 
@@ -499,8 +501,7 @@ transform_patterns = {
         sqr_diff(nodes[-1].name, inputs[0], inputs[1]),
 
     'BasicLSTM' : lambda nodes, inputs, tensors, context:
-        basic_lstm(nodes, inputs, tensors, context,
-            index_of_actual_output_node=-3, assert_output_node_op_type='Reshape'),
+        basic_lstm(nodes, inputs, tensors, context, find_type='Reshape'),
 
     'Swish' : lambda nodes, inputs, tensors, _:
         Struct(
@@ -767,11 +768,11 @@ def strided_slice(name, input, input_rank, begin, end, strides, begin_mask, end_
     return nn.layers
 
 # search backwards starting from index_of_actual_output_node for non-const node
-def locate_actual_output_node(nodes, index_of_actual_output_node=-1, assert_output_node_op_type=None):
-    while (-index_of_actual_output_node-1) < len(nodes) and nodes[index_of_actual_output_node].op == 'Const':
+def locate_actual_output_node(nodes, index_of_actual_output_node=-1, find_type='Reshape'):
+    while (-index_of_actual_output_node-1) < len(nodes) and nodes[index_of_actual_output_node].op != find_type:
         index_of_actual_output_node -= 1
     actual_output_node = nodes[index_of_actual_output_node]
-    assert(actual_output_node.op == assert_output_node_op_type or not assert_output_node_op_type)
+    assert(-index_of_actual_output_node < len(nodes))
     return actual_output_node
 
 def gru(nodes, inputs, tensors, context, index_of_actual_output_node, assert_output_node_op_type=None):
@@ -823,7 +824,7 @@ def gru(nodes, inputs, tensors, context, index_of_actual_output_node, assert_out
 
     return new_layers
 
-def basic_lstm(nodes, inputs, tensors, context, index_of_actual_output_node, assert_output_node_op_type=None):
+def basic_lstm(nodes, inputs, tensors, context, find_type='Reshape'):
     assert(len(inputs) == 2)
 
     def find_tensor_by_name(name, default=None):
@@ -874,7 +875,10 @@ def basic_lstm(nodes, inputs, tensors, context, index_of_actual_output_node, ass
     context.layer_ranks[state_c] = 2
     context.layer_ranks[state_h] = 2
 
-    new_layers = barracuda.lstm('lstm', input, state_c, state_h,
+    # lstm_value/strided_slice/stack => lstm_value
+    lstm_name = next(i.name for i in nodes if i.name.startswith('lstm')).split('/')[0]
+
+    new_layers = barracuda.lstm(lstm_name, input, state_c, state_h,
         'kernel_i', 'kernel_j', 'kernel_f', 'kernel_o',
         'bias_i', 'bias_j', 'bias_f', 'bias_o',
         new_state_c, new_state_h)
@@ -884,8 +888,10 @@ def basic_lstm(nodes, inputs, tensors, context, index_of_actual_output_node, ass
     context.model_memories += [state_shape, state_h, new_state_h]
 
     # map expected output of the replaced pattern to output from our LSTM cell
-    actual_output_node = locate_actual_output_node(nodes, index_of_actual_output_node, assert_output_node_op_type)
+    actual_output_node = locate_actual_output_node(nodes, -1, find_type)
+    concat_out_node = locate_actual_output_node(nodes, -1, 'ConcatV2')
     context.map_ignored_layer_to_its_input[actual_output_node.name] = new_state_h
+    context.map_ignored_layer_to_its_input[concat_out_node.name] = new_state_c
 
     return new_layers
 
@@ -1038,7 +1044,7 @@ def process_layer(layer, context, args):
 
     input_ranks = [layer_ranks.get(i, -1) for i in o_l.inputs]
     for i in o_l.inputs:
-        if i not in layer_ranks:
+        if i not in layer_ranks and 'lstm' not in i:
             print("WARNING: rank unknown for tensor", i, "while processing node", name)
     if hasattr(klass, 'rank'):
         rank = klass.rank
@@ -1288,8 +1294,12 @@ def convert(source_file, target_file, trim_unused_by_output="", verbose=False, c
         args.print_layer_links = verbose
         args.print_patterns = verbose
         args.print_tensors = verbose
+        args.print_supported_ops = verbose
     else:
         args = verbose
+
+    if args.print_supported_ops:
+        barracuda.print_known_operations(known_classes, known_activations)
 
     # Load Tensorflow model
     print("Converting %s to %s" % (source_file, target_file))

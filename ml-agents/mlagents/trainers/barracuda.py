@@ -35,6 +35,7 @@ def parse_args(description, source_extension, help):
     parser.add_argument('--print-layer-links', action='store_true')
     parser.add_argument('--print-patterns', action='store_true')
     parser.add_argument('--print-tensors', action='store_true')
+    parser.add_argument('--print-supported-ops', action='store_true')
     parser.add_argument('--verbose', action='store_true')
     args = parser.parse_args()
     args.compress_f16 = False # TEMP: disabled, until properly implemented parser.add_argument('-f16', '--compress-f16', action='store_true')
@@ -520,4 +521,10 @@ def write(model, filename):
             w.write_array(x.data)
 
 
-
+def print_known_operations(known_classes, known_activations):
+    print('OPS supported by the converter:')
+    for key in sorted(known_classes.keys()):
+        print(key)
+    print('ACTIVATIONS supported by the converter:')
+    for key in sorted(known_activations.keys()):
+        print(key)

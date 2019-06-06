@@ -1,7 +1,7 @@
 #pragma kernel Dense_L1Cached64
 #pragma kernel DenseTiled16x16
-//#pragma kernel DenseTiled32x32
-//#pragma kernel DenseTiled64x64
+#pragma kernel DenseTiled32x32
+#pragma kernel DenseTiled64x64
 
 #include "Tensor.cginc"
 
