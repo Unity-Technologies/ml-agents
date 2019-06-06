@@ -240,4 +240,3 @@ class GAILSignal(RewardSignal):
         self.policy.sess.run(
             self.model.update_beta, feed_dict={self.model.kl_div_input: kl_div}
         )
-
