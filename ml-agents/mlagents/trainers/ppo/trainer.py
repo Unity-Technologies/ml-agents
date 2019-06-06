@@ -364,7 +364,7 @@ class PPOTrainer(Trainer):
                         )
                     else:
                         self.training_buffer[agent_id]["action_mask"].append(
-                            stored_info.action_masks[idx]
+                            stored_info.action_masks[idx], padding_value=1
                         )
                     a_dist = stored_take_action_outputs["log_probs"]
                     # value is a dictionary from name of reward to value estimate of the value head
