@@ -127,7 +127,7 @@ def test_gail_rnn_evaluate(mock_communicator, mock_launcher, dummy_config):
     assert scaled_reward.shape == (3,)
     assert unscaled_reward.shape == (3,)
     env.close()
-       
+
 
 @mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
 @mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
