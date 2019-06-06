@@ -109,8 +109,10 @@ namespace MLAgents.InferenceBrain
             var memory = GetIntScalar(TensorNames.MemorySize);
             if (memory > 0)
             {
-                names.Add(TensorNames.RecurrentOutput_C);
-                names.Add(TensorNames.RecurrentOutput_H);
+                foreach (var mem in _model.memories)
+                {
+                    names.Add(mem.output);
+                }
             }
 
             names.Sort();
@@ -264,8 +266,8 @@ namespace MLAgents.InferenceBrain
             // If the model has a non-negative memory size but requires a recurrent input
             if (memory > 0)
             {
-                if (!tensorsNames.Contains(TensorNames.RecurrentInPlaceholder_H) ||
-                    !tensorsNames.Contains(TensorNames.RecurrentInPlaceholder_C))
+                if (!tensorsNames.Any(x => x.EndsWith("_h")) ||
+                    !tensorsNames.Any(x => x.EndsWith("_c")))
                 {
                     _failedModelChecks.Add(
                         "The model does not contain a Recurrent Input Node but has memory_size.");
@@ -302,8 +304,8 @@ namespace MLAgents.InferenceBrain
             {
                 var memOutputs = _model.memories.Select(x => x.output).ToList();
                 
-                if (!memOutputs.Contains(TensorNames.RecurrentOutput_H) || 
-                    !memOutputs.Contains(TensorNames.RecurrentOutput_C))
+                if (!memOutputs.Any(x => x.EndsWith("_h")) || 
+                    !memOutputs.Any(x => x.EndsWith("_c")))
                 {
                     _failedModelChecks.Add(
                         "The model does not contain a Recurrent Output Node but has memory_size.");
@@ -325,9 +327,12 @@ namespace MLAgents.InferenceBrain
                     {TensorNames.RandomNormalEpsilonPlaceholder, ((tensor) => null)},
                     {TensorNames.ActionMaskPlaceholder, ((tensor) => null)},
                     {TensorNames.SequenceLengthPlaceholder, ((tensor) => null)},
-                    {TensorNames.RecurrentInPlaceholder_H, ((tensor) => null)},
-                    {TensorNames.RecurrentInPlaceholder_C, ((tensor) => null)},
+                    {TensorNames.RecurrentInPlaceholder, ((tensor) => null)},
                 };
+
+            foreach (var mem in _model.memories)
+                tensorTester[mem.input] = ((tensor) => null);
+            
             for (var obsIndex = 0; obsIndex < _brainParameters.cameraResolutions.Length; obsIndex++)
             {
                 var index = obsIndex;

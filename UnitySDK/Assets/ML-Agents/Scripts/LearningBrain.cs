@@ -126,8 +126,8 @@ namespace MLAgents
             _modelParamLoader = BarracudaModelParamLoader.GetLoaderAndCheck(_engine, _barracudaModel, brainParameters);
             _inferenceInputs = _modelParamLoader.GetInputTensors();
             _outputNames = _modelParamLoader.GetOutputNames();
-            _tensorGenerator = new TensorGenerator(brainParameters, seed);
-            _tensorApplier = new TensorApplier(brainParameters, seed);
+            _tensorGenerator = new TensorGenerator(brainParameters, seed, _barracudaModel);
+            _tensorApplier = new TensorApplier(brainParameters, seed, _barracudaModel);
 #endif
         }
         
