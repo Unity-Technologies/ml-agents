@@ -1,13 +1,24 @@
 import numpy as np
 
-from mlagents.trainers.components import RewardSignal
+from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.policy import Policy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
 class GAILSignal(RewardSignal):
-    def __init__(self, policy: Policy, h_size, lr, demo_path, signal_strength):
+    def __init__(
+        self,
+        policy: Policy,
+        strength,
+        gamma,
+        demo_path,
+        num_epoch=3,
+        encoding_size=128,
+        learning_rate=3e-4,
+        max_batches=10,
+    ):
         """
         The Gail Reward signal generator.
         :param policy: The policy of the learning model
@@ -17,12 +28,15 @@ class GAILSignal(RewardSignal):
         :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter
         """
-        super().__init__()
         self.policy = policy
-        self.strength = signal_strength
+        self.strength = strength
+        self.gamma = gamma
         self.stat_name = "Policy/GAIL Reward"
         self.value_name = "Policy/GAIL Value Estimate"
-        self.model = GAILModel(policy.model, h_size, lr, 64)
+        self.num_epoch = num_epoch
+        self.max_batches = max_batches
+
+        self.model = GAILModel(policy.model, encoding_size, learning_rate, 64)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
@@ -57,7 +71,16 @@ class GAILSignal(RewardSignal):
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
         return scaled_reward, unscaled_reward
 
-    def update(self, policy_buffer, n_sequences=32, max_batches=100):
+    @classmethod
+    def check_config(cls, config_dict):
+        """
+        Checks the config and throw an exception if a hyperparameter is missing. GAIL requires strength and gamma 
+        at minimum. 
+        """
+        param_keys = ["strength", "gamma", "demo_path"]
+        super().check_config(config_dict, param_keys)
+
+    def update(self, policy_buffer, n_sequences=32, max_batches=10):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
@@ -83,14 +106,14 @@ class GAILSignal(RewardSignal):
         zme = []
         zmp = []
         # end for reporting
-        n_epoch = 3
-        for epoch in range(n_epoch):
+        n_epoch = self.num_epoch
+        for _epoch in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
             policy_buffer.update_buffer.shuffle()
-            if max_batches == 0:
+            if self.max_batches == 0:
                 num_batches = possible_batches
             else:
-                num_batches = min(possible_batches, max_batches)
+                num_batches = min(possible_batches, self.max_batches)
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
                 policy_update_buffer = policy_buffer.update_buffer

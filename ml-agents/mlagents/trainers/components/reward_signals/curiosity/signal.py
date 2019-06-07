@@ -1,11 +1,11 @@
 import numpy as np
-from mlagents.trainers.components import RewardSignal
-from mlagents.trainers.components.curiosity.model import CuriosityModel
+from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.policy import Policy
 
 
 class CuriositySignal(RewardSignal):
-    def __init__(self, policy: Policy, encoding_size, signal_strength):
+    def __init__(self, policy: Policy, strength, gamma, encoding_size=128):
         """
         Creates the Curiosity reward generator
         :param policy: The Learning Policy
@@ -14,7 +14,8 @@ class CuriositySignal(RewardSignal):
         reward multiplied by the strength parameter
         """
         self.policy = policy
-        self.strength = signal_strength
+        self.strength = strength
+        self.gamma = gamma
         self.stat_name = "Policy/Curiosity Reward"
         self.value_name = "Policy/Curiosity Value Estimate"
         self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
@@ -59,6 +60,15 @@ class CuriositySignal(RewardSignal):
             unscaled_reward * float(self.has_updated) * self.strength, 0, 1
         )
         return scaled_reward, unscaled_reward
+
+    @classmethod
+    def check_config(cls, config_dict):
+        """
+        Checks the config and throw an exception if a hyperparameter is missing. Curiosity requires strength,
+        gamma, and encoding size at minimum.
+        """
+        param_keys = ["strength", "gamma", "encoding_size"]
+        super().check_config(config_dict, param_keys)
 
     def update(self, mini_batch, num_sequences):
         """

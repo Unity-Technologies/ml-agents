@@ -4,10 +4,11 @@ import numpy as np
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.components.gail import GAILSignal
-from mlagents.trainers.components.curiosity import CuriositySignal
-from mlagents.trainers.components.extrinsic import ExtrinsicSignal
-from mlagents.trainers.components.entropy import EntropySignal
+from mlagents.trainers.components.reward_signals.reward_signal_factory import create_reward_signal
+# from mlagents.trainers.components.gail import GAILSignal
+# from mlagents.trainers.components.curiosity import CuriositySignal
+# from mlagents.trainers.components.extrinsic import ExtrinsicSignal
+# from mlagents.trainers.components.entropy import EntropySignal
 from mlagents.trainers.components.bc import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -25,9 +26,8 @@ class PPOPolicy(Policy):
         """
         super().__init__(seed, brain, trainer_params)
 
-        reward_strengths = dict(
-            zip(trainer_params["reward_signals"], trainer_params["reward_strengths"])
-        )
+        reward_signal_configs = trainer_params["reward_signals"]
+
         self.reward_signals = {}
         with self.graph.as_default():
             self.model = PPOModel(
@@ -42,36 +42,14 @@ class PPOPolicy(Policy):
                 num_layers=int(trainer_params["num_layers"]),
                 m_size=self.m_size,
                 seed=seed,
-                stream_names=list(reward_strengths.keys()),
+                stream_names=list(reward_signal_configs.keys()),
             )
             self.model.create_ppo_optimizer()
 
-            # Initialize Components
-            if "extrinsic" in reward_strengths.keys():
-                self.reward_signals["extrinsic"] = ExtrinsicSignal(
-                    reward_strengths["extrinsic"]
-                )
-            if "curiosity" in reward_strengths.keys():
-                encoding_size = float(trainer_params["curiosity_enc_size"])
-                curiosity_signal = CuriositySignal(
-                    policy=self,
-                    signal_strength=reward_strengths["curiosity"],
-                    encoding_size=encoding_size,
-                )
-                self.reward_signals["curiosity"] = curiosity_signal
-            if "gail" in reward_strengths.keys():
-                gail_signal = GAILSignal(
-                    self,
-                    int(trainer_params["hidden_units"]),
-                    float(trainer_params["learning_rate"]),
-                    trainer_params["demo_path"],
-                    reward_strengths["gail"],
-                )
-                self.reward_signals["gail"] = gail_signal
-            if "entropy" in reward_strengths.keys():
-                self.reward_signals["entropy"] = EntropySignal(
-                    self, reward_strengths["entropy"]
-                )
+            # Create reward signals
+            for _rsignal in reward_signal_configs.keys():
+                self.reward_signals[_rsignal] = create_reward_signal(self, _rsignal, reward_signal_configs[_rsignal])
+
             # BC trainer is not a reward signal
             if "pretraining" in trainer_params:
                 self.bc_trainer = BCTrainer(

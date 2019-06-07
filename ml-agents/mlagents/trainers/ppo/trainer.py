@@ -53,13 +53,8 @@ class PPOTrainer(Trainer):
             "curiosity_enc_size",
             "model_path",
             "reward_signals",
-            "reward_strengths",
-            "gammas",
         ]
-        self.valid_reward_signals = ["extrinsic", "gail", "entropy", "curiosity"]
-
         self.check_param_keys()
-        self.check_rewards_keys(trainer_parameters)
         self.check_demo_keys(trainer_parameters)
         self.use_curiosity = "curiosity" in trainer_parameters["reward_signals"]
         self.use_gail = "gail" in trainer_parameters["reward_signals"]
@@ -73,9 +68,7 @@ class PPOTrainer(Trainer):
             trainer_parameters["reward_signals"].append("extrinsic")
             trainer_parameters["gammas"].append(0.0)
             trainer_parameters["reward_strengths"].append(0.0)
-        self.gamma_parameters = dict(
-            zip(trainer_parameters["reward_signals"], trainer_parameters["gammas"])
-        )
+
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
@@ -161,33 +154,6 @@ class PPOTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def check_rewards_keys(self, trainer_parameters: dict):
-        """
-        Checks if the reward_signals, reward_strengths and gammas hyperparamters have consistent length
-        and that the values of reward_signals are valid.
-        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
-        """
-        if len(trainer_parameters["reward_signals"]) != len(
-            trainer_parameters["reward_strengths"]
-        ):
-            raise UnityTrainerException(
-                "The length of the reward_signals Hyperparameter must be equal to the length of "
-                "the reward_strengths Hyperparameter"
-            )
-        if len(trainer_parameters["reward_signals"]) != len(
-            trainer_parameters["gammas"]
-        ):
-            raise UnityTrainerException(
-                "The length of the reward_signals Hyperparameter must be equal to the length of "
-                "the gammas Hyperparameter"
-            )
-        for signal_name in trainer_parameters["reward_signals"]:
-            if signal_name not in self.valid_reward_signals:
-                raise UnityTrainerException(
-                    "Unknown reward signal {} was given as Hyperparameter. ".format(
-                        signal_name
-                    )
-                )
 
     def check_demo_keys(self, trainer_parameters: dict):
         """
@@ -448,7 +414,7 @@ class PPOTrainer(Trainer):
                         rewards=local_rewards,
                         value_estimates=local_value_estimates,
                         value_next=bootstrap_value,
-                        gamma=self.gamma_parameters[name],
+                        gamma=self.policy.reward_signals[name].gamma,
                         lambd=self.trainer_parameters["lambd"],
                     )
                     local_return = local_advantage + local_value_estimates
