@@ -80,16 +80,15 @@ class GAILSignal(RewardSignal):
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, policy_buffer, n_sequences=32, max_batches=10):
+    def update(self, policy_buffer, num_sequences=32):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
-        :param n_sequences: The number of sequences used in each mini batch.
-        :param max_batches: The maximum number of batches to use per update.
+        :param n_sequences: The total (demo + environment) number of sequences used in each mini batch.
         :return: The loss of the update.
         """
         batch_losses = []
-        n_sequences = n_sequences // 2
+        n_sequences = num_sequences // 2
         possible_demo_batches = (
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
@@ -156,8 +155,8 @@ class GAILSignal(RewardSignal):
             np.mean(zmp),
             np.mean(zlss),
         )
-        # end for reporting
-        return np.mean(batch_losses)
+        update_stats = {"Losses/GAIL Loss": np.mean(batch_losses)}
+        return update_stats
 
     def _update_batch(self, mini_batch_demo, mini_batch_policy):
         """

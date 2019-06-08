@@ -56,6 +56,10 @@ class Trainer(object):
                     "The hyper-parameter {0} could not be found for the {1} trainer of "
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
+        if not self.trainer_parameters["reward_signals"]:
+            raise UnityTrainerException(
+                "No reward signals were defined. You must define at least one."
+            )
 
     @property
     def parameters(self):
@@ -191,20 +195,22 @@ class Trainer(object):
                 if self.is_training and self.get_step <= self.get_max_steps
                 else "Not Training."
             )
-            if len(self.stats["Environment/Extrinsic Reward"]) > 0:
-                mean_reward = np.mean(self.stats["Environment/Extrinsic Reward"])
+            if len(self.stats["Environment/Cumulative Reward"]) > 0:
+                mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
+                std_rward = np.std(self.stats["Environment/Cumulative Reward"])
+
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
                     "Mean "
-                    "Reward: {"
-                    ":0.3f}. Std of Reward: {:0.3f}. {}".format(
+                    "Reward: {:0.3f}"
+                    ". Std of Reward: {:0.3f}. {}".format(
                         self.run_id,
                         self.brain_name,
                         min(self.get_step, self.get_max_steps),
                         delta_train_start,
                         mean_reward,
-                        np.std(self.stats["Environment/Extrinsic Reward"]),
+                        std_rward,
                         is_training,
                     )
                 )

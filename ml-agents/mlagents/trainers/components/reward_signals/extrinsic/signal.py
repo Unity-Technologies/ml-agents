@@ -11,7 +11,7 @@ class ExtrinsicSignal(RewardSignal):
         :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter
         """
-        self.stat_name = "Environment/Extrinsic Reward"
+        self.stat_name = "Policy/Extrinsic Reward"
         self.value_name = "Policy/Extrinsic Value Estimate"
         self.strength = strength
         self.gamma = gamma
@@ -29,3 +29,9 @@ class ExtrinsicSignal(RewardSignal):
         unscaled_reward = np.array(next_info.rewards)
         scaled_reward = self.strength * unscaled_reward
         return scaled_reward, unscaled_reward
+
+    def update(self, training_buffer, num_sequences):
+        """ 
+        This method does nothing, as there is nothing to update.
+        """
+        return {}

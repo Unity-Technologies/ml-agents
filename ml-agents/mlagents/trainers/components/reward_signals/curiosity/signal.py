@@ -5,7 +5,7 @@ from mlagents.trainers.policy import Policy
 
 
 class CuriositySignal(RewardSignal):
-    def __init__(self, policy: Policy, strength, gamma, encoding_size=128):
+    def __init__(self, policy: Policy, strength, gamma, encoding_size=128, num_epoch=3):
         """
         Creates the Curiosity reward generator
         :param policy: The Learning Policy
@@ -19,6 +19,7 @@ class CuriositySignal(RewardSignal):
         self.stat_name = "Policy/Curiosity Reward"
         self.value_name = "Policy/Curiosity Value Estimate"
         self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
+        self.num_epoch = num_epoch
         self.update_dict = {
             "forward_loss": self.model.forward_loss,
             "inverse_loss": self.model.inverse_loss,
@@ -70,7 +71,36 @@ class CuriositySignal(RewardSignal):
         param_keys = ["strength", "gamma", "encoding_size"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, mini_batch, num_sequences):
+    def update(self, training_buffer, num_sequences):
+        """ 
+        Updates Curiosity model using training buffer. Divides training buffer into mini batches and performs
+        gradient descent. 
+        :param training_buffer: Training buffer. 
+        :param num_sequences: Number of sequences in the training buffer.
+        :return: Dict of stats that should be reported to Tensorboard.
+        """
+        forward_total, inverse_total = [], []
+        for _ in range(self.num_epoch):
+            training_buffer.update_buffer.shuffle()
+            buffer = training_buffer.update_buffer
+            for l in range(
+                len(training_buffer.update_buffer["actions"]) // num_sequences
+            ):
+                start = l * num_sequences
+                end = (l + 1) * num_sequences
+                run_out_curio = self._update_batch(
+                    buffer.make_mini_batch(start, end), num_sequences
+                )
+                inverse_total.append(run_out_curio["inverse_loss"])
+                forward_total.append(run_out_curio["forward_loss"])
+
+        update_stats = {
+            "Losses/Curiosity Forward Loss": np.mean(forward_total),
+            "Losses/Curiosity Inverse Loss": np.mean(inverse_total),
+        }
+        return update_stats
+
+    def _update_batch(self, mini_batch, num_sequences):
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
