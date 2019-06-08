@@ -1,14 +1,14 @@
 import logging
 import numpy as np
 
-from mlagents.trainers.ppo.models import PPOModel
+from mlagents.trainers.ppo.models import PPOModel, PPOMultiGPUModel
 from mlagents.trainers.policy import Policy
 
 logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(Policy):
-    def __init__(self, seed, brain, trainer_params, is_training, load):
+    def __init__(self, seed, brain, trainer_params, is_training, load, devices):
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
@@ -22,7 +22,7 @@ class PPOPolicy(Policy):
         self.use_curiosity = bool(trainer_params["use_curiosity"])
 
         with self.graph.as_default():
-            self.model = PPOModel(
+            self.multi_model = PPOMultiGPUModel(
                 brain,
                 lr=float(trainer_params["learning_rate"]),
                 h_size=int(trainer_params["hidden_units"]),
@@ -37,7 +37,9 @@ class PPOPolicy(Policy):
                 curiosity_strength=float(trainer_params["curiosity_strength"]),
                 curiosity_enc_size=float(trainer_params["curiosity_enc_size"]),
                 seed=seed,
+                devices=devices
             )
+            self.model = self.multi_model.towers[0]
 
         if load:
             self._load_graph()
@@ -60,9 +62,9 @@ class PPOPolicy(Policy):
             self.inference_dict["update_variance"] = self.model.update_variance
 
         self.update_dict = {
-            "value_loss": self.model.value_loss,
-            "policy_loss": self.model.policy_loss,
-            "update_batch": self.model.update_batch,
+            "value_loss": self.multi_model.value_loss,
+            "policy_loss": self.multi_model.policy_loss,
+            "update_batch": self.multi_model.update_batch,
         }
         if self.use_curiosity:
             self.update_dict["forward_loss"] = self.model.forward_loss
@@ -100,71 +102,72 @@ class PPOPolicy(Policy):
             run_out["random_normal_epsilon"] = epsilon
         return run_out
 
-    def update(self, mini_batch, num_sequences):
+    def update(self, mini_batches, num_sequences):
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
         :param mini_batch: Experience batch.
         :return: Output from update process.
         """
-        feed_dict = {
-            self.model.batch_size: num_sequences,
-            self.model.sequence_length: self.sequence_length,
-            self.model.mask_input: mini_batch["masks"].flatten(),
-            self.model.returns_holder: mini_batch["discounted_returns"].flatten(),
-            self.model.old_value: mini_batch["value_estimates"].flatten(),
-            self.model.advantage: mini_batch["advantages"].reshape([-1, 1]),
-            self.model.all_old_log_probs: mini_batch["action_probs"].reshape(
-                [-1, sum(self.model.act_size)]
-            ),
-        }
-        if self.use_continuous_act:
-            feed_dict[self.model.output_pre] = mini_batch["actions_pre"].reshape(
-                [-1, self.model.act_size[0]]
-            )
-            feed_dict[self.model.epsilon] = mini_batch["random_normal_epsilon"].reshape(
-                [-1, self.model.act_size[0]]
-            )
-        else:
-            feed_dict[self.model.action_holder] = mini_batch["actions"].reshape(
-                [-1, len(self.model.act_size)]
-            )
-            if self.use_recurrent:
-                feed_dict[self.model.prev_action] = mini_batch["prev_action"].reshape(
-                    [-1, len(self.model.act_size)]
+        feed_dict = {}
+        assert(len(mini_batches) == len(self.multi_model.towers))
+        for mini_batch, tower in zip(mini_batches, self.multi_model.towers):
+            feed_dict[tower.batch_size] = num_sequences
+            feed_dict[tower.sequence_length] = self.sequence_length
+            feed_dict[tower.mask_input] = mini_batch["masks"].flatten()
+            feed_dict[tower.returns_holder] = mini_batch["discounted_returns"].flatten()
+            feed_dict[tower.old_value] = mini_batch["value_estimates"].flatten()
+            feed_dict[tower.advantage] = mini_batch["advantages"].reshape([-1, 1])
+            feed_dict[tower.all_old_log_probs] = mini_batch["action_probs"].reshape(
+                    [-1, sum(tower.act_size)])
+            if self.use_continuous_act:
+                feed_dict[tower.output_pre] = mini_batch["actions_pre"].reshape(
+                    [-1, tower.act_size[0]]
                 )
-            feed_dict[self.model.action_masks] = mini_batch["action_mask"].reshape(
-                [-1, sum(self.brain.vector_action_space_size)]
-            )
-        if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, self.vec_obs_size]
-            )
-            if self.use_curiosity:
-                feed_dict[self.model.next_vector_in] = mini_batch[
-                    "next_vector_in"
-                ].reshape([-1, self.vec_obs_size])
-        if self.model.vis_obs_size > 0:
-            for i, _ in enumerate(self.model.visual_in):
-                _obs = mini_batch["visual_obs%d" % i]
-                if self.sequence_length > 1 and self.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
-                else:
-                    feed_dict[self.model.visual_in[i]] = _obs
-            if self.use_curiosity:
-                for i, _ in enumerate(self.model.visual_in):
-                    _obs = mini_batch["next_visual_obs%d" % i]
+                feed_dict[tower.epsilon] = mini_batch["random_normal_epsilon"].reshape(
+                    [-1, tower.act_size[0]]
+                )
+            else:
+                feed_dict[tower.action_holder] = mini_batch["actions"].reshape(
+                    [-1, len(tower.act_size)]
+                )
+                if self.use_recurrent:
+                    feed_dict[tower.prev_action] = mini_batch["prev_action"].reshape(
+                        [-1, len(tower.act_size)]
+                    )
+                feed_dict[tower.action_masks] = mini_batch["action_mask"].reshape(
+                    [-1, sum(self.brain.vector_action_space_size)]
+                )
+            if self.use_vec_obs:
+                feed_dict[tower.vector_in] = mini_batch["vector_obs"].reshape(
+                    [-1, self.vec_obs_size]
+                )
+                if self.use_curiosity:
+                    feed_dict[tower.next_vector_in] = mini_batch[
+                        "next_vector_in"
+                    ].reshape([-1, self.vec_obs_size])
+            if tower.vis_obs_size > 0:
+                for i, _ in enumerate(tower.visual_in):
+                    _obs = mini_batch["visual_obs%d" % i]
                     if self.sequence_length > 1 and self.use_recurrent:
                         (_batch, _seq, _w, _h, _c) = _obs.shape
-                        feed_dict[self.model.next_visual_in[i]] = _obs.reshape(
-                            [-1, _w, _h, _c]
-                        )
+                        feed_dict[tower.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
                     else:
-                        feed_dict[self.model.next_visual_in[i]] = _obs
-        if self.use_recurrent:
-            mem_in = mini_batch["memory"][:, 0, :]
-            feed_dict[self.model.memory_in] = mem_in
+                        feed_dict[tower.visual_in[i]] = _obs
+                if self.use_curiosity:
+                    for i, _ in enumerate(tower.visual_in):
+                        _obs = mini_batch["next_visual_obs%d" % i]
+                        if self.sequence_length > 1 and self.use_recurrent:
+                            (_batch, _seq, _w, _h, _c) = _obs.shape
+                            feed_dict[tower.next_visual_in[i]] = _obs.reshape(
+                                [-1, _w, _h, _c]
+                            )
+                        else:
+                            feed_dict[tower.next_visual_in[i]] = _obs
+            if self.use_recurrent:
+                mem_in = mini_batch["memory"][:, 0, :]
+                feed_dict[tower.memory_in] = mem_in
+
         self.has_updated = True
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out

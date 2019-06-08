@@ -1,10 +1,107 @@
 import logging
 import numpy as np
+import sys
 
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
 
+# Variable scope in which created variables will be placed under
+TOWER_SCOPE_NAME = "tower"
+
 logger = logging.getLogger("mlagents.trainers")
+
+
+class PPOMultiGPUModel(object):
+    def __init__(self,
+        brain,
+        lr=1e-4,
+        h_size=128,
+        epsilon=0.2,
+        beta=1e-3,
+        max_step=5e6,
+        normalize=False,
+        use_recurrent=False,
+        num_layers=2,
+        m_size=None,
+        use_curiosity=False,
+        curiosity_strength=0.01,
+        curiosity_enc_size=128,
+        seed=0,
+        devices=['/cpu:0']
+    ):
+        ''' 
+        A multi GPU wrapper for PPO model
+        '''
+        self.towers = []
+        for device in devices:
+            with tf.device(device):
+                with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE) as scope:
+                    self.towers.append(PPOModel(brain,
+                                lr=lr,
+                                h_size=h_size,
+                                epsilon=epsilon,
+                                beta=beta,
+                                max_step=max_step,
+                                normalize=normalize,
+                                use_recurrent=use_recurrent,
+                                num_layers=num_layers,
+                                m_size=m_size,
+                                use_curiosity=use_curiosity,
+                                curiosity_strength=curiosity_strength,
+                                curiosity_enc_size=curiosity_enc_size,
+                                seed=seed))
+
+        self.value_loss = tf.reduce_mean(tf.stack([t.value_loss for t in self.towers]))
+        self.policy_loss = tf.reduce_mean(tf.stack([t.policy_loss for t in self.towers]))
+
+        self.optimizer = self.towers[0].optimizer
+        avg_grad = self.average_gradients([t.grads for t in self.towers])
+        with tf.control_dependencies([print_value_op, print_value_loss_op, print_policy_op, print_policy_loss_op]):
+            self.update_batch = self.optimizer.apply_gradients(avg_grad)
+
+    def average_gradients(self, tower_grads):
+        """Averages gradients across towers.
+        Calculate the average gradient for each shared variable across all towers.
+        Note that this function provides a synchronization point across all towers.
+        Args:
+            tower_grads: List of lists of (gradient, variable) tuples. The outer
+                list is over individual gradients. The inner list is over the
+                gradient calculation for each tower.
+        Returns:
+           List of pairs of (gradient, variable) where the gradient has been
+               averaged across all towers.
+        TODO(ekl): We could use NCCL if this becomes a bottleneck.
+        """
+
+        average_grads = []
+        for grad_and_vars in zip(*tower_grads):
+
+            # Note that each grad_and_vars looks like the following:
+            #   ((grad0_gpu0, var0_gpu0), ... , (grad0_gpuN, var0_gpuN))
+            grads = []
+            for g, _ in grad_and_vars:
+                if g is not None:
+                    # Add 0 dimension to the gradients to represent the tower.
+                    expanded_g = tf.expand_dims(g, 0)
+
+                    # Append on a 'tower' dimension which we will average over below.
+                    grads.append(expanded_g)
+
+            if not grads:
+                continue
+
+            # Average over the 'tower' dimension.
+            grad = tf.concat(axis=0, values=grads)
+            grad = tf.reduce_mean(grad, 0)
+
+            # Keep in mind that the Variables are redundant because they are shared
+            # across towers. So .. we will just return the first tower's pointer to
+            # the Variable.
+            v = grad_and_vars[0][1]
+            grad_and_var = (grad, v)
+            average_grads.append(grad_and_var)
+
+        return average_grads
 
 
 class PPOModel(LearningModel):
@@ -251,7 +348,7 @@ class PPOModel(LearningModel):
         decay_beta = tf.train.polynomial_decay(
             beta, self.global_step, max_step, 1e-5, power=1.0
         )
-        optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
 
         clipped_value_estimate = self.old_value + tf.clip_by_value(
             tf.reduce_sum(value, axis=1) - self.old_value, -decay_epsilon, decay_epsilon
@@ -287,4 +384,6 @@ class PPOModel(LearningModel):
 
         if self.use_curiosity:
             self.loss += 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
-        self.update_batch = optimizer.minimize(self.loss)
+
+        self.grads = self.optimizer.compute_gradients(self.loss)
+        # self.update_batch = optimizer.minimize(self.loss)
