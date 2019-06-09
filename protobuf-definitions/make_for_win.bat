@@ -3,7 +3,7 @@ rem variables
 rem GRPC-TOOLS required. Install with `nuget install Grpc.Tools`. 
 rem Then un-comment and replace [DIRECTORY] with location of files.
 rem For example, on Windows, you might have something like:
-rem set COMPILER=Grpc.Tools.1.14.1/tools/windows_x64
+set COMPILER=Grpc.Tools.1.21.0\tools\windows_x64
 
 set SRC_DIR=proto\mlagents\envs\communicator_objects
 set DST_DIR_C=..\UnitySDK\Assets\ML-Agents\Scripts\CommunicatorObjects
@@ -21,8 +21,8 @@ mkdir %DST_DIR_P%\%PYTHON_PACKAGE%
 rem generate proto objects in python and C#
 
 for %%i in (%SRC_DIR%\*.proto) do (
-    protoc --proto_path=proto --csharp_out=%DST_DIR_C% %%i
-    protoc --proto_path=proto --python_out=%DST_DIR_P% %%i
+    %COMPILER%\protoc --proto_path=proto --csharp_out=%DST_DIR_C% %%i
+    %COMPILER%\protoc --proto_path=proto --python_out=%DST_DIR_P% %%i
 )
 
 rem grpc
@@ -30,7 +30,7 @@ rem grpc
 set GRPC=unity_to_external.proto
 
 %COMPILER%\protoc --proto_path=proto --csharp_out %DST_DIR_C% --grpc_out %DST_DIR_C% %SRC_DIR%\%GRPC% --plugin=protoc-gen-grpc=%COMPILER%\grpc_csharp_plugin.exe
-python3 -m grpc_tools.protoc --proto_path=proto --python_out=%DST_DIR_P% --grpc_python_out=%DST_DIR_P% %SRC_DIR%\%GRPC%
+python -m grpc_tools.protoc --proto_path=proto --python_out=%DST_DIR_P% --grpc_python_out=%DST_DIR_P% %SRC_DIR%\%GRPC%
 
 rem Generate the init file for the python module
 rem rm -f $DST_DIR_P/$PYTHON_PACKAGE/__init__.py
