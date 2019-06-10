@@ -47,12 +47,6 @@ PushBlockLearning:
     summary_freq: 2000
     time_horizon: 64
     num_layers: 2
-    reward_signals: 
-     - 'extrinsic'
-    reward_strengths: 
-     - 1.0
-    gammas:
-     - 0.99
 
 SmallWallJumpLearning: 
     max_steps: 1.0e6
