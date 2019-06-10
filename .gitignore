@@ -90,7 +90,7 @@
 *.pytest_cache/
 
 # Ignore compiled protobuf files.
-*/protobuf-definitions/Grpc*
+*Grpc.Tools*
 
 # Ignore PyPi build files.
 dist/
