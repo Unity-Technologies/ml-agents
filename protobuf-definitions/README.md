@@ -9,24 +9,30 @@ Contains relevant definitions needed to generate probobuf files used in [ML-Agen
 
 ## Set-up & Installation
 
+Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
+First we will install protobuf and grpcio-tools via your terminal.
+**Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
+
 `pip install protobuf==3.6.0 --force`
 
-`pip install grpcio-tools`
+`pip install grpcio-tools==1.11.1`
 
-`nuget install Grpc.Tools` into known directory.
+If you don't have it already, download the latest version of [nuget](https://www.nuget.org/downloads).
+Navigate to your installation of nuget and run the following: 
+
+`nuget install Grpc.Tools -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
 
 ### Installing Protobuf Compiler
 
 On Mac: `brew install protobuf`
 
-On Windows & Linux: [See here](https://github.com/google/protobuf/blob/master/src/README.md).
-
 ## Running
 
-1. Install pre-requisites.
-2. Un-comment line 4 in `make.bat`, and set to correct Grpc.Tools sub-directory.
-3. Run `make.bat`
-4. In the generated `UnityToExternalGrpc.cs` file in the `UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects` folder, you will need to add the following to the beginning of the file
+1. Open a terminal. **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
+2. Un-comment line 6 in `make.bat` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
+3. Run the `.bat` from the terminal by navigating to `$MLAGENTS_ROOT\protobuf-definitions` and entering `make.bat` (for Windows, use `make_for_win.bat`)
+4. Note any errors generated that may result from setting the wrong directory in step 2.
+5. In the generated `UnityToExternalGrpc.cs` file in the `$MLAGENTS_ROOT/UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects` folder, you will need to add the following to the beginning of the file:
 
 ```csharp
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
