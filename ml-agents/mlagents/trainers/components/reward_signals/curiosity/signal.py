@@ -4,7 +4,7 @@ from mlagents.trainers.components.reward_signals.curiosity.model import Curiosit
 from mlagents.trainers.policy import Policy
 
 
-class CuriositySignal(RewardSignal):
+class CuriosityRewardSignal(RewardSignal):
     def __init__(self, policy: Policy, strength, gamma, encoding_size=128, num_epoch=3):
         """
         Creates the Curiosity reward generator

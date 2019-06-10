@@ -1,1 +1,1 @@
-from .signal import CuriositySignal
+from .signal import CuriosityRewardSignal

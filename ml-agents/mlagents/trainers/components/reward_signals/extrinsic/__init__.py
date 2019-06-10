@@ -1,1 +1,1 @@
-from .signal import ExtrinsicSignal
+from .signal import ExtrinsicRewardSignal

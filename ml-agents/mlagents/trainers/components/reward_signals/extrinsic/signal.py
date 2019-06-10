@@ -4,12 +4,14 @@ from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.policy import Policy
 
 
-class ExtrinsicSignal(RewardSignal):
+class ExtrinsicRewardSignal(RewardSignal):
     def __init__(self, policy: Policy, strength, gamma):
         """
         The extrinsic reward generator. Returns the reward received by the environment
-        :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
-        reward multiplied by the strength parameter
+        :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to. 
+        :param strength: The strength of the reward. The reward's raw value will be multiplied by this value. 
+        :param gamma: The time discounting factor used for this reward. 
+        :return: An ExtrinsicRewardSignal object. 
         """
         self.stat_name = "Policy/Extrinsic Reward"
         self.value_name = "Policy/Extrinsic Value Estimate"

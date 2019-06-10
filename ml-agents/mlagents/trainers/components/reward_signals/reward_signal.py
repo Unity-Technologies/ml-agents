@@ -12,18 +12,25 @@ class RewardSignal(object):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to, 
         the reward strength, and the gamma (discount factor.)
+        :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to. 
+        :param strength: The strength of the reward. The reward's raw value will be multiplied by this value. 
+        :param gamma: The time discounting factor used for this reward. 
+        :return: A RewardSignal object. 
         """
-        raise UnityTrainerException("The initialize for this RewardSignal was not implemented.")
+        raise UnityTrainerException(
+            "The initialize for this RewardSignal was not implemented."
+        )
 
     def evaluate(self, current_info, next_info):
         """
         Evaluates the reward for the agents present in current_info given the next_info
-        :current_info: The current BrainInfo. 
-        :next_info: The BrainInfo from the next timestep.
+        :param current_info: The current BrainInfo. 
+        :param next_info: The BrainInfo from the next timestep.
         :return: a tuple of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
-        raise UnityTrainerException("The evaluate for this RewardSignal was not implemented.")
-
+        raise UnityTrainerException(
+            "The evaluate for this RewardSignal was not implemented."
+        )
 
     def update(self, training_buffer, n_sequences):
         """
@@ -32,7 +39,9 @@ class RewardSignal(object):
         :param n_sequences: The number of sequences in the training buffer.
         :return: A dict of {"Stat Name": stat} to be added to Tensorboard
         """
-        raise UnityTrainerException("The update for this RewardSignal was not implemented.")
+        raise UnityTrainerException(
+            "The update for this RewardSignal was not implemented."
+        )
 
     @classmethod
     def check_config(cls, config_dict, param_keys=[]):

@@ -5,10 +5,6 @@ from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import create_reward_signal
-# from mlagents.trainers.components.gail import GAILSignal
-# from mlagents.trainers.components.curiosity import CuriositySignal
-# from mlagents.trainers.components.extrinsic import ExtrinsicSignal
-# from mlagents.trainers.components.entropy import EntropySignal
 from mlagents.trainers.components.bc import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")

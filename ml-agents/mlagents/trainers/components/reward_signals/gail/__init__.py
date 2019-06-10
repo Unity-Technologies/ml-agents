@@ -1,1 +1,1 @@
-from .signal import GAILSignal
+from .signal import GAILRewardSignal
