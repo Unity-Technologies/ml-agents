@@ -50,7 +50,6 @@ class PPOTrainer(Trainer):
             "use_recurrent",
             "summary_path",
             "memory_size",
-            "curiosity_enc_size",
             "model_path",
             "reward_signals",
         ]
