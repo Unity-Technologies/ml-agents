@@ -25,7 +25,7 @@ class BCTrainer(Trainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The The identifier of the current run
+        :param run_id: The identifier of the current run
         """
         super(BCTrainer, self).__init__(brain, trainer_parameters, training, run_id)
         self.policy = BCPolicy(seed, brain, trainer_parameters, load)
