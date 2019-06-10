@@ -429,6 +429,8 @@ class PPOTrainer(Trainer):
                             self.stats["Environment/Cumulative Reward"].append(
                                 rewards.get(agent_id, 0)
                             )
+                            rewards[agent_id] = 0
+                            self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                         else:
                             self.stats[
                                 self.policy.reward_signals[name].stat_name
