@@ -29,7 +29,7 @@ On Mac: `brew install protobuf`
 ## Running
 
 1. Open a terminal. **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
-2. Un-comment line 6 in `make.bat` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
+2. Un-comment line 7 in `make.bat` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
 3. Run the `.bat` from the terminal by navigating to `$MLAGENTS_ROOT\protobuf-definitions` and entering `make.bat` (for Windows, use `make_for_win.bat`)
 4. Note any errors generated that may result from setting the wrong directory in step 2.
 5. In the generated `UnityToExternalGrpc.cs` file in the `$MLAGENTS_ROOT/UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects` folder, you will need to add the following to the beginning of the file:
