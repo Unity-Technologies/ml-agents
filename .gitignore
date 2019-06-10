@@ -90,9 +90,7 @@
 *.pytest_cache/
 
 # Ignore compiled protobuf files.
-ml-agents-protobuf/cs
-ml-agents-protobuf/python
-ml-agents-protobuf/Grpc*
+*/protobuf-definitions/Grpc*
 
 # Ignore PyPi build files.
 dist/
