@@ -35,17 +35,14 @@ def dummy_config():
         use_recurrent: false
         memory_size: 8
         pretraining:
-            demo_path: ./demos/ExpertPyramid.demo 
-            pretraining_strength: 1.0
-            pretraining_steps: 10000000
-            curiosity_strength: 0.0
-        curiosity_enc_size: 1
+          demo_path: ./demos/ExpertPyramid.demo 
+          pretraining_strength: 1.0
+          pretraining_steps: 10000000
+          curiosity_strength: 0.0
         reward_signals:
-          - extrinsic
-        reward_strengths:
-          - 1.0
-        gammas:
-          - 0.99
+          extrinsic:
+            strength: 1.0
+            gamma: 0.99
         """
     )
 

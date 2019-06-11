@@ -38,49 +38,32 @@ def dummy_config():
         curiosity_strength: 0.0
         curiosity_enc_size: 1
         reward_signals:
-          - extrinsic
-        reward_strengths:
-          - 1.0
-        gammas:
-          - 0.99
+          extrinsic:
+            strength: 1.0
+            gamma: 0.99
         """
     )
 
 
-def create_ppo_policy(
-    mock_communicator,
-    mock_launcher,
-    dummy_config,
-    reward_signal,
-    use_rnn,
-    use_discrete,
-    use_visual,
-):
-    tf.reset_default_graph()
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=use_discrete, visual_inputs=int(use_visual)
-    )
-    env = UnityEnvironment(" ")
+@pytest.fixture
+def gail_dummy_config():
+    return {
+        "gail": {
+            "strength": 0.1,
+            "gamma": 0.9,
+            "encoding_size": 128,
+            "demo_path": os.path.dirname(os.path.abspath(__file__)) + "/test.demo",
+        }
+    }
 
-    trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
-    trainer_parameters["model_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    trainer_parameters["reward_signals"].append(reward_signal)
-    trainer_parameters["reward_strengths"].append(0.1)
-    trainer_parameters["gammas"].append(0.9)
-    trainer_parameters["use_recurrent"] = use_rnn
-    trainer_parameters["demo_path"] = (
-        os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
-    )
-    policy = PPOPolicy(
-        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
-    )
-    return env, policy
+
+@pytest.fixture
+def curiosity_dummy_config():
+    return {"curiosity": {"strength": 0.1, "gamma": 0.9, "encoding_size": 128}}
 
 
 def create_ppo_policy_mock(
-    mock_env, dummy_config, reward_signal, use_rnn, use_discrete, use_visual
+    mock_env, dummy_config, reward_signal_config, use_rnn, use_discrete, use_visual
 ):
 
     if not use_visual:
@@ -115,21 +98,16 @@ def create_ppo_policy_mock(
     model_path = env.brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    trainer_parameters["reward_signals"].append(reward_signal)
-    trainer_parameters["reward_strengths"].append(0.1)
-    trainer_parameters["gammas"].append(0.9)
+    trainer_parameters["reward_signals"].update(reward_signal_config)
     trainer_parameters["use_recurrent"] = use_rnn
-    trainer_parameters["demo_path"] = (
-        os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
-    )
     policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False)
     return env, policy
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_cc_evaluate(mock_env, dummy_config):
+def test_gail_cc_evaluate(mock_env, dummy_config, gail_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "gail", False, False, False
+        mock_env, dummy_config, gail_dummy_config, False, False, False
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
@@ -142,9 +120,9 @@ def test_gail_cc_evaluate(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_dc_evaluate(mock_env, dummy_config):
+def test_gail_dc_evaluate(mock_env, dummy_config, gail_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "gail", False, True, False
+        mock_env, dummy_config, gail_dummy_config, False, True, False
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
@@ -157,9 +135,9 @@ def test_gail_dc_evaluate(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_visual_evaluate(mock_env, dummy_config):
+def test_gail_visual_evaluate(mock_env, dummy_config, gail_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "gail", False, False, True
+        mock_env, dummy_config, gail_dummy_config, False, False, True
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
@@ -172,9 +150,9 @@ def test_gail_visual_evaluate(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_rnn_evaluate(mock_env, dummy_config):
+def test_gail_rnn_evaluate(mock_env, dummy_config, gail_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "gail", True, False, False
+        mock_env, dummy_config, gail_dummy_config, True, False, False
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
@@ -187,9 +165,9 @@ def test_gail_rnn_evaluate(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_cc_evaluate(mock_env, dummy_config):
+def test_curiosity_cc_evaluate(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "curiosity", False, False, False
+        mock_env, dummy_config, curiosity_dummy_config, False, False, False
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
@@ -202,9 +180,9 @@ def test_curiosity_cc_evaluate(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_dc_evaluate(mock_env, dummy_config):
+def test_curiosity_dc_evaluate(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "curiosity", False, True, False
+        mock_env, dummy_config, curiosity_dummy_config, False, True, False
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
@@ -217,9 +195,9 @@ def test_curiosity_dc_evaluate(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_visual_evaluate(mock_env, dummy_config):
+def test_curiosity_visual_evaluate(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "curiosity", False, False, True
+        mock_env, dummy_config, curiosity_dummy_config, False, False, True
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
@@ -232,9 +210,9 @@ def test_curiosity_visual_evaluate(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_rnn_evaluate(mock_env, dummy_config):
+def test_curiosity_rnn_evaluate(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, "curiosity", True, False, False
+        mock_env, dummy_config, curiosity_dummy_config, True, False, False
     )
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
