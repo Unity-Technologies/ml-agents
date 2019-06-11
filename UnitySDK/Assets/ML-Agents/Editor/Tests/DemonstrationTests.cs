@@ -14,9 +14,9 @@ namespace MLAgents.Tests
         [Test]
         public void TestSanitization()
         {
-            const string dirtyString = "abc123&!@";
+            const string dirtyString = "abc1234567&!@";
             const string knownCleanString = "abc123";
-            var cleanString = DemonstrationRecorder.SanitizeName(dirtyString);
+            var cleanString = DemonstrationRecorder.SanitizeName(dirtyString, 6);
             Assert.AreNotEqual(dirtyString, cleanString);
             Assert.AreEqual(cleanString, knownCleanString);
         }
