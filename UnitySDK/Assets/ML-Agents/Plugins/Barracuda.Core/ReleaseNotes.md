@@ -1,5 +1,50 @@
 # Release notes
 
+## 0.2.2
+- Added support for --print-supported-ops flag for model converters, now it will print approximate list of supported operations. List of supported ops depends on converter.
+- Added Keras converter as part of distribution.
+- Now compute shaders are loaded only if GPU worker is requested.
+- Fixed bug in MaxPool and AvgPool padding. Issue discovered by Yolo faces network.
+- Fixed bug in Transpose convolution support for C# backend.
+- Fixed TF model conversion with two LSTM cells.
+- Fixed case when strided slice end overflows to zero and thus producing negative range.
+
+## 0.2.1
+- TF importer: fixed ResizeNearestNeighbor aka Upsample2D scaling factor detection.
+- TF importer: optimized node sorting. Should be faster than 0.2.0.
+- TF importer: made detection of actual output node from LSTM/GRU pattern more bullet proof by skipping Const nodes.
+- TF importer: improved InstanceNormalization handling.
+- TF importer: fixed SquareDifference pattern.
+- TF importer: fixed Conv2DBackpropInput (transpose convolution) import. 
+- Fixed Conv2D performance regression on some GPUs.
+- Fixed TextureAsTensorData.Download() to work properly with InterpretDepthAs.Channels.
+- Fixed bug when identity/nop layers would reuse input as an output and later causing premature release of that tensor as part of intermediate data cleanup.
+- Added scale + bias to TenstorToRenderTexture interface, usefull for adjusting network output scale + bias on the fly.
+- Fixed double Dispose issue when worker gets garbage collected.
+
+## 0.2.0
+- Version bumped to 0.2.0 as it brings breaking API changes, for details look below. 
+- Significantly reduced temporary memory allocations by introducing internal allocator support. Now memory is re-used between layer execution as much as possible.
+- Improved small workload performance on CSharp backend
+- Added parallel implementation for multiple activation functions on CSharp backend
+- Added `Peek()` function to `IWorker`, it retains object storage in worker's allocator, useful for quick grabbing of output. If you want to preserve content of output tensor between `Execute()` invocations, then use `Fetch()`.
+- Fixed ESRGAN model conversion (ONNX importer).
+- Fixed Tensor <-> Texture copy for textures/tensors that dimensions are not multiple of 8.
+- Added `Summary()` method to `Worker`. Currently returns allocator information.
+- Tabs to spaces! Aiming at higher salary (https://stackoverflow.blog/2017/06/15/developers-use-spaces-make-money-use-tabs/).
+- Renamed worker type enum members: `CSharp` -> `CSharpRef`, `CSharpFast` -> `CSharp`, `Compute` -> `ComputeRef`, `ComputeFast` -> `Compute`.
+- Implemented new optimized `ComputePrecompiled` worker. This worker caches Compute kernels and state beforehand to reduce CPU overhead. 
+- Added `ExecuteAsync()` to `IWorker` interface, it returns `IEnumerator`, which enables you to control how many layers to schedule per frame (one iteration == one layer).
+- Added `Log` op support on Compute workers.
+- Optimized activation functions and ScaleBias by accessing tensor as continuous array. Gained ~2.0ms on 4 batch MobileNet (MBP2016).
+- Introduced _Loop version of activations to fight 65535 scheduling limit on D3D11.
+- Added .nn as Barracuda model file extension for use in Unity Editor. Also added simple editor importer. Now you can declare serializable fields as NNModel to bind them to .nn asset. ModelLoader.Load() now accepts NNModel as a source.
+- Compute: Reduce reference GPU implementation.
+- TF importer: Expanded Mean support to mean over channels, implemented Pad (as Border2D), implemented SquaredDifference, added InstanceNormalization and LeakyRelu patterns, StridedSlice implementation.
+- TF importer: sort model nodes by dependencies before processing.
+- Fixed ComputeBuffer leak when using Compute and ComputePrecompiled backends.
+- Made to use Conv2D_L1Cached64_RegisterBlock4x4 more often: improves perf ~2x on Vega 16, and ~30% on Nvidia and Intel.
+
 ## 0.1.6
 - Added activation type print in verbose mode
 - Added fast and parallel CPU implementation for Swish, Relu, Add, Sub, Div, Min, Max, Tanh, Exp
@@ -80,3 +125,13 @@
 
 ## 0.1.0
 - First internal build. Due some bugs encountered wasn't published.
+
+#Contributors
+- Renaldas (ReJ) Zioma
+- Mantas Puida
+- Vladimir Oster
+- Martin Sternevald
+- Valdemar Bučilko
+- Kuba Cupisz
+- Povilas Kanapickas
+- Paulius Puodžiūnas

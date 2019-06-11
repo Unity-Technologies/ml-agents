@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Linq;
+using Barracuda;
 using MLAgents.InferenceBrain.Utils;
 
 namespace MLAgents.InferenceBrain
@@ -119,28 +120,28 @@ namespace MLAgents.InferenceBrain
     
     public class BarracudaRecurrentInputGenerator : TensorGenerator.Generator
     {
-        private bool firstHalf = true;
+        private int memoriesCount;
+        private int memoryIndex;
         
-        public BarracudaRecurrentInputGenerator(bool firstHalf)
+        public BarracudaRecurrentInputGenerator(int memoriesCount, int memoryIndex)
         {
-            this.firstHalf = firstHalf;
+            this.memoriesCount = memoriesCount;
+            this.memoryIndex = memoryIndex;
         }
         
         public void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensor.Shape[0] = batchSize;
-            var memorySize = tensor.Shape[tensor.Shape.Length - 1];
+            
+            var memorySize = (int)tensor.Shape[tensor.Shape.Length - 1];
+            
             tensor.Data = new float[batchSize, memorySize];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
-                var memory = agentInfo[agent].memories;
+                var memory = agentInfo[agent].memories;         
 
-                int offset = 0;
-                if (!firstHalf)
-                {
-                    offset = memory.Count - (int)memorySize;
-                }
+                int offset = memorySize * memoryIndex;
                 
                 if (memory == null)
                 {
@@ -260,6 +261,7 @@ namespace MLAgents.InferenceBrain
             var textures = agentInfo.Keys.Select(
                 agent => agentInfo[agent].visualObservations[_index]).ToList();
             tensor.Data = Utilities.TextureToFloatArray(textures, _grayScale);
+            tensor.Shape[0] = textures.Count;
         } 
     } 
 }
