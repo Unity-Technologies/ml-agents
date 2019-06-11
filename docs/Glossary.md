@@ -13,7 +13,7 @@
 * **Editor** - The Unity Editor, which may include any pane (e.g. Hierarchy,
   Scene, Inspector).
 * **Environment** - The Unity scene which contains Agents, Academy, and Brains.
-* **FixedUpdate** - Unity method called each time the the game engine is
+* **FixedUpdate** - Unity method called each time the game engine is
   stepped. ML-Agents logic should be placed here.
 * **Frame** - An instance of rendering the main camera for the display.
   Corresponds to each `Update` call of the game engine.

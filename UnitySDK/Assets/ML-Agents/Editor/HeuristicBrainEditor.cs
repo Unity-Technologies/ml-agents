@@ -47,7 +47,7 @@ namespace MLAgents
                 {
                     Debug.LogError(
                         "Instance of " + brain.decisionScript.name + " couldn't be created. " +
-                        "The the script class needs to derive from Decision.");
+                        "The script class needs to derive from Decision.");
                     brain.decisionScript = null;
                 }
             }

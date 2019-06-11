@@ -97,3 +97,6 @@ ml-agents-protobuf/Grpc*
 # Ignore PyPi build files.
 dist/
 build/
+
+# Python virtual environment
+venv/
