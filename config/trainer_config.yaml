@@ -1,20 +1,22 @@
 default:
-    trainer: ppo
-    batch_size: 1024
-    beta: 5.0e-3
-    buffer_size: 10240
-    epsilon: 0.2
+    trainer: sac
+    batch_size: 128
+    buffer_size: 50000
+    buffer_init_steps: 0
     hidden_units: 128
-    lambd: 0.95
+    init_entcoef: 1.0
     learning_rate: 3.0e-4
     max_steps: 5.0e4
     memory_size: 256
     normalize: false
-    num_epoch: 3
+    num_epoch: 1
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
     summary_freq: 1000
+    tau: 0.005
+    target_update_steps: 1
+    train_interval: 1
     use_recurrent: false
     curiosity_enc_size: 128
     demo_path: None
@@ -26,11 +28,15 @@ default:
      - 0.99
 
 BananaLearning:
+    trainer: sac
     normalize: false
     beta: 0.0
     batch_size: 256
-    buffer_size: 2560
+    buffer_size: 500000
     max_steps: 1.0e5
+    init_entcoef: 0.05
+    num_epoch: 1
+    train_interval: 1
 
 VisualBananaLearning:
     beta: 1.0e-2
@@ -40,98 +46,63 @@ VisualBananaLearning:
     batch_size: 32
     max_steps: 5.0e5
     summary_freq: 1000
-    demo_path: ./demos/VisualBananaHuman.demo 
-    demo_aided:
-     demo_path: ./demos/VisualBananaHuman.demo 
-     demo_strength: 1.0
-     demo_steps: 5000
-    reward_signals: 
-     - 'extrinsic'
-     - 'gail'
-    reward_strength: 
-     - 1.0
-     - 0.1
-    gammas:
-     - 0.99
-     - 0.9
 
 BouncerLearning:
     normalize: true
     beta: 0.0
     max_steps: 5.0e5
-    batch_size: 32
-    buffer_size: 512
     num_layers: 2
     hidden_units: 64
     summary_freq: 1000
-    demo_path: ./demos/ExpertBouncer.demo
 
 PushBlockLearning:
     max_steps: 5.0e4
-    batch_size: 128
-    buffer_size: 2048
+    init_entcoef: 0.1
     beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 64
     num_layers: 2
-    demo_path: ./UnitySDK/Assets/Demonstrations/ImperfectPushBlock.demo 
-    pretraining:
-     demo_path: ./UnitySDK/Assets/Demonstrations/ImperfectPushBlock.demo 
-     pretraining_strength: 0.2
-     pretraining_steps: 10000
-    reward_signals: 
-     - 'extrinsic'
-    reward_strength: 
-     - 1.0
-    gammas:
-     - 0.99
 
 SmallWallJumpLearning: 
     max_steps: 1.0e6
-    batch_size: 128
-    buffer_size: 2048
     beta: 5.0e-3
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
+    init_entcoef: 0.1
     num_layers: 2
     normalize: false
 
 BigWallJumpLearning: 
     max_steps: 1.0e6
-    batch_size: 128
-    buffer_size: 2048
     beta: 5.0e-3
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
     num_layers: 2
+    init_entcoef: 0.1
     normalize: false
 
 StrikerLearning:
     max_steps: 5.0e5
     learning_rate: 1e-3
-    batch_size: 128
-    num_epoch: 3
-    buffer_size: 2000
     beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
+    init_entcoef: 0.1
     num_layers: 2
     normalize: false
 
 GoalieLearning:
     max_steps: 5.0e5
     learning_rate: 1e-3
-    batch_size: 320
-    num_epoch: 3
-    buffer_size: 2000
     beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
+    init_entcoef: 0.1
     num_layers: 2
     normalize: false
 
@@ -143,56 +114,11 @@ PyramidsLearning:
     buffer_size: 2048
     hidden_units: 512
     num_layers: 2
-    beta: 0.0
+    init_entcoef: 0.1
     max_steps: 5.0e5
-    num_epoch: 3
+    num_epoch: 1
     sequence_length: 32
-    demo_path: ./demos/PyramidsHuman.demo
-    # demo_aided:
-    #   demo_path: ./demos/PyramidsHuman.demo
-    #   demo_strength: 1.0
-    #   demo_steps: 10000
-    reward_signals: 
-     - 'extrinsic'
-     - 'gail'
-    #  - 'curiosity'
-    reward_strength: 
-     - 1.0
-     - 0.01
-    #  - 0.01
-    gammas:
-     - 0.99
-     - 0.9
     #  - 0.99
-
-PyramidsLearning2:
-    summary_freq: 2000
-    curiosity_enc_size: 256
-    time_horizon: 128
-    batch_size: 128
-    buffer_size: 2048
-    hidden_units: 512
-    num_layers: 2
-    beta: 0.0
-    max_steps: 5.0e5
-    num_epoch: 3
-    sequence_length: 32
-    demo_path: ./demos/ExpertPyramid.demo
-    reward_signals: 
-     - 'extrinsic'
-    #  - 'entropy'
-    #  - 'curiosity'
-     - 'gail'
-    reward_strength: 
-     - 1.0
-    #  - 0.001
-    #  - 0.001
-     - 0.2
-    gammas:
-     - 0.99
-    #  - 0.7
-    #  - 0.7
-     - 0.9
 
 VisualPyramidsLearning:
     curiosity_enc_size: 256
@@ -206,21 +132,18 @@ VisualPyramidsLearning:
     num_epoch: 3
 
 3DBallLearning:
-    trainer: sac
     normalize: false
     demo_path: ./demos/ExpertBall.demo
-    batch_size: 64
-    buffer_size: 12000
+    batch_size: 256
     summary_freq: 1000
     time_horizon: 1000
-    num_epoch: 1
-    lambd: 0.99
-    beta: 0.001
+    hidden_units: 64
+    init_entcoef: 0.5
+    max_steps: 5.0e5
 
 3DBallHardLearning:
     normalize: true
-    batch_size: 1200
-    buffer_size: 12000
+    batch_size: 256
     summary_freq: 1000
     time_horizon: 1000
     max_steps: 5.0e5
@@ -232,53 +155,24 @@ TennisLearning:
 
 CrawlerStaticLearning:
     normalize: true
-    extrinsic_strength: 0.0
-    demo_path: ./UnitySDK/Assets/Demonstrations/Crawler100x.demo 
-    #demo_path: ./demos/CrawlerDemo.demo 
-    num_epoch: 3
+    demo_path: ./demos/Crawler100x.demo
+    num_epoch: 1
+    init_entcoef: 0.3
     time_horizon: 1000
-    batch_size: 1024
-    buffer_size: 20240
+    batch_size: 256
+    train_interval: 1
+    buffer_size: 500000
     max_steps: 1e6
     summary_freq: 3000
-    num_layers: 3
-    hidden_units: 512
-<<<<<<< HEAD
-    demo_aided:
-       demo_path: ./demos/CrawlerDemo2.demo
-       demo_strength: 1.0
-       demo_steps: 10000
-    reward_signals: 
-     - 'extrinsic'
-     - 'gail'
-    #  - 'curiosity'
-    reward_strength: 
-     - 1.0
-     - 0.1
-    #  - 0.01
-=======
-    # demo_aided:
-    #     demo_path: ./UnitySDK/Assets/Demonstrations/Crawler100x.demo 
-    #     demo_strength: 0.2
-    #     demo_steps: 10000
-    reward_signals: 
-     - 'extrinsic'
-     - 'gail'
-    reward_strength: 
-     - 0.0
-     - 0.2
->>>>>>> origin/develop-irl-ervin
-    gammas:
-     - 0.99
-     - 0.9
+    num_layers: 2
+    hidden_units: 128
 
 CrawlerDynamicLearning:
     normalize: true
     beta: 0.0
-    num_epoch: 3
     time_horizon: 1000
-    batch_size: 2024
-    buffer_size: 20240
+    batch_size: 256
+    buffer_size: 500000
     max_steps: 1e5
     summary_freq: 3000
     num_layers: 3
@@ -286,15 +180,13 @@ CrawlerDynamicLearning:
 
 WalkerLearning:
     normalize: true
-    num_epoch: 3
     time_horizon: 1000
-    batch_size: 2048
-    buffer_size: 20480
+    batch_size: 256
+    buffer_size: 500000
     max_steps: 2e6
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
-    demo_path: ./demos/Walker1episode.demo
 
 ReacherLearning:
     normalize: true
@@ -314,8 +206,7 @@ HallwayLearning:
     memory_size: 256
     beta: 0.0
     num_epoch: 3
-    buffer_size: 1024
-    batch_size: 128
+    init_entcoef: 0.1
     max_steps: 5.0e5
     summary_freq: 1000
     time_horizon: 64
@@ -328,8 +219,6 @@ VisualHallwayLearning:
     memory_size: 256
     beta: 1.0e-2
     gamma: 0.99
-    num_epoch: 3
-    buffer_size: 1024
     batch_size: 64
     max_steps: 5.0e5
     summary_freq: 1000
@@ -351,47 +240,25 @@ VisualPushBlockLearning:
     time_horizon: 64
 
 GridWorldLearning:
-    batch_size: 32
+    batch_size: 128
     normalize: false
     num_layers: 1
-    hidden_units: 256
-    beta: 1.0e-3
-    gamma: 0.9
-    buffer_size: 256
+    hidden_units: 128
+    init_entcoef: 0.01
+    buffer_size: 50000
     max_steps: 5.0e5
     summary_freq: 2000
     time_horizon: 5
-<<<<<<< HEAD
-    demo_path: ./demos/GridWorld.demo
-    # demo_aided:
-    #    demo_path: ./demos/GridWorld.demo
-    #    demo_strength: 0.1
-    #    demo_steps: 10000
-=======
-    demo_path: ./demos/GridDemo.demo
->>>>>>> origin/develop-irl-ervin
-    reward_signals: 
-     - 'extrinsic'
-     - 'gail'
-    reward_strength: 
-     - 1.0
-<<<<<<< HEAD
-     - 0.01
-=======
-     - 0.2
->>>>>>> origin/develop-irl-ervin
-    gammas:
-     - 0.99
-     - 0.9
+    train_interval: 1
+    target_update_steps: 1
+    buffer_init_steps: 10000
 
 BasicLearning:
-    batch_size: 32
+    batch_size: 64
     normalize: false
-    num_layers: 1
+    num_layers: 2
+    init_entcoef: 0.01
     hidden_units: 20
-    beta: 5.0e-3
-    gamma: 0.9
-    buffer_size: 256
     max_steps: 5.0e5
     summary_freq: 2000
-    time_horizon: 3
+    time_horizon: 10
