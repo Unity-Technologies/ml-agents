@@ -271,7 +271,6 @@ class PPOTrainer(Trainer):
             if stored_info is not None:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
-                assert idx == next_idx
                 if not stored_info.local_done[idx]:
                     for i, _ in enumerate(stored_info.visual_observations):
                         self.training_buffer[agent_id]["visual_obs%d" % i].append(
@@ -318,7 +317,7 @@ class PPOTrainer(Trainer):
                     )
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(
-                        next_info.local_done[idx]
+                        next_info.local_done[next_idx]
                     )
 
                     for name, reward in tmp_rewards_dict.items():
