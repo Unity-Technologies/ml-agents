@@ -5,7 +5,7 @@ from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
-class BCTrainer:
+class BCModule:
     def __init__(
         self, policy: Policy, lr, demo_path, anneal_steps, batch_size, use_recurrent
     ):

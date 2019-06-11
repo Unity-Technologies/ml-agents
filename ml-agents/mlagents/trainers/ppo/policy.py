@@ -5,7 +5,7 @@ from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import create_reward_signal
-from mlagents.trainers.components.bc import BCTrainer
+from mlagents.trainers.components.bc import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -48,7 +48,7 @@ class PPOPolicy(Policy):
 
             # BC trainer is not a reward signal
             if "pretraining" in trainer_params:
-                self.bc_trainer = BCTrainer(
+                self.bc_trainer = BCModule(
                     self,
                     float(
                         trainer_params["pretraining"]["pretraining_strength"]
