@@ -422,6 +422,7 @@ class PPOTrainer(Trainer):
             number_experiences=len(self.training_buffer.update_buffer["actions"]),
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
+        self.cumulative_returns_since_policy_update = []
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
