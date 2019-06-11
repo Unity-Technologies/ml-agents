@@ -302,7 +302,7 @@ class SACNetwork(LearningModel):
                 ],
                 axis=1,
             )
-            self.selected_actions = self.output_oh
+            self.selected_actions = tf.stop_gradient(self.output_oh)
             # self.output_pre = gumbeldist.sample(tf.shape(act_probs)[0])[0]
             # act_probs = tf.Print(act_probs, [act_probs, gumbeldist.sample(3)[0]])
             # self.all_log_probs = normalized_logits
@@ -593,7 +593,7 @@ class SACModel(LearningModel):
                 # self.min_policy_q = tf.Print(self.min_policy_q, [self.policy_network.action_probs], summarize = 11)
             else:
                 self.min_policy_qs[name] = tf.minimum(
-                    self.policy_network.q1_p, self.policy_network.q2_p
+                    self.policy_network.q1_pheads[name], self.policy_network.q2_pheads[name]
                 )
 
             rewards_holder = tf.placeholder(
@@ -720,9 +720,15 @@ class SACModel(LearningModel):
                     for i, _lp in enumerate(broken_log_probs)
                 ]
             )
-            v_backup = tf.stop_gradient(
-                self.min_policy_q - tf.reduce_mean(broken_ent_bonus, axis=0)
-            )
+            value_losses = []
+            for name in stream_names:
+                v_backup = tf.stop_gradient(
+                    self.min_policy_qs[name]
+                    - tf.reduce_mean(broken_ent_bonus, axis=0)
+                )
+                value_losses.append(0.5 * tf.reduce_mean(
+                    tf.squared_difference(self.policy_network.value_heads[name], v_backup))
+                )
             # v_backup = tf.Print(v_backup,[v_backup,tf.reduce_mean(broken_ent_bonus, axis=0)])
         else:
             self.entropy_loss = -tf.reduce_mean(
@@ -743,17 +749,17 @@ class SACModel(LearningModel):
 
             # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
             # self.policy_loss = tf.Print(self.policy_loss,[self.policy_network.q1_p])
-        value_losses = []
-        for name in stream_names:
-            v_backup = tf.stop_gradient(
-                self.min_policy_qs[name]
-                - tf.reduce_sum(
-                    self.ent_coef * self.policy_network.all_log_probs, axis=1
+            value_losses = []
+            for name in stream_names:
+                v_backup = tf.stop_gradient(
+                    self.min_policy_qs[name]
+                    - tf.reduce_sum(
+                        self.ent_coef * self.policy_network.all_log_probs, axis=1
+                    )
                 )
-            )
-            value_losses.append(0.5 * tf.reduce_mean(
-                tf.squared_difference(self.policy_network.value_heads[name], v_backup))
-            )
+                value_losses.append(0.5 * tf.reduce_mean(
+                    tf.squared_difference(self.policy_network.value_heads[name], v_backup))
+                )
         self.value_loss = tf.reduce_mean(value_losses)
         self.total_value_loss = self.q1_loss + self.q2_loss + self.value_loss
         self.entropy = self.policy_network.entropy
