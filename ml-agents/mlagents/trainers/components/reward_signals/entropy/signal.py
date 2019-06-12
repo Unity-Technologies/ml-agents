@@ -1,4 +1,4 @@
-from mlagents.trainers.components import RewardSignal
+from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.policy import Policy
 
 
@@ -12,11 +12,11 @@ class EntropySignal(RewardSignal):
         """
         self.policy = policy
         self.strength = signal_strength
-        self.stat_name = 'Policy/Entropy Reward'
-        self.value_name = 'Policy/Entropy Value Estimate'
+        self.stat_name = "Policy/Entropy Reward"
+        self.value_name = "Policy/Entropy Value Estimate"
 
     def evaluate(self, current_info, next_info):
         run_out = self.policy.evaluate(current_info)
-        unscaled_reward = run_out['entropy']
+        unscaled_reward = run_out["entropy"]
         scaled_reward = self.strength * unscaled_reward
         return scaled_reward, unscaled_reward

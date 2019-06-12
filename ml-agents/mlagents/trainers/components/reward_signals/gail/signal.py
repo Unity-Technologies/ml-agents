@@ -1,34 +1,45 @@
 import numpy as np
 
-from mlagents.trainers.components import RewardSignal
+from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.policy import Policy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
-class GAILSignal(RewardSignal):
+class GAILRewardSignal(RewardSignal):
     def __init__(
-        self, policy: Policy, h_size, lr, demo_path, signal_strength, batch_size
+        self,
+        policy: Policy,
+        strength,
+        gamma,
+        demo_path,
+        num_epoch=3,
+        encoding_size=128,
+        learning_rate=3e-4,
+        max_batches=10,
     ):
         """
         The Gail Reward signal generator.
         :param policy: The policy of the learning model
-        :param h_size: The size of the the hidden layers of the discriminator
-        :param lr: The Learning Rate
+        :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
+        :param 
         :param demo_path: The path to the demonstration file
-        :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
+        :param encoding_size: The size of the the hidden layers of the discriminator
+        :param learning_rate: The Learning Rate
         reward multiplied by the strength parameter
         """
-        super().__init__()
         self.policy = policy
-        self.strength = signal_strength
+        self.strength = strength
+        self.gamma = gamma
         self.stat_name = "Policy/GAIL Reward"
         self.value_name = "Policy/GAIL Value Estimate"
-        self.normalize_reward = False
-        self.model = GAILModel(policy.model, h_size, lr, 64)
+        self.num_epoch = num_epoch
+        self.max_batches = max_batches
+
+        self.model = GAILModel(policy.model, encoding_size, learning_rate, 64)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
-        self.batch_size = batch_size
 
     def evaluate(self, current_info, next_info):
         if len(current_info.agents) == 0:
@@ -55,31 +66,36 @@ class GAILSignal(RewardSignal):
                     len(current_info.agents)
                 )
             feed_dict[self.policy.model.memory_in] = current_info.memories
-        if self.normalize_reward:
-            unscaled_reward, _ = self.policy.sess.run(
-                [self.model.intrinsic_reward, self.model.update_normalization],
-                feed_dict=feed_dict,
-            )
-        else:
-            unscaled_reward = self.policy.sess.run(
-                self.model.intrinsic_reward, feed_dict=feed_dict
-            )
+        unscaled_reward = self.policy.sess.run(
+            self.model.intrinsic_reward, feed_dict=feed_dict
+        )
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
         return scaled_reward, unscaled_reward
 
-    def update(self, update_buffer, max_batches=16):
+    @classmethod
+    def check_config(cls, config_dict):
+        """
+        Checks the config and throw an exception if a hyperparameter is missing. GAIL requires strength and gamma 
+        at minimum. 
+        """
+        param_keys = ["strength", "gamma", "demo_path"]
+        super().check_config(config_dict, param_keys)
+
+    def update(self, policy_buffer, num_sequences=32):
         """
         Updates model using buffer.
-        :param update_buffer: The update buffer containing the trajectories for the current policy.
-        :param max_batches: The maximum number of batches to use per update.
+        :param policy_buffer: The policy buffer containing the trajectories for the current policy.
+        :param n_sequences: The total (demo + environment) number of sequences used in each mini batch.
         :return: The loss of the update.
         """
         batch_losses = []
-        n_sequences = max(int(self.batch_size / self.policy.sequence_length), 1)
+        n_sequences = num_sequences // 2
         possible_demo_batches = (
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
-        possible_policy_batches = len(update_buffer["actions"]) // n_sequences
+        possible_policy_batches = (
+            len(policy_buffer.update_buffer["actions"]) // n_sequences
+        )
         possible_batches = min(possible_policy_batches, possible_demo_batches)
 
         # for reporting
@@ -90,17 +106,17 @@ class GAILSignal(RewardSignal):
         zme = []
         zmp = []
         # end for reporting
-        n_epoch = 1
-        for epoch in range(n_epoch):
+        n_epoch = self.num_epoch
+        for _epoch in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
-            update_buffer.shuffle()
-            if max_batches == 0:
+            policy_buffer.update_buffer.shuffle()
+            if self.max_batches == 0:
                 num_batches = possible_batches
             else:
-                num_batches = min(possible_batches, max_batches)
+                num_batches = min(possible_batches, self.max_batches)
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
-                policy_update_buffer = update_buffer
+                policy_update_buffer = policy_buffer.update_buffer
                 start = i * n_sequences
                 end = (i + 1) * n_sequences
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
@@ -120,28 +136,28 @@ class GAILSignal(RewardSignal):
 
         # for reporting
 
-        # print(
-        #     "n_epoch",
-        #     "beta",
-        #     "kl_loss",
-        #     "policy_estimate",
-        #     "expert_estimate",
-        #     "z_mean_expert",
-        #     "z_mean_policy",
-        #     "z_log_sig_sq",
-        # )
-        # print(
-        #     n_epoch,
-        #     self.policy.sess.run(self.model.beta),
-        #     np.mean(kl_loss),
-        #     np.mean(pos),
-        #     np.mean(pes),
-        #     np.mean(zme),
-        #     np.mean(zmp),
-        #     np.mean(zlss),
-        # )
-        # end for reporting
-        return np.mean(batch_losses)
+        print(
+            "n_epoch",
+            "beta",
+            "kl_loss",
+            "policy_estimate",
+            "expert_estimate",
+            "z_mean_expert",
+            "z_mean_policy",
+            "z_log_sig_sq",
+        )
+        print(
+            n_epoch,
+            self.policy.sess.run(self.model.beta),
+            np.mean(kl_loss),
+            np.mean(pos),
+            np.mean(pes),
+            np.mean(zme),
+            np.mean(zmp),
+            np.mean(zlss),
+        )
+        update_stats = {"Losses/GAIL Loss": np.mean(batch_losses)}
+        return update_stats
 
     def _update_batch(self, mini_batch_demo, mini_batch_policy):
         """
@@ -247,4 +263,3 @@ class GAILSignal(RewardSignal):
         self.policy.sess.run(
             self.model.update_beta, feed_dict={self.model.kl_div_input: kl_div}
         )
-

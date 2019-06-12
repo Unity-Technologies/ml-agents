@@ -40,11 +40,11 @@ float f16tof32_(uint src)
 
 float2 Unpack(SharedTensor t, uint y, uint x)
 {
-	uint v = asuint(t.data[t.Index(y, x) >> 1]);
-	// TEMPORARY: f16tof32 is broken in GLSL/Metal compiler
-	// using custom conversion function for now
-	//return float2(f16tof32(v), f16tof32(v>>16));
-	return float2(f16tof32_(v), f16tof32_(v>>16));
+    uint v = asuint(t.data[t.Index(y, x) >> 1]);
+    // TEMPORARY: f16tof32 is broken in GLSL/Metal compiler
+    // using custom conversion function for now
+    //return float2(f16tof32(v), f16tof32(v>>16));
+    return float2(f16tof32_(v), f16tof32_(v>>16));
 }
 
 // NOTE: usually this path is used for <16 batches
@@ -54,19 +54,19 @@ void DenseFP16Div2(uint3 dispatchThreadID : SV_DispatchThreadID)
     DISPATCH_ARGS(O.flatWidth/2, O.flatHeight, 1);
     TENSOR_SHARED2_ARGS4(X, W, B, WBK, O);
 
-	uint x = dispatchThreadID.x;
-	uint y = dispatchThreadID.y;
+    uint x = dispatchThreadID.x;
+    uint y = dispatchThreadID.y;
 
     if (x*2 >= O.GetFlatWidth()) return;
     if (y >= O.GetFlatHeight()) return;
 
-	float2 acc = Unpack(B, 0, x*2);
-	for (uint i = 0; i < X.width; ++i)
-	{
-		float2 w = Unpack(W, i, x*2);
-		acc += X.Get(y, i) * w;
-	}
+    float2 acc = Unpack(B, 0, x*2);
+    for (uint i = 0; i < X.width; ++i)
+    {
+        float2 w = Unpack(W, i, x*2);
+        acc += X.Get(y, i) * w;
+    }
 
-	O.Set(y, x*2+0, acc[0]);
-	O.Set(y, x*2+1, acc[1]);
+    O.Set(y, x*2+0, acc[0]);
+    O.Set(y, x*2+1, acc[1]);
 }

@@ -1,1 +1,1 @@
-from .trainer import BCTrainer
+from .trainer import BCModule

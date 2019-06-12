@@ -5,8 +5,10 @@ from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
 
-class BCTrainer:
-    def __init__(self, policy: Policy, lr, demo_path, anneal_steps, batch_size):
+class BCModule:
+    def __init__(
+        self, policy: Policy, lr, demo_path, anneal_steps, batch_size, use_recurrent
+    ):
         """
         A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
@@ -14,8 +16,8 @@ class BCTrainer:
         :param demo_path: The path to the demonstration file
         :param anneal_steps: The number of steps to anneal BC training over. 0 for continuous training.
         :param batch_size: The batch size to use during BC training. 
+        :param use_recurrent: Whether or not we are training an LSTM as well. 
         """
-        super().__init__()
         self.policy = policy
         self.current_lr = lr
         self.model = BCModel(policy.model, lr, anneal_steps)
@@ -24,12 +26,11 @@ class BCTrainer:
             batch_size, len(self.demonstration_buffer.update_buffer["actions"])
         )
         self.has_updated = False
+        self.use_recurrent = use_recurrent
 
-    def update(self, policy_buffer, max_batches=10):
+    def update(self, max_batches=10):
         """
         Updates model using buffer.
-        :param policy_buffer: The policy buffer containing the trajectories for the current policy.
-        :param n_sequences: The number of sequences used in each mini batch.
         :param max_batches: The maximum number of batches to use per update.
         :return: The loss of the update.
         """
@@ -63,18 +64,13 @@ class BCTrainer:
         self.has_updated = True
         return np.mean(batch_losses)
 
-    def evaluate(self, current_info, next_info):
-        unscaled_reward = np.array(next_info.rewards)
-        scaled_reward = 0.0 * unscaled_reward
-        return scaled_reward, unscaled_reward
-
     def _update_batch(self, mini_batch_demo, n_sequences):
         """
         Helper function for update_batch.
         """
         feed_dict = {
             self.policy.model.batch_size: n_sequences,
-            self.policy.model.sequence_length: 1,
+            self.policy.model.sequence_length: self.policy.sequence_length,
         }
         if self.policy.model.brain.vector_action_space_type == "continuous":
             feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"].reshape(
@@ -104,14 +100,22 @@ class BCTrainer:
         for i, _ in enumerate(self.policy.model.visual_in):
             visual_obs = mini_batch_demo["visual_obs%d" % i]
             feed_dict[self.policy.model.visual_in[i]] = visual_obs
-        # if self.use_recurrent:
-        #     feed_dict[self.policy.model.memory_in] = np.zeros([num_sequences, self.m_size])
-        #     if not self.policy.model.brain.vector_action_space_type == "continuous":
-        #         print(mini_batch.keys())
-        #         # feed_dict[self.policy_model.prev_action] = mini_batch['prev_action'] \
-        #         #     .reshape([-1, len(self.policy_model.act_size)])
-        #         feed_dict[self.policy.model.prev_action] = np.zeros((num_sequences* self.sequence_length,
-        #                                                              len(self.policy_model.act_size)))
+        if self.use_recurrent:
+            feed_dict[self.policy.model.memory_in] = np.zeros(
+                [self.n_sequences, self.policy.m_size]
+            )
+            if not self.policy.model.brain.vector_action_space_type == "continuous":
+                feed_dict[self.policy.model.prev_action] = mini_batch_demo[
+                    "prev_action"
+                ].reshape([-1, len(self.policy.model.act_size)])
+                # # print(len(self.policy.model.act_size))
+                # # print(self.n_sequences, self.policy.sequence_length)
+                # feed_dict[self.policy.model.prev_action] = np.zeros(
+                #     (
+                #         self.n_sequences * self.policy.sequence_length,
+                #         len(self.policy.model.act_size),
+                #     )
+                # )
         self.out_dict = {
             "loss": self.model.loss,
             "update": self.model.update_batch,
@@ -122,4 +126,3 @@ class BCTrainer:
         )
         run_out = dict(zip(list(self.out_dict.keys()), network_out))
         return run_out
-

@@ -36,11 +36,9 @@ def dummy_config():
         curiosity_strength: 0.0
         curiosity_enc_size: 1
         reward_signals:
-          - extrinsic
-        reward_strengths:
-          - 1.0
-        gammas:
-          - 0.99
+          extrinsic:
+            strength: 1.0
+            gamma: 0.99
         """
     )
 

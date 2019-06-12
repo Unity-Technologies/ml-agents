@@ -3,7 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 import logging
-from collections import deque
+from collections import deque, defaultdict
 
 import numpy as np
 import tensorflow as tf
@@ -29,7 +29,7 @@ class PPOTrainer(Trainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The The identifier of the current run
+        :param run_id: The identifier of the current run
         """
         super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
         self.param_keys = [
@@ -50,16 +50,10 @@ class PPOTrainer(Trainer):
             "use_recurrent",
             "summary_path",
             "memory_size",
-            "curiosity_enc_size",
             "model_path",
             "reward_signals",
-            "reward_strengths",
-            "gammas",
         ]
-        self.valid_reward_signals = ["extrinsic", "gail", "entropy", "curiosity"]
-
         self.check_param_keys()
-        self.check_rewards_keys(trainer_parameters)
         self.check_demo_keys(trainer_parameters)
         self.use_curiosity = "curiosity" in trainer_parameters["reward_signals"]
         self.use_gail = "gail" in trainer_parameters["reward_signals"]
@@ -69,45 +63,22 @@ class PPOTrainer(Trainer):
 
         # We always want to record the extrinsic reward. If it wasn't specified,
         # add the extrinsic reward signal with strength 0.
-        if not self.use_extrinsic:
-            trainer_parameters["reward_signals"].append("extrinsic")
-            trainer_parameters["gammas"].append(0.0)
-            trainer_parameters["reward_strengths"].append(0.0)
-        self.gamma_parameters = dict(
-            zip(trainer_parameters["reward_signals"], trainer_parameters["gammas"])
-        )
+        # if not self.use_extrinsic:
+        #     trainer_parameters["reward_signals"].append("extrinsic")
+        #     trainer_parameters["gammas"].append(0.0)
+        #     trainer_parameters["reward_strengths"].append(0.0)
+
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
-        stats = {
-            "Environment/Extrinsic Reward": [],
-            "Environment/Episode Length": [],
-            "Policy/Extrinsic Value Estimate": [],
-            "Policy/Entropy": [],
-            "Losses/Value Loss": [],
-            "Losses/Policy Loss": [],
-            "Policy/Learning Rate": [],
-        }
-
+        stats = defaultdict(list)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
-        # used for reporting only
-        self.collected_rewards = {"extrinsic": {}}
+        # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
+        # of what reward signals are actually present.
+        self.collected_rewards = {"environment": {}}
+        for _reward_signal in trainer_parameters["reward_signals"].keys():
+            self.collected_rewards[_reward_signal] = {}
 
-        if self.use_curiosity:
-            stats["Losses/Forward Loss"] = []
-            stats["Losses/Inverse Loss"] = []
-            stats["Policy/Curiosity Reward"] = []
-            stats["Policy/Curiosity Value Estimate"] = []
-            self.collected_rewards["curiosity"] = {}
-        if self.use_gail:
-            stats["Losses/GAIL Loss"] = []
-            stats["Policy/GAIL Reward"] = []
-            stats["Policy/GAIL Value Estimate"] = []
-            self.collected_rewards["gail"] = {}
-        if self.use_entropy:
-            stats["Policy/Entropy Reward"] = []
-            stats["Policy/Entropy Value Estimate"] = []
-            self.collected_rewards["entropy"] = {}
         if self.use_bc:
             stats["Losses/BC Loss"] = []
         self.stats = stats
@@ -161,34 +132,6 @@ class PPOTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def check_rewards_keys(self, trainer_parameters: dict):
-        """
-        Checks if the reward_signals, reward_strengths and gammas hyperparamters have consistent length
-        and that the values of reward_signals are valid.
-        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
-        """
-        if len(trainer_parameters["reward_signals"]) != len(
-            trainer_parameters["reward_strengths"]
-        ):
-            raise UnityTrainerException(
-                "The length of the reward_signals Hyperparameter must be equal to the length of "
-                "the reward_strengths Hyperparameter"
-            )
-        if len(trainer_parameters["reward_signals"]) != len(
-            trainer_parameters["gammas"]
-        ):
-            raise UnityTrainerException(
-                "The length of the reward_signals Hyperparameter must be equal to the length of "
-                "the gammas Hyperparameter"
-            )
-        for signal_name in trainer_parameters["reward_signals"]:
-            if signal_name not in self.valid_reward_signals:
-                raise UnityTrainerException(
-                    "Unknown reward signal {} was given as Hyperparameter. ".format(
-                        signal_name
-                    )
-                )
-
     def check_demo_keys(self, trainer_parameters: dict):
         """
         Checks if the demonstration pretraining parameters are set properly. 
@@ -208,8 +151,8 @@ class PPOTrainer(Trainer):
         """
         Increment the step count of the trainer and Updates the last reward
         """
-        if len(self.stats["Environment/Extrinsic Reward"]) > 0:
-            mean_reward = np.mean(self.stats["Environment/Extrinsic Reward"])
+        if self.stats["Environment/Cumulative Reward"]:
+            mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
             self.policy.update_reward(mean_reward)
         self.policy.increment_step()
         self.step = self.policy.get_current_step()
@@ -328,7 +271,6 @@ class PPOTrainer(Trainer):
             if stored_info is not None:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
-                assert idx == next_idx
                 if not stored_info.local_done[idx]:
                     for i, _ in enumerate(stored_info.visual_observations):
                         self.training_buffer[agent_id]["visual_obs%d" % i].append(
@@ -364,7 +306,7 @@ class PPOTrainer(Trainer):
                         )
                     else:
                         self.training_buffer[agent_id]["action_mask"].append(
-                            stored_info.action_masks[idx]
+                            stored_info.action_masks[idx], padding_value=1
                         )
                     a_dist = stored_take_action_outputs["log_probs"]
                     # value is a dictionary from name of reward to value estimate of the value head
@@ -375,7 +317,7 @@ class PPOTrainer(Trainer):
                     )
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(
-                        next_info.local_done[idx]
+                        next_info.local_done[next_idx]
                     )
 
                     for name, reward in tmp_rewards_dict.items():
@@ -394,14 +336,12 @@ class PPOTrainer(Trainer):
                     ):
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
-                        # We want to report the unscaled extrinsic reward but the scaled intrinsic reward
-                        if name == "extrinsic":
-                            use_unscaled = 1
+                        if name == "environment":
+                            # Report the reward from the environment
+                            rewards[agent_id] += np.array(next_info.rewards)[next_idx]
                         else:
-                            use_unscaled = 0
-                        rewards[agent_id] += tmp_rewards_dict[name][use_unscaled][
-                            next_idx
-                        ]
+                            # Report the reward signals
+                            rewards[agent_id] += tmp_rewards_dict[name][0][next_idx]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -448,7 +388,7 @@ class PPOTrainer(Trainer):
                         rewards=local_rewards,
                         value_estimates=local_value_estimates,
                         value_next=bootstrap_value,
-                        gamma=self.gamma_parameters[name],
+                        gamma=self.policy.reward_signals[name].gamma,
                         lambd=self.trainer_parameters["lambd"],
                     )
                     local_return = local_advantage + local_value_estimates
@@ -480,11 +420,16 @@ class PPOTrainer(Trainer):
                     )
                     self.episode_steps[agent_id] = 0
                     for name, rewards in self.collected_rewards.items():
-                        if name == "extrinsic":
+                        if name == "environment":
                             self.cumulative_returns_since_policy_update.append(
                                 rewards.get(agent_id, 0)
                             )
-                        if self.policy.reward_signals[name].stat_name in self.stats:
+                            self.stats["Environment/Cumulative Reward"].append(
+                                rewards.get(agent_id, 0)
+                            )
+                            rewards[agent_id] = 0
+                            self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                        else:
                             self.stats[
                                 self.policy.reward_signals[name].stat_name
                             ].append(rewards.get(agent_id, 0))
@@ -521,6 +466,7 @@ class PPOTrainer(Trainer):
             number_experiences=len(self.training_buffer.update_buffer["actions"]),
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
+        self.cumulative_returns_since_policy_update = []
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
@@ -543,22 +489,14 @@ class PPOTrainer(Trainer):
                 )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(np.abs(run_out["policy_loss"]))
-                if self.use_curiosity:
-                    run_out_curio = self.policy.reward_signals["curiosity"].update(
-                        buffer.make_mini_batch(start, end), n_sequences
-                    )
-                    inverse_total.append(run_out_curio["inverse_loss"])
-                    forward_total.append(run_out_curio["forward_loss"])
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
-        if self.use_curiosity:
-            self.stats["Losses/Forward Loss"].append(np.mean(forward_total))
-            self.stats["Losses/Inverse Loss"].append(np.mean(inverse_total))
-        if self.use_gail:
-            gail_loss = self.policy.reward_signals["gail"].update(self.training_buffer.update_buffer)
-            self.stats["Losses/GAIL Loss"].append(gail_loss)
+        for _, _reward_signal in self.policy.reward_signals.items():
+            _stats = _reward_signal.update(self.training_buffer, n_sequences)
+            for _stat, _val in _stats.items():
+                self.stats[_stat].append(_val)
         if self.use_bc:
-            _bc_loss = self.policy.bc_trainer.update(self.training_buffer)
+            _bc_loss = self.policy.bc_trainer.update()
             self.stats["Losses/BC Loss"].append(_bc_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
