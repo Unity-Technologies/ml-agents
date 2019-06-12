@@ -12,10 +12,13 @@ public class CrawlerAcademy : Academy
         Physics.defaultSolverVelocityIterations = 12;
         Time.fixedDeltaTime = 0.01333f; // (75fps). default is .2 (60fps)
         Time.maximumDeltaTime = .15f; // Default is .33
+
+        Physics.gravity = new Vector3(0, -resetParameters["gravity"], 0);
     }
 
     public override void AcademyReset()
     {
+        Physics.gravity = new Vector3(0, -resetParameters["gravity"], 0);
     }
 
     public override void AcademyStep()
