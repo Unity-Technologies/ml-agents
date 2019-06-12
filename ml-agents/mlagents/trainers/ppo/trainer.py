@@ -29,7 +29,7 @@ class PPOTrainer(Trainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The The identifier of the current run
+        :param run_id: The identifier of the current run
         """
         super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
         self.param_keys = [
@@ -422,6 +422,7 @@ class PPOTrainer(Trainer):
             number_experiences=len(self.training_buffer.update_buffer["actions"]),
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
+        self.cumulative_returns_since_policy_update = []
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )

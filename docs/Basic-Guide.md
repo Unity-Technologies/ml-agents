@@ -16,7 +16,7 @@ Unity settings.
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
 3. Using the file dialog that opens, locate the `UnitySDK` folder
-   within the the ML-Agents toolkit project and click **Open**.
+   within the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target (**PC, Mac and Linux Standalone**,
    **iOS** or **Android**):
