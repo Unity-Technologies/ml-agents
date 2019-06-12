@@ -69,6 +69,15 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
                 [-1, self.policy.vec_obs_size]
             )
+        if self.policy.model.vis_obs_size > 0:
+            for i, _ in enumerate(self.policy.model.visual_in):
+                _obs = mini_batch["visual_obs%d" % i]
+                if self.policy.sequence_length > 1 and self.policy.use_recurrent:
+                    (_batch, _seq, _w, _h, _c) = _obs.shape
+                    feed_dict[self.policy.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
+                else:
+                    feed_dict[self.policy.model.visual_in[i]] = _obs
+
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -176,26 +185,26 @@ class GAILRewardSignal(RewardSignal):
 
         # for reporting
 
-        print(
-            "n_epoch",
-            "beta",
-            "kl_loss",
-            "policy_estimate",
-            "expert_estimate",
-            "z_mean_expert",
-            "z_mean_policy",
-            "z_log_sig_sq",
-        )
-        print(
-            n_epoch,
-            self.policy.sess.run(self.model.beta),
-            np.mean(kl_loss),
-            np.mean(pos),
-            np.mean(pes),
-            np.mean(zme),
-            np.mean(zmp),
-            np.mean(zlss),
-        )
+        # print(
+        #     "n_epoch",
+        #     "beta",
+        #     "kl_loss",
+        #     "policy_estimate",
+        #     "expert_estimate",
+        #     "z_mean_expert",
+        #     "z_mean_policy",
+        #     "z_log_sig_sq",
+        # )
+        # print(
+        #     n_epoch,
+        #     self.policy.sess.run(self.model.beta),
+        #     np.mean(kl_loss),
+        #     np.mean(pos),
+        #     np.mean(pes),
+        #     np.mean(zme),
+        #     np.mean(zmp),
+        #     np.mean(zlss),
+        # )
         update_stats = {"Losses/GAIL Loss": np.mean(batch_losses)}
         return update_stats
 
