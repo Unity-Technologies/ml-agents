@@ -235,7 +235,9 @@ class SACTrainer(Trainer):
             )
             for name, signal in self.policy.reward_signals.items():
                 if signal.value_name in self.stats:
-                    self.stats[signal.value_name].append(take_action_outputs["value"])
+                    self.stats[signal.value_name].append(
+                        take_action_outputs["value"][name]
+                    )
 
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
@@ -313,7 +315,9 @@ class SACTrainer(Trainer):
                     self.training_buffer[agent_id]["done"].append(
                         next_info.local_done[idx]
                     )
-                    self.training_buffer[agent_id]["environment_rewards"].append(np.array(next_info.rewards)[next_idx])
+                    self.training_buffer[agent_id]["environment_rewards"].append(
+                        np.array(next_info.rewards)[next_idx]
+                    )
                     # for name, reward in tmp_rewards_dict.items():
                     #     # 0 because we use the scaled reward to train the agent
                     #     self.training_buffer[agent_id][
@@ -336,7 +340,6 @@ class SACTrainer(Trainer):
                         else:
                             # Report the reward signals
                             rewards[agent_id] += tmp_rewards_dict[name][0][next_idx]
-
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -497,10 +500,10 @@ class SACTrainer(Trainer):
         self.stats["Losses/Q1 Loss"].append(np.mean(q1loss_total))
         self.stats["Losses/Q2 Loss"].append(np.mean(q2loss_total))
         self.stats["Policy/Entropy Coeff"].append(np.mean(entcoeff_total))
+        sampled_minibatch = buffer.sample_mini_batch(
+            self.trainer_parameters["batch_size"]
+        )
         for _, _reward_signal in self.policy.reward_signals.items():
-            sampled_minibatch = buffer.sample_mini_batch(
-                    self.trainer_parameters["batch_size"]
-                )
             _stats = _reward_signal.update(sampled_minibatch, n_sequences)
             for _stat, _val in _stats.items():
                 self.stats[_stat].append(_val)
