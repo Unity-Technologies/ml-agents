@@ -3,7 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 import logging
-from collections import deque
+from collections import deque, defaultdict
 
 import numpy as np
 import tensorflow as tf
@@ -51,32 +51,13 @@ class SACTrainer(Trainer):
             "use_recurrent",
             "summary_path",
             "memory_size",
-            "curiosity_enc_size",
             "model_path",
             "reward_signals",
-            "reward_strength",
-            "gammas",
         ]
-        self.valid_reward_signals = ["extrinsic", "gail", "entropy", "curiosity"]
 
         self.check_param_keys()
-        self.check_rewards_keys(trainer_parameters)
         self.check_demo_keys(trainer_parameters)
-        self.use_curiosity = "curiosity" in trainer_parameters["reward_signals"]
-        self.use_gail = "gail" in trainer_parameters["reward_signals"]
-        self.use_entropy = "entropy" in trainer_parameters["reward_signals"]
-        self.use_extrinsic = "extrinsic" in trainer_parameters["reward_signals"]
-        self.use_bc = "demo_aided" in trainer_parameters
 
-        # We always want to record the extrinsic reward. If it wasn't specified,
-        # add the extrinsic reward signal with strength 0.
-        if not self.use_extrinsic:
-            trainer_parameters["reward_signals"].append("extrinsic")
-            trainer_parameters["gammas"].append(0.0)
-            trainer_parameters["reward_strength"].append(0.0)
-        self.gamma_parameters = dict(
-            zip(trainer_parameters["reward_signals"], trainer_parameters["gammas"])
-        )
         self.step = 0
         self.train_interval = (
             trainer_parameters["train_interval"]
@@ -86,40 +67,14 @@ class SACTrainer(Trainer):
         self.target_update_interval = trainer_parameters["target_update_steps"]
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
-        stats = {
-            "Environment/Extrinsic Reward": [],
-            "Environment/Episode Length": [],
-            "Policy/Extrinsic Value Estimate": [],
-            "Policy/Entropy": [],
-            "Policy/Entropy Coeff": [],
-            "Losses/Q1 Loss": [],
-            "Losses/Q2 Loss": [],
-            "Losses/Value Loss": [],
-            "Losses/Policy Loss": [],
-            "Policy/Learning Rate": [],
-        }
+        stats = defaultdict(list)
 
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only
-        self.collected_rewards = {"extrinsic": {}}
+        self.collected_rewards = {"environment": {}}
+        for _reward_signal in trainer_parameters["reward_signals"].keys():
+            self.collected_rewards[_reward_signal] = {}
 
-        if self.use_curiosity:
-            stats["Losses/Forward Loss"] = []
-            stats["Losses/Inverse Loss"] = []
-            stats["Policy/Curiosity Reward"] = []
-            stats["Policy/Curiosity Value Estimate"] = []
-            self.collected_rewards["curiosity"] = {}
-        if self.use_gail:
-            stats["Losses/GAIL Loss"] = []
-            stats["Policy/GAIL Reward"] = []
-            stats["Policy/GAIL Value Estimate"] = []
-            self.collected_rewards["gail"] = {}
-        if self.use_entropy:
-            stats["Policy/Entropy Reward"] = []
-            stats["Policy/Entropy Value Estimate"] = []
-            self.collected_rewards["entropy"] = {}
-        if self.use_bc:
-            stats["Losses/BC Loss"] = []
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -171,34 +126,6 @@ class SACTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def check_rewards_keys(self, trainer_parameters: dict):
-        """
-        Checks if the reward_signals, reward_strength and gammas hyperparamters have consistent length
-        and that the values of reward_signals are valid.
-        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
-        """
-        if len(trainer_parameters["reward_signals"]) != len(
-            trainer_parameters["reward_strength"]
-        ):
-            raise UnityTrainerException(
-                "The length of the reward_signals Hyperparameter must be equal to the length of "
-                "the reward_strength Hyperparameter"
-            )
-        if len(trainer_parameters["reward_signals"]) != len(
-            trainer_parameters["gammas"]
-        ):
-            raise UnityTrainerException(
-                "The length of the reward_signals Hyperparameter must be equal to the length of "
-                "the gammas Hyperparameter"
-            )
-        for signal_name in trainer_parameters["reward_signals"]:
-            if signal_name not in self.valid_reward_signals:
-                raise UnityTrainerException(
-                    "Unknown reward signal {} was given as Hyperparameter. ".format(
-                        signal_name
-                    )
-                )
-
     def check_demo_keys(self, trainer_parameters: dict):
         """
         Checks if the demonstration-aided parameters are set properly. 
@@ -218,8 +145,8 @@ class SACTrainer(Trainer):
         """
         Increment the step count of the trainer and Updates the last reward
         """
-        if len(self.stats["Environment/Extrinsic Reward"]) > 0:
-            mean_reward = np.mean(self.stats["Environment/Extrinsic Reward"])
+        if len(self.stats["Environment/Cumulative Reward"]) > 0:
+            mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
             self.policy.update_reward(mean_reward)
         self.policy.increment_step()
         self.step = self.policy.get_current_step()
@@ -403,14 +330,13 @@ class SACTrainer(Trainer):
                     ):
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
-                        # We want to report the unscaled extrinsic reward but the scaled intrinsic reward
-                        if name == "extrinsic":
-                            use_unscaled = 1
+                        if name == "environment":
+                            # Report the reward from the environment
+                            rewards[agent_id] += np.array(next_info.rewards)[next_idx]
                         else:
-                            use_unscaled = 0
-                        rewards[agent_id] += tmp_rewards_dict[name][use_unscaled][
-                            next_idx
-                        ]
+                            # Report the reward signals
+                            rewards[agent_id] += tmp_rewards_dict[name][0][next_idx]
+
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -470,7 +396,16 @@ class SACTrainer(Trainer):
                     )
                     self.episode_steps[agent_id] = 0
                     for name, rewards in self.collected_rewards.items():
-                        if self.policy.reward_signals[name].stat_name in self.stats:
+                        if name == "environment":
+                            self.cumulative_returns_since_policy_update.append(
+                                rewards.get(agent_id, 0)
+                            )
+                            self.stats["Environment/Cumulative Reward"].append(
+                                rewards.get(agent_id, 0)
+                            )
+                            rewards[agent_id] = 0
+                            self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                        else:
                             self.stats[
                                 self.policy.reward_signals[name].stat_name
                             ].append(rewards.get(agent_id, 0))
@@ -541,13 +476,6 @@ class SACTrainer(Trainer):
                 q1loss_total.append(run_out["q1_loss"])
                 q2loss_total.append(run_out["q2_loss"])
                 entcoeff_total.append(run_out["entropy_coef"])
-                if self.use_curiosity:
-                    run_out_curio = self.policy.reward_signals["curiosity"].update(
-                        sampled_minibatch, n_sequences
-                    )
-                    inverse_total.append(run_out_curio["inverse_loss"])
-                    forward_total.append(run_out_curio["forward_loss"])
-
         # Truncate update buffer if neccessary. Truncate more than we need to to avoid truncating
         # a large buffer at each update.
         if (
@@ -563,17 +491,12 @@ class SACTrainer(Trainer):
         self.stats["Losses/Q1 Loss"].append(np.mean(q1loss_total))
         self.stats["Losses/Q2 Loss"].append(np.mean(q2loss_total))
         self.stats["Policy/Entropy Coeff"].append(np.mean(entcoeff_total))
-        if self.use_curiosity:
-            self.stats["Losses/Forward Loss"].append(np.mean(forward_total))
-            self.stats["Losses/Inverse Loss"].append(np.mean(inverse_total))
-        if self.use_gail:
-            sampled_minibatch = buffer.sample_mini_batch(
-                    self.trainer_parameters["batch_size"]/2
-                )
-            gail_loss = self.policy.reward_signals["gail"].update(sampled_minibatch, 0)
-            self.stats["Losses/GAIL Loss"].append(gail_loss)
-        if self.use_bc:
-            _bc_loss = self.policy.bc_trainer.update(self.training_buffer)
-            self.stats["Losses/BC Loss"].append(_bc_loss)
+        for _, _reward_signal in self.policy.reward_signals.items():
+            _stats = _reward_signal.update(self.training_buffer, n_sequences)
+            for _stat, _val in _stats.items():
+                self.stats[_stat].append(_val)
+        # if self.use_bc:
+        #     _bc_loss = self.policy.bc_trainer.update(self.training_buffer)
+        #     self.stats["Losses/BC Loss"].append(_bc_loss)
 
         self.trainer_metrics.end_policy_update()

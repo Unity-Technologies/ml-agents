@@ -5,11 +5,8 @@ import tensorflow as tf
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.components.gail import GAILSignal
-from mlagents.trainers.components.curiosity import CuriositySignal
-from mlagents.trainers.components.extrinsic import ExtrinsicSignal
-from mlagents.trainers.components.entropy import EntropySignal
-from mlagents.trainers.components.bc import BCTrainer
+from mlagents.trainers.components.reward_signals.reward_signal_factory import create_reward_signal
+from mlagents.trainers.components.bc import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -26,9 +23,8 @@ class SACPolicy(Policy):
         """
         super().__init__(seed, brain, trainer_params)
 
-        reward_strengths = dict(
-            zip(trainer_params["reward_signals"], trainer_params["reward_strength"])
-        )
+        reward_signal_configs = trainer_params["reward_signals"]
+
         self.reward_signals = {}
         with self.graph.as_default():
             self.model = SACModel(
@@ -42,40 +38,16 @@ class SACPolicy(Policy):
                 num_layers=int(trainer_params["num_layers"]),
                 m_size=self.m_size,
                 seed=seed,
-                stream_names=list(reward_strengths.keys()),
+                stream_names=list(reward_signal_configs.keys()),
                 tau=float(trainer_params["tau"]),
-                gammas=trainer_params["gammas"],
+                gammas=list(_val['gamma'] for _val in reward_signal_configs.values())
             )
             self.model.create_sac_optimizers()
 
             # Initialize Components
-            if "extrinsic" in reward_strengths.keys():
-                self.reward_signals["extrinsic"] = ExtrinsicSignal(
-                    reward_strengths["extrinsic"]
-                )
-            if "curiosity" in reward_strengths.keys():
-                encoding_size = float(trainer_params["curiosity_enc_size"])
-                curiosity_signal = CuriositySignal(
-                    policy=self,
-                    signal_strength=reward_strengths["curiosity"],
-                    encoding_size=encoding_size,
-                )
-                self.reward_signals["curiosity"] = curiosity_signal
-            if "gail" in reward_strengths.keys():
-                _gail_batch_size = trainer_params["gail_batch_size"] if "gail_batch_size" in trainer_params else trainer_params["batch_size"]
-                gail_signal = GAILSignal(
-                    self,
-                    int(trainer_params["hidden_units"]),
-                    float(trainer_params["learning_rate"]),
-                    trainer_params["demo_path"],
-                    reward_strengths["gail"],
-                    _gail_batch_size,
-                )
-                self.reward_signals["gail"] = gail_signal
-            if "entropy" in reward_strengths.keys():
-                self.reward_signals["entropy"] = EntropySignal(
-                    self, reward_strengths["entropy"]
-                )
+            for _rsignal in reward_signal_configs.keys():
+                self.reward_signals[_rsignal] = create_reward_signal(self, _rsignal, reward_signal_configs[_rsignal])
+
             # BC trainer is not a reward signal
             # if "demo_aided" in trainer_params:
             #     self.bc_trainer = BCTrainer(
