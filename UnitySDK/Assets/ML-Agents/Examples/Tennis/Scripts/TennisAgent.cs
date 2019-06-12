@@ -114,6 +114,5 @@ public class TennisAgent : Agent
     {
         SetRacket();
         SetBall();
-        Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
     }
 }
