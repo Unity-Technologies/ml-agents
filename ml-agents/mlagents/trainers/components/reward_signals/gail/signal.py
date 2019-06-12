@@ -41,6 +41,46 @@ class GAILRewardSignal(RewardSignal):
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
+    def evaluate_batch(self, mini_batch):
+        feed_dict = {
+            self.policy.model.batch_size: len(mini_batch["actions"]),
+            self.policy.model.sequence_length: self.policy.sequence_length,
+            self.model.use_noise: [0],
+        }
+        if self.policy.use_continuous_act:
+            feed_dict[self.policy.model.output_pre] = mini_batch["actions_pre"].reshape(
+                [-1, self.policy.model.act_size[0]]
+            )
+            feed_dict[self.policy.model.selected_actions] = mini_batch[
+                "prev_action"
+            ].reshape([-1, len(self.policy.model.act_size)])
+        else:
+            feed_dict[self.policy.model.action_holder] = mini_batch["actions"].reshape(
+                [-1, len(self.policy.model.act_size)]
+            )
+            if self.policy.use_recurrent:
+                feed_dict[self.policy.model.prev_action] = mini_batch[
+                    "prev_action"
+                ].reshape([-1, len(self.policy.model.act_size)])
+            feed_dict[self.policy.model.action_masks] = mini_batch[
+                "action_mask"
+            ].reshape([-1, sum(self.policy.brain.vector_action_space_size)])
+        if self.policy.use_vec_obs:
+            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
+                [-1, self.policy.vec_obs_size]
+            )
+        unscaled_reward = self.policy.sess.run(
+            self.model.intrinsic_reward, feed_dict=feed_dict
+        )
+        scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
+        return scaled_reward, unscaled_reward
+        # if self.policy.use_recurrent:
+        #     if current_info.memories.shape[1] == 0:
+        #         current_info.memories = self.policy.make_empty_memory(
+        #             len(current_info.agents)
+        #         )
+        #     feed_dict[self.policy.model.memory_in] = current_info.memories
+
     def evaluate(self, current_info, next_info):
         if len(current_info.agents) == 0:
             return []
@@ -81,7 +121,7 @@ class GAILRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, policy_buffer, num_sequences=32):
+    def update(self, update_buffer, num_sequences=32):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
@@ -94,7 +134,7 @@ class GAILRewardSignal(RewardSignal):
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
         possible_policy_batches = (
-            len(policy_buffer.update_buffer["actions"]) // n_sequences
+            len(update_buffer["actions"]) // n_sequences
         )
         possible_batches = min(possible_policy_batches, possible_demo_batches)
 
@@ -109,14 +149,14 @@ class GAILRewardSignal(RewardSignal):
         n_epoch = self.num_epoch
         for _epoch in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
-            policy_buffer.update_buffer.shuffle()
+            update_buffer.shuffle()
             if self.max_batches == 0:
                 num_batches = possible_batches
             else:
                 num_batches = min(possible_batches, self.max_batches)
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
-                policy_update_buffer = policy_buffer.update_buffer
+                policy_update_buffer = update_buffer
                 start = i * n_sequences
                 end = (i + 1) * n_sequences
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)

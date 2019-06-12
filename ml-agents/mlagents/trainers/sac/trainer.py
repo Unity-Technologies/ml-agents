@@ -313,15 +313,15 @@ class SACTrainer(Trainer):
                     self.training_buffer[agent_id]["done"].append(
                         next_info.local_done[idx]
                     )
-
-                    for name, reward in tmp_rewards_dict.items():
-                        # 0 because we use the scaled reward to train the agent
-                        self.training_buffer[agent_id][
-                            "{}_rewards".format(name)
-                        ].append(tmp_rewards_dict[name][0][next_idx])
-                        self.training_buffer[agent_id][
-                            "{}_value_estimates".format(name)
-                        ].append(value)
+                    self.training_buffer[agent_id]["environment_rewards"].append(np.array(next_info.rewards)[next_idx])
+                    # for name, reward in tmp_rewards_dict.items():
+                    #     # 0 because we use the scaled reward to train the agent
+                    #     self.training_buffer[agent_id][
+                    #         "{}_rewards".format(name)
+                    #     ].append(tmp_rewards_dict[name][0][next_idx])
+                    #     self.training_buffer[agent_id][
+                    #         "{}_value_estimates".format(name)
+                    #     ].append(value)
 
                     self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
 
@@ -466,6 +466,12 @@ class SACTrainer(Trainer):
                 sampled_minibatch = buffer.sample_mini_batch(
                     self.trainer_parameters["batch_size"]
                 )
+                # Get rewards for each reward
+                for name, signal in self.policy.reward_signals.items():
+                    sampled_minibatch[
+                        "{}_rewards".format(name)
+                    ] = signal.evaluate_batch(sampled_minibatch)[0]
+                # print(sampled_minibatch)
                 run_out = self.policy.update(
                     sampled_minibatch,
                     n_sequences,
@@ -492,7 +498,10 @@ class SACTrainer(Trainer):
         self.stats["Losses/Q2 Loss"].append(np.mean(q2loss_total))
         self.stats["Policy/Entropy Coeff"].append(np.mean(entcoeff_total))
         for _, _reward_signal in self.policy.reward_signals.items():
-            _stats = _reward_signal.update(self.training_buffer, n_sequences)
+            sampled_minibatch = buffer.sample_mini_batch(
+                    self.trainer_parameters["batch_size"]
+                )
+            _stats = _reward_signal.update(sampled_minibatch, n_sequences)
             for _stat, _val in _stats.items():
                 self.stats[_stat].append(_val)
         # if self.use_bc:

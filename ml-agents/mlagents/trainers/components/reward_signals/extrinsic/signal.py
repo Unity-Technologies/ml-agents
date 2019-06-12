@@ -27,6 +27,11 @@ class ExtrinsicRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma"]
         super().check_config(config_dict, param_keys)
 
+    def evaluate_batch(self, mini_batch):
+        env_rews = mini_batch["environment_rewards"]
+
+        return self.strength*env_rews, env_rews
+
     def evaluate(self, current_info, next_info):
         unscaled_reward = np.array(next_info.rewards)
         scaled_reward = self.strength * unscaled_reward
