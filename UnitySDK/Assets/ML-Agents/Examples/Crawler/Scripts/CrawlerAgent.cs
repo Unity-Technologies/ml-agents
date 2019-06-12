@@ -315,7 +315,6 @@ public class CrawlerAgent : Agent
 
     public void SetResetParameters()
     {
-        Physics.gravity = new Vector3(0, -resetParams["gravity"], 0);
         SetLegSize();
         SetAgentStartingHeight();
     }
