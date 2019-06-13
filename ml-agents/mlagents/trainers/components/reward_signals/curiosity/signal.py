@@ -71,20 +71,20 @@ class CuriosityRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "encoding_size"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, training_buffer, num_sequences):
+    def update(self, update_buffer, num_sequences):
         """ 
         Updates Curiosity model using training buffer. Divides training buffer into mini batches and performs
         gradient descent. 
-        :param training_buffer: Training buffer. 
-        :param num_sequences: Number of sequences in the training buffer.
+        :param update_buffer: Update buffer from which to pull data from.  
+        :param num_sequences: Number of sequences in the update buffer.
         :return: Dict of stats that should be reported to Tensorboard.
         """
         forward_total, inverse_total = [], []
         for _ in range(self.num_epoch):
-            training_buffer.update_buffer.shuffle()
-            buffer = training_buffer.update_buffer
+            update_buffer.shuffle()
+            buffer = update_buffer
             for l in range(
-                len(training_buffer.update_buffer["actions"]) // num_sequences
+                len(update_buffer["actions"]) // num_sequences
             ):
                 start = l * num_sequences
                 end = (l + 1) * num_sequences

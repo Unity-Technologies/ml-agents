@@ -81,7 +81,7 @@ class GAILRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, policy_buffer, num_sequences=32):
+    def update(self, update_buffer, num_sequences=32):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
@@ -94,7 +94,7 @@ class GAILRewardSignal(RewardSignal):
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
         possible_policy_batches = (
-            len(policy_buffer.update_buffer["actions"]) // n_sequences
+            len(update_buffer["actions"]) // n_sequences
         )
         possible_batches = min(possible_policy_batches, possible_demo_batches)
 
@@ -109,14 +109,14 @@ class GAILRewardSignal(RewardSignal):
         n_epoch = self.num_epoch
         for _epoch in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
-            policy_buffer.update_buffer.shuffle()
+            update_buffer.shuffle()
             if self.max_batches == 0:
                 num_batches = possible_batches
             else:
                 num_batches = min(possible_batches, self.max_batches)
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
-                policy_update_buffer = policy_buffer.update_buffer
+                policy_update_buffer = update_buffer
                 start = i * n_sequences
                 end = (i + 1) * n_sequences
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)

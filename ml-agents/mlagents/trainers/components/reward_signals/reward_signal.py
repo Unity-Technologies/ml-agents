@@ -32,10 +32,10 @@ class RewardSignal(object):
             "The evaluate for this RewardSignal was not implemented."
         )
 
-    def update(self, training_buffer, n_sequences):
+    def update(self, update_buffer, n_sequences):
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), update that model.
-        :param training_buffer: The training buffer
+        :param update_buffer: An AgentBuffer that contains the live data from which to update.
         :param n_sequences: The number of sequences in the training buffer.
         :return: A dict of {"Stat Name": stat} to be added to Tensorboard
         """

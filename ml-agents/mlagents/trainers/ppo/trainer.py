@@ -65,7 +65,7 @@ class PPOTrainer(Trainer):
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
         self.collected_rewards = {"environment": {}}
-        for _reward_signal in trainer_parameters["reward_signals"].keys():
+        for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
         if self.use_bc:
@@ -481,7 +481,7 @@ class PPOTrainer(Trainer):
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
         for _, _reward_signal in self.policy.reward_signals.items():
-            _stats = _reward_signal.update(self.training_buffer, n_sequences)
+            _stats = _reward_signal.update(self.training_buffer.update_buffer, n_sequences)
             for _stat, _val in _stats.items():
                 self.stats[_stat].append(_val)
         if self.use_bc:
