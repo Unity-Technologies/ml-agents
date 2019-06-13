@@ -64,7 +64,6 @@ class PPOModel(LearningModel):
             epsilon,
             lr,
             max_step,
-            stream_names,
         )
 
     @staticmethod
@@ -78,16 +77,7 @@ class PPOModel(LearningModel):
         return last_reward, new_reward, update_reward
 
     def create_losses(
-        self,
-        probs,
-        old_probs,
-        value_streams,
-        entropy,
-        beta,
-        epsilon,
-        lr,
-        max_step,
-        stream_names,
+        self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step
     ):
         """
         Creates training-specific Tensorflow ops for PPO models.
@@ -100,21 +90,19 @@ class PPOModel(LearningModel):
         :param lr: Learning rate
         :param max_step: Total number of training steps.
         """
-        self.returns_holders = []
-        self.old_values = []
-        for i in range(len(value_streams)):
+        self.returns_holders = {}
+        self.old_values = {}
+        for value_name in value_heads.keys():
             returns_holder = tf.placeholder(
-                shape=[None],
-                dtype=tf.float32,
-                name="{}_returns".format(stream_names[i]),
+                shape=[None], dtype=tf.float32, name="{}_returns".format(value_name)
             )
             old_value = tf.placeholder(
                 shape=[None],
                 dtype=tf.float32,
-                name="{}_value_estimate".format(stream_names[i]),
+                name="{}_value_estimate".format(value_name),
             )
-            self.returns_holders.append(returns_holder)
-            self.old_values.append(old_value)
+            self.returns_holders[value_name] = returns_holder
+            self.old_values[value_name] = old_value
         self.advantage = tf.placeholder(
             shape=[None, 1], dtype=tf.float32, name="advantages"
         )
@@ -130,17 +118,17 @@ class PPOModel(LearningModel):
         )
 
         value_losses = []
-        for i, name in enumerate(stream_names):
-            clipped_value_estimate = self.old_values[i] + tf.clip_by_value(
-                tf.reduce_sum(value_streams[name], axis=1) - self.old_values[i],
+        for value_name, head in value_heads.items():
+            clipped_value_estimate = self.old_values[value_name] + tf.clip_by_value(
+                tf.reduce_sum(head, axis=1) - self.old_values[value_name],
                 -decay_epsilon,
                 decay_epsilon,
             )
             v_opt_a = tf.squared_difference(
-                self.returns_holders[i], tf.reduce_sum(value_streams[name], axis=1)
+                self.returns_holders[value_name], tf.reduce_sum(head, axis=1)
             )
             v_opt_b = tf.squared_difference(
-                self.returns_holders[i], clipped_value_estimate
+                self.returns_holders[value_name], clipped_value_estimate
             )
             value_loss = tf.reduce_mean(
                 tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), self.mask, 2)[1]
