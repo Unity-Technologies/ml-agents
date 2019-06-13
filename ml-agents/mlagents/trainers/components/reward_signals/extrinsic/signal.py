@@ -37,7 +37,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         scaled_reward = self.strength * unscaled_reward
         return scaled_reward, unscaled_reward
 
-    def update(self, training_buffer, num_sequences):
+    def update(self, update_buffer, num_sequences):
         """ 
         This method does nothing, as there is nothing to update.
         """

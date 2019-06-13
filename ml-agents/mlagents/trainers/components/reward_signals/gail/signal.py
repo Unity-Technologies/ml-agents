@@ -18,6 +18,7 @@ class GAILRewardSignal(RewardSignal):
         encoding_size=128,
         learning_rate=3e-4,
         max_batches=10,
+        print_debug=False,
     ):
         """
         The Gail Reward signal generator.
@@ -36,6 +37,7 @@ class GAILRewardSignal(RewardSignal):
         self.value_name = "Policy/GAIL Value Estimate"
         self.num_epoch = num_epoch
         self.max_batches = max_batches
+        self.print_debug = print_debug
 
         self.model = GAILModel(policy.model, encoding_size, learning_rate, 64)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
@@ -142,9 +144,7 @@ class GAILRewardSignal(RewardSignal):
         possible_demo_batches = (
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
-        possible_policy_batches = (
-            len(update_buffer["actions"]) // n_sequences
-        )
+        possible_policy_batches = len(update_buffer["actions"]) // n_sequences
         possible_batches = min(possible_policy_batches, possible_demo_batches)
 
         # for reporting
@@ -184,27 +184,27 @@ class GAILRewardSignal(RewardSignal):
         self.has_updated = True
 
         # for reporting
-
-        # print(
-        #     "n_epoch",
-        #     "beta",
-        #     "kl_loss",
-        #     "policy_estimate",
-        #     "expert_estimate",
-        #     "z_mean_expert",
-        #     "z_mean_policy",
-        #     "z_log_sig_sq",
-        # )
-        # print(
-        #     n_epoch,
-        #     self.policy.sess.run(self.model.beta),
-        #     np.mean(kl_loss),
-        #     np.mean(pos),
-        #     np.mean(pes),
-        #     np.mean(zme),
-        #     np.mean(zmp),
-        #     np.mean(zlss),
-        # )
+        if self.print_debug:
+            print(
+                "n_epoch",
+                "beta",
+                "kl_loss",
+                "policy_estimate",
+                "expert_estimate",
+                "z_mean_expert",
+                "z_mean_policy",
+                "z_log_sig_sq",
+            )
+            print(
+                n_epoch,
+                self.policy.sess.run(self.model.beta),
+                np.mean(kl_loss),
+                np.mean(pos),
+                np.mean(pes),
+                np.mean(zme),
+                np.mean(zmp),
+                np.mean(zlss),
+            )
         update_stats = {"Losses/GAIL Loss": np.mean(batch_losses)}
         return update_stats
 

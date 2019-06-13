@@ -4,7 +4,9 @@ import numpy as np
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.components.reward_signals.reward_signal_factory import create_reward_signal
+from mlagents.trainers.components.reward_signals.reward_signal_factory import (
+    create_reward_signal,
+)
 from mlagents.trainers.components.bc import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
@@ -43,8 +45,10 @@ class PPOPolicy(Policy):
             self.model.create_ppo_optimizer()
 
             # Create reward signals
-            for _rsignal in reward_signal_configs.keys():
-                self.reward_signals[_rsignal] = create_reward_signal(self, _rsignal, reward_signal_configs[_rsignal])
+            for reward_signal, config in reward_signal_configs.items():
+                self.reward_signals[reward_signal] = create_reward_signal(
+                    self, reward_signal, config
+                )
 
             # BC trainer is not a reward signal
             if "pretraining" in trainer_params:
@@ -141,10 +145,10 @@ class PPOPolicy(Policy):
             ),
         }
         for i, name in enumerate(self.reward_signals.keys()):
-            feed_dict[self.model.returns_holders[i]] = mini_batch[
+            feed_dict[self.model.returns_holders[name]] = mini_batch[
                 "{}_returns".format(name)
             ].flatten()
-            feed_dict[self.model.old_values[i]] = mini_batch[
+            feed_dict[self.model.old_values[name]] = mini_batch[
                 "{}_value_estimates".format(name)
             ].flatten()
 

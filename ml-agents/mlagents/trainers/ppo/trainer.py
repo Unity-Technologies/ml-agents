@@ -65,7 +65,7 @@ class PPOTrainer(Trainer):
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
         self.collected_rewards = {"environment": {}}
-        for _reward_signal in trainer_parameters["reward_signals"].keys():
+        for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
         if self.use_bc:
@@ -229,10 +229,9 @@ class PPOTrainer(Trainer):
                 take_action_outputs["learning_rate"]
             )
             for name, signal in self.policy.reward_signals.items():
-                if signal.value_name in self.stats:
-                    self.stats[signal.value_name].append(
-                        np.mean(take_action_outputs["value"][name])
-                    )
+                self.stats[signal.value_name].append(
+                    np.mean(take_action_outputs["value"][name])
+                )
 
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
@@ -480,10 +479,12 @@ class PPOTrainer(Trainer):
                 policy_total.append(np.abs(run_out["policy_loss"]))
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
-        for _, _reward_signal in self.policy.reward_signals.items():
-            _stats = _reward_signal.update(self.training_buffer, n_sequences)
-            for _stat, _val in _stats.items():
-                self.stats[_stat].append(_val)
+        for _, reward_signal in self.policy.reward_signals.items():
+            update_stats = reward_signal.update(
+                self.training_buffer.update_buffer, n_sequences
+            )
+            for stat, val in update_stats.items():
+                self.stats[stat].append(val)
         if self.use_bc:
             _bc_loss = self.policy.bc_trainer.update()
             self.stats["Losses/BC Loss"].append(_bc_loss)

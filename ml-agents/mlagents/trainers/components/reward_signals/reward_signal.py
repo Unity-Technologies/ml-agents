@@ -1,13 +1,19 @@
 import logging
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.policy import Policy
+import numpy as np
+import abc
 
 import tensorflow as tf
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class RewardSignal(object):
+class RewardSignal(abc.ABC):
+    value_name = "Policy/{} Value Estimate".format(__name__)
+    stat_name = "Policy/{} Reward".format(__name__)
+
+    @abc.abstractmethod
     def __init__(self, policy: Policy, strength, gamma):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to, 
@@ -17,10 +23,11 @@ class RewardSignal(object):
         :param gamma: The time discounting factor used for this reward. 
         :return: A RewardSignal object. 
         """
-        raise UnityTrainerException(
-            "The initialize for this RewardSignal was not implemented."
-        )
+        self.gamma = gamma
+        self.policy = policy
+        self.strength = strength
 
+    @abc.abstractmethod
     def evaluate(self, current_info, next_info):
         """
         Evaluates the reward for the agents present in current_info given the next_info
@@ -28,20 +35,20 @@ class RewardSignal(object):
         :param next_info: The BrainInfo from the next timestep.
         :return: a tuple of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
-        raise UnityTrainerException(
-            "The evaluate for this RewardSignal was not implemented."
+        return (
+            self.strength * np.zeros(len(current_info.agents)),
+            np.zeros(len(current_info.agents)),
         )
 
-    def update(self, training_buffer, n_sequences):
+    @abc.abstractmethod
+    def update(self, update_buffer, n_sequences):
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), update that model.
-        :param training_buffer: The training buffer
+        :param update_buffer: An AgentBuffer that contains the live data from which to update.
         :param n_sequences: The number of sequences in the training buffer.
         :return: A dict of {"Stat Name": stat} to be added to Tensorboard
         """
-        raise UnityTrainerException(
-            "The update for this RewardSignal was not implemented."
-        )
+        return {}
 
     @classmethod
     def check_config(cls, config_dict, param_keys=[]):
