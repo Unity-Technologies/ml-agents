@@ -234,10 +234,9 @@ class SACTrainer(Trainer):
                 take_action_outputs["learning_rate"]
             )
             for name, signal in self.policy.reward_signals.items():
-                if signal.value_name in self.stats:
-                    self.stats[signal.value_name].append(
-                        take_action_outputs["value"][name]
-                    )
+                self.stats[signal.value_name].append(
+                    np.mean(take_action_outputs["value"][name])
+                )
 
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]

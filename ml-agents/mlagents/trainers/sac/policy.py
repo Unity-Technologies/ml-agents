@@ -70,7 +70,7 @@ class SACPolicy(Policy):
         self.inference_dict = {
             "action": self.model.output,
             "log_probs": self.model.all_log_probs,
-            "value": self.model.value,
+            "value": self.model.value_heads,
             "entropy": self.model.entropy,
             "learning_rate": self.model.learning_rate,
         }
@@ -234,12 +234,15 @@ class SACPolicy(Policy):
             return ActionInfo([], [], [], None, None)
 
         run_out = self.evaluate(brain_info)
+        mean_values = np.mean(
+            np.array(list(run_out.get("value").values())), axis=0
+        ).flatten()
 
         return ActionInfo(
             action=run_out.get("action"),
             memory=run_out.get("memory_out"),
             text=None,
-            value=run_out.get("value"),
+            value=mean_values,
             outputs=run_out,
         )
 

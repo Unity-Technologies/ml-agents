@@ -530,6 +530,10 @@ class SACModel(LearningModel):
         return last_reward, new_reward, update_reward
 
     def create_inputs(self):
+        """ 
+        Assign the higher-level SACModel's inputs and outputs to those of its policy or 
+        target network.
+        """
         self.vector_in = self.policy_network.vector_in
         self.visual_in = self.policy_network.visual_in
         self.next_vector_in = self.target_network.vector_in
@@ -540,6 +544,7 @@ class SACModel(LearningModel):
 
         self.output = self.policy_network.output
         self.value = self.policy_network.value
+        self.value_heads = self.policy_network.value_heads
         self.all_log_probs = self.policy_network.all_log_probs
         self.dones_holder = tf.placeholder(
             shape=[None], dtype=tf.float32, name="dones_holder"
