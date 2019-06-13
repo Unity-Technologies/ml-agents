@@ -92,17 +92,17 @@ class PPOModel(LearningModel):
         """
         self.returns_holders = {}
         self.old_values = {}
-        for value_name in value_heads.keys():
+        for name in value_heads.keys():
             returns_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_returns".format(value_name)
+                shape=[None], dtype=tf.float32, name="{}_returns".format(name)
             )
             old_value = tf.placeholder(
                 shape=[None],
                 dtype=tf.float32,
-                name="{}_value_estimate".format(value_name),
+                name="{}_value_estimate".format(name),
             )
-            self.returns_holders[value_name] = returns_holder
-            self.old_values[value_name] = old_value
+            self.returns_holders[name] = returns_holder
+            self.old_values[name] = old_value
         self.advantage = tf.placeholder(
             shape=[None, 1], dtype=tf.float32, name="advantages"
         )
@@ -118,17 +118,17 @@ class PPOModel(LearningModel):
         )
 
         value_losses = []
-        for value_name, head in value_heads.items():
-            clipped_value_estimate = self.old_values[value_name] + tf.clip_by_value(
-                tf.reduce_sum(head, axis=1) - self.old_values[value_name],
+        for name, head in value_heads.items():
+            clipped_value_estimate = self.old_values[name] + tf.clip_by_value(
+                tf.reduce_sum(head, axis=1) - self.old_values[name],
                 -decay_epsilon,
                 decay_epsilon,
             )
             v_opt_a = tf.squared_difference(
-                self.returns_holders[value_name], tf.reduce_sum(head, axis=1)
+                self.returns_holders[name], tf.reduce_sum(head, axis=1)
             )
             v_opt_b = tf.squared_difference(
-                self.returns_holders[value_name], clipped_value_estimate
+                self.returns_holders[name], clipped_value_estimate
             )
             value_loss = tf.reduce_mean(
                 tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), self.mask, 2)[1]
