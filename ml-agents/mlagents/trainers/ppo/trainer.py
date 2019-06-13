@@ -480,10 +480,12 @@ class PPOTrainer(Trainer):
                 policy_total.append(np.abs(run_out["policy_loss"]))
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
-        for _, _reward_signal in self.policy.reward_signals.items():
-            _stats = _reward_signal.update(self.training_buffer.update_buffer, n_sequences)
-            for _stat, _val in _stats.items():
-                self.stats[_stat].append(_val)
+        for _, reward_signal in self.policy.reward_signals.items():
+            update_stats = reward_signal.update(
+                self.training_buffer.update_buffer, n_sequences
+            )
+            for stat, val in update_stats.items():
+                self.stats[stat].append(val)
         if self.use_bc:
             _bc_loss = self.policy.bc_trainer.update()
             self.stats["Losses/BC Loss"].append(_bc_loss)

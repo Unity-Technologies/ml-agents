@@ -83,9 +83,7 @@ class CuriosityRewardSignal(RewardSignal):
         for _ in range(self.num_epoch):
             update_buffer.shuffle()
             buffer = update_buffer
-            for l in range(
-                len(update_buffer["actions"]) // num_sequences
-            ):
+            for l in range(len(update_buffer["actions"]) // num_sequences):
                 start = l * num_sequences
                 end = (l + 1) * num_sequences
                 run_out_curio = self._update_batch(
