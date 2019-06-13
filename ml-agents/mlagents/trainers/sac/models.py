@@ -35,7 +35,15 @@ class SACNetwork(LearningModel):
         self.h_size = h_size
         self.share_ac_cnn = False
         self.activ_fn = self.swish
+        
+        if self.use_recurrent:
+            self.memory_in = tf.placeholder(
+                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+            )
+        
         if is_target:
+            if self.use_recurrent:
+                self.value_memory_in = self.memory_in
             with tf.variable_scope("target_network"):
                 hidden_streams = self.create_observation_streams(
                     1, self.h_size, 0, ["critic/value/"]
@@ -48,28 +56,35 @@ class SACNetwork(LearningModel):
                 self.create_dc_critic(
                     hidden_streams[0], "target_network", create_qs=False
                 )
+            mem_ins = [self.value_memory_in]
+            mem_outs = [self.value_memory_out]
         else:
+            if self.use_recurrent:
+                num_mems = 4
+                mem_ins = []
+                for i in range(num_mems):
+                    _start = int(self.m_size/num_mems)*i
+                    _end = int(self.m_size/num_mems)*(i +1)
+                    mem_ins.append(self.memory_in[:, _start:_end])
+                self.policy_memory_in = mem_ins[3]
+                self.q1_memory_in = mem_ins[1]
+                self.q2_memory_in = mem_ins[2]
+                self.value_memory_in = mem_ins[0]
             if self.share_ac_cnn:
                 with tf.variable_scope("policy_network"):
                     hidden_streams = self.create_observation_streams(
-                        1,
-                        self.h_size,
-                        0,
-                        ["critic/value/"],
+                        1, self.h_size, 0, ["critic/value/"]
                     )
                 hidden_policy = hidden_streams[0]
                 hidden_critic = hidden_streams[0]
             else:
                 with tf.variable_scope("policy_network"):
                     hidden_streams = self.create_observation_streams(
-                        2,
-                        self.h_size,
-                        0,
-                        ["policy/", "critic/value/"],
+                        2, self.h_size, 0, ["policy/", "critic/value/"]
                     )
                 hidden_policy = hidden_streams[0]
                 hidden_critic = hidden_streams[1]
-                
+
             if brain.vector_action_space_type == "continuous":
                 self.create_cc_actor(hidden_policy, "policy_network")
                 self.create_cc_critic(hidden_critic, "policy_network")
@@ -77,10 +92,20 @@ class SACNetwork(LearningModel):
             else:
                 self.create_dc_actor(hidden_policy, "policy_network")
                 self.create_dc_critic(hidden_critic, "policy_network")
-            
+
             if self.share_ac_cnn:
                 # Make sure that the policy also contains the CNN
-                self.policy_vars += self.get_vars("policy_network/critic/value/main_graph_0_encoder0")
+                self.policy_vars += self.get_vars(
+                    "policy_network/critic/value/main_graph_0_encoder0"
+                )
+            mem_outs = [
+                self.policy_memory_out,
+                self.q1_memory_out,
+                self.q2_memory_out,
+                self.value_memory_out,
+            ]
+        if self.use_recurrent:
+            self.memory_out = tf.concat(mem_outs, axis=1, name="recurrent_out")
 
     def get_vars(self, scope):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
@@ -91,7 +116,11 @@ class SACNetwork(LearningModel):
         """
         scope = scope + "/critic"
         self.value = self.create_sac_value_head(
-            self.stream_names, hidden_value, self.num_layers, self.h_size, scope + "/value"
+            self.stream_names,
+            hidden_value,
+            self.num_layers,
+            self.h_size,
+            scope + "/value",
         )
 
         self.value_vars = self.get_vars(scope + "/value")
@@ -119,7 +148,11 @@ class SACNetwork(LearningModel):
         """
         scope = scope + "/critic"
         self.value = self.create_sac_value_head(
-            self.stream_names, hidden_value, self.num_layers, self.h_size, scope + "/value"
+            self.stream_names,
+            hidden_value,
+            self.num_layers,
+            self.h_size,
+            scope + "/value",
         )
 
         self.value_vars = self.get_vars(scope + "/value")
@@ -242,14 +275,10 @@ class SACNetwork(LearningModel):
                     axis=1,
                 )
                 hidden_policy = tf.concat([hidden_policy, prev_action_oh], axis=1)
-
-                self.memory_in = tf.placeholder(
-                    shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-                )
                 hidden_policy, memory_out = self.create_recurrent_encoder(
-                    hidden_policy, self.memory_in, self.sequence_length
+                    hidden_policy, self.policy_memory_in, self.sequence_length
                 )
-                self.memory_out = tf.identity(memory_out, name="recurrent_out")
+                self.policy_memory_out = tf.identity(memory_out, name="recurrent_out")
 
             policy_branches = []
             for size in self.act_size:
@@ -367,6 +396,11 @@ class SACNetwork(LearningModel):
         )
         self.value_heads = {}
         with tf.variable_scope(scope):
+            if self.use_recurrent:  # Not sure if works
+                value_hidden, memory_out = self.create_recurrent_encoder(
+                    value_hidden, self.value_memory_in, self.sequence_length
+                )
+                self.value_memory_out = tf.identity(memory_out, name="recurrent_out")
             for name in stream_names:
                 self.value_heads[name] = tf.layers.dense(
                     value_hidden, 1, reuse=False, name="{}_value".format(name)
@@ -401,6 +435,12 @@ class SACNetwork(LearningModel):
             q1_hidden = self.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "q1_encoder", reuse
             )
+            if self.use_recurrent:  # Not sure if works
+                q1_hidden, memory_out = self.create_recurrent_encoder(
+                    q1_hidden, self.q1_memory_in, self.sequence_length
+                )
+                self.q1_memory_out = tf.identity(memory_out, name="recurrent_out")
+
             q1_heads = {}
             for name in stream_names:
                 _q1 = tf.layers.dense(q1_hidden, num_outputs, name="{}_q1".format(name))
@@ -409,6 +449,12 @@ class SACNetwork(LearningModel):
             q2_hidden = self.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "q2_encoder", reuse
             )
+            if self.use_recurrent:  # Not sure if works
+                q2_hidden, memory_out = self.create_recurrent_encoder(
+                    q2_hidden, self.q2_memory_in, self.sequence_length
+                )
+                self.q2_memory_out = tf.identity(memory_out, name="recurrent_out")
+
             q2_heads = {}
             for name in stream_names:
                 _q2 = tf.layers.dense(q2_hidden, num_outputs, name="{}_q2".format(name))
@@ -487,7 +533,7 @@ class SACModel(LearningModel):
         )
         self.target_network = SACNetwork(
             brain=brain,
-            m_size=m_size,
+            m_size=m_size//4,
             h_size=h_size,
             normalize=normalize,
             use_recurrent=use_recurrent,
@@ -505,7 +551,9 @@ class SACModel(LearningModel):
             stream_names,
             discrete=self.brain.vector_action_space_type == "discrete",
         )
-        self.selected_actions = self.policy_network.selected_actions #For GAIL and other reward signals
+        self.selected_actions = (
+            self.policy_network.selected_actions
+        )  # For GAIL and other reward signals
         if normalize:
             target_update_norm = self.target_network.copy_normalization(
                 self.policy_network.running_mean,
@@ -550,14 +598,16 @@ class SACModel(LearningModel):
             shape=[None], dtype=tf.float32, name="dones_holder"
         )
 
+        if self.use_recurrent:
+            self.memory_in = self.policy_network.memory_in
+            self.memory_out = self.policy_network.memory_out
+            self.prev_action = self.policy_network.prev_action
+            self.sequence_length = self.policy_network.sequence_length
+            self.next_sequence_length = self.target_network.sequence_length
+            self.next_memory_in = self.target_network.memory_in
+
     def create_losses(
-        self,
-        q1_streams,
-        q2_streams,
-        lr,
-        max_step,
-        stream_names,
-        discrete=False,
+        self, q1_streams, q2_streams, lr, max_step, stream_names, discrete=False
     ):
         """
         Creates training-specific Tensorflow ops for SAC models.
@@ -572,39 +622,47 @@ class SACModel(LearningModel):
         #     self.policy_network.q1_p, self.policy_network.q2_p
         # )
 
-        
         if discrete:
-            self.target_entropy = [0.1*np.log(i).astype(np.float32) for i in self.act_size]
+            self.target_entropy = [
+                0.1 * np.log(i).astype(np.float32) for i in self.act_size
+            ]
         else:
             self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
-        
+
         self.rewards_holders = {}
         self.min_policy_qs = {}
 
-        for i,name in enumerate(stream_names):
+        for i, name in enumerate(stream_names):
             if discrete:
-                _broken_mpq1 = self.apply_as_branches(self.policy_network.q1_pheads[name] * self.policy_network.action_probs)
-                broken_mpq1 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq1])
+                _broken_mpq1 = self.apply_as_branches(
+                    self.policy_network.q1_pheads[name]
+                    * self.policy_network.action_probs
+                )
+                broken_mpq1 = tf.stack(
+                    [tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq1]
+                )
                 _q1_p_mean = tf.reduce_mean(broken_mpq1, axis=0)
 
-                _broken_mpq2 = self.apply_as_branches(self.policy_network.q2_pheads[name]* self.policy_network.action_probs)
-                broken_mpq2 = tf.stack([tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq2])
+                _broken_mpq2 = self.apply_as_branches(
+                    self.policy_network.q2_pheads[name]
+                    * self.policy_network.action_probs
+                )
+                broken_mpq2 = tf.stack(
+                    [tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq2]
+                )
                 _q2_p_mean = tf.reduce_mean(broken_mpq2, axis=0)
 
-                self.min_policy_qs[name] = tf.minimum(
-                    _q1_p_mean, _q2_p_mean
-                )
+                self.min_policy_qs[name] = tf.minimum(_q1_p_mean, _q2_p_mean)
 
                 # self.min_policy_q = tf.Print(self.min_policy_q, [self.policy_network.action_probs], summarize = 11)
             else:
                 self.min_policy_qs[name] = tf.minimum(
-                    self.policy_network.q1_pheads[name], self.policy_network.q2_pheads[name]
+                    self.policy_network.q1_pheads[name],
+                    self.policy_network.q2_pheads[name],
                 )
 
             rewards_holder = tf.placeholder(
-                shape=[None],
-                dtype=tf.float32,
-                name="{}_rewards".format(name),
+                shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
             )
             self.rewards_holders[name] = rewards_holder
             # self.old_values.append(old_value)
@@ -701,7 +759,9 @@ class SACModel(LearningModel):
                     for _lp, _te in zip(broken_log_probs, self.target_entropy)
                 ]
             )
-            self.entropy_loss = -tf.reduce_mean(self.log_ent_coef * tf.stop_gradient(broken_ent_sums))
+            self.entropy_loss = -tf.reduce_mean(
+                self.log_ent_coef * tf.stop_gradient(broken_ent_sums)
+            )
 
             # Same with policy loss, we have to do the loss per branch and average them, so that larger branches don't get more weight.
             # The equivalent KL divergence is also pi*log(pi) - Q
@@ -711,7 +771,7 @@ class SACModel(LearningModel):
 
             broken_policy_loss = tf.stack(
                 [
-                    tf.reduce_sum( self.ent_coef[i]*_lp - _qt, axis=1, keep_dims=True)
+                    tf.reduce_sum(self.ent_coef[i] * _lp - _qt, axis=1, keep_dims=True)
                     for i, (_lp, _qt) in enumerate(zip(broken_log_probs, broken_q_term))
                 ]
             )
@@ -728,11 +788,15 @@ class SACModel(LearningModel):
             value_losses = []
             for name in stream_names:
                 v_backup = tf.stop_gradient(
-                    self.min_policy_qs[name]
-                    - tf.reduce_mean(broken_ent_bonus, axis=0)
+                    self.min_policy_qs[name] - tf.reduce_mean(broken_ent_bonus, axis=0)
                 )
-                value_losses.append(0.5 * tf.reduce_mean(
-                    tf.squared_difference(self.policy_network.value_heads[name], v_backup))
+                value_losses.append(
+                    0.5
+                    * tf.reduce_mean(
+                        tf.squared_difference(
+                            self.policy_network.value_heads[name], v_backup
+                        )
+                    )
                 )
             # v_backup = tf.Print(v_backup,[v_backup,tf.reduce_mean(broken_ent_bonus, axis=0)])
         else:
@@ -762,8 +826,13 @@ class SACModel(LearningModel):
                         self.ent_coef * self.policy_network.all_log_probs, axis=1
                     )
                 )
-                value_losses.append(0.5 * tf.reduce_mean(
-                    tf.squared_difference(self.policy_network.value_heads[name], v_backup))
+                value_losses.append(
+                    0.5
+                    * tf.reduce_mean(
+                        tf.squared_difference(
+                            self.policy_network.value_heads[name], v_backup
+                        )
+                    )
                 )
         self.value_loss = tf.reduce_mean(value_losses)
         self.total_value_loss = self.q1_loss + self.q2_loss + self.value_loss

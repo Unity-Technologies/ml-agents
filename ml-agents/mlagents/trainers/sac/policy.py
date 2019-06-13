@@ -5,7 +5,9 @@ import tensorflow as tf
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.components.reward_signals.reward_signal_factory import create_reward_signal
+from mlagents.trainers.components.reward_signals.reward_signal_factory import (
+    create_reward_signal,
+)
 from mlagents.trainers.components.bc import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
@@ -40,13 +42,15 @@ class SACPolicy(Policy):
                 seed=seed,
                 stream_names=list(reward_signal_configs.keys()),
                 tau=float(trainer_params["tau"]),
-                gammas=list(_val['gamma'] for _val in reward_signal_configs.values())
+                gammas=list(_val["gamma"] for _val in reward_signal_configs.values()),
             )
             self.model.create_sac_optimizers()
 
             # Initialize Components
             for _rsignal in reward_signal_configs.keys():
-                self.reward_signals[_rsignal] = create_reward_signal(self, _rsignal, reward_signal_configs[_rsignal])
+                self.reward_signals[_rsignal] = create_reward_signal(
+                    self, _rsignal, reward_signal_configs[_rsignal]
+                )
 
             # BC trainer is not a reward signal
             # if "demo_aided" in trainer_params:
@@ -138,6 +142,7 @@ class SACPolicy(Policy):
         feed_dict = {
             self.model.batch_size: num_sequences,
             self.model.sequence_length: self.sequence_length,
+            self.model.next_sequence_length: self.sequence_length,
             self.model.mask_input: mini_batch["masks"].flatten(),
         }
         for i, name in enumerate(self.reward_signals.keys()):
@@ -187,7 +192,10 @@ class SACPolicy(Policy):
                     feed_dict[self.model.next_visual_in[i]] = _obs
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
+            # TODO: Check if sequence length is greater than 1
+            next_mem_in = mini_batch["memory"][:, 1, :]
             feed_dict[self.model.memory_in] = mem_in
+            feed_dict[self.model.next_memory_in] = next_mem_in[:, : self.m_size // 4]
         feed_dict[self.model.dones_holder] = mini_batch["done"].flatten()
         run_out = self._execute_model(feed_dict, self.update_dict)
         # for key in feed_dict.keys():
