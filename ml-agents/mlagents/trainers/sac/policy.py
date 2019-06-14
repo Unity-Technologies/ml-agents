@@ -192,8 +192,7 @@ class SACPolicy(Policy):
                     feed_dict[self.model.next_visual_in[i]] = _obs
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
-            # TODO: Check if sequence length is greater than 1
-            next_mem_in = mini_batch["memory"][:, 1, :]
+            next_mem_in = mini_batch["memory"][:, 1, :] if self.sequence_length > 1 else mini_batch["memory"][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
             feed_dict[self.model.next_memory_in] = next_mem_in[:, : self.m_size // 4]
         feed_dict[self.model.dones_holder] = mini_batch["done"].flatten()

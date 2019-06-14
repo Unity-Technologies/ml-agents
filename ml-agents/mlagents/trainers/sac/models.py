@@ -35,12 +35,12 @@ class SACNetwork(LearningModel):
         self.h_size = h_size
         self.share_ac_cnn = False
         self.activ_fn = self.swish
-        
+
         if self.use_recurrent:
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
-        
+
         if is_target:
             if self.use_recurrent:
                 self.value_memory_in = self.memory_in
@@ -63,13 +63,14 @@ class SACNetwork(LearningModel):
                 num_mems = 4
                 mem_ins = []
                 for i in range(num_mems):
-                    _start = int(self.m_size/num_mems)*i
-                    _end = int(self.m_size/num_mems)*(i +1)
+                    _start = self.m_size // num_mems * i
+                    _end = self.m_size // num_mems * (i + 1)
                     mem_ins.append(self.memory_in[:, _start:_end])
-                self.policy_memory_in = mem_ins[3]
+                self.value_memory_in = mem_ins[0]
                 self.q1_memory_in = mem_ins[1]
                 self.q2_memory_in = mem_ins[2]
-                self.value_memory_in = mem_ins[0]
+                self.policy_memory_in = mem_ins[3]
+
             if self.share_ac_cnn:
                 with tf.variable_scope("policy_network"):
                     hidden_streams = self.create_observation_streams(
@@ -99,10 +100,10 @@ class SACNetwork(LearningModel):
                     "policy_network/critic/value/main_graph_0_encoder0"
                 )
             mem_outs = [
-                self.policy_memory_out,
+                self.value_memory_out,
                 self.q1_memory_out,
                 self.q2_memory_out,
-                self.value_memory_out,
+                self.policy_memory_out,
             ]
         if self.use_recurrent:
             self.memory_out = tf.concat(mem_outs, axis=1, name="recurrent_out")
@@ -225,7 +226,7 @@ class SACNetwork(LearningModel):
                 + 2 * self.log_sigma_sq
                 + np.log(2 * np.pi)
             )
-            print(_gauss_pre)
+
             all_probs = tf.reduce_sum(_gauss_pre, axis=1, keepdims=True)
 
             self.entropy = tf.reduce_sum(
@@ -293,7 +294,7 @@ class SACNetwork(LearningModel):
                         ),
                     )
                 )
-            print(policy_branches)
+
             all_logits = tf.concat(
                 [branch for branch in policy_branches], axis=1, name="action_probs"
             )
@@ -533,7 +534,7 @@ class SACModel(LearningModel):
         )
         self.target_network = SACNetwork(
             brain=brain,
-            m_size=m_size//4,
+            m_size=m_size // 4,
             h_size=h_size,
             normalize=normalize,
             use_recurrent=use_recurrent,
@@ -551,6 +552,7 @@ class SACModel(LearningModel):
             stream_names,
             discrete=self.brain.vector_action_space_type == "discrete",
         )
+
         self.selected_actions = (
             self.policy_network.selected_actions
         )  # For GAIL and other reward signals
@@ -682,7 +684,6 @@ class SACModel(LearningModel):
                 # tf.expand_dims(self.policy_network.external_action_in[:,2] - self.policy_network.external_action_in[:,1], axis = -1)
                 + (1.0 - expanded_dones) * self.gammas[i] * self.target_network.value
             )
-            print("in", self.policy_network.external_action_in)
 
             # q_backup = tf.Print(q_backup, [
             #     self.policy_network.external_action_in[0,2] - self.policy_network.external_action_in[0,1],
@@ -711,15 +712,14 @@ class SACModel(LearningModel):
                 q2_stream = tf.reduce_mean(broken_q2_stream, axis=0)
                 # q1_stream = tf.reduce_mean(self.apply_as_branches(q1_stream), axis=0)
                 # q2_stream = tf.reduce_mean(self.apply_as_branches(q2_stream), axis=0)
-                print("q1_stream", broken_q1_stream, q1_stream)
             else:
                 q1_stream = q1_streams[name]
                 q2_stream = q2_streams[name]
             # q_backup = tf.Print(q_backup, [self.policy_network.external_action_in, _expanded_rewards, q1_streams[name]], message="Qbackup", summarize=10)
 
-            _q1_loss = 0.5 * tf.reduce_mean(tf.squared_difference(q_backup, q1_stream))
+            _q1_loss = 0.5 * tf.reduce_mean(tf.to_float(self.mask)*tf.squared_difference(q_backup, q1_stream))
 
-            _q2_loss = 0.5 * tf.reduce_mean(tf.squared_difference(q_backup, q2_stream))
+            _q2_loss = 0.5 * tf.reduce_mean(tf.to_float(self.mask)*tf.squared_difference(q_backup, q2_stream))
 
             q1_losses.append(_q1_loss)
             q2_losses.append(_q2_loss)
@@ -745,7 +745,6 @@ class SACModel(LearningModel):
                 initializer=np.log(self.init_entcoef).astype(np.float32),
                 trainable=True,
             )
-        print(self.log_ent_coef)
         self.ent_coef = tf.exp(self.log_ent_coef)
         # self.ent_coef = tf.Variable(0.2, tf.float32)
 
@@ -775,8 +774,9 @@ class SACModel(LearningModel):
                     for i, (_lp, _qt) in enumerate(zip(broken_log_probs, broken_q_term))
                 ]
             )
-            print(broken_policy_loss)
-            self.policy_loss = tf.reduce_mean(broken_policy_loss)
+            self.policy_loss = tf.reduce_mean(
+                tf.to_float(self.mask) * tf.squeeze(broken_policy_loss)
+            )
 
             # Do vbackup entropy bonus per branch as well.
             broken_ent_bonus = tf.stack(
@@ -812,8 +812,11 @@ class SACModel(LearningModel):
             )
 
             self.policy_loss = tf.reduce_mean(
-                self.ent_coef * self.policy_network.all_log_probs
-                - self.policy_network.q1_p
+                tf.to_float(self.mask)
+                * (
+                    self.ent_coef * self.policy_network.all_log_probs
+                    - self.policy_network.q1_p
+                )
             )
 
             # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
@@ -829,13 +832,20 @@ class SACModel(LearningModel):
                 value_losses.append(
                     0.5
                     * tf.reduce_mean(
-                        tf.squared_difference(
+                        tf.to_float(self.mask)
+                        * tf.squared_difference(
                             self.policy_network.value_heads[name], v_backup
                         )
                     )
                 )
         self.value_loss = tf.reduce_mean(value_losses)
+
         self.total_value_loss = self.q1_loss + self.q2_loss + self.value_loss
+
+        # Dynamic partition for masks. TODO: Figure out if this can be handled using multiplication.
+        # self.total_value_loss = tf.dynamic_partition(self.total_value_loss, self.mask, 2)[1]
+        # self.policy_loss = tf.dynamic_partition(self.policy_loss, self.mask, 2)[1]
+
         self.entropy = self.policy_network.entropy
 
     def apply_as_branches(self, concat_logits):
