@@ -198,6 +198,12 @@ class SACNetwork(LearningModel):
         )
         # hidden_policy = tf.Print(hidden_policy,[hidden_policy], name="HiddenPoicy" )
         with tf.variable_scope(scope):
+            if self.use_recurrent:  # Not sure if works
+                hidden_policy, memory_out = self.create_recurrent_encoder(
+                    hidden_policy, self.policy_memory_in, self.sequence_length
+                )
+                self.policy_memory_out = tf.identity(memory_out, name="recurrent_out")
+
             mu = tf.layers.dense(
                 hidden_policy,
                 self.act_size[0],
@@ -606,7 +612,8 @@ class SACModel(LearningModel):
         if self.use_recurrent:
             self.memory_in = self.policy_network.memory_in
             self.memory_out = self.policy_network.memory_out
-            self.prev_action = self.policy_network.prev_action
+            if self.brain.vector_action_space_type == "discrete":
+                self.prev_action = self.policy_network.prev_action
             self.next_memory_in = self.target_network.memory_in
 
     def create_losses(
@@ -718,9 +725,13 @@ class SACModel(LearningModel):
                 q2_stream = q2_streams[name]
             # q_backup = tf.Print(q_backup, [self.policy_network.external_action_in, _expanded_rewards, q1_streams[name]], message="Qbackup", summarize=10)
 
-            _q1_loss = 0.5 * tf.reduce_mean(tf.to_float(self.mask)*tf.squared_difference(q_backup, q1_stream))
+            _q1_loss = 0.5 * tf.reduce_mean(
+                tf.to_float(self.mask) * tf.squared_difference(q_backup, q1_stream)
+            )
 
-            _q2_loss = 0.5 * tf.reduce_mean(tf.to_float(self.mask)*tf.squared_difference(q_backup, q2_stream))
+            _q2_loss = 0.5 * tf.reduce_mean(
+                tf.to_float(self.mask) * tf.squared_difference(q_backup, q2_stream)
+            )
 
             q1_losses.append(_q1_loss)
             q2_losses.append(_q2_loss)
@@ -794,7 +805,7 @@ class SACModel(LearningModel):
                 value_losses.append(
                     0.5
                     * tf.reduce_mean(
-                        tf.squared_difference(
+                        tf.to_float(self.mask) * tf.squared_difference(
                             self.policy_network.value_heads[name], v_backup
                         )
                     )
@@ -811,13 +822,13 @@ class SACModel(LearningModel):
                     )
                 )
             )
-
+            batch_policy_loss = tf.reduce_mean(
+                self.ent_coef * self.policy_network.all_log_probs
+                - self.policy_network.q1_p,
+                axis=1,
+            )
             self.policy_loss = tf.reduce_mean(
-                tf.to_float(self.mask)
-                * (
-                    self.ent_coef * self.policy_network.all_log_probs
-                    - self.policy_network.q1_p
-                )
+                tf.to_float(self.mask) * batch_policy_loss
             )
 
             # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
