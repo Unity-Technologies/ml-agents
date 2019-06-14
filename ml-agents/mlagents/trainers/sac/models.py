@@ -56,8 +56,8 @@ class SACNetwork(LearningModel):
                 self.create_dc_critic(
                     hidden_streams[0], "target_network", create_qs=False
                 )
-            mem_ins = [self.value_memory_in]
-            mem_outs = [self.value_memory_out]
+            if self.use_recurrent:
+                mem_outs = [self.value_memory_out]
         else:
             if self.use_recurrent:
                 num_mems = 4
@@ -99,12 +99,13 @@ class SACNetwork(LearningModel):
                 self.policy_vars += self.get_vars(
                     "policy_network/critic/value/main_graph_0_encoder0"
                 )
-            mem_outs = [
-                self.value_memory_out,
-                self.q1_memory_out,
-                self.q2_memory_out,
-                self.policy_memory_out,
-            ]
+            if self.use_recurrent:
+                mem_outs = [
+                    self.value_memory_out,
+                    self.q1_memory_out,
+                    self.q2_memory_out,
+                    self.policy_memory_out,
+                ]
         if self.use_recurrent:
             self.memory_out = tf.concat(mem_outs, axis=1, name="recurrent_out")
 
@@ -534,7 +535,7 @@ class SACModel(LearningModel):
         )
         self.target_network = SACNetwork(
             brain=brain,
-            m_size=m_size // 4,
+            m_size=m_size // 4 if m_size else None,
             h_size=h_size,
             normalize=normalize,
             use_recurrent=use_recurrent,
@@ -589,6 +590,8 @@ class SACModel(LearningModel):
         self.next_vector_in = self.target_network.vector_in
         self.next_visual_in = self.target_network.visual_in
         self.action_holder = self.policy_network.action_holder
+        self.sequence_length = self.policy_network.sequence_length
+        self.next_sequence_length = self.target_network.sequence_length
         if self.brain.vector_action_space_type == "discrete":
             self.action_masks = self.policy_network.action_masks
 
@@ -604,8 +607,6 @@ class SACModel(LearningModel):
             self.memory_in = self.policy_network.memory_in
             self.memory_out = self.policy_network.memory_out
             self.prev_action = self.policy_network.prev_action
-            self.sequence_length = self.policy_network.sequence_length
-            self.next_sequence_length = self.target_network.sequence_length
             self.next_memory_in = self.target_network.memory_in
 
     def create_losses(
