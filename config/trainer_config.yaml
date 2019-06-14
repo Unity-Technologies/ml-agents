@@ -24,9 +24,7 @@ default:
             gamma: 0.99
 
 BananaLearning:
-    trainer: sac
     normalize: false
-    beta: 0.0
     batch_size: 256
     buffer_size: 500000
     max_steps: 1.0e5
@@ -37,9 +35,7 @@ BananaLearning:
 VisualBananaLearning:
     beta: 1.0e-2
     gamma: 0.99
-    num_epoch: 3
-    buffer_size: 512
-    batch_size: 32
+    num_epoch: 1
     max_steps: 5.0e5
     summary_freq: 1000
 
@@ -114,7 +110,6 @@ PyramidsLearning:
     max_steps: 5.0e5
     num_epoch: 3
     sequence_length: 16
-    demo_path: ./demos/ExpertPyramid.demo
     use_recurrent: false
     reward_signals:
         extrinsic: 
@@ -124,10 +119,10 @@ PyramidsLearning:
         #     strength: 0.2
         #     gamma: 0.9
         #     demo_path: ./demos/ExpertPyramid.demo
-        curiosity:
-            strength: 0.01
-            gamma: 0.99
-            encoding_size: 128
+        # curiosity:
+        #     strength: 0.01
+        #     gamma: 0.99
+        #     encoding_size: 128
             
 VisualPyramidsLearning:
     curiosity_enc_size: 256
@@ -138,7 +133,6 @@ VisualPyramidsLearning:
     num_layers: 1
     beta: 1.0e-2
     max_steps: 5.0e5
-    num_epoch: 3
 
 3DBallLearning:
     normalize: true
@@ -156,7 +150,6 @@ VisualPyramidsLearning:
     summary_freq: 1000
     time_horizon: 1000
     max_steps: 5.0e5
-    beta: 0.001
 
 TennisLearning:
     normalize: true
@@ -169,7 +162,8 @@ CrawlerStaticLearning:
     num_epoch: 3
     time_horizon: 1000
     batch_size: 256
-    train_interval: 1
+    train_interval: 3
+    target_update_steps: 3
     buffer_size: 500000
     max_steps: 1e6
     summary_freq: 3000
@@ -178,13 +172,13 @@ CrawlerStaticLearning:
 
 CrawlerDynamicLearning:
     normalize: true
-    beta: 0.0
     time_horizon: 1000
     batch_size: 256
     buffer_size: 500000
     max_steps: 1e5
     summary_freq: 3000
-    num_layers: 3
+    train_interval: 3
+    target_update_steps: 3
     hidden_units: 512
 
 WalkerLearning:
@@ -195,17 +189,21 @@ WalkerLearning:
     max_steps: 2e6
     summary_freq: 3000
     num_layers: 3
+    train_interval: 3
+    target_update_steps: 3
     hidden_units: 512
 
 ReacherLearning:
     normalize: true
-    num_epoch: 3
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    gamma: 0.995
     max_steps: 1e6
     summary_freq: 3000
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.995
 
 HallwayLearning:
     use_recurrent: true
@@ -219,6 +217,7 @@ HallwayLearning:
     max_steps: 5.0e5
     summary_freq: 1000
     time_horizon: 64
+    use_recurrent: true
 
 VisualHallwayLearning:
     use_recurrent: true
@@ -232,6 +231,7 @@ VisualHallwayLearning:
     max_steps: 5.0e5
     summary_freq: 1000
     time_horizon: 64
+    use_recurrent: true
 
 VisualPushBlockLearning:
     use_recurrent: true
@@ -241,7 +241,6 @@ VisualPushBlockLearning:
     memory_size: 256
     beta: 1.0e-2
     gamma: 0.99
-    num_epoch: 3
     buffer_size: 1024
     batch_size: 64
     max_steps: 5.0e5
