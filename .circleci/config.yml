@@ -48,6 +48,13 @@ jobs:
             black --check ml-agents-envs
             black --check gym-unity
 
+      - run:
+          name: Verify there are no hidden/missing metafiles.
+          # Renaming files or deleting files can leave metafiles behind that makes Unity very unhappy.
+          command: |
+            . venv/bin/activate
+            python utils/validate_meta_files.py
+
       - store_test_results:
           path: test-reports
 
