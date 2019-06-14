@@ -37,11 +37,9 @@ def dummy_config():
         curiosity_enc_size: 128
         demo_path: None
         reward_signals: 
-        - 'extrinsic'
-        reward_strength: 
-        - 1.0
-        gammas:
-        - 0.99
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
         """
     )
 

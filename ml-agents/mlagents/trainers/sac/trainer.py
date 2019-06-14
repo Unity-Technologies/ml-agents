@@ -358,7 +358,7 @@ class SACTrainer(Trainer):
             agent_actions = self.training_buffer[info.agents[l]]["actions"]
             if (
                 info.local_done[l]
-                or len(agent_actions) > self.trainer_parameters["time_horizon"]
+                or len(agent_actions) >= self.trainer_parameters["time_horizon"]
             ) and len(agent_actions) > 0:
                 agent_id = info.agents[l]
                 # value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
