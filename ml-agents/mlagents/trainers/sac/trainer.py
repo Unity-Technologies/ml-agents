@@ -301,7 +301,7 @@ class SACTrainer(Trainer):
                         # )
                     else:
                         self.training_buffer[agent_id]["action_mask"].append(
-                            stored_info.action_masks[idx]
+                            stored_info.action_masks[idx], padding_value = 1.0
                         )
                     a_dist = stored_take_action_outputs["log_probs"]
                     # value is a dictionary from name of reward to value estimate of the value head
@@ -466,7 +466,7 @@ class SACTrainer(Trainer):
                 >= self.trainer_parameters["batch_size"]
             ):
                 sampled_minibatch = buffer.sample_mini_batch(
-                    self.trainer_parameters["batch_size"]
+                    self.trainer_parameters["batch_size"]//self.policy.sequence_length
                 )
                 # Get rewards for each reward
                 for name, signal in self.policy.reward_signals.items():
@@ -500,7 +500,7 @@ class SACTrainer(Trainer):
         self.stats["Losses/Q2 Loss"].append(np.mean(q2loss_total))
         self.stats["Policy/Entropy Coeff"].append(np.mean(entcoeff_total))
         sampled_minibatch = buffer.sample_mini_batch(
-            self.trainer_parameters["batch_size"]
+            self.trainer_parameters["batch_size"]//self.policy.sequence_length
         )
         for _, _reward_signal in self.policy.reward_signals.items():
             _stats = _reward_signal.update(sampled_minibatch, n_sequences)
