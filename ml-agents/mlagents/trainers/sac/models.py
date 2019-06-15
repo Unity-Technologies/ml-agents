@@ -771,7 +771,9 @@ class SACModel(LearningModel):
                 ]
             )
             self.entropy_loss = -tf.reduce_mean(
-                self.log_ent_coef * tf.to_float(self.mask) * tf.squeeze(tf.stop_gradient(broken_ent_sums))
+                self.log_ent_coef
+                * tf.to_float(self.mask)
+                * tf.squeeze(tf.stop_gradient(broken_ent_sums))
             )
             # Same with policy loss, we have to do the loss per branch and average them, so that larger branches don't get more weight.
             # The equivalent KL divergence is also pi*log(pi) - Q
@@ -804,7 +806,8 @@ class SACModel(LearningModel):
                 value_losses.append(
                     0.5
                     * tf.reduce_mean(
-                        tf.to_float(self.mask) * tf.squared_difference(
+                        tf.to_float(self.mask)
+                        * tf.squared_difference(
                             self.policy_network.value_heads[name], v_backup
                         )
                     )
@@ -813,6 +816,7 @@ class SACModel(LearningModel):
         else:
             self.entropy_loss = -tf.reduce_mean(
                 self.log_ent_coef
+                * tf.to_float(self.mask)
                 * tf.stop_gradient(
                     tf.reduce_sum(
                         self.policy_network.all_log_probs + self.target_entropy,
