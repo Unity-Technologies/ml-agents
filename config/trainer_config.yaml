@@ -207,7 +207,7 @@ ReacherLearning:
 
 HallwayLearning:
     use_recurrent: true
-    sequence_length: 64
+    sequence_length: 32
     num_layers: 2
     hidden_units: 128
     memory_size: 256
