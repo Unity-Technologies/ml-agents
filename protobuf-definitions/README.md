@@ -4,13 +4,14 @@ Contains relevant definitions needed to generate probobuf files used in [ML-Agen
 
 ## Requirements
 
-* grpc 1.14.1
 * protobuf 3.6.0
+* grpcio-tools 1.11.1
+* Grpc.Tools 1.14.1
 
 ## Set-up & Installation
 
 Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
-First we will install protobuf and grpcio-tools via your terminal.
+First we will follow these steps once install protobuf and grpcio-tools via your terminal.
 **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
 `pip install protobuf==3.6.0 --force`
@@ -27,6 +28,8 @@ Navigate to your installation of nuget and run the following:
 On Mac: `brew install protobuf`
 
 ## Running
+
+Whenever you change the fields of a custom message, you must follow the steps below to create C# and Python files corresponding to the new message.
 
 1. Open a terminal. **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
 2. Un-comment line 7 in `make.bat` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
