@@ -20,7 +20,7 @@ First we will install protobuf and grpcio-tools via your terminal.
 If you don't have it already, download the latest version of [nuget](https://www.nuget.org/downloads).
 Navigate to your installation of nuget and run the following: 
 
-`nuget install Grpc.Tools -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
+`nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
 
 ### Installing Protobuf Compiler
 
