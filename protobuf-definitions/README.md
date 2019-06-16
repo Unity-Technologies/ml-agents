@@ -10,8 +10,8 @@ Contains relevant definitions needed to generate probobuf files used in [ML-Agen
 
 ## Set-up & Installation
 
-Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
 First we will follow these steps once install protobuf and grpcio-tools via your terminal.
+Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
 **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
 `pip install protobuf==3.6.0 --force`
@@ -47,3 +47,17 @@ Whenever you change the fields of a custom message, you must follow the steps be
  ```
 This is to make sure the generated code does not try to access the Grpc library
 on platforms that are not supported by Grpc.
+
+Finally, re-install the mlagents packages by running the following commands from the same `$MLAGENTS_ROOT\protobuf-definitions` directory.
+
+```
+cd ..
+cd ml-agents-envs
+pip install -e .
+cd ..
+cd ml-agents
+pip install -e .
+mlagents-learn
+```
+
+The final line will test if everything was generated and installed correctly. If it worked, you should see the Unity logo. 
