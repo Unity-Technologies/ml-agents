@@ -13,8 +13,6 @@ be a mix of extrinsic and intrinsic reward signals.
 ML-Agents allows reward signals to be defined in a modular way, and we provide three reward 
 signals that can the mixed and matched to help shape your agent's behavior. The `extrinsic` Reward Signal represents the rewards defined in your environment, and is enabled by default. 
 The `curiosity` reward signal helps your agent explore when extrinsic rewards are sparse.
-Finally, the `gail` reward signal is an alternative to Behavioral Cloning that can be used to
-train an agent to mimic demonstrations. 
 
 ## Enabling Reward Signals 
 
@@ -47,14 +45,14 @@ The `extrinsic` reward signal is simply the reward given by the
 [environment](Learning-Environment-Design.md). Remove it to force the agent
 to ignore the environment reward. 
 
-#### strength 
+#### Strength 
 
 `strength` is the factor by which to multiply the raw 
 reward. Typical ranges will vary depending on the reward signal. 
 
 Typical Range: `0.01 - `1.0`
 
-#### gamma
+#### Gamma
 
 `gamma` corresponds to the discount factor for future rewards. This can be
 thought of as how far into the future the agent should care about possible
@@ -66,35 +64,16 @@ Typical Range: `0.8` - `0.995`
 
 ### The Curiosity Reward Signal
 
-### The GAIL Reward Signal
-
-GAIL, or [Generative Adversarial Imitation Learning](https://arxiv.org/abs/1606.03476), is an 
-imitation learning algorithm that uses an adversarial approach, in a similar vein to GANs 
-(Generative Adversarial Networks). In this framework, a second neural network, the
-discriminator, is taught to distinguish whether an observation/action is from a demonstration, or 
-produced by the agent. This discriminator can the examine a new observation/action and provide it a 
-reward based on how close it believes this new observation/action is to the provided demonstrations. 
-
-At each training step, the agent tries to learn how to maximize this reward. Then, the 
-discriminator is trained to better distinguish between demonstrations and agent state/actions. 
-In this way, while the agent gets better and better at mimicing the demonstrations, the
-discriminator keeps getting stricter and stricter and the agent must try harder to "fool" it. 
-
-This approach, when compared to [Behavioral Cloning](Training-BehavioralCloning.md), requires 
-far fewer demonstrations to be provided. After all, we are still learning a policy that happens
-to be similar to the demonstration, not directly copying the behavior of the demonstrations. It
-is also especially effective when combined with an Extrinsic signal, but can also be used independently to purely learn from demonstration. 
-
-Using GAIL requires recorded demonstrations from your Unity environment. See the [imitation learning guide](Training-Imitation-Learning.md) to learn more about recording demonstrations.
+@chriselion
 
 #### Strength 
 
-`strength` is the factor by which to multiply the raw reward. Note that when using GAIL
-with an Extrinsic Signal, this value should be set lower if your demonstrations are 
-suboptimal (e.g. from a human), so that a trained agent will focus on receiving extrinsic 
-rewards instead of exactly copying the demonstrations. Keep the strength below about 0.1 in those cases. 
+In this case, `strength` corresponds to the magnitude of the curiosity reward generated 
+by the intrinsic curiosity module. This should be scaled in order to ensure it is large enough 
+to not be overwhelmed by extrinsic reward signals in the environment. 
+Likewise it should not be too large to overwhelm the extrinsic reward signal.
 
-Typical Range: `0.01 - `1.0`
+Typical Range: `0.1 - `0.001`
 
 #### Gamma
 
@@ -102,17 +81,12 @@ Typical Range: `0.01 - `1.0`
 
 Typical Range: `0.8` - `0.9`
 
-#### Demo Path
-
-`demo_path` is the path to your `.demo` file. See the [imitation learning guide](Training-ImitationLearning.md).
-
 #### Encoding Size
 
-`encoding_size` corresponds to the size of the hidden layer used by the discriminator. 
-This value should be small enough to encourage the discriminator to compress the original
+`encoding_size` corresponds to the size of the encoding used by the intrinsic curiosity model. 
+This value should be small enough to encourage the ICM to compress the original
 observation, but also not too small to prevent it from learning to differentiate between 
-demonstrated and actual behavior. Dramatically increasing this size will also negatively affect
-training times. 
+demonstrated and actual behavior. 
 
 Default Value: 64
 Typical Range: `64` - `256`
@@ -124,23 +98,3 @@ This should typically be decreased if training is unstable, and the GAIL loss is
 
 Default Value: `3e-4`
 Typical Range: `1e-5` - `1e-3`  
-
-#### Use Actions
-
-`use_actions` determines whether the discriminator should discriminate based on both 
-observations and actions, or just observations. Set to `True` if you want the agent to
-mimic the actions from the demonstrations, and `False` if you'd rather have the agent
-visit the same states as in the demonstrations but with possibly different actions. 
-Setting to `False` is more likely to be stable, especially with imperfect demonstrations,
-but may learn slower. 
-
-Default Value: `False`
-
-#### Max Batches
-
-`max_batches` are the maximum number of batches of [`batch_size`](Training-PPO.md)
-to use during each discriminator update. You may want to lower this if your buffer size
-is very large to avoid overfitting the discriminator on current data. 
-
-Default Value: `10`
-Typical Range: `10`-`20`
