@@ -13,7 +13,6 @@ class RewardSignal(abc.ABC):
     value_name = "Policy/{} Value Estimate".format(__name__)
     stat_name = "Policy/{} Reward".format(__name__)
 
-    @abc.abstractmethod
     def __init__(self, policy: Policy, strength, gamma):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to, 
@@ -23,11 +22,14 @@ class RewardSignal(abc.ABC):
         :param gamma: The time discounting factor used for this reward. 
         :return: A RewardSignal object. 
         """
+        class_name = self.__class__.__name__
+        short_name = class_name.replace("RewardSignal", "")
+        self.stat_name = f"Policy/{short_name} Reward"
+        self.value_name = f"Policy/{short_name} Value Estimate"
         self.gamma = gamma
         self.policy = policy
         self.strength = strength
 
-    @abc.abstractmethod
     def evaluate(self, current_info, next_info):
         """
         Evaluates the reward for the agents present in current_info given the next_info
@@ -40,7 +42,6 @@ class RewardSignal(abc.ABC):
             np.zeros(len(current_info.agents)),
         )
 
-    @abc.abstractmethod
     def update(self, update_buffer, n_sequences):
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), update that model.

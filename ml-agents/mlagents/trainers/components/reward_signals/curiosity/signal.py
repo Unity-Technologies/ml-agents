@@ -13,11 +13,7 @@ class CuriosityRewardSignal(RewardSignal):
         :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter
         """
-        self.policy = policy
-        self.strength = strength
-        self.gamma = gamma
-        self.stat_name = "Policy/Curiosity Reward"
-        self.value_name = "Policy/Curiosity Value Estimate"
+        super().__init__(policy, strength, gamma)
         self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
         self.num_epoch = num_epoch
         self.update_dict = {

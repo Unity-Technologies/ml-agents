@@ -13,10 +13,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         :param gamma: The time discounting factor used for this reward. 
         :return: An ExtrinsicRewardSignal object. 
         """
-        self.stat_name = "Policy/Extrinsic Reward"
-        self.value_name = "Policy/Extrinsic Value Estimate"
-        self.strength = strength
-        self.gamma = gamma
+        super().__init__(policy, strength, gamma)
 
     @classmethod
     def check_config(cls, config_dict):

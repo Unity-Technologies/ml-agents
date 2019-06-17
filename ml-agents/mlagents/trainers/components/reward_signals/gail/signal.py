@@ -31,16 +31,14 @@ class GAILRewardSignal(RewardSignal):
         :param learning_rate: The Learning Rate
         reward multiplied by the strength parameter
         """
-        self.policy = policy
-        self.strength = strength
-        self.gamma = gamma
-        self.stat_name = "Policy/GAIL Reward"
-        self.value_name = "Policy/GAIL Value Estimate"
+        super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
         self.max_batches = max_batches
         self.print_debug = print_debug
 
-        self.model = GAILModel(policy.model, 128, learning_rate, encoding_size, use_actions)
+        self.model = GAILModel(
+            policy.model, 128, learning_rate, encoding_size, use_actions
+        )
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
