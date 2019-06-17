@@ -5,7 +5,15 @@ from mlagents.trainers.policy import Policy
 
 
 class CuriosityRewardSignal(RewardSignal):
-    def __init__(self, policy: Policy, strength, gamma, encoding_size=128, num_epoch=3):
+    def __init__(
+        self,
+        policy: Policy,
+        strength,
+        gamma,
+        encoding_size=128,
+        learning_rate=3e-4,
+        num_epoch=3,
+    ):
         """
         Creates the Curiosity reward generator
         :param policy: The Learning Policy
@@ -14,7 +22,9 @@ class CuriosityRewardSignal(RewardSignal):
         reward multiplied by the strength parameter
         """
         super().__init__(policy, strength, gamma)
-        self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
+        self.model = CuriosityModel(
+            policy.model, encoding_size=encoding_size, learning_rate=learning_rate
+        )
         self.num_epoch = num_epoch
         self.update_dict = {
             "forward_loss": self.model.forward_loss,
