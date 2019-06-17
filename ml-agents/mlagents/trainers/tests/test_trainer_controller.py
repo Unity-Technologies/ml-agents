@@ -16,7 +16,7 @@ from mlagents.envs.exception import UnityEnvironmentException
 
 @pytest.fixture
 def dummy_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         default:
             trainer: ppo
@@ -46,7 +46,7 @@ def dummy_config():
 
 @pytest.fixture
 def dummy_online_bc_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         default:
             trainer: online_bc
@@ -78,7 +78,7 @@ def dummy_online_bc_config():
 
 @pytest.fixture
 def dummy_offline_bc_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         default:
             trainer: offline_bc
@@ -120,7 +120,7 @@ def dummy_offline_bc_config_with_override():
 
 @pytest.fixture
 def dummy_bad_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         default:
             trainer: incorrect_trainer

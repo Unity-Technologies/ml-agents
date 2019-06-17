@@ -51,7 +51,7 @@ namespace MLAgents.InferenceBrain
             Barracuda.Model model = (Barracuda.Model) barracudaModel;
             for (var i = 0; i < model?.memories.Length; i++)
             {
-                _dict[model.memories[i].input] = new BarracudaRecurrentInputGenerator(model.memories.Length, i);
+                _dict[model.memories[i].input] = new BarracudaRecurrentInputGenerator(i);
             }
             #endif
             
