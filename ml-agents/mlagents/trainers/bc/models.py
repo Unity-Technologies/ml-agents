@@ -15,9 +15,7 @@ class BehavioralCloningModel(LearningModel):
         use_recurrent=False,
         seed=0,
     ):
-        super().__init__(
-            self, m_size, normalize, use_recurrent, brain, seed, None
-        )
+        LearningModel.__init__(self, m_size, normalize, use_recurrent, brain, seed)
         num_streams = 1
         hidden_streams = self.create_observation_streams(num_streams, h_size, n_layers)
         hidden = hidden_streams[0]
