@@ -10,7 +10,7 @@ logger = logging.getLogger("mlagents.trainers")
 class LearningModel(object):
     _version_number_ = 2
 
-    def __init__(self, m_size, normalize, use_recurrent, brain, seed, stream_names):
+    def __init__(self, m_size, normalize, use_recurrent, brain, seed, stream_names=None):
         tf.set_random_seed(seed)
         self.brain = brain
         self.vector_in = None
@@ -22,7 +22,7 @@ class LearningModel(object):
         )
         self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name="masks")
         self.mask = tf.cast(self.mask_input, tf.int32)
-        self.stream_names = stream_names
+        self.stream_names = stream_names or []
         self.use_recurrent = use_recurrent
         if self.use_recurrent:
             self.m_size = m_size
