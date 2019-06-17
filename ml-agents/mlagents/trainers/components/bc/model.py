@@ -11,9 +11,6 @@ class BCModel(object):
         :param lr: The initial learning Rate for behavioral cloning
         :param anneal_steps: Number of steps over which to anneal BC training
         """
-        self.z_size = 128
-        self.alpha = 0.0005
-        self.mutual_information = 0.5
         self.policy_model = policy_model
         self.expert_visual_in = self.policy_model.visual_in
         self.obs_in_expert = self.policy_model.vector_in
