@@ -15,7 +15,7 @@ class BehavioralCloningModel(LearningModel):
         use_recurrent=False,
         seed=0,
     ):
-        LearningModel.__init__(
+        super().__init__(
             self, m_size, normalize, use_recurrent, brain, seed, None
         )
         num_streams = 1
