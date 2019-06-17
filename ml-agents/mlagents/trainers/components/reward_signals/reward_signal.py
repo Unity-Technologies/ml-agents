@@ -51,10 +51,11 @@ class RewardSignal(abc.ABC):
         return {}
 
     @classmethod
-    def check_config(cls, config_dict, param_keys=[]):
+    def check_config(cls, config_dict, param_keys=None):
         """
         Check the config dict, and throw an error if there are missing hyperparameters.
         """
+        param_keys = param_keys or []
         for k in param_keys:
             if k not in config_dict:
                 raise UnityTrainerException(
