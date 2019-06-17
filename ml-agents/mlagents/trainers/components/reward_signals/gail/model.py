@@ -3,7 +3,7 @@ from mlagents.trainers.models import LearningModel
 
 
 class GAILModel(object):
-    def __init__(self, policy_model: LearningModel, h_size, lr, encoding_size):
+    def __init__(self, policy_model: LearningModel, h_size, lr, encoding_size, use_actions):
         """
         The GAIL reward generator.
         https://arxiv.org/abs/1606.03476
@@ -19,7 +19,7 @@ class GAILModel(object):
         self.policy_model = policy_model
         self.encoding_size = encoding_size
         self.use_vail = True
-        self.use_actions = False  # True # Not using actions
+        self.use_actions = use_actions  # True # Not using actions
         self.make_beta()
         self.make_inputs()
         self.create_network()

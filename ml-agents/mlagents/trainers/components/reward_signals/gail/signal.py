@@ -15,9 +15,10 @@ class GAILRewardSignal(RewardSignal):
         gamma,
         demo_path,
         num_epoch=3,
-        encoding_size=128,
+        encoding_size=64,
         learning_rate=3e-4,
         max_batches=10,
+        use_actions=False,
         print_debug=False,
     ):
         """
@@ -39,7 +40,7 @@ class GAILRewardSignal(RewardSignal):
         self.max_batches = max_batches
         self.print_debug = print_debug
 
-        self.model = GAILModel(policy.model, encoding_size, learning_rate, 64)
+        self.model = GAILModel(policy.model, 128, learning_rate, encoding_size, use_actions)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
