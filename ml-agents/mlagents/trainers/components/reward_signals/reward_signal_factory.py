@@ -1,7 +1,6 @@
 import logging
 
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.components.reward_signals.gail.signal import GAILRewardSignal
 from mlagents.trainers.components.reward_signals.extrinsic.signal import (
     ExtrinsicRewardSignal,
 )
@@ -13,11 +12,7 @@ from mlagents.trainers.policy import Policy
 logger = logging.getLogger("mlagents.trainers")
 
 
-NAME_TO_CLASS = {
-    "extrinsic": ExtrinsicRewardSignal,
-    "gail": GAILRewardSignal,
-    "curiosity": CuriosityRewardSignal,
-}
+NAME_TO_CLASS = {"extrinsic": ExtrinsicRewardSignal, "curiosity": CuriosityRewardSignal}
 
 
 def create_reward_signal(policy: Policy, name, config_entry):

@@ -108,16 +108,11 @@ PyramidsLearning:
     max_steps: 5.0e5
     num_epoch: 3
     sequence_length: 16
-    demo_path: ./demos/ExpertPyramid.demo
     use_recurrent: false
     reward_signals:
         extrinsic: 
             strength: 1.0
             gamma: 0.99
-        # gail:
-        #     strength: 0.2
-        #     gamma: 0.9
-        #     demo_path: ./demos/ExpertPyramid.demo
         curiosity:
             strength: 0.01
             gamma: 0.99
@@ -159,7 +154,6 @@ TennisLearning:
 CrawlerStaticLearning:
     normalize: true
     extrinsic_strength: 0.0
-    #demo_path: ./demos/CrawlerDemo.demo 
     num_epoch: 3
     time_horizon: 1000
     batch_size: 1024

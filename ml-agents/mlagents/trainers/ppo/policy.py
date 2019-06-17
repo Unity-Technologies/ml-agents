@@ -7,7 +7,6 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.bc import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -48,20 +47,6 @@ class PPOPolicy(Policy):
             for reward_signal, config in reward_signal_configs.items():
                 self.reward_signals[reward_signal] = create_reward_signal(
                     self, reward_signal, config
-                )
-
-            # BC trainer is not a reward signal
-            if "pretraining" in trainer_params:
-                self.bc_trainer = BCModule(
-                    self,
-                    float(
-                        trainer_params["pretraining"]["pretraining_strength"]
-                        * trainer_params["learning_rate"]
-                    ),
-                    trainer_params["pretraining"]["demo_path"],
-                    trainer_params["pretraining"]["pretraining_steps"],
-                    trainer_params["batch_size"],
-                    trainer_params["use_recurrent"],
                 )
 
         if load:

@@ -54,8 +54,6 @@ class PPOTrainer(Trainer):
             "reward_signals",
         ]
         self.check_param_keys()
-        self.check_demo_keys(trainer_parameters)
-        self.use_bc = "pretraining" in trainer_parameters
 
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
@@ -120,21 +118,6 @@ class PPOTrainer(Trainer):
         :return: the reward buffer.
         """
         return self._reward_buffer
-
-    def check_demo_keys(self, trainer_parameters: dict):
-        """
-        Checks if the demonstration pretraining parameters are set properly. 
-        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
-        """
-        if "pretraining" in trainer_parameters:
-            if (
-                "demo_path" not in trainer_parameters["pretraining"]
-                or "pretraining_strength" not in trainer_parameters["pretraining"]
-                or "pretraining_steps" not in trainer_parameters["pretraining"]
-            ):
-                raise UnityTrainerException(
-                    "pretraining was specified but either demo_path, pretraining_strength, or pretraining_steps was not given."
-                )
 
     def increment_step_and_update_last_reward(self):
         """
@@ -485,9 +468,6 @@ class PPOTrainer(Trainer):
             )
             for stat, val in update_stats.items():
                 self.stats[stat].append(val)
-        if self.use_bc:
-            _bc_loss = self.policy.bc_trainer.update()
-            self.stats["Losses/BC Loss"].append(_bc_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 
