@@ -10,7 +10,9 @@ logger = logging.getLogger("mlagents.trainers")
 class LearningModel(object):
     _version_number_ = 2
 
-    def __init__(self, m_size, normalize, use_recurrent, brain, seed, stream_names=None):
+    def __init__(
+        self, m_size, normalize, use_recurrent, brain, seed, stream_names=None
+    ):
         tf.set_random_seed(seed)
         self.brain = brain
         self.vector_in = None

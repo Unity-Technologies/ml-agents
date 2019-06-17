@@ -97,9 +97,7 @@ class PPOModel(LearningModel):
                 shape=[None], dtype=tf.float32, name="{}_returns".format(name)
             )
             old_value = tf.placeholder(
-                shape=[None],
-                dtype=tf.float32,
-                name="{}_value_estimate".format(name),
+                shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
             )
             self.returns_holders[name] = returns_holder
             self.old_values[name] = old_value
