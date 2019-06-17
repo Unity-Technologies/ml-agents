@@ -130,7 +130,7 @@ VisualPyramidsLearning:
         curiosity:
             strength: 0.01
             gamma: 0.99
-            encoding_size: 128
+            encoding_size: 256
 
 3DBallLearning:
     normalize: true
@@ -160,7 +160,6 @@ TennisLearning:
 
 CrawlerStaticLearning:
     normalize: true
-    extrinsic_strength: 0.0
     num_epoch: 3
     time_horizon: 1000
     batch_size: 2024
