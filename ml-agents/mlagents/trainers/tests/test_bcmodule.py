@@ -15,7 +15,7 @@ from mlagents.envs import UnityEnvironment
 
 @pytest.fixture
 def dummy_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         trainer: ppo
         batch_size: 32

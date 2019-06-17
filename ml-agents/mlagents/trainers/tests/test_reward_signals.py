@@ -16,7 +16,7 @@ from mlagents.envs.mock_communicator import MockCommunicator
 
 @pytest.fixture
 def dummy_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         trainer: ppo
         batch_size: 32
