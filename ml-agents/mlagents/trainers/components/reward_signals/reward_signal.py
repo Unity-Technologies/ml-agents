@@ -10,9 +10,6 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class RewardSignal(abc.ABC):
-    value_name = "Policy/{} Value Estimate".format(__name__)
-    stat_name = "Policy/{} Reward".format(__name__)
-
     def __init__(self, policy: Policy, strength, gamma):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to, 
