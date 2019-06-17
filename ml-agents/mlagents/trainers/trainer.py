@@ -197,20 +197,18 @@ class Trainer(object):
             )
             if len(self.stats["Environment/Cumulative Reward"]) > 0:
                 mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
-                std_rward = np.std(self.stats["Environment/Cumulative Reward"])
-
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
                     "Mean "
-                    "Reward: {:0.3f}"
-                    ". Std of Reward: {:0.3f}. {}".format(
+                    "Reward: {"
+                    ":0.3f}. Std of Reward: {:0.3f}. {}".format(
                         self.run_id,
                         self.brain_name,
                         min(self.get_step, self.get_max_steps),
                         delta_train_start,
                         mean_reward,
-                        std_rward,
+                        np.std(self.stats["Environment/Cumulative Reward"]),
                         is_training,
                     )
                 )
