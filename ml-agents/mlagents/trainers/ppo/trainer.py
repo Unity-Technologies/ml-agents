@@ -81,13 +81,7 @@ class PPOTrainer(Trainer):
 
     def __str__(self):
         return """Hyperparameters for the PPO Trainer of brain {0}: \n{1}""".format(
-            self.brain_name,
-            "\n".join(
-                [
-                    "\t{0}:\t{1}".format(x, self.trainer_parameters[x])
-                    for x in self.param_keys
-                ]
-            ),
+            self.brain_name, self.dict_to_str(self.trainer_parameters, 0)
         )
 
     @property
@@ -314,7 +308,9 @@ class PPOTrainer(Trainer):
                             rewards[agent_id] += np.array(next_info.rewards)[next_idx]
                         else:
                             # Report the reward signals
-                            rewards[agent_id] += tmp_rewards_dict[name].scaled_reward[next_idx]
+                            rewards[agent_id] += tmp_rewards_dict[name].scaled_reward[
+                                next_idx
+                            ]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:

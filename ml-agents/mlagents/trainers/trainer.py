@@ -57,6 +57,27 @@ class Trainer(object):
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
 
+    def dict_to_str(self, param_dict, num_tabs):
+        """
+        Takes a parameter dictionary and converts it to a human-readable string.
+        Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
+        param: param_dict: A Dictionary of key, value parameters. 
+        return: A string version of this dictionary.
+        """
+        if not isinstance(param_dict, dict):
+            return param_dict
+        else:
+            append_newline = "\n" if num_tabs > 0 else ""
+            return append_newline + "\n".join(
+                [
+                    "\t"  + "  " * num_tabs
+                    + "{0}:\t{1}".format(
+                        x, self.dict_to_str(param_dict[x], num_tabs + 1)
+                    )
+                    for x in param_dict
+                ]
+            )
+
     @property
     def parameters(self):
         """
