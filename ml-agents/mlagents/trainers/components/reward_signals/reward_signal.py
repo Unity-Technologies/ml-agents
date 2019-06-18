@@ -1,12 +1,17 @@
 import logging
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.policy import Policy
+from collections import namedtuple
 import numpy as np
 import abc
 
 import tensorflow as tf
 
 logger = logging.getLogger("mlagents.trainers")
+
+RewardSignalResult = namedtuple(
+    "RewardSignalResult", ["scaled_reward", "unscaled_reward"]
+)
 
 
 class RewardSignal(abc.ABC):

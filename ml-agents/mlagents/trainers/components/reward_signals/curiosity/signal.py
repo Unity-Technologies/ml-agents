@@ -1,5 +1,5 @@
 import numpy as np
-from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.policy import Policy
 
@@ -66,7 +66,7 @@ class CuriosityRewardSignal(RewardSignal):
         scaled_reward = np.clip(
             unscaled_reward * float(self.has_updated) * self.strength, 0, 1
         )
-        return scaled_reward, unscaled_reward
+        return RewardSignalResult(scaled_reward, unscaled_reward)
 
     @classmethod
     def check_config(cls, config_dict):

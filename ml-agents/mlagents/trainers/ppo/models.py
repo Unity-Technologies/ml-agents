@@ -40,8 +40,6 @@ class PPOModel(LearningModel):
         :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used. 
         :return: a sub-class of PPOAgent tailored to the environment.
         """
-        if stream_names is None:
-            stream_names = []
         LearningModel.__init__(
             self, m_size, normalize, use_recurrent, brain, seed, stream_names
         )

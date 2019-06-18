@@ -55,6 +55,12 @@ class PPOTrainer(Trainer):
         ]
         self.check_param_keys()
 
+        # Make sure we have at least one reward_signal
+        if not self.trainer_parameters["reward_signals"]:
+            raise UnityTrainerException(
+                "No reward signals were defined. At least one must be used with the PPO trainer."
+            )
+
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
@@ -66,8 +72,6 @@ class PPOTrainer(Trainer):
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
-        if self.use_bc:
-            stats["Losses/BC Loss"] = []
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -291,20 +295,18 @@ class PPOTrainer(Trainer):
                         next_info.local_done[next_idx]
                     )
 
-                    for name, reward in tmp_rewards_dict.items():
+                    for name, reward_result in tmp_rewards_dict.items():
                         # 0 because we use the scaled reward to train the agent
                         self.training_buffer[agent_id][
                             "{}_rewards".format(name)
-                        ].append(tmp_rewards_dict[name][0][next_idx])
+                        ].append(reward_result.scaled_reward[next_idx])
                         self.training_buffer[agent_id][
                             "{}_value_estimates".format(name)
                         ].append(value[name][idx][0])
 
                     self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
 
-                    for idx, (name, rewards) in enumerate(
-                        self.collected_rewards.items()
-                    ):
+                    for name, rewards in self.collected_rewards.items():
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
                         if name == "environment":
@@ -312,7 +314,7 @@ class PPOTrainer(Trainer):
                             rewards[agent_id] += np.array(next_info.rewards)[next_idx]
                         else:
                             # Report the reward signals
-                            rewards[agent_id] += tmp_rewards_dict[name][0][next_idx]
+                            rewards[agent_id] += tmp_rewards_dict[name].scaled_reward[next_idx]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -346,7 +348,7 @@ class PPOTrainer(Trainer):
                     value_next["extrinsic"] = 0.0
                 tmp_advantages = []
                 tmp_returns = []
-                for idx, name in enumerate(self.policy.reward_signals.keys()):
+                for name in self.policy.reward_signals:
                     bootstrap_value = value_next[name]
 
                     local_rewards = self.training_buffer[agent_id][

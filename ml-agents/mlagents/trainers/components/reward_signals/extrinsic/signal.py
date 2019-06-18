@@ -1,6 +1,6 @@
 import numpy as np
 
-from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.policy import Policy
 
 
@@ -27,7 +27,7 @@ class ExtrinsicRewardSignal(RewardSignal):
     def evaluate(self, current_info, next_info):
         unscaled_reward = np.array(next_info.rewards)
         scaled_reward = self.strength * unscaled_reward
-        return scaled_reward, unscaled_reward
+        return RewardSignalResult(scaled_reward, unscaled_reward)
 
     def update(self, update_buffer, num_sequences):
         """ 
