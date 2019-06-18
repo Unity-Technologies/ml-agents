@@ -93,8 +93,8 @@ Typical Range: `64` - `256`
 
 #### Learning Rate
 
-`learning_rate` is the learning rate used to update the discriminator. 
-This should typically be decreased if training is unstable, and the GAIL loss is unstable.
+`learning_rate` is the learning rate used to update the intrinsic curiosity module. 
+This should typically be decreased if training is unstable, and the curiosity loss is unstable.
 
 Default Value: `3e-4`
 Typical Range: `1e-5` - `1e-3`  

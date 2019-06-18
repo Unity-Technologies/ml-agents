@@ -129,7 +129,7 @@ class PPOPolicy(Policy):
                 [-1, sum(self.model.act_size)]
             ),
         }
-        for i, name in enumerate(self.reward_signals.keys()):
+        for name in self.reward_signals:
             feed_dict[self.model.returns_holders[name]] = mini_batch[
                 "{}_returns".format(name)
             ].flatten()
