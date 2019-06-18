@@ -70,7 +70,8 @@ class Trainer(object):
             append_newline = "\n" if num_tabs > 0 else ""
             return append_newline + "\n".join(
                 [
-                    "\t"  + "  " * num_tabs
+                    "\t"
+                    + "  " * num_tabs
                     + "{0}:\t{1}".format(
                         x, self.dict_to_str(param_dict[x], num_tabs + 1)
                     )
