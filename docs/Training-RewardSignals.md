@@ -7,7 +7,7 @@ external of the learning algorithm.
 
 Rewards, however, can be defined outside of the enviroment as well, to encourage the agent to 
 behave in certain ways, or to aid the learning of the true extrinsic reward. We refer to these
-rewards as "intrinsic" reward signals. The total reward that the agent attempts to maximize can 
+rewards as "intrinsic" reward signals. The total reward that the agent will learn to maximize can 
 be a mix of extrinsic and intrinsic reward signals. 
 
 ML-Agents allows reward signals to be defined in a modular way, and we provide three reward 
