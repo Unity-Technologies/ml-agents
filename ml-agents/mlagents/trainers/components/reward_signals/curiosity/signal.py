@@ -34,6 +34,12 @@ class CuriosityRewardSignal(RewardSignal):
         self.has_updated = False
 
     def evaluate(self, current_info, next_info):
+        """
+        Evaluates the reward for the agents present in current_info given the next_info
+        :param current_info: The current BrainInfo. 
+        :param next_info: The BrainInfo from the next timestep.
+        :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
+        """
         if len(current_info.agents) == 0:
             return []
 

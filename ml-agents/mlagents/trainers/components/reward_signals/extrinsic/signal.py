@@ -25,6 +25,12 @@ class ExtrinsicRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def evaluate(self, current_info, next_info):
+        """
+        Evaluates the reward for the agents present in current_info given the next_info
+        :param current_info: The current BrainInfo. 
+        :param next_info: The BrainInfo from the next timestep.
+        :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
+        """
         unscaled_reward = np.array(next_info.rewards)
         scaled_reward = self.strength * unscaled_reward
         return RewardSignalResult(scaled_reward, unscaled_reward)

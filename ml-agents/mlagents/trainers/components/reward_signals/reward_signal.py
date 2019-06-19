@@ -37,7 +37,7 @@ class RewardSignal(abc.ABC):
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo. 
         :param next_info: The BrainInfo from the next timestep.
-        :return: a tuple of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
+        :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         return (
             self.strength * np.zeros(len(current_info.agents)),
