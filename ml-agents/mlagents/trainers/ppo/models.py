@@ -56,8 +56,7 @@ class PPOMultiGPUModel(object):
 
         self.optimizer = self.towers[0].optimizer
         avg_grad = self.average_gradients([t.grads for t in self.towers])
-        with tf.control_dependencies([print_value_op, print_value_loss_op, print_policy_op, print_policy_loss_op]):
-            self.update_batch = self.optimizer.apply_gradients(avg_grad)
+        self.update_batch = self.optimizer.apply_gradients(avg_grad)
 
     def average_gradients(self, tower_grads):
         """Averages gradients across towers.
