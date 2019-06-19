@@ -32,6 +32,7 @@ namespace MLAgents.InferenceBrain
         }
         
         Dictionary<string, Generator> _dict = new Dictionary<string, Generator>();
+        ITensorAllocator _allocator;
 
         /// <summary>
         /// Returns a new TensorGenerators object.
@@ -39,25 +40,27 @@ namespace MLAgents.InferenceBrain
         /// <param name="bp"> The BrainParameters used to determine what Generators will be
         /// used</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
-        public TensorGenerator(BrainParameters bp, int seed, object barracudaModel = null)
+        public TensorGenerator(BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
         {
+            _allocator = allocator;
+            
             // Generator for Inputs
-            _dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator();
-            _dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator();
-            _dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator();
-            _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator();
+            _dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator(_allocator);
+            _dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator(_allocator);
+            _dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator(_allocator);
+            _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator(_allocator);
             
             #if ENABLE_BARRACUDA
             Barracuda.Model model = (Barracuda.Model) barracudaModel;
             for (var i = 0; i < model?.memories.Length; i++)
             {
-                _dict[model.memories[i].input] = new BarracudaRecurrentInputGenerator(i);
+                _dict[model.memories[i].input] = new BarracudaRecurrentInputGenerator(i, _allocator);
             }
             #endif
             
-            _dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator();
-            _dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator();
-            _dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed);
+            _dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator(_allocator);
+            _dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator(_allocator);
+            _dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed, _allocator);
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;
@@ -67,14 +70,14 @@ namespace MLAgents.InferenceBrain
                     var index = visIndex;
                     var bw = bp.cameraResolutions[visIndex].blackAndWhite;
                     _dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = new
-                            VisualObservationInputGenerator(index, bw);
+                            VisualObservationInputGenerator(index, bw, _allocator);
                 }
             }
 
             // Generators for Outputs
-            _dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator();
-            _dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator();
-            _dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator();
+            _dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(_allocator);
+            _dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(_allocator);
+            _dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(_allocator);
         }
 
         /// <summary>

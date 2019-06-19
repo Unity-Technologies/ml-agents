@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace MLAgents.InferenceBrain.Utils
 {
@@ -50,22 +51,6 @@ namespace MLAgents.InferenceBrain.Utils
 
             return v * s * m_stddev + m_mean;
         }
-
-        private void IncreaseNextDim(Array arr, long[] indices)
-        {
-            for (int i = 1; i < arr.Rank; ++i)
-            {
-                ++indices[i];
-                if (i == arr.Rank - 1 || indices[i] < arr.GetLength(i))
-                {
-                    break;
-                }
-                else
-                {
-                    indices[i] = 0;
-                }
-            }
-        }
         
         /// <summary>
         /// Fill a pre-allocated Tensor with random numbers 
@@ -84,22 +69,9 @@ namespace MLAgents.InferenceBrain.Utils
             {
                 throw new ArgumentNullException();
             }
-
-            long[] indices = new long[t.Data.Rank];
-
-            // Since IEnumerable is const, and we don't know the dimentions of the Array
-            // we need to traverse all the dimentions
-            // TODO: this seems like a nice general operation for the Tensor, consider moving it there
-            do
-            {
-                t.Data.SetValue((float) NextDouble(), indices);
-                ++indices[0];
-                if (indices[0] == t.Data.GetLength(0))
-                {
-                    indices[0] = 0;
-                    IncreaseNextDim(t.Data, indices);
-                }
-            } while (indices[t.Data.Rank - 1] < t.Data.GetLength(t.Data.Rank - 1));
+            
+            for (int i = 0; i < t.Data.length; i++)
+                t.Data[i] = (float) NextDouble();
         }
     }
 }

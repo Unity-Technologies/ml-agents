@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Barracuda;
 
 namespace MLAgents
 {
@@ -28,13 +29,15 @@ namespace MLAgents
         /// If set to <c>true</c> the textures
         /// will be converted to grayscale before being stored in the tensor.
         /// </param>
-        public static float[,,,] TextureToFloatArray(List<Texture2D> textures, bool blackAndWhite)
+        /// <param name="allocator">Tensor allocator</param>
+        public static Barracuda.Tensor TextureToFloatArray(List<Texture2D> textures, bool blackAndWhite, 
+                                                                ITensorAllocator allocator)
         {
             var batchSize = textures.Count;
             var width = textures[0].width;
             var height = textures[0].height;
             var pixels = blackAndWhite ? 1 : 3;
-            var result = new float[batchSize, height, width, pixels];
+            var result = allocator.Alloc(new TensorShape(batchSize, height, width, pixels));
 
             for (var b = 0; b < batchSize; b++)
             {

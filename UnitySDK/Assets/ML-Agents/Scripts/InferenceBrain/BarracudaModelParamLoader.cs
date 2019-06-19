@@ -576,16 +576,6 @@ public class BarracudaUtils
         return dest;
     }
     
-    public static Barracuda.Tensor ToBarracuda(MLAgents.InferenceBrain.Tensor src)
-    {
-        Array linearArray = LinearizeArray(src.Data);
-
-        if (linearArray.GetType().GetElementType() == typeof(int))
-            linearArray = IntArrayToFloatArray(linearArray as int[]);
-
-        var shape = ToBarracuda(src.Shape);
-        return new Barracuda.Tensor(shape,  linearArray as float[], src.Name);
-    }
     
     internal static long[] FromBarracuda(Barracuda.TensorShape src)
     {
@@ -595,14 +585,6 @@ public class BarracudaUtils
         return new long[4] {src.batch, src.height, src.width, src.channels};
     }
     
-    private static Array ReshapeArray(Array src, long[] shape)
-    {
-        var elementType = src.GetType().GetElementType();
-        var elementSize = Marshal.SizeOf(elementType);
-        var dest = Array.CreateInstance(elementType, shape);
-        Buffer.BlockCopy(src, 0, dest, 0, dest.Length * elementSize);
-        return dest;
-    }
     
     public static Tensor FromBarracuda(Barracuda.Tensor src, string nameOverride = null)
     {
@@ -612,7 +594,7 @@ public class BarracudaUtils
             Name = nameOverride ?? src.name,
             ValueType = Tensor.TensorType.FloatingPoint,
             Shape = shape,
-            Data = ReshapeArray(src.data.Download(src.length), shape)
+            Data = src
         };
     }
 }

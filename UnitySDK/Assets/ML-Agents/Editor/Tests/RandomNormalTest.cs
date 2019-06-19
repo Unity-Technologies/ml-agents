@@ -76,7 +76,7 @@ namespace MLAgents.Tests
 			Tensor t = new Tensor
 			{
 				ValueType = Tensor.TensorType.FloatingPoint,
-				Data = Array.CreateInstance(typeof(float), new long[3] {3, 4, 2})
+				Data = new Barracuda.Tensor (1, 3, 4, 2)
 		};
 
 			rn.FillTensor(t);
@@ -109,10 +109,9 @@ namespace MLAgents.Tests
 				-0.4378373f,
 			};
 
-			int i = 0;
-			foreach (float f in t.Data)
+			for (var i = 0; i < t.Data.length; i++)
 			{
-				Assert.AreEqual(f, reference[i], 0.0001);
+				Assert.AreEqual(t.Data[i], reference[i], 0.0001);
 				++i;
 			}
 

@@ -32,6 +32,7 @@ namespace MLAgents
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
+        private ITensorAllocator _tensorAllocator;
         private TensorGenerator _tensorGenerator;
         private TensorApplier _tensorApplier;
 #if ENABLE_TENSORFLOW
@@ -82,6 +83,9 @@ namespace MLAgents
         /// </exception>
         public void ReloadModel(int seed = 0)
         {
+            if (_tensorAllocator == null)
+                _tensorAllocator = new TensorCachingAllocator();
+            
 #if ENABLE_TENSORFLOW
             if (model != null)
             {
@@ -126,8 +130,8 @@ namespace MLAgents
             _modelParamLoader = BarracudaModelParamLoader.GetLoaderAndCheck(_engine, _barracudaModel, brainParameters);
             _inferenceInputs = _modelParamLoader.GetInputTensors();
             _outputNames = _modelParamLoader.GetOutputNames();
-            _tensorGenerator = new TensorGenerator(brainParameters, seed, _barracudaModel);
-            _tensorApplier = new TensorApplier(brainParameters, seed, _barracudaModel);
+            _tensorGenerator = new TensorGenerator(brainParameters, seed, _tensorAllocator, _barracudaModel);
+            _tensorApplier = new TensorApplier(brainParameters, seed, _tensorAllocator, _barracudaModel);
 #endif
         }
         
@@ -166,6 +170,9 @@ namespace MLAgents
             {
                 return;
             }
+            
+            Profiler.BeginSample("LearningBrain.DecideAction");
+            
 #if ENABLE_TENSORFLOW
             if (_engine == null)
             {
@@ -192,21 +199,28 @@ namespace MLAgents
                 return;
             }
             
+            Profiler.BeginSample($"MLAgents.{name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
             _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
+            Profiler.EndSample();
 
+            Profiler.BeginSample($"MLAgents.{name}.PrepareBarracudaInputs");
             var inputs = PrepareBarracudaInputs(_inferenceInputs);
+            Profiler.EndSample();
 
             // Execute the Model
             Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
             _engine.Execute(inputs);
             Profiler.EndSample();
 
+            Profiler.BeginSample($"MLAgents.{name}.FetchBarracudaOutputs");
             _inferenceOutputs = FetchBarracudaOutputs(_outputNames);
-            CleanupBarracudaState(inputs);
+            Profiler.EndSample();
 
+            Profiler.BeginSample($"MLAgents.{name}.ApplyTensors");
             // Update the outputs
             _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
+            Profiler.EndSample();
 #else
             if (agentInfos.Count > 0)
             {
@@ -217,6 +231,7 @@ namespace MLAgents
             }
 #endif
             agentInfos.Clear();
+            Profiler.EndSample();
         }
         
 #if ENABLE_BARRACUDA && !ENABLE_TENSORFLOW
@@ -225,7 +240,7 @@ namespace MLAgents
             var inputs = new Dictionary<string, Barracuda.Tensor>();
             foreach (var inp in _inferenceInputs)
             {        
-                inputs[inp.Name] = BarracudaUtils.ToBarracuda(inp);
+                inputs[inp.Name] = inp.Data;
             }
 
             return inputs;
@@ -255,6 +270,7 @@ namespace MLAgents
         public void OnDisable()
         {
             _engine?.Dispose();
+            _tensorAllocator?.Reset(false);
         }
 #endif
     }

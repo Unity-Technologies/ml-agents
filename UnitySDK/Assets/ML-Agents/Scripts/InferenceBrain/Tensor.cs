@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Barracuda;
 
 namespace MLAgents.InferenceBrain
 {
@@ -34,7 +35,22 @@ namespace MLAgents.InferenceBrain
 			get { return m_typeMap[ValueType]; }
 		}
 		public long[] Shape;
-		public Array Data;
+		//public Array Data;
+		public Barracuda.Tensor Data;
+	}
+	
+	public class TensorUtils
+	{
+		public static void ResizeTensor(Tensor tensor, int batch, ITensorAllocator allocator)
+		{
+			if (tensor.Shape[0] == batch &&
+			    tensor.Data != null && tensor.Data.batch == batch)
+				return; 
+
+			tensor.Data?.Dispose();
+			tensor.Shape[0] = batch;
+			tensor.Data = allocator.Alloc(new TensorShape(batch, (int)tensor.Shape[tensor.Shape.Length - 1]));
+		}
 	}
 
 }
