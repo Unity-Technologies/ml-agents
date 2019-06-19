@@ -58,7 +58,9 @@ class PPOTrainer(Trainer):
         # Make sure we have at least one reward_signal
         if not self.trainer_parameters["reward_signals"]:
             raise UnityTrainerException(
-                "No reward signals were defined. At least one must be used with the PPO trainer."
+                "No reward signals were defined. At least one must be used with {}.".format(
+                    self.__class__.__name__
+                )
             )
 
         self.step = 0
@@ -80,8 +82,10 @@ class PPOTrainer(Trainer):
         self.episode_steps = {}
 
     def __str__(self):
-        return """Hyperparameters for the PPO Trainer of brain {0}: \n{1}""".format(
-            self.brain_name, self.dict_to_str(self.trainer_parameters, 0)
+        return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
+            self.__class__.__name__,
+            self.brain_name,
+            self.dict_to_str(self.trainer_parameters, 0),
         )
 
     @property
