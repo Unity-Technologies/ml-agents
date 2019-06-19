@@ -11,7 +11,8 @@ rewards as "intrinsic" reward signals. The total reward that the agent attempts 
 be a mix of extrinsic and intrinsic reward signals. 
 
 ML-Agents allows reward signals to be defined in a modular way, and we provide three reward 
-signals that can the mixed and matched to help shape your agent's behavior. The `extrinsic` Reward Signal represents the rewards defined in your environment, and is enabled by default. 
+signals that can the mixed and matched to help shape your agent's behavior. The `extrinsic` Reward 
+Signal represents the rewards defined in your environment, and is enabled by default. 
 The `curiosity` reward signal helps your agent explore when extrinsic rewards are sparse.
 
 ## Enabling Reward Signals 
@@ -50,7 +51,7 @@ to ignore the environment reward.
 `strength` is the factor by which to multiply the raw 
 reward. Typical ranges will vary depending on the reward signal. 
 
-Typical Range: `0.01 - `1.0`
+Typical Range: `1.0`
 
 #### Gamma
 
@@ -64,7 +65,7 @@ Typical Range: `0.8` - `0.995`
 
 ### The Curiosity Reward Signal
 
-@chriselion
+The `curiosity` Reward Signal enables the Intrinsic Curiosity Module.
 
 #### Strength 
 
@@ -73,13 +74,13 @@ by the intrinsic curiosity module. This should be scaled in order to ensure it i
 to not be overwhelmed by extrinsic reward signals in the environment. 
 Likewise it should not be too large to overwhelm the extrinsic reward signal.
 
-Typical Range: `0.1 - `0.001`
+Typical Range: `0.001` - `0.1`
 
 #### Gamma
 
 `gamma` corresponds to the discount factor for future rewards. 
 
-Typical Range: `0.8` - `0.9`
+Typical Range: `0.8` - `0.995`
 
 #### Encoding Size
 
