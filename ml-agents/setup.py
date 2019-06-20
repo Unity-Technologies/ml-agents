@@ -23,7 +23,11 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
     ],
-    packages=["mlagents.trainers", "mlagents.trainers.bc", "mlagents.trainers.ppo"],  # Required
+    packages=[
+        "mlagents.trainers",
+        "mlagents.trainers.bc",
+        "mlagents.trainers.ppo",
+    ],  # Required
     zip_safe=False,
     install_requires=[
         "mlagents_envs==0.8.2",
