@@ -183,6 +183,10 @@ CrawlerDynamicLearning:
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    reward_signals:
+        extrinsic: 
+            strength: 1.0
+            gamma: 0.995
 
 WalkerLearning:
     normalize: true
