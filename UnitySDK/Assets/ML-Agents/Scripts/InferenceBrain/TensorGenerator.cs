@@ -10,10 +10,10 @@ namespace MLAgents.InferenceBrain
     /// The Action take as argument the tensor, the current batch size and a Dictionary of
     /// Agent to AgentInfo corresponding to the current batch.
     /// Each Generator reshapes and fills the data of the tensor based of the data of the batch.
-    /// When the Tensor is an Input to the model, the shape of the Tensor will be modified
+    /// When the TensorProxy is an Input to the model, the shape of the Tensor will be modified
     /// depending on the current batch size and the data of the Tensor will be filled using the
     /// Dictionary of Agent to AgentInfo.
-    /// When the Tensor is an Output of the model, only the shape of the Tensor will be modified
+    /// When the TensorProxy is an Output of the model, only the shape of the Tensor will be modified
     /// using the current batch size. The data will be prefilled with zeros.
     /// </summary>
     public class TensorGenerator
@@ -24,11 +24,11 @@ namespace MLAgents.InferenceBrain
             /// Modifies the data inside a Tensor according to the information contained in the
             /// AgentInfos contained in the current batch.
             /// </summary>
-            /// <param name="tensor"> The tensor the data and shape will be modified</param>
+            /// <param name="tensorProxy"> The tensor the data and shape will be modified</param>
             /// <param name="batchSize"> The number of agents present in the current batch</param>
             /// <param name="agentInfo"> Dictionary of Agent to AgentInfo containing the
             /// information that will be used to populate the tensor's data</param>
-            void Generate(Tensor tensor, int batchSize, Dictionary<Agent, AgentInfo> agentInfo);
+            void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo);
         }
         
         Dictionary<string, Generator> _dict = new Dictionary<string, Generator>();
@@ -40,6 +40,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="bp"> The BrainParameters used to determine what Generators will be
         /// used</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
+        /// <param name="allocator"> Tensor allocator</param>
         public TensorGenerator(BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
         {
             _allocator = allocator;
@@ -51,7 +52,7 @@ namespace MLAgents.InferenceBrain
             _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator(_allocator);
             
             #if ENABLE_BARRACUDA
-            Barracuda.Model model = (Barracuda.Model) barracudaModel;
+            Model model = (Model) barracudaModel;
             for (var i = 0; i < model?.memories.Length; i++)
             {
                 _dict[model.memories[i].input] = new BarracudaRecurrentInputGenerator(i, _allocator);
@@ -91,7 +92,7 @@ namespace MLAgents.InferenceBrain
         /// data that will be used to modify the tensors</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
-        public void GenerateTensors(IEnumerable<Tensor> tensors, 
+        public void GenerateTensors(IEnumerable<TensorProxy> tensors, 
             int currentBatchSize, 
             Dictionary<Agent, AgentInfo> agentInfos)
         {
@@ -100,7 +101,7 @@ namespace MLAgents.InferenceBrain
                 if (!_dict.ContainsKey(tensor.Name))
                 {
                     throw new UnityAgentsException(
-                        "Unknow tensor expected as input : " + tensor.Name);
+                        "Unknow tensorProxy expected as input : " + tensor.Name);
                 }
                 _dict[tensor.Name].Generate(tensor, currentBatchSize, agentInfos);
             }

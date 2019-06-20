@@ -58,7 +58,7 @@ namespace MLAgents.InferenceBrain.Utils
         /// <param name="t">The pre-allocated Tensor to fill</param>
         /// <exception cref="NotImplementedException">Throws when trying to fill a Tensor of type other than float</exception>
         /// <exception cref="ArgumentNullException">Throws when the Tensor is not allocated</exception>
-        public void FillTensor(Tensor t)
+        public void FillTensor(TensorProxy t)
         {
             if (t.DataType != typeof(float))
             {

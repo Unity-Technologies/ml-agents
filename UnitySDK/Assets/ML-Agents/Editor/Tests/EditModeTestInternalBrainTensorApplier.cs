@@ -5,7 +5,6 @@ using UnityEngine;
 using System.Reflection;
 using Barracuda;
 using MLAgents.InferenceBrain;
-using Tensor = MLAgents.InferenceBrain.Tensor;
 
 namespace MLAgents.Tests
 {
@@ -44,10 +43,10 @@ namespace MLAgents.Tests
         [Test]
         public void ApplyContinuousActionOutput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 3},
-                Data = new Barracuda.Tensor (2, 3, new float[] {1, 2, 3, 
+                Data = new Tensor (2, 3, new float[] {1, 2, 3, 
                                                                 4, 5, 6})
             };
             var agentInfos = GetFakeAgentInfos();
@@ -70,10 +69,10 @@ namespace MLAgents.Tests
         [Test]
         public void ApplyDiscreteActionOutput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 5},
-                Data = new Barracuda.Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
+                Data = new Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
                                                                 4f, 5f, 6f, 7f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
@@ -94,10 +93,10 @@ namespace MLAgents.Tests
         [Test]
         public void ApplyMemoryOutput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 5},
-                Data = new Barracuda.Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
+                Data = new Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
                                                           4f, 5f, 6f, 7f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
@@ -118,10 +117,10 @@ namespace MLAgents.Tests
         [Test]
         public void ApplyValueEstimate()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 1},
-                Data = new Barracuda.Tensor (2, 1, new[]{0.5f, 8f})
+                Data = new Tensor (2, 1, new[]{0.5f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
             

@@ -7,7 +7,6 @@ using System.Linq;
 using Barracuda;
 using MLAgents.InferenceBrain;
 using UnityEngine.Profiling;
-using Tensor = MLAgents.InferenceBrain.Tensor;
 
 namespace MLAgents
 {
@@ -52,8 +51,8 @@ namespace MLAgents
                  "(This field is not applicable for training).")]
         public InferenceDevice inferenceDevice = InferenceDevice.CPU;
         
-        private IReadOnlyList<Tensor> _inferenceInputs;
-        private IReadOnlyList<Tensor> _inferenceOutputs;
+        private IReadOnlyList<TensorProxy> _inferenceInputs;
+        private IReadOnlyList<TensorProxy> _inferenceOutputs;
 
         [NonSerialized]
         private bool _isControlled;
@@ -235,9 +234,9 @@ namespace MLAgents
         }
         
 #if ENABLE_BARRACUDA && !ENABLE_TENSORFLOW
-        protected Dictionary<string, Barracuda.Tensor> PrepareBarracudaInputs(IEnumerable<Tensor> infInputs)
+        protected Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
-            var inputs = new Dictionary<string, Barracuda.Tensor>();
+            var inputs = new Dictionary<string, Tensor>();
             foreach (var inp in _inferenceInputs)
             {        
                 inputs[inp.Name] = inp.Data;
@@ -246,9 +245,9 @@ namespace MLAgents
             return inputs;
         }
 
-        protected List<Tensor> FetchBarracudaOutputs(string[] names)
+        protected List<TensorProxy> FetchBarracudaOutputs(string[] names)
         {
-            var outputs = new List<Tensor>();
+            var outputs = new List<TensorProxy>();
             foreach (var name in names)
             {
                 var outp = _engine.Peek(name);
@@ -256,15 +255,6 @@ namespace MLAgents
             }
 
             return outputs;
-        }
-
-        protected void CleanupBarracudaState(Dictionary<string, Barracuda.Tensor> inputs)
-        {
-            foreach (var key in inputs.Keys)
-            {
-                inputs[key].Dispose();
-            }
-            inputs.Clear();
         }
 
         public void OnDisable()

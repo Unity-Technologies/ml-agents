@@ -1,4 +1,5 @@
 ﻿using System;
+using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
 using MLAgents.InferenceBrain;
@@ -13,16 +14,16 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
 
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                Data = new Barracuda.Tensor(1, 3, new[] {0.1f, 0.2f, 0.7f}),
-                ValueType = Tensor.TensorType.FloatingPoint
+                Data = new Tensor(1, 3, new[] {0.1f, 0.2f, 0.7f}),
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                Data = new Barracuda.Tensor(1, 3),
-                ValueType = Tensor.TensorType.FloatingPoint
+                Data = new Tensor(1, 3),
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
             m.Eval(src, dst);
@@ -40,16 +41,16 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
 
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                Data = new Barracuda.Tensor(1, 3, new[] {Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50}),
-                ValueType = Tensor.TensorType.FloatingPoint
+                Data = new Tensor(1, 3, new[] {Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50}),
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                Data = new Barracuda.Tensor(1, 3),
-                ValueType = Tensor.TensorType.FloatingPoint
+                Data = new Tensor(1, 3),
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
             m.Eval(src, dst);
@@ -67,21 +68,21 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
 
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                Data = new Barracuda.Tensor(2, 3, new []
+                Data = new Tensor(2, 3, new []
                 {
                     Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50,
                     Mathf.Log(0.3f) - 25, Mathf.Log(0.4f) - 25, Mathf.Log(0.3f) - 25
                     
                 }),
-                ValueType = Tensor.TensorType.FloatingPoint
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                Data = new Barracuda.Tensor(2, 3),
-                ValueType = Tensor.TensorType.FloatingPoint
+                Data = new Tensor(2, 3),
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
             m.Eval(src, dst);
@@ -99,9 +100,9 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
 
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                ValueType = Tensor.TensorType.Integer
+                ValueType = TensorProxy.TensorType.Integer
             };
 
             Assert.Throws<NotImplementedException>(() => m.Eval(src, null));
@@ -112,13 +113,13 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
 
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                ValueType = Tensor.TensorType.Integer
+                ValueType = TensorProxy.TensorType.Integer
             };
 
             Assert.Throws<ArgumentException>(() => m.Eval(src, dst));
@@ -129,13 +130,13 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
             
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
             Assert.Throws<ArgumentNullException>(() => m.Eval(src, dst));
@@ -146,14 +147,14 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
             
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new Barracuda.Tensor(0,1)
+                ValueType = TensorProxy.TensorType.FloatingPoint,
+                Data = new Tensor(0,1)
             };
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint
+                ValueType = TensorProxy.TensorType.FloatingPoint
             };
 
             Assert.Throws<ArgumentNullException>(() => m.Eval(src, dst));
@@ -164,15 +165,15 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
             
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new Barracuda.Tensor(0,1)
+                ValueType = TensorProxy.TensorType.FloatingPoint,
+                Data = new Tensor(0,1)
             };
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new Barracuda.Tensor(0,2)
+                ValueType = TensorProxy.TensorType.FloatingPoint,
+                Data = new Tensor(0,2)
             };
 
             Assert.Throws<ArgumentException>(() => m.Eval(src, dst));
@@ -183,15 +184,15 @@ namespace MLAgents.Tests
         {
             Multinomial m = new Multinomial(2018);
             
-            Tensor src = new Tensor
+            TensorProxy src = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new Barracuda.Tensor(1, 1)
+                ValueType = TensorProxy.TensorType.FloatingPoint,
+                Data = new Tensor(1, 1)
             };
-            Tensor dst = new Tensor
+            TensorProxy dst = new TensorProxy
             {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new Barracuda.Tensor(2, 1)
+                ValueType = TensorProxy.TensorType.FloatingPoint,
+                Data = new Tensor(2, 1)
             };
 
             Assert.Throws<ArgumentException>(() => m.Eval(src, dst));

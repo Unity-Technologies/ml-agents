@@ -30,7 +30,7 @@ namespace MLAgents
         /// will be converted to grayscale before being stored in the tensor.
         /// </param>
         /// <param name="allocator">Tensor allocator</param>
-        public static Barracuda.Tensor TextureToFloatArray(List<Texture2D> textures, bool blackAndWhite, 
+        public static Tensor TextureToFloatArray(List<Texture2D> textures, bool blackAndWhite, 
                                                                 ITensorAllocator allocator)
         {
             var batchSize = textures.Count;

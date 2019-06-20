@@ -1,4 +1,5 @@
 ﻿using System;
+using Barracuda;
 using NUnit.Framework;
 using MLAgents.InferenceBrain;
 using MLAgents.InferenceBrain.Utils;
@@ -49,9 +50,9 @@ namespace MLAgents.Tests
 		public void RandomNormalTestTensorInt()
 		{
 			RandomNormal rn = new RandomNormal(1982);
-			Tensor t = new Tensor
+			TensorProxy t = new TensorProxy
 			{
-				ValueType = Tensor.TensorType.Integer
+				ValueType = TensorProxy.TensorType.Integer
 			};
 
 			Assert.Throws<NotImplementedException>(() => rn.FillTensor(t));
@@ -61,9 +62,9 @@ namespace MLAgents.Tests
 		public void RandomNormalTestDataNull()
 		{
 			RandomNormal rn = new RandomNormal(1982);
-			Tensor t = new Tensor
+			TensorProxy t = new TensorProxy
 			{
-				ValueType = Tensor.TensorType.FloatingPoint
+				ValueType = TensorProxy.TensorType.FloatingPoint
 			};
 
 			Assert.Throws<ArgumentNullException>(() => rn.FillTensor(t));
@@ -73,10 +74,10 @@ namespace MLAgents.Tests
 		public void RandomNormalTestTensor()
 		{
 			RandomNormal rn = new RandomNormal(1982);
-			Tensor t = new Tensor
+			TensorProxy t = new TensorProxy
 			{
-				ValueType = Tensor.TensorType.FloatingPoint,
-				Data = new Barracuda.Tensor (1, 3, 4, 2)
+				ValueType = TensorProxy.TensorType.FloatingPoint,
+				Data = new Tensor (1, 3, 4, 2)
 		};
 
 			rn.FillTensor(t);

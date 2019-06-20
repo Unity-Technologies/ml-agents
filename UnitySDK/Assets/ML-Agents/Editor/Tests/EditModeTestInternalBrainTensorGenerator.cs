@@ -5,7 +5,6 @@ using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
 using MLAgents.InferenceBrain;
-using Tensor = MLAgents.InferenceBrain.Tensor;
 
 namespace MLAgents.Tests
 {
@@ -52,7 +51,7 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateBatchSize()
         {
-            var inputTensor = new Tensor();
+            var inputTensor = new TensorProxy();
             var batchSize = 4;
             var generator = new BatchSizeGenerator(new TensorCachingAllocator());
             generator.Generate(inputTensor, batchSize, null);
@@ -63,7 +62,7 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateSequenceLength()
         {
-            var inputTensor = new Tensor();
+            var inputTensor = new TensorProxy();
             var batchSize = 4;
             var generator = new SequenceLengthGenerator(new TensorCachingAllocator());
             generator.Generate(inputTensor, batchSize, null);
@@ -74,7 +73,7 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateVectorObservation()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 3}
             };
@@ -93,7 +92,7 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateRecurrentInput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 5}
             };
@@ -112,10 +111,10 @@ namespace MLAgents.Tests
         [Test]
         public void GeneratePreviousActionInput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 2},
-                ValueType = Tensor.TensorType.Integer
+                ValueType = TensorProxy.TensorType.Integer
                 
             };
             var batchSize = 4;
@@ -134,10 +133,10 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateActionMaskInput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 5},
-                ValueType = Tensor.TensorType.FloatingPoint
+                ValueType = TensorProxy.TensorType.FloatingPoint
                 
             };
             var batchSize = 4;

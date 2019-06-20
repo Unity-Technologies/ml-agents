@@ -26,7 +26,7 @@ namespace MLAgents.InferenceBrain.Utils
         /// <exception cref="NotImplementedException">Multinomial doesn't support integer tensors</exception>
         /// <exception cref="ArgumentException">Issue with tensor shape or type</exception>
         /// <exception cref="ArgumentNullException">At least one of the tensors is not allocated</exception>
-        public void Eval(Tensor src, Tensor dst)
+        public void Eval(TensorProxy src, TensorProxy dst)
         {
             if (src.DataType != typeof(float))
             {

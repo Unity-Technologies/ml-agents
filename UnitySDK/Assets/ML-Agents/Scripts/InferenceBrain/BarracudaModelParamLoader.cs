@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Barracuda;
+using MLAgents.InferenceBrain;
 using UnityEngine;
-using Tensor = MLAgents.InferenceBrain.Tensor;
 
 namespace MLAgents.InferenceBrain
 {
@@ -57,20 +57,20 @@ namespace MLAgents.InferenceBrain
         /// <summary>
         /// Generates the Tensor inputs that are expected to be present in the Model. 
         /// </summary>
-        /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
-        public IReadOnlyList<Tensor> GetInputTensors()
+        /// <returns>TensorProxy IEnumerable with the expected Tensor inputs</returns>
+        public IReadOnlyList<TensorProxy> GetInputTensors()
         {
-            List<Tensor> tensors = new List<Tensor>();
+            List<TensorProxy> tensors = new List<TensorProxy>();
 
             if (_model == null)
                 return tensors;
             
             foreach (var input in _model.inputs)
             {
-                tensors.Add(new Tensor
+                tensors.Add(new TensorProxy
                 {
                     Name = input.name,
-                    ValueType = Tensor.TensorType.FloatingPoint,
+                    ValueType = TensorProxy.TensorType.FloatingPoint,
                     Data = null,
                     Shape = input.shape.Select(i => (long)i).ToArray()
                 });
@@ -79,10 +79,10 @@ namespace MLAgents.InferenceBrain
             foreach (var mem in _model.memories)
             {
                 //Debug.Log($"{mem.input}: {mem.shape} -> {BarracudaUtils.FromBarracuda(mem.shape).Length}");
-                tensors.Add(new Tensor
+                tensors.Add(new TensorProxy
                 {
                     Name = mem.input,
-                    ValueType = Tensor.TensorType.FloatingPoint,
+                    ValueType = TensorProxy.TensorType.FloatingPoint,
                     Data = null,
                     Shape = BarracudaUtils.FromBarracuda(mem.shape)
                 });
@@ -96,7 +96,7 @@ namespace MLAgents.InferenceBrain
         /// <summary>
         /// Generates the Tensor outputs that are expected to be present in the Model. 
         /// </summary>
-        /// <returns>Tensor IEnumerable with the expected Tensor outputs</returns>
+        /// <returns>TensorProxy IEnumerable with the expected Tensor outputs</returns>
         public string[] GetOutputNames()
         {
             var names = new List<string>();
@@ -320,7 +320,7 @@ namespace MLAgents.InferenceBrain
         private void CheckInputTensorShape()
         {
             var tensorTester =
-                new Dictionary<string, Func<Tensor, string>>()
+                new Dictionary<string, Func<TensorProxy, string>>()
                 {
                     {TensorNames.VectorObservationPlacholder, CheckVectorObsShape},
                     {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
@@ -363,14 +363,14 @@ namespace MLAgents.InferenceBrain
         /// Checks that the shape of the Vector Observation input placeholder is the same in the
         /// model and in the Brain Parameters.
         /// </summary>
-        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="tensorProxy"> The tensor that is expected by the model</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckVectorObsShape(Tensor tensor)
+        private string CheckVectorObsShape(TensorProxy tensorProxy)
         {
             var vecObsSizeBp = _brainParameters.vectorObservationSize;
             var numStackedVector = _brainParameters.numStackedVectorObservations;
-            var totalVecObsSizeT = tensor.Shape[tensor.Shape.Length - 1];
+            var totalVecObsSizeT = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
             if (vecObsSizeBp * numStackedVector != totalVecObsSizeT)
             {
                 return string.Format(
@@ -385,13 +385,13 @@ namespace MLAgents.InferenceBrain
         /// Checks that the shape of the Previous Vector Action input placeholder is the same in the
         /// model and in the Brain Parameters.
         /// </summary>
-        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="tensorProxy"> The tensor that is expected by the model</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckPreviousActionShape(Tensor tensor)
+        private string CheckPreviousActionShape(TensorProxy tensorProxy)
         {
             var numberActionsBp = _brainParameters.vectorActionSize.Length;
-            var numberActionsT = tensor.Shape[tensor.Shape.Length - 1];
+            var numberActionsT = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
             if  (numberActionsBp != numberActionsT)
             {
                 return string.Format(
@@ -406,24 +406,24 @@ namespace MLAgents.InferenceBrain
         /// Checks that the shape of the visual observation input placeholder is the same in the
         /// model and in the Brain Parameters.
         /// </summary>
-        /// <param name="tensor"> The tensor that is expected by the model</param>
+        /// <param name="tensorProxy"> The tensor that is expected by the model</param>
         /// <param name="visObsIndex"> The index of the visual observation.</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckVisualObsShape(Tensor tensor, int visObsIndex)
+        private string CheckVisualObsShape(TensorProxy tensorProxy, int visObsIndex)
         {
             var resolutionBp = _brainParameters.cameraResolutions[visObsIndex];
             var widthBp = resolutionBp.width;
             var heightBp = resolutionBp.height;
             var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;  
-            var heightT = tensor.Shape[1];
-            var widthT = tensor.Shape[2];
-            var pixelT = tensor.Shape[3];
+            var heightT = tensorProxy.Shape[1];
+            var widthT = tensorProxy.Shape[2];
+            var pixelT = tensorProxy.Shape[3];
             if  ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
                 return string.Format(
                     "The visual Observation {0} of the model does not match. " +
-                    "Received Tensor of shape [?x{1}x{2}x{3}] but was expecting [?x{4}x{5}x{6}].",
+                    "Received TensorProxy of shape [?x{1}x{2}x{3}] but was expecting [?x{4}x{5}x{6}].",
                     visObsIndex, widthBp, heightBp, pixelBp, widthT, heightT, pixelT);
             }
             return null;
@@ -547,7 +547,7 @@ public class BarracudaUtils
     protected static Barracuda.TensorShape ToBarracuda(long[] src)
     {
         if (src.Length > 4)
-            throw new NotImplementedException("Barracuda does not support Tensor shapes with rank higher than 4");
+            throw new NotImplementedException("Barracuda does not support TensorProxy shapes with rank higher than 4");
 
         var shape = new int[4];
 
@@ -586,13 +586,13 @@ public class BarracudaUtils
     }
     
     
-    public static Tensor FromBarracuda(Barracuda.Tensor src, string nameOverride = null)
+    public static TensorProxy FromBarracuda(Tensor src, string nameOverride = null)
     {
         var shape = FromBarracuda(src.shape);
-        return new Tensor
+        return new TensorProxy
         {
             Name = nameOverride ?? src.name,
-            ValueType = Tensor.TensorType.FloatingPoint,
+            ValueType = TensorProxy.TensorType.FloatingPoint,
             Shape = shape,
             Data = src
         };
