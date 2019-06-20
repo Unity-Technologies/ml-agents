@@ -1,12 +1,9 @@
-﻿#define ENABLE_BARRACUDA
-#if ENABLE_BARRACUDA
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Barracuda;
 using MLAgents.InferenceBrain;
-using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
@@ -534,50 +531,9 @@ namespace MLAgents.InferenceBrain
 }
 
 public class BarracudaUtils
-{
-    private static Array LinearizeArray(Array src)  
-    {
-        var elementType = src.GetType().GetElementType();
-        var elementSize = Marshal.SizeOf(elementType);
-        var dest = Array.CreateInstance(elementType, src.Length);
-        Buffer.BlockCopy(src, 0, dest, 0, src.Length * elementSize);
-        return dest;
-    }
-    
-    protected static Barracuda.TensorShape ToBarracuda(long[] src)
-    {
-        if (src.Length > 4)
-            throw new NotImplementedException("Barracuda does not support TensorProxy shapes with rank higher than 4");
-
-        var shape = new int[4];
-
-        if (src.Length == 2)
-        {
-            shape[0] = (int)src[0];
-            shape[1] = 1;
-            shape[2] = 1;
-            shape[3] = (int)src[1];
-        }
-        else
-        {
-            for (var axis = 0; axis < src.Length; ++axis)
-                shape[shape.Length-axis-1] = (int)src[src.Length-axis-1];
-        }
-        
-        return new Barracuda.TensorShape(shape);
-    }
-    
-    private static float[] IntArrayToFloatArray(int[] src)
-    {
-        var dest = new float[src.Length];
-        for (var i = 0; i < src.Length; i++)
-            dest[i] = (float) src[i];
-
-        return dest;
-    }
-    
-    
-    internal static long[] FromBarracuda(Barracuda.TensorShape src)
+{ 
+   
+    internal static long[] FromBarracuda(TensorShape src)
     {
         if (src.height == 1 && src.width == 1)
             return new long[2] {src.batch, src.channels};
@@ -598,4 +554,3 @@ public class BarracudaUtils
         };
     }
 }
-#endif

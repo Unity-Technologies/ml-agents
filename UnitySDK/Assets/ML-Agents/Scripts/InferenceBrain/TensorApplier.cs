@@ -1,5 +1,4 @@
-﻿#define ENABLE_BARRACUDA
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Barracuda;
 
 namespace MLAgents.InferenceBrain
@@ -52,15 +51,16 @@ namespace MLAgents.InferenceBrain
                 _dict[TensorNames.ActionOutput] = new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
             _dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
-            
-            #if ENABLE_BARRACUDA
-            Model model = (Model) barracudaModel;
 
-            for (var i = 0; i < model?.memories.Length; i++)
+            if (barracudaModel != null)
             {
-                _dict[model.memories[i].output] = new BarracudaMemoryOutputApplier(model.memories.Length, i);
+                Model model = (Model) barracudaModel;
+
+                for (var i = 0; i < model?.memories.Length; i++)
+                {
+                    _dict[model.memories[i].output] = new BarracudaMemoryOutputApplier(model.memories.Length, i);
+                }
             }
-            #endif
         }
 
         /// <summary>
