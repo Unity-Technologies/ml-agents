@@ -1,28 +1,28 @@
 # Reward Signals
 
 In reinforcement learning, the end goal for the Agent is to discover a behavior (a Policy)
-that maximizes a reward. Typically, a reward is defined by your environment, and corresponds 
+that maximizes a reward. Typically, a reward is defined by your environment, and corresponds
 to reaching some goal. These are what we refer to as "extrinsic" rewards, as they are defined
-external of the learning algorithm. 
+external of the learning algorithm.
 
-Rewards, however, can be defined outside of the enviroment as well, to encourage the agent to 
+Rewards, however, can be defined outside of the enviroment as well, to encourage the agent to
 behave in certain ways, or to aid the learning of the true extrinsic reward. We refer to these
-rewards as "intrinsic" reward signals. The total reward that the agent will learn to maximize can 
-be a mix of extrinsic and intrinsic reward signals. 
+rewards as "intrinsic" reward signals. The total reward that the agent will learn to maximize can
+be a mix of extrinsic and intrinsic reward signals.
 
-ML-Agents allows reward signals to be defined in a modular way, and we provide three reward 
-signals that can the mixed and matched to help shape your agent's behavior. The `extrinsic` Reward 
-Signal represents the rewards defined in your environment, and is enabled by default. 
+ML-Agents allows reward signals to be defined in a modular way, and we provide three reward
+signals that can the mixed and matched to help shape your agent's behavior. The `extrinsic` Reward
+Signal represents the rewards defined in your environment, and is enabled by default.
 The `curiosity` reward signal helps your agent explore when extrinsic rewards are sparse.
 
-## Enabling Reward Signals 
+## Enabling Reward Signals
 
 Reward signals, like other hyperparameters, are defined in the trainer config `.yaml` file. An
-example is provided in `config/trainer_config.yaml`. To enable a reward signal, add it to the 
+example is provided in `config/trainer_config.yaml`. To enable a reward signal, add it to the
 `reward_signals:` section under the brain name. For instance, to enable the extrinsic signal
 in addition to a small curiosity reward, you would define your `reward_signals` as follows:
 
-```
+```yaml
 reward_signals:
     extrinsic:
         strength: 1.0
@@ -33,10 +33,10 @@ reward_signals:
         encoding_size: 128
 ```
 
-Each reward signal should define at least two parameters, `strength` and `gamma`, in addition 
-to any class-specific hyperparameters. Note that to remove a reward signal, you should delete 
+Each reward signal should define at least two parameters, `strength` and `gamma`, in addition
+to any class-specific hyperparameters. Note that to remove a reward signal, you should delete
 its entry entirely from `reward_signals`. At least one reward signal should be left defined
-at all times. 
+at all times.
 
 ## Reward Signal Types
 
@@ -44,12 +44,12 @@ at all times.
 
 The `extrinsic` reward signal is simply the reward given by the
 [environment](Learning-Environment-Design.md). Remove it to force the agent
-to ignore the environment reward. 
+to ignore the environment reward.
 
-#### Strength 
+#### Strength
 
-`strength` is the factor by which to multiply the raw 
-reward. Typical ranges will vary depending on the reward signal. 
+`strength` is the factor by which to multiply the raw
+reward. Typical ranges will vary depending on the reward signal.
 
 Typical Range: `1.0`
 
@@ -78,16 +78,16 @@ Typical Range: `0.001` - `0.1`
 
 #### Gamma
 
-`gamma` corresponds to the discount factor for future rewards. 
+`gamma` corresponds to the discount factor for future rewards.
 
 Typical Range: `0.8` - `0.995`
 
 #### Encoding Size
 
-`encoding_size` corresponds to the size of the encoding used by the intrinsic curiosity model. 
+`encoding_size` corresponds to the size of the encoding used by the intrinsic curiosity model.
 This value should be small enough to encourage the ICM to compress the original
-observation, but also not too small to prevent it from learning to differentiate between 
-demonstrated and actual behavior. 
+observation, but also not too small to prevent it from learning to differentiate between
+demonstrated and actual behavior.
 
 Default Value: 64
 Typical Range: `64` - `256`
