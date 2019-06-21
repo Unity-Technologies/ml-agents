@@ -42,11 +42,13 @@ jobs:
 
       - run:
           name: Check Code Style for ml-agents and gym_unity using black
+          # Some pre-commit hooks (namely mypy) don't work well on the entire repo because of the pacakage structure.
+          # So run it on all the files of the subdirectory instead.
           command: |
             . venv/bin/activate
-            black --check ml-agents
-            black --check ml-agents-envs
-            black --check gym-unity
+            git ls-files ml-agents      | xargs pre-commit run --files
+            git ls-files ml-agents-envs | xargs pre-commit run --files
+            git ls-files gym-unity      | xargs pre-commit run --files
 
       - run:
           name: Verify there are no hidden/missing metafiles.
