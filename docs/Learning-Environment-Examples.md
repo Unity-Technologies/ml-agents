@@ -56,7 +56,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
-* Reset Parameters: None
+* Reset Parameters: Three, corresponding to ball size, ball mass and gravity.
 * Benchmark Mean Reward: 100
 
 ## [GridWorld](https://youtu.be/gu8HE9WKEVI)
