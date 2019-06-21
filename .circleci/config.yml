@@ -46,9 +46,9 @@ jobs:
           # So run it on all the files of the subdirectory instead.
           command: |
             . venv/bin/activate
-            git ls-files ml-agents      | xargs pre-commit run --files
-            git ls-files ml-agents-envs | xargs pre-commit run --files
-            git ls-files gym-unity      | xargs pre-commit run --files
+            git ls-files ml-agents      | xargs pre-commit run --files --show-diff-on-failure
+            git ls-files ml-agents-envs | xargs pre-commit run --files --show-diff-on-failure
+            git ls-files gym-unity      | xargs pre-commit run --files --show-diff-on-failure
 
       - run:
           name: Verify there are no hidden/missing metafiles.
