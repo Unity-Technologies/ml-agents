@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from os import path
 from io import open
 
@@ -23,11 +23,10 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
     ],
-    packages=[
-        "mlagents.trainers",
-        "mlagents.trainers.bc",
-        "mlagents.trainers.ppo",
-    ],  # Required
+    # find_namespace_packages will recurse through the directories and find all the packages
+    packages=find_namespace_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
+    ),
     zip_safe=False,
     install_requires=[
         "mlagents_envs==0.8.2",
