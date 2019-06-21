@@ -94,7 +94,6 @@ GoalieLearning:
 
 PyramidsLearning:
     summary_freq: 2000
-    curiosity_enc_size: 256
     time_horizon: 128
     batch_size: 128
     buffer_size: 2048
@@ -103,8 +102,6 @@ PyramidsLearning:
     beta: 1.0e-2
     max_steps: 5.0e5
     num_epoch: 3
-    sequence_length: 16
-    use_recurrent: false
     reward_signals:
         extrinsic: 
             strength: 1.0
