@@ -83,6 +83,7 @@ def run_training(
         )
 
     trainer_config = load_config(trainer_config_path)
+    reset_param_dict = load_config(reset_param_dict_path)
     env_factory = create_environment_factory(
         env_path,
         docker_target_name,

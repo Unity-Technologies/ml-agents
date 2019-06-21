@@ -24,6 +24,7 @@ from mlagents.trainers.meta_curriculum import MetaCurriculum
 
 
 class TrainerController(object):
+    # Type of reset_param_dict unspecified as typing library does not support heterogeneous dictionary types
     def __init__(
         self,
         trainers: Dict[str, Trainer],
