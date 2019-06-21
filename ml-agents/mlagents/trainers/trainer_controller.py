@@ -12,6 +12,10 @@ import numpy as np
 import tensorflow as tf
 from time import time
 
+"""
+[TODO:] Figure out the file structure and import the Sampling class
+"""
+
 from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
@@ -23,6 +27,7 @@ from mlagents.trainers.meta_curriculum import MetaCurriculum
 
 
 class TrainerController(object):
+    # Type of reset_param_dict unspecified as typing library does not support heterogeneous dictionary types
     def __init__(
         self,
         model_path: str,
@@ -37,6 +42,8 @@ class TrainerController(object):
         external_brains: Dict[str, BrainParameters],
         training_seed: int,
         fast_simulation: bool,
+        generalize: bool = False,
+        reset_param_dict = None,
     ):
         """
         :param model_path: Path to save the model.
@@ -50,6 +57,8 @@ class TrainerController(object):
         :param lesson: Start learning from this lesson.
         :param external_brains: dictionary of external brain names to BrainInfo objects.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
+        :param generalize: Whether to train agent over various
+        :param reset_param_dict: dictionary of reset parameters used for generalization training
         """
 
         self.model_path = model_path
@@ -72,6 +81,8 @@ class TrainerController(object):
         self.fast_simulation = fast_simulation
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
+        self.generalize = generalize
+        self.reset_param_dict = reset_param_dict
 
     def _get_measure_vals(self):
         if self.meta_curriculum:
@@ -202,6 +213,10 @@ class TrainerController(object):
                 "accessed. Please make sure the "
                 "permissions are set correctly.".format(model_path)
             )
+
+    @staticmethod
+    def _create_sampler(reset_param_dict):
+        self.sampler = 
 
     def _reset_env(self, env: BaseUnityEnvironment):
         """Resets the environment.
