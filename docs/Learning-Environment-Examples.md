@@ -106,9 +106,9 @@ If you would like to contribute environments, please see our
     toward net or away from net, and jumping.
   * Visual Observations: None.
 * Reset Parameters: Three, corresponding to the following.
- * angle: Angle of the racket from the vertical axis.
- * gravity: Magnitude of gravity
- * scale: Size of the ball
+    * angle: Angle of the racket from the vertical axis.
+    * gravity: Magnitude of gravity
+    * scale: Size of the ball
 * Benchmark Mean Reward: 2.5
 * Optional Imitation Learning scene: `TennisIL`.
 
