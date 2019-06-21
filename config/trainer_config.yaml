@@ -112,7 +112,7 @@ PyramidsLearning:
         curiosity:
             strength: 0.01
             gamma: 0.99
-            encoding_size: 128
+            encoding_size: 256
             
 VisualPyramidsLearning:
     time_horizon: 128
