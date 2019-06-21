@@ -75,13 +75,13 @@ namespace MLAgents.InferenceBrain
             
             foreach (var mem in _model.memories)
             {
-                //Debug.Log($"{mem.input}: {mem.shape} -> {BarracudaUtils.FromBarracuda(mem.shape).Length}");
+                //Debug.Log($"{mem.input}: {mem.shape} -> {BarracudaUtils.TensorShapeFromBarracuda(mem.shape).Length}");
                 tensors.Add(new TensorProxy
                 {
                     Name = mem.input,
                     ValueType = TensorProxy.TensorType.FloatingPoint,
                     Data = null,
-                    Shape = BarracudaUtils.FromBarracuda(mem.shape)
+                    Shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
                 });
             }
             
@@ -527,30 +527,5 @@ namespace MLAgents.InferenceBrain
             }
             return null;
         }
-    }
-}
-
-public class BarracudaUtils
-{ 
-   
-    internal static long[] FromBarracuda(TensorShape src)
-    {
-        if (src.height == 1 && src.width == 1)
-            return new long[2] {src.batch, src.channels};
-
-        return new long[4] {src.batch, src.height, src.width, src.channels};
-    }
-    
-    
-    public static TensorProxy FromBarracuda(Tensor src, string nameOverride = null)
-    {
-        var shape = FromBarracuda(src.shape);
-        return new TensorProxy
-        {
-            Name = nameOverride ?? src.name,
-            ValueType = TensorProxy.TensorType.FloatingPoint,
-            Shape = shape,
-            Data = src
-        };
     }
 }

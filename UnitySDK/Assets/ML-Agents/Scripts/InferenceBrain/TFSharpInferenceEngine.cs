@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using UnityEngine.Profiling;
 using System.Runtime.InteropServices;
+using Barracuda;
 using UnityEngine;
 
 namespace MLAgents.InferenceBrain
@@ -47,10 +48,10 @@ namespace MLAgents.InferenceBrain
             TFSession.Runner runner = m_session.GetRunner();
 
             inputs.ToList().ForEach((TensorProxy input) =>
-            {
+            {   
                 if (input.Shape.Length == 0)
                 {
-                    var data = input.Data.GetValue(0);
+                    var data = input.Data[0];
                     if (input.DataType == typeof(int))
                     {
                         runner.AddInput(m_graph[input.Name][0], (int)data);
@@ -62,7 +63,9 @@ namespace MLAgents.InferenceBrain
                 }
                 else
                 {
-                    runner.AddInput(m_graph[input.Name][0], input.Data);
+                    runner.AddInput(m_graph[input.Name][0], input.DataType == typeof(int) ?
+                                                            TensorUtils.BarracudaToIntArray(input.Data) :
+                                                            TensorUtils.BarracudaToFloatArray(input.Data));
                 }
             });
 
@@ -87,12 +90,12 @@ namespace MLAgents.InferenceBrain
                 if (outputs[i].Shape.Length == 0)
                 {
                     // Handle scalars
-                    outputs[i].Data = Array.CreateInstance(outputs[i].DataType, new long[1] {1}); 
-                    outputs[i].Data.SetValue(out_tensors[i].GetValue(), 0);
+                    outputs[i].Data = new Tensor(1,1);
+                    outputs[i].Data[0] = (float)(int)out_tensors[i].GetValue();
                 }
                 else
                 {
-                    outputs[i].Data = out_tensors[i].GetValue() as Array;
+                    outputs[i].Data = TensorUtils.ArrayToBarracuda(out_tensors[i].GetValue() as Array);
                 }
             }
 
@@ -118,8 +121,8 @@ namespace MLAgents.InferenceBrain
             var shape_attr = op.GetAttributeMetadata("shape", status);
             if (!status.Ok || shape_attr.TotalSize <= 0)
             {
-                Debug.LogWarning("Operation " + op.Name + " does not contain shape attribute or it" +
-                                 " doesn't contain valid shape data!");
+                Debug.LogWarning($"Operation {op.Name} does not contain shape attribute or it" +
+                                 $" doesn't contain valid shape data! Status: {status.StatusMessage}");
             }
             else
             {

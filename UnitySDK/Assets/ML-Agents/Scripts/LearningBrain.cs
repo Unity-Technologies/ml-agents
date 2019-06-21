@@ -97,8 +97,8 @@ namespace MLAgents
             _modelParamLoader = ModelParamLoader.GetLoaderAndCheck(_engine, brainParameters);
             _inferenceInputs = _modelParamLoader.GetInputTensors();
             _inferenceOutputs = _modelParamLoader.GetOutputTensors();
-            _tensorGenerator = new TensorGenerator(brainParameters, seed);
-            _tensorApplier = new TensorApplier(brainParameters, seed);
+            _tensorGenerator = new TensorGenerator(brainParameters, seed, _tensorAllocator);
+            _tensorApplier = new TensorApplier(brainParameters, seed, _tensorAllocator);
 #else
             if (model != null)
             {
@@ -220,6 +220,7 @@ namespace MLAgents
             Profiler.EndSample();
         }
         
+#if !ENABLE_TENSORFLOW
         protected Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();
@@ -237,16 +238,20 @@ namespace MLAgents
             foreach (var name in names)
             {
                 var outp = _engine.Peek(name);
-                outputs.Add(BarracudaUtils.FromBarracuda(outp, name));
+                outputs.Add(TensorUtils.TensorProxyFromBarracuda(outp, name));
             }
 
             return outputs;
         }
-
+#endif
+        
         public void OnDisable()
         {
+#if !ENABLE_TENSORFLOW
             _engine?.Dispose();
+#endif
             _tensorAllocator?.Reset(false);
         }
+
     }
 }

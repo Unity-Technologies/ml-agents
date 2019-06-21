@@ -1,7 +1,9 @@
 ﻿#if ENABLE_TENSORFLOW
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Barracuda;
 
 namespace MLAgents.InferenceBrain
 {
@@ -121,18 +123,19 @@ namespace MLAgents.InferenceBrain
                     Name = name,
                     ValueType = TensorProxy.TensorType.Integer,
                     Shape = new long[] { },
-                    Data = new long[1]
+                    Data = new Tensor(1,1)
                 },
             };
             try
             {
                 _engine.ExecuteGraph(new TensorProxy[0], outputs);
             }
-            catch
+            catch (Exception ex)
             {
+                UnityEngine.Debug.LogError($"Failed to execute GetIntScalar()\n{ex}");
                 return -1;
             }
-            return (outputs[0].Data as int[])[0];
+            return (int)outputs[0].Data[0];
         }
 
         /// <summary>
