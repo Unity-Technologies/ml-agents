@@ -105,7 +105,10 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, corresponding to movement
     toward net or away from net, and jumping.
   * Visual Observations: None.
-* Reset Parameters: One, corresponding to size of ball.
+* Reset Parameters: Three, corresponding to the following.
+ * angle: Angle of the racket from the vertical axis.
+ * gravity: Magnitude of gravity
+ * scale: Size of the ball
 * Benchmark Mean Reward: 2.5
 * Optional Imitation Learning scene: `TennisIL`.
 
