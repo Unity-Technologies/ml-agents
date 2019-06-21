@@ -21,7 +21,8 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id):
+        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+    ):
         """
         Responsible for collecting experiences and training PPO model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
