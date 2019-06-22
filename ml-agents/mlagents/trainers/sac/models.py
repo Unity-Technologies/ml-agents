@@ -778,7 +778,7 @@ class SACModel(LearningModel):
                     axis=1,
                 )
             )
-            
+
             # Same with policy loss, we have to do the loss per branch and average them, so that larger branches don't get more weight.
             # The equivalent KL divergence is also pi*log(pi) - Q
             broken_q_term = self.apply_as_branches(
