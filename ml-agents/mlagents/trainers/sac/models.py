@@ -766,15 +766,19 @@ class SACModel(LearningModel):
             broken_log_probs = self.apply_as_branches(self.policy_network.all_log_probs)
             broken_ent_sums = tf.stack(
                 [
-                    tf.reduce_sum(_lp, axis=1, keep_dims=True) + self.target_entropy
+                    tf.reduce_sum(_lp, axis=1, keep_dims=True) + _te
                     for _lp, _te in zip(broken_log_probs, self.target_entropy)
-                ]
+                ],
+                axis=1,
             )
             self.entropy_loss = -tf.reduce_mean(
-                self.log_ent_coef
-                * tf.to_float(self.mask)
-                * tf.squeeze(tf.stop_gradient(broken_ent_sums))
+                tf.to_float(self.mask)
+                * tf.reduce_mean(
+                    self.log_ent_coef * tf.squeeze(tf.stop_gradient(broken_ent_sums)),
+                    axis=1,
+                )
             )
+            
             # Same with policy loss, we have to do the loss per branch and average them, so that larger branches don't get more weight.
             # The equivalent KL divergence is also pi*log(pi) - Q
             broken_q_term = self.apply_as_branches(
