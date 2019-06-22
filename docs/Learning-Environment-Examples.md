@@ -195,7 +195,10 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 20, corresponding to target
     rotations for joints.
   * Visual Observations: None.
-* Reset Parameters: None
+* Reset Parameters: Three, corresponding to the following
+    * gravity: Set the magnitude of gravity in the environment
+    * forlegScale: Set the scale of the foreleg of the crawler
+    * upperlegScale: Set the scale of the upperleg of the crawler
 * Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
 * Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
 
