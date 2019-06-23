@@ -6,9 +6,9 @@ import tensorflow as tf
 import yaml
 
 from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.ppo.trainer import discount_rewards
+from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.envs import UnityEnvironment
+from mlagents.envs import UnityEnvironment, BrainParameters
 from mlagents.envs.mock_communicator import MockCommunicator
 
 
@@ -274,6 +274,56 @@ def test_rl_functions():
     gamma = 0.9
     returns = discount_rewards(rewards, gamma, 0.0)
     np.testing.assert_array_almost_equal(returns, np.array([0.729, 0.81, 0.9, 1.0]))
+
+
+def test_trainer_increment_step_and_update_last_reward():
+    trainer_params = {
+        "trainer": "ppo",
+        "batch_size": 2048,
+        "beta": 0.005,
+        "buffer_size": 20480,
+        "epsilon": 0.2,
+        "gamma": 0.995,
+        "hidden_units": 512,
+        "lambd": 0.95,
+        "learning_rate": 0.0003,
+        "max_steps": "2e6",
+        "memory_size": 256,
+        "normalize": True,
+        "num_epoch": 3,
+        "num_layers": 3,
+        "time_horizon": 1000,
+        "sequence_length": 64,
+        "summary_freq": 3000,
+        "use_recurrent": False,
+        "use_curiosity": False,
+        "curiosity_strength": 0.01,
+        "curiosity_enc_size": 128,
+        "summary_path": "./summaries/test_trainer_summary",
+        "model_path": "./models/test_trainer_models/TestModel",
+        "keep_checkpoints": 5,
+    }
+    brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
+
+    trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0")
+    policy_mock = mock.Mock()
+    policy_mock.update_reward = mock.Mock()
+    step_count = 10
+    policy_mock.increment_step = mock.Mock(return_value=step_count)
+    trainer.policy = policy_mock
+
+    # No rewards in trainer yet, only step increment should be called / returned
+    trainer.increment_step_and_update_last_reward(5)
+    policy_mock.update_reward.assert_not_called()
+    policy_mock.increment_step.assert_called_with(5)
+    assert trainer.step == 10
+
+    # Adding rewards to cumulative rewards, we'll also update the reward
+    trainer.stats["Environment/Cumulative Reward"] = np.array([1.0, 2.0])
+    trainer.increment_step_and_update_last_reward(5)
+    policy_mock.update_reward.assert_called_with(1.5)
+    policy_mock.increment_step.assert_called_with(5)
+    assert trainer.step == 10
 
 
 if __name__ == "__main__":

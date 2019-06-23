@@ -7,9 +7,8 @@ from collections import deque, defaultdict
 from typing import Any, List
 
 import numpy as np
-import tensorflow as tf
 
-from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.envs import AllBrainInfo, BrainInfo, BrainParameters
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
@@ -22,11 +21,19 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self,
+        brain: BrainParameters,
+        reward_buff_cap: int,
+        trainer_parameters,
+        training,
+        load,
+        seed,
+        run_id,
     ):
         """
         Responsible for collecting experiences and training PPO model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param reward_buff_cap: Max reward history to track in the reward buffer
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
@@ -122,12 +129,13 @@ class PPOTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def increment_step(self):
+    def increment_step(self, n_steps):
         """
         Increment the step count of the trainer
+
+        :param n_steps: number of steps to increment the step count by
         """
-        self.policy.increment_step()
-        self.step = self.policy.get_current_step()
+        self.step = self.policy.increment_step(n_steps)
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """

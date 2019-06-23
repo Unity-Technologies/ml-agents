@@ -299,11 +299,13 @@ def trainer_controller_with_start_learning_mocks():
     tc.initialize_trainers = MagicMock()
     tc.trainers = {"testbrain": trainer_mock}
     tc.take_step = MagicMock()
+    tc.trainers["testbrain"].get_step = 0
 
-    def take_step_sideeffect(env, curr_info):
+    def take_step_sideeffect(env):
         tc.trainers["testbrain"].get_step += 1
         if tc.trainers["testbrain"].get_step > 10:
             raise KeyboardInterrupt
+        return 1
 
     tc.take_step.side_effect = take_step_sideeffect
 
@@ -391,16 +393,16 @@ def trainer_controller_with_take_step_mocks():
 def test_take_step_adds_experiences_to_trainer_and_trains():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
-    curr_info_mock = MagicMock()
-    brain_info_mock = MagicMock()
-    curr_info_mock.__getitem__ = MagicMock(return_value=brain_info_mock)
+    prev_brain_info = MagicMock()
+    new_brain_info = MagicMock()
+    prev_brain_info.__getitem__ = MagicMock(return_value=new_brain_info)
     trainer_mock.is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
-    env_step_output_mock = MagicMock()
-    env_mock.step = MagicMock(return_value=env_step_output_mock)
+    env_mock.get_last_steps = MagicMock(return_value=[prev_brain_info])
+    env_mock.step = MagicMock(return_value=[new_brain_info])
     env_mock.close = MagicMock()
-    env_mock.reset = MagicMock(return_value=curr_info_mock)
+    env_mock.reset = MagicMock(return_value=prev_brain_info)
     env_mock.global_done = False
 
     action_output_mock = ActionInfo(
@@ -408,21 +410,26 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     )
     trainer_mock.get_action = MagicMock(return_value=action_output_mock)
 
-    tc.take_step(env_mock, curr_info_mock)
+    tc.take_step(env_mock)
     env_mock.reset.assert_not_called()
-    trainer_mock.get_action.assert_called_once_with(brain_info_mock)
+    trainer_mock.get_action.assert_called_once_with(new_brain_info)
     env_mock.step.assert_called_once_with(
-        vector_action={"testbrain": action_output_mock.action},
-        memory={"testbrain": action_output_mock.memory},
-        text_action={"testbrain": action_output_mock.text},
-        value={"testbrain": action_output_mock.value},
+        [
+            (
+                {"testbrain": action_output_mock.action},
+                {"testbrain": action_output_mock.memory},
+                {"testbrain": action_output_mock.text},
+                {"testbrain": action_output_mock.value},
+            )
+        ]
     )
     trainer_mock.add_experiences.assert_called_once_with(
-        curr_info_mock, env_step_output_mock, action_output_mock.outputs
+        prev_brain_info, new_brain_info, action_output_mock.outputs
     )
     trainer_mock.process_experiences.assert_called_once_with(
-        curr_info_mock, env_step_output_mock
+        prev_brain_info, new_brain_info
     )
     trainer_mock.update_policy.assert_called_once()
     trainer_mock.write_summary.assert_called_once()
     trainer_mock.increment_step.assert_called_once()
+

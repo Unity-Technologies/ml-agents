@@ -18,7 +18,7 @@ from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
+from mlagents.envs.subprocess_environment import SubprocessEnvManager
 
 
 def run_training(
@@ -83,7 +83,7 @@ def run_training(
         run_seed,
         base_port + (sub_id * num_envs),
     )
-    env = SubprocessUnityEnvironment(env_factory, num_envs)
+    env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
 
     # Create controller and begin training.
@@ -110,7 +110,7 @@ def run_training(
 
 
 def try_create_meta_curriculum(
-    curriculum_folder: Optional[str], env: BaseUnityEnvironment
+    curriculum_folder: Optional[str], env: SubprocessEnvManager
 ) -> Optional[MetaCurriculum]:
     if curriculum_folder is None:
         return None

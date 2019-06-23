@@ -109,7 +109,7 @@ class Trainer(object):
         """
         raise UnityTrainerException("The get_step property was not implemented.")
 
-    def increment_step(self):
+    def increment_step(self, n_steps: int):
         """
         Increment the step count of the trainer
         """
@@ -208,6 +208,8 @@ class Trainer(object):
                 if self.is_training and self.get_step <= self.get_max_steps
                 else "Not Training."
             )
+            # step = min(self.get_step, self.get_max_steps)
+            step = global_step
             if len(self.stats["Environment/Cumulative Reward"]) > 0:
                 mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
                 LOGGER.info(
@@ -218,7 +220,7 @@ class Trainer(object):
                     ":0.3f}. Std of Reward: {:0.3f}. {}".format(
                         self.run_id,
                         self.brain_name,
-                        min(self.get_step, self.get_max_steps),
+                        step,
                         delta_train_start,
                         mean_reward,
                         np.std(self.stats["Environment/Cumulative Reward"]),
@@ -228,7 +230,7 @@ class Trainer(object):
             else:
                 LOGGER.info(
                     " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
-                        self.run_id, self.brain_name, self.get_step, is_training
+                        self.run_id, self.brain_name, step, is_training
                     )
                 )
             summary = tf.Summary()

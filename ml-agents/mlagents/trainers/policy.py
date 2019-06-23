@@ -168,11 +168,16 @@ class Policy(object):
         step = self.sess.run(self.model.global_step)
         return step
 
-    def increment_step(self):
+    def increment_step(self, n_steps):
         """
         Increments model step.
         """
-        self.sess.run(self.model.increment_step)
+        out_dict = {
+            "global_step": self.model.global_step,
+            "increment_step": self.model.increment_step,
+        }
+        feed_dict = {self.model.steps_to_increment: n_steps}
+        return self.sess.run(out_dict, feed_dict=feed_dict)["global_step"]
 
     def get_inference_vars(self):
         """
