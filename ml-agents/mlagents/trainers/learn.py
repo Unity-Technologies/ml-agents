@@ -21,7 +21,9 @@ from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
 
 
-def run_training(sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue) -> None:
+def run_training(
+    sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue
+) -> None:
     """
     Launches training session.
     :param process_queue: Queue used to send signal back to main.

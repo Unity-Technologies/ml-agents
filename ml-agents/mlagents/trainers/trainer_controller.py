@@ -218,7 +218,9 @@ class TrainerController(object):
         else:
             return env.reset(train_mode=self.fast_simulation)
 
-    def start_learning(self, env: BaseUnityEnvironment, trainer_config: Dict[str, Dict[str, str]]) -> None:
+    def start_learning(
+        self, env: BaseUnityEnvironment, trainer_config: Dict[str, Dict[str, str]]
+    ) -> None:
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         if self.meta_curriculum is not None:
@@ -263,7 +265,9 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
 
-    def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo) -> AllBrainInfo:
+    def take_step(
+        self, env: BaseUnityEnvironment, curr_info: AllBrainInfo
+    ) -> AllBrainInfo:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {

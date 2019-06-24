@@ -65,7 +65,9 @@ class TrainerMetrics:
         else:
             self.delta_last_experience_collection = delta
 
-    def start_policy_update_timer(self, number_experiences: int, mean_return: float) -> None:
+    def start_policy_update_timer(
+        self, number_experiences: int, mean_return: float
+    ) -> None:
         """
         Inform Metrics class that policy update has started.
         :int number_experiences: Number of experiences in Buffer at this point.
