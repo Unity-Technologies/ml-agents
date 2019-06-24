@@ -1,5 +1,3 @@
-exclude: '^$'
-fail_fast: false
 repos:
 -   repo: https://github.com/python/black
     rev: '19.3b0'
@@ -9,6 +7,15 @@ repos:
     rev: 'v0.701'
     hooks:
     -   id: mypy
-        stages: [manual]
-    # TODO --disallow-incomplete-defs
+        name: mypy-ml-agents
+        files: "ml-agents/.*"
+        # TODO --disallow-incomplete-defs
+        args: [--ignore-missing-imports]
+    -   id: mypy
+        name: mypy-ml-agents-envs
+        files: "ml-agents-envs/.*"
+        args: [--ignore-missing-imports]
+    -   id: mypy
+        name: mypy-gym-unity
+        files: "gym-unity/.*"
         args: [--ignore-missing-imports]
