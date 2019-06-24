@@ -126,19 +126,17 @@ class TrainerMetrics:
                 writer.writerow(row)
 
 from contextlib import contextmanager
-from typing import Dict
+from typing import Any, Dict
 
 class TimerNode:
-    def __init__(self, name):
-        # TODO __slots__
-        self.name = name
+    __slots__ = ["children", "_start_time", "total", "count"]
+
+    def __init__(self):
+
         self.children: Dict[str, 'TimerNode'] = {}
         self._start_time: float = 0.0
         self.total: float = 0.0
         self.count: int = 0
-
-    def __repr__(self):
-            return f'TimerNode(total={self.total}, count={self.count})'
 
     def _start(self):
         self._start_time = perf_counter()
@@ -155,30 +153,33 @@ class TimerNode:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._end()
 
+
 class TimerStack:
+    __slots__ = ["root", "stack"]
+
     def __init__(self):
-        self.root = TimerNode('__root__')
+        self.root = TimerNode()
         self.root._start()
         self.stack = [self.root]
 
     def push(self, name):
         current: TimerNode = self.stack[-1]
-        if name not in current.children:
-            current.children[name] = TimerNode(name)
-        next_timer = current.children[name]
+        next_timer = current.children.get(name)
+        if next_timer is None:
+            next_timer = TimerNode()
+            current.children[name] = next_timer
         self.stack.append(next_timer)
         return next_timer
 
     def pop(self):
-        self.stack.pop(-1)
+        self.stack.pop()
 
-    def get_timing_tree(self, node: TimerNode = None):
+    def get_timing_tree(self, node: TimerNode = None) -> Dict[str, Any]:
         if node is None:
             self.root._end()
             node = self.root
 
         res = {
-            "name": node.name,
             "total": node.total,
             "count": node.count,
         }
@@ -187,7 +188,7 @@ class TimerStack:
         if node.children:
             res["children"] = []
             for child_name, child_node in node.children.items():
-                child_res = self.get_timing_tree(child_node)
+                child_res = {"name": child_name, **self.get_timing_tree(child_node)}
                 res["children"].append(child_res)
                 child_total += child_res["total"]
 
@@ -195,8 +196,6 @@ class TimerStack:
         res["self"] = node.total - child_total
 
         return res
-
-
 
 
 _global_timer_stack = TimerStack()
