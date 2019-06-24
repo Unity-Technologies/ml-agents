@@ -3,6 +3,10 @@ import logging
 import csv
 from time import time, perf_counter
 
+from contextlib import contextmanager
+from typing import Any, Dict
+import json
+
 LOGGER = logging.getLogger("mlagents.trainers")
 FIELD_NAMES = [
     "Brain name",
@@ -125,8 +129,10 @@ class TrainerMetrics:
             for row in self.rows:
                 writer.writerow(row)
 
-from contextlib import contextmanager
-from typing import Any, Dict
+        json_path = self.path.replace('csv', 'hierarchy.json')
+        with open(json_path, 'w') as file:
+            json.dump(get_timer_tree(), file, indent=2)
+
 
 class TimerNode:
     __slots__ = ["children", "_start_time", "total", "count"]
@@ -193,7 +199,7 @@ class TimerStack:
                 child_total += child_res["total"]
 
         # "self" time is total time minus all time spent on children
-        res["self"] = node.total - child_total
+        res["self"] = max(0.0, node.total - child_total)
 
         return res
 
@@ -208,5 +214,8 @@ def hierarchical_timer(name, timer_stack=_global_timer_stack):
     yield next_timer
     next_timer._end()
     timer_stack.pop()
+
+def get_timer_tree(timer_stack=_global_timer_stack):
+    return timer_stack.get_timing_tree()
 
 

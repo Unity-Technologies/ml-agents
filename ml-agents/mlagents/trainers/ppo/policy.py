@@ -3,6 +3,7 @@ import numpy as np
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.policy import Policy
+from mlagents.trainers.trainer_metrics import hierarchical_timer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -166,7 +167,8 @@ class PPOPolicy(Policy):
             mem_in = mini_batch["memory"][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
         self.has_updated = True
-        run_out = self._execute_model(feed_dict, self.update_dict)
+        with hierarchical_timer("execute_model"):
+            run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
     def get_intrinsic_rewards(self, curr_info, next_info):

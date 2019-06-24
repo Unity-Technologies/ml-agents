@@ -20,6 +20,7 @@ from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.trainer_metrics import hierarchical_timer
 
 
 class TrainerController(object):
@@ -241,7 +242,8 @@ class TrainerController(object):
                 any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
                 or not self.train_model
             ):
-                new_info = self.take_step(env, curr_info)
+                with hierarchical_timer("take_step"):
+                    new_info = self.take_step(env, curr_info)
                 self.global_step += 1
                 if (
                     self.global_step % self.save_freq == 0
@@ -249,7 +251,8 @@ class TrainerController(object):
                     and self.train_model
                 ):
                     # Save Tensorflow model
-                    self._save_model(steps=self.global_step)
+                    with hierarchical_timer("save_model"):
+                        self._save_model(steps=self.global_step)
                 curr_info = new_info
             # Final save Tensorflow model
             if self.global_step != 0 and self.train_model:
@@ -293,36 +296,40 @@ class TrainerController(object):
         take_action_text = {}
         take_action_value = {}
         take_action_outputs = {}
-        for brain_name, trainer in self.trainers.items():
-            action_info = trainer.get_action(curr_info[brain_name])
-            take_action_vector[brain_name] = action_info.action
-            take_action_memories[brain_name] = action_info.memory
-            take_action_text[brain_name] = action_info.text
-            take_action_value[brain_name] = action_info.value
-            take_action_outputs[brain_name] = action_info.outputs
+        with hierarchical_timer("get_actions"):
+            for brain_name, trainer in self.trainers.items():
+                action_info = trainer.get_action(curr_info[brain_name])
+                take_action_vector[brain_name] = action_info.action
+                take_action_memories[brain_name] = action_info.memory
+                take_action_text[brain_name] = action_info.text
+                take_action_value[brain_name] = action_info.value
+                take_action_outputs[brain_name] = action_info.outputs
         time_start_step = time()
-        new_info = env.step(
-            vector_action=take_action_vector,
-            memory=take_action_memories,
-            text_action=take_action_text,
-            value=take_action_value,
-        )
+        with hierarchical_timer("env_step"):
+            new_info = env.step(
+                vector_action=take_action_vector,
+                memory=take_action_memories,
+                text_action=take_action_text,
+                value=take_action_value,
+            )
         delta_time_step = time() - time_start_step
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-            trainer.add_experiences(
-                curr_info, new_info, take_action_outputs[brain_name]
-            )
-            trainer.process_experiences(curr_info, new_info)
+            with hierarchical_timer("add_experiences"):
+                trainer.add_experiences(
+                    curr_info, new_info, take_action_outputs[brain_name]
+                )
+            with hierarchical_timer("process_experiences"):
+                    trainer.process_experiences(curr_info, new_info)
             if (
                 trainer.is_ready_update()
                 and self.train_model
                 and trainer.get_step <= trainer.get_max_steps
             ):
                 # Perform gradient descent with experience buffer
-
-                trainer.update_policy()
+                with hierarchical_timer("update_policy"):
+                    trainer.update_policy()
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:
