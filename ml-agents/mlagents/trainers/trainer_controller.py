@@ -132,7 +132,7 @@ class TrainerController(object):
         """
         trainer_parameters_dict = {}
         for brain_name in self.external_brains:
-            trainer_parameters = trainer_config["default"].copy()
+            trainer_parameters: Dict[Any, Any] = trainer_config["default"].copy()
             trainer_parameters["summary_path"] = "{basedir}/{name}".format(
                 basedir=self.summaries_dir, name=str(self.run_id) + "_" + brain_name
             )
@@ -141,7 +141,7 @@ class TrainerController(object):
             )
             trainer_parameters["keep_checkpoints"] = self.keep_checkpoints
             if brain_name in trainer_config:
-                _brain_key = brain_name
+                _brain_key: Any = brain_name  # TODO clean this up?
                 while not isinstance(trainer_config[_brain_key], dict):
                     _brain_key = trainer_config[_brain_key]
                 for k in trainer_config[_brain_key]:

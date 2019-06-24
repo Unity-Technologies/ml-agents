@@ -11,10 +11,12 @@ repos:
         files: "ml-agents/.*"
         # TODO --disallow-incomplete-defs
         args: [--ignore-missing-imports]
-    -   id: mypy
-        name: mypy-ml-agents-envs
-        files: "ml-agents-envs/.*"
-        args: [--ignore-missing-imports]
+    # -   id: mypy
+    #     name: mypy-ml-agents-envs
+    #     files: "ml-agents-envs/.*"
+    #     exclude: ".*_pb2.py"
+    #     #additional_dependencies: [protobuf==3.6.1]
+    #     args: [--ignore-missing-imports]
     -   id: mypy
         name: mypy-gym-unity
         files: "gym-unity/.*"

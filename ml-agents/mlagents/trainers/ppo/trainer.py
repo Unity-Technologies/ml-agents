@@ -4,6 +4,7 @@
 
 import logging
 from collections import deque
+from typing import Any, List
 
 import numpy as np
 import tensorflow as tf
@@ -144,7 +145,9 @@ class PPOTrainer(Trainer):
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
-        visual_observations = [[]]
+        visual_observations: List[List[Any]] = [
+            []
+        ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
         memories = []
