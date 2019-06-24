@@ -209,7 +209,7 @@ class PPOTrainer(Trainer):
         curr_all_info: AllBrainInfo,
         next_all_info: AllBrainInfo,
         take_action_outputs,
-    ):
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
@@ -319,7 +319,7 @@ class PPOTrainer(Trainer):
                     self.episode_steps[agent_id] += 1
         self.trainer_metrics.end_experience_collection_timer()
 
-    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
+    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.

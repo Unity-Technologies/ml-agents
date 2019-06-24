@@ -1,4 +1,6 @@
 import logging
+from typing import Any, Dict
+
 import numpy as np
 import tensorflow as tf
 
@@ -6,6 +8,7 @@ from mlagents.trainers import ActionInfo, UnityException
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.envs import BrainInfo
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -93,7 +96,7 @@ class Policy(object):
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
-    def evaluate(self, brain_info: BrainInfo):
+    def evaluate(self, brain_info: BrainInfo) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
         :param brain_info: BrainInfo input to network.

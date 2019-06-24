@@ -125,7 +125,7 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
 
-    def initialize_trainers(self, trainer_config: Dict[str, Dict[str, str]]):
+    def initialize_trainers(self, trainer_config: Dict[str, Dict[str, str]]) -> None:
         """
         Initialization of the trainers
         :param trainer_config: The configurations of the trainers
@@ -203,7 +203,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
-    def _reset_env(self, env: BaseUnityEnvironment):
+    def _reset_env(self, env: BaseUnityEnvironment) -> AllBrainInfo:
         """Resets the environment.
 
         Returns:
@@ -218,7 +218,7 @@ class TrainerController(object):
         else:
             return env.reset(train_mode=self.fast_simulation)
 
-    def start_learning(self, env: BaseUnityEnvironment, trainer_config):
+    def start_learning(self, env: BaseUnityEnvironment, trainer_config: Dict[str, Dict[str, str]]) -> None:
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         if self.meta_curriculum is not None:
@@ -263,7 +263,7 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
 
-    def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
+    def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo) -> AllBrainInfo:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {

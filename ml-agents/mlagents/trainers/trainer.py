@@ -116,7 +116,7 @@ class Trainer(object):
 
     def add_experiences(
         self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs
-    ):
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_info: Current AllBrainInfo.
@@ -125,7 +125,7 @@ class Trainer(object):
         """
         raise UnityTrainerException("The add_experiences method was not implemented.")
 
-    def process_experiences(self, current_info: AllBrainInfo, next_info: AllBrainInfo):
+    def process_experiences(self, current_info: AllBrainInfo, next_info: AllBrainInfo) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
