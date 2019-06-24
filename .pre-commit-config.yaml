@@ -9,8 +9,7 @@ repos:
     -   id: mypy
         name: mypy-ml-agents
         files: "ml-agents/.*"
-        # TODO --disallow-incomplete-defs
-        args: [--ignore-missing-imports]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
     # -   id: mypy
     #     name: mypy-ml-agents-envs
     #     files: "ml-agents-envs/.*"
