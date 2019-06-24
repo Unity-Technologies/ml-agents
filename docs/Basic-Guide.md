@@ -16,7 +16,7 @@ Unity settings.
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
 3. Using the file dialog that opens, locate the `UnitySDK` folder
-   within the the ML-Agents toolkit project and click **Open**.
+   within the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target (**PC, Mac and Linux Standalone**,
    **iOS** or **Android**):
@@ -238,9 +238,10 @@ the steps described
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the  **3DBallLearning** Learning Brain from the Scene hierarchy.
-5. Drag the `<brain_name>.nn` file from the Project window of
+4. Drag the `<brain_name>.nn` file from the Project window of
    the Editor to the **Model** placeholder in the **3DBallLearning**
    inspector window.
+5. Select Ball3DAcademy in the scene and toggle off Control, each platform's brain now regains control.
 6. Press the :arrow_forward: button at the top of the Editor.
 
 ## Next Steps

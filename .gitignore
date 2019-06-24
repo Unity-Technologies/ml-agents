@@ -7,7 +7,6 @@
 /UnitySDK/[Uu]nity[Pp]ackage[Mm]anager/
 /UnitySDK/Assets/AssetStoreTools*
 /UnitySDK/Assets/Plugins*
-/UnitySDK/Assets/Gizmos*
 /UnitySDK/Assets/Demonstrations*
 
 # Tensorflow Model Info
@@ -72,6 +71,7 @@
 *.pyc
 *.idea/misc.xml
 *.idea/modules.xml
+*.idea/
 *.iml
 *.cache
 */build/
@@ -97,3 +97,6 @@ ml-agents-protobuf/Grpc*
 # Ignore PyPi build files.
 dist/
 build/
+
+# Python virtual environment
+venv/

@@ -7,6 +7,7 @@ class BufferException(UnityException):
     """
     Related to errors with the Buffer.
     """
+
     pass
 
 
@@ -95,11 +96,13 @@ class Buffer(dict):
                         # The number of sequences of length training_length taken from a list of len(self) elements
                         # with overlapping is equal to batch_size
                         if (len(self) - training_length + 1) < batch_size:
-                            raise BufferException("The batch size and training length requested for get_batch where"
-                                                  " too large given the current number of data points.")
+                            raise BufferException(
+                                "The batch size and training length requested for get_batch where"
+                                " too large given the current number of data points."
+                            )
                         tmp_list = []
                         for end in range(len(self) - batch_size + 1, len(self) + 1):
-                            tmp_list += [np.array(self[end - training_length:end])]
+                            tmp_list += [np.array(self[end - training_length : end])]
                         return np.array(tmp_list)
                     if sequential:
                         # The sequences will not have overlapping elements (this involves padding)
@@ -107,19 +110,32 @@ class Buffer(dict):
                         # leftover is the number of elements in the first sequence (this sequence might need 0 padding)
                         if batch_size is None:
                             # retrieve the maximum number of elements
-                            batch_size = len(self) // training_length + 1 * (leftover != 0)
+                            batch_size = len(self) // training_length + 1 * (
+                                leftover != 0
+                            )
                         # The maximum number of sequences taken from a list of length len(self) without overlapping
                         # with padding is equal to batch_size
-                        if batch_size > (len(self) // training_length + 1 * (leftover != 0)):
-                            raise BufferException("The batch size and training length requested for get_batch where"
-                                                  " too large given the current number of data points.")
+                        if batch_size > (
+                            len(self) // training_length + 1 * (leftover != 0)
+                        ):
+                            raise BufferException(
+                                "The batch size and training length requested for get_batch where"
+                                " too large given the current number of data points."
+                            )
                         tmp_list = []
                         padding = np.array(self[-1]) * self.padding_value
                         # The padding is made with zeros and its shape is given by the shape of the last element
-                        for end in range(len(self), len(self) % training_length, -training_length)[:batch_size]:
-                            tmp_list += [np.array(self[end - training_length:end])]
+                        for end in range(
+                            len(self), len(self) % training_length, -training_length
+                        )[:batch_size]:
+                            tmp_list += [np.array(self[end - training_length : end])]
                         if (leftover != 0) and (len(tmp_list) < batch_size):
-                            tmp_list += [np.array([padding] * (training_length - leftover) + self[:leftover])]
+                            tmp_list += [
+                                np.array(
+                                    [padding] * (training_length - leftover)
+                                    + self[:leftover]
+                                )
+                            ]
                         tmp_list.reverse()
                         return np.array(tmp_list)
 
@@ -135,7 +151,9 @@ class Buffer(dict):
             super(Buffer.AgentBuffer, self).__init__()
 
         def __str__(self):
-            return ", ".join(["'{0}' : {1}".format(k, str(self[k])) for k in self.keys()])
+            return ", ".join(
+                ["'{0}' : {1}".format(k, str(self[k])) for k in self.keys()]
+            )
 
         def reset_agent(self):
             """
@@ -179,7 +197,9 @@ class Buffer(dict):
             if key_list is None:
                 key_list = list(self.keys())
             if not self.check_length(key_list):
-                raise BufferException("Unable to shuffle if the fields are not of same length")
+                raise BufferException(
+                    "Unable to shuffle if the fields are not of same length"
+                )
             s = np.arange(len(self[key_list[0]]))
             np.random.shuffle(s)
             for key in key_list:
@@ -202,10 +222,12 @@ class Buffer(dict):
         super(Buffer, self).__init__()
 
     def __str__(self):
-        return "update buffer :\n\t{0}\nlocal_buffers :\n{1}".format(str(self.update_buffer),
-                                                                     '\n'.join(
-                                                                         ['\tagent {0} :{1}'.format(k, str(self[k])) for
-                                                                          k in self.keys()]))
+        return "update buffer :\n\t{0}\nlocal_buffers :\n{1}".format(
+            str(self.update_buffer),
+            "\n".join(
+                ["\tagent {0} :{1}".format(k, str(self[k])) for k in self.keys()]
+            ),
+        )
 
     def __getitem__(self, key):
         if key not in self.keys():
@@ -226,7 +248,9 @@ class Buffer(dict):
         for k in agent_ids:
             self[k].reset_agent()
 
-    def append_update_buffer(self, agent_id, key_list=None, batch_size=None, training_length=None):
+    def append_update_buffer(
+        self, agent_id, key_list=None, batch_size=None, training_length=None
+    ):
         """
         Appends the buffer of an agent to the update buffer.
         :param agent_id: The id of the agent which data will be appended
@@ -237,14 +261,21 @@ class Buffer(dict):
         if key_list is None:
             key_list = self[agent_id].keys()
         if not self[agent_id].check_length(key_list):
-            raise BufferException("The length of the fields {0} for agent {1} where not of same length"
-                                  .format(key_list, agent_id))
+            raise BufferException(
+                "The length of the fields {0} for agent {1} where not of same length".format(
+                    key_list, agent_id
+                )
+            )
         for field_key in key_list:
             self.update_buffer[field_key].extend(
-                self[agent_id][field_key].get_batch(batch_size=batch_size, training_length=training_length)
+                self[agent_id][field_key].get_batch(
+                    batch_size=batch_size, training_length=training_length
+                )
             )
 
-    def append_all_agent_batch_to_update_buffer(self, key_list=None, batch_size=None, training_length=None):
+    def append_all_agent_batch_to_update_buffer(
+        self, key_list=None, batch_size=None, training_length=None
+    ):
         """
         Appends the buffer of all agents to the update buffer.
         :param key_list: The fields that must be added. If None: all fields will be appended.

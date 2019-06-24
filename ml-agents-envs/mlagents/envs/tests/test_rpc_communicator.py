@@ -28,4 +28,3 @@ def test_rpc_communicator_create_multiple_workers():
     second_comm = RpcCommunicator(worker_id=1)
     first_comm.close()
     second_comm.close()
-

@@ -128,7 +128,6 @@ VisualPyramidsLearning:
     lambd: 0.99
     gamma: 0.995
     beta: 0.001
-    use_curiosity: true
 
 3DBallHardLearning:
     normalize: true

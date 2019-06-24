@@ -28,6 +28,7 @@
     [Learning](Learning-Environment-Design-Learning-Brains.md)
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 * [Using the Monitor](Feature-Monitor.md)
+* [Using the Video Recorder](https://github.com/Unity-Technologies/video-recorder)
 * [Using an Executable Environment](Learning-Environment-Executable.md)
 * [Creating Custom Protobuf Messages](Creating-Custom-Protobuf-Messages.md)
 

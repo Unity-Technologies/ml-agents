@@ -531,15 +531,21 @@ namespace MLAgents
 
             BrainParameters param = brain.brainParameters;
             actionMasker = new ActionMasker(param);
-            if (param.vectorActionSpaceType == SpaceType.continuous)
+            // If we haven't initialized vectorActions, initialize to 0. This should only
+            // happen during the creation of the Agent. In subsequent episodes, vectorAction
+            // should stay the previous action before the Done(), so that it is properly recorded. 
+            if (action.vectorActions == null)
             {
-                action.vectorActions = new float[param.vectorActionSize[0]];
-                info.storedVectorActions = new float[param.vectorActionSize[0]];
-            }
-            else
-            {
-                action.vectorActions = new float[param.vectorActionSize.Length];
-                info.storedVectorActions = new float[param.vectorActionSize.Length];
+                if (param.vectorActionSpaceType == SpaceType.continuous)
+                {
+                    action.vectorActions = new float[param.vectorActionSize[0]];
+                    info.storedVectorActions = new float[param.vectorActionSize[0]];
+                }
+                else
+                {
+                    action.vectorActions = new float[param.vectorActionSize.Length];
+                    info.storedVectorActions = new float[param.vectorActionSize.Length];
+                }
             }
 
             if (info.textObservation == null)
@@ -916,6 +922,11 @@ namespace MLAgents
         public void AppendMemoriesAction(List<float> memories)
         {
             action.memories.AddRange(memories);
+        }
+
+        public List<float> GetMemoriesAction()
+        {
+            return action.memories;
         }
 
         /// <summary>

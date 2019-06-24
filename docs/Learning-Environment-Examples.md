@@ -126,7 +126,9 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Discrete) Size of 6, corresponding to turn clockwise
     and counterclockwise and move along four different face directions.
   * Visual Observations (Optional): One first-person camera. Use
-    `VisualPushBlock` scene.
+    `VisualPushBlock` scene. __The visual observation version of
+     this environment does not train with the provided default
+     training parameters.__
 * Reset Parameters: None.
 * Benchmark Mean Reward: 4.5
 * Optional Imitation Learning scene: `PushBlockIL`.
@@ -219,7 +221,9 @@ If you would like to contribute environments, please see our
     * Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
     * Laser (2 possible actions: Laser, No Action)
   * Visual Observations (Optional): First-person camera per-agent. Use
-    `VisualBanana` scene.
+    `VisualBanana` scene. __The visual observation version of
+     this environment does not train with the provided default
+     training parameters.__
 * Reset Parameters: None.
 * Benchmark Mean Reward: 10
 * Optional Imitation Learning scene: `BananaIL`.
@@ -243,9 +247,12 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Discrete) 1 Branch, 4 actions corresponding to agent
     rotation and forward/backward movement.
   * Visual Observations (Optional): First-person view for the agent. Use
-    `VisualHallway` scene.
+    `VisualHallway` scene. __The visual observation version of
+     this environment does not train with the provided default
+     training parameters.__
 * Reset Parameters: None.
 * Benchmark Mean Reward: 0.7
+  * To speed up training, you can enable curiosity by adding `use_curiosity: true` in `config/trainer_config.yaml`
 * Optional Imitation Learning scene: `HallwayIL`.
 
 ## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
@@ -299,7 +306,7 @@ If you would like to contribute environments, please see our
   * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward (Striker & Goalie Brain): 0 (the means will be inverse
-  of each other and criss crosses during training)
+  of each other and criss crosses during training) __Note that our trainer is currently unable to consistently train this environment__
 
 ## Walker
 
@@ -344,7 +351,9 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Discrete) 4 corresponding to agent rotation and
     forward/backward movement.
   * Visual Observations (Optional): First-person camera per-agent. Us
-    `VisualPyramids` scene.
+    `VisualPyramids` scene. __The visual observation version of
+     this environment does not train with the provided default
+     training parameters.__
 * Reset Parameters: None.
 * Optional Imitation Learning scene: `PyramidsIL`.
 * Benchmark Mean Reward: 1.75

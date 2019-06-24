@@ -1,4 +1,4 @@
-version: 2.1
+version: 2.0
 
 jobs:
   build:
@@ -20,16 +20,18 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
+            pip install --upgrade pip
+            pip install --upgrade setuptools
             cd ml-agents-envs && pip install -e .
             cd ../ml-agents && pip install -e .
-            pip install pytest-cov==2.6.1 codacy-coverage==1.3.11
+            pip install black pytest-cov==2.6.1 codacy-coverage==1.3.11
             cd ../gym-unity && pip install -e .
 
       - save_cache:
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
-        
+
       - run:
           name: Run Tests for ml-agents and gym_unity
           command: |
@@ -37,6 +39,21 @@ jobs:
             mkdir test-reports
             pytest --cov=mlagents --cov-report xml --junitxml=test-reports/junit.xml -p no:warnings
             python-codacy-coverage -r coverage.xml
+
+      - run:
+          name: Check Code Style for ml-agents and gym_unity using black
+          command: |
+            . venv/bin/activate
+            black --check ml-agents
+            black --check ml-agents-envs
+            black --check gym-unity
+
+      - run:
+          name: Verify there are no hidden/missing metafiles.
+          # Renaming files or deleting files can leave metafiles behind that makes Unity very unhappy.
+          command: |
+            . venv/bin/activate
+            python utils/validate_meta_files.py
 
       - store_test_results:
           path: test-reports
