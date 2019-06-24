@@ -1,7 +1,7 @@
 # # Unity ML-Agents Toolkit
 import logging
 import csv
-from time import time
+from time import time, perf_counter
 
 LOGGER = logging.getLogger("mlagents.trainers")
 FIELD_NAMES = [
@@ -124,3 +124,90 @@ class TrainerMetrics:
             writer.writerow(FIELD_NAMES)
             for row in self.rows:
                 writer.writerow(row)
+
+from contextlib import contextmanager
+from typing import Dict
+
+class TimerNode:
+    def __init__(self, name):
+        # TODO __slots__
+        self.name = name
+        self.children: Dict[str, 'TimerNode'] = {}
+        self._start_time: float = 0.0
+        self.total: float = 0.0
+        self.count: int = 0
+
+    def __repr__(self):
+            return f'TimerNode(total={self.total}, count={self.count})'
+
+    def _start(self):
+        self._start_time = perf_counter()
+
+    def _end(self):
+        elapsed = perf_counter() - self._start_time
+        self.total += elapsed
+        self.count += 1
+
+    def __enter__(self):
+        self._start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._end()
+
+class TimerStack:
+    def __init__(self):
+        self.root = TimerNode('__root__')
+        self.root._start()
+        self.stack = [self.root]
+
+    def push(self, name):
+        current: TimerNode = self.stack[-1]
+        if name not in current.children:
+            current.children[name] = TimerNode(name)
+        next_timer = current.children[name]
+        self.stack.append(next_timer)
+        return next_timer
+
+    def pop(self):
+        self.stack.pop(-1)
+
+    def get_timing_tree(self, node: TimerNode = None):
+        if node is None:
+            self.root._end()
+            node = self.root
+
+        res = {
+            "name": node.name,
+            "total": node.total,
+            "count": node.count,
+        }
+
+        child_total = 0.0
+        if node.children:
+            res["children"] = []
+            for child_name, child_node in node.children.items():
+                child_res = self.get_timing_tree(child_node)
+                res["children"].append(child_res)
+                child_total += child_res["total"]
+
+        # "self" time is total time minus all time spent on children
+        res["self"] = node.total - child_total
+
+        return res
+
+
+
+
+_global_timer_stack = TimerStack()
+
+
+@contextmanager
+def hierarchical_timer(name, timer_stack=_global_timer_stack):
+    next_timer: TimerNode = timer_stack.push(name)
+    next_timer._start()
+    yield next_timer
+    next_timer._end()
+    timer_stack.pop()
+
+
