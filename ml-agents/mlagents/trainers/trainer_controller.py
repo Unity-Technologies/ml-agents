@@ -125,14 +125,14 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
 
-    def initialize_trainers(self, trainer_config: Dict[str, Dict[str, str]]) -> None:
+    def initialize_trainers(self, trainer_config: Dict[str, Any]) -> None:
         """
         Initialization of the trainers
         :param trainer_config: The configurations of the trainers
         """
         trainer_parameters_dict = {}
         for brain_name in self.external_brains:
-            trainer_parameters: Dict[Any, Any] = trainer_config["default"].copy()
+            trainer_parameters = trainer_config["default"].copy()
             trainer_parameters["summary_path"] = "{basedir}/{name}".format(
                 basedir=self.summaries_dir, name=str(self.run_id) + "_" + brain_name
             )
@@ -141,11 +141,10 @@ class TrainerController(object):
             )
             trainer_parameters["keep_checkpoints"] = self.keep_checkpoints
             if brain_name in trainer_config:
-                _brain_key: Any = brain_name  # TODO clean this up?
+                _brain_key: Any = brain_name
                 while not isinstance(trainer_config[_brain_key], dict):
                     _brain_key = trainer_config[_brain_key]
-                for k in trainer_config[_brain_key]:
-                    trainer_parameters[k] = trainer_config[_brain_key][k]
+                trainer_parameters.update(trainer_config[_brain_key])
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.external_brains:
             if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
@@ -219,7 +218,7 @@ class TrainerController(object):
             return env.reset(train_mode=self.fast_simulation)
 
     def start_learning(
-        self, env: BaseUnityEnvironment, trainer_config: Dict[str, Dict[str, str]]
+        self, env: BaseUnityEnvironment, trainer_config: Dict[str, Any]
     ) -> None:
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.

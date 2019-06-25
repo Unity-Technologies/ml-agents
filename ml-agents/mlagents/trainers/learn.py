@@ -153,7 +153,7 @@ def prepare_for_docker_run(docker_target_name, env_path):
     return env_path
 
 
-def load_config(trainer_config_path):
+def load_config(trainer_config_path: str) -> Dict[str, Any]:
     try:
         with open(trainer_config_path) as data_file:
             trainer_config = yaml.safe_load(data_file)
