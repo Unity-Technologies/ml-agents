@@ -4,6 +4,7 @@ import unittest
 
 from mlagents.envs.subprocess_environment import *
 from mlagents.envs import UnityEnvironmentException, BrainInfo
+from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 
 
 def mock_env_factory(worker_id: int):

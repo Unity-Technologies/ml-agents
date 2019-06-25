@@ -100,3 +100,4 @@ build/
 
 # Python virtual environment
 venv/
+.mypy_cache/
