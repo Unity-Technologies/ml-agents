@@ -12,7 +12,6 @@ from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.trainer_metrics import hierarchical_timer
 
 
 logger = logging.getLogger("mlagents.trainers")

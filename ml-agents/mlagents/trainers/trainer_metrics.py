@@ -138,26 +138,24 @@ class TimerNode:
     __slots__ = ["children", "_start_time", "total", "count"]
 
     def __init__(self):
-
         self.children: Dict[str, 'TimerNode'] = {}
-        self._start_time: float = 0.0
+        self._start_time: float = -1.0
         self.total: float = 0.0
         self.count: int = 0
 
     def _start(self):
+        assert not self._is_running(), "calling start() on an already-running timer"
         self._start_time = perf_counter()
 
     def _end(self):
+        assert self._is_running(), "calling _end on a stopped timer"
         elapsed = perf_counter() - self._start_time
         self.total += elapsed
         self.count += 1
+        self._start_time = -1.0
 
-    def __enter__(self):
-        self._start()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._end()
+    def _is_running(self):
+        return self._start_time != -1.0
 
 
 class TimerStack:

@@ -251,8 +251,7 @@ class TrainerController(object):
                     and self.train_model
                 ):
                     # Save Tensorflow model
-                    with hierarchical_timer("save_model"):
-                        self._save_model(steps=self.global_step)
+                    self._save_model(steps=self.global_step)
                 curr_info = new_info
             # Final save Tensorflow model
             if self.global_step != 0 and self.train_model:
