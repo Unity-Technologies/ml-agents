@@ -71,6 +71,7 @@
 *.pyc
 *.idea/misc.xml
 *.idea/modules.xml
+*.idea/
 *.iml
 *.cache
 */build/
