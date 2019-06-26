@@ -72,6 +72,108 @@ namespace MLAgents
         }
     }
 
+    public class TimerNode
+    {
+        private long startTick = 0;
+        private Dictionary<string, TimerNode> children;
+        private long totalTicks = 0;
+        private int count = 0;
+
+        public TimerNode()
+        {
+            children = new Dictionary<string, TimerNode> ();
+        }
+
+        public void Begin()
+        {
+            startTick = System.DateTime.Now.Ticks;
+        }
+
+        public void End()
+        {
+            long elapsed = System.DateTime.Now.Ticks - startTick;
+            totalTicks += elapsed;
+            count += 1;
+        }
+
+        public TimerNode GetChild(string name) {
+            if (!children.ContainsKey(name)) {
+                TimerNode newChild = new TimerNode();
+                children[name] = newChild;
+                return newChild;
+            }
+            return children [name];
+        }
+
+        public double TotalSeconds() {
+            System.TimeSpan elapsedSpan = new System.TimeSpan(totalTicks);
+            return elapsedSpan.TotalSeconds;
+        }
+
+        public double SelfSeconds() {
+            // Time spend in this block, excluding all children.
+            double s = TotalSeconds ();
+            foreach (TimerNode c in children) {
+                s -= c.TotalSeconds;
+            }
+            return s > 0.0 ? s : 0.0;
+        }
+    }
+
+    public class TimerStack
+    {
+        private Stack<TimerNode> stack;
+
+        public TimerStack()
+        {
+            stack = new Stack<TimerNode> ();
+            TimerNode root = new TimerNode ();
+            stack.Push (root);
+        }
+
+        public TimerNode Push(string name)
+        {
+            TimerNode current = stack.Peek ();
+            TimerNode next = current.GetChild (name);
+            stack.Push (next);
+            return next;
+        }
+
+        public void Pop()
+        {
+            stack.Pop ();
+        }
+
+        public class Helper : System.IDisposable {
+            private TimerStack stack;
+            private TimerNode node;
+            //private string debug_name;
+
+            public Helper(TimerStack _stack, string name)
+            {
+                //Debug.Log($"starting {name}");
+                stack = _stack;
+                node = stack.Push(name);
+                node.Begin();
+                //debug_name = name;
+            }
+
+            public void Dispose()
+            {
+                node.End ();
+                stack.Pop ();
+                //Debug.Log($"done with {debug_name}, total = {node.TotalSeconds()}");
+            }
+        }
+
+        public Helper Scoped(string name)
+        {
+            Helper h = new Helper (this, name);
+            return h;
+        }
+    }
+
+
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors. More
     /// specifically, an academy is a collection of Brain objects and each agent
@@ -239,6 +341,8 @@ namespace MLAgents
         // Sigals to all the agents each time the Academy force resets.
         public event System.Action AgentForceReset;
 
+        private TimerStack timer;
+
         /// <summary>
         /// Monobehavior function called at the very beginning of environment
         /// creation. Academy uses this time to initialize internal data
@@ -271,6 +375,8 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
+            timer = new TimerStack ();
+
             originalGravity = Physics.gravity;
             originalFixedDeltaTime = Time.fixedDeltaTime;
             originalMaximumDeltaTime = Time.maximumDeltaTime;
@@ -621,11 +727,15 @@ namespace MLAgents
                 EnvironmentReset();
             }
 
-            AgentResetIfDone();
+            using (timer.Scoped ("AgentResetIfDone")) {
+                AgentResetIfDone();
+            }
 
             AgentSendState();
 
-            BrainDecideAction();
+            using (timer.Scoped ("BrainDecideAction")) {
+                BrainDecideAction ();
+            }
 
             AcademyStep();
 
