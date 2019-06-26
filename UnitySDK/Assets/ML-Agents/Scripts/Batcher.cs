@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using Google.Protobuf;
+using UnityEngine.Profiling;
 
 namespace MLAgents
 {
@@ -57,6 +58,10 @@ namespace MLAgents
         /// Keeps track of the number of messages received
         private ulong m_messagesReceived;
 
+        CustomSampler ConvertToProtoSampler;
+        CustomSampler UpdateActionSampler;
+        CustomSampler SendBatchedMessageHelperSampler;
+
         /// <summary>
         /// Initializes a new instance of the Batcher class.
         /// </summary>
@@ -64,6 +69,9 @@ namespace MLAgents
         public Batcher(Communicator communicator)
         {
             this.m_communicator = communicator;
+            ConvertToProtoSampler = CustomSampler.Create ("ConvertToProto");
+            UpdateActionSampler = CustomSampler.Create ("UpdateAction");
+            SendBatchedMessageHelperSampler = CustomSampler.Create ("SendBatchedMessageHelper");
         }
 
         /// <summary>
@@ -194,6 +202,7 @@ namespace MLAgents
             // the message and update hasSentState
             if (m_currentAgents[brainKey].Count > 0)
             {
+                ConvertToProtoSampler.Begin ();
                 foreach (Agent agent in m_currentAgents[brainKey])
                 {
                     CommunicatorObjects.AgentInfoProto agentInfoProto = agentInfo[agent].ToProto();
@@ -201,6 +210,7 @@ namespace MLAgents
                 }
 
                 m_hasData[brainKey] = true;
+                ConvertToProtoSampler.End ();
             }
 
             // If any agent needs to send data, then the whole message
@@ -210,7 +220,9 @@ namespace MLAgents
                 if (m_hasData.Values.Any(x => x) || m_academyDone)
                 {
                     m_currentUnityRLOutput.GlobalDone = m_academyDone;
+                    SendBatchedMessageHelperSampler.Begin ();
                     SendBatchedMessageHelper();
+                    SendBatchedMessageHelperSampler.End ();
                 }
 
                 // The message was just sent so we must reset hasSentState and
@@ -264,6 +276,7 @@ namespace MLAgents
                 return;
             }
 
+            UpdateActionSampler.Begin ();
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
                 if (!m_currentAgents[brainName].Any())
@@ -287,6 +300,7 @@ namespace MLAgents
                     agent.UpdateCustomAction(action.CustomAction);
                 }
             }
+            UpdateActionSampler.End ();
         }
     }
 }

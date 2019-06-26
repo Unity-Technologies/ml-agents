@@ -6,6 +6,8 @@ using System.Linq;
 using UnityEditor;
 
 #endif
+//using Unity.Profiling;
+using UnityEngine.Profiling;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -239,6 +241,19 @@ namespace MLAgents
         // Sigals to all the agents each time the Academy force resets.
         public event System.Action AgentForceReset;
 
+        private CustomSampler AgentSendStateSampler;
+        private CustomSampler BrainDecideActionSampler;
+        private CustomSampler AcademyStepSampler;
+        private CustomSampler AgentActSampler;
+
+        void Start()
+        {
+            AgentSendStateSampler = CustomSampler.Create("AgentSendState");
+            BrainDecideActionSampler = CustomSampler.Create("BrainDecideAction");
+            AcademyStepSampler = CustomSampler.Create("AcademyStep");
+            AgentActSampler = CustomSampler.Create("AgentAct");
+        }
+
         /// <summary>
         /// Monobehavior function called at the very beginning of environment
         /// creation. Academy uses this time to initialize internal data
@@ -353,6 +368,16 @@ namespace MLAgents
                     logWriter.WriteLine(" ");
                     logWriter.Close();
                 }
+            }
+
+            bool enableProfiling = true;
+            if (enableProfiling) {
+                var profilePath = Path.GetFullPath (".") + "/profiler.log";
+                Profiler.logFile = profilePath;
+                Profiler.enableBinaryLog = true;
+                Profiler.enabled = true;
+                // TODO in newer versions of the engine, can turn of specific areas that are being profiled
+                //Profiler.SetAreaEnabled(...)
             }
 
             // If a communicator is enabled/provided, then we assume we are in
@@ -623,13 +648,21 @@ namespace MLAgents
 
             AgentResetIfDone();
 
+            AgentSendStateSampler.Begin ();
             AgentSendState();
+            AgentSendStateSampler.End ();
 
+            BrainDecideActionSampler.Begin ();
             BrainDecideAction();
+            BrainDecideActionSampler.End ();
 
+            AcademyStepSampler.Begin ();
             AcademyStep();
+            AcademyStepSampler.End ();
 
+            AgentActSampler.Begin ();
             AgentAct();
+            AgentActSampler.End ();
 
             stepCount += 1;
             totalStepCount += 1;
