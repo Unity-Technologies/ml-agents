@@ -63,3 +63,7 @@ We use [`mypy`](http://mypy-lang.org/) to perform static type checking on python
 2. Make sure that code calling or called by the modified code also has type annotations.
 
 The [type hint cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) provides a good introduction to adding type hints.
+
+## Contributor License Agreements
+
+When you open a pull request, you will be asked to acknolwedge our Contributor License Agreement. We allow both individual contributions and contributions made on behalf of companies. We use an open source tool called CLA assistant. If you have any questions on our CLA, please [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) or email us at ml-agents@unity3d.com.
