@@ -4,6 +4,7 @@
 
 import logging
 from collections import deque
+from typing import Any, List
 
 import numpy as np
 import tensorflow as tf
@@ -12,7 +13,7 @@ from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer
-
+from mlagents.trainers.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -29,7 +30,7 @@ class PPOTrainer(Trainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The The identifier of the current run
+        :param run_id: The identifier of the current run
         """
         super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
         self.param_keys = [
@@ -144,7 +145,9 @@ class PPOTrainer(Trainer):
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
-        visual_observations = [[]]
+        visual_observations: List[List[Any]] = [
+            []
+        ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
         memories = []
@@ -205,8 +208,8 @@ class PPOTrainer(Trainer):
         self,
         curr_all_info: AllBrainInfo,
         next_all_info: AllBrainInfo,
-        take_action_outputs,
-    ):
+        take_action_outputs: ActionInfoOutputs,
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
@@ -316,7 +319,9 @@ class PPOTrainer(Trainer):
                     self.episode_steps[agent_id] += 1
         self.trainer_metrics.end_experience_collection_timer()
 
-    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
+    def process_experiences(
+        self, current_info: AllBrainInfo, new_info: AllBrainInfo
+    ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
@@ -422,6 +427,7 @@ class PPOTrainer(Trainer):
             number_experiences=len(self.training_buffer.update_buffer["actions"]),
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
+        self.cumulative_returns_since_policy_update = []
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )

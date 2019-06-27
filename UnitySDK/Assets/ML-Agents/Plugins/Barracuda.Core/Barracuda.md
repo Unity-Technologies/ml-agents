@@ -26,13 +26,19 @@ See _Converting models to Barracuda_ paragraph below for more information.
 ### Load Model into Barracuda
 Once you have your TensorFlow (or ONNX) model converted, you can load resulting Barracuda file via `ModelLoader`:
 ```C#
-var model = ModelLoader.LoadFromStreamingAssets(modelName + ".bytes");
+var model = ModelLoader.LoadFromStreamingAssets(modelName + ".nn");
+```
+Another option is to use editor model importer. Just add public `NNModel` field to your C# script and assing ``.nn`` model file via editor UI:
+```C#
+public NNModel modelSource;
+<..>
+var model = ModelLoader.Load(modelSource);
 ```
 
 ### Create inference engine (Worker)
 Inference engine in Barracuda is called Worker. Worker is responsible for converting model into executable tasks and scheduling them on GPU or CPU.
 ```C#
-var worker = BarracudaWorkerFactory.CreateWorker(BarracudaWorkerFactory.Type.ComputeFast, model)
+var worker = BarracudaWorkerFactory.CreateWorker(BarracudaWorkerFactory.Type.ComputePrecompiled, model)
 ```
 
 ### Execute the model
@@ -47,10 +53,11 @@ worker.Execute(inputs);
 Execution is asynchronous for GPU backends. Currently implementation is synchronous for CPU backends, however it is good to assume that execution will be async for all backends in the future.
 
 ### Fetch outputs
-If model has only single output, then simple `worker.Fetch()` can be used, otherwise output names should be provided.
+If model has only single output, then simple `worker.Peek()` can be used, otherwise output names should be provided.
 ```C#
-var O = worker.Fetch(outputName);
+var O = worker.Peek(outputName);
 ```
+_Note:_ ``Peek()`` does not take ownership of the tensor. If you expect to keep tensor for longer time use ``Fetch()``
 
 ### Cleanup
 As a Barracuda client you are responsible to `Dispose` _worker_, _inputs_ and _outputs_ you fetched. This is necessary to properly free GPU resources.
@@ -107,14 +114,14 @@ Note that to form a batch all textures must have the same width and height dimen
 ### Texture as output
 If you want to use Barracuda execution results further in the graphics pipeline, you can copy data from `Tensor` into `RenderTexture` without stalling CPU or GPU:
 ```C#
-	var tensor = worker.Fetch();
+	var tensor = worker.Peek();
 	var texture = BarracudaTextureUtils.TensorToRenderTexture(tensor);
 ```
 If you wish, you can reuse the same `RenderTexture` multiple times:
 ```C#
 	var texture = new RenderTexture(width, height, 0);
 	// ...
-	var tensor = worker.Fetch();
+	var tensor = worker.Peek();
 	BarracudaTextureUtils.TensorToRenderTexture(tensor, texture);
 ```
 
@@ -143,12 +150,12 @@ Barracuda comes with dedicated python scripts to convert pre-trained TensorFlow 
 
 Convert from TensorFlow:
 ```bash
-python tensorflow_to_barracuda.py Models/3DBall-tf-model.pb Destination/3DBall-bc.bytes
+python tensorflow_to_barracuda.py Models/3DBall-tf-model.pb Destination/3DBall-bc.nn
 ```
 
 Convert from ONNX:
 ```bash
-python onnx_to_barracuda.py Models/mnist/model.onnx Destination/mnist-bc.bytes
+python onnx_to_barracuda.py Models/mnist/model.onnx Destination/mnist-bc.nn
 ```
 
 If network has multiple outputs, but you need only particular ones during the inference, there is an optional `-trim` flag to remove unused outputs and calculations.
@@ -159,8 +166,92 @@ python tensorflow_to_barracuda.py Models/3DBall-tf-model.pb Destination/3DBall-b
 Trim will first remove outputs that do not match regular expression from the graph. In this case only output that ends with `action` will be left.
 Next trim will strip all nodes that do not participate in the evaluation of the output.
 
+You could pass `--print-supported-ops` to get approximate list of supported operations/activations for specific converter.
 
-P.S. Python 3.5 or 3.6 is recommended
+## Approximate list of supported layers/operations for TensorFlow converter
+```
+Activation
+Add
+AvgPool
+BatchNormalization
+BatchNormalizationRuntime
+BiasAdd
+Concat
+Conv2D
+Conv2DBackpropInput
+Dense
+DepthwiseConv2dNative
+Flatten
+FusedBatchNorm
+GlobalAveragePool
+GlobalAvgPool
+InstanceNormalization
+LRN
+MatMul
+Max
+MaxPool
+Maximum
+Mean
+Min
+Minimum
+Mul
+Multinomial
+Nop
+OneHot
+Pad
+Pow
+Prod
+RandomStandardNormal
+RandomUniform
+RealDiv
+Reshape
+ResizeBicubic
+ResizeBilinear
+ResizeNearestNeighbor
+StridedSlice
+Sub
+Sum
 
-P.P.S. We plan to migrate Tensorflow and ONNX converters from Python to C# in the future.
+```
+
+## Approximate list of supported activations for TensorFlow converter
+```
+Abs
+Acos
+Acosh
+Asin
+Asinh
+Atan
+Atanh
+Ceil
+Cos
+Cosh
+Elu
+Exp
+Floor
+LeakyRelu
+Linear
+Log
+LogSoftmax
+Neg
+Relu
+Relu6
+Selu
+Sigmoid
+Sin
+Sinh
+Softmax
+Softplus
+Softsign
+Sqrt
+Swish
+Tan
+Tanh
+```
+
+P.S. some of these operations are under limited support and not all configurations are properly supported 
+
+P.P.S. Python 3.5 or 3.6 is recommended
+
+P.P.P.S. We plan to migrate Tensorflow and ONNX converters from Python to C# in the future.
 

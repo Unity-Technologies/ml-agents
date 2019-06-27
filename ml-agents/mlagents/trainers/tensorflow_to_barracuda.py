@@ -50,6 +50,7 @@ if __name__ == "__main__":
 known_classes = {
     "Dense": Struct(
         id=1,
+        rank=2,
         out_shapes=lambda shapes: [
             [shapes[0][0], 1, 1, shapes[0][1]],  # W
             [1, 1, 1, shapes[-1][-1]],  # B
@@ -58,6 +59,7 @@ known_classes = {
     ),
     "MatMul": Struct(
         id=1,
+        rank=2,
         out_shapes=lambda shapes: [
             [shapes[0][0], 1, 1, shapes[0][1]],  # W
             [1, 1, 1, shapes[0][1]],  # B
@@ -75,11 +77,13 @@ known_classes = {
     # TODO: NCHW
     "Conv2D": Struct(
         id=20,
+        rank=4,
         out_shapes=lambda shapes: [shapes[0], [1, 1, 1, shapes[-1][-1]]],  # K  # B
         patch_data=lambda data: [data[0], data[1]],
     ),
     "DepthwiseConv2dNative": Struct(  # DepthwiseConv2D
         id=21,
+        rank=4,
         out_shapes=lambda s: [
             [
                 s[0][0],
@@ -93,9 +97,19 @@ known_classes = {
     ),
     "Conv2DBackpropInput": Struct(  # Conv2DTranspose
         id=22,
-        out_shapes=lambda shapes: [shapes[0], [1, 1, 1, shapes[-1][-1]]],  # K  # B
-        patch_data=lambda data: [data[0], data[1]],
+        rank=4,
+        out_shapes=lambda s: [
+            [
+                s[0][0],
+                s[0][1],
+                s[0][3],
+                s[0][2],
+            ],  # K TF:[H, W, in_channels, out_channels] => [H, W, out_channels, in_channels]
+            [1, 1, 1, s[-1][-1]] if len(s) > 1 else [1, 1, 1, s[0][2]],  # B
+        ],
+        patch_data=lambda data: [np.transpose(data[0], (0, 1, 3, 2)), data[1]],
     ),
+    "Pad": 29,
     # TODO: 3D
     "ResizeNearestNeighbor": 23,  # implemented as Upsample2D
     "ResizeBilinear": 23,  # implemented as Upsample2D
@@ -103,6 +117,7 @@ known_classes = {
     "MaxPool": 25,
     "AvgPool": 26,
     "GlobalAveragePool": 28,
+    "GlobalAvgPool": 28,
     "Activation": 50,
     "BatchNormalization": Struct(
         id=51,  # after fusion implemented as ScaleBias
@@ -134,31 +149,50 @@ known_classes = {
             data[0], data[1], data[2], data[3], get_epsilon(layer)
         ),
     ),
+    "BatchNormalizationRuntime": Struct(
+        id=52,
+        out_shapes=lambda shapes: [
+            [1, 1, 1, shapes[0][0]],  # G
+            [1, 1, 1, shapes[0][0]],  # B
+        ],
+        patch_data=lambda data: [data[0], data[1]]
+        if len(data) == 4
+        else [np.ones(np.shape(data[0])), data[0]],
+    ),
+    "InstanceNormalization": Struct(  # TODO: epsilon
+        id=52,
+        out_shapes=lambda shapes: [
+            [1, 1, 1, shapes[0][0]],  # G
+            [1, 1, 1, shapes[0][0]],  # B
+        ],
+        patch_data=lambda data: [data[0], data[1]]
+        if len(data) == 2
+        else [np.ones(np.shape(data[0])), data[0]],
+    ),
     "LRN": 53,
     "RandomStandardNormal": 64,
     "RandomUniform": 65,
-    "Multinomial": 66,
-    "OneHot": 67,
+    "Multinomial": Struct(id=66, rank=2),
+    "OneHot": Struct(id=67, rank=lambda inputs: inputs[0] + 1),
     # Broadcast ops
-    "Add": 100,
-    "Sub": 101,
-    "Mul": 102,
-    "RealDiv": 103,
-    "Pow": 104,
-    "Minimum": 110,
-    "Maximum": 111,
+    "Add": Struct(id=100, rank=lambda inputs: np.max(inputs)),
+    "Sub": Struct(id=101, rank=lambda inputs: np.max(inputs)),
+    "Mul": Struct(id=102, rank=lambda inputs: np.max(inputs)),
+    "RealDiv": Struct(id=103, rank=lambda inputs: np.max(inputs)),
+    "Pow": Struct(id=104, rank=lambda inputs: np.max(inputs)),
+    "Minimum": Struct(id=110, rank=lambda inputs: np.max(inputs)),
+    "Maximum": Struct(id=111, rank=lambda inputs: np.max(inputs)),
     # Reduce ops
-    "Max": 124,
-    "Mean": 125,
-    "Min": 126,
-    "Prod": 127,
-    "Sum": 128,
-    "Flatten": 200,
+    "Max": Struct(id=124, rank=lambda inputs: inputs[0] - 1),
+    "Mean": Struct(id=125, rank=lambda inputs: inputs[0] - 1),
+    "Min": Struct(id=126, rank=lambda inputs: inputs[0] - 1),
+    "Prod": Struct(id=127, rank=lambda inputs: inputs[0] - 1),
+    "Sum": Struct(id=128, rank=lambda inputs: inputs[0] - 1),
+    "Flatten": Struct(id=200, rank=2),
     "Reshape": 201,
-    #'Squeeze':          203,
-    #'Unsqueeze':        204,
     "Concat": 210,
     "StridedSlice": 211,
+    "Nop": 0,
 }
 
 requires_runtime_flag = {
@@ -211,18 +245,72 @@ known_patterns = {
     repr(
         ["Shape", "Slice", "Slice", "Prod", "ExpandDims", "ConcatV2", "Reshape"]
     ): "Flatten",
-    repr(["Const", "Reshape"]): "Reshape",
     repr(["Add", "Rsqrt", "Mul", "Mul", "Sub", "Add"]): "BatchNormalization",
     repr(["Add", "Rsqrt", "Mul", "Mul", "Mul", "Sub", "Add"]): "BatchNormalization",
-    repr(["ConcatV2"]): "ConcatV2",
-    repr(["Mean"]): "Mean",
-    repr(["Multinomial"]): "Multinomial",
-    repr(["OneHot"]): "OneHot",
-    repr(["Square"]): "Square",
+    repr(
+        [
+            "Mean",
+            "StopGradient",
+            "SquaredDifference",
+            "Mean",
+            "Sub",
+            "Add",
+            "Pow",
+            "RealDiv",
+            "Mul",
+            "Add",
+        ]
+    ): "InstanceNormalization_ByTensorOrder",
+    repr(
+        [
+            "Mean",
+            "StopGradient",
+            "SquaredDifference",
+            "Mean",
+            "Squeeze",
+            "Squeeze",
+            "Add",
+            "Rsqrt",
+            "Mul",
+            "Mul",
+            "Mul",
+            "Sub",
+            "Add",
+        ]
+    ): "InstanceNormalization_ByTensorName",
     repr(["MatMul", "BiasAdd"]): "Dense",
     repr(["Conv2D", "BiasAdd"]): "Conv2D",
     repr(["DepthwiseConv2dNative", "BiasAdd"]): "DepthwiseConv2dNative",
     repr(["Conv2DBackpropInput", "BiasAdd"]): "Conv2DBackpropInput",
+    repr(["Conv2DBackpropInput"]): "Conv2DBackpropInput",
+    repr(
+        [
+            "Shape",
+            "StridedSlice",
+            "StridedSlice",
+            "StridedSlice",
+            "Mul",
+            "Mul",
+            "Pack",
+            "Conv2DBackpropInput",
+            "BiasAdd",
+        ]
+    ): "Conv2DBackpropInput",
+    repr(
+        [
+            "Shape",
+            "StridedSlice",
+            "StridedSlice",
+            "StridedSlice",
+            "Mul",
+            "Mul",
+            "Pack",
+            "Conv2DBackpropInput",
+        ]
+    ): "Conv2DBackpropInput",
+    repr(
+        ["Shape", "StridedSlice", "Mul", "ResizeNearestNeighbor"]
+    ): "ResizeNearestNeighbor",
     repr(
         ["Pack", "Reshape"]
     ): "Flatten$",  # for now we assume that this combination is trivial Flatten
@@ -238,7 +326,23 @@ known_patterns = {
         ]
     ): "BasicLSTM",
     repr([re.compile("^lstm/"), "Reshape", "ConcatV2", "Identity"]): "BasicLSTM",
+    repr(["Reshape", re.compile("^lstm_[a-z]*/"), "Reshape", "ConcatV2"]): "BasicLSTM",
     repr(["Sigmoid", "Mul"]): "Swish",
+    repr(["Mul", "Abs", "Mul", "Add"]): "LeakyRelu",
+    repr(
+        ["Shape", "Reshape"]
+    ): "ReshapeLikeInput0",  # shape comes from the 1st node as input[0]
+    repr(["Reshape"]): "Reshape",
+    repr(["ConcatV2"]): "ConcatV2",
+    repr(["Mean"]): "Mean",
+    repr(["Pad"]): "Pad",
+    repr(["Multinomial"]): "Multinomial",
+    repr(["OneHot"]): "OneHot",
+    repr(["Square"]): "Square",
+    repr(["SquaredDifference"]): "SquaredDifference",
+    repr(["StridedSlice"]): "StridedSlice",
+    repr(["Squeeze"]): "Squeeze",
+    repr(["ExpandDims"]): "ExpandDims",
     # TODO: FusedResizeAndPadConv2D
 }
 
@@ -274,8 +378,14 @@ transform_patterns = {
             inputs[-1]
         ],  # take only the last input, assume all other arguments are trivial (like sequence_length==1 always in ML-agents LSTM nets)
     ),
-    "Reshape": lambda nodes, inputs, tensors, _: Struct(
+    "Reshape": lambda nodes, inputs, tensors, context: Struct(
         op="Reshape",
+        rank=len(tensors[0].data)
+        if len(tensors)
+        > 0  # tensor data is treated as reshape coefficient, if not empty
+        else context.layer_ranks[inputs[1]]
+        if len(inputs) == 2  # otherwise shape of the 2nd input tensor is used
+        else -1,
         input=inputs,
         shape=[
             tensors[0].data[0],
@@ -283,11 +393,56 @@ transform_patterns = {
             tensors[0].data[2],
             tensors[0].data[3],
         ]
-        if len(tensors[0].data) == 4
+        if len(tensors) > 0 and len(tensors[0].data) == 4
         else [tensors[0].data[0], 1, tensors[0].data[1], tensors[0].data[2]]
-        if len(tensors[0].data) == 3
+        if len(tensors) > 0 and len(tensors[0].data) == 3
         else [tensors[0].data[0], 1, 1, tensors[0].data[1]]
-        # tensor.name = 'shape'
+        if len(tensors) > 0 and len(tensors[0].data) == 2
+        else [1, 1, 1, tensors[0].data[0]]
+        if len(tensors) > 0 and len(tensors[0].data) == 1
+        else [],
+    ),
+    "ReshapeLikeInput0": lambda nodes, inputs, tensors, context: Struct(
+        op="Reshape",
+        rank=context.layer_ranks[inputs[0]]
+        if len(inputs)
+        == 2  # unlike standard 'Reshape' input[0] is used as shape & input[1] as data
+        else -1,
+        input=[inputs[1], inputs[0]]
+        if len(inputs)
+        == 2  # unlike standard 'Reshape' input[0] is used as shape & input[1] as data
+        else inputs,
+    ),
+    "Pad": lambda nodes, inputs, tensors, _: Struct(
+        op="Pad"
+        if (
+            len(tensors) > 0
+            and np.shape(tensors[0]) == [4, 2]
+            and get_attr(nodes[-1], "mode", default="constant").lower() == "constant"
+        )
+        else "BarracudaUnsupportedPad",
+        input=inputs,
+        pads=[
+            tensors[0].data[1, 0],
+            tensors[0].data[1, 1],
+            tensors[0].data[2, 0],
+            tensors[0].data[2, 1],
+        ]
+        if len(tensors) > 0 and np.shape(tensors[0]) == [4, 2]
+        else [0, 0, 0, 0],
+        beta=get_attr(nodes[-1], "constant_values") or 0,
+    ),
+    "Squeeze": lambda nodes, inputs, tensors, context: Struct(
+        op="Nop",  # Squeeze is no-operation in Barracuda
+        input=inputs,
+        rank=context.layer_ranks[inputs[0]] - len(get_attr(nodes[-1], "squeeze_dims"))
+        if len(get_attr(nodes[-1], "squeeze_dims")) > 0
+        else -1,  # if list of squeeze axis is not specified, it is unknown what would be the rank of result
+    ),
+    "ExpandDims": lambda nodes, inputs, tensors, context: Struct(
+        op="Nop",  # ExpandDims is no-operation in Barracuda
+        input=[inputs[0]],
+        rank=context.layer_ranks[inputs[0]] + 1,
     ),
     "Multinomial": lambda nodes, inputs, tensors, _: Struct(
         op="Multinomial",
@@ -303,27 +458,41 @@ transform_patterns = {
         beta=by_name(tensors, "/off_value").data[0],
     ),
     "Square": lambda nodes, inputs, tensors, _: Struct(
-        op="Mul", input=[i for i in inputs] + [i for i in inputs]  # input * input
+        op="Mul", input=[inputs[0], inputs[0]]  # input * input
     ),
-    "ConcatV2": lambda nodes, inputs, tensors, _: Struct(
+    "ConcatV2": lambda nodes, inputs, tensors, context: Struct(
         op="Concat",
         input=inputs,
-        # TEMPORARY: until we implemented rank detection and axis remapping (hopefully in exporter)
-        # HACK: assume Concat is always for last channel
-        axis=int(-1)
-        # axis = int(by_name(tensors, '/axis').data[0])
+        axis=axis_to_barracuda(
+            int(by_name(tensors, "/axis").data[0]), context.layer_ranks[inputs[0]]
+        ),
+    ),
+    "StridedSlice": lambda nodes, inputs, tensors, context: strided_slice(
+        nodes[-1].name,
+        inputs[0],
+        context.layer_ranks[inputs[0]],
+        begin=tensors[0].data,
+        end=tensors[1].data,
+        strides=tensors[2].data,
+        begin_mask=get_attr(nodes[-1], "begin_mask"),
+        end_mask=get_attr(nodes[-1], "end_mask"),
+        ellipsis_mask=get_attr(nodes[-1], "ellipsis_mask"),
+        new_axis_mask=get_attr(nodes[-1], "new_axis_mask"),
+        shrink_axis_mask=get_attr(nodes[-1], "shrink_axis_mask"),
     ),
     "BatchNormalization": lambda nodes, inputs, tensors, _: Struct(
         op="BatchNormalization",
         input=[i for i in inputs]
         + order_by([t.name for t in tensors], ["gamma", "beta", "mean", "variance"]),
     ),
-    "Mean": lambda nodes, inputs, tensors, _: Struct(
-        # TODO: use data_frmt of the input instead of hardcoded [1,2] for HW
-        op="GlobalAveragePool"
-        if np.array_equal(tensors[0].data, [1, 2])
-        else "MeanWithUnsupportedReductionTensor",
-        input=[i for i in inputs],
+    "InstanceNormalization_ByTensorName": lambda nodes, inputs, tensors, _: Struct(
+        op="InstanceNormalization",
+        input=[i for i in inputs]
+        + order_by([t.name for t in tensors], ["scale", "offset"]),
+    ),
+    "InstanceNormalization_ByTensorOrder": lambda nodes, inputs, tensors, _: Struct(
+        op="InstanceNormalization",
+        input=[i for i in inputs] + [t.name for t in tensors][-2:],
     ),
     "Dense": lambda nodes, inputs, tensors, _: Struct(
         op="Dense",
@@ -350,19 +519,50 @@ transform_patterns = {
     ),
     "Conv2DBackpropInput": lambda nodes, inputs, tensors, _: Struct(
         op="Conv2DBackpropInput",
-        input=[i for i in inputs] + [t.name for t in tensors],
+        input=[i for i in inputs]
+        + [t.name for t in tensors][1:][
+            -2:
+        ],  # [1:]  - skips the 0th tensor, since Conv2DBackpropInput 0th tensor is 'input_sizes' (which differs from other Conv layers)
+        # [-2:] - take only last 2 tensors, this allows to process large patterns with the same code
         padding=get_attr(by_op(nodes, "Conv2DBackpropInput"), "padding"),
         strides=get_attr(by_op(nodes, "Conv2DBackpropInput"), "strides"),
         dilations=get_attr(by_op(nodes, "Conv2DBackpropInput"), "dilations"),
         data_frmt=get_attr(by_op(nodes, "Conv2DBackpropInput"), "data_format"),
     ),
+    "ResizeNearestNeighbor": lambda nodes, inputs, tensors, _: Struct(
+        op="ResizeNearestNeighbor",
+        input=[i for i in inputs],
+        ksize=[int(tensors[0].data[0]), int(tensors[0].data[1])]
+        if len(tensors) == 1 and len(tensors[0].data) == 2
+        else [int(tensors[-1].data[0]), int(tensors[-1].data[1])]
+        if len(tensors) >= 4 and len(tensors[-1].data) == 2
+        else [1, 1],
+    ),
+    "Mean": lambda nodes, inputs, tensors, _:
+    # take only the last input
+    barracuda.mean(nodes[-1].name, inputs[-1], axis=tensors[0].data),
+    "SquaredDifference": lambda nodes, inputs, tensors, _: sqr_diff(
+        nodes[-1].name, inputs[0], inputs[1]
+    ),
     "BasicLSTM": lambda nodes, inputs, tensors, context: basic_lstm(
-        nodes, inputs, tensors, context
+        nodes, inputs, tensors, context, find_type="Reshape"
     ),
     "Swish": lambda nodes, inputs, tensors, _: Struct(op="Swish", input=inputs),
+    "LeakyRelu": lambda nodes, inputs, tensors, _: Struct(op="LeakyRelu", input=inputs),
     # TODO:'Round'
     # TODO:'Rsqrt'
 }
+
+# Debug
+def debug(s):
+    print(s)
+    return s
+
+
+# Helper
+def embody(v, default=0):
+    return default if v is None else v
+
 
 # Parse
 def get_attr(node, attr_name, default=None):
@@ -400,6 +600,16 @@ def get_epsilon(layer):
     )  # default epsilon taken from tf.layers.batch_normalization
 
 
+def get_layer_rank(layer):
+    shape = get_attr(layer, "shape")
+    if not shape:
+        return None
+    if isinstance(shape, list):
+        return 1
+    shape = [dim.size for dim in shape.dim]
+    return len(shape)
+
+
 def get_layer_shape(layer):
     shape = get_attr(layer, "shape")
     if not shape:
@@ -409,6 +619,8 @@ def get_layer_shape(layer):
         return [1, 1, 1, shape[0]]
     if len(shape) == 2:
         return [shape[0], 1, 1, shape[1]]
+    if len(shape) == 3:
+        return [shape[0], 1, shape[1], shape[2]]
     return shape
 
 
@@ -519,10 +731,141 @@ def strides_to_HW(shape, format):
     return pool_to_HW(shape, format)
 
 
+def axis_to_barracuda(axis, input_rank):
+    N = 0
+    H = 1
+    W = 2
+    C = 3
+    if axis < 0:
+        axis = input_rank - axis
+    assert axis >= 0
+    assert axis < input_rank
+    if input_rank == 4:
+        # [NHWC]
+        return [N, H, W, C][axis]
+    if input_rank == 3:
+        # [N_WC]
+        return [N, W, C][axis]
+    elif input_rank == 2:
+        # [N__C]
+        return [N, C][axis]
+    elif input_rank == 1:
+        # [___C]
+        return [C][axis]
+    return -1
+
+
 #########################################################
 
 
-def gru(nodes, inputs, tensors, context):
+def sqr_diff(name, a, b):
+    nn = barracuda.Build(name)
+    d = nn.sub(a, b)
+    nn.mul(d, d, out=name)
+    return nn.layers
+
+
+def strided_slice(
+    name,
+    input,
+    input_rank,
+    begin,
+    end,
+    strides,
+    begin_mask,
+    end_mask,
+    ellipsis_mask,
+    new_axis_mask,
+    shrink_axis_mask,
+):
+    assert input_rank != -1
+    begin = begin.astype(np.int32).tolist()
+    end = end.astype(np.int32).tolist()
+    strides = strides.astype(np.int32).tolist()
+
+    # StridedSlice range and mask descriptions: https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/strided-slice
+    # TODO: I don't think elipsis and newaxis would work together well with current implementation
+
+    assert len(begin) == len(end)
+    assert len(begin) == len(strides)
+
+    # prepare begin, end, stride arrays
+    output_rank = input_rank
+    insert_pos = 0
+    while ellipsis_mask:
+        ellipsis_mask >>= 1
+        insert_pos += 1
+
+    # NOTE: begin=0, end=0, stride=1  <=  full range from existing axis
+    #       begin=0, end=0, stride=0  <=  new axis OR shrink axis to single 1st element
+    #       begin=N, end=N, stride=0  <=              shrink axis to single Nth element
+    while len(begin) < input_rank:
+        if insert_pos:
+            begin.insert(insert_pos, 0)
+            end.insert(insert_pos, 0)
+            strides.insert(insert_pos, 1)
+        else:
+            begin.append(0)
+            end.append(0)
+            strides.append(1)
+    assert len(begin) <= input_rank
+
+    descriptor_count = input_rank
+    for i in range(len(begin)):
+        if begin_mask & (1 << i):
+            begin[i] = 0
+        if end_mask & (1 << i):
+            end[i] = 0
+        if new_axis_mask & (1 << i):
+            begin[i] = end[i] = strides[i] = 0
+            output_rank += 1
+        if shrink_axis_mask & (1 << i):
+            end[i] = begin[i]
+            strides[i] = 0
+            output_rank -= 1
+
+    # convert to Barracuda layout
+    descriptor_count = len(begin)
+    assert descriptor_count <= 4
+    if descriptor_count == 3:
+        begin = [begin[0], 0, begin[1], begin[2]]
+        end = [end[0], 0, end[1], end[2]]
+        strides = [strides[0], 1, strides[1], strides[2]]
+    elif descriptor_count == 2:
+        begin = [begin[0], 0, 0, begin[1]]
+        end = [end[0], 0, 0, end[1]]
+        strides = [strides[0], 1, 1, strides[1]]
+    elif descriptor_count == 1:
+        begin = [0, 0, 0, begin[0]]
+        end = [0, 0, 0, end[0]]
+        strides = [1, 1, 1, strides[0]]
+
+    nn = barracuda.Build(name)
+    nn.strided_slice(input, begin, end, strides, output_rank, out=name)
+    return nn.layers
+
+
+# search backwards starting from index_of_actual_output_node for non-const node
+def locate_actual_output_node(
+    nodes, index_of_actual_output_node=-1, find_type="Reshape"
+):
+    while (-index_of_actual_output_node - 1) < len(nodes) and nodes[
+        index_of_actual_output_node
+    ].op != find_type:
+        index_of_actual_output_node -= 1
+    actual_output_node = nodes[index_of_actual_output_node]
+    assert -index_of_actual_output_node < len(nodes)
+    return actual_output_node
+
+
+def gru(
+    nodes,
+    inputs,
+    tensors,
+    context,
+    index_of_actual_output_node,
+    assert_output_node_op_type=None,
+):
     assert len(inputs) == 2
 
     def find_tensor_by_name(name, default=None):
@@ -559,6 +902,8 @@ def gru(nodes, inputs, tensors, context):
     context.model_tensors["bias_u"] = gate_biases[1]
     context.model_tensors["bias_c"] = candidate_bias
 
+    context.layer_ranks[state] = 2
+
     new_layers = barracuda.gru(
         "gru",
         input,
@@ -576,14 +921,15 @@ def gru(nodes, inputs, tensors, context):
     context.model_memories += [state_shape, state, new_state]
 
     # map exptected output of the replaced pattern to output from our GRU cell
-    actual_output_node = nodes[-4]
-    assert actual_output_node.op == "Reshape"
+    actual_output_node = locate_actual_output_node(
+        nodes, index_of_actual_output_node, assert_output_node_op_type
+    )
     context.map_ignored_layer_to_its_input[actual_output_node.name] = new_state
 
     return new_layers
 
 
-def basic_lstm(nodes, inputs, tensors, context):
+def basic_lstm(nodes, inputs, tensors, context, find_type="Reshape"):
     assert len(inputs) == 2
 
     def find_tensor_by_name(name, default=None):
@@ -631,8 +977,14 @@ def basic_lstm(nodes, inputs, tensors, context):
     context.model_tensors["bias_f"] = biases[2] + forget_bias
     context.model_tensors["bias_o"] = biases[3]
 
+    context.layer_ranks[state_c] = 2
+    context.layer_ranks[state_h] = 2
+
+    # lstm_value/strided_slice/stack => lstm_value
+    lstm_name = next(i.name for i in nodes if i.name.startswith("lstm")).split("/")[0]
+
     new_layers = barracuda.lstm(
-        "lstm",
+        lstm_name,
         input,
         state_c,
         state_h,
@@ -653,9 +1005,10 @@ def basic_lstm(nodes, inputs, tensors, context):
     context.model_memories += [state_shape, state_h, new_state_h]
 
     # map expected output of the replaced pattern to output from our LSTM cell
-    actual_output_node = nodes[-4]
-    assert actual_output_node.op == "Reshape"
+    actual_output_node = locate_actual_output_node(nodes, -1, find_type)
+    concat_out_node = locate_actual_output_node(nodes, -1, "ConcatV2")
     context.map_ignored_layer_to_its_input[actual_output_node.name] = new_state_h
+    context.map_ignored_layer_to_its_input[concat_out_node.name] = new_state_c
 
     return new_layers
 
@@ -666,6 +1019,7 @@ def basic_lstm(nodes, inputs, tensors, context):
 def process_layer(layer, context, args):
     model_tensors = context.model_tensors
     input_shapes = context.input_shapes
+    layer_ranks = context.layer_ranks
     map_ignored_layer_to_its_input = context.map_ignored_layer_to_its_input
 
     name = layer.name
@@ -675,14 +1029,23 @@ def process_layer(layer, context, args):
     )  # Tensorflow inputs are always explicit, but in case of Keras we had 'inputs = layer.input or [prev_layer_name]'
     inputs = replace_strings_in_list(inputs, map_ignored_layer_to_its_input)
 
+    if class_name == "Nop":
+        assert len(inputs) <= 1
+        map_ignored_layer_to_its_input[name] = inputs
+        return
+
     if class_name == "Const":
         model_tensors[name] = layer.attr["value"].tensor
+        layer_ranks[name] = (
+            get_layer_rank(layer) or 1
+        )  # we treast constants without shape as rank=1 (scalar converted to tensor)
         return
 
     if class_name == "Placeholder":
         assert inputs == []
         map_ignored_layer_to_its_input[name] = inputs
         input_shapes[name] = get_layer_shape(layer)
+        layer_ranks[name] = get_layer_rank(layer)
         return
 
     if class_name == "Identity":
@@ -694,16 +1057,6 @@ def process_layer(layer, context, args):
             # treat Identity layer that are connected to processing nodes
             # as output from the network
             class_name = "Linear"
-
-    # TEMPORARY: until we implemented rank detection and StidedSlice at runtime
-    # HACK: skips trivial StridedSlices for rank=2 tensors
-    if (
-        class_name == "StridedSlice"
-        and get_attr(layer, "begin_mask") == 1
-        and get_attr(layer, "end_mask") == 1
-    ):
-        map_ignored_layer_to_its_input[name] = inputs[0]
-        return
 
     if args.print_layers or args.verbose:
         var_tensors = [i for i in inputs if i not in model_tensors]
@@ -735,32 +1088,44 @@ def process_layer(layer, context, args):
     o_l.class_name = class_name
     o_l.name = name
 
-    padding = get_attr(layer, "padding")  # layer.attr['padding'].s.decode("utf-8")
+    auto_pad = get_attr(layer, "padding")  # layer.attr['padding'].s.decode("utf-8")
+    pads = get_attr(layer, "pads")
     strides = get_attr(layer, "strides")  # layer.attr['strides'].list.i
     dilations = get_attr(layer, "dilations")  # layer.attr['dilations'].list.i
     pool_size = get_attr(layer, "ksize")  # layer.attr['ksize'].list.i
-    shape = get_attr(layer, "shape", default=[])
+    shape = get_attr(layer, "shape")
+    starts = get_attr(layer, "starts")
+    ends = get_attr(layer, "ends")
+    slice_strides = get_attr(layer, "slice_strides")
+    rank = get_attr(layer, "rank") or get_layer_rank(layer)
     data_frmt = get_attr(
         layer, "data_format"
     )  # layer.attr['data_format'].s.decode("utf-8")
     axis = get_attr(layer, "axis")
-    alpha = get_attr(layer, "alpha")
+    alpha = get_attr(layer, "alpha", default=1)
     beta = get_attr(layer, "beta")
 
     if activation and not activation in known_activations:
         print("IGNORED: unknown activation", activation)
-    if padding and not padding in known_paddings:
-        print("IGNORED: unknown padding", padding)
+    if auto_pad and not auto_pad in known_paddings:
+        print("IGNORED: unknown padding", auto_pad)
     if data_frmt and not data_frmt in supported_data_formats:
         print("UNSUPPORTED: data format", data_frmt)
 
     o_l.activation = known_activations.get(activation) or 0
-    o_l.pads = known_paddings.get(padding) or [0, 0, 0, 0]
-    o_l.strides = strides_to_HW(strides, data_frmt) if strides else []
-    o_l.pool_size = pool_to_HW(pool_size, data_frmt) if pool_size else shape
-    o_l.axis = axis or -1
-    o_l.alpha = alpha or 1
+    o_l.pads = (
+        known_paddings.get(auto_pad) if auto_pad else pads or starts or [0, 0, 0, 0]
+    )
+    o_l.strides = strides_to_HW(strides, data_frmt) if strides else slice_strides or []
+    o_l.pool_size = (
+        pool_to_HW(pool_size, data_frmt) if pool_size else ends or shape or []
+    )
+    o_l.axis = embody(axis, default=-1)
+    o_l.alpha = embody(alpha, default=1)
     o_l.beta = beta or 0
+    o_l.rank = (
+        -1
+    )  # default initialization, actual value will be set later on in this function
 
     tensor_names = [i for i in inputs if i in model_tensors]
     o_l.tensors = [
@@ -808,18 +1173,41 @@ def process_layer(layer, context, args):
         assert len(o_l.tensors) == len(shapes)
 
         for x, shape in zip(o_l.tensors, shapes):
+            assert x.data.size == np.prod(shape)
             x.shape = shape
 
         o_l.inputs = [i for i in inputs if i not in model_tensors]
 
     else:
-        # no 'patch_data' lambda was specified, op does not require tensor args
+        # no 'patch_data' lambda was specifiowned, op does not require tensor args
         o_l.tensors = []
         o_l.inputs = inputs
 
     # Force all tensors to float32
     for x in o_l.tensors:
         x.data = x.data.astype(np.float32)
+
+    input_ranks = [layer_ranks.get(i, -1) for i in o_l.inputs]
+    for i in o_l.inputs:
+        if i not in layer_ranks and "lstm" not in i:
+            print("WARNING: rank unknown for tensor", i, "while processing node", name)
+    if hasattr(klass, "rank"):
+        rank = klass.rank
+        if hasattr(rank, "__call__"):
+            assert (
+                -1 not in input_ranks
+            )  # for rank() lambda all input ranks have to be known (not -1)
+            rank = rank(input_ranks)
+    if rank == None:
+
+        def all_elements_equal(arr):  # http://stackoverflow.com/q/3844948/
+            return arr.count(arr[0]) == len(arr)
+
+        assert len(input_ranks) > 0
+        assert all_elements_equal(input_ranks)
+        rank = input_ranks[0]
+    layer_ranks[name] = rank
+    o_l.rank = rank
 
     # Layer is ready
     context.layers.append(o_l)
@@ -831,6 +1219,7 @@ class ModelBuilderContext:
         self.input_shapes = {}
         self.model_tensors = {}
         self.model_memories = []
+        self.layer_ranks = {}
         self.map_ignored_layer_to_its_input = {}
 
 
@@ -839,6 +1228,7 @@ def process_model(model, args):
 
     # Find node patterns
     nodes_as_array = [node for node in model.node]
+    nodes_as_array = slow_but_stable_topological_sort(nodes_as_array, verbose=True)
 
     node_index = 0
     while node_index < len(nodes_as_array):
@@ -890,18 +1280,10 @@ def process_model(model, args):
                 map_ignored_layer_to_its_input = (
                     o_context.map_ignored_layer_to_its_input
                 )
+                model_tensors = o_context.model_tensors
 
                 # tensors <= all Const nodes within this pattern
-                tensor_nodes = [n for n in pattern_nodes if n.op == "Const"]
-                tensors = [
-                    Struct(
-                        name=n.name,
-                        obj=n.attr["value"].tensor,
-                        shape=get_tensor_dims(n.attr["value"].tensor),
-                        data=get_tensor_data(n.attr["value"].tensor),
-                    )
-                    for n in tensor_nodes
-                ]
+                const_nodes = [n for n in pattern_nodes if n.op == "Const"]
 
                 # TODO: unify / reuse code from process_layer
                 identity_nodes = [n for n in pattern_nodes if n.op == "Identity"]
@@ -915,7 +1297,7 @@ def process_model(model, args):
                 op_nodes = [
                     n
                     for n in pattern_nodes
-                    if n not in tensor_nodes and n not in identity_nodes
+                    if n not in const_nodes and n not in identity_nodes
                 ]
                 inputs_to_op_nodes = list(
                     flatten([list(flatten(n.input)) for n in op_nodes])
@@ -925,9 +1307,34 @@ def process_model(model, args):
                 )
                 inputs_to_op_nodes = [i.split(":")[0] for i in inputs_to_op_nodes]
 
+                const_nodes_by_name = {n.name: n for n in const_nodes}
+                tensors = []
+                for i in inputs_to_op_nodes:
+                    if i in model_tensors:
+                        src = model_tensors[i]
+                        tensors += [
+                            Struct(
+                                name=i,
+                                obj=src,
+                                shape=get_tensor_dims(src),
+                                data=get_tensor_data(src),
+                            )
+                        ]
+                    elif i in const_nodes_by_name:
+                        src = const_nodes_by_name[i].attr["value"].tensor
+                        tensors += [
+                            Struct(
+                                name=i,
+                                obj=src,
+                                shape=get_tensor_dims(src),
+                                data=get_tensor_data(src),
+                            )
+                        ]
+                tensor_names = [n.name for n in tensors]
+
                 # filter only inputs that are coming from nodes that are outside this pattern
                 # preserve the order
-                pattern_nodes = [n.name for n in pattern_nodes]
+                pattern_nodes = [n.name for n in pattern_nodes] + tensor_names
                 # inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if nodes_by_name[i] not in pattern_nodes])
                 inputs_from_outside_pattern = remove_duplicates_from_list(
                     [i for i in inputs_to_op_nodes if i not in pattern_nodes]
@@ -945,12 +1352,12 @@ def process_model(model, args):
                         name,
                         "~~",
                         pattern_name,
-                        pattern,
                         "<-",
                         var_tensors,
                         "+",
                         [t.name for t in const_tensors],
                     )
+                    print("        ", pattern)
                 for n in nodes:
                     if n.op == "Const" or n.op == "Identity":
                         process_layer(n, o_context, args)
@@ -976,12 +1383,103 @@ def process_model(model, args):
             process_layer(node, o_context, args)
             node_index += 1
 
+    def find_unconnected_const_nodes(nodes):
+        nodes_with_consts = {node.name: node for node in nodes if node.op == "Const"}
+        for node in nodes:
+            for i in node.input:
+                nodes_with_consts.pop(i, None)
+        return list(nodes_with_consts.keys())
+
     return (
         o_context.layers,
         o_context.input_shapes,
         o_context.model_tensors,
         o_context.model_memories,
+        find_unconnected_const_nodes(nodes_as_array),
     )
+
+
+# Sort nodes so that all input dependencies are satisfied beforehand
+# while preserving original order of the nodes in the model whenever possible.
+# NOITE: preservation of original order is important for pattern matching
+def slow_but_stable_topological_sort(nodes, verbose):
+
+    nodes_with_consts = [node for node in nodes if node.op == "Const"]
+    nodes_for_sorting = [node for node in nodes if node.op != "Const"]
+
+    # TODO: optimize for performance
+    # based on http://blog.gapotchenko.com/stable-topological-sort
+
+    def assign_ids(nodes):
+        ids = []
+        id_by_name = {}
+        id = 0
+        for node in nodes:
+            id_by_name[node.name] = id
+            ids.append(id)
+            id += 1
+
+        inputs_by_id = [None] * len(nodes)
+        for node in nodes:
+            id = id_by_name[node.name]
+            inputs_by_id[id] = {id_by_name.get(i, -1) for i in node.input}
+
+        return ids, inputs_by_id
+
+    def sort(ids, inputs_by_id, verbose_lambda):
+        sorted = False
+        n = len(ids)
+        while not sorted:
+            sorted = True
+            for i in range(n):
+                for j in range(i):
+                    if ids[i] in inputs_by_id[ids[j]]:
+                        tmp = ids.pop(i)
+                        ids.insert(j, tmp)
+                        sorted = False
+            verbose_lambda(sorted)
+        return ids
+
+    prefix_printed = False
+
+    def print_status(sorted):
+        nonlocal prefix_printed
+        if not sorted:
+            if not prefix_printed:
+                print("Sorting model, may take a while...", end="", flush=True)
+                prefix_printed = True
+            else:
+                print(".", end="", flush=True)
+        else:
+            if prefix_printed:
+                print(" Done!")
+
+    ids, inputs_by_id = assign_ids(nodes_for_sorting)
+    ids = sort(
+        ids, inputs_by_id, lambda sorted: print_status(sorted) if verbose else None
+    )
+
+    assert len(ids) == len(nodes_for_sorting)
+    assert len(ids) + len(nodes_with_consts) == len(nodes)
+    return nodes_with_consts + [nodes_for_sorting[id] for id in ids]
+
+
+def very_slow_but_stable_topological_sort(nodes, verbose):
+    # TODO: optimize for performance
+    # based on http://blog.gapotchenko.com/stable-topological-sort
+    n = len(nodes)
+    sorted = False
+
+    while not sorted:
+        sorted = True
+        for i in range(n):
+            for j in range(i):
+                if nodes[i].name in nodes[j].input:
+                    tmp = nodes.pop(i)
+                    nodes.insert(j, tmp)
+                    sorted = False
+    assert len(nodes) == n
+    return nodes
 
 
 #########################################################
@@ -1012,8 +1510,12 @@ def convert(
         args.print_layer_links = verbose
         args.print_patterns = verbose
         args.print_tensors = verbose
+        args.print_supported_ops = verbose
     else:
         args = verbose
+
+    if args.print_supported_ops:
+        barracuda.print_known_operations(known_classes, known_activations)
 
     # Load Tensorflow model
     print("Converting %s to %s" % (source_file, target_file))
@@ -1031,7 +1533,7 @@ def convert(
 
     # Convert
     o_model = barracuda.Model()
-    o_model.layers, o_input_shapes, o_model.tensors, o_model.memories = process_model(
+    o_model.layers, o_input_shapes, o_model.tensors, o_model.memories, o_model.globals = process_model(
         i_model, args
     )
 
@@ -1054,35 +1556,23 @@ def convert(
     all_inputs = {i for l in o_model.layers for i in l.inputs}
     embedded_tensors = {t.name for l in o_model.layers for t in l.tensors}
 
-    # Find global tensors
-    def dims_to_barracuda_shape(dims):
-        shape = list(dims)
-        while len(shape) < 4:
-            shape = [1] + shape
-        return shape
-
-    o_model.globals = [
-        t for t in o_model.tensors if t not in all_inputs and t not in embedded_tensors
-    ]
-    # for x in global_tensors:
-    #    shape = dims_to_barracuda_shape(get_tensor_dims(o_model.tensors[x]))
-    #    o_globals += [Struct(
-    #        name = x,
-    #        shape = shape,
-    #        data = np.reshape(get_tensor_data(o_model.tensors[x]), shape).astype(np.float32))]
-
     # Trim
     if trim_unused_by_output:
         o_model.layers = barracuda.trim(
             o_model.layers, trim_unused_by_output, args.verbose
         )
 
-    # Create load layers for constants
+    # Create load layer for constants
+    def dims_to_barracuda_shape(dims):
+        shape = list(dims)
+        while len(shape) < 4:
+            shape = [1] + shape
+        return shape
+
     const_tensors = [i for i in all_inputs if i in o_model.tensors]
     const_tensors += o_model.globals
     for x in const_tensors:
         shape = dims_to_barracuda_shape(get_tensor_dims(o_model.tensors[x]))
-
         o_l = Struct(
             type=255,  # Load
             class_name="Const",
@@ -1143,6 +1633,7 @@ def convert(
     o_model.layers = barracuda.sort(
         o_model.layers, o_model.inputs, o_model.memories, args.verbose
     )
+    o_model.layers = barracuda.fuse(o_model.layers, args.verbose)
 
     # Summary
     barracuda.summary(

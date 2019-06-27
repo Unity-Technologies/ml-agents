@@ -174,17 +174,19 @@ class BrainInfo:
         return brain_info
 
 
-def safe_concat_lists(l1: Optional[List], l2: Optional[List]):
-    if l1 is None and l2 is None:
-        return None
-    if l1 is None and l2 is not None:
-        return l2.copy()
-    if l1 is not None and l2 is None:
-        return l1.copy()
+def safe_concat_lists(l1: Optional[List], l2: Optional[List]) -> Optional[List]:
+    if l1 is None:
+        if l2 is None:
+            return None
+        else:
+            return l2.copy()
     else:
-        copy = l1.copy()
-        copy.extend(l2)
-        return copy
+        if l2 is None:
+            return l1.copy()
+        else:
+            copy = l1.copy()
+            copy.extend(l2)
+            return copy
 
 
 def safe_concat_np_ndarray(a1: Optional[np.ndarray], a2: Optional[np.ndarray]):

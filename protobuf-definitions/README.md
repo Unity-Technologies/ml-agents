@@ -18,6 +18,8 @@ Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
 
 `pip install grpcio-tools==1.11.1`
 
+`pip install mypy-protobuf`
+
 If you don't have it already, download the latest version of [nuget](https://www.nuget.org/downloads).
 Navigate to your installation of nuget and run the following: 
 
