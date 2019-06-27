@@ -246,12 +246,36 @@ namespace MLAgents
         private CustomSampler AcademyStepSampler;
         private CustomSampler AgentActSampler;
 
+        private CustomSampler DuplicateSampler1;
+        private CustomSampler DuplicateSampler2;
+        private CustomSampler CalledTwiceSampler;
+
+        private CustomSampler RecursiveSampler1;
+        private CustomSampler RecursiveSampler2;
+
+
+        private Recorder DuplicateRecorder;
+        private Recorder CalledTwiceRecorder;
+
         void Start()
         {
             AgentSendStateSampler = CustomSampler.Create("AgentSendState");
             BrainDecideActionSampler = CustomSampler.Create("BrainDecideAction");
             AcademyStepSampler = CustomSampler.Create("AcademyStep");
             AgentActSampler = CustomSampler.Create("AgentAct");
+
+            DuplicateSampler1 = CustomSampler.Create("Duplicate");
+            DuplicateSampler2 = CustomSampler.Create("Duplicate");
+            CalledTwiceSampler = CustomSampler.Create("CalledTwice");
+
+            RecursiveSampler1 = CustomSampler.Create("Recursive1");
+            RecursiveSampler2 = CustomSampler.Create("Recursive2");
+
+            DuplicateRecorder = Recorder.Get ("Duplicate");
+            DuplicateRecorder.enabled = true;
+
+            CalledTwiceRecorder = Recorder.Get ("CalledTwice");
+            CalledTwiceRecorder.enabled = true;
         }
 
         /// <summary>
@@ -646,22 +670,38 @@ namespace MLAgents
                 EnvironmentReset();
             }
 
+            RecursiveSampler1.Begin ();
+            RecursiveSampler2.Begin ();
+            RecursiveSampler1.Begin ();
+            RecursiveSampler2.Begin ();
             AgentResetIfDone();
+            RecursiveSampler2.End ();
+            RecursiveSampler1.End ();
+            RecursiveSampler2.End ();
+            RecursiveSampler1.End ();
 
             AgentSendStateSampler.Begin ();
+            CalledTwiceSampler.Begin ();
             AgentSendState();
+            CalledTwiceSampler.End ();
             AgentSendStateSampler.End ();
 
             BrainDecideActionSampler.Begin ();
+            CalledTwiceSampler.Begin ();
             BrainDecideAction();
+            CalledTwiceSampler.End ();
             BrainDecideActionSampler.End ();
 
             AcademyStepSampler.Begin ();
+            DuplicateSampler2.Begin ();
             AcademyStep();
+            DuplicateSampler2.End();
             AcademyStepSampler.End ();
 
             AgentActSampler.Begin ();
+            DuplicateSampler1.Begin();
             AgentAct();
+            DuplicateSampler1.End();
             AgentActSampler.End ();
 
             stepCount += 1;
@@ -686,6 +726,12 @@ namespace MLAgents
         void FixedUpdate()
         {
             EnvironmentStep();
+        }
+
+        void Update() 
+        {
+            Debug.Log ($"DuplicateRecorder time={DuplicateRecorder.elapsedNanoseconds} calls={DuplicateRecorder.sampleBlockCount} isValid={DuplicateRecorder.isValid}");
+            Debug.Log ($"CalledTwiceRecoder time={CalledTwiceRecorder.elapsedNanoseconds} calls={CalledTwiceRecorder.sampleBlockCount} isValid={CalledTwiceRecorder.isValid}");
         }
 
         /// <summary>
