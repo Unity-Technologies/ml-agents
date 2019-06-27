@@ -78,14 +78,18 @@ namespace MLAgents
         private Dictionary<string, TimerNode> children;
         private long totalTicks = 0;
         private int count = 0;
+        // TODO CustomerSampler
 
         public TimerNode()
         {
+            // TODO Create CustomeSampler
+            // TODO Don't create child dict until needed?
             children = new Dictionary<string, TimerNode> ();
         }
 
         public void Begin()
         {
+            // TODO CustomerSampler.Begin()
             startTick = System.DateTime.Now.Ticks;
         }
 
@@ -94,6 +98,7 @@ namespace MLAgents
             long elapsed = System.DateTime.Now.Ticks - startTick;
             totalTicks += elapsed;
             count += 1;
+            // TODO CustomerSampler.End()
         }
 
         public TimerNode GetChild(string name) {
@@ -113,8 +118,8 @@ namespace MLAgents
         public double SelfSeconds() {
             // Time spend in this block, excluding all children.
             double s = TotalSeconds ();
-            foreach (TimerNode c in children) {
-                s -= c.TotalSeconds;
+            foreach (TimerNode c in children.Values) {
+                s -= c.TotalSeconds();
             }
             return s > 0.0 ? s : 0.0;
         }
