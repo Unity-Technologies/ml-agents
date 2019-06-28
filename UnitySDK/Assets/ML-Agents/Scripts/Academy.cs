@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using UnityEngine.Profiling;
 #if UNITY_EDITOR
 using UnityEditor;
 
@@ -74,66 +75,82 @@ namespace MLAgents
 
     public class TimerNode
     {
-        private long startTick = 0;
+        static string separator = ".";
+        string fullName;
         private Dictionary<string, TimerNode> children;
-        private long totalTicks = 0;
-        private int count = 0;
-        // TODO CustomerSampler
+        private CustomSampler sampler;
+        private Recorder recorder;
 
-        public TimerNode()
+        private long totalNanoseconds = 0;
+        private int totalCalls = 0;
+
+        public TimerNode(string name)
         {
-            // TODO Create CustomeSampler
+            fullName = name;
+            sampler = CustomSampler.Create (fullName);
+            recorder = Recorder.Get (fullName);
+            recorder.enabled = true;
+
             // TODO Don't create child dict until needed?
             children = new Dictionary<string, TimerNode> ();
         }
 
         public void Begin()
         {
-            // TODO CustomerSampler.Begin()
-            startTick = System.DateTime.Now.Ticks;
+            sampler.Begin();
         }
 
         public void End()
         {
-            long elapsed = System.DateTime.Now.Ticks - startTick;
-            totalTicks += elapsed;
-            count += 1;
-            // TODO CustomerSampler.End()
+            sampler.End ();
         }
 
         public TimerNode GetChild(string name) {
             if (!children.ContainsKey(name)) {
-                TimerNode newChild = new TimerNode();
+                string childFullName = fullName + separator + name;
+                TimerNode newChild = new TimerNode(childFullName);
                 children[name] = newChild;
                 return newChild;
             }
             return children [name];
         }
 
-        public double TotalSeconds() {
-            System.TimeSpan elapsedSpan = new System.TimeSpan(totalTicks);
-            return elapsedSpan.TotalSeconds;
+        public void Update()
+        {
+            totalNanoseconds += recorder.elapsedNanoseconds;
+            totalCalls += recorder.sampleBlockCount;
+
+            // Update children too
+            foreach (TimerNode c in children.Values) {
+                c.Update ();
+            }
         }
 
-        public double SelfSeconds() {
-            // Time spend in this block, excluding all children.
-            double s = TotalSeconds ();
-            foreach (TimerNode c in children.Values) {
-                s -= c.TotalSeconds();
-            }
-            return s > 0.0 ? s : 0.0;
-        }
+//        public double TotalSeconds() {
+//            System.TimeSpan elapsedSpan = new System.TimeSpan(totalTicks);
+//            return elapsedSpan.TotalSeconds;
+//        }
+//
+//        public double SelfSeconds() {
+//            // Time spend in this block, excluding all children.
+//            double s = TotalSeconds ();
+//            foreach (TimerNode c in children.Values) {
+//                s -= c.TotalSeconds();
+//            }
+//            return s > 0.0 ? s : 0.0;
+//        }
     }
 
     public class TimerStack
     {
         private Stack<TimerNode> stack;
+        private TimerNode rootNode;
 
-        public TimerStack()
+        public TimerStack(string rootName)
         {
             stack = new Stack<TimerNode> ();
-            TimerNode root = new TimerNode ();
-            stack.Push (root);
+            rootNode = new TimerNode (rootName);
+            stack.Push (rootNode);
         }
 
         public TimerNode Push(string name)
@@ -167,6 +184,7 @@ namespace MLAgents
             {
                 node.End ();
                 stack.Pop ();
+                // TODO return Node from Pop(), then we don't need to store the node here.
                 //Debug.Log($"done with {debug_name}, total = {node.TotalSeconds()}");
             }
         }
@@ -175,6 +193,11 @@ namespace MLAgents
         {
             Helper h = new Helper (this, name);
             return h;
+        }
+
+        public void Update()
+        {
+            rootNode.Update ();
         }
     }
 
@@ -380,7 +403,7 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
-            timer = new TimerStack ();
+            timer = new TimerStack ("MLAgents");
 
             originalGravity = Physics.gravity;
             originalFixedDeltaTime = Time.fixedDeltaTime;
@@ -736,15 +759,21 @@ namespace MLAgents
                 AgentResetIfDone();
             }
 
-            AgentSendState();
+            using (timer.Scoped ("AgentSendState")) {
+                AgentSendState ();
+            }
 
             using (timer.Scoped ("BrainDecideAction")) {
                 BrainDecideAction ();
             }
 
-            AcademyStep();
+            using (timer.Scoped ("AcademyStep")) {
+                AcademyStep ();
+            }
 
-            AgentAct();
+            using (timer.Scoped ("AgentAct")) {
+                AgentAct ();
+            }
 
             stepCount += 1;
             totalStepCount += 1;
@@ -769,6 +798,12 @@ namespace MLAgents
         {
             EnvironmentStep();
         }
+
+        void Update()
+        {
+            timer.Update ();
+        }
+
 
         /// <summary>
         /// Cleanup function
