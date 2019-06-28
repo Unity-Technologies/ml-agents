@@ -194,13 +194,15 @@ namespace MLAgents
             // the message and update hasSentState
             if (m_currentAgents[brainKey].Count > 0)
             {
-                foreach (Agent agent in m_currentAgents[brainKey])
+                using (TimerStack.Scoped ("ConvertToProto"))
                 {
-                    CommunicatorObjects.AgentInfoProto agentInfoProto = agentInfo[agent].ToProto();
-                    m_currentUnityRLOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                }
+                    foreach (Agent agent in m_currentAgents[brainKey]) {
+                        CommunicatorObjects.AgentInfoProto agentInfoProto = agentInfo [agent].ToProto ();
+                        m_currentUnityRLOutput.AgentInfos [brainKey].Value.Add (agentInfoProto);
+                    }
 
-                m_hasData[brainKey] = true;
+                    m_hasData [brainKey] = true;
+                }
             }
 
             // If any agent needs to send data, then the whole message
@@ -210,7 +212,9 @@ namespace MLAgents
                 if (m_hasData.Values.Any(x => x) || m_academyDone)
                 {
                     m_currentUnityRLOutput.GlobalDone = m_academyDone;
-                    SendBatchedMessageHelper();
+                    using (TimerStack.Scoped ("SendBatchedMessageHelper")) {
+                        SendBatchedMessageHelper();
+                    }
                 }
 
                 // The message was just sent so we must reset hasSentState and
@@ -264,27 +268,26 @@ namespace MLAgents
                 return;
             }
 
-            foreach (var brainName in rlInput.AgentActions.Keys)
-            {
-                if (!m_currentAgents[brainName].Any())
-                {
-                    continue;
-                }
+            using (TimerStack.Scoped ("UpdateActionSampler")) {
+                    
+                foreach (var brainName in rlInput.AgentActions.Keys) {
+                    if (!m_currentAgents [brainName].Any ()) {
+                        continue;
+                    }
 
-                if (!rlInput.AgentActions[brainName].Value.Any())
-                {
-                    continue;
-                }
+                    if (!rlInput.AgentActions [brainName].Value.Any ()) {
+                        continue;
+                    }
 
-                for (var i = 0; i < m_currentAgents[brainName].Count; i++)
-                {
-                    var agent = m_currentAgents[brainName][i];
-                    var action = rlInput.AgentActions[brainName].Value[i];
-                    agent.UpdateVectorAction(action.VectorActions.ToArray());
-                    agent.UpdateMemoriesAction(action.Memories.ToList());
-                    agent.UpdateTextAction(action.TextActions);
-                    agent.UpdateValueAction(action.Value);
-                    agent.UpdateCustomAction(action.CustomAction);
+                    for (var i = 0; i < m_currentAgents [brainName].Count; i++) {
+                        var agent = m_currentAgents [brainName] [i];
+                        var action = rlInput.AgentActions [brainName].Value [i];
+                        agent.UpdateVectorAction (action.VectorActions.ToArray ());
+                        agent.UpdateMemoriesAction (action.Memories.ToList ());
+                        agent.UpdateTextAction (action.TextActions);
+                        agent.UpdateValueAction (action.Value);
+                        agent.UpdateCustomAction (action.CustomAction);
+                    }
                 }
             }
         }

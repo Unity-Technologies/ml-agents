@@ -143,6 +143,9 @@ namespace MLAgents
 
     public class TimerStack
     {
+        // TODO make this a proper singleton
+        public static TimerStack sInstance = new TimerStack("MLAgents");
+
         private Stack<TimerNode> stack;
         private TimerNode rootNode;
 
@@ -189,9 +192,9 @@ namespace MLAgents
             }
         }
 
-        public Helper Scoped(string name)
+        public static Helper Scoped(string name)
         {
-            Helper h = new Helper (this, name);
+            Helper h = new Helper (sInstance, name);
             return h;
         }
 
@@ -199,6 +202,17 @@ namespace MLAgents
         {
             rootNode.Update ();
         }
+
+//        public string DebugGetTimerString() {
+//            TimerNode n = rootNode;
+//            //string indent = "  ";
+//
+//            // TODO stringbuilder if we actually want this anywhere
+//            // TODO indenxt
+//            string s = "";
+//            for 
+//
+//        }
     }
 
 
@@ -369,8 +383,6 @@ namespace MLAgents
         // Sigals to all the agents each time the Academy force resets.
         public event System.Action AgentForceReset;
 
-        private TimerStack timer;
-
         /// <summary>
         /// Monobehavior function called at the very beginning of environment
         /// creation. Academy uses this time to initialize internal data
@@ -403,7 +415,7 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
-            timer = new TimerStack ("MLAgents");
+            //timer = new TimerStack ("MLAgents");
 
             originalGravity = Physics.gravity;
             originalFixedDeltaTime = Time.fixedDeltaTime;
@@ -755,23 +767,23 @@ namespace MLAgents
                 EnvironmentReset();
             }
 
-            using (timer.Scoped ("AgentResetIfDone")) {
+            using (TimerStack.Scoped ("AgentResetIfDone")) {
                 AgentResetIfDone();
             }
 
-            using (timer.Scoped ("AgentSendState")) {
+            using (TimerStack.Scoped ("AgentSendState")) {
                 AgentSendState ();
             }
 
-            using (timer.Scoped ("BrainDecideAction")) {
+            using (TimerStack.Scoped ("BrainDecideAction")) {
                 BrainDecideAction ();
             }
 
-            using (timer.Scoped ("AcademyStep")) {
+            using (TimerStack.Scoped ("AcademyStep")) {
                 AcademyStep ();
             }
 
-            using (timer.Scoped ("AgentAct")) {
+            using (TimerStack.Scoped ("AgentAct")) {
                 AgentAct ();
             }
 
@@ -801,7 +813,8 @@ namespace MLAgents
 
         void Update()
         {
-            timer.Update ();
+            // TODO need a better way to udpate the singleton
+            TimerStack.sInstance.Update ();
         }
 
 
