@@ -72,7 +72,7 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
             elif cmd.name == "reset_parameters":
                 _send_response("reset_parameters", env.reset_parameters)
             elif cmd.name == "reset":
-                all_brain_info = env.reset(cmd.payload[0], cmd.payload[1])
+                all_brain_info = env.reset(cmd.payload[0], cmd.payload[1], cmd.payload[2])
                 _send_response("reset", all_brain_info)
             elif cmd.name == "global_done":
                 _send_response("global_done", env.global_done)
@@ -167,8 +167,8 @@ class SubprocessUnityEnvironment(BaseUnityEnvironment):
         self.step_async(vector_action, memory, text_action, value)
         return self.step_await()
 
-    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
-        self._broadcast_message("reset", (config, train_mode))
+    def reset(self, config=None, train_mode=True, custom_reset_parameters=None) -> AllBrainInfo:
+        self._broadcast_message("reset", (config, train_mode, custom_reset_parameters))
         reset_results = [self.envs[i].recv() for i in range(len(self.envs))]
         self._get_agent_counts(map(lambda r: r.payload, reset_results))
 
