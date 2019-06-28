@@ -78,8 +78,7 @@ namespace MLAgents
         static string separator = ".";
         string fullName;
         private Dictionary<string, TimerNode> children;
-        private CustomSampler sampler;
-        private Recorder recorder;
+        public CustomSampler sampler;
 
         private long totalNanoseconds = 0;
         private int totalCalls = 0;
@@ -88,8 +87,7 @@ namespace MLAgents
         {
             fullName = name;
             sampler = CustomSampler.Create (fullName);
-            recorder = Recorder.Get (fullName);
-            recorder.enabled = true;
+            sampler.GetRecorder().enabled = true;
 
             // TODO Don't create child dict until needed?
             children = new Dictionary<string, TimerNode> ();
@@ -117,6 +115,7 @@ namespace MLAgents
 
         public void Update()
         {
+            var recorder = sampler.GetRecorder ();
             totalNanoseconds += recorder.elapsedNanoseconds;
             totalCalls += recorder.sampleBlockCount;
 
@@ -126,19 +125,20 @@ namespace MLAgents
             }
         }
 
-//        public double TotalSeconds() {
-//            System.TimeSpan elapsedSpan = new System.TimeSpan(totalTicks);
-//            return elapsedSpan.TotalSeconds;
-//        }
-//
-//        public double SelfSeconds() {
-//            // Time spend in this block, excluding all children.
-//            double s = TotalSeconds ();
-//            foreach (TimerNode c in children.Values) {
-//                s -= c.TotalSeconds();
-//            }
-//            return s > 0.0 ? s : 0.0;
-//        }
+        public string DebugGetTimerString(string parentName = "", int level = 0)
+        {
+            string indent = new string (' ', 2 * level); // TODO generalize
+            double totalSeconds = totalNanoseconds / 1000000000.0;
+            string shortName = (level == 0) ? fullName : fullName.Replace (parentName + separator, "");
+            string timerString = $"{indent}{shortName}\t{totalSeconds}s\t({totalCalls} calls)\n";
+            // TODO stringbuilder? overkill?
+            foreach (TimerNode c in children.Values) 
+            {
+                timerString += c.DebugGetTimerString(fullName, level + 1);
+            }
+            return timerString;
+
+        }
     }
 
     public class TimerStack
@@ -151,6 +151,11 @@ namespace MLAgents
 
         public TimerStack(string rootName)
         {
+//            var profilePath = Path.GetFullPath (".") + "/profiler.log";
+//            Profiler.logFile = profilePath;
+//            Profiler.enableBinaryLog = true;
+//
+            Profiler.enabled = true;
             stack = new Stack<TimerNode> ();
             rootNode = new TimerNode (rootName);
             stack.Push (rootNode);
@@ -203,16 +208,11 @@ namespace MLAgents
             rootNode.Update ();
         }
 
-//        public string DebugGetTimerString() {
-//            TimerNode n = rootNode;
-//            //string indent = "  ";
-//
-//            // TODO stringbuilder if we actually want this anywhere
-//            // TODO indenxt
-//            string s = "";
-//            for 
-//
-//        }
+        public string DebugGetTimerString(int totalStepCount) {
+            Recorder rootRec = rootNode.sampler.GetRecorder ();
+            string header = $"frame={Time.frameCount}  Academy.totalStepCount={totalStepCount}  Profiler.enabled={Profiler.enabled}  rootRec.isValid={rootRec.isValid}  rootRed.enabled={rootRec.enabled}\n";
+            return header + rootNode.DebugGetTimerString ();
+        }
     }
 
 
@@ -789,6 +789,10 @@ namespace MLAgents
 
             stepCount += 1;
             totalStepCount += 1;
+
+            // TODO need a better way to udpate the singleton
+            TimerStack.sInstance.Update ();
+            Debug.Log (TimerStack.sInstance.DebugGetTimerString (totalStepCount));
         }
 
         /// <summary>
@@ -811,10 +815,11 @@ namespace MLAgents
             EnvironmentStep();
         }
 
-        void Update()
+        void LateUpdate()
         {
             // TODO need a better way to udpate the singleton
-            TimerStack.sInstance.Update ();
+//            TimerStack.sInstance.Update ();
+//            Debug.Log (TimerStack.sInstance.DebugGetTimerString (totalStepCount));
         }
 
 
