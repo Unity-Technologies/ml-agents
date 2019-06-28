@@ -14,6 +14,7 @@ from time import time
 
 """
 [TODO:] Figure out the file structure and import the Sampling class
+from sampler_class import ParameterManager
 """
 
 from mlagents.envs import AllBrainInfo, BrainParameters
@@ -24,6 +25,7 @@ from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.envs.sampler_class import SamplerManager
 
 
 class TrainerController(object):
@@ -42,8 +44,9 @@ class TrainerController(object):
         external_brains: Dict[str, BrainParameters],
         training_seed: int,
         fast_simulation: bool,
-        generalize: bool = False,
-        reset_param_dict = None,
+        reset_param_dict,
+        min_reward:int,
+        min_lesson_length: int,
     ):
         """
         :param model_path: Path to save the model.
@@ -57,8 +60,9 @@ class TrainerController(object):
         :param lesson: Start learning from this lesson.
         :param external_brains: dictionary of external brain names to BrainInfo objects.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
-        :param generalize: Whether to train agent over various
         :param reset_param_dict: dictionary of reset parameters used for generalization training
+        :param min_reward: Reward to be obtained before sampling reset parameter for generalization training
+        :param min_lesson_length: The minimum number of episodes that should be completed before the lesson can change.
         """
 
         self.model_path = model_path
@@ -81,8 +85,10 @@ class TrainerController(object):
         self.fast_simulation = fast_simulation
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
-        self.generalize = generalize
-        self.reset_param_dict = reset_param_dict
+        self.sampler_manager = SamplerManager(reset_param_dict) if reset_param_dict is not None else None
+        # self.min_reward = min_reward
+        # self.min_lesson_length = min_lesson_length
+        self.num_episodes = 0 if self.sampler_manager is not None else 0
 
     def _get_measure_vals(self):
         if self.meta_curriculum:
@@ -184,7 +190,9 @@ class TrainerController(object):
                         brain_name
                     ].min_lesson_length
                     if self.meta_curriculum
-                    else 0,
+                    else self.min_lesson_length
+                        if self.sampler_manager is not None
+                        else 0,
                     trainer_parameters_dict[brain_name],
                     self.train_model,
                     self.load_model,
@@ -215,8 +223,20 @@ class TrainerController(object):
             )
 
     @staticmethod
-    def _create_sampler(reset_param_dict):
-        self.sampler = 
+    def _check_reset_params(reset_params, new_config):
+        for k in new_config:
+            if (k in reset_params) and (isinstance(config[k], (int, float))):
+                continue
+            elif not isinstance(config[k], (int, float)):
+                raise UnityEnvironmentException(
+                    "The parameter '{0}'' doesn't exist in this environment.".format(
+                        k
+                    )
+                )
+
+    # @staticmethod
+    # def _create_sampler(reset_param_dict):
+    #     self.sampler = 
 
     def _reset_env(self, env: BaseUnityEnvironment):
         """Resets the environment.
@@ -229,6 +249,12 @@ class TrainerController(object):
             return env.reset(
                 train_mode=self.fast_simulation,
                 config=self.meta_curriculum.get_config(),
+            )
+        elif self.sampler_manager is not None:
+            new_config = self.sampler_manager.sample_all()
+            return env.reset(
+                train_mode=self.fast_simulation,
+                config=new_config
             )
         else:
             return env.reset(train_mode=self.fast_simulation)
@@ -279,7 +305,7 @@ class TrainerController(object):
             self._export_graph()
 
     def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
-        if self.meta_curriculum:
+        if (self.meta_curriculum):
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
                 k: len(t.reward_buffer) for (k, t) in self.trainers.items()
@@ -289,19 +315,26 @@ class TrainerController(object):
             lessons_incremented = self.meta_curriculum.increment_lessons(
                 self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
             )
+        elif (self.sampler_manager is not None):
+            reward_buff_mean = {
+                k: np.mean(t.reward_buffer) if len(t.reward_buffer) > 0 else 0.0 for (k, t) in self.trainers.items()
+            }
+            lessons_incremented = {
+                k: (t > self.min_reward) for (k, t) in reward_buff_mean.items()
+            }
         else:
             lessons_incremented = {}
 
         # If any lessons were incremented or the environment is
         # ready to be reset
-        if self.meta_curriculum and any(lessons_incremented.values()):
+        if (((self.meta_curriculum) or (self.sampler_manager is not None)) and any(lessons_incremented.values())):
             curr_info = self._reset_env(env)
             for brain_name, trainer in self.trainers.items():
                 trainer.end_episode()
             for brain_name, changed in lessons_incremented.items():
                 if changed:
                     self.trainers[brain_name].reward_buffer.clear()
-
+    
         # Decide and take an action
         take_action_vector = {}
         take_action_memories = {}
