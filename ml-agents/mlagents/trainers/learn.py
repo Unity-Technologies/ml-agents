@@ -82,8 +82,11 @@ def run_training(
             docker_target_name=docker_target_name
         )
 
+    if sampler is not None:
+        sampler = load_config(sampler)
+
     trainer_config = load_config(trainer_config_path)
-    reset_param_dict = load_config(reset_param_dict_path)
+    # reset_param_dict = load_config(reset_param_dict_path)
     env_factory = create_environment_factory(
         env_path,
         docker_target_name,

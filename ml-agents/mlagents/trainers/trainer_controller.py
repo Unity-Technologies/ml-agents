@@ -244,6 +244,13 @@ class TrainerController(object):
             lessons_incremented = self.meta_curriculum.increment_lessons(
                 self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
             )
+        elif (self.sampler_manager is not None):
+            reward_buff_mean = {
+                k: np.mean(t.reward_buffer) if len(t.reward_buffer) > 0 else 0.0 for (k, t) in self.trainers.items()
+            }
+            lessons_incremented = {
+                k: (t > self.min_reward) for (k, t) in reward_buff_mean.items()
+            }
         else:
             lessons_incremented = {}
 
