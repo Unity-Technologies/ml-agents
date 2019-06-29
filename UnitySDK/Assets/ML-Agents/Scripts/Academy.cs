@@ -83,6 +83,12 @@ namespace MLAgents
         private long totalNanoseconds = 0;
         private int totalCalls = 0;
 
+        // "Raw" times and counts, independent of Recorder
+        private long rawTicks = 0;
+        private long tickStart = 0;
+        private int rawCalls = 0;
+
+
         public TimerNode(string name)
         {
             fullName = name;
@@ -91,15 +97,21 @@ namespace MLAgents
 
             // TODO Don't create child dict until needed?
             children = new Dictionary<string, TimerNode> ();
+
         }
 
         public void Begin()
         {
             sampler.Begin();
+            tickStart = System.DateTime.Now.Ticks;
         }
 
         public void End()
         {
+            long elapsed = System.DateTime.Now.Ticks - tickStart;
+            rawTicks += elapsed;
+            tickStart = 0;
+            rawCalls++;
             sampler.End ();
         }
 
@@ -129,8 +141,9 @@ namespace MLAgents
         {
             string indent = new string (' ', 2 * level); // TODO generalize
             double totalSeconds = totalNanoseconds / 1000000000.0;
+            double totalRawSeconds = rawTicks / 10000000.0; // 100 ns per tick
             string shortName = (level == 0) ? fullName : fullName.Replace (parentName + separator, "");
-            string timerString = $"{indent}{shortName}\t{totalSeconds}s\t({totalCalls} calls)\n";
+            string timerString = $"{indent}{shortName}\t{totalSeconds}s\t({totalCalls} calls)\t\traw={totalRawSeconds}  rawCount={rawCalls}\n";
             // TODO stringbuilder? overkill?
             foreach (TimerNode c in children.Values) 
             {
@@ -815,11 +828,12 @@ namespace MLAgents
             EnvironmentStep();
         }
 
-        void LateUpdate()
+        void Update()
+        //void OnPreRender()
         {
             // TODO need a better way to udpate the singleton
-//            TimerStack.sInstance.Update ();
-//            Debug.Log (TimerStack.sInstance.DebugGetTimerString (totalStepCount));
+            //TimerStack.sInstance.Update ();
+            //Debug.Log (TimerStack.sInstance.DebugGetTimerString (totalStepCount));
         }
 
 
