@@ -9,7 +9,7 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
-from typing import Optional, Callable
+from typing import Any, Callable, Dict, Optional
 
 
 from mlagents.trainers.trainer_controller import TrainerController
@@ -21,7 +21,9 @@ from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
 
 
-def run_training(sub_id: int, run_seed: int, run_options, process_queue):
+def run_training(
+    sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue
+) -> None:
     """
     Launches training session.
     :param process_queue: Queue used to send signal back to main.
@@ -151,7 +153,7 @@ def prepare_for_docker_run(docker_target_name, env_path):
     return env_path
 
 
-def load_config(trainer_config_path):
+def load_config(trainer_config_path: str) -> Dict[str, Any]:
     try:
         with open(trainer_config_path) as data_file:
             trainer_config = yaml.safe_load(data_file)
