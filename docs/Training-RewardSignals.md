@@ -65,7 +65,20 @@ Typical Range: `0.8` - `0.995`
 
 ### The Curiosity Reward Signal
 
-The `curiosity` Reward Signal enables the Intrinsic Curiosity Module.
+The `curiosity` Reward Signal enables the Intrinsic Curiosity Module. This is an implementation 
+of the approach described in "Curiosity-driven Exploration by Self-supervised Prediction" 
+by Pathak, et al. It trains two networks:
+* an inverse model, which takes the current and next obersvation of the agent, encodes them, and
+uses the encoding to predict the action that was taken between the observations
+* a forward model, which takes the encoded current obseravation and action, and predicts the
+next encoded observation.
+
+The loss of the forward model (the difference between the predicted and actual encoded observations) is used as the intrinsic reward, so the more surprised the model is, the larger the reward will be.
+
+For more information, see
+* https://arxiv.org/abs/1705.05363
+* https://pathak22.github.io/noreward-rl/
+* https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/
 
 #### Strength 
 
