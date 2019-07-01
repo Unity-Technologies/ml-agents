@@ -139,7 +139,9 @@ class PPOTrainer(Trainer):
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
-        visual_observations: List[Any] = []  # TODO add types to brain.py methods
+        visual_observations: List[List[Any]] = [
+            []
+        ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
         memories = []
