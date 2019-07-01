@@ -1,9 +1,14 @@
 import unittest.mock as mock
 from unittest.mock import Mock, MagicMock
 import unittest
+import cloudpickle
 
-from mlagents.envs.subprocess_environment import *
-from mlagents.envs import UnityEnvironmentException, BrainInfo
+from mlagents.envs.subprocess_environment import (
+    SubprocessEnvManager,
+    EnvironmentResponse,
+    EnvironmentCommand,
+    worker,
+)
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 
 

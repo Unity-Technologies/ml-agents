@@ -88,7 +88,7 @@ class SubprocessEnvManager(EnvManager):
         self, env_factory: Callable[[int], BaseUnityEnvironment], n_env: int = 1
     ):
         self.envs: List[UnityEnvWorker] = []
-        self.env_last_steps: Dict[str, EnvironmentResponse] = {}
+        self.env_last_steps: Dict[int, EnvironmentResponse] = {}
         self.waiting = False
         for worker_id in range(n_env):
             self.envs.append(self.create_worker(worker_id, env_factory))

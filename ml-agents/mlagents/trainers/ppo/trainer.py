@@ -4,11 +4,11 @@
 
 import logging
 from collections import deque, defaultdict
-from typing import Any, List
+from typing import List, Any
 
 import numpy as np
 
-from mlagents.envs import AllBrainInfo, BrainInfo, BrainParameters
+from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
@@ -21,14 +21,7 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-        self,
-        brain: BrainParameters,
-        reward_buff_cap: int,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
+        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -129,7 +122,7 @@ class PPOTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def increment_step(self, n_steps):
+    def increment_step(self, n_steps: int) -> None:
         """
         Increment the step count of the trainer
 

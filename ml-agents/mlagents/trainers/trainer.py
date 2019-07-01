@@ -109,7 +109,7 @@ class Trainer(object):
         """
         raise UnityTrainerException("The get_step property was not implemented.")
 
-    def increment_step(self, n_steps: int):
+    def increment_step(self, n_steps: int) -> None:
         """
         Increment the step count of the trainer
         """
