@@ -21,3 +21,13 @@ repos:
         name: mypy-gym-unity
         files: "gym-unity/.*"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+    -   id: mixed-line-ending
+        exclude: >
+            (?x)^(
+                .*cs.meta|
+                .*.css
+            )$
+        args: [--fix=lf]
