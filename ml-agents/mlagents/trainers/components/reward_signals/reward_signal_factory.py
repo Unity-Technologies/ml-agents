@@ -1,6 +1,8 @@
 import logging
+from typing import Any, Dict, Type
 
 from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.components.reward_signals.reward_signal import RewardSignal
 from mlagents.trainers.components.reward_signals.extrinsic.signal import (
     ExtrinsicRewardSignal,
 )
@@ -12,16 +14,21 @@ from mlagents.trainers.policy import Policy
 logger = logging.getLogger("mlagents.trainers")
 
 
-NAME_TO_CLASS = {"extrinsic": ExtrinsicRewardSignal, "curiosity": CuriosityRewardSignal}
+NAME_TO_CLASS: Dict[str, Type[RewardSignal]] = {
+    "extrinsic": ExtrinsicRewardSignal,
+    "curiosity": CuriosityRewardSignal,
+}
 
 
-def create_reward_signal(policy: Policy, name, config_entry):
+def create_reward_signal(
+    policy: Policy, name: str, config_entry: Dict[str, Any]
+) -> RewardSignal:
     """
-    Creates a reward signal class based on the name and config entry provided as a dict. 
-    :param policy: The policy class which the reward will be applied to. 
+    Creates a reward signal class based on the name and config entry provided as a dict.
+    :param policy: The policy class which the reward will be applied to.
     :param name: The name of the reward signal
     :param config_entry: The config entries for that reward signal
-    :return: The reward signal class instantiated 
+    :return: The reward signal class instantiated
     """
     rcls = NAME_TO_CLASS.get(name)
     if not rcls:

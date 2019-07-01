@@ -4,7 +4,10 @@ from mlagents.trainers.models import LearningModel
 
 class CuriosityModel(object):
     def __init__(
-        self, policy_model: LearningModel, encoding_size=128, learning_rate=3e-4
+        self,
+        policy_model: LearningModel,
+        encoding_size: int = 128,
+        learning_rate: float = 3e-4,
     ):
         """
         Creates the curiosity model for the Curiosity reward Generator

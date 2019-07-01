@@ -8,11 +8,11 @@ class CuriosityRewardSignal(RewardSignal):
     def __init__(
         self,
         policy: Policy,
-        strength,
-        gamma,
-        encoding_size=128,
-        learning_rate=3e-4,
-        num_epoch=3,
+        strength: float,
+        gamma: float,
+        encoding_size: int = 128,
+        learning_rate: float = 3e-4,
+        num_epoch: int = 3,
     ):
         """
         Creates the Curiosity reward generator
@@ -36,7 +36,7 @@ class CuriosityRewardSignal(RewardSignal):
     def evaluate(self, current_info, next_info):
         """
         Evaluates the reward for the agents present in current_info given the next_info
-        :param current_info: The current BrainInfo. 
+        :param current_info: The current BrainInfo.
         :param next_info: The BrainInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
@@ -84,10 +84,10 @@ class CuriosityRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def update(self, update_buffer, num_sequences):
-        """ 
+        """
         Updates Curiosity model using training buffer. Divides training buffer into mini batches and performs
-        gradient descent. 
-        :param update_buffer: Update buffer from which to pull data from.  
+        gradient descent.
+        :param update_buffer: Update buffer from which to pull data from.
         :param num_sequences: Number of sequences in the update buffer.
         :return: Dict of stats that should be reported to Tensorboard.
         """
