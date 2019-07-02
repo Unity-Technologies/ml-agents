@@ -34,7 +34,6 @@ class TrainerController(object):
         train: bool,
         keep_checkpoints: int,
         lesson: Optional[int],
-        external_brains: Dict[str, BrainParameters],
         training_seed: int,
         fast_simulation: bool,
     ):
@@ -54,8 +53,6 @@ class TrainerController(object):
 
         self.model_path = model_path
         self.summaries_dir = summaries_dir
-        self.external_brains = external_brains
-        self.external_brain_names = external_brains.keys()
         self.logger = logging.getLogger("mlagents.envs")
         self.run_id = run_id
         self.save_freq = save_freq
@@ -125,13 +122,17 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
 
-    def initialize_trainers(self, trainer_config: Dict[str, Any]) -> None:
+    def initialize_trainers(
+        self,
+        trainer_config: Dict[str, Any],
+        external_brains: Dict[str, BrainParameters],
+    ) -> None:
         """
         Initialization of the trainers
         :param trainer_config: The configurations of the trainers
         """
         trainer_parameters_dict = {}
-        for brain_name in self.external_brains:
+        for brain_name in external_brains:
             trainer_parameters = trainer_config["default"].copy()
             trainer_parameters["summary_path"] = "{basedir}/{name}".format(
                 basedir=self.summaries_dir, name=str(self.run_id) + "_" + brain_name
@@ -146,10 +147,10 @@ class TrainerController(object):
                     _brain_key = trainer_config[_brain_key]
                 trainer_parameters.update(trainer_config[_brain_key])
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
-        for brain_name in self.external_brains:
+        for brain_name in external_brains:
             if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
                 self.trainers[brain_name] = OfflineBCTrainer(
-                    self.external_brains[brain_name],
+                    external_brains[brain_name],
                     trainer_parameters_dict[brain_name],
                     self.train_model,
                     self.load_model,
@@ -158,7 +159,7 @@ class TrainerController(object):
                 )
             elif trainer_parameters_dict[brain_name]["trainer"] == "online_bc":
                 self.trainers[brain_name] = OnlineBCTrainer(
-                    self.external_brains[brain_name],
+                    external_brains[brain_name],
                     trainer_parameters_dict[brain_name],
                     self.train_model,
                     self.load_model,
@@ -167,7 +168,7 @@ class TrainerController(object):
                 )
             elif trainer_parameters_dict[brain_name]["trainer"] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(
-                    self.external_brains[brain_name],
+                    external_brains[brain_name],
                     self.meta_curriculum.brains_to_curriculums[
                         brain_name
                     ].min_lesson_length
@@ -229,7 +230,7 @@ class TrainerController(object):
         tf.reset_default_graph()
 
         # Prevent a single session from taking all GPU memory.
-        self.initialize_trainers(trainer_config)
+        self.initialize_trainers(trainer_config, env.external_brains)
         for _, t in self.trainers.items():
             self.logger.info(t)
 
