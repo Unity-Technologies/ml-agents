@@ -47,7 +47,6 @@ class TrainerController(object):
         :param train: Whether to train model, or only run inference.
         :param keep_checkpoints: How many model checkpoints to keep.
         :param lesson: Start learning from this lesson.
-        :param external_brains: dictionary of external brain names to BrainInfo objects.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         """
 
