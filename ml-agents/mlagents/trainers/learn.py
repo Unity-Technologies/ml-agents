@@ -15,7 +15,9 @@ from typing import Optional, Callable
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
+from mlagents.trainers.lesson_controller import LessonController
 from mlagents.envs import UnityEnvironment
+from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
@@ -52,9 +54,9 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     fast_simulation = not bool(run_options["--slow"])
     no_graphics = run_options["--no-graphics"]
     trainer_config_path = run_options["<trainer-config-path>"]
-    sampler = run_options["--sampler"] if run_options ["--sampler"] != "None" else None
-    min_reward = int(run_options["--min_reward"])
-    min_lesson_length = int(run_options["--min_lesson_length"])
+    sampler_file_path = run_options["--sampler"] if run_options ["--sampler"] != "None" else None
+    lesson_config_path = run_options["--lesson_config"]
+
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
         model_path = "./models/{run_id}-{sub_id}".format(run_id=run_id, sub_id=sub_id)
@@ -76,11 +78,13 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
             docker_target_name=docker_target_name
         )
 
-    if sampler is not None:
-        sampler = load_config(sampler)
+    sampler = None
+    lesson_config = None
+    if sampler_file_path is not None:
+        sampler = load_config(sampler_file_path)
+        lesson_config = LessonController(lesson_config_path)
 
     trainer_config = load_config(trainer_config_path)
-    # reset_param_dict = load_config(reset_param_dict_path)
     env_factory = create_environment_factory(
         env_path,
         docker_target_name,
@@ -90,6 +94,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     )
     env = SubprocessUnityEnvironment(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
+
 
     # Create controller and begin training.
     tc = TrainerController(
@@ -106,8 +111,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         run_seed,
         fast_simulation,
         sampler,
-        min_reward,
-        min_lesson_length
+        lesson_config,
     )
 
     # Signal that environment has been launched.
@@ -252,25 +256,24 @@ def main():
       mlagents-learn --help
 
     Options:
-      --env=<file>               Name of the Unity executable [default: None].
-      --curriculum=<directory>   Curriculum json directory for environment [default: None].
-      --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
-      --lesson=<n>               Start learning from this lesson [default: 0].
-      --load                     Whether to load the model or randomly initialize [default: False].
-      --run-id=<path>            The directory name for model and summary statistics [default: ppo].
-      --num-runs=<n>             Number of concurrent training sessions [default: 1].
-      --save-freq=<n>            Frequency at which to save model [default: 50000].
-      --seed=<n>                 Random seed used for training [default: -1].
-      --slow                     Whether to run the game at training speed [default: False].
-      --train                    Whether to train model, or only run inference [default: False].
-      --base-port=<n>            Base port for environment communication [default: 5005].
-      --num-envs=<n>             Number of parallel environments to use for training [default: 1]
-      --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
-      --no-graphics              Whether to run the environment in no-graphics mode [default: False].
-      --sampler=<directory>      Reset parameter yaml directory for sampling of environment reset parameters [default: None].
-      --min_reward=<n>           Minimum amount of reward to be achieved before resetting environment in generalization training [default: 60]
-      --min_lesson_length=<n>    The minimum number of episodes that should be completed before the lesson can change. [default: 100]
-      --debug                    Whether to run ML-Agents in debug mode with detailed logging [default: False].       
+      --env=<file>                Name of the Unity executable [default: None].
+      --curriculum=<directory>    Curriculum json directory for environment [default: None].
+      --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
+      --lesson=<n>                Start learning from this lesson [default: 0].
+      --load                      Whether to load the model or randomly initialize [default: False].
+      --run-id=<path>             The directory name for model and summary statistics [default: ppo].
+      --num-runs=<n>              Number of concurrent training sessions [default: 1].
+      --save-freq=<n>             Frequency at which to save model [default: 50000].
+      --seed=<n>                  Random seed used for training [default: -1].
+      --slow                      Whether to run the game at training speed [default: False].
+      --train                     Whether to train model, or only run inference [default: False].
+      --base-port=<n>             Base port for environment communication [default: 5005].
+      --num-envs=<n>              Number of parallel environments to use for training [default: 1]
+      --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
+      --no-graphics               Whether to run the environment in no-graphics mode [default: False].
+      --sampler=<directory>       Reset parameter yaml directory for sampling of environment reset parameters [default: None].
+      --lesson_config=<directory> Lesson yaml file for controlling generalization training [default: None].
+      --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].       
     """
 
     options = docopt(_USAGE)
