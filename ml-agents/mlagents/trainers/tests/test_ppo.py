@@ -276,7 +276,7 @@ def test_rl_functions():
     np.testing.assert_array_almost_equal(returns, np.array([0.729, 0.81, 0.9, 1.0]))
 
 
-def test_trainer_increment_step_and_update_last_reward():
+def test_trainer_increment_step():
     trainer_params = {
         "trainer": "ppo",
         "batch_size": 2048,
@@ -302,26 +302,17 @@ def test_trainer_increment_step_and_update_last_reward():
         "summary_path": "./summaries/test_trainer_summary",
         "model_path": "./models/test_trainer_models/TestModel",
         "keep_checkpoints": 5,
+        "reward_signals": {"extrinsic": {"strength": 1.0, "gamma": 0.99}},
     }
     brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
 
     trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0")
     policy_mock = mock.Mock()
-    policy_mock.update_reward = mock.Mock()
     step_count = 10
     policy_mock.increment_step = mock.Mock(return_value=step_count)
     trainer.policy = policy_mock
 
-    # No rewards in trainer yet, only step increment should be called / returned
-    trainer.increment_step_and_update_last_reward(5)
-    policy_mock.update_reward.assert_not_called()
-    policy_mock.increment_step.assert_called_with(5)
-    assert trainer.step == 10
-
-    # Adding rewards to cumulative rewards, we'll also update the reward
-    trainer.stats["Environment/Cumulative Reward"] = np.array([1.0, 2.0])
-    trainer.increment_step_and_update_last_reward(5)
-    policy_mock.update_reward.assert_called_with(1.5)
+    trainer.increment_step(5)
     policy_mock.increment_step.assert_called_with(5)
     assert trainer.step == 10
 

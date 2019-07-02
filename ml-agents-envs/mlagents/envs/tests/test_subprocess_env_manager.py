@@ -2,8 +2,9 @@ import unittest.mock as mock
 from unittest.mock import Mock, MagicMock
 import unittest
 import cloudpickle
+from mlagents.envs.subprocess_env_manager import StepInfo
 
-from mlagents.envs.subprocess_environment import (
+from mlagents.envs.subprocess_env_manager import (
     SubprocessEnvManager,
     EnvironmentResponse,
     EnvironmentCommand,
@@ -25,7 +26,7 @@ class MockEnvWorker:
         self.recv = Mock(return_value=resp)
 
 
-class SubprocessEnvironmentTest(unittest.TestCase):
+class SubprocessEnvManagerTest(unittest.TestCase):
     def test_environments_are_created(self):
         SubprocessEnvManager.create_worker = MagicMock()
         env = SubprocessEnvManager(mock_env_factory, 2)
@@ -81,19 +82,26 @@ class SubprocessEnvironmentTest(unittest.TestCase):
             env.send.assert_called_with("reset", (params, True))
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
-            self.assertEqual(manager.env_last_steps[i], i)
-        assert res == [0, 1, 2, 3]
+            self.assertEqual(manager.env_last_steps[i].current_all_brain_info, i)
+        assert res == manager.env_last_steps
 
     def test_step_takes_steps_for_all_envs(self):
         SubprocessEnvManager.create_worker = lambda em, worker_id, env_factory: MockEnvWorker(
             worker_id, EnvironmentResponse("step", worker_id, worker_id)
         )
         manager = SubprocessEnvManager(mock_env_factory, 2)
-        steps = [("a0", "m0", "t0", "v0"), ("a1", "m1", "t1", "v1")]
-        res = manager.step(steps)
+        step_mock = Mock()
+        last_steps = [Mock(), Mock()]
+        manager.env_last_steps = [last_steps[0], last_steps[1]]
+        manager._take_step = Mock(return_value=step_mock)
+        res = manager.step()
         for i, env in enumerate(manager.envs):
-            env.send.assert_called_with("step", steps[i])
+            env.send.assert_called_with("step", step_mock)
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
-            self.assertEqual(manager.env_last_steps[i], i)
-        assert res == [0, 1]
+            self.assertEqual(manager.env_last_steps[i].current_all_brain_info, i)
+            self.assertEqual(
+                manager.env_last_steps[i].last_all_brain_info,
+                last_steps[i].current_all_brain_info,
+            )
+        assert res == manager.env_last_steps

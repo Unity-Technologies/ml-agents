@@ -10,8 +10,9 @@ import numpy as np
 import tensorflow as tf
 from time import time
 
-from mlagents.envs import BrainParameters, AllBrainInfo
-from mlagents.envs.subprocess_environment import SubprocessEnvManager
+from mlagents.envs import BrainParameters
+from mlagents.envs.env_manager import StepInfo
+from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer, TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
@@ -199,7 +200,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
-    def _reset_env(self, env: SubprocessEnvManager) -> List[AllBrainInfo]:
+    def _reset_env(self, env: SubprocessEnvManager) -> List[StepInfo]:
         """Resets the environment.
 
         Returns:
@@ -236,6 +237,8 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
         try:
+            for brain_name, trainer in self.trainers.items():
+                env_manager.set_policy(brain_name, trainer.policy)
             self._reset_env(env_manager)
             while (
                 any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
@@ -300,47 +303,22 @@ class TrainerController(object):
                 if changed:
                     self.trainers[brain_name].reward_buffer.clear()
 
-        last_brain_infos = env.get_last_steps()
-        new_steps = []
-        new_take_action_outputs = []
-        for last_brain_info in last_brain_infos:
-            # Decide and take an action
-            take_action_vector = {}
-            take_action_memories = {}
-            take_action_text = {}
-            take_action_value = {}
-            take_action_outputs = {}
-            for brain_name, trainer in self.trainers.items():
-                action_info = trainer.get_action(last_brain_info[brain_name])
-                take_action_vector[brain_name] = action_info.action
-                take_action_memories[brain_name] = action_info.memory
-                take_action_text[brain_name] = action_info.text
-                take_action_value[brain_name] = action_info.value
-                take_action_outputs[brain_name] = action_info.outputs
-            new_take_action_outputs.append(take_action_outputs)
-            new_steps.append(
-                (
-                    take_action_vector,
-                    take_action_memories,
-                    take_action_text,
-                    take_action_value,
-                )
-            )
-
         time_start_step = time()
-        new_brain_infos = env.step(new_steps)
+        new_step_infos = env.step()
         delta_time_step = time() - time_start_step
 
-        for i, new_info in enumerate(new_brain_infos):
+        for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
                 trainer.add_experiences(
-                    last_brain_infos[i],
-                    new_info,
-                    new_take_action_outputs[i][brain_name],
+                    step_info.last_all_brain_info,
+                    step_info.current_all_brain_info,
+                    step_info.all_action_infos[brain_name].outputs,
                 )
-                trainer.process_experiences(last_brain_infos[i], new_info)
+                trainer.process_experiences(
+                    step_info.last_all_brain_info, step_info.current_all_brain_info
+                )
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
@@ -350,7 +328,8 @@ class TrainerController(object):
                 and trainer.get_step <= trainer.get_max_steps
             ):
                 if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                    trainer.increment_step(len(new_steps))
+                    trainer.increment_step(len(new_step_infos))
                 # Perform gradient descent with experience buffer
                 trainer.update_policy()
-        return len(new_steps)
+                env.set_policy(brain_name, trainer.policy)
+        return len(new_step_infos)

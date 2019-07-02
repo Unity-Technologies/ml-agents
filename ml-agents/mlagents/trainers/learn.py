@@ -18,7 +18,7 @@ from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_environment import SubprocessEnvManager
+from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
 
 def run_training(

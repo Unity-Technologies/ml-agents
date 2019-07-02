@@ -4,8 +4,7 @@ import os
 import tensorflow as tf
 import numpy as np
 
-from mlagents.envs import UnityException, AllBrainInfo, BrainInfo
-from mlagents.trainers import ActionInfo, ActionInfoOutputs
+from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
 from mlagents.trainers import TrainerMetrics
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -114,17 +113,6 @@ class Trainer(object):
         Increment the step count of the trainer
         """
         raise UnityTrainerException("The increment_step method was not implemented.")
-
-    def get_action(self, curr_info: BrainInfo) -> ActionInfo:
-        """
-        Get an action using this trainer's current policy.
-        :param curr_info: Current BrainInfo.
-        :return: The ActionInfo given by the policy given the BrainInfo.
-        """
-        self.trainer_metrics.start_experience_collection_timer()
-        action = self.policy.get_action(curr_info)
-        self.trainer_metrics.end_experience_collection_timer()
-        return action
 
     def add_experiences(
         self,
