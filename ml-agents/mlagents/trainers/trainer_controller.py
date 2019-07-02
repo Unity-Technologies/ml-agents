@@ -12,15 +12,11 @@ import numpy as np
 import tensorflow as tf
 from time import time
 
-"""
-[TODO:] Figure out the file structure and import the Sampling class
-from sampler_class import ParameterManager
-"""
-
 from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer
+from mlagents.trainers.lesson_controller import LessonController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
@@ -45,8 +41,7 @@ class TrainerController(object):
         training_seed: int,
         fast_simulation: bool,
         reset_param_dict,
-        min_reward:int,
-        min_lesson_length: int,
+        lesson_controller: Optional[LessonController],
     ):
         """
         :param model_path: Path to save the model.
@@ -61,6 +56,9 @@ class TrainerController(object):
         :param external_brains: dictionary of external brain names to BrainInfo objects.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         :param reset_param_dict: dictionary of reset parameters used for generalization training
+        :param lesson_controller_
+
+        [REPLACING]
         :param min_reward: Reward to be obtained before sampling reset parameter for generalization training
         :param min_lesson_length: The minimum number of episodes that should be completed before the lesson can change.
         """
@@ -86,9 +84,7 @@ class TrainerController(object):
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.sampler_manager = SamplerManager(reset_param_dict) if reset_param_dict is not None else None
-        # self.min_reward = min_reward
-        # self.min_lesson_length = min_lesson_length
-        self.num_episodes = 0 if self.sampler_manager is not None else 0
+        self.lesson_controller = lesson_controller
 
     def _get_measure_vals(self):
         if self.meta_curriculum:
@@ -107,6 +103,21 @@ class TrainerController(object):
                     measure_val = np.mean(self.trainers[brain_name].reward_buffer)
                     brain_names_to_measure_vals[brain_name] = measure_val
             return brain_names_to_measure_vals
+
+        elif ((self.sampler_manager is not None) and (self.lesson_controller is not None)):
+            brain_names_to_measure_vals = {}
+            for brain_name, trainer in self.trainers.items():
+                if (self.lesson_controller.measure == "progress"):
+                    measure_val = (
+                        trainer.get_step
+                        / trainer.get_max_steps
+                    )
+                    brain_names_to_measure_vals[brain_name]  = measure_val
+                elif (self.lesson_controller.measure == "reward"):
+                    measure_val = np.mean(trainer.reward_buffer)
+                    brain_names_to_measure_vals[brain_name] = measure_val
+            return brain_names_to_measure_vals
+
         else:
             return None
 
@@ -190,7 +201,7 @@ class TrainerController(object):
                         brain_name
                     ].min_lesson_length
                     if self.meta_curriculum
-                    else self.min_lesson_length
+                    else self.lesson_controller.min_lesson_length
                         if self.sampler_manager is not None
                         else 0,
                     trainer_parameters_dict[brain_name],
@@ -233,10 +244,6 @@ class TrainerController(object):
                         k
                     )
                 )
-
-    # @staticmethod
-    # def _create_sampler(reset_param_dict):
-    #     self.sampler = 
 
     def _reset_env(self, env: BaseUnityEnvironment):
         """Resets the environment.
@@ -305,23 +312,21 @@ class TrainerController(object):
             self._export_graph()
 
     def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
-        if (self.meta_curriculum):
+        if ((self.meta_curriculum) or (self.sampler_manager is not None)):
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
                 k: len(t.reward_buffer) for (k, t) in self.trainers.items()
             }
             # Attempt to increment the lessons of the brains who
             # were ready.
-            lessons_incremented = self.meta_curriculum.increment_lessons(
-                self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
-            )
-        elif (self.sampler_manager is not None):
-            reward_buff_mean = {
-                k: np.mean(t.reward_buffer) if len(t.reward_buffer) > 0 else 0.0 for (k, t) in self.trainers.items()
-            }
-            lessons_incremented = {
-                k: (t > self.min_reward) for (k, t) in reward_buff_mean.items()
-            }
+            if (self.meta_curriculum):
+                lessons_incremented = self.meta_curriculum.increment_lessons(
+                    self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
+                )
+            elif ((self.sampler_manager is not None) and (self.lesson_controller is not None)):
+                lessons_incremented = self.lesson_controller.check_change_lesson(
+                    self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
+                )
         else:
             lessons_incremented = {}
 
