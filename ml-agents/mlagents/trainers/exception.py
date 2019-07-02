@@ -23,3 +23,12 @@ class MetaCurriculumError(TrainerError):
     """
     Any error related to the configuration of a metacurriculum.
     """
+
+    pass
+
+class LessonControllerError(TrainerError):
+    """
+    Any error related to the configuration of lesson controller
+    """
+
+    pass
