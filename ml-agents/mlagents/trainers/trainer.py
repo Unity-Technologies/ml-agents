@@ -109,21 +109,11 @@ class Trainer(object):
         """
         raise UnityTrainerException("The get_step property was not implemented.")
 
-    @property
-    def get_last_reward(self):
+    def increment_step(self):
         """
-        Returns the last reward the trainer has had
-        :return: the new last reward
+        Increment the step count of the trainer
         """
-        raise UnityTrainerException("The get_last_reward property was not implemented.")
-
-    def increment_step_and_update_last_reward(self):
-        """
-        Increment the step count of the trainer and updates the last reward
-        """
-        raise UnityTrainerException(
-            "The increment_step_and_update_last_reward method was not implemented."
-        )
+        raise UnityTrainerException("The increment_step method was not implemented.")
 
     def get_action(self, curr_info: BrainInfo) -> ActionInfo:
         """

@@ -122,13 +122,10 @@ class PPOTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def increment_step_and_update_last_reward(self):
+    def increment_step(self):
         """
-        Increment the step count of the trainer and Updates the last reward
+        Increment the step count of the trainer
         """
-        if self.stats["Environment/Cumulative Reward"]:
-            mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
-            self.policy.update_reward(mean_reward)
         self.policy.increment_step()
         self.step = self.policy.get_current_step()
 
