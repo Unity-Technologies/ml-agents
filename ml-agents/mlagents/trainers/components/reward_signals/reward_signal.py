@@ -1,11 +1,15 @@
 import logging
-from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.policy import Policy
+from typing import Any, Dict, List
 from collections import namedtuple
 import numpy as np
 import abc
 
 import tensorflow as tf
+
+from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.policy import Policy
+from mlagents.trainers.buffer import Buffer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -32,19 +36,21 @@ class RewardSignal(abc.ABC):
         self.policy = policy
         self.strength = strength
 
-    def evaluate(self, current_info, next_info):
+    def evaluate(
+        self, current_info: BrainInfo, next_info: BrainInfo
+    ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
         :param next_info: The BrainInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
-        return (
+        return RewardSignalResult(
             self.strength * np.zeros(len(current_info.agents)),
             np.zeros(len(current_info.agents)),
         )
 
-    def update(self, update_buffer, n_sequences):
+    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), update that model.
         :param update_buffer: An AgentBuffer that contains the live data from which to update.
@@ -54,7 +60,9 @@ class RewardSignal(abc.ABC):
         return {}
 
     @classmethod
-    def check_config(cls, config_dict, param_keys=None):
+    def check_config(
+        cls, config_dict: Dict[str, Any], param_keys: List[str] = None
+    ) -> None:
         """
         Check the config dict, and throw an error if there are missing hyperparameters.
         """

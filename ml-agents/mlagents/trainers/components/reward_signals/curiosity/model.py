@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
 
@@ -22,7 +23,9 @@ class CuriosityModel(object):
         self.create_forward_model(encoded_state, encoded_next_state)
         self.create_loss(learning_rate)
 
-    def create_curiosity_encoders(self):
+        self.next_visual_in: List[tf.Tensor] = []
+
+    def create_curiosity_encoders(self) -> Tuple[tf.Tensor, tf.Tensor]:
         """
         Creates state encoders for current and future observations.
         Used for implementation of ﻿Curiosity-driven Exploration by Self-supervised Prediction
@@ -104,7 +107,9 @@ class CuriosityModel(object):
         encoded_next_state = tf.concat(encoded_next_state_list, axis=1)
         return encoded_state, encoded_next_state
 
-    def create_inverse_model(self, encoded_state, encoded_next_state):
+    def create_inverse_model(
+        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
+    ) -> None:
         """
         Creates inverse model TensorFlow ops for Curiosity module.
         Predicts action taken given current and future encoded states.
@@ -142,7 +147,9 @@ class CuriosityModel(object):
                 tf.dynamic_partition(cross_entropy, self.policy_model.mask, 2)[1]
             )
 
-    def create_forward_model(self, encoded_state, encoded_next_state):
+    def create_forward_model(
+        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
+    ) -> None:
         """
         Creates forward model TensorFlow ops for Curiosity module.
         Predicts encoded future state based on encoded current state and given action.
@@ -169,7 +176,7 @@ class CuriosityModel(object):
             tf.dynamic_partition(squared_difference, self.policy_model.mask, 2)[1]
         )
 
-    def create_loss(self, learning_rate):
+    def create_loss(self, learning_rate: float) -> None:
         """
         Creates the loss node of the model as well as the update_batch optimizer to update the model.
         :param learning_rate: The learning rate for the optimizer.
