@@ -30,13 +30,9 @@ BananaLearning:
 
 BouncerLearning:
     normalize: true
-    beta: 0.0
     max_steps: 5.0e5
-    batch_size: 32
-    buffer_size: 512
     num_layers: 2
     hidden_units: 64
-    summary_freq: 1000
 
 PushBlockLearning:
     max_steps: 5.0e4
@@ -103,7 +99,7 @@ PyramidsLearning:
     buffer_size: 2048
     hidden_units: 512
     num_layers: 2
-    beta: 0.0
+    beta: 1.0e-2
     max_steps: 5.0e5
     num_epoch: 3
     reward_signals:
@@ -161,11 +157,9 @@ TennisLearning:
 
 CrawlerStaticLearning:
     normalize: true
-    extrinsic_strength: 0.0
-    #demo_path: ./demos/CrawlerDemo.demo 
     num_epoch: 3
     time_horizon: 1000
-    batch_size: 1024
+    batch_size: 2024
     buffer_size: 20240
     max_steps: 1e6
     summary_freq: 3000
@@ -178,7 +172,6 @@ CrawlerStaticLearning:
 
 CrawlerDynamicLearning:
     normalize: true
-    beta: 0.0
     num_epoch: 3
     time_horizon: 1000
     batch_size: 2024
