@@ -1,15 +1,13 @@
-import os
 import yaml
 import math
+import logging
 
 from .exception import LessonControllerError
-
-import logging
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class LessonController(object):
+class LessonController:
     def __init__(self, location):
         """
         Initializes a Curriculum object.
@@ -18,28 +16,32 @@ class LessonController(object):
         self.measure = None
         try:
             with open(location) as data_file:
-                self.data = yaml.load(data_file)
+                data = yaml.load(data_file)
         except IOError:
             raise LessonControllerError("The file {0} could not be found.".format(location))
         except UnicodeDecodeError:
             raise LessonControllerError("There was an error decoding {}".format(location))
         self.smoothing_value = 0
-        self.check_keys(location)
-        self.measure = self.data["measure"]
-        self.thresholds = self.data["thresholds"]
-        self.min_lesson_length = self.data["min_lesson_length"]
+        self.check_keys(data, location)
+        self.measure = data["measure"]
+        self.thresholds = data["thresholds"]
+        self.min_lesson_length = data["min_lesson_length"]
+        self.signal_smoothing = data["signal_smoothing"]
         self.max_lesson_num = len(self.thresholds)
         self._lesson_num = 0
+        self.test_lesson_length = (data["test_lesson_length"] 
+                                if "test_lesson_length" in data 
+                                else 1000)
 
 
-    def check_keys(self, location):
+    def check_keys(self, data, location):
         for key in [
             "measure",
             "thresholds",
             "min_lesson_length",
             "signal_smoothing",
         ]:
-            if key not in self.data:
+            if key not in data:
                 raise LessonControllerError(
                     "{0} does not contain a " "{1} field.".format(location, key)
                 )
@@ -76,14 +78,14 @@ class LessonController(object):
         :param measure_val: A dict of brain name to measure value.
         :return Whether the lesson was incremented.
         """
-        if not self.data or not measure_val or math.isnan(measure_val):
+        if (not measure_val) or math.isnan(measure_val):
             return False
-        if self.data["signal_smoothing"]:
+        if self.signal_smoothing:
             measure_val = self.smoothing_value * 0.25 + 0.75 * measure_val
             self.smoothing_value = measure_val
 
         if (self.lesson_num < self.max_lesson_num):
-            if measure_val >= self.data["thresholds"][self.lesson_num]:
+            if measure_val >= self.thresholds[self.lesson_num]:
                     self.lesson_num += 1
                     logger.info(
                         "Lesson changed. Now in lesson {0}".format(
