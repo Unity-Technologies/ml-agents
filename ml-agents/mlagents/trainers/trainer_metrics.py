@@ -4,7 +4,7 @@ import csv
 from time import time, perf_counter
 
 from contextlib import contextmanager
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Generator
 import json
 
 
@@ -138,27 +138,23 @@ class TrainerMetrics:
 
 
 class TimerNode:
-    __slots__ = ["children", "_start_time", "total", "count"]
+    __slots__ = ["children", "total", "count"]
 
     def __init__(self):
         self.children: Dict[str, "TimerNode"] = {}
-        self._start_time: float = -1.0
         self.total: float = 0.0
         self.count: int = 0
 
-    def _start(self):
-        assert not self._is_running(), "calling start() on an already-running timer"
-        self._start_time = perf_counter()
+    def get_child(self, name: str) -> "TimerNode":
+        child = self.children.get(name)
+        if child is None:
+            child = TimerNode()
+            self.children[name] = child
+        return child
 
-    def _end(self):
-        assert self._is_running(), "calling _end on a stopped timer"
-        elapsed = perf_counter() - self._start_time
+    def add_time(self, elapsed: float) -> None:
         self.total += elapsed
         self.count += 1
-        self._start_time = -1.0
-
-    def _is_running(self):
-        return self._start_time != -1.0
 
 
 class TimerStack:
@@ -166,24 +162,19 @@ class TimerStack:
 
     def __init__(self):
         self.root = TimerNode()
-        self.root._start()
         self.stack = [self.root]
 
-    def push(self, name):
+    def push(self, name: str) -> TimerNode:
         current: TimerNode = self.stack[-1]
-        next_timer = current.children.get(name)
-        if next_timer is None:
-            next_timer = TimerNode()
-            current.children[name] = next_timer
+        next_timer = current.get_child(name)
         self.stack.append(next_timer)
         return next_timer
 
-    def pop(self):
+    def pop(self) -> None:
         self.stack.pop()
 
     def get_timing_tree(self, node: TimerNode = None) -> Dict[str, Any]:
         if node is None:
-            self.root._end()
             node = self.root
 
         res: Dict[str, Any] = {"total": node.total, "count": node.count}
@@ -209,13 +200,22 @@ _global_timer_stack = TimerStack()
 
 
 @contextmanager
-def hierarchical_timer(name, timer_stack=_global_timer_stack):
-    next_timer: TimerNode = timer_stack.push(name)
-    next_timer._start()
-    yield next_timer
-    next_timer._end()
-    timer_stack.pop()
+def hierarchical_timer(
+    name: str, timer_stack: TimerStack = _global_timer_stack
+) -> Generator:
+    timer_node = timer_stack.push(name)
+    start_time = perf_counter()
+
+    try:
+        # The wrapped code block will run here.
+        yield
+    finally:
+        # This will trigger either when the context manager exits, or an exception is raised.
+        # We'll accumulate the time, and the exception (if any) gets raised automatically.
+        elapsed = perf_counter() - start_time
+        timer_node.add_time(elapsed)
+        timer_stack.pop()
 
 
-def get_timer_tree(timer_stack=_global_timer_stack):
+def get_timer_tree(timer_stack: TimerStack = _global_timer_stack) -> Dict[str, Any]:
     return timer_stack.get_timing_tree()
