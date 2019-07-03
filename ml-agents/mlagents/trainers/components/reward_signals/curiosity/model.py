@@ -38,7 +38,7 @@ class CuriosityModel(object):
             next_visual_encoders = []
             for i in range(self.policy_model.vis_obs_size):
                 # Create input ops for next (t+1) visual observations.
-                next_visual_input = self.policy_model.create_visual_input(
+                next_visual_input = LearningModel.create_visual_input(
                     self.policy_model.brain.camera_resolutions[i],
                     name="next_visual_observation_" + str(i),
                 )
