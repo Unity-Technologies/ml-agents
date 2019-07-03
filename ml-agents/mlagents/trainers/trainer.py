@@ -5,7 +5,7 @@ import tensorflow as tf
 import numpy as np
 
 from mlagents.envs import UnityException, AllBrainInfo, BrainInfo
-from mlagents.trainers import ActionInfo
+from mlagents.trainers import ActionInfo, ActionInfoOutputs
 from mlagents.trainers import TrainerMetrics
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -56,6 +56,28 @@ class Trainer(object):
                     "The hyper-parameter {0} could not be found for the {1} trainer of "
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
+
+    def dict_to_str(self, param_dict, num_tabs):
+        """
+        Takes a parameter dictionary and converts it to a human-readable string.
+        Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
+        param: param_dict: A Dictionary of key, value parameters. 
+        return: A string version of this dictionary.
+        """
+        if not isinstance(param_dict, dict):
+            return param_dict
+        else:
+            append_newline = "\n" if num_tabs > 0 else ""
+            return append_newline + "\n".join(
+                [
+                    "\t"
+                    + "  " * num_tabs
+                    + "{0}:\t{1}".format(
+                        x, self.dict_to_str(param_dict[x], num_tabs + 1)
+                    )
+                    for x in param_dict
+                ]
+            )
 
     @property
     def parameters(self):
@@ -115,8 +137,11 @@ class Trainer(object):
         return action
 
     def add_experiences(
-        self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs
-    ):
+        self,
+        curr_info: AllBrainInfo,
+        next_info: AllBrainInfo,
+        take_action_outputs: ActionInfoOutputs,
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_info: Current AllBrainInfo.
@@ -125,7 +150,9 @@ class Trainer(object):
         """
         raise UnityTrainerException("The add_experiences method was not implemented.")
 
-    def process_experiences(self, current_info: AllBrainInfo, next_info: AllBrainInfo):
+    def process_experiences(
+        self, current_info: AllBrainInfo, next_info: AllBrainInfo
+    ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.

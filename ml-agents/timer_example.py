@@ -10,10 +10,10 @@ import json
 # print(root)
 
 with hierarchical_timer("foo"):
-    time.sleep(.1)
+    time.sleep(0.1)
     for i in range(3):
         with hierarchical_timer("bar"):
-            time.sleep(.05)
-    time.sleep(.1)
+            time.sleep(0.05)
+    time.sleep(0.1)
 
 print(json.dumps(_global_timer_stack.get_timing_tree(), indent=2))

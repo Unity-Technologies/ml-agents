@@ -4,7 +4,8 @@ import os
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects import *
-from google.protobuf.internal.decoder import _DecodeVarint32
+from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -29,6 +30,9 @@ def make_demo_buffer(brain_infos, brain_params, sequence_length):
                 current_brain_info.vector_observations[0]
             )
         demo_buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
+        demo_buffer[0]["prev_action"].append(
+            current_brain_info.previous_vector_actions[0]
+        )
         if next_brain_info.local_done[0]:
             demo_buffer.append_update_buffer(
                 0, batch_size=None, training_length=sequence_length
@@ -61,10 +65,17 @@ def load_demonstration(file_path):
 
     # First 32 bytes of file dedicated to meta-data.
     INITIAL_POS = 33
-
-    if not os.path.isfile(file_path):
+    file_paths = []
+    if os.path.isdir(file_path):
+        all_files = os.listdir(file_path)
+        for _file in all_files:
+            if _file.endswith(".demo"):
+                file_paths.append(_file)
+    elif os.path.isfile(file_path):
+        file_paths.append(file_path)
+    else:
         raise FileNotFoundError(
-            "The demonstration file {} does not exist.".format(file_path)
+            "The demonstration file or directory {} does not exist.".format(file_path)
         )
     file_extension = pathlib.Path(file_path).suffix
     if file_extension != ".demo":
@@ -75,28 +86,29 @@ def load_demonstration(file_path):
 
     brain_params = None
     brain_infos = []
-    data = open(file_path, "rb").read()
-    next_pos, pos, obs_decoded = 0, 0, 0
-    total_expected = 0
-    while pos < len(data):
-        next_pos, pos = _DecodeVarint32(data, pos)
-        if obs_decoded == 0:
-            meta_data_proto = DemonstrationMetaProto()
-            meta_data_proto.ParseFromString(data[pos : pos + next_pos])
-            total_expected = meta_data_proto.number_steps
-            pos = INITIAL_POS
-        if obs_decoded == 1:
-            brain_param_proto = BrainParametersProto()
-            brain_param_proto.ParseFromString(data[pos : pos + next_pos])
-            brain_params = BrainParameters.from_proto(brain_param_proto)
-            pos += next_pos
-        if obs_decoded > 1:
-            agent_info = AgentInfoProto()
-            agent_info.ParseFromString(data[pos : pos + next_pos])
-            brain_info = BrainInfo.from_agent_proto([agent_info], brain_params)
-            brain_infos.append(brain_info)
-            if len(brain_infos) == total_expected:
-                break
-            pos += next_pos
-        obs_decoded += 1
+    for _file_path in file_paths:
+        data = open(_file_path, "rb").read()
+        next_pos, pos, obs_decoded = 0, 0, 0
+        total_expected = 0
+        while pos < len(data):
+            next_pos, pos = _DecodeVarint32(data, pos)
+            if obs_decoded == 0:
+                meta_data_proto = DemonstrationMetaProto()
+                meta_data_proto.ParseFromString(data[pos : pos + next_pos])
+                total_expected = meta_data_proto.number_steps
+                pos = INITIAL_POS
+            if obs_decoded == 1:
+                brain_param_proto = BrainParametersProto()
+                brain_param_proto.ParseFromString(data[pos : pos + next_pos])
+                brain_params = BrainParameters.from_proto(brain_param_proto)
+                pos += next_pos
+            if obs_decoded > 1:
+                agent_info = AgentInfoProto()
+                agent_info.ParseFromString(data[pos : pos + next_pos])
+                brain_info = BrainInfo.from_agent_proto([agent_info], brain_params)
+                brain_infos.append(brain_info)
+                if len(brain_infos) == total_expected:
+                    break
+                pos += next_pos
+            obs_decoded += 1
     return brain_params, brain_infos, total_expected

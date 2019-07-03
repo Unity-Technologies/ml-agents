@@ -15,7 +15,7 @@ from time import time
 from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.trainers import Trainer
+from mlagents.trainers import Trainer, TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
@@ -126,7 +126,7 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
 
-    def initialize_trainers(self, trainer_config: Dict[str, Dict[str, str]]):
+    def initialize_trainers(self, trainer_config: Dict[str, Any]) -> None:
         """
         Initialization of the trainers
         :param trainer_config: The configurations of the trainers
@@ -142,11 +142,10 @@ class TrainerController(object):
             )
             trainer_parameters["keep_checkpoints"] = self.keep_checkpoints
             if brain_name in trainer_config:
-                _brain_key = brain_name
+                _brain_key: Any = brain_name
                 while not isinstance(trainer_config[_brain_key], dict):
                     _brain_key = trainer_config[_brain_key]
-                for k in trainer_config[_brain_key]:
-                    trainer_parameters[k] = trainer_config[_brain_key][k]
+                trainer_parameters.update(trainer_config[_brain_key])
             trainer_parameters_dict[brain_name] = trainer_parameters.copy()
         for brain_name in self.external_brains:
             if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
@@ -204,7 +203,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
-    def _reset_env(self, env: BaseUnityEnvironment):
+    def _reset_env(self, env: BaseUnityEnvironment) -> AllBrainInfo:
         """Resets the environment.
 
         Returns:
@@ -219,7 +218,9 @@ class TrainerController(object):
         else:
             return env.reset(train_mode=self.fast_simulation)
 
-    def start_learning(self, env: BaseUnityEnvironment, trainer_config):
+    def start_learning(
+        self, env: BaseUnityEnvironment, trainer_config: Dict[str, Any]
+    ) -> None:
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         if self.meta_curriculum is not None:
@@ -265,7 +266,9 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
 
-    def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
+    def take_step(
+        self, env: BaseUnityEnvironment, curr_info: AllBrainInfo
+    ) -> AllBrainInfo:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
@@ -320,7 +323,7 @@ class TrainerController(object):
                     curr_info, new_info, take_action_outputs[brain_name]
                 )
             with hierarchical_timer("process_experiences"):
-                    trainer.process_experiences(curr_info, new_info)
+                trainer.process_experiences(curr_info, new_info)
             if (
                 trainer.is_ready_update()
                 and self.train_model

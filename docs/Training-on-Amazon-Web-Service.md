@@ -14,7 +14,7 @@ headless mode, you need to enable X Server.
 After launching your EC2 instance using the ami and ssh into it, run the 
 following commands to enable it:
 
-```console
+```sh
 # Start the X Server, press Enter to come to the command line
 $ sudo /usr/bin/X :0 &
 
@@ -88,7 +88,7 @@ linux executables which use visual observations.
 
 #### Install and setup Xorg:
 
-    ```console
+    ```sh
     # Install Xorg
     $ sudo apt-get update
     $ sudo apt-get install -y xserver-xorg mesa-utils
@@ -107,7 +107,7 @@ linux executables which use visual observations.
 
 #### Update and setup Nvidia driver:
 
-    ```console
+    ```sh
     # Download and install the latest Nvidia driver for ubuntu
     # Please refer to http://download.nvidia.com/XFree86/Linux-#x86_64/latest.txt     
     $ wget http://download.nvidia.com/XFree86/Linux-x86_64/390.87/NVIDIA-Linux-x86_64-390.87.run
@@ -122,13 +122,13 @@ linux executables which use visual observations.
 
 #### Restart the EC2 instance:
 
-    ```console
+    ```sh
     sudo reboot now
     ```
 
 #### Make sure there are no Xorg processes running:
 
-   ```console
+   ```sh
    # Kill any possible running Xorg processes
    # Note that you might have to run this command multiple times depending on
    # how Xorg is configured.
@@ -175,7 +175,7 @@ linux executables which use visual observations.
 
 #### Ensure the Xorg is correctly configured:
 
-    ```console
+    ```sh
     # For more information on glxgears, see ftp://www.x.org/pub/X11R6.8.1/doc/glxgears.1.html.
     $ glxgears
     # If Xorg is configured correctly, you should see the following message
@@ -201,12 +201,12 @@ Headless Mode, you have to setup the X Server to enable training.)
 6. Upload the executable to your EC2 instance within `ml-agents` folder.
 7. Change the permissions of the executable.
 
-    ```console
+    ```sh
     chmod +x <your_env>.x86_64
     ```
 8. (Without Headless Mode) Start X Server and use it for display:
 
-    ```console
+    ```sh
     # Start the X Server, press Enter to come back to the command line
     $ sudo /usr/bin/X :0 &
 
@@ -240,7 +240,7 @@ Headless Mode, you have to setup the X Server to enable training.)
 
 If you've built your Linux executable, but forget to copy over the corresponding <Executable_Name>_Data folder, you will see error message like the following: 
 
-```console
+```sh
 Set current directory to /home/ubuntu/ml-agents/ml-agents
 Found path: /home/ubuntu/ml-agents/ml-agents/3dball_linux.x86_64
 no boot config - using default values
@@ -275,13 +275,13 @@ It would be also really helpful to check your /home/ubuntu/.config/unity3d/<Some
 
 When you execute:
 
-```console
+```sh
 sudo /usr/bin/X :0 &
 ```
 
 You might see something like:
 
-```console
+```sh
 X.Org X Server 1.18.4
 ...
 (==) Log file: "/var/log/Xorg.0.log", Time: Thu Oct 11 21:10:38 2018
@@ -301,13 +301,13 @@ Please consult the The X.Org Foundation support
 
 And when you execute:
 
-```console
+```sh
 nvidia-smi
 ```
 
 You might see something like:
 
-```console
+```sh
 NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 ```
 This means the NVIDIA's driver needs to be updated. Refer to [this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver) for more information. 

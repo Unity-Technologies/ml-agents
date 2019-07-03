@@ -15,6 +15,15 @@ namespace MLAgents
 
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
+        /// Each ray in the rayAngles array adds a sublist of data to the observation.
+        /// The sublist contains the observation data for a single ray. The list is composed of the following:
+        /// 1. A one-hot encoding for detectable objects. For example, if detectableObjects.Length = n, the
+        ///    first n elements of the sublist will be a one-hot encoding of the detectableObject that was hit, or
+        ///    all zeroes otherwise.
+        /// 2. The 'length' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
+        ///    something (detectable or not).
+        /// 3. The 'length+1' element of the sublist will contain the normalised distance to the object hit.
+        /// NOTE: Only objects with tags in the detectableObjects array will have a distance set.
         /// </summary>
         /// <returns>The partial vector observation corresponding to the set of rays</returns>
         /// <param name="rayDistance">Radius of rays</param>

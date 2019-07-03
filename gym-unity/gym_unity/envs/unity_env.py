@@ -28,13 +28,13 @@ class UnityEnv(gym.Env):
     def __init__(
         self,
         environment_filename: str,
-        worker_id=0,
-        use_visual=False,
-        uint8_visual=False,
-        multiagent=False,
-        flatten_branched=False,
-        no_graphics=False,
-        allow_multiple_visual_obs=False,
+        worker_id: int = 0,
+        use_visual: bool = False,
+        uint8_visual: bool = False,
+        multiagent: bool = False,
+        flatten_branched: bool = False,
+        no_graphics: bool = False,
+        allow_multiple_visual_obs: bool = False,
     ):
         """
         Environment initialization
