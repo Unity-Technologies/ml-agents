@@ -212,26 +212,55 @@ class LearningModel(object):
         :param num_layers: number of hidden layers to create.
         :return: List of hidden layer tensors.
         """
+        # channel for each stack
+        n_channels = [16, 32, 32]
+        # number of residual blocks
+        n_blocks = 2
+
         with tf.variable_scope(scope):
-            conv1 = tf.layers.conv2d(
-                image_input,
-                16,
-                kernel_size=[8, 8],
-                strides=[4, 4],
-                activation=tf.nn.elu,
-                reuse=reuse,
-                name="conv_1",
-            )
-            conv2 = tf.layers.conv2d(
-                conv1,
-                32,
-                kernel_size=[4, 4],
-                strides=[2, 2],
-                activation=tf.nn.elu,
-                reuse=reuse,
-                name="conv_2",
-            )
-            hidden = c_layers.flatten(conv2)
+            hidden = image_input
+            for i, ch in enumerate(n_channels):
+                hidden = tf.layers.conv2d(
+                    hidden,
+                    ch,
+                    kernel_size=[3, 3],
+                    strides=1,
+                    reuse=reuse,
+                    name="layer%dconv_1" % i,
+                )
+                hidden = tf.layers.max_pooling2d(
+                    hidden,
+                    pool_size=[3, 3],
+                    strides=2,
+                    padding='same',
+                )
+                # create residual blocks
+                for j in range(n_blocks):
+                    block_input = hidden
+                    hidden = tf.nn.relu(hidden)
+                    hidden = tf.layers.conv2d(
+                        hidden,
+                        ch,
+                        kernel_size=[3, 3],
+                        strides=1,
+                        padding='same',
+                        reuse=reuse,
+                        name="layer%d_%d_conv1" % (i, j),
+                    )
+                    hidden = tf.nn.relu(hidden)
+                    hidden = tf.layers.conv2d(
+                        hidden,
+                        ch,
+                        kernel_size=[3, 3],
+                        strides=1,
+                        padding='same',
+                        reuse=reuse,
+                        name="layer%d_%d_conv2" % (i, j),
+                    )
+                    hidden = tf.add(block_input, hidden)
+
+            hidden = tf.nn.relu(hidden)
+            hidden = c_layers.flatten(hidden)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
             hidden_flat = self.create_vector_observation_encoder(
