@@ -40,8 +40,6 @@ class PPOModel(LearningModel):
         :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used. 
         :return: a sub-class of PPOAgent tailored to the environment.
         """
-        if stream_names is None:
-            stream_names = []
         LearningModel.__init__(
             self, m_size, normalize, use_recurrent, brain, seed, stream_names
         )
@@ -83,7 +81,7 @@ class PPOModel(LearningModel):
         Creates training-specific Tensorflow ops for PPO models.
         :param probs: Current policy probabilities
         :param old_probs: Past policy probabilities
-        :param value_streams: Current value estimates from each value stream
+        :param value_heads: Value estimate tensors from each value stream
         :param beta: Entropy regularization strength
         :param entropy: Current policy entropy
         :param epsilon: Value for policy-divergence threshold
@@ -97,9 +95,7 @@ class PPOModel(LearningModel):
                 shape=[None], dtype=tf.float32, name="{}_returns".format(name)
             )
             old_value = tf.placeholder(
-                shape=[None],
-                dtype=tf.float32,
-                name="{}_value_estimate".format(name),
+                shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
             )
             self.returns_holders[name] = returns_holder
             self.old_values[name] = old_value

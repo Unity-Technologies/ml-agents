@@ -1,6 +1,7 @@
 import logging
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.policy import Policy
+from collections import namedtuple
 import numpy as np
 import abc
 
@@ -8,16 +9,20 @@ import tensorflow as tf
 
 logger = logging.getLogger("mlagents.trainers")
 
+RewardSignalResult = namedtuple(
+    "RewardSignalResult", ["scaled_reward", "unscaled_reward"]
+)
+
 
 class RewardSignal(abc.ABC):
-    def __init__(self, policy: Policy, strength, gamma):
+    def __init__(self, policy: Policy, strength: float, gamma: float):
         """
-        Initializes a reward signal. At minimum, you must pass in the policy it is being applied to, 
+        Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)
-        :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to. 
-        :param strength: The strength of the reward. The reward's raw value will be multiplied by this value. 
-        :param gamma: The time discounting factor used for this reward. 
-        :return: A RewardSignal object. 
+        :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to.
+        :param strength: The strength of the reward. The reward's raw value will be multiplied by this value.
+        :param gamma: The time discounting factor used for this reward.
+        :return: A RewardSignal object.
         """
         class_name = self.__class__.__name__
         short_name = class_name.replace("RewardSignal", "")
@@ -30,9 +35,9 @@ class RewardSignal(abc.ABC):
     def evaluate(self, current_info, next_info):
         """
         Evaluates the reward for the agents present in current_info given the next_info
-        :param current_info: The current BrainInfo. 
+        :param current_info: The current BrainInfo.
         :param next_info: The BrainInfo from the next timestep.
-        :return: a tuple of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
+        :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         return (
             self.strength * np.zeros(len(current_info.agents)),

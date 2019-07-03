@@ -4,6 +4,7 @@
 
 import logging
 from collections import deque, defaultdict
+from typing import Any, List
 
 import numpy as np
 import tensorflow as tf
@@ -12,7 +13,7 @@ from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
-
+from mlagents.trainers.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -54,8 +55,14 @@ class PPOTrainer(Trainer):
             "reward_signals",
         ]
         self.check_param_keys()
-        self.check_demo_keys(trainer_parameters)
-        self.use_bc = "pretraining" in trainer_parameters
+
+        # Make sure we have at least one reward_signal
+        if not self.trainer_parameters["reward_signals"]:
+            raise UnityTrainerException(
+                "No reward signals were defined. At least one must be used with {}.".format(
+                    self.__class__.__name__
+                )
+            )
 
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
@@ -68,8 +75,6 @@ class PPOTrainer(Trainer):
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
-        if self.use_bc:
-            stats["Losses/BC Loss"] = []
         self.stats = stats
 
         self.training_buffer = Buffer()
@@ -78,14 +83,10 @@ class PPOTrainer(Trainer):
         self.episode_steps = {}
 
     def __str__(self):
-        return """Hyperparameters for the PPO Trainer of brain {0}: \n{1}""".format(
+        return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
+            self.__class__.__name__,
             self.brain_name,
-            "\n".join(
-                [
-                    "\t{0}:\t{1}".format(x, self.trainer_parameters[x])
-                    for x in self.param_keys
-                ]
-            ),
+            self.dict_to_str(self.trainer_parameters, 0),
         )
 
     @property
@@ -121,21 +122,6 @@ class PPOTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def check_demo_keys(self, trainer_parameters: dict):
-        """
-        Checks if the demonstration pretraining parameters are set properly. 
-        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
-        """
-        if "pretraining" in trainer_parameters:
-            if (
-                "demo_path" not in trainer_parameters["pretraining"]
-                or "pretraining_strength" not in trainer_parameters["pretraining"]
-                or "pretraining_steps" not in trainer_parameters["pretraining"]
-            ):
-                raise UnityTrainerException(
-                    "pretraining was specified but either demo_path, pretraining_strength, or pretraining_steps was not given."
-                )
-
     def increment_step_and_update_last_reward(self):
         """
         Increment the step count of the trainer and Updates the last reward
@@ -153,7 +139,9 @@ class PPOTrainer(Trainer):
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
-        visual_observations = []
+        visual_observations: List[List[Any]] = [
+            []
+        ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
         memories = []
@@ -214,8 +202,8 @@ class PPOTrainer(Trainer):
         self,
         curr_all_info: AllBrainInfo,
         next_all_info: AllBrainInfo,
-        take_action_outputs,
-    ):
+        take_action_outputs: ActionInfoOutputs,
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
@@ -308,20 +296,18 @@ class PPOTrainer(Trainer):
                         next_info.local_done[next_idx]
                     )
 
-                    for name, reward in tmp_rewards_dict.items():
+                    for name, reward_result in tmp_rewards_dict.items():
                         # 0 because we use the scaled reward to train the agent
                         self.training_buffer[agent_id][
                             "{}_rewards".format(name)
-                        ].append(tmp_rewards_dict[name][0][next_idx])
+                        ].append(reward_result.scaled_reward[next_idx])
                         self.training_buffer[agent_id][
                             "{}_value_estimates".format(name)
                         ].append(value[name][idx][0])
 
                     self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
 
-                    for idx, (name, rewards) in enumerate(
-                        self.collected_rewards.items()
-                    ):
+                    for name, rewards in self.collected_rewards.items():
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
                         if name == "environment":
@@ -329,7 +315,9 @@ class PPOTrainer(Trainer):
                             rewards[agent_id] += np.array(next_info.rewards)[next_idx]
                         else:
                             # Report the reward signals
-                            rewards[agent_id] += tmp_rewards_dict[name][0][next_idx]
+                            rewards[agent_id] += tmp_rewards_dict[name].scaled_reward[
+                                next_idx
+                            ]
 
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
@@ -337,7 +325,9 @@ class PPOTrainer(Trainer):
                     self.episode_steps[agent_id] += 1
         self.trainer_metrics.end_experience_collection_timer()
 
-    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
+    def process_experiences(
+        self, current_info: AllBrainInfo, new_info: AllBrainInfo
+    ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
@@ -363,7 +353,7 @@ class PPOTrainer(Trainer):
                     value_next["extrinsic"] = 0.0
                 tmp_advantages = []
                 tmp_returns = []
-                for idx, name in enumerate(self.policy.reward_signals.keys()):
+                for name in self.policy.reward_signals:
                     bootstrap_value = value_next[name]
 
                     local_rewards = self.training_buffer[agent_id][
@@ -485,9 +475,6 @@ class PPOTrainer(Trainer):
             )
             for stat, val in update_stats.items():
                 self.stats[stat].append(val)
-        if self.use_bc:
-            _bc_loss = self.policy.bc_trainer.update()
-            self.stats["Losses/BC Loss"].append(_bc_loss)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 

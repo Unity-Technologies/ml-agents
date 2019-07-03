@@ -123,9 +123,8 @@ namespace MLAgents.InferenceBrain
         private int memoriesCount;
         private int memoryIndex;
         
-        public BarracudaRecurrentInputGenerator(int memoriesCount, int memoryIndex)
+        public BarracudaRecurrentInputGenerator(int memoryIndex)
         {
-            this.memoriesCount = memoriesCount;
             this.memoryIndex = memoryIndex;
         }
         

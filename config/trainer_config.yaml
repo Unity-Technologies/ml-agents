@@ -23,9 +23,9 @@ default:
 
 BananaLearning:
     normalize: false
-    beta: 0.0
-    batch_size: 256
-    buffer_size: 2560
+    beta: 5.0e-3
+    batch_size: 1024
+    buffer_size: 10240
     max_steps: 1.0e5
 
 BouncerLearning:
@@ -98,7 +98,6 @@ GoalieLearning:
 
 PyramidsLearning:
     summary_freq: 2000
-    curiosity_enc_size: 256
     time_horizon: 128
     batch_size: 128
     buffer_size: 2048
@@ -107,24 +106,16 @@ PyramidsLearning:
     beta: 0.0
     max_steps: 5.0e5
     num_epoch: 3
-    sequence_length: 16
-    demo_path: ./demos/ExpertPyramid.demo
-    use_recurrent: false
     reward_signals:
         extrinsic: 
             strength: 1.0
             gamma: 0.99
-        # gail:
-        #     strength: 0.2
-        #     gamma: 0.9
-        #     demo_path: ./demos/ExpertPyramid.demo
         curiosity:
-            strength: 0.01
+            strength: 0.02
             gamma: 0.99
-            encoding_size: 128
+            encoding_size: 256
             
 VisualPyramidsLearning:
-    curiosity_enc_size: 256
     time_horizon: 128
     batch_size: 64
     buffer_size: 2024
@@ -133,6 +124,14 @@ VisualPyramidsLearning:
     beta: 1.0e-2
     max_steps: 5.0e5
     num_epoch: 3
+    reward_signals:
+        extrinsic: 
+            strength: 1.0
+            gamma: 0.99
+        curiosity:
+            strength: 0.01
+            gamma: 0.99
+            encoding_size: 256
 
 3DBallLearning:
     normalize: true
@@ -151,6 +150,10 @@ VisualPyramidsLearning:
     time_horizon: 1000
     max_steps: 5.0e5
     beta: 0.001
+    reward_signals:
+        extrinsic: 
+            strength: 1.0
+            gamma: 0.995
 
 TennisLearning:
     normalize: true
@@ -168,6 +171,10 @@ CrawlerStaticLearning:
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    reward_signals:
+        extrinsic: 
+            strength: 1.0
+            gamma: 0.995
 
 CrawlerDynamicLearning:
     normalize: true
@@ -176,10 +183,14 @@ CrawlerDynamicLearning:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 1e5
+    max_steps: 1e6
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    reward_signals:
+        extrinsic: 
+            strength: 1.0
+            gamma: 0.995
 
 WalkerLearning:
     normalize: true
@@ -191,6 +202,10 @@ WalkerLearning:
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    reward_signals:
+        extrinsic: 
+            strength: 1.0
+            gamma: 0.995
 
 ReacherLearning:
     normalize: true
@@ -208,7 +223,7 @@ HallwayLearning:
     num_layers: 2
     hidden_units: 128
     memory_size: 256
-    beta: 0.0
+    beta: 1.0e-2
     num_epoch: 3
     buffer_size: 1024
     batch_size: 128
