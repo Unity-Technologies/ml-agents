@@ -87,6 +87,8 @@ def run_training(
     if sampler_file_path is not None:
         sampler = load_config(sampler_file_path)
         lesson_config = LessonController(lesson_config_path)
+    sampler_manager = SamplerManager(sampler)
+
 
     trainer_config = load_config(trainer_config_path)
     env_factory = create_environment_factory(
