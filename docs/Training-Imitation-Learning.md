@@ -10,7 +10,19 @@ from the game and actions from a game controller to guide the medic's behavior.
 Imitation Learning uses pairs of observations and actions from
 from a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
 
-ML-Agents provides several ways to interact with demonstrations. 
+ML-Agents provides several ways to interact with demonstrations. For most situations,
+[GAIL](Training-RewardSignals.md#the-gail-reward-signal) is the preferred approach.
+
+* To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the
+  [GAIL reward signal](Training-RewardSignals.md#the-gail-reward-signal). GAIL can be
+  used with or without environment rewards, and works well when there are a limited
+  number of demonstrations. 
+* To help bootstrap reinforcement learning, you can enable [pretraining](Training-PPO.md) 
+  on the PPO trainer. 
+* To train an agent to exactly mimic demonstrations, you can use the 
+  [Behavioral Cloning](Training-BehavioralCloning.md) trainer. Behavioral Cloning can be
+  used offline and online (in-editor), and learns very quickly. However, it usually is ineffective
+  on more complex environments without a large number of demonstrations.
 
 ## Recording Demonstrations
 

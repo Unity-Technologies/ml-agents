@@ -130,9 +130,11 @@ discriminator keeps getting stricter and stricter and the agent must try harder 
 This approach, when compared to [Behavioral Cloning](Training-BehavioralCloning.md), requires 
 far fewer demonstrations to be provided. After all, we are still learning a policy that happens
 to be similar to the demonstration, not directly copying the behavior of the demonstrations. It
-is also especially effective when combined with an Extrinsic signal, but can also be used independently to purely learn from demonstration. 
+is also especially effective when combined with an Extrinsic signal, but can also be used 
+independently to purely learn from demonstration. 
 
-Using GAIL requires recorded demonstrations from your Unity environment. See the [imitation learning guide](Training-Imitation-Learning.md) to learn more about recording demonstrations.
+Using GAIL requires recorded demonstrations from your Unity environment. See the 
+[imitation learning guide](Training-Imitation-Learning.md) to learn more about recording demonstrations.
 
 #### Strength 
 
@@ -188,4 +190,3 @@ is very large to avoid overfitting the discriminator on current data.
 
 Default Value: `10`
 Typical Range: `10`-`20`
-
