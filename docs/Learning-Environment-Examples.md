@@ -57,11 +57,11 @@ If you would like to contribute environments, please see our
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
 * Reset Parameters: Three
-    * Ball size - Determines the scale of the ball in the 3 dimensions
+    * Ball size - Specifies the scale of the ball in the 3 dimensions
       * Default - 1
       * Recommended Minimum - 0.2
       * Recommend Maximum - 5
-    * Gravity
+    * Gravity 
       * Default - 9.81
       * Recommended Minimum - 4
       * Recommended Maximum - 105
