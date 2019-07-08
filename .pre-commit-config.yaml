@@ -31,4 +31,8 @@ repos:
             )$
         args: [--fix=lf]
     -   id: flake8
-        exclude: ".*_pb2.py"
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py
+            )$

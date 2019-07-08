@@ -376,7 +376,8 @@ transform_patterns = {
         op="Flatten",
         input=[
             inputs[-1]
-        ],  # take only the last input, assume all other arguments are trivial (like sequence_length==1 always in ML-agents LSTM nets)
+        ],  # take only the last input, assume all other arguments are trivial (like sequence_length==1
+        # always in ML-agents LSTM nets)
     ),
     "Reshape": lambda nodes, inputs, tensors, context: Struct(
         op="Reshape",
@@ -522,7 +523,8 @@ transform_patterns = {
         input=[i for i in inputs]
         + [t.name for t in tensors][1:][
             -2:
-        ],  # [1:]  - skips the 0th tensor, since Conv2DBackpropInput 0th tensor is 'input_sizes' (which differs from other Conv layers)
+        ],  # [1:]  - skips the 0th tensor, since Conv2DBackpropInput 0th tensor is 'input_sizes'
+        # (which differs from other Conv layers)
         # [-2:] - take only last 2 tensors, this allows to process large patterns with the same code
         padding=get_attr(by_op(nodes, "Conv2DBackpropInput"), "padding"),
         strides=get_attr(by_op(nodes, "Conv2DBackpropInput"), "strides"),
@@ -783,7 +785,8 @@ def strided_slice(
     end = end.astype(np.int32).tolist()
     strides = strides.astype(np.int32).tolist()
 
-    # StridedSlice range and mask descriptions: https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/strided-slice
+    # StridedSlice range and mask descriptions:
+    #   https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/strided-slice
     # TODO: I don't think elipsis and newaxis would work together well with current implementation
 
     assert len(begin) == len(end)
@@ -1336,7 +1339,8 @@ def process_model(model, args):
                 # filter only inputs that are coming from nodes that are outside this pattern
                 # preserve the order
                 pattern_nodes = [n.name for n in pattern_nodes] + tensor_names
-                # inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if nodes_by_name[i] not in pattern_nodes])
+                # inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if
+                #   nodes_by_name[i] not in pattern_nodes])
                 inputs_from_outside_pattern = remove_duplicates_from_list(
                     [i for i in inputs_to_op_nodes if i not in pattern_nodes]
                 )
@@ -1497,7 +1501,8 @@ def convert(
     Converts a TensorFlow model into a Barracuda model.
     :param source_file: The TensorFlow Model
     :param target_file: The name of the file the converted model will be saved to
-    :param trim_unused_by_output: The regexp to match output nodes to remain in the model. All other uconnected nodes will be removed.
+    :param trim_unused_by_output: The regexp to match output nodes to remain in the model.
+        All other unconnected nodes will be removed.
     :param verbose: If True, will display debug messages
     :param compress_f16: If true, the float values will be converted to f16
     :return:
