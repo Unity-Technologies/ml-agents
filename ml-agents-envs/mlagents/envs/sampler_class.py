@@ -4,9 +4,6 @@ from abc import ABC, abstractmethod
 
 from .exception import SamplerException
 
-class SamplerException(Exception):
-    pass
-
 class Sampler(ABC): 
 
     @abstractmethod
