@@ -99,7 +99,8 @@ class CuriosityRewardSignal(RewardSignal):
         :param num_sequences: Number of sequences in the update buffer.
         :return: Dict of stats that should be reported to Tensorboard.
         """
-        forward_total, inverse_total = [], []
+        forward_total: List[float] = []
+        inverse_total: List[float] = []
         for _ in range(self.num_epoch):
             update_buffer.shuffle()
             buffer = update_buffer
@@ -120,7 +121,7 @@ class CuriosityRewardSignal(RewardSignal):
 
     def _update_batch(
         self, mini_batch: Dict[str, np.ndarray], num_sequences: int
-    ) -> Any:  # TODO
+    ) -> Dict[str, float]:
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
