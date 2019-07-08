@@ -14,6 +14,7 @@ repos:
         name: mypy-ml-agents-envs
         files: "ml-agents-envs/.*"
         # Exclude protobuf files and don't follow them when imported
+        exclude: ".*_pb2.py"
         # TODO get disallow-incomplete-defs working
         args: [--ignore-missing-imports, --follow-imports=silent]
     -   id: mypy
