@@ -107,8 +107,17 @@ If you would like to contribute environments, please see our
   * Visual Observations: None.
 * Reset Parameters: Three, corresponding to the following.
     * angle: Angle of the racket from the vertical axis.
+      * Default
+      * Recommended Minimum
+      * Recommended Maximum
     * gravity: Magnitude of gravity
+      * Default - 9.81
+      * Recommended Minimum - 6
+      * Recommended Maximum - 20
     * scale: Size of the ball
+      * Default - 1
+      * Recommended Minimum - 0.2
+      * Recommended Maximum - 5
 * Benchmark Mean Reward: 2.5
 * Optional Imitation Learning scene: `TennisIL`.
 
