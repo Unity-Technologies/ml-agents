@@ -3,38 +3,71 @@ import numpy as np
 from mlagents.trainers.policy import Policy
 from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
+from mlagents.trainers.trainer import UnityTrainerException
 
 
 class BCModule:
     def __init__(
-        self, policy: Policy, lr, demo_path, anneal_steps, batch_size, use_recurrent
+        self,
+        policy: Policy,
+        policy_learning_rate: float,
+        default_batch_size: int,
+        default_num_epoch: int,
+        strength: float,
+        demo_path: str,
+        steps: int,
+        batch_size: int = None,
+        num_epoch: int = None,
+        max_batches: int = 0,
     ):
         """
-        A BC trainer that can be used inline with RL.
+        A BC trainer that can be used inline with RL, especially for pretraining. 
         :param policy: The policy of the learning model
-        :param lr: The Learning Rate
+        :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate for the pretrainer.
+        :param default_batch_size: The default batch size to use if batch_size isn't provided. 
+        :param default_num_epoch: The default num_epoch to use if num_epoch isn't provided. 
+        :param strength: The proportion of learning rate used to update through BC. 
+        :param pretraining_steps: The number of steps to anneal BC training over. 0 for continuous training.
         :param demo_path: The path to the demonstration file
-        :param anneal_steps: The number of steps to anneal BC training over. 0 for continuous training.
         :param batch_size: The batch size to use during BC training. 
-        :param use_recurrent: Whether or not we are training an LSTM as well. 
+        :param num_epoch: Number of epochs to train for during each update. 
+        :param max_batches: Maximum number of batches to train on during each pretraining update. 
         """
         self.policy = policy
-        self.current_lr = lr
-        self.model = BCModel(policy.model, lr, anneal_steps)
+        self.current_lr = policy_learning_rate * strength
+        self.model = BCModel(policy.model, self.current_lr, steps)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
+
+        self.batch_size = batch_size if batch_size else default_batch_size
+        self.num_epoch = num_epoch if num_epoch else default_num_epoch
         self.n_sequences = min(
-            batch_size, len(self.demonstration_buffer.update_buffer["actions"])
+            self.batch_size, len(self.demonstration_buffer.update_buffer["actions"])
         )
         self.has_updated = False
-        self.use_recurrent = use_recurrent
+        self.use_recurrent = self.policy.use_recurrent
+        self.max_batches = max_batches
 
-    def update(self, max_batches=10):
+    @staticmethod
+    def check_config(config_dict):
+        """
+        Check the pretraining config for the required keys.
+        :param config_dict: Pretraining section of trainer_config
+        """
+        param_keys = ["strength", "demo_path", "steps"]
+        for k in param_keys:
+            if k not in config_dict:
+                raise UnityTrainerException(
+                    "The required pre-training hyper-parameter {0} was not defined. Please check your \
+                    trainer YAML file.".format(k)
+                )
+
+    def update(self):
         """
         Updates model using buffer.
         :param max_batches: The maximum number of batches to use per update.
         :return: The loss of the update.
         """
-        # Don't continue training if the learning rate has reached 0, for performance.
+        # Don't continue training if the learning rate has reached 0, to reduce training time.
         if self.current_lr <= 0:
             return 0
 
@@ -44,13 +77,13 @@ class BCModule:
         )
         possible_batches = possible_demo_batches
 
-        n_epoch = 3
+        n_epoch = self.num_epoch
         for epoch in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
-            if max_batches == 0:
+            if self.max_batches == 0:
                 num_batches = possible_batches
             else:
-                num_batches = min(possible_batches, max_batches)
+                num_batches = min(possible_batches, self.max_batches)
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
                 start = i * self.n_sequences
@@ -108,14 +141,6 @@ class BCModule:
                 feed_dict[self.policy.model.prev_action] = mini_batch_demo[
                     "prev_action"
                 ].reshape([-1, len(self.policy.model.act_size)])
-                # # print(len(self.policy.model.act_size))
-                # # print(self.n_sequences, self.policy.sequence_length)
-                # feed_dict[self.policy.model.prev_action] = np.zeros(
-                #     (
-                #         self.n_sequences * self.policy.sequence_length,
-                #         len(self.policy.model.act_size),
-                #     )
-                # )
         self.out_dict = {
             "loss": self.model.loss,
             "update": self.model.update_batch,

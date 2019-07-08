@@ -11,25 +11,28 @@ class GAILRewardSignal(RewardSignal):
     def __init__(
         self,
         policy: Policy,
-        strength,
-        gamma,
-        demo_path,
-        num_epoch=3,
-        encoding_size=64,
-        learning_rate=3e-4,
-        max_batches=10,
-        use_actions=False,
-        print_debug=False,
+        strength: float,
+        gamma: float,
+        demo_path: str,
+        num_epoch: int = 3,
+        encoding_size: int = 64,
+        learning_rate: float = 3e-4,
+        max_batches: int = 10,
+        use_actions: bool = False,
+        print_debug: bool = False,
     ):
         """
         The Gail Reward signal generator.
         :param policy: The policy of the learning model
         :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
-        :param 
+        reward multiplied by the strength parameter
+        :param gamma: The time discounting factor used for this reward.
         :param demo_path: The path to the demonstration file
         :param encoding_size: The size of the the hidden layers of the discriminator
-        :param learning_rate: The Learning Rate
-        reward multiplied by the strength parameter
+        :param learning_rate: The Learning Rate used during GAIL updates. 
+        :param max_batches: The maximum number of batches to update during GAIL updates. 
+        :param use_actions: Whether or not to use the actions for the discriminator. 
+        :param print_debug: Whether or not to print debug statements during GAIL updates. 
         """
         super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
