@@ -215,6 +215,32 @@ class TrainerController(object):
         else:
             return env.reset(train_mode=self.fast_simulation)
 
+    def _should_save_model(self, global_step):
+        return (
+            global_step % self.save_freq == 0 and global_step != 0 and self.train_model
+        )
+
+    def _not_done_training(self):
+        return (
+            any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
+            or not self.train_model
+        )
+
+    def write_to_tensorboard(self, global_step):
+        for brain_name, trainer in self.trainers.items():
+            # Write training statistics to Tensorboard.
+            delta_train_start = time() - self.training_start_time
+            if self.meta_curriculum is not None:
+                trainer.write_summary(
+                    global_step,
+                    delta_train_start,
+                    lesson_num=self.meta_curriculum.brains_to_curriculums[
+                        brain_name
+                    ].lesson_num,
+                )
+            else:
+                trainer.write_summary(global_step, delta_train_start)
+
     def start_learning(
         self, env_manager: SubprocessEnvManager, trainer_config: Dict[str, Any]
     ) -> None:
@@ -240,33 +266,14 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 env_manager.set_policy(brain_name, trainer.policy)
             self._reset_env(env_manager)
-            while (
-                any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
-                or not self.train_model
-            ):
-                n_steps = self.take_step(env_manager)
+            while self._not_done_training():
+                n_steps = self.advance(env_manager)
                 for i in range(n_steps):
                     global_step += 1
-                    if (
-                        global_step % self.save_freq == 0
-                        and global_step != 0
-                        and self.train_model
-                    ):
+                    if self._should_save_model(global_step):
                         # Save Tensorflow model
                         self._save_model(steps=global_step)
-                    for brain_name, trainer in self.trainers.items():
-                        # Write training statistics to Tensorboard.
-                        delta_train_start = time() - self.training_start_time
-                        if self.meta_curriculum is not None:
-                            trainer.write_summary(
-                                global_step,
-                                delta_train_start,
-                                lesson_num=self.meta_curriculum.brains_to_curriculums[
-                                    brain_name
-                                ].lesson_num,
-                            )
-                        else:
-                            trainer.write_summary(global_step, delta_train_start)
+                    self.write_to_tensorboard(global_step)
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model(steps=global_step)
@@ -279,7 +286,7 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
 
-    def take_step(self, env: SubprocessEnvManager) -> int:
+    def advance(self, env: SubprocessEnvManager) -> int:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
@@ -312,12 +319,12 @@ class TrainerController(object):
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
                 trainer.add_experiences(
-                    step_info.last_all_brain_info,
+                    step_info.previous_all_brain_info,
                     step_info.current_all_brain_info,
-                    step_info.all_action_infos[brain_name].outputs,
+                    step_info.brain_name_to_action_info[brain_name].outputs,
                 )
                 trainer.process_experiences(
-                    step_info.last_all_brain_info, step_info.current_all_brain_info
+                    step_info.previous_all_brain_info, step_info.current_all_brain_info
                 )
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:

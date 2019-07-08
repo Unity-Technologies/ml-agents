@@ -84,7 +84,7 @@ class BrainInfo:
         return np.append(m1, m2, axis=0)
 
     @staticmethod
-    def process_pixels(image_bytes, gray_scale) -> np.ndarray:
+    def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
         """
         Converts byte array observation image into numpy array, re-sizes it,
         and optionally converts it to grey scale
@@ -157,7 +157,7 @@ class BrainInfo:
             vector_obs = np.nan_to_num(
                 np.array([x.stacked_vector_observation for x in agent_info_list])
             )
-        agents = [str(worker_id) + "-" + str(x.id) for x in agent_info_list]
+        agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         brain_info = BrainInfo(
             visual_observation=vis_obs,
             vector_observation=vector_obs,

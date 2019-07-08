@@ -68,13 +68,11 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
                     memories = {}
                     texts = {}
                     values = {}
-                    outputs = {}
                     for brain_name, action_info in all_action_info.items():
                         actions[brain_name] = action_info.action
                         memories[brain_name] = action_info.memory
                         texts[brain_name] = action_info.text
                         values[brain_name] = action_info.value
-                        outputs[brain_name] = action_info.outputs
                     all_brain_info = env.step(actions, memories, texts, values)
                 _send_response("step", all_brain_info)
             elif cmd.name == "external_brains":
@@ -99,14 +97,14 @@ class SubprocessEnvManager(EnvManager):
         self, env_factory: Callable[[int], BaseUnityEnvironment], n_env: int = 1
     ):
         super().__init__()
-        self.envs: List[UnityEnvWorker] = []
-        for worker_id in range(n_env):
-            self.envs.append(self.create_worker(worker_id, env_factory))
-        self.env_last_steps: List[StepInfo] = [None for _ in self.envs]
-        self.env_last_action_infos: List[ActionInfo] = [None for _ in self.envs]
+        self.env_workers: List[UnityEnvWorker] = []
+        for worker_idx in range(n_env):
+            self.env_workers.append(self.create_worker(worker_idx, env_factory))
+        self.env_last_steps: List[StepInfo] = [None] * n_env
+        self.env_last_action_infos: List[ActionInfo] = [None] * n_env
 
     def get_last_steps(self):
-        return [self.env_last_steps[i] for i in range(len(self.envs))]
+        return [self.env_last_steps[i] for i in range(len(self.env_workers))]
 
     @staticmethod
     def create_worker(
@@ -125,14 +123,14 @@ class SubprocessEnvManager(EnvManager):
 
     def step(self) -> List[StepInfo]:
         env_action_infos: Dict[int, Dict[str, ActionInfo]] = {}
-        for env_id in range(len(self.envs)):
+        for env_id in range(len(self.env_workers)):
             last_step = self.env_last_steps[env_id]
             all_action_info = self._take_step(last_step)
             env_action_infos[env_id] = all_action_info
-            self.envs[env_id].send("step", all_action_info)
+            self.env_workers[env_id].send("step", all_action_info)
 
         step_brain_infos: List[AllBrainInfo] = [
-            self.envs[i].recv().payload for i in range(len(self.envs))
+            self.env_workers[i].recv().payload for i in range(len(self.env_workers))
         ]
         steps = []
         for i in range(len(step_brain_infos)):
@@ -147,27 +145,29 @@ class SubprocessEnvManager(EnvManager):
 
     def reset(self, config=None, train_mode=True) -> List[StepInfo]:
         self._broadcast_message("reset", (config, train_mode))
-        reset_results = [self.envs[i].recv().payload for i in range(len(self.envs))]
+        reset_results = [
+            self.env_workers[i].recv().payload for i in range(len(self.env_workers))
+        ]
         for i in range(len(reset_results)):
             self.env_last_steps[i] = StepInfo(None, reset_results[i], None)
         return self.env_last_steps
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:
-        self.envs[0].send("external_brains")
-        return self.envs[0].recv().payload
+        self.env_workers[0].send("external_brains")
+        return self.env_workers[0].recv().payload
 
     @property
-    def reset_parameters(self):
-        self.envs[0].send("reset_parameters")
-        return self.envs[0].recv().payload
+    def reset_parameters(self) -> Dict[str, float]:
+        self.env_workers[0].send("reset_parameters")
+        return self.env_workers[0].recv().payload
 
     def close(self):
-        for env in self.envs:
+        for env in self.env_workers:
             env.close()
 
     def _broadcast_message(self, name: str, payload=None):
-        for env in self.envs:
+        for env in self.env_workers:
             env.send(name, payload)
 
     def _take_step(self, last_step: StepInfo) -> Dict[str, ActionInfo]:
