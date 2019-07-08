@@ -1,3 +1,5 @@
+episode-length: 1000
+
 mass:
     sampler-type: "uniform"
     min_value: 0.5
