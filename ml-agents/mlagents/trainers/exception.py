@@ -26,9 +26,3 @@ class MetaCurriculumError(TrainerError):
 
     pass
 
-class LessonControllerError(TrainerError):
-    """
-    Any error related to the configuration of lesson controller
-    """
-
-    pass
