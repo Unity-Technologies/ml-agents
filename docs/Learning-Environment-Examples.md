@@ -56,7 +56,19 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
-* Reset Parameters: Three, corresponding to ball size, ball mass and gravity.
+* Reset Parameters: Three
+    * Ball size - Determines the scale of the ball in the 3 dimensions
+      * Default - 1
+      * Recommended Minimum - 0.2
+      * Recommend Maximum - 5
+    * Gravity
+      * Default - 9.81
+      * Recommended Minimum - 4
+      * Recommended Maximum - 105
+    * Ball Mass
+      * Default - 1
+      * Recommended Minimum - 0.1
+      * Recommended Maximum - 20
 * Benchmark Mean Reward: 100
 
 ## [GridWorld](https://youtu.be/gu8HE9WKEVI)
