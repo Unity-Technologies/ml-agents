@@ -101,7 +101,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             # Check that the "last steps" are set to the value returned for each step
             self.assertEqual(manager.env_last_steps[i].current_all_brain_info, i)
             self.assertEqual(
-                manager.env_last_steps[i].last_all_brain_info,
+                manager.env_last_steps[i].previous_all_brain_info,
                 last_steps[i].current_all_brain_info,
             )
         assert res == manager.env_last_steps
