@@ -36,8 +36,8 @@ class PPOModel(LearningModel):
         :param use_recurrent: Whether to use an LSTM layer in the network.
         :param num_layers Number of hidden layers between encoded input and policy & value layers
         :param m_size: Size of brain memory.
-        :param seed: Seed to use for initialization of model. 
-        :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used. 
+        :param seed: Seed to use for initialization of model.
+        :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used.
         :return: a sub-class of PPOAgent tailored to the environment.
         """
         LearningModel.__init__(

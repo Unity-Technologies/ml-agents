@@ -1071,7 +1071,7 @@ def process_layer(layer, context, args):
     else:
         activation = "Linear"
 
-    if not class_name in known_classes:
+    if class_name not in known_classes:
         if class_name in requires_runtime_flag:
             print("SKIP:", class_name, "layer is used only for training")
         else:
@@ -1091,7 +1091,8 @@ def process_layer(layer, context, args):
     auto_pad = get_attr(layer, "padding")  # layer.attr['padding'].s.decode("utf-8")
     pads = get_attr(layer, "pads")
     strides = get_attr(layer, "strides")  # layer.attr['strides'].list.i
-    dilations = get_attr(layer, "dilations")  # layer.attr['dilations'].list.i
+    # TODO remove?
+    # dilations = get_attr(layer, "dilations")  # layer.attr['dilations'].list.i
     pool_size = get_attr(layer, "ksize")  # layer.attr['ksize'].list.i
     shape = get_attr(layer, "shape")
     starts = get_attr(layer, "starts")
@@ -1105,11 +1106,11 @@ def process_layer(layer, context, args):
     alpha = get_attr(layer, "alpha", default=1)
     beta = get_attr(layer, "beta")
 
-    if activation and not activation in known_activations:
+    if activation and activation not in known_activations:
         print("IGNORED: unknown activation", activation)
-    if auto_pad and not auto_pad in known_paddings:
+    if auto_pad and auto_pad not in known_paddings:
         print("IGNORED: unknown padding", auto_pad)
-    if data_frmt and not data_frmt in supported_data_formats:
+    if data_frmt and data_frmt not in supported_data_formats:
         print("UNSUPPORTED: data format", data_frmt)
 
     o_l.activation = known_activations.get(activation) or 0
@@ -1198,7 +1199,7 @@ def process_layer(layer, context, args):
                 -1 not in input_ranks
             )  # for rank() lambda all input ranks have to be known (not -1)
             rank = rank(input_ranks)
-    if rank == None:
+    if rank is None:
 
         def all_elements_equal(arr):  # http://stackoverflow.com/q/3844948/
             return arr.count(arr[0]) == len(arr)
@@ -1554,7 +1555,8 @@ def convert(
     o_model.layers = cleanup_layers(o_model.layers)
 
     all_inputs = {i for l in o_model.layers for i in l.inputs}
-    embedded_tensors = {t.name for l in o_model.layers for t in l.tensors}
+    # TODO remove?
+    # embedded_tensors = {t.name for l in o_model.layers for t in l.tensors}
 
     # Trim
     if trim_unused_by_output:
