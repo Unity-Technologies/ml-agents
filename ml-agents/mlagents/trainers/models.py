@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Dict, NewType
+from typing import Any, Callable, Dict
 
 import numpy as np
 import tensorflow as tf
@@ -7,7 +7,6 @@ import tensorflow.contrib.layers as c_layers
 
 logger = logging.getLogger("mlagents.trainers")
 
-# tf.Tensor = NewType("tf.Tensor", tf.Tensor)
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 
 

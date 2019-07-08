@@ -18,12 +18,11 @@ class CuriosityModel(object):
         """
         self.encoding_size = encoding_size
         self.policy_model = policy_model
+        self.next_visual_in: List[tf.Tensor] = []
         encoded_state, encoded_next_state = self.create_curiosity_encoders()
         self.create_inverse_model(encoded_state, encoded_next_state)
         self.create_forward_model(encoded_state, encoded_next_state)
         self.create_loss(learning_rate)
-
-        self.next_visual_in: List[tf.Tensor] = []
 
     def create_curiosity_encoders(self) -> Tuple[tf.Tensor, tf.Tensor]:
         """
