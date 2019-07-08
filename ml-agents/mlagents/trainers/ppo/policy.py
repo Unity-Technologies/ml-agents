@@ -221,19 +221,3 @@ class PPOPolicy(Policy):
             value=mean_values,
             outputs=run_out,
         )
-
-    def get_last_reward(self):
-        """
-        Returns the last reward the trainer has had
-        :return: the new last reward
-        """
-        return self.sess.run(self.model.last_reward)
-
-    def update_reward(self, new_reward):
-        """
-        Updates reward value for policy.
-        :param new_reward: New reward to save.
-        """
-        self.sess.run(
-            self.model.update_reward, feed_dict={self.model.new_reward: new_reward}
-        )

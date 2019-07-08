@@ -45,9 +45,6 @@ class PPOModel(LearningModel):
         )
         if num_layers < 1:
             num_layers = 1
-        self.last_reward, self.new_reward, self.update_reward = (
-            self.create_reward_encoder()
-        )
         if brain.vector_action_space_type == "continuous":
             self.create_cc_actor_critic(h_size, num_layers)
             self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
@@ -63,16 +60,6 @@ class PPOModel(LearningModel):
             lr,
             max_step,
         )
-
-    @staticmethod
-    def create_reward_encoder():
-        """Creates TF ops to track and increment recent average cumulative reward."""
-        last_reward = tf.Variable(
-            0, name="last_reward", trainable=False, dtype=tf.float32
-        )
-        new_reward = tf.placeholder(shape=[], dtype=tf.float32, name="new_reward")
-        update_reward = tf.assign(last_reward, new_reward)
-        return last_reward, new_reward, update_reward
 
     def create_losses(
         self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step
