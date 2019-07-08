@@ -9,6 +9,7 @@ import os.path
 
 BARRACUDA_VERSION = 16
 
+
 # Definition of Barracuda model
 class Model:
     def __init__(self):
