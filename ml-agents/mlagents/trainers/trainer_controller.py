@@ -16,6 +16,7 @@ from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer
+from mlagents.envs.sampler_class import SamplerManager
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
@@ -39,7 +40,7 @@ class TrainerController(object):
         external_brains: Dict[str, BrainParameters],
         training_seed: int,
         fast_simulation: bool,
-        sampler_manager,
+        sampler_manager: SamplerManager,
         lesson_length: Optional[int],
     ):
         """
@@ -294,13 +295,6 @@ class TrainerController(object):
                 self.trainers[brain_name].reward_buffer.clear()
         return curr_info
 
-    def check_empty_sampler_manager(self):
-        """
-        If self.samplers is empty, then bool of it returns false, indicating
-        there is no sampler manager.
-        """
-        return not bool(self.sampler_manager.samplers)
-
     def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
@@ -317,9 +311,15 @@ class TrainerController(object):
 
         # If any lessons were incremented or the environment is
         # ready to be reset
-        if ( ((self.meta_curriculum)  and any(lessons_incremented.values()))
-            or ( (not self.check_empty_sampler_manager()) and (self.global_step % self.lesson_length == 0)
-                and (self.global_step != 0)) ):
+        meta_curriculum_reset = (self.meta_curriculum) and any(lessons_incremented.values())
+
+        # Check if we are performing generalization training and we have finished the
+        # specified number of steps for the lesson
+        generalization_reset = ( not self.sampler_manager.check_empty_sampler_manager()
+                                    and (self.global_step != 0) 
+                                    and (self.global_step % self.lesson_length == 0)
+                               )
+        if meta_curriculum_reset or generalization_reset:
             curr_info = self.end_trainer_episodes(env, lessons_incremented)
         
     

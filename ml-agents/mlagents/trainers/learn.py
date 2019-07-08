@@ -76,19 +76,24 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
             docker_target_name=docker_target_name
         )
 
-    sampler = None
+    sampler_config = None
     lesson_length = None
     if sampler_file_path is not None:
-        sampler = load_config(sampler_file_path)
-        if ("episode-length") in sampler:
-            lesson_length = sampler["episode-length"]
-            del sampler["episode-length"]
+        sampler_config = load_config(sampler_file_path)
+        if ("episode-length") in sampler_config:
+            # Default lesson_length is at 1000
+            lesson_length = sampler_config.pop("episode-length", 1000)
+            if lesson_length <= 0:
+                raise SamplerException(
+                    "Specified episode-length is negative or 0. Please provide"
+                    " a positive integer value for episode-length"
+                )
         else:
             raise SamplerException(
                 "Episode Length was not specified in the sampler file."
                 " Please specify it with the 'episode-length' key in the sampler config file."
             )
-    sampler_manager = SamplerManager(sampler)
+    sampler_manager = SamplerManager(sampler_config)
 
 
     trainer_config = load_config(trainer_config_path)
