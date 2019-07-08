@@ -15,10 +15,9 @@ from typing import Optional, Callable
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
-from mlagents.trainers.lesson_controller import LessonController
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.exception import UnityEnvironmentException, SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
 
@@ -55,7 +54,6 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     no_graphics = run_options["--no-graphics"]
     trainer_config_path = run_options["<trainer-config-path>"]
     sampler_file_path = run_options["--sampler"] if run_options ["--sampler"] != "None" else None
-    lesson_config_path = run_options["--lesson_config"]
 
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
@@ -79,10 +77,17 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         )
 
     sampler = None
-    lesson_config = None
+    lesson_length = None
     if sampler_file_path is not None:
         sampler = load_config(sampler_file_path)
-        lesson_config = LessonController(lesson_config_path)
+        if ("episode-length") in sampler:
+            lesson_length = sampler["episode-length"]
+            del sampler["episode-length"]
+        else:
+            raise SamplerException(
+                "Episode Length was not specified in the sampler file."
+                " Please specify it with the 'episode-length' key in the sampler config file."
+            )
     sampler_manager = SamplerManager(sampler)
 
 
@@ -113,7 +118,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         run_seed,
         fast_simulation,
         sampler_manager,
-        lesson_config,
+        lesson_length,
     )
 
     # Signal that environment has been launched.
@@ -274,7 +279,6 @@ def main():
       --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
       --no-graphics               Whether to run the environment in no-graphics mode [default: False].
       --sampler=<directory>       Reset parameter yaml directory for sampling of environment reset parameters [default: None].
-      --lesson_config=<directory> Lesson yaml file for controlling generalization training [default: None].
       --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].       
     """
 

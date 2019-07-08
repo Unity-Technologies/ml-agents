@@ -16,7 +16,6 @@ from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer
-from mlagents.trainers.lesson_controller import LessonController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
@@ -41,7 +40,7 @@ class TrainerController(object):
         training_seed: int,
         fast_simulation: bool,
         sampler_manager,
-        lesson_controller: Optional[LessonController],
+        lesson_length: Optional[int],
     ):
         """
         :param model_path: Path to save the model.
@@ -56,7 +55,7 @@ class TrainerController(object):
         :param external_brains: dictionary of external brain names to BrainInfo objects.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         :param sampler_manager: SamplerManager object which stores information about samplers to use for the reset parameters.
-        :param lesson_controller: LessonController object which takes measured_values to determine lesson changes.
+        :param lesson_length: Specifies number of steps after which reset parameters are resampled.
         """
 
         self.model_path = model_path
@@ -80,7 +79,7 @@ class TrainerController(object):
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.sampler_manager = sampler_manager
-        self.lesson_controller = lesson_controller
+        self.lesson_length = lesson_length
 
     def _get_measure_vals(self):
         if self.meta_curriculum:
@@ -97,20 +96,6 @@ class TrainerController(object):
                     brain_names_to_measure_vals[brain_name] = measure_val
                 elif curriculum.measure == "reward":
                     measure_val = np.mean(self.trainers[brain_name].reward_buffer)
-                    brain_names_to_measure_vals[brain_name] = measure_val
-            return brain_names_to_measure_vals
-
-        elif ((self.sampler_manager is not None) and (self.lesson_controller is not None)):
-            brain_names_to_measure_vals = {}
-            for brain_name, trainer in self.trainers.items():
-                if (self.lesson_controller.measure == "progress"):
-                    measure_val = (
-                        trainer.get_step
-                        / trainer.get_max_steps
-                    )
-                    brain_names_to_measure_vals[brain_name]  = measure_val
-                elif (self.lesson_controller.measure == "reward"):
-                    measure_val = np.mean(trainer.reward_buffer)
                     brain_names_to_measure_vals[brain_name] = measure_val
             return brain_names_to_measure_vals
 
@@ -195,9 +180,6 @@ class TrainerController(object):
                 if self.meta_curriculum:
                     lesson_length = self.meta_curriculum.brains_to_curriculums[
                         brain_name].min_lesson_length
-                    # if generalization training
-                elif self.sampler_manager is not None:
-                    lesson_length = self.lesson_controller.min_lesson_length
                 else:
                     lesson_length = 0
 
@@ -312,38 +294,34 @@ class TrainerController(object):
                 self.trainers[brain_name].reward_buffer.clear()
         return curr_info
 
+    def check_empty_sampler_manager(self):
+        """
+        If self.samplers is empty, then bool of it returns false, indicating
+        there is no sampler manager.
+        """
+        return not bool(self.sampler_manager.samplers)
+
     def take_step(self, env: BaseUnityEnvironment, curr_info: AllBrainInfo):
-        if ((self.meta_curriculum) or (self.sampler_manager is not None)):
+        if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
                 k: len(t.reward_buffer) for (k, t) in self.trainers.items()
             }
             # Attempt to increment the lessons of the brains who
             # were ready.
-            if (self.meta_curriculum):
-                lessons_incremented = self.meta_curriculum.increment_lessons(
-                    self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
-                )
-            elif ((self.sampler_manager is not None) and (self.lesson_controller is not None)):
-                lessons_incremented = self.lesson_controller.check_change_lesson(
-                    self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
-                )
+            lessons_incremented = self.meta_curriculum.increment_lessons(
+                self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
+            )
         else:
             lessons_incremented = {}
 
         # If any lessons were incremented or the environment is
         # ready to be reset
-        if (((self.meta_curriculum) or (self.sampler_manager is not None)) and any(lessons_incremented.values())):
+        if ( ((self.meta_curriculum)  and any(lessons_incremented.values()))
+            or ( (not self.check_empty_sampler_manager()) and (self.global_step % self.lesson_length == 0)
+                and (self.global_step != 0)) ):
             curr_info = self.end_trainer_episodes(env, lessons_incremented)
         
-        # Change testing lesson if conditions are met
-        test_change_lesson_conds = [(not self.train_model),
-                                    (self.global_step != 0),
-                                    (self.sampler_manager is not None),
-                                    (self.lesson_controller is not None) and (self.global_step % self.lesson_controller.test_lesson_length == 0)
-                                    ]
-        if (all(test_change_lesson_conds)):
-            curr_info = self.end_trainer_episodes(env, lessons_incremented)
     
         # Decide and take an action
         take_action_vector = {}
