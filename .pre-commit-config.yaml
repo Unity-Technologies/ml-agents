@@ -1,10 +1,10 @@
 repos:
 -   repo: https://github.com/python/black
-    rev: '19.3b0'
+    rev: 19.3b0
     hooks:
     -   id: black
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.701'
+    rev: v0.711
     hooks:
     -   id: mypy
         name: mypy-ml-agents
