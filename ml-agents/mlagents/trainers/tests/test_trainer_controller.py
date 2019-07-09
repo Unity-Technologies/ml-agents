@@ -1,4 +1,3 @@
-import json
 import os
 from unittest.mock import *
 
@@ -11,6 +10,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
+from mlagents.envs.subprocess_env_manager import StepInfo
 from mlagents.envs.exception import UnityEnvironmentException
 
 
@@ -298,14 +298,16 @@ def trainer_controller_with_start_learning_mocks():
     tc = basic_trainer_controller(brain_info_mock)
     tc.initialize_trainers = MagicMock()
     tc.trainers = {"testbrain": trainer_mock}
-    tc.take_step = MagicMock()
+    tc.advance = MagicMock()
+    tc.trainers["testbrain"].get_step = 0
 
-    def take_step_sideeffect(env, curr_info):
+    def take_step_sideeffect(env):
         tc.trainers["testbrain"].get_step += 1
         if tc.trainers["testbrain"].get_step > 10:
             raise KeyboardInterrupt
+        return 1
 
-    tc.take_step.side_effect = take_step_sideeffect
+    tc.advance.side_effect = take_step_sideeffect
 
     tc._export_graph = MagicMock()
     tc._save_model = MagicMock()
@@ -328,7 +330,7 @@ def test_start_learning_trains_forever_if_no_train_model(tf_reset_graph):
     tf_reset_graph.assert_called_once()
     tc.initialize_trainers.assert_called_once_with(trainer_config)
     env_mock.reset.assert_called_once()
-    assert tc.take_step.call_count == 11
+    assert tc.advance.call_count == 11
     tc._export_graph.assert_not_called()
     tc._save_model.assert_not_called()
     env_mock.close.assert_called_once()
@@ -349,7 +351,7 @@ def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     tf_reset_graph.assert_called_once()
     tc.initialize_trainers.assert_called_once_with(trainer_config)
     env_mock.reset.assert_called_once()
-    assert tc.take_step.call_count == trainer_mock.get_max_steps + 1
+    assert tc.advance.call_count == trainer_mock.get_max_steps + 1
     env_mock.close.assert_called_once()
     tc._save_model.assert_called_once_with(steps=6)
 
@@ -391,38 +393,25 @@ def trainer_controller_with_take_step_mocks():
 def test_take_step_adds_experiences_to_trainer_and_trains():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
-    curr_info_mock = MagicMock()
-    brain_info_mock = MagicMock()
-    curr_info_mock.__getitem__ = MagicMock(return_value=brain_info_mock)
+    old_step_info = StepInfo(Mock(), Mock(), MagicMock())
+    new_step_info = StepInfo(Mock(), Mock(), MagicMock())
     trainer_mock.is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
-    env_step_output_mock = MagicMock()
-    env_mock.step = MagicMock(return_value=env_step_output_mock)
-    env_mock.close = MagicMock()
-    env_mock.reset = MagicMock(return_value=curr_info_mock)
+    env_mock.step.return_value = [new_step_info]
+    env_mock.reset.return_value = [old_step_info]
     env_mock.global_done = False
 
-    action_output_mock = ActionInfo(
-        "action", "memory", "actiontext", "value", {"some": "output"}
-    )
-    trainer_mock.get_action = MagicMock(return_value=action_output_mock)
-
-    tc.take_step(env_mock, curr_info_mock)
+    tc.advance(env_mock)
     env_mock.reset.assert_not_called()
-    trainer_mock.get_action.assert_called_once_with(brain_info_mock)
-    env_mock.step.assert_called_once_with(
-        vector_action={"testbrain": action_output_mock.action},
-        memory={"testbrain": action_output_mock.memory},
-        text_action={"testbrain": action_output_mock.text},
-        value={"testbrain": action_output_mock.value},
-    )
+    env_mock.step.assert_called_once()
     trainer_mock.add_experiences.assert_called_once_with(
-        curr_info_mock, env_step_output_mock, action_output_mock.outputs
+        new_step_info.previous_all_brain_info,
+        new_step_info.current_all_brain_info,
+        new_step_info.brain_name_to_action_info["testbrain"].outputs,
     )
     trainer_mock.process_experiences.assert_called_once_with(
-        curr_info_mock, env_step_output_mock
+        new_step_info.previous_all_brain_info, new_step_info.current_all_brain_info
     )
     trainer_mock.update_policy.assert_called_once()
-    trainer_mock.write_summary.assert_called_once()
     trainer_mock.increment_step.assert_called_once()

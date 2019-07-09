@@ -1,4 +1,3 @@
-import unittest.mock as mock
 import pytest
 from unittest.mock import *
 from mlagents.trainers import learn, TrainerController
@@ -25,7 +24,7 @@ def basic_options():
     }
 
 
-@patch("mlagents.trainers.learn.SubprocessUnityEnvironment")
+@patch("mlagents.trainers.learn.SubprocessEnvManager")
 @patch("mlagents.trainers.learn.create_environment_factory")
 @patch("mlagents.trainers.learn.load_config")
 def test_run_training(load_config, create_environment_factory, subproc_env_mock):
@@ -56,7 +55,7 @@ def test_run_training(load_config, create_environment_factory, subproc_env_mock)
             )
 
 
-@patch("mlagents.trainers.learn.SubprocessUnityEnvironment")
+@patch("mlagents.trainers.learn.SubprocessEnvManager")
 @patch("mlagents.trainers.learn.create_environment_factory")
 @patch("mlagents.trainers.learn.load_config")
 def test_docker_target_path(load_config, create_environment_factory, subproc_env_mock):
