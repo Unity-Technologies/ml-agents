@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 1aa47bdee73e8a54d8ec176f3a9bc097, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.45141286, g: 0.5008754, b: 0.5721655, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -498,7 +498,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 1, g: 0.91039026, b: 0.666, a: 1}
+  m_Color: {r: 1, g: 0.9936872, b: 0.9764706, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -1212,17 +1212,17 @@ MonoBehaviour:
   resetParameters:
     resetParameters:
     - key: big_wall_min_height
-      value: 8
+      value: 0.1
     - key: small_wall_height
-      value: 4
+      value: 1
     - key: no_wall_height
       value: 0
     - key: big_wall_max_height
-      value: 8
+      value: 2
   agentRunSpeed: 1.5
   agentJumpHeight: 2.75
-  goalScoredMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
-  failMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
+  goalScoredMaterial: {fileID: 2100000, guid: 54ab68247b13ffe42927e8859e0e57cc, type: 2}
+  failMaterial: {fileID: 2100000, guid: 197e2e54c4e29fd4ca29bf8c4024f138, type: 2}
   gravityMultiplier: 2.5
   agentJumpVelocity: 777
   agentJumpVelocityMaxChange: 10

@@ -15,6 +15,8 @@ ModelImporter:
     100018: //RootNode
     100020: WallSideA
     100022: WallSideB
+    100024: GoalBlue
+    100026: GoalRed
     400000: CenterPitch
     400002: GlassSideA
     400004: GlassSideB
@@ -27,6 +29,8 @@ ModelImporter:
     400018: //RootNode
     400020: WallSideA
     400022: WallSideB
+    400024: GoalBlue
+    400026: GoalRed
     2100000: rep_Pitch
     2100002: rep_Clear
     2100004: rep_BlackPaint
@@ -46,6 +50,8 @@ ModelImporter:
     2300018: //RootNode
     2300020: WallSideA
     2300022: WallSideB
+    2300024: GoalBlue
+    2300026: GoalRed
     3300000: CenterPitch
     3300002: GlassSideA
     3300004: GlassSideB
@@ -58,6 +64,8 @@ ModelImporter:
     3300018: //RootNode
     3300020: WallSideA
     3300022: WallSideB
+    3300024: GoalBlue
+    3300026: GoalRed
     4300000: Pitch
     4300002: GlassSideA
     4300004: GlassSideB
@@ -70,6 +78,8 @@ ModelImporter:
     4300018: GoalAreaBlue
     4300020: GoalAreaRed
     4300022: CenterPitch
+    4300024: GoalBlue
+    4300026: GoalRed
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -84,13 +94,28 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: rep_Net
+    second: {fileID: 2100000, guid: daad6e777b6e99a46bbcded7cf6816ee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: rep_Pitch
+    second: {fileID: 2100000, guid: ff03c5911bd5dfa49a040cf45420a0e4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_SoccerAgent
     second: {fileID: 2100000, guid: ff03c5911bd5dfa49a040cf45420a0e4, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: rep_White
     second: {fileID: 2100000, guid: 6a39c0407dd85684384bf0277294e9b6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_goalMaterial
+    second: {fileID: 2100000, guid: ef4e40785f0a2bc409010f7bed622ee0, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

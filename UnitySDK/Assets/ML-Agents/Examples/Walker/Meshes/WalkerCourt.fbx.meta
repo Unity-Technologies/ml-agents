@@ -17,7 +17,17 @@ ModelImporter:
     3300002: WallsOuter
     4300000: WallsOuter
     4300002: Floor
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_Floor
+    second: {fileID: 2100000, guid: d66bdae8d2fdef84aba27de49d41be4f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_WhiteWalls
+    second: {fileID: 2100000, guid: 6a39c0407dd85684384bf0277294e9b6, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -55,7 +65,7 @@ ModelImporter:
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0

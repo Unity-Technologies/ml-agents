@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 114915946461826994}
   m_Layer: 0
   m_Name: AgentA
-  m_TagString: Untagged
+  m_TagString: blueAgent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 114800310164848628}
   m_Layer: 0
   m_Name: AgentB
-  m_TagString: Untagged
+  m_TagString: redAgent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -352,7 +352,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1541947554534326}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4386284105444698}
@@ -1074,7 +1074,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1600389029549348}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 56162663048874fd4b10e065f9cf78b7, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1110,7 +1110,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1170495812642400}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 81bc1938a128a417eae63a8d644e3baf, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1122,7 +1122,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1882383181950958}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 81bc1938a128a417eae63a8d644e3baf, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1195,10 +1195,10 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  ball: {fileID: 0}
+  ball: {fileID: 1273406647218856}
   invertX: 0
   score: 0
-  myArea: {fileID: 0}
+  myArea: {fileID: 1710012663221972}
 --- !u!114 &114915946461826994
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1218,10 +1218,10 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  ball: {fileID: 0}
+  ball: {fileID: 1273406647218856}
   invertX: 0
   score: 0
-  myArea: {fileID: 0}
+  myArea: {fileID: 1359544077854622}
 --- !u!114 &114965703901356864
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1233,7 +1233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc15854a4efe14dceb84a3183ca4c896, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ball: {fileID: 0}
+  ball: {fileID: 1273406647218856}
   agentA: {fileID: 1170495812642400}
   agentB: {fileID: 1882383181950958}
 --- !u!135 &135169800965173222
@@ -1242,7 +1242,7 @@ SphereCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1273406647218856}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 422ac22c624b247749ec84410e5d3462, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
