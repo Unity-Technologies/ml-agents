@@ -87,16 +87,18 @@ def test_bcmodule_defaults(mock_env, dummy_config):
 @mock.patch("mlagents.envs.UnityEnvironment")
 def test_bcmodule_update(mock_env, dummy_config):
     env, policy = create_ppo_policy_with_bc_mock(mock_env, dummy_config, False)
-    loss = policy.bc_module.update()
-    assert isinstance(loss, np.float32)
+    stats = policy.bc_module.update()
+    for _, item in stats.items():
+        assert isinstance(item, np.float32)
     env.close()
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
 def test_bcmodule_rnn_update(mock_env, dummy_config):
     env, policy = create_ppo_policy_with_bc_mock(mock_env, dummy_config, True)
-    loss = policy.bc_module.update()
-    assert isinstance(loss, np.float32)
+    stats = policy.bc_module.update()
+    for _, item in stats.items():
+        assert isinstance(item, np.float32)
     env.close()
 
 

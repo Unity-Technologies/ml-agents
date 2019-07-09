@@ -476,8 +476,9 @@ class PPOTrainer(Trainer):
             for stat, val in update_stats.items():
                 self.stats[stat].append(val)
         if self.policy.bc_module:
-            _bc_loss = self.policy.bc_module.update()
-            self.stats["Losses/Pretraining Loss"].append(_bc_loss)
+            update_stats = self.policy.bc_module.update()
+            for stat, val in update_stats.items():
+                self.stats[stat].append(val)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 

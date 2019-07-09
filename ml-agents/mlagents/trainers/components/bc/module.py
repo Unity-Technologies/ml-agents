@@ -95,7 +95,8 @@ class BCModule:
                 # end for reporting
                 batch_losses.append(loss)
         self.has_updated = True
-        return np.mean(batch_losses)
+        update_stats = {"Losses/Pretraining Loss": np.mean(batch_losses)}
+        return update_stats
 
     def _update_batch(self, mini_batch_demo, n_sequences):
         """
