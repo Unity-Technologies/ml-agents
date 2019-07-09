@@ -2,9 +2,7 @@
 import logging
 import csv
 from time import time
-
 from typing import List, Optional
-
 
 LOGGER = logging.getLogger("mlagents.trainers")
 FIELD_NAMES = [
