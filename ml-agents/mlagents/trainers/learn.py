@@ -97,7 +97,6 @@ def run_training(
         train_model,
         keep_checkpoints,
         lesson,
-        env.external_brains,
         run_seed,
         fast_simulation,
     )
