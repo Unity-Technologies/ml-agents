@@ -20,10 +20,13 @@ class EnvironmentResponse(NamedTuple):
     payload: Any
 
 
-class UnityEnvWorker(NamedTuple):
-    process: Process
-    worker_id: int
-    conn: Connection
+class UnityEnvWorker:
+    def __init__(self, process: Process, worker_id: int, conn: Connection):
+        self.process = process
+        self.worker_id = worker_id
+        self.conn = conn
+        self.previous_step: StepInfo = StepInfo(None, {}, None)
+        self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
     def send(self, name: str, payload=None):
         try:
@@ -100,11 +103,9 @@ class SubprocessEnvManager(EnvManager):
         self.env_workers: List[UnityEnvWorker] = []
         for worker_idx in range(n_env):
             self.env_workers.append(self.create_worker(worker_idx, env_factory))
-        self.env_last_steps: List[StepInfo] = [None] * n_env
-        self.env_last_action_infos: List[ActionInfo] = [None] * n_env
 
     def get_last_steps(self):
-        return [self.env_last_steps[i] for i in range(len(self.env_workers))]
+        return [ew.previous_step for ew in self.env_workers]
 
     @staticmethod
     def create_worker(
@@ -122,24 +123,23 @@ class SubprocessEnvManager(EnvManager):
         return UnityEnvWorker(child_process, worker_id, parent_conn)
 
     def step(self) -> List[StepInfo]:
-        env_action_infos: Dict[int, Dict[str, ActionInfo]] = {}
-        for env_id in range(len(self.env_workers)):
-            last_step = self.env_last_steps[env_id]
-            all_action_info = self._take_step(last_step)
-            env_action_infos[env_id] = all_action_info
-            self.env_workers[env_id].send("step", all_action_info)
+        for env_worker in self.env_workers:
+            all_action_info = self._take_step(env_worker.previous_step)
+            env_worker.previous_all_action_info = all_action_info
+            env_worker.send("step", all_action_info)
 
         step_brain_infos: List[AllBrainInfo] = [
             self.env_workers[i].recv().payload for i in range(len(self.env_workers))
         ]
         steps = []
         for i in range(len(step_brain_infos)):
+            env_worker = self.env_workers[i]
             step_info = StepInfo(
-                self.env_last_steps[i].current_all_brain_info,
+                env_worker.previous_step.current_all_brain_info,
                 step_brain_infos[i],
-                env_action_infos[i],
+                env_worker.previous_all_action_info,
             )
-            self.env_last_steps[i] = step_info
+            env_worker.previous_step = step_info
             steps.append(step_info)
         return steps
 
@@ -149,8 +149,9 @@ class SubprocessEnvManager(EnvManager):
             self.env_workers[i].recv().payload for i in range(len(self.env_workers))
         ]
         for i in range(len(reset_results)):
-            self.env_last_steps[i] = StepInfo(None, reset_results[i], None)
-        return self.env_last_steps
+            env_worker = self.env_workers[i]
+            env_worker.previous_step = StepInfo(None, reset_results[i], None)
+        return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:

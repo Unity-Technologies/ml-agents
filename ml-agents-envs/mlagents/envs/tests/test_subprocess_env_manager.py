@@ -82,8 +82,10 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             env.send.assert_called_with("reset", (params, True))
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
-            self.assertEqual(manager.env_last_steps[i].current_all_brain_info, i)
-        assert res == manager.env_last_steps
+            self.assertEqual(
+                manager.env_workers[i].previous_step.current_all_brain_info, i
+            )
+        assert res == list(map(lambda ew: ew.previous_step, manager.env_workers))
 
     def test_step_takes_steps_for_all_envs(self):
         SubprocessEnvManager.create_worker = lambda em, worker_id, env_factory: MockEnvWorker(
@@ -92,16 +94,19 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         manager = SubprocessEnvManager(mock_env_factory, 2)
         step_mock = Mock()
         last_steps = [Mock(), Mock()]
-        manager.env_last_steps = [last_steps[0], last_steps[1]]
+        manager.env_workers[0].previous_step = last_steps[0]
+        manager.env_workers[1].previous_step = last_steps[1]
         manager._take_step = Mock(return_value=step_mock)
         res = manager.step()
         for i, env in enumerate(manager.env_workers):
             env.send.assert_called_with("step", step_mock)
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
-            self.assertEqual(manager.env_last_steps[i].current_all_brain_info, i)
             self.assertEqual(
-                manager.env_last_steps[i].previous_all_brain_info,
+                manager.env_workers[i].previous_step.current_all_brain_info, i
+            )
+            self.assertEqual(
+                manager.env_workers[i].previous_step.previous_all_brain_info,
                 last_steps[i].current_all_brain_info,
             )
-        assert res == manager.env_last_steps
+        assert res == list(map(lambda ew: ew.previous_step, manager.env_workers))
