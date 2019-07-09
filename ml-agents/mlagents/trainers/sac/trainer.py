@@ -18,7 +18,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class SACTrainer(Trainer):
-    """The PPOTrainer is an implementation of the PPO algorithm."""
+    """The SACTrainer is an implementation of the SAC algorithm."""
 
     def __init__(
         self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
