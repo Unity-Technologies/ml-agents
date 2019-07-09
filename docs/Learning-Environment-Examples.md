@@ -106,18 +106,18 @@ If you would like to contribute environments, please see our
     toward net or away from net, and jumping.
   * Visual Observations: None.
 * Reset Parameters: Three, corresponding to the following.
-    * angle: Angle of the racket from the vertical axis.
-      * Default
-      * Recommended Minimum
-      * Recommended Maximum
+    * angle: Angle of the racket from the vertical (Y) axis.
+      * Default: 55
+      * Recommended Minimum: 35 
+      * Recommended Maximum: 65
     * gravity: Magnitude of gravity
-      * Default - 9.81
-      * Recommended Minimum - 6
-      * Recommended Maximum - 20
+      * Default: 9.81
+      * Recommended Minimum: 6
+      * Recommended Maximum: 20
     * scale: Size of the ball
-      * Default - 1
-      * Recommended Minimum - 0.2
-      * Recommended Maximum - 5
+      * Default: 1
+      * Recommended Minimum: 0.2
+      * Recommended Maximum: 5
 * Benchmark Mean Reward: 2.5
 * Optional Imitation Learning scene: `TennisIL`.
 
