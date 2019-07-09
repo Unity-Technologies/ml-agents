@@ -4,16 +4,15 @@
 
 import logging
 from collections import deque, defaultdict
-from typing import Any, List
+from typing import List, Any
 
 import numpy as np
-import tensorflow as tf
 
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
-from mlagents.trainers.action_info import ActionInfoOutputs
+from mlagents.envs.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -27,6 +26,7 @@ class PPOTrainer(Trainer):
         """
         Responsible for collecting experiences and training PPO model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param reward_buff_cap: Max reward history to track in the reward buffer
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
@@ -122,15 +122,13 @@ class PPOTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def increment_step_and_update_last_reward(self):
+    def increment_step(self, n_steps: int) -> None:
         """
-        Increment the step count of the trainer and Updates the last reward
+        Increment the step count of the trainer
+
+        :param n_steps: number of steps to increment the step count by
         """
-        if self.stats["Environment/Cumulative Reward"]:
-            mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
-            self.policy.update_reward(mean_reward)
-        self.policy.increment_step()
-        self.step = self.policy.get_current_step()
+        self.step = self.policy.increment_step(n_steps)
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """

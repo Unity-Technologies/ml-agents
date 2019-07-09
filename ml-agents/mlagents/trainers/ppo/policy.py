@@ -3,7 +3,7 @@ import numpy as np
 
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
@@ -12,7 +12,7 @@ from mlagents.trainers.components.bc.module import BCModule
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOPolicy(Policy):
+class PPOPolicy(TFPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.
@@ -234,20 +234,4 @@ class PPOPolicy(Policy):
             text=None,
             value=mean_values,
             outputs=run_out,
-        )
-
-    def get_last_reward(self):
-        """
-        Returns the last reward the trainer has had
-        :return: the new last reward
-        """
-        return self.sess.run(self.model.last_reward)
-
-    def update_reward(self, new_reward):
-        """
-        Updates reward value for policy.
-        :param new_reward: New reward to save.
-        """
-        self.sess.run(
-            self.model.update_reward, feed_dict={self.model.new_reward: new_reward}
         )
