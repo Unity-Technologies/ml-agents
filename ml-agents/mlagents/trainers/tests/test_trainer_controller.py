@@ -425,4 +425,4 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     )
     trainer_mock.update_policy.assert_called_once()
     trainer_mock.write_summary.assert_called_once()
-    trainer_mock.increment_step_and_update_last_reward.assert_called_once()
+    trainer_mock.increment_step.assert_called_once()

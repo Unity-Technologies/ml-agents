@@ -67,20 +67,9 @@ class BCTrainer(Trainer):
         """
         return self.policy.get_current_step()
 
-    @property
-    def get_last_reward(self):
+    def increment_step(self):
         """
-        Returns the last reward the trainer has had
-        :return: the new last reward
-        """
-        if len(self.stats["Environment/Cumulative Reward"]) > 0:
-            return np.mean(self.stats["Environment/Cumulative Reward"])
-        else:
-            return 0
-
-    def increment_step_and_update_last_reward(self):
-        """
-        Increment the step count of the trainer and Updates the last reward
+        Increment the step count of the trainer
         """
         self.policy.increment_step()
         return

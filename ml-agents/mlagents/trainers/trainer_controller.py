@@ -345,5 +345,5 @@ class TrainerController(object):
             else:
                 trainer.write_summary(self.global_step, delta_train_start)
             if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                trainer.increment_step_and_update_last_reward()
+                trainer.increment_step()
         return new_info
