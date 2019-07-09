@@ -1,6 +1,7 @@
 import time
-from mlagents.trainers.trainer_metrics import hierarchical_timer, _global_timer_stack
 import json
+
+from mlagents.envs.timers import hierarchical_timer, _global_timer_stack
 
 
 with hierarchical_timer("foo"):
