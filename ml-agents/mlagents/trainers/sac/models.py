@@ -774,7 +774,7 @@ class SACModel(LearningModel):
             self.entropy_loss = -tf.reduce_mean(
                 tf.to_float(self.mask)
                 * tf.reduce_mean(
-                    self.log_ent_coef * tf.squeeze(tf.stop_gradient(broken_ent_sums)),
+                    self.log_ent_coef * tf.squeeze(tf.stop_gradient(broken_ent_sums), axis=2),
                     axis=1,
                 )
             )
