@@ -57,18 +57,18 @@ If you would like to contribute environments, please see our
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
 * Reset Parameters: Three
-    * Ball size - Specifies the scale of the ball in the 3 dimensions
-      * Default - 1
-      * Recommended Minimum - 0.2
-      * Recommend Maximum - 5
+    * Ball size: Specifies the scale of the ball in the 3 dimensions
+      * Default: 1
+      * Recommended Minimum: 0.2
+      * Recommend Maximum: 5
     * Gravity 
-      * Default - 9.81
-      * Recommended Minimum - 4
-      * Recommended Maximum - 105
+      * Default: 9.81
+      * Recommended Minimum: 4
+      * Recommended Maximum: 105
     * Ball Mass
-      * Default - 1
-      * Recommended Minimum - 0.1
-      * Recommended Maximum - 20
+      * Default: 1
+      * Recommended Minimum: 0.1
+      * Recommended Maximum: 20
 * Benchmark Mean Reward: 100
 
 ## [GridWorld](https://youtu.be/gu8HE9WKEVI)
