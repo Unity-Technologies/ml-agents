@@ -31,9 +31,8 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         SubprocessEnvManager.create_worker = MagicMock()
         env = SubprocessEnvManager(mock_env_factory, 2)
         # Creates two processes
-        self.assertEqual(
-            env.create_worker.call_args_list,
-            [mock.call(0, mock_env_factory), mock.call(1, mock_env_factory)],
+        env.create_worker.assert_has_calls(
+            [mock.call(0, mock_env_factory), mock.call(1, mock_env_factory)]
         )
         self.assertEqual(len(env.env_workers), 2)
 
@@ -48,7 +47,6 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         mock_parent_connection = Mock()
         step_command = EnvironmentCommand("step", (None, None, None, None))
         close_command = EnvironmentCommand("close")
-        mock_parent_connection.recv = Mock()
         mock_parent_connection.recv.side_effect = [step_command, close_command]
         mock_parent_connection.send = Mock()
 

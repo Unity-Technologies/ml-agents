@@ -196,16 +196,15 @@ class Trainer(object):
                 if self.is_training and self.get_step <= self.get_max_steps
                 else "Not Training."
             )
-            # step = min(self.get_step, self.get_max_steps)
-            step = global_step
+            step = min(self.get_step, self.get_max_steps)
             if len(self.stats["Environment/Cumulative Reward"]) > 0:
                 mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
                     "Mean "
-                    "Reward: {"
-                    ":0.3f}. Std of Reward: {:0.3f}. {}".format(
+                    "Reward: {:0.3f}"
+                    ". Std of Reward: {:0.3f}. {}".format(
                         self.run_id,
                         self.brain_name,
                         step,
@@ -228,7 +227,7 @@ class Trainer(object):
                     summary.value.add(tag="{}".format(key), simple_value=stat_mean)
                     self.stats[key] = []
             summary.value.add(tag="Environment/Lesson", simple_value=lesson_num)
-            self.summary_writer.add_summary(summary, self.get_step)
+            self.summary_writer.add_summary(summary, step)
             self.summary_writer.flush()
 
     def write_tensorboard_text(self, key, input_dict):

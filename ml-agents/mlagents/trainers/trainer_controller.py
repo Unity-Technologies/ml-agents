@@ -215,18 +215,18 @@ class TrainerController(object):
         else:
             return env.reset(train_mode=self.fast_simulation)
 
-    def _should_save_model(self, global_step):
+    def _should_save_model(self, global_step: int) -> bool:
         return (
             global_step % self.save_freq == 0 and global_step != 0 and self.train_model
         )
 
-    def _not_done_training(self):
+    def _not_done_training(self) -> bool:
         return (
             any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
             or not self.train_model
         )
 
-    def write_to_tensorboard(self, global_step):
+    def write_to_tensorboard(self, global_step: int) -> None:
         for brain_name, trainer in self.trainers.items():
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
@@ -329,14 +329,10 @@ class TrainerController(object):
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-            if (
-                trainer.is_ready_update()
-                and self.train_model
-                and trainer.get_step <= trainer.get_max_steps
-            ):
-                if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                    trainer.increment_step(len(new_step_infos))
-                # Perform gradient descent with experience buffer
-                trainer.update_policy()
-                env.set_policy(brain_name, trainer.policy)
+            if self.train_model and trainer.get_step <= trainer.get_max_steps:
+                trainer.increment_step(len(new_step_infos))
+                if trainer.is_ready_update():
+                    # Perform gradient descent with experience buffer
+                    trainer.update_policy()
+                    env.set_policy(brain_name, trainer.policy)
         return len(new_step_infos)

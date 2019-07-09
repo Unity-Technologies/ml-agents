@@ -398,9 +398,8 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     trainer_mock.is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
-    env_mock.step = MagicMock(return_value=[new_step_info])
-    env_mock.close = MagicMock()
-    env_mock.reset = MagicMock(return_value=[old_step_info])
+    env_mock.step.return_value = [new_step_info]
+    env_mock.reset.return_value = [old_step_info]
     env_mock.global_done = False
 
     tc.advance(env_mock)
