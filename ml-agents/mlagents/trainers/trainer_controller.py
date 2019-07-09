@@ -253,7 +253,7 @@ class TrainerController(object):
         tf.reset_default_graph()
 
         # Prevent a single session from taking all GPU memory.
-        self.initialize_trainers(trainer_config, env.external_brains)
+        self.initialize_trainers(trainer_config, env_manager.external_brains)
         for _, t in self.trainers.items():
             self.logger.info(t)
 
