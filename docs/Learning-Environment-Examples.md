@@ -60,7 +60,7 @@ If you would like to contribute environments, please see our
     * Ball size: Specifies the scale of the ball in the 3 dimensions
       * Default: 1
       * Recommended Minimum: 0.2
-      * Recommend Maximum: 5
+      * Recommended Maximum: 5
     * Gravity 
       * Default: 9.81
       * Recommended Minimum: 4
