@@ -4,6 +4,7 @@
 
 import os
 import logging
+import json
 import shutil
 import sys
 from typing import *
@@ -15,7 +16,7 @@ from time import time
 from mlagents.envs import AllBrainInfo, BrainParameters
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.envs.timers import hierarchical_timer
+from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -118,6 +119,11 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             if brain_name in self.trainer_metrics:
                 self.trainers[brain_name].write_training_metrics()
+
+    def _write_timing_tree(self) -> None:
+        timing_path = f"{self.summaries_dir}/{self.run_id}_timers.json"
+        with open(timing_path, "w") as f:
+            json.dump(get_timer_tree(), f, indent=2)
 
     def _export_graph(self):
         """
@@ -243,8 +249,7 @@ class TrainerController(object):
                 any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
                 or not self.train_model
             ):
-                with hierarchical_timer("take_step"):
-                    new_info = self.take_step(env, curr_info)
+                new_info = self.take_step(env, curr_info)
                 self.global_step += 1
                 if (
                     self.global_step % self.save_freq == 0
@@ -266,6 +271,7 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
 
+    @timed
     def take_step(
         self, env: BaseUnityEnvironment, curr_info: AllBrainInfo
     ) -> AllBrainInfo:

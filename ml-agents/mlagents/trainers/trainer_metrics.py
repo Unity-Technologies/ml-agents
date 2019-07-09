@@ -4,8 +4,6 @@ import csv
 from time import time
 
 from typing import List, Optional
-import json
-from mlagents.envs.timers import get_timer_tree
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -131,7 +129,3 @@ class TrainerMetrics:
             writer.writerow(FIELD_NAMES)
             for row in self.rows:
                 writer.writerow(row)
-
-        json_path = self.path.replace("csv", "hierarchy.json")
-        with open(json_path, "w") as file:
-            json.dump(get_timer_tree(), file, indent=2)
