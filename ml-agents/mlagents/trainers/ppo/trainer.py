@@ -21,7 +21,7 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id, multi_gpu
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -60,7 +60,7 @@ class PPOTrainer(Trainer):
         self.check_param_keys()
         self.use_curiosity = bool(trainer_parameters["use_curiosity"])
         self.step = 0
-        self.devices = get_available_gpus()
+        self.devices = get_devices(multi_gpu)
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load, self.devices)
 
         stats = {
@@ -493,7 +493,11 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
 
-def get_available_gpus():
+def get_devices(multi_gpu):
     local_device_protos = device_lib.list_local_devices()
-    gpus = [x.name for x in local_device_protos if x.device_type == 'GPU']
-    return gpus if len(gpus) > 0 else ['/cpu:0']
+    devices = [x.name for x in local_device_protos if x.device_type == 'GPU']
+    if len(devices) < 1:
+        devices = ['/cpu:0']
+    if not multi_gpu:
+        devices = devices[:1]
+    return devices

@@ -37,6 +37,7 @@ class TrainerController(object):
         external_brains: Dict[str, BrainParameters],
         training_seed: int,
         fast_simulation: bool,
+        multi_gpu: bool,
     ):
         """
         :param model_path: Path to save the model.
@@ -70,6 +71,7 @@ class TrainerController(object):
         self.seed = training_seed
         self.training_start_time = time()
         self.fast_simulation = fast_simulation
+        self.multi_gpu = multi_gpu
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
 
@@ -179,6 +181,7 @@ class TrainerController(object):
                     self.load_model,
                     self.seed,
                     self.run_id,
+                    self.multi_gpu,
                 )
                 self.trainer_metrics[brain_name] = self.trainers[
                     brain_name

@@ -51,6 +51,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     lesson = int(run_options["--lesson"])
     fast_simulation = not bool(run_options["--slow"])
     no_graphics = run_options["--no-graphics"]
+    multi_gpu = run_options["--multi-gpu"]
     trainer_config_path = run_options["<trainer-config-path>"]
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
@@ -98,6 +99,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         env.external_brains,
         run_seed,
         fast_simulation,
+        multi_gpu,
     )
 
     # Signal that environment has been launched.
@@ -258,6 +260,7 @@ def main():
       --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
       --no-graphics              Whether to run the environment in no-graphics mode [default: False].
       --debug                    Whether to run ML-Agents in debug mode with detailed logging [default: False].
+      --multi-gpu                Whether to use multiple GPU training [default: False].
     """
 
     options = docopt(_USAGE)
