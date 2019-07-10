@@ -269,6 +269,7 @@ class TrainerController(object):
         env.close()
         if self.train_model:
             self._write_training_metrics()
+            self._write_timing_tree()
             self._export_graph()
 
     @timed
