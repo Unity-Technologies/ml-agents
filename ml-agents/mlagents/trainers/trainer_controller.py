@@ -116,8 +116,13 @@ class TrainerController(object):
 
     def _write_timing_tree(self) -> None:
         timing_path = f"{self.summaries_dir}/{self.run_id}_timers.json"
-        with open(timing_path, "w") as f:
-            json.dump(get_timer_tree(), f, indent=2)
+        try:
+            with open(timing_path, "w") as f:
+                json.dump(get_timer_tree(), f, indent=2)
+        except FileNotFoundError:
+            self.logger.warning(
+                f"Unable to save to {timing_path}. Make sure the directory exists"
+            )
 
     def _export_graph(self):
         """
