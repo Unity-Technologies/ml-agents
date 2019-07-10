@@ -40,7 +40,7 @@ class TimerNode:
     __slots__ = ["children", "total", "count"]
 
     def __init__(self):
-        self.children: Dict[str, "TimerNode"] = {}
+        self.children: Dict[str, TimerNode] = {}
         self.total: float = 0.0
         self.count: int = 0
 
