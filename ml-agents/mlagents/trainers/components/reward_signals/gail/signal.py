@@ -21,7 +21,7 @@ class GAILRewardSignal(RewardSignal):
         print_debug: bool = False,
     ):
         """
-        The GAIL Reward signal generator.
+        The GAIL Reward signal generator. https://arxiv.org/abs/1606.03476
         :param policy: The policy of the learning model
         :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter

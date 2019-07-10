@@ -3,14 +3,22 @@ from mlagents.trainers.models import LearningModel
 
 
 class GAILModel(object):
-    def __init__(self, policy_model: LearningModel, h_size, lr, encoding_size, use_actions):
+    def __init__(
+        self,
+        policy_model: LearningModel,
+        h_size: int = 128,
+        learning_rate: float = 3e-4,
+        encoding_size: int = 64,
+        use_actions: bool = False,
+    ):
         """
-        The GAIL reward generator.
+        The initializer for the GAIL reward generator.
         https://arxiv.org/abs/1606.03476
         :param policy_model: The policy of the learning algorithm
         :param h_size: Size of the hidden layer for the discriminator
-        :param lr: The learning Rate for the discriminator
+        :param learning_rate: The learning Rate for the discriminator
         :param encoding_size: The encoding size for the encoder
+        :param use_actions: Whether or not to use actions to discriminate
         """
         self.h_size = h_size
         self.z_size = 128
@@ -23,7 +31,7 @@ class GAILModel(object):
         self.make_beta()
         self.make_inputs()
         self.create_network()
-        self.create_loss(lr)
+        self.create_loss(learning_rate)
 
     def make_beta(self):
         """
@@ -77,7 +85,6 @@ class GAILModel(object):
             self.obs_in_expert = tf.placeholder(
                 shape=[None, self.policy_model.vec_obs_size], dtype=tf.float32
             )
-            # TODO : Experiment with normalization, the normalization could change with time
             if self.policy_model.normalize:
                 encoded_expert_list.append(
                     self.policy_model.normalize_vector_obs(self.obs_in_expert)
