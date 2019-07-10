@@ -83,7 +83,7 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
             elif cmd.name == "reset_parameters":
                 _send_response("reset_parameters", env.reset_parameters)
             elif cmd.name == "reset":
-                all_brain_info = env.reset(cmd.payload[0], cmd.payload[1])
+                all_brain_info = env.reset(cmd.payload[0], cmd.payload[1], cmd.payload[2])
                 _send_response("reset", all_brain_info)
             elif cmd.name == "global_done":
                 _send_response("global_done", env.global_done)
@@ -143,8 +143,8 @@ class SubprocessEnvManager(EnvManager):
             steps.append(step_info)
         return steps
 
-    def reset(self, config=None, train_mode=True) -> List[StepInfo]:
-        self._broadcast_message("reset", (config, train_mode))
+    def reset(self, config=None, train_mode=True, custom_reset_parameters=None) -> List[StepInfo]:
+        self._broadcast_message("reset", (config, train_mode, custom_reset_parameters))
         reset_results = [
             self.env_workers[i].recv().payload for i in range(len(self.env_workers))
         ]
