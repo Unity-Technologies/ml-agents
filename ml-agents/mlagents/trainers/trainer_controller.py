@@ -183,7 +183,7 @@ class TrainerController(object):
                 ].trainer_metrics
             elif trainer_parameters_dict[brain_name]["trainer"] == "sac":
                 self.trainers[brain_name] = SACTrainer(
-                    self.external_brains[brain_name],
+                    external_brains[brain_name],
                     self.meta_curriculum.brains_to_curriculums[
                         brain_name
                     ].min_lesson_length
