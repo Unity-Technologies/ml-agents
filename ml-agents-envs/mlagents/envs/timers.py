@@ -63,7 +63,7 @@ class TimerNode:
 
     def merge(self, other: "TimerNode"):
         """
-        Add the other node to this node, then do the same recurively on its children.
+        Add the other node to this node, then do the same recursively on its children.
         :param other:
         :return:
         """
