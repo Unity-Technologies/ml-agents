@@ -2,7 +2,7 @@ import numpy as np
 
 from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
@@ -10,7 +10,7 @@ from mlagents.trainers.demo_loader import demo_to_buffer
 class GAILRewardSignal(RewardSignal):
     def __init__(
         self,
-        policy: Policy,
+        policy: TFPolicy,
         strength: float,
         gamma: float,
         demo_path: str,

@@ -1,6 +1,6 @@
 import numpy as np
 
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.trainer import UnityTrainerException
@@ -9,7 +9,7 @@ from mlagents.trainers.trainer import UnityTrainerException
 class BCModule:
     def __init__(
         self,
-        policy: Policy,
+        policy: TFPolicy,
         policy_learning_rate: float,
         default_batch_size: int,
         default_num_epoch: int,
