@@ -31,7 +31,7 @@ class SACTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super(SACTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super(SACTrainer, self).__init__(brain, reward_buff_cap, trainer_parameters, training, run_id)
         self.param_keys = [
             "batch_size",
             "buffer_size",
@@ -78,20 +78,7 @@ class SACTrainer(Trainer):
         self.stats = stats
 
         self.training_buffer = Buffer()
-
-        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
-
-    def __str__(self):
-        return """Hyperparameters for the SAC Trainer of brain {0}: \n{1}""".format(
-            self.brain_name,
-            "\n".join(
-                [
-                    "\t{0}:\t{1}".format(x, self.trainer_parameters[x])
-                    for x in self.param_keys
-                ]
-            ),
-        )
 
     @property
     def parameters(self):

@@ -3,9 +3,11 @@ import logging
 import os
 import tensorflow as tf
 import numpy as np
+from collections import deque
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
 from mlagents.trainers import TrainerMetrics
+from mlagents.envs import BrainParameters
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -21,13 +23,21 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the base class for the mlagents.envs.trainers"""
 
-    def __init__(self, brain, trainer_parameters, training, run_id):
+    def __init__(
+        self,
+        brain: BrainParameters,
+        reward_buff_cap: int,
+        trainer_parameters: dict,
+        training: bool,
+        run_id: int,
+    ):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
         :dict trainer_parameters: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
         :int run_id: The identifier of the current run
+        :int reward_buff_cap: 
         """
         self.param_keys = []
         self.brain_name = brain.brain_name
@@ -43,10 +53,8 @@ class Trainer(object):
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
+        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.policy = None
-
-    def __str__(self):
-        return """{} Trainer""".format(self.__class__)
 
     def check_param_keys(self):
         for k in self.param_keys:
@@ -78,6 +86,54 @@ class Trainer(object):
                 ]
             )
 
+    def __str__(self):
+        return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
+            self.__class__.__name__,
+            self.brain_name,
+            self.dict_to_str(self.trainer_parameters, 0),
+        )
+
+    @property
+    def parameters(self):
+        """
+        Returns the trainer parameters of the trainer.
+        """
+        return self.trainer_parameters
+
+    @property
+    def get_max_steps(self):
+        """
+        Returns the maximum number of steps. Is used to know when the trainer should be stopped.
+        :return: The maximum number of steps of the trainer
+        """
+        return float(self.trainer_parameters["max_steps"])
+
+    @property
+    def get_step(self):
+        """
+        Returns the number of steps the trainer has performed
+        :return: the step count of the trainer
+        """
+        return self.step
+
+    @property
+    def reward_buffer(self):
+        """
+        Returns the reward buffer. The reward buffer contains the cumulative
+        rewards of the most recent episodes completed by agents using this
+        trainer.
+        :return: the reward buffer.
+        """
+        return self._reward_buffer
+
+    def increment_step(self, n_steps: int) -> None:
+        """
+        Increment the step count of the trainer
+
+        :param n_steps: number of steps to increment the step count by
+        """
+        self.step = self.policy.increment_step(n_steps)
+
     @property
     def parameters(self):
         """
@@ -91,28 +147,6 @@ class Trainer(object):
         Returns the graph scope of the trainer.
         """
         raise UnityTrainerException("The graph_scope property was not implemented.")
-
-    @property
-    def get_max_steps(self):
-        """
-        Returns the maximum number of steps. Is used to know when the trainer should be stopped.
-        :return: The maximum number of steps of the trainer
-        """
-        raise UnityTrainerException("The get_max_steps property was not implemented.")
-
-    @property
-    def get_step(self):
-        """
-        Returns the number of training steps the trainer has performed
-        :return: the step count of the trainer
-        """
-        raise UnityTrainerException("The get_step property was not implemented.")
-
-    def increment_step(self, n_steps: int) -> None:
-        """
-        Increment the step count of the trainer
-        """
-        raise UnityTrainerException("The increment_step method was not implemented.")
 
     def add_experiences(
         self,

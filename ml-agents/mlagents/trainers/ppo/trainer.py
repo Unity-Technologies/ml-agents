@@ -32,7 +32,7 @@ class PPOTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
         """
-        super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super(PPOTrainer, self).__init__(brain, reward_buff_cap, trainer_parameters, training, run_id)
         self.param_keys = [
             "batch_size",
             "beta",
@@ -78,57 +78,7 @@ class PPOTrainer(Trainer):
         self.stats = stats
 
         self.training_buffer = Buffer()
-
-        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
-
-    def __str__(self):
-        return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
-            self.__class__.__name__,
-            self.brain_name,
-            self.dict_to_str(self.trainer_parameters, 0),
-        )
-
-    @property
-    def parameters(self):
-        """
-        Returns the trainer parameters of the trainer.
-        """
-        return self.trainer_parameters
-
-    @property
-    def get_max_steps(self):
-        """
-        Returns the maximum number of steps. Is used to know when the trainer should be stopped.
-        :return: The maximum number of steps of the trainer
-        """
-        return float(self.trainer_parameters["max_steps"])
-
-    @property
-    def get_step(self):
-        """
-        Returns the number of steps the trainer has performed
-        :return: the step count of the trainer
-        """
-        return self.step
-
-    @property
-    def reward_buffer(self):
-        """
-        Returns the reward buffer. The reward buffer contains the cumulative
-        rewards of the most recent episodes completed by agents using this
-        trainer.
-        :return: the reward buffer.
-        """
-        return self._reward_buffer
-
-    def increment_step(self, n_steps: int) -> None:
-        """
-        Increment the step count of the trainer
-
-        :param n_steps: number of steps to increment the step count by
-        """
-        self.step = self.policy.increment_step(n_steps)
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
