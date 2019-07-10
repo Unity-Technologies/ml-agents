@@ -1,0 +1,19 @@
+episode-length: 1000
+
+mass:
+    sampler-type: "uniform"
+    min_value: 0.5
+    max_value: 10
+    seed: 5
+
+gravity:
+    sampler-type: "uniform"
+    min_value: 7
+    max_value: 12
+    seed: 5
+
+scale:
+    sampler-type: "uniform"
+    min_value: 0.75
+    max_value: 3
+    seed: 5
