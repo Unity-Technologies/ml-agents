@@ -158,7 +158,7 @@ def timed(func: FuncT) -> FuncT:
     """
 
     def wrapped(*args, **kwargs):
-        with hierarchical_timer(func.__name__):
+        with hierarchical_timer(func.__qualname__):
             return func(*args, **kwargs)
 
     return wrapped  # type: ignore
