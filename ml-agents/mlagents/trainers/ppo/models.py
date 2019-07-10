@@ -40,16 +40,11 @@ class PPOModel(LearningModel):
         :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used. 
         :return: a sub-class of PPOAgent tailored to the environment.
         """
-        if stream_names is None:
-            stream_names = []
         LearningModel.__init__(
             self, m_size, normalize, use_recurrent, brain, seed, stream_names
         )
         if num_layers < 1:
             num_layers = 1
-        self.last_reward, self.new_reward, self.update_reward = (
-            self.create_reward_encoder()
-        )
         if brain.vector_action_space_type == "continuous":
             self.create_cc_actor_critic(h_size, num_layers)
             self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
@@ -66,16 +61,6 @@ class PPOModel(LearningModel):
             max_step,
         )
 
-    @staticmethod
-    def create_reward_encoder():
-        """Creates TF ops to track and increment recent average cumulative reward."""
-        last_reward = tf.Variable(
-            0, name="last_reward", trainable=False, dtype=tf.float32
-        )
-        new_reward = tf.placeholder(shape=[], dtype=tf.float32, name="new_reward")
-        update_reward = tf.assign(last_reward, new_reward)
-        return last_reward, new_reward, update_reward
-
     def create_losses(
         self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step
     ):
@@ -83,7 +68,7 @@ class PPOModel(LearningModel):
         Creates training-specific Tensorflow ops for PPO models.
         :param probs: Current policy probabilities
         :param old_probs: Past policy probabilities
-        :param value_streams: Current value estimates from each value stream
+        :param value_heads: Value estimate tensors from each value stream
         :param beta: Entropy regularization strength
         :param entropy: Current policy entropy
         :param epsilon: Value for policy-divergence threshold
@@ -97,9 +82,7 @@ class PPOModel(LearningModel):
                 shape=[None], dtype=tf.float32, name="{}_returns".format(name)
             )
             old_value = tf.placeholder(
-                shape=[None],
-                dtype=tf.float32,
-                name="{}_value_estimate".format(name),
+                shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
             )
             self.returns_holders[name] = returns_holder
             self.old_values[name] = old_value

@@ -4,7 +4,8 @@ import os
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects import *
-from google.protobuf.internal.decoder import _DecodeVarint32
+from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -104,7 +105,7 @@ def load_demonstration(file_path):
             if obs_decoded > 1:
                 agent_info = AgentInfoProto()
                 agent_info.ParseFromString(data[pos : pos + next_pos])
-                brain_info = BrainInfo.from_agent_proto([agent_info], brain_params)
+                brain_info = BrainInfo.from_agent_proto(0, [agent_info], brain_params)
                 brain_infos.append(brain_info)
                 if len(brain_infos) == total_expected:
                     break

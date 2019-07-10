@@ -10,11 +10,15 @@ logger = logging.getLogger("mlagents.trainers")
 class LearningModel(object):
     _version_number_ = 2
 
-    def __init__(self, m_size, normalize, use_recurrent, brain, seed, stream_names):
+    def __init__(
+        self, m_size, normalize, use_recurrent, brain, seed, stream_names=None
+    ):
         tf.set_random_seed(seed)
         self.brain = brain
         self.vector_in = None
-        self.global_step, self.increment_step = self.create_global_steps()
+        self.global_step, self.increment_step, self.steps_to_increment = (
+            self.create_global_steps()
+        )
         self.visual_in = []
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name="batch_size")
         self.sequence_length = tf.placeholder(
@@ -22,7 +26,7 @@ class LearningModel(object):
         )
         self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name="masks")
         self.mask = tf.cast(self.mask_input, tf.int32)
-        self.stream_names = stream_names
+        self.stream_names = stream_names or []
         self.use_recurrent = use_recurrent
         if self.use_recurrent:
             self.m_size = m_size
@@ -68,8 +72,15 @@ class LearningModel(object):
         global_step = tf.Variable(
             0, name="global_step", trainable=False, dtype=tf.int32
         )
-        increment_step = tf.assign(global_step, tf.add(global_step, 1))
-        return global_step, increment_step
+        steps_to_increment = tf.placeholder(
+            shape=[], dtype=tf.int32, name="steps_to_increment"
+        )
+        increment_step = tf.assign(global_step, tf.add(global_step, steps_to_increment))
+        return global_step, increment_step, steps_to_increment
+
+    @staticmethod
+    def scaled_init(scale):
+        return c_layers.variance_scaling_initializer(scale)
 
     @staticmethod
     def scaled_init(scale):

@@ -1,11 +1,19 @@
 import numpy as np
-from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 
 
 class CuriosityRewardSignal(RewardSignal):
-    def __init__(self, policy: Policy, strength, gamma, encoding_size=128, num_epoch=3):
+    def __init__(
+        self,
+        policy: TFPolicy,
+        strength: float,
+        gamma: float,
+        encoding_size: int = 128,
+        learning_rate: float = 3e-4,
+        num_epoch: int = 3,
+    ):
         """
         Creates the Curiosity reward generator
         :param policy: The Learning Policy
@@ -13,12 +21,10 @@ class CuriosityRewardSignal(RewardSignal):
         :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter
         """
-        self.policy = policy
-        self.strength = strength
-        self.gamma = gamma
-        self.stat_name = "Policy/Curiosity Reward"
-        self.value_name = "Policy/Curiosity Value Estimate"
-        self.model = CuriosityModel(policy.model, encoding_size=encoding_size)
+        super().__init__(policy, strength, gamma)
+        self.model = CuriosityModel(
+            policy.model, encoding_size=encoding_size, learning_rate=learning_rate
+        )
         self.num_epoch = num_epoch
         self.update_dict = {
             "forward_loss": self.model.forward_loss,
@@ -28,6 +34,12 @@ class CuriosityRewardSignal(RewardSignal):
         self.has_updated = False
 
     def evaluate(self, current_info, next_info):
+        """
+        Evaluates the reward for the agents present in current_info given the next_info
+        :param current_info: The current BrainInfo.
+        :param next_info: The BrainInfo from the next timestep.
+        :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
+        """
         if len(current_info.agents) == 0:
             return []
 
@@ -60,7 +72,7 @@ class CuriosityRewardSignal(RewardSignal):
         scaled_reward = np.clip(
             unscaled_reward * float(self.has_updated) * self.strength, 0, 1
         )
-        return scaled_reward, unscaled_reward
+        return RewardSignalResult(scaled_reward, unscaled_reward)
 
     @classmethod
     def check_config(cls, config_dict):
@@ -72,10 +84,10 @@ class CuriosityRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def update(self, update_buffer, num_sequences):
-        """ 
+        """
         Updates Curiosity model using training buffer. Divides training buffer into mini batches and performs
-        gradient descent. 
-        :param update_buffer: Update buffer from which to pull data from.  
+        gradient descent.
+        :param update_buffer: Update buffer from which to pull data from.
         :param num_sequences: Number of sequences in the update buffer.
         :return: Dict of stats that should be reported to Tensorboard.
         """

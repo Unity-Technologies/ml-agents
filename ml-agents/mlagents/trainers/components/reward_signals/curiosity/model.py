@@ -4,7 +4,10 @@ from mlagents.trainers.models import LearningModel
 
 class CuriosityModel(object):
     def __init__(
-        self, policy_model: LearningModel, encoding_size=128, learning_rate=1e-4
+        self,
+        policy_model: LearningModel,
+        encoding_size: int = 128,
+        learning_rate: float = 3e-4,
     ):
         """
         Creates the curiosity model for the Curiosity reward Generator
@@ -35,7 +38,7 @@ class CuriosityModel(object):
             next_visual_encoders = []
             for i in range(self.policy_model.vis_obs_size):
                 # Create input ops for next (t+1) visual observations.
-                next_visual_input = self.policy_model.create_visual_input(
+                next_visual_input = LearningModel.create_visual_input(
                     self.policy_model.brain.camera_resolutions[i],
                     name="next_visual_observation_" + str(i),
                 )

@@ -3,16 +3,15 @@ import numpy as np
 
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.bc import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOPolicy(Policy):
+class PPOPolicy(TFPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.
@@ -48,20 +47,6 @@ class PPOPolicy(Policy):
             for reward_signal, config in reward_signal_configs.items():
                 self.reward_signals[reward_signal] = create_reward_signal(
                     self, reward_signal, config
-                )
-
-            # BC trainer is not a reward signal
-            if "pretraining" in trainer_params:
-                self.bc_trainer = BCModule(
-                    self,
-                    float(
-                        trainer_params["pretraining"]["pretraining_strength"]
-                        * trainer_params["learning_rate"]
-                    ),
-                    trainer_params["pretraining"]["demo_path"],
-                    trainer_params["pretraining"]["pretraining_steps"],
-                    trainer_params["batch_size"],
-                    trainer_params["use_recurrent"],
                 )
 
         if load:
@@ -144,7 +129,7 @@ class PPOPolicy(Policy):
                 [-1, sum(self.model.act_size)]
             ),
         }
-        for i, name in enumerate(self.reward_signals.keys()):
+        for name in self.reward_signals:
             feed_dict[self.model.returns_holders[name]] = mini_batch[
                 "{}_returns".format(name)
             ].flatten()
@@ -235,20 +220,4 @@ class PPOPolicy(Policy):
             text=None,
             value=mean_values,
             outputs=run_out,
-        )
-
-    def get_last_reward(self):
-        """
-        Returns the last reward the trainer has had
-        :return: the new last reward
-        """
-        return self.sess.run(self.model.last_reward)
-
-    def update_reward(self, new_reward):
-        """
-        Updates reward value for policy.
-        :param new_reward: New reward to save.
-        """
-        self.sess.run(
-            self.model.update_reward, feed_dict={self.model.new_reward: new_reward}
         )
