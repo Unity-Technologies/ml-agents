@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.sac.models import SACModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
@@ -13,7 +13,7 @@ from mlagents.trainers.components.bc import BCModule
 logger = logging.getLogger("mlagents.trainers")
 
 
-class SACPolicy(Policy):
+class SACPolicy(TFPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.
