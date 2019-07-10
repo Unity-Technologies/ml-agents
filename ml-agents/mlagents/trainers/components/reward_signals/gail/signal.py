@@ -1,7 +1,6 @@
 import numpy as np
 
 from mlagents.trainers.components.reward_signals import RewardSignal
-from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
@@ -22,7 +21,7 @@ class GAILRewardSignal(RewardSignal):
         print_debug: bool = False,
     ):
         """
-        The Gail Reward signal generator.
+        The GAIL Reward signal generator.
         :param policy: The policy of the learning model
         :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter
@@ -85,7 +84,7 @@ class GAILRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, update_buffer, num_sequences=32):
+    def update(self, update_buffer, n_sequences):
         """
         Updates model using buffer.
         :param policy_buffer: The policy buffer containing the trajectories for the current policy.
@@ -93,7 +92,7 @@ class GAILRewardSignal(RewardSignal):
         :return: The loss of the update.
         """
         batch_losses = []
-        n_sequences = num_sequences // 2
+        n_sequences = n_sequences // 2  # Divide by 2 since we have two buffers
         possible_demo_batches = (
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
