@@ -4,7 +4,12 @@ from mlagents.trainers.models import LearningModel
 
 
 class BCModel(object):
-    def __init__(self, policy_model: LearningModel, lr, anneal_steps):
+    def __init__(
+        self,
+        policy_model: LearningModel,
+        learning_rate: float = 3e-4,
+        anneal_steps: int = 0,
+    ):
         """
         Tensorflow operations to perform Behavioral Cloning on a Policy model
         :param policy_model: The policy of the learning algorithm
@@ -15,7 +20,7 @@ class BCModel(object):
         self.expert_visual_in = self.policy_model.visual_in
         self.obs_in_expert = self.policy_model.vector_in
         self.make_inputs()
-        self.create_loss(lr, anneal_steps)
+        self.create_loss(learning_rate, anneal_steps)
 
     def make_inputs(self):
         """
