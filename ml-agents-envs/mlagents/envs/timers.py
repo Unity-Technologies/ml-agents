@@ -4,6 +4,33 @@ from time import perf_counter
 from contextlib import contextmanager
 from typing import Any, Callable, Dict, Generator, TypeVar
 
+"""
+Lightweight, hierarchical timers for profiling sections of code.
+
+Example:
+
+@timed
+def foo(t):
+    time.sleep(t)
+
+def main():
+    for i in range(3):
+        foo(i + 1)
+    with hierarchical_timer("context"):
+        foo(1)
+
+    print(get_timer_tree())
+
+This would produce a timer tree like
+    (root)
+        "foo"
+        "context"
+            "foo"
+
+The total time and counts are tracked for each block of code; in this example "foo" and "context.foo" are considered
+distinct blocks, and are tracked separately.
+"""
+
 
 class TimerNode:
     """
