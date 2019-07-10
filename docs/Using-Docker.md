@@ -124,7 +124,7 @@ docker run --name 3DBallContainer.first.trial \
            balance.ball.v0.1:latest 3DBall \
            --docker-target-name=unity-volume \
            trainer_config.yaml \
-           --env=3DBall
+           --env=3DBall \
            --train \
            --run-id=3dball_first_trial
 ```
