@@ -9,10 +9,8 @@ from mlagents.envs.env_manager import EnvManager, StepInfo
 from mlagents.envs.timers import (
     timed,
     hierarchical_timer,
-    get_timer_tree,
     reset_timers,
     _global_timer_stack,
-    merge_timers,
 )
 from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo
 
@@ -69,7 +67,6 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
 
     try:
         while True:
-            # print(f"{worker_id} {get_timer_tree()}")
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
@@ -97,7 +94,9 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
             elif cmd.name == "global_done":
                 _send_response("global_done", env.global_done)
             elif cmd.name == "timers":
-                _send_response("timers", _global_timer_stack)
+                # The timers in this process are independent from all the others.
+                # So send back the root timer, then clear them.
+                _send_response("timers", _global_timer_stack.root)
                 reset_timers()
             elif cmd.name == "close":
                 break
@@ -155,12 +154,13 @@ class SubprocessEnvManager(EnvManager):
             env_worker.previous_step = step_info
             steps.append(step_info)
 
-        # Accumulate the timers from the workers
-        with hierarchical_timer("workers"):
+        # Get timers from the workers, and add them to the "main" timers in this process
+        with hierarchical_timer("workers") as main_timer_node:
             for env_worker in self.env_workers:
                 env_worker.send("timers")
-                worker_timers = env_worker.recv().payload
-                merge_timers(worker_timers)
+                worker_timer_node = env_worker.recv().payload
+                # TODO store these separately to indicate they ran in parallel?
+                main_timer_node.merge(worker_timer_node)
 
         return steps
 

@@ -62,6 +62,11 @@ class TimerNode:
         self.count += 1
 
     def merge(self, other: "TimerNode"):
+        """
+        Add the other node to this node, then do the same recurively on its children.
+        :param other:
+        :return:
+        """
         self.total += other.total
         self.count += other.count
         for other_child_name, other_child_node in other.children.items():
@@ -126,14 +131,6 @@ class TimerStack:
 
         return res
 
-    def merge(self, other_stack: "TimerStack") -> None:
-        # Insert the other stack (excluding it's root) under the current node
-        current_node: TimerNode = self.stack[-1]
-        other_node: TimerNode = other_stack.root
-        for other_child_name, other_child_node in other_node.children.items():
-            child = current_node.get_child(other_child_name)
-            child.merge(other_child_node)
-
 
 # Global instance of a TimerStack. This is generally all that we need for profiling, but you can potentially
 # create multiple instances and pass them to the contextmanager
@@ -194,8 +191,3 @@ def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:
 def reset_timers(timer_stack: TimerStack = None) -> None:
     timer_stack = timer_stack or _global_timer_stack
     timer_stack.reset()
-
-
-def merge_timers(other_stack: TimerStack, timer_stack: TimerStack = None):
-    timer_stack = timer_stack or _global_timer_stack
-    timer_stack.merge(other_stack)
