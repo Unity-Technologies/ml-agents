@@ -61,6 +61,13 @@ class TimerNode:
         self.total += elapsed
         self.count += 1
 
+    def merge(self, other: "TimerNode"):
+        self.total += other.total
+        self.count += other.count
+        for other_child_name, other_child_node in other.children.items():
+            child = self.get_child(other_child_name)
+            child.merge(other_child_node)
+
 
 class TimerStack:
     """
@@ -71,6 +78,10 @@ class TimerStack:
     __slots__ = ["root", "stack"]
 
     def __init__(self):
+        self.root = TimerNode()
+        self.stack = [self.root]
+
+    def reset(self):
         self.root = TimerNode()
         self.stack = [self.root]
 
@@ -115,6 +126,14 @@ class TimerStack:
 
         return res
 
+    def merge(self, other_stack: "TimerStack") -> None:
+        # Insert the other stack (excluding it's root) under the current node
+        current_node: TimerNode = self.stack[-1]
+        other_node: TimerNode = other_stack.root
+        for other_child_name, other_child_node in other_node.children.items():
+            child = current_node.get_child(other_child_name)
+            child.merge(other_child_node)
+
 
 # Global instance of a TimerStack. This is generally all that we need for profiling, but you can potentially
 # create multiple instances and pass them to the contextmanager
@@ -133,7 +152,7 @@ def hierarchical_timer(name: str, timer_stack: TimerStack = None) -> Generator:
 
     try:
         # The wrapped code block will run here.
-        yield
+        yield timer_node
     finally:
         # This will trigger either when the context manager exits, or an exception is raised.
         # We'll accumulate the time, and the exception (if any) gets raised automatically.
@@ -170,3 +189,13 @@ def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:
     """
     timer_stack = timer_stack or _global_timer_stack
     return timer_stack.get_timing_tree()
+
+
+def reset_timers(timer_stack: TimerStack = None) -> None:
+    timer_stack = timer_stack or _global_timer_stack
+    timer_stack.reset()
+
+
+def merge_timers(other_stack: TimerStack, timer_stack: TimerStack = None):
+    timer_stack = timer_stack or _global_timer_stack
+    timer_stack.merge(other_stack)

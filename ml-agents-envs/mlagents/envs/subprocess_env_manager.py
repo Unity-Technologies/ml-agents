@@ -6,7 +6,14 @@ from multiprocessing import Process, Pipe
 from multiprocessing.connection import Connection
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, StepInfo
-from mlagents.envs.timers import timed, hierarchical_timer
+from mlagents.envs.timers import (
+    timed,
+    hierarchical_timer,
+    get_timer_tree,
+    reset_timers,
+    _global_timer_stack,
+    merge_timers,
+)
 from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo
 
 
@@ -62,6 +69,7 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
 
     try:
         while True:
+            # print(f"{worker_id} {get_timer_tree()}")
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
@@ -88,6 +96,9 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
                 _send_response("reset", all_brain_info)
             elif cmd.name == "global_done":
                 _send_response("global_done", env.global_done)
+            elif cmd.name == "timers":
+                _send_response("timers", _global_timer_stack)
+                reset_timers()
             elif cmd.name == "close":
                 break
     except KeyboardInterrupt:
@@ -129,7 +140,7 @@ class SubprocessEnvManager(EnvManager):
             env_worker.previous_all_action_info = all_action_info
             env_worker.send("step", all_action_info)
 
-        with hierarchical_timer("recv"):
+        with hierarchical_timer("step_recv"):
             step_brain_infos: List[AllBrainInfo] = [
                 self.env_workers[i].recv().payload for i in range(len(self.env_workers))
             ]
@@ -143,6 +154,14 @@ class SubprocessEnvManager(EnvManager):
             )
             env_worker.previous_step = step_info
             steps.append(step_info)
+
+        # Accumulate the timers from the workers
+        with hierarchical_timer("workers"):
+            for env_worker in self.env_workers:
+                env_worker.send("timers")
+                worker_timers = env_worker.recv().payload
+                merge_timers(worker_timers)
+
         return steps
 
     def reset(self, config=None, train_mode=True) -> List[StepInfo]:
@@ -166,12 +185,12 @@ class SubprocessEnvManager(EnvManager):
         return self.env_workers[0].recv().payload
 
     def close(self):
-        for env in self.env_workers:
-            env.close()
+        for env_worker in self.env_workers:
+            env_worker.close()
 
     def _broadcast_message(self, name: str, payload=None):
-        for env in self.env_workers:
-            env.send(name, payload)
+        for env_worker in self.env_workers:
+            env_worker.send(name, payload)
 
     @timed
     def _take_step(self, last_step: StepInfo) -> Dict[str, ActionInfo]:

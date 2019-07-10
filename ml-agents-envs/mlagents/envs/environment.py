@@ -7,6 +7,7 @@ import subprocess
 from typing import *
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.timers import timed, hierarchical_timer
 from .brain import AllBrainInfo, BrainInfo, BrainParameters
 from .exception import (
     UnityEnvironmentException,
@@ -349,6 +350,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
+    @timed
     def step(
         self,
         vector_action=None,
@@ -622,6 +624,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
         return _data, global_done
 
+    @timed
     def _generate_step_input(
         self, vector_action, memory, text_action, value, custom_action
     ) -> UnityInput:
