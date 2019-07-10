@@ -3,7 +3,7 @@ import numpy as np
 
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
@@ -11,7 +11,7 @@ from mlagents.trainers.components.reward_signals.reward_signal_factory import (
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOPolicy(Policy):
+class PPOPolicy(TFPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.

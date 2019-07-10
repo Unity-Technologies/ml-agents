@@ -1,6 +1,6 @@
 import logging
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from collections import namedtuple
 import numpy as np
 import abc
@@ -15,7 +15,7 @@ RewardSignalResult = namedtuple(
 
 
 class RewardSignal(abc.ABC):
-    def __init__(self, policy: Policy, strength: float, gamma: float):
+    def __init__(self, policy: TFPolicy, strength: float, gamma: float):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)

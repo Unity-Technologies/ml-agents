@@ -9,7 +9,7 @@ from mlagents.trainers.components.reward_signals.extrinsic.signal import (
 from mlagents.trainers.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -21,7 +21,7 @@ NAME_TO_CLASS: Dict[str, Type[RewardSignal]] = {
 
 
 def create_reward_signal(
-    policy: Policy, name: str, config_entry: Dict[str, Any]
+    policy: TFPolicy, name: str, config_entry: Dict[str, Any]
 ) -> RewardSignal:
     """
     Creates a reward signal class based on the name and config entry provided as a dict.

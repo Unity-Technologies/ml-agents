@@ -74,6 +74,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             None
         )  # The process that is started. If None, no process was started
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
+        self.worker_id = worker_id
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -617,7 +618,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         for brain_name in output.agentInfos:
             agent_info_list = output.agentInfos[brain_name].value
             _data[brain_name] = BrainInfo.from_agent_proto(
-                agent_info_list, self.brains[brain_name]
+                self.worker_id, agent_info_list, self.brains[brain_name]
             )
         return _data, global_done
 

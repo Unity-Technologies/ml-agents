@@ -4,7 +4,8 @@ from typing import Any, Dict
 import numpy as np
 import tensorflow as tf
 
-from mlagents.trainers import ActionInfo, UnityException
+from mlagents.trainers import UnityException
+from mlagents.envs import Policy, ActionInfo
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.envs import BrainInfo
@@ -21,7 +22,7 @@ class UnityPolicyException(UnityException):
     pass
 
 
-class Policy(object):
+class TFPolicy(Policy):
     """
     Contains a learning model, and the necessary
     functions to interact with it to perform evaluate and updating.
@@ -168,11 +169,16 @@ class Policy(object):
         step = self.sess.run(self.model.global_step)
         return step
 
-    def increment_step(self):
+    def increment_step(self, n_steps):
         """
         Increments model step.
         """
-        self.sess.run(self.model.increment_step)
+        out_dict = {
+            "global_step": self.model.global_step,
+            "increment_step": self.model.increment_step,
+        }
+        feed_dict = {self.model.steps_to_increment: n_steps}
+        return self.sess.run(out_dict, feed_dict=feed_dict)["global_step"]
 
     def get_inference_vars(self):
         """
