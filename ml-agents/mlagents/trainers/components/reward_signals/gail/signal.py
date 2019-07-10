@@ -2,7 +2,7 @@ import numpy as np
 
 from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
@@ -10,36 +10,38 @@ from mlagents.trainers.demo_loader import demo_to_buffer
 class GAILRewardSignal(RewardSignal):
     def __init__(
         self,
-        policy: Policy,
-        strength,
-        gamma,
-        demo_path,
-        num_epoch=3,
-        encoding_size=128,
-        learning_rate=3e-4,
-        max_batches=10,
-        print_debug=False,
+        policy: TFPolicy,
+        strength: float,
+        gamma: float,
+        demo_path: str,
+        num_epoch: int = 3,
+        encoding_size: int = 64,
+        learning_rate: float = 3e-4,
+        max_batches: int = 10,
+        use_actions: bool = False,
+        print_debug: bool = False,
     ):
         """
         The Gail Reward signal generator.
         :param policy: The policy of the learning model
         :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
-        :param 
+        reward multiplied by the strength parameter
+        :param gamma: The time discounting factor used for this reward.
         :param demo_path: The path to the demonstration file
         :param encoding_size: The size of the the hidden layers of the discriminator
-        :param learning_rate: The Learning Rate
-        reward multiplied by the strength parameter
+        :param learning_rate: The Learning Rate used during GAIL updates. 
+        :param max_batches: The maximum number of batches to update during GAIL updates. 
+        :param use_actions: Whether or not to use the actions for the discriminator. 
+        :param print_debug: Whether or not to print debug statements during GAIL updates. 
         """
-        self.policy = policy
-        self.strength = strength
-        self.gamma = gamma
-        self.stat_name = "Policy/GAIL Reward"
-        self.value_name = "Policy/GAIL Value Estimate"
+        super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
         self.max_batches = max_batches
         self.print_debug = print_debug
 
-        self.model = GAILModel(policy.model, encoding_size, learning_rate, 64)
+        self.model = GAILModel(
+            policy.model, 128, learning_rate, encoding_size, use_actions
+        )
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 

@@ -15,7 +15,7 @@ from mlagents.envs import UnityEnvironment
 
 @pytest.fixture
 def dummy_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         trainer: ppo
         batch_size: 32
@@ -36,9 +36,8 @@ def dummy_config():
         memory_size: 8
         pretraining:
           demo_path: ./demos/ExpertPyramid.demo 
-          pretraining_strength: 1.0
-          pretraining_steps: 10000000
-          curiosity_strength: 0.0
+          strength: 1.0
+          steps: 10000000
         reward_signals:
           extrinsic:
             strength: 1.0
@@ -70,18 +69,36 @@ def create_ppo_policy_with_bc_mock(mock_env, dummy_config, use_rnn):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
+def test_bcmodule_defaults(mock_env, dummy_config):
+    # See if default values match
+    env, policy = create_ppo_policy_with_bc_mock(mock_env, dummy_config, False)
+    assert policy.bc_module.num_epoch == dummy_config["num_epoch"]
+    assert policy.bc_module.batch_size == dummy_config["batch_size"]
+    env.close()
+    # Assign strange values and see if it overrides properly
+    dummy_config["pretraining"]["num_epoch"] = 100
+    dummy_config["pretraining"]["batch_size"] = 10000
+    env, policy = create_ppo_policy_with_bc_mock(mock_env, dummy_config, False)
+    assert policy.bc_module.num_epoch == 100
+    assert policy.bc_module.batch_size == 10000
+    env.close()
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
 def test_bcmodule_update(mock_env, dummy_config):
     env, policy = create_ppo_policy_with_bc_mock(mock_env, dummy_config, False)
-    loss = policy.bc_trainer.update()
-    assert isinstance(loss, np.float32)
+    stats = policy.bc_module.update()
+    for _, item in stats.items():
+        assert isinstance(item, np.float32)
     env.close()
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
 def test_bcmodule_rnn_update(mock_env, dummy_config):
     env, policy = create_ppo_policy_with_bc_mock(mock_env, dummy_config, True)
-    loss = policy.bc_trainer.update()
-    assert isinstance(loss, np.float32)
+    stats = policy.bc_module.update()
+    for _, item in stats.items():
+        assert isinstance(item, np.float32)
     env.close()
 
 

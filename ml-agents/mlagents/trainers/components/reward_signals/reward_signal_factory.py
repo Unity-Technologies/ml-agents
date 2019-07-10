@@ -6,6 +6,7 @@ from mlagents.trainers.components.reward_signals.reward_signal import RewardSign
 from mlagents.trainers.components.reward_signals.extrinsic.signal import (
     ExtrinsicRewardSignal,
 )
+from mlagents.trainers.components.reward_signals.gail.signal import GAILRewardSignal
 from mlagents.trainers.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )

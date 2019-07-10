@@ -46,6 +46,18 @@ def dummy_config():
 
 
 @pytest.fixture
+def gail_dummy_config():
+    return {
+        "gail": {
+            "strength": 0.1,
+            "gamma": 0.9,
+            "encoding_size": 128,
+            "demo_path": os.path.dirname(os.path.abspath(__file__)) + "/test.demo",
+        }
+    }
+
+
+@pytest.fixture
 def curiosity_dummy_config():
     return {"curiosity": {"strength": 0.1, "gamma": 0.9, "encoding_size": 128}}
 
@@ -90,6 +102,66 @@ def create_ppo_policy_mock(
     trainer_parameters["use_recurrent"] = use_rnn
     policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False)
     return env, policy
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_gail_cc_evaluate(mock_env, dummy_config, gail_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, False, False, False
+    )
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+    next_brain_info = env.step()[env.brain_names[0]]
+    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+        brain_info, next_brain_info
+    )
+    assert scaled_reward.shape == (12,)
+    assert unscaled_reward.shape == (12,)
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_gail_dc_evaluate(mock_env, dummy_config, gail_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, False, True, False
+    )
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+    next_brain_info = env.step()[env.brain_names[0]]
+    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+        brain_info, next_brain_info
+    )
+    assert scaled_reward.shape == (12,)
+    assert unscaled_reward.shape == (12,)
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_gail_visual_evaluate(mock_env, dummy_config, gail_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, False, False, True
+    )
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+    next_brain_info = env.step()[env.brain_names[0]]
+    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+        brain_info, next_brain_info
+    )
+    assert scaled_reward.shape == (12,)
+    assert unscaled_reward.shape == (12,)
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_gail_rnn_evaluate(mock_env, dummy_config, gail_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, True, False, False
+    )
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+    next_brain_info = env.step()[env.brain_names[0]]
+    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+        brain_info, next_brain_info
+    )
+    assert scaled_reward.shape == (12,)
+    assert unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")

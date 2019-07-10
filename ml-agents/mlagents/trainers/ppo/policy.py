@@ -7,6 +7,7 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
+from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -48,6 +49,19 @@ class PPOPolicy(TFPolicy):
                 self.reward_signals[reward_signal] = create_reward_signal(
                     self, reward_signal, config
                 )
+
+            # Create pretrainer if needed
+            if "pretraining" in trainer_params:
+                BCModule.check_config(trainer_params["pretraining"])
+                self.bc_module = BCModule(
+                    self,
+                    policy_learning_rate=trainer_params["learning_rate"],
+                    default_batch_size=trainer_params["batch_size"],
+                    default_num_epoch=trainer_params["num_epoch"],
+                    **trainer_params["pretraining"],
+                )
+            else:
+                self.bc_module = None
 
         if load:
             self._load_graph()
