@@ -20,26 +20,44 @@ class PPOPolicy(Policy):
         super().__init__(seed, brain, trainer_params)
         self.has_updated = False
         self.use_curiosity = bool(trainer_params["use_curiosity"])
+        self.devices = devices
 
         with self.graph.as_default():
-            self.multi_model = PPOMultiGPUModel(
-                brain,
-                lr=float(trainer_params["learning_rate"]),
-                h_size=int(trainer_params["hidden_units"]),
-                epsilon=float(trainer_params["epsilon"]),
-                beta=float(trainer_params["beta"]),
-                max_step=float(trainer_params["max_steps"]),
-                normalize=trainer_params["normalize"],
-                use_recurrent=trainer_params["use_recurrent"],
-                num_layers=int(trainer_params["num_layers"]),
-                m_size=self.m_size,
-                use_curiosity=bool(trainer_params["use_curiosity"]),
-                curiosity_strength=float(trainer_params["curiosity_strength"]),
-                curiosity_enc_size=float(trainer_params["curiosity_enc_size"]),
-                seed=seed,
-                devices=devices
-            )
-            self.model = self.multi_model.towers[0]
+            if len(devices) > 1:
+                self.model = PPOMultiGPUModel(
+                    brain,
+                    lr=float(trainer_params["learning_rate"]),
+                    h_size=int(trainer_params["hidden_units"]),
+                    epsilon=float(trainer_params["epsilon"]),
+                    beta=float(trainer_params["beta"]),
+                    max_step=float(trainer_params["max_steps"]),
+                    normalize=trainer_params["normalize"],
+                    use_recurrent=trainer_params["use_recurrent"],
+                    num_layers=int(trainer_params["num_layers"]),
+                    m_size=self.m_size,
+                    use_curiosity=bool(trainer_params["use_curiosity"]),
+                    curiosity_strength=float(trainer_params["curiosity_strength"]),
+                    curiosity_enc_size=float(trainer_params["curiosity_enc_size"]),
+                    seed=seed,
+                    devices=devices
+                )
+            else:
+                self.model = PPOModel(
+                    brain,
+                    lr=float(trainer_params["learning_rate"]),
+                    h_size=int(trainer_params["hidden_units"]),
+                    epsilon=float(trainer_params["epsilon"]),
+                    beta=float(trainer_params["beta"]),
+                    max_step=float(trainer_params["max_steps"]),
+                    normalize=trainer_params["normalize"],
+                    use_recurrent=trainer_params["use_recurrent"],
+                    num_layers=int(trainer_params["num_layers"]),
+                    m_size=self.m_size,
+                    use_curiosity=bool(trainer_params["use_curiosity"]),
+                    curiosity_strength=float(trainer_params["curiosity_strength"]),
+                    curiosity_enc_size=float(trainer_params["curiosity_enc_size"]),
+                    seed=seed,
+                )
 
         if load:
             self._load_graph()
@@ -62,9 +80,9 @@ class PPOPolicy(Policy):
             self.inference_dict["update_variance"] = self.model.update_variance
 
         self.update_dict = {
-            "value_loss": self.multi_model.value_loss,
-            "policy_loss": self.multi_model.policy_loss,
-            "update_batch": self.multi_model.update_batch,
+            "value_loss": self.model.value_loss,
+            "policy_loss": self.model.policy_loss,
+            "update_batch": self.model.update_batch,
         }
         if self.use_curiosity:
             self.update_dict["forward_loss"] = self.model.forward_loss
@@ -110,8 +128,9 @@ class PPOPolicy(Policy):
         :return: Output from update process.
         """
         feed_dict = {}
-        assert(len(mini_batches) == len(self.multi_model.towers))
-        for mini_batch, tower in zip(mini_batches, self.multi_model.towers):
+        models = self.model.towers if len(self.devices) > 1 else [self.model]
+        assert(len(mini_batches) == len(self.model.towers))
+        for mini_batch, tower in zip(models):
             feed_dict[tower.batch_size] = num_sequences
             feed_dict[tower.sequence_length] = self.sequence_length
             feed_dict[tower.mask_input] = mini_batch["masks"].flatten()

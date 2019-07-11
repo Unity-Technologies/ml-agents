@@ -12,7 +12,8 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOMultiGPUModel(object):
-    def __init__(self,
+    def __init__(
+        self,
         brain,
         lr=1e-4,
         h_size=128,
@@ -27,36 +28,52 @@ class PPOMultiGPUModel(object):
         curiosity_strength=0.01,
         curiosity_enc_size=128,
         seed=0,
-        devices=['/cpu:0']
+        devices=["/cpu:0"],
     ):
-        ''' 
+        """
         A multi GPU wrapper for PPO model
-        '''
+        """
         self.towers = []
         for device in devices:
             with tf.device(device):
                 with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE) as scope:
-                    self.towers.append(PPOModel(brain,
-                                lr=lr,
-                                h_size=h_size,
-                                epsilon=epsilon,
-                                beta=beta,
-                                max_step=max_step,
-                                normalize=normalize,
-                                use_recurrent=use_recurrent,
-                                num_layers=num_layers,
-                                m_size=m_size,
-                                use_curiosity=use_curiosity,
-                                curiosity_strength=curiosity_strength,
-                                curiosity_enc_size=curiosity_enc_size,
-                                seed=seed))
+                    self.towers.append(
+                        PPOModel(
+                            brain,
+                            lr=lr,
+                            h_size=h_size,
+                            epsilon=epsilon,
+                            beta=beta,
+                            max_step=max_step,
+                            normalize=normalize,
+                            use_recurrent=use_recurrent,
+                            num_layers=num_layers,
+                            m_size=m_size,
+                            use_curiosity=use_curiosity,
+                            curiosity_strength=curiosity_strength,
+                            curiosity_enc_size=curiosity_enc_size,
+                            seed=seed,
+                        )
+                    )
 
         self.value_loss = tf.reduce_mean(tf.stack([t.value_loss for t in self.towers]))
-        self.policy_loss = tf.reduce_mean(tf.stack([t.policy_loss for t in self.towers]))
+        self.policy_loss = tf.reduce_mean(
+            tf.stack([t.policy_loss for t in self.towers])
+        )
+        if use_curiosity:
+            self.forward_loss = tf.reduce_mean(
+                tf.stack([t.forward_loss for t in self.towers])
+            )
+            self.inverse_loss = tf.reduce_mean(
+                tf.stack([t.inverse_loss for t in self.towers])
+            )
 
         self.optimizer = self.towers[0].optimizer
         avg_grad = self.average_gradients([t.grads for t in self.towers])
         self.update_batch = self.optimizer.apply_gradients(avg_grad)
+
+    def __getattr__(self, name):
+        return getattr(self.towers[0], name)
 
     def average_gradients(self, tower_grads):
         """Averages gradients across towers.
@@ -385,4 +402,4 @@ class PPOModel(LearningModel):
             self.loss += 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
 
         self.grads = self.optimizer.compute_gradients(self.loss)
-        # self.update_batch = optimizer.minimize(self.loss)
+        self.update_batch = optimizer.minimize(self.loss)
