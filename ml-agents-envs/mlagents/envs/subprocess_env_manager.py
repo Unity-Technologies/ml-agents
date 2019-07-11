@@ -6,6 +6,7 @@ from multiprocessing import Process, Pipe
 from multiprocessing.connection import Connection
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, StepInfo
+from mlagents.envs.timers import timed, hierarchical_timer
 from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo
 
 
@@ -128,9 +129,10 @@ class SubprocessEnvManager(EnvManager):
             env_worker.previous_all_action_info = all_action_info
             env_worker.send("step", all_action_info)
 
-        step_brain_infos: List[AllBrainInfo] = [
-            self.env_workers[i].recv().payload for i in range(len(self.env_workers))
-        ]
+        with hierarchical_timer("recv"):
+            step_brain_infos: List[AllBrainInfo] = [
+                self.env_workers[i].recv().payload for i in range(len(self.env_workers))
+            ]
         steps = []
         for i in range(len(step_brain_infos)):
             env_worker = self.env_workers[i]
@@ -171,6 +173,7 @@ class SubprocessEnvManager(EnvManager):
         for env in self.env_workers:
             env.send(name, payload)
 
+    @timed
     def _take_step(self, last_step: StepInfo) -> Dict[str, ActionInfo]:
         all_action_info: Dict[str, ActionInfo] = {}
         for brain_name, brain_info in last_step.current_all_brain_info.items():
