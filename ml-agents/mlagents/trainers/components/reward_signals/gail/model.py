@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
@@ -99,7 +99,7 @@ class GAILModel(object):
                 encoded_policy_list.append(self.policy_model.vector_in)
 
         if self.policy_model.vis_obs_size > 0:
-            self.expert_visual_in = []
+            self.expert_visual_in: List[tf.Tensor] = []
             visual_policy_encoders = []
             visual_expert_encoders = []
             for i in range(self.policy_model.vis_obs_size):
