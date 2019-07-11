@@ -71,9 +71,27 @@ def test_tennis_sampler():
     config = basic_tennis_sampler()
     sampler = SamplerManager(config)
     assert sampler.check_empty_sampler_manager() == False
-    assert sampler.reset_parame
-    cur_sample = sampler.sample_all())
+    assert isinstance(sampler.samplers["angle"], UniformSampler)
+    assert isinstance(sampler.samplers["gravity"], UniformSampler)
+    assert isinstance(sampler.samplers["mass"], MultiRangeUniformSampler)
 
+    cur_sample = sampler.sample_all()
+
+    # Check angle uniform sampler
+    assert sampler.samplers["angle"].min_value == config["angle"]["min_value"]
+    assert sampler.samplers["angle"].max_value == config["angle"]["max_value"]
+    assert cur_sample["angle"] >= config["angle"]["min_value"]
+    assert cur_sample["angle"] <= config["angle"]["max_value"]
+
+    # Check gravity uniform sampler
+    assert sampler.samplers["gravity"].min_value == config["gravity"]["min_value"]
+    assert sampler.samplers["gravity"].max_value == config["gravity"]["max_value"]
+    assert cur_sample["gravity"] >= config["gravity"]["min_value"]
+    assert cur_sample["gravity"] <= config["gravity"]["max_value"]
+
+    # Check mass multirange uniform sampler
+    assert config["mass"]["intervals"] == sampler.samplers["mass"].intervals
+    assert check_value_in_intervals(cur_sample["mass"], config["mass"]["intervals"])
 
 
 def make_empty_sampler_config():

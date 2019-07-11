@@ -1,4 +1,4 @@
-episode-length: 1000
+episode-length: 5000
 
 mass:
     sampler-type: "uniform"
