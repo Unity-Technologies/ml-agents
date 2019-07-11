@@ -112,11 +112,11 @@ def test_gail_cc_evaluate(mock_env, dummy_config, gail_dummy_config):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+    rsig_result = policy.reward_signals["gail"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
@@ -127,11 +127,11 @@ def test_gail_dc_evaluate(mock_env, dummy_config, gail_dummy_config):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+    rsig_result = policy.reward_signals["gail"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
@@ -142,11 +142,11 @@ def test_gail_visual_evaluate(mock_env, dummy_config, gail_dummy_config):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+    rsig_result = policy.reward_signals["gail"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
@@ -157,11 +157,11 @@ def test_gail_rnn_evaluate(mock_env, dummy_config, gail_dummy_config):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["gail"].evaluate(
+    rsig_result = policy.reward_signals["gail"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
@@ -172,11 +172,11 @@ def test_curiosity_cc_evaluate(mock_env, dummy_config, curiosity_dummy_config):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
+    rsig_result = policy.reward_signals["curiosity"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
@@ -187,11 +187,11 @@ def test_curiosity_dc_evaluate(mock_env, dummy_config, curiosity_dummy_config):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
+    rsig_result = policy.reward_signals["curiosity"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
@@ -202,11 +202,11 @@ def test_curiosity_visual_evaluate(mock_env, dummy_config, curiosity_dummy_confi
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
+    rsig_result = policy.reward_signals["curiosity"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
@@ -217,11 +217,11 @@ def test_curiosity_rnn_evaluate(mock_env, dummy_config, curiosity_dummy_config):
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
     next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
+    rsig_result = policy.reward_signals["curiosity"].evaluate(
         brain_info, next_brain_info
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (12,)
+    assert rsig_result.unscaled_reward.shape == (12,)
 
 
 if __name__ == "__main__":
