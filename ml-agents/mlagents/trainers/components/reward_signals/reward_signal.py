@@ -8,7 +8,7 @@ import tensorflow as tf
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.policy import TFPolicy
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.buffer import Buffer
 
 logger = logging.getLogger("mlagents.trainers")
