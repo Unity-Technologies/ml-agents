@@ -1,11 +1,15 @@
 import logging
+from typing import Any, Dict
+
 import numpy as np
 import tensorflow as tf
 
-from mlagents.trainers import ActionInfo, UnityException
+from mlagents.trainers import UnityException
+from mlagents.envs import Policy, ActionInfo
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.envs import BrainInfo
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -18,7 +22,7 @@ class UnityPolicyException(UnityException):
     pass
 
 
-class Policy(object):
+class TFPolicy(Policy):
     """
     Contains a learning model, and the necessary
     functions to interact with it to perform evaluate and updating.
@@ -93,7 +97,7 @@ class Policy(object):
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
-    def evaluate(self, brain_info: BrainInfo):
+    def evaluate(self, brain_info: BrainInfo) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
         :param brain_info: BrainInfo input to network.
@@ -140,7 +144,7 @@ class Policy(object):
         run_out = dict(zip(list(out_dict.keys()), network_out))
         return run_out
 
-    def _fill_eval_dict(self, feed_dict, brain_info):
+    def fill_eval_dict(self, feed_dict, brain_info):
         for i, _ in enumerate(brain_info.visual_observations):
             feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
         if self.use_vec_obs:
@@ -165,11 +169,16 @@ class Policy(object):
         step = self.sess.run(self.model.global_step)
         return step
 
-    def increment_step(self):
+    def increment_step(self, n_steps):
         """
         Increments model step.
         """
-        self.sess.run(self.model.increment_step)
+        out_dict = {
+            "global_step": self.model.global_step,
+            "increment_step": self.model.increment_step,
+        }
+        feed_dict = {self.model.steps_to_increment: n_steps}
+        return self.sess.run(out_dict, feed_dict=feed_dict)["global_step"]
 
     def get_inference_vars(self):
         """

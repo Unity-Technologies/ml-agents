@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from .communicator_objects import UnityOutput, UnityInput
 
@@ -21,7 +22,7 @@ class Communicator(object):
         :return: UnityOutput: The initialization output sent by Unity
         """
 
-    def exchange(self, inputs: UnityInput) -> UnityOutput:
+    def exchange(self, inputs: UnityInput) -> Optional[UnityOutput]:
         """
         Used to send an input and receive an output from the Environment
         :param inputs: The UnityInput that needs to be sent the Environment
