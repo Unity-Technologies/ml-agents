@@ -1,3 +1,4 @@
+from typing import List, Dict, Any
 import numpy as np
 
 from mlagents.trainers.tf_policy import TFPolicy
@@ -53,7 +54,7 @@ class BCModule:
         }
 
     @staticmethod
-    def check_config(config_dict):
+    def check_config(config_dict: Dict[str, Any]) -> None:
         """
         Check the pretraining config for the required keys.
         :param config_dict: Pretraining section of trainer_config
@@ -68,7 +69,7 @@ class BCModule:
                     )
                 )
 
-    def update(self):
+    def update(self) -> Dict[str, Any]:
         """
         Updates model using buffer.
         :param max_batches: The maximum number of batches to use per update.
@@ -104,7 +105,9 @@ class BCModule:
         update_stats = {"Losses/Pretraining Loss": np.mean(batch_losses)}
         return update_stats
 
-    def _update_batch(self, mini_batch_demo, n_sequences):
+    def _update_batch(
+        self, mini_batch_demo: Dict[str, Any], n_sequences: int
+    ) -> Dict[str, Any]:
         """
         Helper function for update_batch.
         """

@@ -1,6 +1,7 @@
 import pathlib
 import logging
 import os
+from typing import List, Tuple
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects import *
@@ -10,7 +11,9 @@ from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
 logger = logging.getLogger("mlagents.trainers")
 
 
-def make_demo_buffer(brain_infos, brain_params, sequence_length):
+def make_demo_buffer(
+    brain_infos: List[BrainInfo], brain_params: BrainParameters, sequence_length: int
+) -> Buffer:
     # Create and populate buffer using experiences
     demo_buffer = Buffer()
     for idx, experience in enumerate(brain_infos):
@@ -44,7 +47,9 @@ def make_demo_buffer(brain_infos, brain_params, sequence_length):
     return demo_buffer
 
 
-def demo_to_buffer(file_path, sequence_length):
+def demo_to_buffer(
+    file_path: str, sequence_length: int
+) -> Tuple[BrainParameters, Buffer]:
     """
     Loads demonstration file and uses it to fill training buffer.
     :param file_path: Location of demonstration file (.demo).
@@ -56,7 +61,7 @@ def demo_to_buffer(file_path, sequence_length):
     return brain_params, demo_buffer
 
 
-def load_demonstration(file_path):
+def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo], int]:
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).

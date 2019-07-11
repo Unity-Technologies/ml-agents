@@ -22,7 +22,7 @@ class BCModel(object):
         self.make_inputs()
         self.create_loss(learning_rate, anneal_steps)
 
-    def make_inputs(self):
+    def make_inputs(self) -> None:
         """
         Creates the input layers for the discriminator
         """
@@ -50,7 +50,7 @@ class BCModel(object):
                 axis=1,
             )
 
-    def create_loss(self, learning_rate, anneal_steps):
+    def create_loss(self, learning_rate: float, anneal_steps: int) -> None:
         """
         Creates the loss and update nodes for the GAIL reward generator
         :param learning_rate: The learning rate for the optimizer

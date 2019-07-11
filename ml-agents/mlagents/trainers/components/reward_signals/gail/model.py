@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
 
@@ -33,7 +35,7 @@ class GAILModel(object):
         self.create_network()
         self.create_loss(learning_rate)
 
-    def make_beta(self):
+    def make_beta(self) -> None:
         """
         Creates the beta parameter and its updater for GAIL
         """
@@ -50,7 +52,7 @@ class GAILModel(object):
         )
         self.update_beta = tf.assign(self.beta, new_beta)
 
-    def make_inputs(self):
+    def make_inputs(self) -> None:
         """
         Creates the input layers for the discriminator
         """
@@ -135,7 +137,9 @@ class GAILModel(object):
         self.encoded_expert = tf.concat(encoded_expert_list, axis=1)
         self.encoded_policy = tf.concat(encoded_policy_list, axis=1)
 
-    def create_encoder(self, state_in, action_in, done_in, reuse):
+    def create_encoder(
+        self, state_in: tf.Tensor, action_in: tf.Tensor, done_in: tf.Tensor, reuse: bool
+    ) -> Tuple[tf.Tensor, tf.Tensor]:
         """
         Creates the encoder for the discriminator
         :param state_in: The encoded observation input
@@ -143,7 +147,7 @@ class GAILModel(object):
         :param done_in: The done flags input
         :param reuse: If true, the weights will be shared with the previous encoder created
         """
-        with tf.variable_scope("model"):
+        with tf.variable_scope("GAIL_model"):
             if self.use_actions:
                 concat_input = tf.concat([state_in, action_in, done_in], axis=1)
             else:
@@ -193,7 +197,7 @@ class GAILModel(object):
             )
             return estimate, z_mean
 
-    def create_network(self):
+    def create_network(self) -> None:
         """
         Helper for creating the intrinsic reward nodes
         """
@@ -223,7 +227,7 @@ class GAILModel(object):
         )
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
 
-    def create_loss(self, learning_rate):
+    def create_loss(self, learning_rate: float) -> None:
         """
         Creates the loss and update nodes for the GAIL reward generator
         :param learning_rate: The learning rate for the optimizer
