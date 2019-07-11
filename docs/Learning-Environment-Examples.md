@@ -1,4 +1,4 @@
-# Example Learning Environments
+﻿# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -173,7 +173,27 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   * Visual Observations: None.
-* Reset Parameters: Two, corresponding to goal size, and goal movement speed.
+* Reset Parameters: Five, corresponding to the following
+  * Goal size: radius of the goal zone
+    * Default: 5
+    * Recommended Minimum: 1
+    * Recommended Maximum: 10
+  * Goal Movement speed: speed of the goal zone around the arm
+    * Default: 1
+    * Recommended Minimum: 0.2
+    * Recommended Maximum: 4
+  * Gravity
+    * Default: 9.81
+    * Recommended Minimum: 4
+    * Recommended Maximum: 20
+  * Deviation: Magnitude of sinusoidal (cosine) deviation of the goal along the vertical dimension
+    * Default: 0
+    * Recommended Minimum: 0
+    * Recommended Maximum: 5
+  * Deviation Frequency: Frequency of the cosine deviation of the goal along the vertical dimension
+    * Default: 0
+    * Recommended Minimum: 0
+    * Recommended Maximum: 3.
 * Benchmark Mean Reward: 30
 
 ## [Crawler](https://youtu.be/ftLliaeooYI)
