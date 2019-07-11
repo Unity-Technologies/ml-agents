@@ -153,7 +153,8 @@ Typical Range: `0.8` - `0.9`
 
 #### Demo Path
 
-`demo_path` is the path to your `.demo` file. See the [imitation learning guide](Training-ImitationLearning.md).
+`demo_path` is the path to your `.demo` file or directory of `.demo` files. See the [imitation learning guide]
+(Training-ImitationLearning.md).
 
 #### Encoding Size
 
@@ -189,4 +190,5 @@ to use during each discriminator update. You may want to lower this if your buff
 is very large to avoid overfitting the discriminator on current data. 
 
 Default Value: `10`
+
 Typical Range: `10`-`20`
