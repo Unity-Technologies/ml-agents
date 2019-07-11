@@ -23,7 +23,22 @@ ModelImporter:
     4300000: WallsOuter
     4300002: Ground
     4300004: GoalArea
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_Checkers
+    second: {fileID: 2100000, guid: 36c7baa347d68f347a9aa9698aa1bcdd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_Floor
+    second: {fileID: 2100000, guid: bc723809e6ff3174fad3e774cae1aed0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_WhiteWalls
+    second: {fileID: 2100000, guid: 6a39c0407dd85684384bf0277294e9b6, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -61,7 +76,7 @@ ModelImporter:
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
