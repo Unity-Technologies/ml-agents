@@ -129,8 +129,8 @@ class PPOPolicy(Policy):
         """
         feed_dict = {}
         models = self.model.towers if len(self.devices) > 1 else [self.model]
-        assert(len(mini_batches) == len(self.model.towers))
-        for mini_batch, tower in zip(models):
+        assert(len(mini_batches) == len(models))
+        for mini_batch, tower in zip(mini_batches, models):
             feed_dict[tower.batch_size] = num_sequences
             feed_dict[tower.sequence_length] = self.sequence_length
             feed_dict[tower.mask_input] = mini_batch["masks"].flatten()

@@ -402,4 +402,4 @@ class PPOModel(LearningModel):
             self.loss += 10 * (0.2 * self.forward_loss + 0.8 * self.inverse_loss)
 
         self.grads = self.optimizer.compute_gradients(self.loss)
-        self.update_batch = optimizer.minimize(self.loss)
+        self.update_batch = self.optimizer.minimize(self.loss)
