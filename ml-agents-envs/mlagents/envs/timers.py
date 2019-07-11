@@ -40,6 +40,7 @@ class TimerNode:
     __slots__ = ["children", "total", "count"]
 
     def __init__(self):
+        # Note that since dictionary keys are the node names, we don't explicitly store the name on the TimerNode.
         self.children: Dict[str, TimerNode] = {}
         self.total: float = 0.0
         self.count: int = 0
@@ -68,11 +69,12 @@ class TimerStack:
     sure that pushes and pops are already matched.
     """
 
-    __slots__ = ["root", "stack"]
+    __slots__ = ["root", "stack", "start_time"]
 
     def __init__(self):
         self.root = TimerNode()
         self.stack = [self.root]
+        self.start_time = perf_counter()
 
     def push(self, name: str) -> TimerNode:
         """
@@ -93,10 +95,14 @@ class TimerStack:
         """
         Recursively build a tree of timings, suitable for output/archiving.
         """
-        if node is None:
-            node = self.root
 
-        res: Dict[str, Any] = {"total": node.total, "count": node.count}
+        if node is None:
+            # Special case the root - total is time since it was created, and count is 1
+            node = self.root
+            total_elapsed = perf_counter() - self.start_time
+            res = {"name": "root", "total": total_elapsed, "count": 1}
+        else:
+            res = {"total": node.total, "count": node.count}
 
         child_total = 0.0
         child_list = []

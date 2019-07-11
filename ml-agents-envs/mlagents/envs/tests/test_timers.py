@@ -52,9 +52,10 @@ def test_timers() -> None:
         timer_tree = test_timer.get_timing_tree()
 
         expected_tree = {
-            "total": 0.0,
-            "count": 0,
-            "self": 0.0,
+            "name": "root",
+            "total": mock.ANY,
+            "count": 1,
+            "self": mock.ANY,
             "children": [
                 {
                     "name": "top_level",
