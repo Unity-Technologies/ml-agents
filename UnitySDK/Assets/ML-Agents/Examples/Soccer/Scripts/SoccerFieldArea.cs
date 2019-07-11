@@ -178,5 +178,8 @@ public class SoccerFieldArea : MonoBehaviour
         ball.transform.position = GetBallSpawnPosition();
         ballRB.velocity = Vector3.zero;
         ballRB.angularVelocity = Vector3.zero;
+
+        var ballScale = academy.resetParameters["ball_scale"];
+        ballRB.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }
