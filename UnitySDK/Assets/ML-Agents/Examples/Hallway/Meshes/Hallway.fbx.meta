@@ -41,6 +41,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: rep_Checkers
+    second: {fileID: 2100000, guid: 36c7baa347d68f347a9aa9698aa1bcdd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: rep_Floor
     second: {fileID: 2100000, guid: e4aa5f7e085732044a5a275e15c10aa7, type: 2}
   - first:
