@@ -1919,7 +1919,7 @@ GameObject:
   - component: {fileID: 2095421679}
   - component: {fileID: 2095421680}
   m_Layer: 0
-  m_Name: Academy
+  m_Name: CrawlerStaticAcademy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1967,4 +1967,10 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: -1
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: gravity
+      value: 9.81
+    - key: forelegScale
+      value: 0.780001
+    - key: upperlegScale
+      value: 0.4800002

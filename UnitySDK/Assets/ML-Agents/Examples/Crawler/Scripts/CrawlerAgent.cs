@@ -47,6 +47,8 @@ public class CrawlerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
+    private ResetParameters resetParams;
+
     public override void InitializeAgent()
     {
         jdController = GetComponent<JointDriveController>();
@@ -62,6 +64,12 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
+
+        var academy = Object.FindObjectOfType<Academy>() as Academy;
+        resetParams = academy.resetParameters;
+
+        SetResetParameters();
+
     }
 
     /// <summary>
@@ -210,7 +218,7 @@ public class CrawlerAgent : Agent
         }
 
         if (rewardFacingTarget)
-        {
+        { 
             RewardFunctionFacingTarget();
         }
 
@@ -265,5 +273,49 @@ public class CrawlerAgent : Agent
 
         isNewDecisionStep = true;
         currentDecisionStep = 1;
+        SetResetParameters();
+    }
+
+    public void SetForeLegSize()
+    {
+        leg0Lower.localScale = new Vector3(leg0Lower.localScale.x, resetParams["forelegScale"], leg0Lower.localScale.z);
+        leg1Lower.localScale = new Vector3(leg1Lower.localScale.x, resetParams["forelegScale"], leg1Lower.localScale.z);
+        leg2Lower.localScale = new Vector3(leg2Lower.localScale.x, resetParams["forelegScale"], leg2Lower.localScale.z);
+        leg3Lower.localScale = new Vector3(leg3Lower.localScale.x, resetParams["forelegScale"], leg3Lower.localScale.z);
+    }
+
+    public void SetUpperLegSize()
+    {
+        leg0Upper.localScale = new Vector3(leg0Upper.localScale.x, resetParams["upperlegScale"], leg0Upper.localScale.z);
+        leg1Upper.localScale = new Vector3(leg1Upper.localScale.x, resetParams["upperlegScale"], leg1Upper.localScale.z);
+        leg2Upper.localScale = new Vector3(leg2Upper.localScale.x, resetParams["upperlegScale"], leg2Upper.localScale.z);
+        leg3Upper.localScale = new Vector3(leg3Upper.localScale.x, resetParams["upperlegScale"], leg3Upper.localScale.z);
+    }
+
+    public void SetLegSize()
+    {
+        SetForeLegSize();
+        SetUpperLegSize();
+    }
+
+    public void SetAgentStartingHeight()
+    {
+        float newHeight = leg0Upper.localScale.y + leg0Lower.localScale.y + 2;
+
+        body.position = new Vector3(body.position.x, newHeight, body.position.z);
+        leg0Upper.position = new Vector3(leg0Upper.position.x, newHeight, leg0Upper.position.z);
+        leg0Lower.position = new Vector3(leg0Lower.position.x, newHeight, leg0Lower.position.z);
+        leg1Upper.position = new Vector3(leg1Upper.position.x, newHeight, leg1Upper.position.z);
+        leg1Lower.position = new Vector3(leg1Lower.position.x, newHeight, leg1Lower.position.z);
+        leg2Upper.position = new Vector3(leg2Upper.position.x, newHeight, leg2Upper.position.z);
+        leg2Lower.position = new Vector3(leg2Lower.position.x, newHeight, leg2Lower.position.z);
+        leg3Lower.position = new Vector3(leg3Lower.position.x, newHeight, leg3Lower.position.z);
+        leg3Upper.position = new Vector3(leg3Upper.position.x, newHeight, leg3Upper.position.z);
+    }
+
+    public void SetResetParameters()
+    {
+        SetLegSize();
+        SetAgentStartingHeight();
     }
 }
