@@ -1,4 +1,4 @@
-# Example Learning Environments
+﻿# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -56,7 +56,19 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
-* Reset Parameters: None
+* Reset Parameters: Three, corresponding to the following:
+    * Ball size: Specifies the scale of the ball in the 3 dimensions
+      * Default: 1
+      * Recommended Minimum: 0.2
+      * Recommended Maximum: 5
+    * Gravity 
+      * Default: 9.81
+      * Recommended Minimum: 4
+      * Recommended Maximum: 105
+    * Ball Mass
+      * Default: 1
+      * Recommended Minimum: 0.1
+      * Recommended Maximum: 20
 * Benchmark Mean Reward: 100
 
 ## [GridWorld](https://youtu.be/gu8HE9WKEVI)
@@ -105,7 +117,19 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, corresponding to movement
     toward net or away from net, and jumping.
   * Visual Observations: None.
-* Reset Parameters: One, corresponding to size of ball.
+* Reset Parameters: Three, corresponding to the following:
+    * angle: Angle of the racket from the vertical (Y) axis.
+      * Default: 55
+      * Recommended Minimum: 35 
+      * Recommended Maximum: 65
+    * gravity: Magnitude of gravity
+      * Default: 9.81
+      * Recommended Minimum: 6
+      * Recommended Maximum: 20
+    * scale: Size of the ball
+      * Default: 1
+      * Recommended Minimum: 0.2
+      * Recommended Maximum: 5
 * Benchmark Mean Reward: 2.5
 * Optional Imitation Learning scene: `TennisIL`.
 
@@ -304,7 +328,15 @@ If you would like to contribute environments, please see our
       as well as rotation.
     * Goalie: 4 actions corresponding to forward, backward, sideways movement.
   * Visual Observations: None.
-* Reset Parameters: None
+* Reset Parameters: Two, corresponding to the following:
+  * ball_scale:
+    * Default: 7.5
+    * Recommended minimum: 4
+    * Recommended maximum: 10
+  * gravity:
+    * Default: 9.81
+    * Recommended minimum: 6
+    * Recommended maximum: 20
 * Benchmark Mean Reward (Striker & Goalie Brain): 0 (the means will be inverse
   of each other and criss crosses during training) __Note that our trainer is currently unable to consistently train this environment__
 
