@@ -1,6 +1,6 @@
 import numpy as np
 
-from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
@@ -73,7 +73,7 @@ class GAILRewardSignal(RewardSignal):
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
-        return scaled_reward, unscaled_reward
+        return RewardSignalResult(scaled_reward, unscaled_reward)
 
     @classmethod
     def check_config(cls, config_dict):

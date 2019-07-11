@@ -76,7 +76,7 @@ class BCModule:
         """
         # Don't continue training if the learning rate has reached 0, to reduce training time.
         if self.current_lr <= 0:
-            return 0
+            return {"Losses/Pretraining Loss": 0}
 
         batch_losses = []
         possible_demo_batches = (
