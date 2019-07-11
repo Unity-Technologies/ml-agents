@@ -7,7 +7,7 @@ import tensorflow.contrib.layers as c_layers
 logger = logging.getLogger("mlagents.trainers")
 
 
-class LearningModel(object):
+class timersLearningModel(object):
     _version_number_ = 2
 
     def __init__(

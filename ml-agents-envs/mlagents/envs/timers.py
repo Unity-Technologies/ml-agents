@@ -29,6 +29,9 @@ This would produce a timer tree like
 
 The total time and counts are tracked for each block of code; in this example "foo" and "context.foo" are considered
 distinct blocks, and are tracked separately.
+
+The decorator and contextmanager are equivalent; the context manager may be more useful if you want more control
+over the timer name, or are splitting up multiple sections of a large function.
 """
 
 
@@ -155,7 +158,7 @@ FuncT = TypeVar("FuncT", bound=Callable[..., Any])
 
 def timed(func: FuncT) -> FuncT:
     """
-    Decorator for timing a function or method.
+    Decorator for timing a function or method. The name of the timer will be the qualified name of the function.
     Usage:
         @timed
         def my_func(x, y):
