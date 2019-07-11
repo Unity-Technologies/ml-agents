@@ -24,6 +24,10 @@ public class CrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
+    private Transform[] body_parts;
+    private Transform[] upper_legs;
+    private Transform[] lower_legs;
+
     [Header("Joint Settings")] [Space(10)] JointDriveController jdController;
     Vector3 dirToTarget;
     float movingTowardsDot;
@@ -64,6 +68,10 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
+
+        body_parts =  new Transform[9] { body, leg0Upper, leg0Lower, leg1Upper, leg1Lower, leg2Upper, leg2Lower, leg3Upper, leg3Lower };
+        upper_legs = new Transform[4] { leg0Upper, leg1Upper, leg2Upper, leg3Upper };
+        lower_legs = new Transform[4] { leg0Lower, leg1Lower, leg2Lower, leg3Lower };
 
         var academy = Object.FindObjectOfType<Academy>() as Academy;
         resetParams = academy.resetParameters;
@@ -278,21 +286,25 @@ public class CrawlerAgent : Agent
 
     public void SetForeLegSize()
     {
-        leg0Lower.localScale = new Vector3(leg0Lower.localScale.x, resetParams["forelegScale"], leg0Lower.localScale.z);
-        leg1Lower.localScale = new Vector3(leg1Lower.localScale.x, resetParams["forelegScale"], leg1Lower.localScale.z);
-        leg2Lower.localScale = new Vector3(leg2Lower.localScale.x, resetParams["forelegScale"], leg2Lower.localScale.z);
-        leg3Lower.localScale = new Vector3(leg3Lower.localScale.x, resetParams["forelegScale"], leg3Lower.localScale.z);
+
+        foreach (var bp in lower_legs)
+        {
+            bp.localScale = new Vector3(bp.localScale.x, resetParams["forelegScale"], bp.localScale.z);
+        }
+
     }
 
     public void SetUpperLegSize()
     {
-        leg0Upper.localScale = new Vector3(leg0Upper.localScale.x, resetParams["upperlegScale"], leg0Upper.localScale.z);
-        leg1Upper.localScale = new Vector3(leg1Upper.localScale.x, resetParams["upperlegScale"], leg1Upper.localScale.z);
-        leg2Upper.localScale = new Vector3(leg2Upper.localScale.x, resetParams["upperlegScale"], leg2Upper.localScale.z);
-        leg3Upper.localScale = new Vector3(leg3Upper.localScale.x, resetParams["upperlegScale"], leg3Upper.localScale.z);
+
+        foreach (var bp in upper_legs)
+        {
+            bp.localScale = new Vector3(bp.localScale.x, resetParams["upperlegScale"], bp.localScale.z);
+        }
+
     }
 
-    public void SetLegSize()
+    public void SetLegSizes()
     {
         SetForeLegSize();
         SetUpperLegSize();
@@ -302,20 +314,15 @@ public class CrawlerAgent : Agent
     {
         float newHeight = leg0Upper.localScale.y + leg0Lower.localScale.y + 2;
 
-        body.position = new Vector3(body.position.x, newHeight, body.position.z);
-        leg0Upper.position = new Vector3(leg0Upper.position.x, newHeight, leg0Upper.position.z);
-        leg0Lower.position = new Vector3(leg0Lower.position.x, newHeight, leg0Lower.position.z);
-        leg1Upper.position = new Vector3(leg1Upper.position.x, newHeight, leg1Upper.position.z);
-        leg1Lower.position = new Vector3(leg1Lower.position.x, newHeight, leg1Lower.position.z);
-        leg2Upper.position = new Vector3(leg2Upper.position.x, newHeight, leg2Upper.position.z);
-        leg2Lower.position = new Vector3(leg2Lower.position.x, newHeight, leg2Lower.position.z);
-        leg3Lower.position = new Vector3(leg3Lower.position.x, newHeight, leg3Lower.position.z);
-        leg3Upper.position = new Vector3(leg3Upper.position.x, newHeight, leg3Upper.position.z);
+        foreach (var bp in body_parts)
+        {
+            bp.position = new Vector3(bp.position.x, newHeight, bp.position.z);
+        }
     }
 
     public void SetResetParameters()
     {
-        SetLegSize();
+        SetLegSizes();
         SetAgentStartingHeight();
     }
 }
