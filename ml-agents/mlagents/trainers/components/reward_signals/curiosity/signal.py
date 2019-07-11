@@ -5,13 +5,13 @@ from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 
 
 class CuriosityRewardSignal(RewardSignal):
     def __init__(
         self,
-        policy: Policy,
+        policy: TFPolicy,
         strength: float,
         gamma: float,
         encoding_size: int = 128,

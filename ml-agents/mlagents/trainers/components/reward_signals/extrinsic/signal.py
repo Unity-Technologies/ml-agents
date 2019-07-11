@@ -4,11 +4,11 @@ from mlagents.envs.brain import BrainInfo
 
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 
 
 class ExtrinsicRewardSignal(RewardSignal):
-    def __init__(self, policy: Policy, strength: float, gamma: float):
+    def __init__(self, policy: TFPolicy, strength: float, gamma: float):
         """
         The extrinsic reward generator. Returns the reward received by the environment
         :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to.

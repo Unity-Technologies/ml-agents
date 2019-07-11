@@ -4,8 +4,7 @@ import os
 import tensorflow as tf
 import numpy as np
 
-from mlagents.envs import UnityException, AllBrainInfo, BrainInfo
-from mlagents.trainers import ActionInfo, ActionInfoOutputs
+from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
 from mlagents.trainers import TrainerMetrics
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -109,22 +108,11 @@ class Trainer(object):
         """
         raise UnityTrainerException("The get_step property was not implemented.")
 
-    def increment_step(self):
+    def increment_step(self, n_steps: int) -> None:
         """
         Increment the step count of the trainer
         """
         raise UnityTrainerException("The increment_step method was not implemented.")
-
-    def get_action(self, curr_info: BrainInfo) -> ActionInfo:
-        """
-        Get an action using this trainer's current policy.
-        :param curr_info: Current BrainInfo.
-        :return: The ActionInfo given by the policy given the BrainInfo.
-        """
-        self.trainer_metrics.start_experience_collection_timer()
-        action = self.policy.get_action(curr_info)
-        self.trainer_metrics.end_experience_collection_timer()
-        return action
 
     def add_experiences(
         self,
@@ -208,17 +196,18 @@ class Trainer(object):
                 if self.is_training and self.get_step <= self.get_max_steps
                 else "Not Training."
             )
+            step = min(self.get_step, self.get_max_steps)
             if len(self.stats["Environment/Cumulative Reward"]) > 0:
                 mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
                     "Mean "
-                    "Reward: {"
-                    ":0.3f}. Std of Reward: {:0.3f}. {}".format(
+                    "Reward: {:0.3f}"
+                    ". Std of Reward: {:0.3f}. {}".format(
                         self.run_id,
                         self.brain_name,
-                        min(self.get_step, self.get_max_steps),
+                        step,
                         delta_train_start,
                         mean_reward,
                         np.std(self.stats["Environment/Cumulative Reward"]),
@@ -228,7 +217,7 @@ class Trainer(object):
             else:
                 LOGGER.info(
                     " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
-                        self.run_id, self.brain_name, self.get_step, is_training
+                        self.run_id, self.brain_name, step, is_training
                     )
                 )
             summary = tf.Summary()
@@ -238,7 +227,7 @@ class Trainer(object):
                     summary.value.add(tag="{}".format(key), simple_value=stat_mean)
                     self.stats[key] = []
             summary.value.add(tag="Environment/Lesson", simple_value=lesson_num)
-            self.summary_writer.add_summary(summary, self.get_step)
+            self.summary_writer.add_summary(summary, step)
             self.summary_writer.flush()
 
     def write_tensorboard_text(self, key, input_dict):

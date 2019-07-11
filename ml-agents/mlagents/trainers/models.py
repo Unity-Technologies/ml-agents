@@ -19,7 +19,9 @@ class LearningModel(object):
         tf.set_random_seed(seed)
         self.brain = brain
         self.vector_in = None
-        self.global_step, self.increment_step = self.create_global_steps()
+        self.global_step, self.increment_step, self.steps_to_increment = (
+            self.create_global_steps()
+        )
         self.visual_in = []
         self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name="batch_size")
         self.sequence_length = tf.placeholder(
@@ -73,8 +75,11 @@ class LearningModel(object):
         global_step = tf.Variable(
             0, name="global_step", trainable=False, dtype=tf.int32
         )
-        increment_step = tf.assign(global_step, tf.add(global_step, 1))
-        return global_step, increment_step
+        steps_to_increment = tf.placeholder(
+            shape=[], dtype=tf.int32, name="steps_to_increment"
+        )
+        increment_step = tf.assign(global_step, tf.add(global_step, steps_to_increment))
+        return global_step, increment_step, steps_to_increment
 
     @staticmethod
     def scaled_init(scale):
