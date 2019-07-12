@@ -361,26 +361,8 @@ class SACNetwork(LearningModel):
             action_idx = [0] + list(np.cumsum(self.act_size))
 
             # self.entropy = self.all_log_probs
-
-            self.entropy = tf.reduce_sum(
-                (
-                    tf.stack(
-                        [
-                            tf.nn.softmax_cross_entropy_with_logits_v2(
-                                labels=tf.nn.softmax(
-                                    all_logits[:, action_idx[i] : action_idx[i + 1]]
-                                ),
-                                logits=all_logits[:, action_idx[i] : action_idx[i + 1]],
-                            )
-                            for i in range(len(self.act_size))
-                        ],
-                        axis=1,
-                    )
-                ),
-                axis=1,
-            )
-
-            self.entropy = -self.all_log_probs
+            # This is total entropy over all branches
+            self.entropy = -1*tf.reduce_sum(self.all_log_probs, axis=1)
 
         self.policy_vars = self.get_vars(scope)
 
@@ -504,13 +486,13 @@ class SACModel(LearningModel):
         :param brain: BrainInfo used to generate specific network graph.
         :param lr: Learning rate.
         :param h_size: Size of hidden layers
-        :param init_entcoef: Initial value for entropy coefficient. Set lower to learn faster, set higher to explore more. .
+        :param init_entcoef: Initial value for entropy coefficient. Set lower to learn faster, set higher to explore more.
         :return: a sub-class of PPOAgent tailored to the environment.
         :param max_step: Total number of training steps.
         :param normalize: Whether to normalize vector observation input.
         :param use_recurrent: Whether to use an LSTM layer in the network.
-        :param num_layers Number of hidden layers between encoded input and policy & value layers
-        :param tau Strength of soft-Q update. 
+        :param num_layers: Number of hidden layers between encoded input and policy & value layers
+        :param tau: Strength of soft-Q update. 
         :param m_size: Size of brain memory.
         """
         self.tau = tau
