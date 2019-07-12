@@ -27,7 +27,7 @@ class BaseUnityEnvironment(ABC):
 
     @property
     @abstractmethod
-    def reset_parameters(self) -> Dict[str, str]:
+    def reset_parameters(self) -> Dict[str, float]:
         pass
 
     @abstractmethod

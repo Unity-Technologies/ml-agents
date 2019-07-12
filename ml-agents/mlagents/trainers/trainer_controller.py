@@ -13,6 +13,7 @@ from time import time
 
 from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
+from mlagents.envs.env_manager import EnvManager
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
@@ -212,7 +213,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
-    def _reset_env(self, env: SubprocessEnvManager) -> List[StepInfo]:
+    def _reset_env(self, env: EnvManager) -> List[StepInfo]:
         """Resets the environment.
 
         Returns:
@@ -254,7 +255,7 @@ class TrainerController(object):
                 trainer.write_summary(global_step, delta_train_start)
 
     def start_learning(
-        self, env_manager: SubprocessEnvManager, trainer_config: Dict[str, Any]
+        self, env_manager: EnvManager, trainer_config: Dict[str, Any]
     ) -> None:
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
@@ -300,7 +301,7 @@ class TrainerController(object):
         self._write_timing_tree()
 
     @timed
-    def advance(self, env: SubprocessEnvManager) -> int:
+    def advance(self, env: EnvManager) -> int:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {

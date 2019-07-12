@@ -24,6 +24,7 @@ class EnvManager(ABC):
     def reset(self, config=None, train_mode=True) -> List[StepInfo]:
         pass
 
+    @property
     @abstractmethod
     def external_brains(self) -> Dict[str, BrainParameters]:
         pass
