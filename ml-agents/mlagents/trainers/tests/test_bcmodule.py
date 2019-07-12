@@ -3,14 +3,10 @@ import pytest
 import mlagents.trainers.tests.mock_brain as mb
 
 import numpy as np
-import tensorflow as tf
 import yaml
 import os
 
-from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.envs import UnityEnvironment
 
 
 @pytest.fixture
@@ -35,7 +31,7 @@ def dummy_config():
         use_recurrent: false
         memory_size: 8
         pretraining:
-          demo_path: ./demos/ExpertPyramid.demo 
+          demo_path: ./demos/ExpertPyramid.demo
           strength: 1.0
           steps: 10000000
         reward_signals:

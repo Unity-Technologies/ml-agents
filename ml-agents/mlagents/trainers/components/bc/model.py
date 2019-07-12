@@ -58,16 +58,9 @@ class BCModel(object):
         selected_action = self.policy_model.output
         action_size = self.policy_model.act_size
         if self.policy_model.brain.vector_action_space_type == "continuous":
-            # self.expert_action = tf.placeholder(shape=[None, action_size[0]],
-            #                                     dtype=tf.float32,
-            #                                     name="teacher_action")
-            entropy = 0.5 * tf.reduce_mean(
-                tf.log(2 * np.pi * np.e) + self.policy_model.log_sigma_sq
-            )
             self.loss = tf.reduce_mean(
                 tf.squared_difference(selected_action, self.expert_action)
-            )  # / self.policy_model.n_sequences \
-            # - tf.reduce_mean(entropy)
+            )
         else:
             log_probs = self.policy_model.all_log_probs
             # self.expert_action = tf.placeholder(shape=[None, len(action_size)], dtype=tf.int32)
@@ -91,9 +84,8 @@ class BCModel(object):
             )
             self.loss = tf.reduce_mean(
                 -tf.log(tf.nn.softmax(log_probs) + 1e-7) * self.expert_action
-            )  # - 1 * tf.reduce_sum(entropy)
+            )
 
-        # self.loss = tf.train.polynomial_decay(self.loss, self.policy_model.global_step, max_step*decay_duration, 0.0, power=1.0)
         if anneal_steps > 0:
             self.annealed_learning_rate = tf.train.polynomial_decay(
                 learning_rate,

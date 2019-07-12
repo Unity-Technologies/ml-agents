@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 import numpy as np
 
 from mlagents.trainers.tf_policy import TFPolicy
@@ -22,17 +22,17 @@ class BCModule:
         max_batches: int = 0,
     ):
         """
-        A BC trainer that can be used inline with RL, especially for pretraining. 
+        A BC trainer that can be used inline with RL, especially for pretraining.
         :param policy: The policy of the learning model
         :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate for the pretrainer.
-        :param default_batch_size: The default batch size to use if batch_size isn't provided. 
-        :param default_num_epoch: The default num_epoch to use if num_epoch isn't provided. 
-        :param strength: The proportion of learning rate used to update through BC. 
+        :param default_batch_size: The default batch size to use if batch_size isn't provided.
+        :param default_num_epoch: The default num_epoch to use if num_epoch isn't provided.
+        :param strength: The proportion of learning rate used to update through BC.
         :param steps: The number of steps to anneal BC training over. 0 for continuous training.
-        :param demo_path: The path to the demonstration file
-        :param batch_size: The batch size to use during BC training. 
-        :param num_epoch: Number of epochs to train for during each update. 
-        :param max_batches: Maximum number of batches to train on during each pretraining update. 
+        :param demo_path: The path to the demonstration file.
+        :param batch_size: The batch size to use during BC training.
+        :param num_epoch: Number of epochs to train for during each update.
+        :param max_batches: Maximum number of batches to train on during each pretraining update.
         """
         self.policy = policy
         self.current_lr = policy_learning_rate * strength

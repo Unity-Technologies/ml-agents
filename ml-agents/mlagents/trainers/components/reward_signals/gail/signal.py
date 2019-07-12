@@ -31,10 +31,10 @@ class GAILRewardSignal(RewardSignal):
         :param gamma: The time discounting factor used for this reward.
         :param demo_path: The path to the demonstration file
         :param encoding_size: The size of the the hidden layers of the discriminator
-        :param learning_rate: The Learning Rate used during GAIL updates. 
-        :param max_batches: The maximum number of batches to update during GAIL updates. 
-        :param use_actions: Whether or not to use the actions for the discriminator. 
-        :param print_debug: Whether or not to print debug statements during GAIL updates. 
+        :param learning_rate: The Learning Rate used during GAIL updates.
+        :param max_batches: The maximum number of batches to update during GAIL updates.
+        :param use_actions: Whether or not to use the actions for the discriminator.
+        :param print_debug: Whether or not to print debug statements during GAIL updates.
         """
         super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
