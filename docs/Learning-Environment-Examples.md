@@ -224,7 +224,15 @@ If you would like to contribute environments, please see our
     `VisualBanana` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None.
+* Reset Parameters: Two, corresponding to the following
+  * Laser Length:
+    * Default: 1
+    * Recommended Minimum: 0.2
+    * Recommended Maximum: 7
+  * Agent Scale:
+    * Default: 1
+    * Recommended Minimum: 0.5
+    * Recommended Maximum: 5
 * Benchmark Mean Reward: 10
 * Optional Imitation Learning scene: `BananaIL`.
 
@@ -273,7 +281,15 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) 3 corresponding to agent force applied for
     the jump.
   * Visual Observations: None.
-* Reset Parameters: None.
+* Reset Parameters: Two, corresponding to the following
+    * Agent_scale:
+        * Default: 1
+        * Recommended Minimum: 0.25
+        * Recommended Maximum: 5
+    * banana_scale:
+        * Default: 150
+        * Recommended Minimum: 50
+        * Recommended Maximum: 250
 * Benchmark Mean Reward: 10
 
 ## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)

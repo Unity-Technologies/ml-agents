@@ -15,10 +15,17 @@ public class BouncerAgent : Agent {
     int numberJumps = 20;
     int jumpLeft = 20;
 
+    ResetParameters resetParams;
+
     public override void InitializeAgent()
     {
         rb = gameObject.GetComponent<Rigidbody>();
         lookDir = Vector3.zero;
+
+        var academy = FindObjectOfType<Academy>() as Academy;
+        resetParams = academy.resetParameters;
+
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -60,6 +67,8 @@ public class BouncerAgent : Agent {
             bb.Respawn();
         }
         jumpLeft = numberJumps;
+
+        SetResetParameters();
     }
 
     public override void AgentOnDone()
@@ -108,5 +117,23 @@ public class BouncerAgent : Agent {
                 Quaternion.LookRotation(lookDir),
                 Time.deltaTime * 10f);
         }
+    }
+
+    public void SetAgentScale()
+    {
+        var agent_scale = resetParams["agent_scale"];
+        gameObject.transform.localScale = new Vector3(agent_scale, agent_scale, agent_scale);
+    }
+
+    public void SetBananaScale()
+    {
+        var banana_scale = resetParams["banana_scale"];
+        banana.transform.localScale = new Vector3(banana_scale, banana_scale, banana_scale);
+    }
+
+    public void SetResetParameters()
+    {
+        SetAgentScale();
+        SetBananaScale();
     }
 }
