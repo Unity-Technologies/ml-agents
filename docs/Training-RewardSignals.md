@@ -102,7 +102,8 @@ This value should be small enough to encourage the ICM to compress the original
 observation, but also not too small to prevent it from learning to differentiate between
 demonstrated and actual behavior.
 
-Default Value: 64
+Default Value: `64`
+
 Typical Range: `64` - `256`
 
 #### Learning Rate
@@ -111,6 +112,7 @@ Typical Range: `64` - `256`
 This should typically be decreased if training is unstable, and the curiosity loss is unstable.
 
 Default Value: `3e-4`
+
 Typical Range: `1e-5` - `1e-3`  
 
 ### The GAIL Reward Signal
@@ -143,7 +145,7 @@ with an Extrinsic Signal, this value should be set lower if your demonstrations 
 suboptimal (e.g. from a human), so that a trained agent will focus on receiving extrinsic 
 rewards instead of exactly copying the demonstrations. Keep the strength below about 0.1 in those cases. 
 
-Typical Range: `0.01 - `1.0`
+Typical Range: `0.01` - `1.0`
 
 #### Gamma
 
@@ -164,12 +166,17 @@ observation, but also not too small to prevent it from learning to differentiate
 demonstrated and actual behavior. Dramatically increasing this size will also negatively affect
 training times. 
 
+Default Value: `64`
+
+Typical Range: `64` - `256`
+
 #### Learning Rate
 
 `learning_rate` is the learning rate used to update the discriminator. 
 This should typically be decreased if training is unstable, and the GAIL loss is unstable.
 
 Default Value: `3e-4`
+
 Typical Range: `1e-5` - `1e-3`  
 
 #### Use Actions
@@ -181,7 +188,7 @@ visit the same states as in the demonstrations but with possibly different actio
 Setting to `False` is more likely to be stable, especially with imperfect demonstrations,
 but may learn slower. 
 
-Default Value: `False`
+Default Value: `false`
 
 #### Max Batches
 
