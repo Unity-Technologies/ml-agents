@@ -1,16 +1,26 @@
+from typing import Tuple, List
+
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
 
 
 class GAILModel(object):
-    def __init__(self, policy_model: LearningModel, h_size, lr, encoding_size, use_actions):
+    def __init__(
+        self,
+        policy_model: LearningModel,
+        h_size: int = 128,
+        learning_rate: float = 3e-4,
+        encoding_size: int = 64,
+        use_actions: bool = False,
+    ):
         """
-        The GAIL reward generator.
+        The initializer for the GAIL reward generator.
         https://arxiv.org/abs/1606.03476
         :param policy_model: The policy of the learning algorithm
         :param h_size: Size of the hidden layer for the discriminator
-        :param lr: The learning Rate for the discriminator
+        :param learning_rate: The learning Rate for the discriminator
         :param encoding_size: The encoding size for the encoder
+        :param use_actions: Whether or not to use actions to discriminate
         """
         self.h_size = h_size
         self.z_size = 128
@@ -23,9 +33,9 @@ class GAILModel(object):
         self.make_beta()
         self.make_inputs()
         self.create_network()
-        self.create_loss(lr)
+        self.create_loss(learning_rate)
 
-    def make_beta(self):
+    def make_beta(self) -> None:
         """
         Creates the beta parameter and its updater for GAIL
         """
@@ -42,7 +52,7 @@ class GAILModel(object):
         )
         self.update_beta = tf.assign(self.beta, new_beta)
 
-    def make_inputs(self):
+    def make_inputs(self) -> None:
         """
         Creates the input layers for the discriminator
         """
@@ -77,7 +87,6 @@ class GAILModel(object):
             self.obs_in_expert = tf.placeholder(
                 shape=[None, self.policy_model.vec_obs_size], dtype=tf.float32
             )
-            # TODO : Experiment with normalization, the normalization could change with time
             if self.policy_model.normalize:
                 encoded_expert_list.append(
                     self.policy_model.normalize_vector_obs(self.obs_in_expert)
@@ -90,7 +99,7 @@ class GAILModel(object):
                 encoded_policy_list.append(self.policy_model.vector_in)
 
         if self.policy_model.vis_obs_size > 0:
-            self.expert_visual_in = []
+            self.expert_visual_in: List[tf.Tensor] = []
             visual_policy_encoders = []
             visual_expert_encoders = []
             for i in range(self.policy_model.vis_obs_size):
@@ -128,7 +137,9 @@ class GAILModel(object):
         self.encoded_expert = tf.concat(encoded_expert_list, axis=1)
         self.encoded_policy = tf.concat(encoded_policy_list, axis=1)
 
-    def create_encoder(self, state_in, action_in, done_in, reuse):
+    def create_encoder(
+        self, state_in: tf.Tensor, action_in: tf.Tensor, done_in: tf.Tensor, reuse: bool
+    ) -> Tuple[tf.Tensor, tf.Tensor]:
         """
         Creates the encoder for the discriminator
         :param state_in: The encoded observation input
@@ -136,7 +147,7 @@ class GAILModel(object):
         :param done_in: The done flags input
         :param reuse: If true, the weights will be shared with the previous encoder created
         """
-        with tf.variable_scope("model"):
+        with tf.variable_scope("GAIL_model"):
             if self.use_actions:
                 concat_input = tf.concat([state_in, action_in, done_in], axis=1)
             else:
@@ -186,7 +197,7 @@ class GAILModel(object):
             )
             return estimate, z_mean
 
-    def create_network(self):
+    def create_network(self) -> None:
         """
         Helper for creating the intrinsic reward nodes
         """
@@ -216,7 +227,7 @@ class GAILModel(object):
         )
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
 
-    def create_loss(self, learning_rate):
+    def create_loss(self, learning_rate: float) -> None:
         """
         Creates the loss and update nodes for the GAIL reward generator
         :param learning_rate: The learning rate for the optimizer

@@ -1,7 +1,9 @@
+from typing import Any, Dict, List
 import numpy as np
+from mlagents.envs.brain import BrainInfo
 
-from mlagents.trainers.components.reward_signals import RewardSignal
-from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
@@ -22,17 +24,17 @@ class GAILRewardSignal(RewardSignal):
         print_debug: bool = False,
     ):
         """
-        The Gail Reward signal generator.
+        The GAIL Reward signal generator. https://arxiv.org/abs/1606.03476
         :param policy: The policy of the learning model
         :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter
         :param gamma: The time discounting factor used for this reward.
         :param demo_path: The path to the demonstration file
         :param encoding_size: The size of the the hidden layers of the discriminator
-        :param learning_rate: The Learning Rate used during GAIL updates. 
-        :param max_batches: The maximum number of batches to update during GAIL updates. 
-        :param use_actions: Whether or not to use the actions for the discriminator. 
-        :param print_debug: Whether or not to print debug statements during GAIL updates. 
+        :param learning_rate: The Learning Rate used during GAIL updates.
+        :param max_batches: The maximum number of batches to update during GAIL updates.
+        :param use_actions: Whether or not to use the actions for the discriminator.
+        :param print_debug: Whether or not to print debug statements during GAIL updates.
         """
         super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
@@ -94,7 +96,9 @@ class GAILRewardSignal(RewardSignal):
         #         )
         #     feed_dict[self.policy.model.memory_in] = current_info.memories
 
-    def evaluate(self, current_info, next_info):
+    def evaluate(
+        self, current_info: BrainInfo, next_info: BrainInfo
+    ) -> RewardSignalResult:
         if len(current_info.agents) == 0:
             return []
 
@@ -123,10 +127,12 @@ class GAILRewardSignal(RewardSignal):
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
-        return scaled_reward, unscaled_reward
+        return RewardSignalResult(scaled_reward, unscaled_reward)
 
     @classmethod
-    def check_config(cls, config_dict):
+    def check_config(
+        cls, config_dict: Dict[str, Any], param_keys: List[str] = None
+    ) -> None:
         """
         Checks the config and throw an exception if a hyperparameter is missing. GAIL requires strength and gamma 
         at minimum. 
@@ -134,15 +140,15 @@ class GAILRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, update_buffer, num_sequences=32):
+    def update(self, update_buffer: Buffer, n_sequences: int) -> Dict[str, float]:
         """
         Updates model using buffer.
-        :param policy_buffer: The policy buffer containing the trajectories for the current policy.
+        :param update_buffer: The policy buffer containing the trajectories for the current policy.
         :param n_sequences: The total (demo + environment) number of sequences used in each mini batch.
         :return: The loss of the update.
         """
         batch_losses = []
-        n_sequences = num_sequences // 2
+        n_sequences = n_sequences // 2  # Divide by 2 since we have two buffers
         possible_demo_batches = (
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
@@ -210,7 +216,11 @@ class GAILRewardSignal(RewardSignal):
         update_stats = {"Losses/GAIL Loss": np.mean(batch_losses)}
         return update_stats
 
-    def _update_batch(self, mini_batch_demo, mini_batch_policy):
+    def _update_batch(
+        self,
+        mini_batch_demo: Dict[str, np.ndarray],
+        mini_batch_policy: Dict[str, np.ndarray],
+    ) -> Dict[str, float]:
         """
         Helper method for update.
         :param mini_batch_demo: A mini batch of expert trajectories
@@ -305,7 +315,7 @@ class GAILRewardSignal(RewardSignal):
         }
         return run_out
 
-    def update_beta(self, kl_div):
+    def update_beta(self, kl_div: float) -> None:
         """
         Updates the Beta parameter with the latest kl_divergence value.
         The larger Beta, the stronger the importance of the kl divergence in the loss function.

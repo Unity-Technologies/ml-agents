@@ -10,6 +10,20 @@ from the game and actions from a game controller to guide the medic's behavior.
 Imitation Learning uses pairs of observations and actions from
 from a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
 
+Imitation learning can also be used to help reinforcement learning. Especially in 
+environments with sparse (i.e., infrequent or rare) rewards, the agent may never see
+the reward and thus not learn from it. Curiosity helps the agent explore, but in some cases
+it is easier to just show the agent how to achieve the reward. In these cases, 
+imitation learning can dramatically reduce the time it takes to solve the environment.
+For instance, on the [Pyramids environment](Learning-Environment-Examples.md#pyramids), 
+just 6 episodes of demonstrations can reduce training steps by more than 4 times.
+
+<p align="center">
+  <img src="images/mlagents-ImitationAndRL.png"
+       alt="Using Demonstrations with Reinforcement Learning"
+       width="350" border="0" />
+</p>
+
 ML-Agents provides several ways to interact with demonstrations. For most situations,
 [GAIL](Training-RewardSignals.md#the-gail-reward-signal) is the preferred approach.
 
@@ -17,8 +31,9 @@ ML-Agents provides several ways to interact with demonstrations. For most situat
   [GAIL reward signal](Training-RewardSignals.md#the-gail-reward-signal). GAIL can be
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations. 
-* To help bootstrap reinforcement learning, you can enable [pretraining](Training-PPO.md) 
-  on the PPO trainer. 
+* To help bootstrap reinforcement learning, you can enable 
+  [pretraining](Training-PPO.md#optional-pretraining-using-demonstrations) 
+  on the PPO trainer, in addition to using a small GAIL reward signal. 
 * To train an agent to exactly mimic demonstrations, you can use the 
   [Behavioral Cloning](Training-BehavioralCloning.md) trainer. Behavioral Cloning can be
   used offline and online (in-editor), and learns very quickly. However, it usually is ineffective
