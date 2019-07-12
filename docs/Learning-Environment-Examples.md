@@ -1,4 +1,4 @@
-﻿# Example Learning Environments
+# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -362,7 +362,23 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations applicable to the joints.
   * Visual Observations: None.
-* Reset Parameters: None.
+* Reset Parameters: Four, corresponding to the following
+    * Gravity:
+        * Default: 9.81
+        * Recommended Minimum:
+        * Recommended Maximum:
+    * Hip_mass:
+        * Default: 15
+        * Recommended Minimum: 7
+        * Recommended Maximum: 28
+    * Chest_mass:
+        * Default: 8
+        * Recommended Minimum: 3
+        * Recommended Maximum: 20
+    * Spine_mass:
+        * Default: 10
+        * Recommended Minimum: 3
+        * Recommended Maximum: 20
 * Benchmark Mean Reward: 1000
 
 ## Pyramids
