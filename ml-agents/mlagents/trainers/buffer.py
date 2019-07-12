@@ -52,7 +52,7 @@ class Buffer(dict):
                 Adds a list of np.arrays to the end of the list of np.arrays.
                 :param data: The np.array list to append.
                 """
-                self += list(np.array(data))
+                self += list(np.array(data, dtype = float))
 
             def set(self, data):
                 """
@@ -60,7 +60,7 @@ class Buffer(dict):
                 :param data: The np.array list to be set.
                 """
                 self[:] = []
-                self[:] = list(np.array(data))
+                self[:] = list(np.array(data, dtype = float))
 
             def get_batch(self, batch_size=None, training_length=1, sequential=True):
                 """
@@ -80,12 +80,12 @@ class Buffer(dict):
                     # not a list of sequences of elements.
                     if batch_size is None:
                         # If batch_size is None : All the elements of the AgentBufferField are returned.
-                        return np.array(self)
+                        return np.array(self, dtype = float)
                     else:
                         # return the batch_size last elements
                         if batch_size > len(self):
                             raise BufferException("Batch size requested is too large")
-                        return np.array(self[-batch_size:])
+                        return np.array(self[-batch_size:], dtype = float)
                 else:
                     # The training_length is not None, the method returns a list of SEQUENCES of elements
                     if not sequential:
@@ -102,8 +102,8 @@ class Buffer(dict):
                             )
                         tmp_list = []
                         for end in range(len(self) - batch_size + 1, len(self) + 1):
-                            tmp_list += [np.array(self[end - training_length : end])]
-                        return np.array(tmp_list)
+                            tmp_list += [np.array(self[end - training_length : end], dtype = float)]
+                        return np.array(tmp_list, dtype = float)
                     if sequential:
                         # The sequences will not have overlapping elements (this involves padding)
                         leftover = len(self) % training_length
@@ -123,21 +123,21 @@ class Buffer(dict):
                                 " too large given the current number of data points."
                             )
                         tmp_list = []
-                        padding = np.array(self[-1]) * self.padding_value
+                        padding = np.array(self[-1], dtype = float) * self.padding_value
                         # The padding is made with zeros and its shape is given by the shape of the last element
                         for end in range(
                             len(self), len(self) % training_length, -training_length
                         )[:batch_size]:
-                            tmp_list += [np.array(self[end - training_length : end])]
+                            tmp_list += [np.array(self[end - training_length : end], dtype = float)]
                         if (leftover != 0) and (len(tmp_list) < batch_size):
                             tmp_list += [
                                 np.array(
                                     [padding] * (training_length - leftover)
-                                    + self[:leftover]
+                                    + self[:leftover], dtype = float
                                 )
                             ]
                         tmp_list.reverse()
-                        return np.array(tmp_list)
+                        return np.array(tmp_list, dtype = float)
 
             def reset_field(self):
                 """
