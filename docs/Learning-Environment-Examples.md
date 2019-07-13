@@ -1,4 +1,4 @@
-# Example Learning Environments
+﻿# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -363,19 +363,19 @@ If you would like to contribute environments, please see our
     rotations applicable to the joints.
   * Visual Observations: None.
 * Reset Parameters: Four, corresponding to the following
-    * Gravity:
+    * gravity: Magnitude of gravity
         * Default: 9.81
         * Recommended Minimum:
         * Recommended Maximum:
-    * Hip_mass:
+    * hip_mass: Mass of the hip component of the walker
         * Default: 15
         * Recommended Minimum: 7
         * Recommended Maximum: 28
-    * Chest_mass:
+    * chest_mass: Mass of the chest component of the walker
         * Default: 8
         * Recommended Minimum: 3
         * Recommended Maximum: 20
-    * Spine_mass:
+    * spine_mass: Mass of the spine component of the walker
         * Default: 10
         * Recommended Minimum: 3
         * Recommended Maximum: 20
