@@ -99,7 +99,7 @@ class GAILRewardSignal(RewardSignal):
         :return: The loss of the update.
         """
         batch_losses = []
-        n_sequences = n_sequences // 2  # Divide by 2 since we have two buffers
+        n_sequences = max(n_sequences // 2, 1)  # Divide by 2 since we have two buffers
         possible_demo_batches = (
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
