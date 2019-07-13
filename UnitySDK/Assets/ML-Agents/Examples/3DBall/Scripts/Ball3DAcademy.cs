@@ -12,5 +12,5 @@ public class Ball3DAcademy : Academy
 
 	public override void AcademyStep()
 	{
-    
+     
 	}
