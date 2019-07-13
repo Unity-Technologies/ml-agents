@@ -1,4 +1,4 @@
-# Example Learning Environments
+﻿# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -225,11 +225,11 @@ If you would like to contribute environments, please see our
      this environment does not train with the provided default
      training parameters.__
 * Reset Parameters: Two, corresponding to the following
-  * Laser Length:
+  * laser_length: Length of the laser used by the agent
     * Default: 1
     * Recommended Minimum: 0.2
     * Recommended Maximum: 7
-  * Agent Scale:
+  * agent_scale: Specifies the scale of the agent in the 3 dimensions (equal across the three dimensions)
     * Default: 1
     * Recommended Minimum: 0.5
     * Recommended Maximum: 5
