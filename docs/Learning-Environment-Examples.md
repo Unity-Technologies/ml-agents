@@ -57,15 +57,15 @@ If you would like to contribute environments, please see our
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
 * Reset Parameters: Three, corresponding to the following:
-    * Ball size: Specifies the scale of the ball in the 3 dimensions
+    * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
       * Default: 1
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
-    * Gravity 
+    * gravity: Magnitude of gravity  
       * Default: 9.81
       * Recommended Minimum: 4
       * Recommended Maximum: 105
-    * Ball Mass
+    * mass: Specifies mass of the ball
       * Default: 1
       * Recommended Minimum: 0.1
       * Recommended Maximum: 20
@@ -126,7 +126,7 @@ If you would like to contribute environments, please see our
       * Default: 9.81
       * Recommended Minimum: 6
       * Recommended Maximum: 20
-    * scale: Size of the ball
+    * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
       * Default: 1
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
@@ -329,11 +329,11 @@ If you would like to contribute environments, please see our
     * Goalie: 4 actions corresponding to forward, backward, sideways movement.
   * Visual Observations: None.
 * Reset Parameters: Two, corresponding to the following:
-  * ball_scale:
+  * ball_scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
     * Default: 7.5
     * Recommended minimum: 4
     * Recommended maximum: 10
-  * gravity:
+  * gravity: Magnitude of the gravity
     * Default: 9.81
     * Recommended minimum: 6
     * Recommended maximum: 20
