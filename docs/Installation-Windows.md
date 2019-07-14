@@ -63,6 +63,7 @@ following new paths.
 %UserProfile%\Anaconda3\Scripts\conda.exe
 %UserProfile%\Anaconda3
 %UserProfile%\Anaconda3\python.exe
+%UserProfile%\Anaconda3\Library\bin
 ```
 
 ## Step 2: Setup and Activate a New Conda Environment
