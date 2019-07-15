@@ -40,13 +40,14 @@ class TimerNode:
     Represents the time spent in a block of code.
     """
 
-    __slots__ = ["children", "total", "count"]
+    __slots__ = ["children", "total", "count", "is_parallel"]
 
     def __init__(self):
         # Note that since dictionary keys are the node names, we don't explicitly store the name on the TimerNode.
         self.children: Dict[str, TimerNode] = {}
         self.total: float = 0.0
         self.count: int = 0
+        self.is_parallel = False
 
     def get_child(self, name: str) -> "TimerNode":
         """
@@ -65,17 +66,25 @@ class TimerNode:
         self.total += elapsed
         self.count += 1
 
-    def merge(self, other: "TimerNode"):
+    def merge(self, other: "TimerNode", root_name: str = None, is_parallel=True):
         """
         Add the other node to this node, then do the same recursively on its children.
-        :param other:
+        :param other: The other node to merge
+        :param is_parallel: Whether or not the code block was executed in parallel.
         :return:
         """
-        self.total += other.total
-        self.count += other.count
-        for other_child_name, other_child_node in other.children.items():
-            child = self.get_child(other_child_name)
-            child.merge(other_child_node)
+        pass
+        # if root_name:
+        #     node = self.get_child("root_name")
+        # else:
+        #     node = self
+        #
+        # node.total += other.total
+        # node.count += other.count
+        # node.is_parallel |= is_parallel
+        # for other_child_name, other_child_node in other.children.items():
+        #     child = node.get_child(other_child_name)
+        #     child.merge(other_child_node, is_parallel=is_parallel)
 
 
 class TimerStack:
@@ -122,6 +131,10 @@ class TimerStack:
             res = {"name": "root", "total": total_elapsed, "count": 1}
         else:
             res = {"total": node.total, "count": node.count}
+
+        if node.is_parallel:
+            # Note when the block ran in parallel, so that it's less confusing that a timer is less that its children.
+            res["is_parallel"] = True
 
         child_total = 0.0
         child_list = []

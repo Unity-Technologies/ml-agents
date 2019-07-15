@@ -161,8 +161,9 @@ class SubprocessEnvManager(EnvManager):
             for env_worker in self.env_workers:
                 env_worker.send("timers")
                 worker_timer_node = env_worker.recv().payload
-                # TODO store these separately to indicate they ran in parallel?
-                main_timer_node.merge(worker_timer_node)
+                main_timer_node.merge(
+                    worker_timer_node, root_name="worker_root", is_parallel=True
+                )
 
         return steps
 
