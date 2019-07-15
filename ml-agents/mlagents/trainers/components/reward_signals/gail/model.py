@@ -194,7 +194,7 @@ class GAILModel(object):
             estimate = tf.layers.dense(
                 estimate_input,
                 1,
-                activation=LearningModel.swish,
+                activation=tf.nn.sigmoid,
                 name="d_estimate",
                 reuse=reuse,
             )
