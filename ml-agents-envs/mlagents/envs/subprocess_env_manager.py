@@ -42,7 +42,7 @@ class UnityEnvWorker:
         try:
             response: EnvironmentResponse = self.conn.recv()
             return response
-        except (BrokenPipeError, EOFError) as e:
+        except (BrokenPipeError, EOFError):
             raise KeyboardInterrupt
 
     def close(self):
