@@ -12,6 +12,7 @@ class GAILModel(object):
         learning_rate: float = 3e-4,
         encoding_size: int = 64,
         use_actions: bool = False,
+        use_vail: bool = True,
     ):
         """
         The initializer for the GAIL reward generator.
@@ -28,7 +29,7 @@ class GAILModel(object):
         self.mutual_information = 0.5
         self.policy_model = policy_model
         self.encoding_size = encoding_size
-        self.use_vail = True
+        self.use_vail = use_vail
         self.use_actions = use_actions  # True # Not using actions
         self.make_beta()
         self.make_inputs()
@@ -214,13 +215,13 @@ class GAILModel(object):
                 shape=[1], dtype=tf.float32, name="NoiseLevel"
             )
         self.expert_estimate, self.z_mean_expert = self.create_encoder(
-            self.encoded_expert, self.expert_action, self.done_expert, False
+            self.encoded_expert, self.expert_action, self.done_expert, reuse=False
         )
         self.policy_estimate, self.z_mean_policy = self.create_encoder(
             self.encoded_policy,
             self.policy_model.selected_actions,
             self.done_policy,
-            True,
+            reuse=True,
         )
         self.discriminator_score = tf.reshape(
             self.policy_estimate, [-1], name="GAIL_reward"
@@ -235,7 +236,7 @@ class GAILModel(object):
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
 
-        self.disc_loss = -tf.reduce_mean(
+        self.discriminator_loss = -tf.reduce_mean(
             tf.log(self.expert_estimate + 1e-7)
             + tf.log(1.0 - self.policy_estimate + 1e-7)
         )
@@ -253,9 +254,10 @@ class GAILModel(object):
                 )
             )
             self.loss = (
-                self.beta * (self.kl_loss - self.mutual_information) + self.disc_loss
+                self.beta * (self.kl_loss - self.mutual_information)
+                + self.discriminator_loss
             )
         else:
-            self.loss = self.disc_loss
+            self.loss = self.discriminator_loss
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
