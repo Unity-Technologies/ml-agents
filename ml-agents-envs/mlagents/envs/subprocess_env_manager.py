@@ -69,6 +69,8 @@ def worker(
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
+                # When an environment is "global_done" it means automatic agent reset won't occur, so we need
+                # to perform an academy reset.
                 if env.global_done:
                     all_brain_info = env.reset()
                 else:
@@ -141,10 +143,13 @@ class SubprocessEnvManager(EnvManager):
                 env_worker.waiting = True
 
     def step(self) -> List[StepInfo]:
+        # Queue steps for any workers which aren't in the "waiting" state.
         self._queue_steps()
 
         worker_steps: List[EnvironmentResponse] = []
         step_workers: Set[int] = set()
+        # Poll the step queue for completed steps from environment workers until we retrieve
+        # 1 or more, which we will then return as StepInfos
         while len(worker_steps) < 1:
             try:
                 while True:
@@ -162,8 +167,10 @@ class SubprocessEnvManager(EnvManager):
     def reset(
         self, config=None, train_mode=True, custom_reset_parameters=None
     ) -> List[StepInfo]:
+        # First enqueue reset commands for all workers so that they reset in parallel
         for ew in self.env_workers:
             ew.send("reset", (config, train_mode, custom_reset_parameters))
+        # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
             ew.previous_step = StepInfo(None, ew.recv().payload, None)
         return list(map(lambda ew: ew.previous_step, self.env_workers))
