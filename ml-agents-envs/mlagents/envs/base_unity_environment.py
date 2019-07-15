@@ -12,7 +12,9 @@ class BaseUnityEnvironment(ABC):
         pass
 
     @abstractmethod
-    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
+    def reset(
+        self, config=None, train_mode=True, custom_reset_parameters=None
+    ) -> AllBrainInfo:
         pass
 
     @property

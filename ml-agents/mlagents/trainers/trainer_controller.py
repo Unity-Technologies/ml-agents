@@ -266,7 +266,6 @@ class TrainerController(object):
                 else:
                     d1[k2] = v2
 
-
     def start_learning(
         self, env_manager: EnvManager, trainer_config: Dict[str, Any]
     ) -> Dict[str, Dict[str, float]]:

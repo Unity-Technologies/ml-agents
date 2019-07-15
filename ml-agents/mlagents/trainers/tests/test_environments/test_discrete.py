@@ -1,51 +1,32 @@
-import logging
-
-from multiprocessing import Process, Queue
-import os
-import glob
-import shutil
-import numpy as np
 import yaml
-from docopt import docopt
 import math
+import tempfile
 from typing import Any, Callable, Dict, Optional, List
 
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.exception import TrainerError
-from mlagents.trainers import MetaCurriculumError, MetaCurriculum
-from mlagents.envs import UnityEnvironment
-from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
-from mlagents.envs.env_manager import EnvManager, StepInfo
-
-from mlagents.envs import UnityEnvironment
-from multiprocessing import Process, Pipe
-from multiprocessing.connection import Connection
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, StepInfo
-from mlagents.envs.timers import timed, hierarchical_timer
-from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo, BrainInfo
-
+from mlagents.envs.timers import timed
+from mlagents.envs import ActionInfo, BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
 
 
-from abc import ABC, abstractmethod
-from typing import Dict
-
-from mlagents.envs import AllBrainInfo, BrainParameters
-
-import tempfile
-
 BRAIN_NAME = __name__
 OBS_SIZE = 1
-STEP_SIZE = .1
+STEP_SIZE = 0.1
+
 
 def clamp(x, min_val, max_val):
     return max(min_val, min(x, max_val))
 
-class MyDumbEnvironment(BaseUnityEnvironment):
+
+class Simple1DEnvironment(BaseUnityEnvironment):
+    """
+    Very simple "game" - the agent has a position on [-1, 1], gets a reward of 1 if it reaches 1, and a reward of -1 if
+    it reaches -1. The position is incremented by the action amount (clamped to [-step_size, step_size]).
+    """
+
     def __init__(self):
         self._brains: Dict[str, BrainParameters] = {}
         self._brains[BRAIN_NAME] = BrainParameters(
@@ -64,8 +45,12 @@ class MyDumbEnvironment(BaseUnityEnvironment):
         self.step_count = 0
 
     def step(
-        self, vector_action=None, memory=None, text_action=None, value=None
-    ) -> AllBrainInfo: # type: ignore
+        self,
+        vector_action: Dict[str, Any] = None,
+        memory: Dict[str, Any] = None,
+        text_action: Dict[str, Any] = None,
+        value: Dict[str, Any] = None,
+    ) -> AllBrainInfo:
         if vector_action:
             delta = vector_action[BRAIN_NAME][0][0]
             self.position += clamp(delta, -STEP_SIZE, STEP_SIZE)
@@ -85,13 +70,15 @@ class MyDumbEnvironment(BaseUnityEnvironment):
             )
         }
 
-    def reset(self, config=None, train_mode=True) -> AllBrainInfo:  # type: ignore
+    def reset(
+        self, config: Dict[str, float] = None, train_mode: bool = True
+    ) -> AllBrainInfo:  # type: ignore
         self.position = 0.0
         self.step_count = 0
         agent_info = AgentInfoProto(
             stacked_vector_observation=[self.position] * OBS_SIZE,
             done=False,
-            max_step_reached=False
+            max_step_reached=False,
         )
         return {
             BRAIN_NAME: BrainInfo.from_agent_proto(
@@ -106,17 +93,13 @@ class MyDumbEnvironment(BaseUnityEnvironment):
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:
-        print("external_brains")
-
         return self._brains
 
     @property
     def reset_parameters(self) -> Dict[str, str]:
-        print("reset_parameters")
         return {}
 
     def close(self):
-        print("close")
         pass
 
 
@@ -141,8 +124,7 @@ class LocalEnvManager(EnvManager):
         for env_worker in self.env_contexts:
             all_action_info = self._take_step(env_worker.previous_step)
             env_worker.previous_all_action_info = all_action_info
-            # env_worker.send("step", all_action_info)
-            env_worker.env.step()  # TODO
+            env_worker.env.step()
 
             if env_worker.env.global_done:
                 all_brain_info = env_worker.env.reset()
@@ -172,12 +154,17 @@ class LocalEnvManager(EnvManager):
         return steps
 
     def reset(
-        self, config=None, train_mode=True, custom_reset_parameters=None
-    ) -> List[StepInfo]: # type: ignore
+        self,
+        config: Dict[str, float] = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
+    ) -> List[StepInfo]:  # type: ignore
         reset_results = []
         for worker in self.env_contexts:
             all_brain_info = worker.env.reset(
-                config=custom_reset_parameters, train_mode=train_mode
+                config=config,
+                train_mode=train_mode,
+                custom_reset_parameters=custom_reset_parameters,
             )
             reset_results.append(all_brain_info)
         for i in range(len(reset_results)):
@@ -234,7 +221,7 @@ default:
 """
 
 
-def test_discrete():
+def test_simple():
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
@@ -254,15 +241,13 @@ def test_discrete():
         )
 
         # Begin training
-        env = MyDumbEnvironment()
+        env = Simple1DEnvironment()
         env_manager = LocalEnvManager([env])
         trainer_config = yaml.safe_load(config)
         final_stats = tc.start_learning(env_manager, trainer_config)
-
-        print(tc.trainers)
 
         for brain_name, stats in final_stats.items():
             mean_reward = stats["Environment/Cumulative Reward"]
 
             assert not math.isnan(mean_reward)
-            assert mean_reward > .99
+            assert mean_reward > 0.99
