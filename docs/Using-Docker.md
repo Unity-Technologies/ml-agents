@@ -142,7 +142,7 @@ You can run Tensorboard to monitor your training instance on http://localhost:60
 docker exec -it <container-name> tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
 ```
 
-With our previous 3DBall example, this command would look like this:
+With out previous 3DBall example, this command would look like this:
 ```sh
 docker exec -it 3DBallContainer.first.trial tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
 ```
