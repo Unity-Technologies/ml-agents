@@ -250,8 +250,6 @@ class GAILRewardSignal(RewardSignal):
         run_out = self.policy.sess.run(out_dict, feed_dict=feed_dict)
         if self.model.use_vail:
             self.update_beta(run_out["kl_loss"])
-        print(feed_dict)
-        print(run_out)
         return run_out
 
     def update_beta(self, kl_div: float) -> None:
