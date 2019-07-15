@@ -1,4 +1,4 @@
-﻿# Example Learning Environments
+# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -329,19 +329,11 @@ If you would like to contribute environments, please see our
     * Goalie: 4 actions corresponding to forward, backward, sideways movement.
   * Visual Observations: None.
 * Reset Parameters: Two, corresponding to the following:
-<<<<<<< HEAD
   * ball_scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
     * Default: 7.5
     * Recommended minimum: 4
     * Recommended maximum: 10
   * gravity: Magnitude of the gravity
-=======
-  * ball_scale:
-    * Default: 7.5
-    * Recommended minimum: 4
-    * Recommended maximum: 10
-  * gravity:
->>>>>>> 02c7d8c1293db50396d38379b9c4d8b95679d0e4
     * Default: 9.81
     * Recommended minimum: 6
     * Recommended maximum: 20
