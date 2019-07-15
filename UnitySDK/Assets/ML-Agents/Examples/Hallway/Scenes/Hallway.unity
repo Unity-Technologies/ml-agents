@@ -929,8 +929,8 @@ MonoBehaviour:
     resetParameters: []
   agentRunSpeed: 1.5
   agentRotationSpeed: 1
-  goalScoredMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
-  failMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
+  goalScoredMaterial: {fileID: 2100000, guid: 53b470e5885ea5744916076464ca1f73, type: 2}
+  failMaterial: {fileID: 2100000, guid: 498b21663356f904c9a5a451e28421b3, type: 2}
   gravityMultiplier: 2
 --- !u!4 &1574236049
 Transform:
