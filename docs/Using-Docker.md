@@ -134,23 +134,6 @@ For more detail on Docker mounts, check out
 
 **NOTE** If you are training using docker for environments that use visual observations, you may need to increase the default memory that Docker allocates for the container. For example, see [here](https://docs.docker.com/docker-for-mac/#advanced) for instructions for Docker for Mac.
 
-### Running Tensorboard
-
-You can run Tensorboard to monitor your training instance on http://localhost:6006:
-
-```sh
-docker exec -it <container-name> tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
-```
-
-With out previous 3DBall example, this command would look like this:
-```sh
-docker exec -it 3DBallContainer.first.trial tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
-```
-
-For more details on Tensorboard, check out the documentation about [Using Tensorboard](Using-Tensorboard.md).
-
-=======
-
 ### Stopping Container and Saving State
 
 If you are satisfied with the training progress, you can stop the Docker
