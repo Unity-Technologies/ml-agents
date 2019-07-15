@@ -1,4 +1,4 @@
-﻿# Example Learning Environments
+# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
