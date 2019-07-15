@@ -1,13 +1,10 @@
 import logging
-from typing import Any, Callable, Dict
 
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
 logger = logging.getLogger("mlagents.trainers")
-
-ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 
 
 class LearningModel(object):
@@ -86,12 +83,12 @@ class LearningModel(object):
         return c_layers.variance_scaling_initializer(scale)
 
     @staticmethod
-    def swish(input_activation: tf.Tensor) -> tf.Tensor:
+    def swish(input_activation):
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
 
     @staticmethod
-    def create_visual_input(camera_parameters: Dict[str, Any], name: str) -> tf.Tensor:
+    def create_visual_input(camera_parameters, name):
         """
         Creates image input op.
         :param camera_parameters: Parameters for visual observation from BrainInfo.
@@ -182,13 +179,8 @@ class LearningModel(object):
 
     @staticmethod
     def create_vector_observation_encoder(
-        observation_input: tf.Tensor,
-        h_size: int,
-        activation: ActivationFunction,
-        num_layers: int,
-        scope: str,
-        reuse: bool,
-    ) -> tf.Tensor:
+        observation_input, h_size, activation, num_layers, scope, reuse
+    ):
         """
         Builds a set of hidden state encoders.
         :param reuse: Whether to re-use the weights within the same scope.
@@ -213,14 +205,8 @@ class LearningModel(object):
         return hidden
 
     def create_visual_observation_encoder(
-        self,
-        image_input: tf.Tensor,
-        h_size: int,
-        activation: ActivationFunction,
-        num_layers: int,
-        scope: str,
-        reuse: bool,
-    ) -> tf.Tensor:
+        self, image_input, h_size, activation, num_layers, scope, reuse
+    ):
         """
         Builds a set of visual (CNN) encoders.
         :param reuse: Whether to re-use the weights within the same scope.

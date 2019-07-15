@@ -1,15 +1,11 @@
 import logging
-from typing import Any, Dict, List
+from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.tf_policy import TFPolicy
 from collections import namedtuple
 import numpy as np
 import abc
 
 import tensorflow as tf
-
-from mlagents.envs.brain import BrainInfo
-from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.buffer import Buffer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -36,21 +32,19 @@ class RewardSignal(abc.ABC):
         self.policy = policy
         self.strength = strength
 
-    def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> RewardSignalResult:
+    def evaluate(self, current_info, next_info):
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
         :param next_info: The BrainInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
-        return RewardSignalResult(
+        return (
             self.strength * np.zeros(len(current_info.agents)),
             np.zeros(len(current_info.agents)),
         )
 
-    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
+    def update(self, update_buffer, n_sequences):
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), update that model.
         :param update_buffer: An AgentBuffer that contains the live data from which to update.
@@ -60,9 +54,7 @@ class RewardSignal(abc.ABC):
         return {}
 
     @classmethod
-    def check_config(
-        cls, config_dict: Dict[str, Any], param_keys: List[str] = None
-    ) -> None:
+    def check_config(cls, config_dict, param_keys=None):
         """
         Check the config dict, and throw an error if there are missing hyperparameters.
         """
