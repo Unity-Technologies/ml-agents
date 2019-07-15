@@ -71,7 +71,10 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         }
 
     def reset(
-        self, config: Dict[str, float] = None, train_mode: bool = True
+        self,
+        config: Dict[str, float] = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
     ) -> AllBrainInfo:  # type: ignore
         self.position = 0.0
         self.step_count = 0
