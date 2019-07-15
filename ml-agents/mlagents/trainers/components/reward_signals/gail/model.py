@@ -22,6 +22,8 @@ class GAILModel(object):
         :param learning_rate: The learning Rate for the discriminator
         :param encoding_size: The encoding size for the encoder
         :param use_actions: Whether or not to use actions to discriminate
+        :param use_vail: Whether or not to use a variational bottleneck for the
+        discriminator. See https://arxiv.org/abs/1810.00821.
         """
         self.h_size = h_size
         self.z_size = 128

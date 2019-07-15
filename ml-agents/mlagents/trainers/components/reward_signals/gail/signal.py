@@ -242,8 +242,6 @@ class GAILRewardSignal(RewardSignal):
             "expert_estimate": self.model.expert_estimate,
         }
         if self.model.use_vail:
-            po, pe, zlss, zme, zmp = None, None, None, None, None
-            kl_loss = None
             out_dict["kl_loss"] = self.model.kl_loss
             out_dict["z_log_sigma_sq"] = self.model.z_log_sigma_sq
             out_dict["z_mean_expert"] = self.model.z_mean_expert
@@ -252,7 +250,8 @@ class GAILRewardSignal(RewardSignal):
         run_out = self.policy.sess.run(out_dict, feed_dict=feed_dict)
         if self.model.use_vail:
             self.update_beta(run_out["kl_loss"])
-
+        print(feed_dict)
+        print(run_out)
         return run_out
 
     def update_beta(self, kl_div: float) -> None:
