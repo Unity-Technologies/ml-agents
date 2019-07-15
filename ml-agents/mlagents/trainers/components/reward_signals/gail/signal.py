@@ -112,11 +112,11 @@ class GAILRewardSignal(RewardSignal):
 
         if self.print_debug:
             kl_loss = []
-            pos = []
-            pes = []
-            zlss = []
-            zme = []
-            zmp = []
+            policy_estimate = []
+            expert_estimate = []
+            z_log_sigma_sq = []
+            z_mean_expert = []
+            z_mean_policy = []
 
         n_epoch = self.num_epoch
         for _epoch in range(n_epoch):
@@ -137,13 +137,13 @@ class GAILRewardSignal(RewardSignal):
                 loss = run_out["gail_loss"]
 
                 if self.print_debug:
-                    pos.append(run_out["policy_estimate"])
-                    pes.append(run_out["expert_estimate"])
+                    policy_estimate.append(run_out["policy_estimate"])
+                    expert_estimate.append(run_out["expert_estimate"])
                     if self.model.use_vail:
                         kl_loss.append(run_out["kl_loss"])
-                        zlss.append(run_out["z_log_sigma_sq"])
-                        zmp.append(run_out["z_mean_policy"])
-                        zme.append(run_out["z_mean_expert"])
+                        z_log_sigma_sq.append(run_out["z_log_sigma_sq"])
+                        z_mean_policy.append(run_out["z_mean_policy"])
+                        z_mean_expert.append(run_out["z_mean_expert"])
 
                 batch_losses.append(loss)
         self.has_updated = True
@@ -153,8 +153,8 @@ class GAILRewardSignal(RewardSignal):
             print_vals = [
                 n_epoch,
                 self.policy.sess.run(self.model.beta),
-                np.mean(pos),
-                np.mean(pes),
+                np.mean(policy_estimate),
+                np.mean(expert_estimate),
             ]
             if self.model.use_vail:
                 print_list += [
@@ -165,9 +165,9 @@ class GAILRewardSignal(RewardSignal):
                 ]
                 print_vals += [
                     np.mean(kl_loss),
-                    np.mean(zme),
-                    np.mean(zmp),
-                    np.mean(zlss),
+                    np.mean(z_mean_expert),
+                    np.mean(z_mean_policy),
+                    np.mean(z_log_sigma_sq),
                 ]
             print(*print_list)
             print(*print_vals)
