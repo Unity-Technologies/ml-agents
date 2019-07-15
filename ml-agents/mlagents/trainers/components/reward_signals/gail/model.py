@@ -157,7 +157,7 @@ class GAILModel(object):
             hidden_1 = tf.layers.dense(
                 concat_input,
                 self.h_size,
-                activation=tf.nn.elu,
+                activation=LearningModel.swish,
                 name="d_hidden_1",
                 reuse=reuse,
             )
@@ -165,7 +165,7 @@ class GAILModel(object):
             hidden_2 = tf.layers.dense(
                 hidden_1,
                 self.h_size,
-                activation=tf.nn.elu,
+                activation=LearningModel.swish,
                 name="d_hidden_2",
                 reuse=reuse,
             )
@@ -192,7 +192,7 @@ class GAILModel(object):
             estimate = tf.layers.dense(
                 estimate_input,
                 1,
-                activation=tf.nn.sigmoid,
+                activation=LearningModel.swish,
                 name="d_estimate",
                 reuse=reuse,
             )
