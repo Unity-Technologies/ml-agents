@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+import logging
 import numpy as np
 import tensorflow as tf
 
@@ -8,6 +9,8 @@ from mlagents.trainers.components.reward_signals import RewardSignal, RewardSign
 from mlagents.trainers.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
+
+LOGGER = logging.getLogger("mlagents.trainers")
 
 
 class GAILRewardSignal(RewardSignal):
@@ -22,8 +25,7 @@ class GAILRewardSignal(RewardSignal):
         learning_rate: float = 3e-4,
         max_batches: int = 10,
         use_actions: bool = False,
-        print_debug: bool = False,
-        use_vail: bool = True,
+        use_vail: bool = False,
     ):
         """
         The GAIL Reward signal generator. https://arxiv.org/abs/1606.03476
@@ -41,7 +43,6 @@ class GAILRewardSignal(RewardSignal):
         super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
         self.max_batches = max_batches
-        self.print_debug = print_debug
 
         self.model = GAILModel(
             policy.model, 128, learning_rate, encoding_size, use_actions, use_vail
@@ -110,13 +111,12 @@ class GAILRewardSignal(RewardSignal):
         possible_policy_batches = len(update_buffer["actions"]) // n_sequences
         possible_batches = min(possible_policy_batches, possible_demo_batches)
 
-        if self.print_debug:
-            kl_loss = []
-            policy_estimate = []
-            expert_estimate = []
-            z_log_sigma_sq = []
-            z_mean_expert = []
-            z_mean_policy = []
+        kl_loss = []
+        policy_estimate = []
+        expert_estimate = []
+        z_log_sigma_sq = []
+        z_mean_expert = []
+        z_mean_policy = []
 
         n_epoch = self.num_epoch
         for _epoch in range(n_epoch):
@@ -136,41 +136,44 @@ class GAILRewardSignal(RewardSignal):
                 run_out = self._update_batch(mini_batch_demo, mini_batch_policy)
                 loss = run_out["gail_loss"]
 
-                if self.print_debug:
-                    policy_estimate.append(run_out["policy_estimate"])
-                    expert_estimate.append(run_out["expert_estimate"])
-                    if self.model.use_vail:
-                        kl_loss.append(run_out["kl_loss"])
-                        z_log_sigma_sq.append(run_out["z_log_sigma_sq"])
-                        z_mean_policy.append(run_out["z_mean_policy"])
-                        z_mean_expert.append(run_out["z_mean_expert"])
+                policy_estimate.append(run_out["policy_estimate"])
+                expert_estimate.append(run_out["expert_estimate"])
+                if self.model.use_vail:
+                    kl_loss.append(run_out["kl_loss"])
+                    z_log_sigma_sq.append(run_out["z_log_sigma_sq"])
+                    z_mean_policy.append(run_out["z_mean_policy"])
+                    z_mean_expert.append(run_out["z_mean_expert"])
 
                 batch_losses.append(loss)
         self.has_updated = True
 
-        if self.print_debug:
-            print_list = ["n_epoch", "beta", "policy_estimate", "expert_estimate"]
-            print_vals = [
-                n_epoch,
-                self.policy.sess.run(self.model.beta),
-                np.mean(policy_estimate),
-                np.mean(expert_estimate),
+        print_list = ["n_epoch", "beta", "policy_estimate", "expert_estimate"]
+        print_vals = [
+            n_epoch,
+            self.policy.sess.run(self.model.beta),
+            np.mean(policy_estimate),
+            np.mean(expert_estimate),
+        ]
+        if self.model.use_vail:
+            print_list += [
+                "kl_loss",
+                "z_mean_expert",
+                "z_mean_policy",
+                "z_log_sigma_sq",
             ]
-            if self.model.use_vail:
-                print_list += [
-                    "kl_loss",
-                    "z_mean_expert",
-                    "z_mean_policy",
-                    "z_log_sigma_sq",
-                ]
-                print_vals += [
-                    np.mean(kl_loss),
-                    np.mean(z_mean_expert),
-                    np.mean(z_mean_policy),
-                    np.mean(z_log_sigma_sq),
-                ]
-            print(*print_list)
-            print(*print_vals)
+            print_vals += [
+                np.mean(kl_loss),
+                np.mean(z_mean_expert),
+                np.mean(z_mean_policy),
+                np.mean(z_log_sigma_sq),
+            ]
+        LOGGER.debug(
+            "GAIL Debug:\n\t\t"
+            + "\n\t\t".join(
+                "{0}: {1}".format(_name, _val)
+                for _name, _val in zip(print_list, print_vals)
+            )
+        )
         update_stats = {"Losses/GAIL Loss": np.mean(batch_losses)}
         return update_stats
 

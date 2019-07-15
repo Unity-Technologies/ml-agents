@@ -199,3 +199,13 @@ is very large to avoid overfitting the discriminator on current data.
 Default Value: `10`
 
 Typical Range: `10`-`20`
+
+#### Variational Discriminator Bottleneck
+
+`use_vail` enables a [variational bottleneck](https://arxiv.org/abs/1810.00821) within the 
+GAIL discriminator. This forces the discriminator to learn a more general representation 
+and reduces its tendency to be "too good" at discriminating, making learning more stable. 
+However, it does increase training time. Enable this if you notice your imitation learning is
+unstable, or unable to learn the task at hand. 
+
+Default Value: `false`
