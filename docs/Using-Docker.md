@@ -80,10 +80,9 @@ Run the Docker container by calling the following command at the top-level of
 the repository:
 
 ```sh
-docker run -it --name <container-name> \
+docker run --name <container-name> \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            -p 5005:5005 \
-           -p 6006:6006 \
            <image-name>:latest \
            --docker-target-name=unity-volume \
            <trainer-config-file> \
@@ -119,14 +118,13 @@ Notes on argument values:
 To train with a `3DBall` environment executable, the command would be:
 
 ```sh
-docker run -it --name 3DBallContainer.first.trial \
+docker run --name 3DBallContainer.first.trial \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            -p 5005:5005 \
-           -p 6006:6006 \
            balance.ball.v0.1:latest 3DBall \
            --docker-target-name=unity-volume \
            trainer_config.yaml \
-           --env=3DBall \
+           --env=3DBall
            --train \
            --run-id=3dball_first_trial
 ```
@@ -150,6 +148,8 @@ docker exec -it 3DBallContainer.first.trial tensorboard --logdir=/unity-volume/s
 ```
 
 For more details on Tensorboard, check out the documentation about [Using Tensorboard](Using-Tensorboard.md).
+
+=======
 
 ### Stopping Container and Saving State
 
