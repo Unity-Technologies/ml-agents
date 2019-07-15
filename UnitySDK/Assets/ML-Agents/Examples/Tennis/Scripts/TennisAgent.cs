@@ -96,7 +96,6 @@ public class TennisAgent : Agent
     public void SetRacket()
     {
         angle = resetParams["angle"];
-        //agentRb.transform.Rotate(0f, 0f, invertMult * angle, Space.World);
         gameObject.transform.eulerAngles = new Vector3(
                                                 gameObject.transform.eulerAngles.x,
                                                 gameObject.transform.eulerAngles.y,
