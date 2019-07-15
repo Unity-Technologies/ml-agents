@@ -239,12 +239,13 @@ class TrainerController(object):
             or not self.train_model
         )
 
-    def write_to_tensorboard(self, global_step: int) -> None:
+    def write_to_tensorboard(self, global_step: int) -> Dict[str, Dict[str, float]]:
+        stats_out = {}
         for brain_name, trainer in self.trainers.items():
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:
-                trainer.write_summary(
+                brain_stats = trainer.write_summary(
                     global_step,
                     delta_train_start,
                     lesson_num=self.meta_curriculum.brains_to_curriculums[
@@ -252,11 +253,27 @@ class TrainerController(object):
                     ].lesson_num,
                 )
             else:
-                trainer.write_summary(global_step, delta_train_start)
+                brain_stats = trainer.write_summary(global_step, delta_train_start)
+            stats_out[brain_name] = brain_stats
+        return stats_out
+
+    @staticmethod
+    def update_nested(d1, d2):
+        for k2, v2 in d2.items():
+            if v2:
+                if k2 in d1:
+                    d1[k2].update(v2)
+                else:
+                    d1[k2] = v2
+
 
     def start_learning(
         self, env_manager: EnvManager, trainer_config: Dict[str, Any]
-    ) -> None:
+    ) -> Dict[str, Dict[str, float]]:
+        """
+        Returns stats for each trainer.
+        :return:
+        """
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         if self.meta_curriculum is not None:
@@ -272,6 +289,8 @@ class TrainerController(object):
 
         global_step = 0
 
+        stats_out: Dict[str, Dict[str, float]] = {}
+
         if self.train_model:
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
@@ -286,7 +305,8 @@ class TrainerController(object):
                     if self._should_save_model(global_step):
                         # Save Tensorflow model
                         self._save_model(steps=global_step)
-                    self.write_to_tensorboard(global_step)
+                    step_stats = self.write_to_tensorboard(global_step)
+                    self.update_nested(stats_out, step_stats)
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model(steps=global_step)
@@ -299,6 +319,7 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
+        return stats_out
 
     @timed
     def advance(self, env: EnvManager) -> int:

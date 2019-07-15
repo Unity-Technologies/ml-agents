@@ -7,6 +7,7 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
+import math
 from typing import Any, Callable, Dict, Optional, List
 
 
@@ -37,48 +38,71 @@ from mlagents.envs import AllBrainInfo, BrainParameters
 
 import tempfile
 
-BRAIN_NAME = "Abby Normal"
-OBS_SIZE = 10
+BRAIN_NAME = __name__
+OBS_SIZE = 1
+STEP_SIZE = .1
+
+def clamp(x, min_val, max_val):
+    return max(min_val, min(x, max_val))
 
 class MyDumbEnvironment(BaseUnityEnvironment):
-
     def __init__(self):
         self._brains: Dict[str, BrainParameters] = {}
         self._brains[BRAIN_NAME] = BrainParameters(
             brain_name=BRAIN_NAME,
-            vector_observation_space_size=10,
+            vector_observation_space_size=OBS_SIZE,
             num_stacked_vector_observations=1,
             camera_resolutions=[],
             vector_action_space_size=[1],
-            vector_action_descriptions=[],
-            vector_action_space_type=0,  # "discrete"
+            vector_action_descriptions=["moveDirection"],
+            # vector_action_space_type=0,  # "discrete"
+            vector_action_space_type=1,  # "continuous"
         )
+
+        # state
+        self.position = 0.0
+        self.step_count = 0
 
     def step(
         self, vector_action=None, memory=None, text_action=None, value=None
-    ) -> AllBrainInfo:
-        #print("step")
+    ) -> AllBrainInfo: # type: ignore
+        if vector_action:
+            delta = vector_action[BRAIN_NAME][0][0]
+            self.position += clamp(delta, -STEP_SIZE, STEP_SIZE)
+            self.position = clamp(self.position, -1, 1)
+            self.step_count += 1
+        done = self.position >= 1.0 or self.position <= -1.0
+        reward = self.position if done else 0.0
+
         agent_info = AgentInfoProto(
-            stacked_vector_observation=[0.0] * OBS_SIZE
+            stacked_vector_observation=[self.position] * OBS_SIZE,
+            reward=reward,
+            done=done,
         )
         return {
-            BRAIN_NAME: BrainInfo.from_agent_proto(0, [agent_info], self._brains[BRAIN_NAME])
+            BRAIN_NAME: BrainInfo.from_agent_proto(
+                0, [agent_info], self._brains[BRAIN_NAME]
+            )
         }
 
-    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
-        #print("reset")
-        #print("step")
+    def reset(self, config=None, train_mode=True) -> AllBrainInfo:  # type: ignore
+        self.position = 0.0
+        self.step_count = 0
         agent_info = AgentInfoProto(
-            stacked_vector_observation=[0.0] * OBS_SIZE
+            stacked_vector_observation=[self.position] * OBS_SIZE,
+            done=False,
+            max_step_reached=False
         )
         return {
-            BRAIN_NAME: BrainInfo.from_agent_proto(0, [agent_info], self._brains[BRAIN_NAME])
+            BRAIN_NAME: BrainInfo.from_agent_proto(
+                0, [agent_info], self._brains[BRAIN_NAME]
+            )
         }
 
     @property
     def global_done(self):
 
-        return False
+        return self.step_count > 1000
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:
@@ -96,42 +120,16 @@ class MyDumbEnvironment(BaseUnityEnvironment):
         pass
 
 
-# class LocalEnvManager(EnvManager):
-#     def __init__(self, env: BaseUnityEnvironment):
-#         super().__init__()
-#         self.env: BaseUnityEnvironment = env
-#
-#     def step(self) -> List[StepInfo]:
-#         all_action_info: Dict[str, ActionInfo] = {}
-#         env_step = self.env.step(all_action_info)
-#         return []
-#
-#     def reset(self, config=None, train_mode=True) -> List[StepInfo]:
-#         return []
-#
-#     @property
-#     def external_brains(self) -> Dict[str, BrainParameters]:
-#         return {}
-#
-#     @property
-#     def reset_parameters(self) -> Dict[str, float]:
-#         return {}
-#
-#     def close(self):
-#         pass
-
-
 class EnvContext:
     def __init__(self, env: BaseUnityEnvironment):
         self.env = env
         self.previous_step: StepInfo = StepInfo(None, {}, None)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
-#Copied from SubprocessEnvManager and removed the subprocess part
+
+# Copied from SubprocessEnvManager and removed the subprocess part
 class LocalEnvManager(EnvManager):
-    def __init__(
-        self, envs: List[BaseUnityEnvironment]
-    ):
+    def __init__(self, envs: List[BaseUnityEnvironment]):
         super().__init__()
         self.env_contexts: List[EnvContext] = [EnvContext(env) for env in envs]
 
@@ -144,7 +142,7 @@ class LocalEnvManager(EnvManager):
             all_action_info = self._take_step(env_worker.previous_step)
             env_worker.previous_all_action_info = all_action_info
             # env_worker.send("step", all_action_info)
-            env_worker.env.step() # TODO
+            env_worker.env.step()  # TODO
 
             if env_worker.env.global_done:
                 all_brain_info = env_worker.env.reset()
@@ -175,7 +173,7 @@ class LocalEnvManager(EnvManager):
 
     def reset(
         self, config=None, train_mode=True, custom_reset_parameters=None
-    ) -> List[StepInfo]:
+    ) -> List[StepInfo]: # type: ignore
         reset_results = []
         for worker in self.env_contexts:
             all_brain_info = worker.env.reset(
@@ -212,21 +210,21 @@ class LocalEnvManager(EnvManager):
 config = """
 default:
     trainer: ppo
-    batch_size: 1024
+    batch_size: 127 #1024
     beta: 5.0e-3
-    buffer_size: 10240
+    buffer_size: 1024 # 10240
     epsilon: 0.2
     hidden_units: 128
     lambd: 0.95
     learning_rate: 3.0e-4
-    max_steps: 5.0e4
+    max_steps: 5000
     memory_size: 256
     normalize: false
     num_epoch: 3
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
-    summary_freq: 1000
+    summary_freq: 500
     use_recurrent: false
     reward_signals: 
         extrinsic:
@@ -235,11 +233,12 @@ default:
 
 """
 
+
 def test_discrete():
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
-        save_freq = 100
+        save_freq = 99999
         tc = TrainerController(
             dir,
             dir,
@@ -257,5 +256,13 @@ def test_discrete():
         # Begin training
         env = MyDumbEnvironment()
         env_manager = LocalEnvManager([env])
-        trainer_config  = yaml.safe_load(config)
-        tc.start_learning(env_manager, trainer_config)
+        trainer_config = yaml.safe_load(config)
+        final_stats = tc.start_learning(env_manager, trainer_config)
+
+        print(tc.trainers)
+
+        for brain_name, stats in final_stats.items():
+            mean_reward = stats["Environment/Cumulative Reward"]
+
+            assert not math.isnan(mean_reward)
+            assert mean_reward > .99
