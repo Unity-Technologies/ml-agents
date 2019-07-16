@@ -98,7 +98,7 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
             elif cmd.name == "timers":
                 # The timers in this process are independent from all the others.
                 # So send back the root timer, then clear them.
-                _send_response("timers", _global_timer_stack.root)
+                _send_response("timers", _global_timer_stack.get_root())
                 reset_timers()
             elif cmd.name == "close":
                 break

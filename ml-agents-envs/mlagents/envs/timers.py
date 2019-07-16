@@ -70,21 +70,21 @@ class TimerNode:
         """
         Add the other node to this node, then do the same recursively on its children.
         :param other: The other node to merge
+        :param root_name: Optional name of the root node being merged.
         :param is_parallel: Whether or not the code block was executed in parallel.
         :return:
         """
-        pass
-        # if root_name:
-        #     node = self.get_child("root_name")
-        # else:
-        #     node = self
-        #
-        # node.total += other.total
-        # node.count += other.count
-        # node.is_parallel |= is_parallel
-        # for other_child_name, other_child_node in other.children.items():
-        #     child = node.get_child(other_child_name)
-        #     child.merge(other_child_node, is_parallel=is_parallel)
+        if root_name:
+            node = self.get_child(root_name)
+        else:
+            node = self
+
+        node.total += other.total
+        node.count += other.count
+        node.is_parallel |= is_parallel
+        for other_child_name, other_child_node in other.children.items():
+            child = node.get_child(other_child_name)
+            child.merge(other_child_node, is_parallel=is_parallel)
 
 
 class TimerStack:
@@ -120,17 +120,27 @@ class TimerStack:
         """
         self.stack.pop()
 
+    def get_root(self) -> TimerNode:
+        """
+        Update the total time and count of the root name, and return it.
+        """
+        root = self.root
+        root.total = perf_counter() - self.start_time
+        root.count = 1
+        return root
+
     def get_timing_tree(self, node: TimerNode = None) -> Dict[str, Any]:
         """
         Recursively build a tree of timings, suitable for output/archiving.
         """
+        res: Dict[str, Any] = {}
         if node is None:
             # Special case the root - total is time since it was created, and count is 1
-            node = self.root
-            total_elapsed = perf_counter() - self.start_time
-            res = {"name": "root", "total": total_elapsed, "count": 1}
-        else:
-            res = {"total": node.total, "count": node.count}
+            node = self.get_root()
+            res["name"] = "root"
+
+        res["total"] = node.total
+        res["count"] = node.count
 
         if node.is_parallel:
             # Note when the block ran in parallel, so that it's less confusing that a timer is less that its children.
