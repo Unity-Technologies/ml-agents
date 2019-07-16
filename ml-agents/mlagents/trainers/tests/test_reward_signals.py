@@ -64,7 +64,10 @@ def curiosity_dummy_config():
 
 
 VECTOR_ACTION_SPACE = [2]
+VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [2]
+BUFFER_INIT_SAMPLES = 20
+NUM_AGENTS = 12
 
 
 def create_ppo_policy_mock(
@@ -77,11 +80,11 @@ def create_ppo_policy_mock(
             vector_action_space_size=DISCRETE_ACTION_SPACE
             if use_discrete
             else VECTOR_ACTION_SPACE,
-            vector_observation_space_size=8,
+            vector_observation_space_size=VECTOR_OBS_SPACE,
         )
         mock_braininfo = mb.create_mock_braininfo(
-            num_agents=12,
-            num_vector_observations=8,
+            num_agents=NUM_AGENTS,
+            num_vector_observations=VECTOR_OBS_SPACE,
             num_vector_acts=sum(
                 DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
             ),
@@ -97,7 +100,7 @@ def create_ppo_policy_mock(
             number_visual_observations=1,
         )
         mock_braininfo = mb.create_mock_braininfo(
-            num_agents=12,
+            num_agents=NUM_AGENTS,
             num_vis_observations=1,
             num_vector_acts=sum(
                 DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
@@ -125,34 +128,13 @@ def reward_signal_eval(env, policy, reward_signal_name):
     rsig_result = policy.reward_signals[reward_signal_name].evaluate(
         brain_info, next_brain_info
     )
-    assert rsig_result.scaled_reward.shape == (12,)
-    assert rsig_result.unscaled_reward.shape == (12,)
+    assert rsig_result.scaled_reward.shape == (NUM_AGENTS,)
+    assert rsig_result.unscaled_reward.shape == (NUM_AGENTS,)
 
 
 def reward_signal_update(env, policy, reward_signal_name):
-    brain_info_list = []
-    for i in range(20):
-        brain_info_list.append(env.step()[env.brain_names[0]])
-    # Make a buffer
-    buffer = make_demo_buffer(brain_info_list, policy.brain, 1)
-    # Some fields aren't created by the demo buffer, so add them here
-    for i in range(len(buffer[0]["actions"])):
-        buffer[0]["masks"].append(1.0)
-        buffer[0]["advantages"].append(1.0)
-        buffer[0]["action_probs"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["actions_pre"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["random_normal_epsilon"].append(
-            np.ones(buffer[0]["actions"][0].shape)
-        )
-        if "vector_obs" in buffer[0]:
-            buffer[0]["next_vector_in"].append(
-                np.ones(buffer[0]["vector_obs"][0].shape)
-            )
-        if "visual_obs0" in buffer[0]:
-            buffer[0]["next_visual_obs0"] = buffer[0]["visual_obs0"]
-        buffer[0]["action_mask"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["memory"].append(np.ones((64, 8)))
-    out = policy.reward_signals[reward_signal_name].update(buffer[0], 2)
+    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    out = policy.reward_signals[reward_signal_name].update(buffer.update_buffer, 2)
     assert type(out) is dict
 
 

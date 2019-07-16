@@ -2,6 +2,8 @@ import unittest.mock as mock
 import pytest
 import numpy as np
 
+from mlagents.trainers.buffer import Buffer
+
 
 def create_mock_brainparams(
     number_visual_observations=0,
@@ -90,3 +92,50 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     mock_env.return_value.brain_names = ["MockBrain"]
     mock_env.return_value.reset.return_value = {"MockBrain": mock_braininfo}
     mock_env.return_value.step.return_value = {"MockBrain": mock_braininfo}
+
+
+def simulate_rollout(env, policy, buffer_init_samples):
+    brain_info_list = []
+    for i in range(buffer_init_samples):
+        brain_info_list.append(env.step()[env.brain_names[0]])
+    buffer = create_buffer(brain_info_list, policy.brain, policy.sequence_length)
+    return buffer
+
+
+def create_buffer(brain_infos, brain_params, sequence_length):
+    buffer = Buffer()
+    # Make a buffer
+    for idx, experience in enumerate(brain_infos):
+        if idx > len(brain_infos) - 2:
+            break
+        current_brain_info = brain_infos[idx]
+        next_brain_info = brain_infos[idx + 1]
+        buffer[0].last_brain_info = current_brain_info
+        buffer[0]["done"].append(next_brain_info.local_done[0])
+        buffer[0]["rewards"].append(next_brain_info.rewards[0])
+        for i in range(brain_params.number_visual_observations):
+            buffer[0]["visual_obs%d" % i].append(
+                current_brain_info.visual_observations[i][0]
+            )
+            buffer[0]["next_visual_obs%d" % i].append(
+                current_brain_info.visual_observations[i][0]
+            )
+        if brain_params.vector_observation_space_size > 0:
+            buffer[0]["vector_obs"].append(current_brain_info.vector_observations[0])
+            buffer[0]["next_vector_in"].append(
+                current_brain_info.vector_observations[0]
+            )
+        buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
+        buffer[0]["prev_action"].append(current_brain_info.previous_vector_actions[0])
+        buffer[0]["masks"].append(1.0)
+        buffer[0]["advantages"].append(1.0)
+        buffer[0]["action_probs"].append(np.ones(buffer[0]["actions"][0].shape))
+        buffer[0]["actions_pre"].append(np.ones(buffer[0]["actions"][0].shape))
+        buffer[0]["random_normal_epsilon"].append(
+            np.ones(buffer[0]["actions"][0].shape)
+        )
+        buffer[0]["action_mask"].append(np.ones(buffer[0]["actions"][0].shape))
+        buffer[0]["memory"].append(np.ones(8))
+
+    buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
+    return buffer
