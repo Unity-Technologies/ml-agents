@@ -71,8 +71,8 @@ class TrainerController(object):
         tf.set_random_seed(self.seed)
 
     def _get_measure_vals(self):
+        brain_names_to_measure_vals = {}
         if self.meta_curriculum:
-            brain_names_to_measure_vals = {}
             for (
                 brain_name,
                 curriculum,
@@ -86,9 +86,11 @@ class TrainerController(object):
                 elif curriculum.measure == "reward":
                     measure_val = np.mean(self.trainers[brain_name].reward_buffer)
                     brain_names_to_measure_vals[brain_name] = measure_val
-            return brain_names_to_measure_vals
         else:
-            return None
+            for brain_name, trainer in self.trainers.items():
+                measure_val = np.mean(trainer.reward_buffer)
+                brain_names_to_measure_vals[brain_name] = measure_val
+        return brain_names_to_measure_vals
 
     def _save_model(self, steps=0):
         """
@@ -160,35 +162,35 @@ class TrainerController(object):
         for brain_name in external_brains:
             if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
                 self.trainers[brain_name] = OfflineBCTrainer(
-                    external_brains[brain_name],
-                    trainer_parameters_dict[brain_name],
-                    self.train_model,
-                    self.load_model,
-                    self.seed,
-                    self.run_id,
+                    brain=external_brains[brain_name],
+                    trainer_parameters=trainer_parameters_dict[brain_name],
+                    training=self.train_model,
+                    load=self.load_model,
+                    seed=self.seed,
+                    run_id=self.run_id,
                 )
             elif trainer_parameters_dict[brain_name]["trainer"] == "online_bc":
                 self.trainers[brain_name] = OnlineBCTrainer(
-                    external_brains[brain_name],
-                    trainer_parameters_dict[brain_name],
-                    self.train_model,
-                    self.load_model,
-                    self.seed,
-                    self.run_id,
+                    brain=external_brains[brain_name],
+                    trainer_parameters=trainer_parameters_dict[brain_name],
+                    training=self.train_model,
+                    load=self.load_model,
+                    seed=self.seed,
+                    run_id=self.run_id,
                 )
             elif trainer_parameters_dict[brain_name]["trainer"] == "ppo":
                 self.trainers[brain_name] = PPOTrainer(
-                    external_brains[brain_name],
-                    self.meta_curriculum.brains_to_curriculums[
+                    brain=external_brains[brain_name],
+                    reward_buff_cap=self.meta_curriculum.brains_to_curriculums[
                         brain_name
                     ].min_lesson_length
                     if self.meta_curriculum
-                    else 0,
-                    trainer_parameters_dict[brain_name],
-                    self.train_model,
-                    self.load_model,
-                    self.seed,
-                    self.run_id,
+                    else 1,
+                    trainer_parameters=trainer_parameters_dict[brain_name],
+                    training=self.train_model,
+                    load=self.load_model,
+                    seed=self.seed,
+                    run_id=self.run_id,
                 )
                 self.trainer_metrics[brain_name] = self.trainers[
                     brain_name
@@ -239,13 +241,12 @@ class TrainerController(object):
             or not self.train_model
         )
 
-    def write_to_tensorboard(self, global_step: int) -> Dict[str, Dict[str, float]]:
-        stats_out = {}
+    def write_to_tensorboard(self, global_step: int) -> None:
         for brain_name, trainer in self.trainers.items():
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:
-                brain_stats = trainer.write_summary(
+                trainer.write_summary(
                     global_step,
                     delta_train_start,
                     lesson_num=self.meta_curriculum.brains_to_curriculums[
@@ -253,22 +254,11 @@ class TrainerController(object):
                     ].lesson_num,
                 )
             else:
-                brain_stats = trainer.write_summary(global_step, delta_train_start)
-            stats_out[brain_name] = brain_stats
-        return stats_out
-
-    @staticmethod
-    def update_nested(d1, d2):
-        for k2, v2 in d2.items():
-            if v2:
-                if k2 in d1:
-                    d1[k2].update(v2)
-                else:
-                    d1[k2] = v2
+                trainer.write_summary(global_step, delta_train_start)
 
     def start_learning(
         self, env_manager: EnvManager, trainer_config: Dict[str, Any]
-    ) -> Dict[str, Dict[str, float]]:
+    ) -> None:
         """
         Returns stats for each trainer.
         :return:
@@ -288,8 +278,6 @@ class TrainerController(object):
 
         global_step = 0
 
-        stats_out: Dict[str, Dict[str, float]] = {}
-
         if self.train_model:
             for brain_name, trainer in self.trainers.items():
                 trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
@@ -304,8 +292,7 @@ class TrainerController(object):
                     if self._should_save_model(global_step):
                         # Save Tensorflow model
                         self._save_model(steps=global_step)
-                    step_stats = self.write_to_tensorboard(global_step)
-                    self.update_nested(stats_out, step_stats)
+                    self.write_to_tensorboard(global_step)
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model(steps=global_step)
@@ -318,7 +305,6 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
-        return stats_out
 
     @timed
     def advance(self, env: EnvManager) -> int:

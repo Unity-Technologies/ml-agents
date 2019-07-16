@@ -183,15 +183,13 @@ class Trainer(object):
 
     def write_summary(
         self, global_step: int, delta_train_start: float, lesson_num: int = 0
-    ) -> Dict[str, float]:
+    ) -> None:
         """
         Saves training statistics to Tensorboard.
         :param delta_train_start:  Time elapsed since training started.
         :param lesson_num: Current lesson number in curriculum.
         :param global_step: The number of steps the simulation has been going for
         """
-        stats_out = {}
-
         if (
             global_step % self.trainer_parameters["summary_freq"] == 0
             and global_step != 0
@@ -230,12 +228,10 @@ class Trainer(object):
                 if len(self.stats[key]) > 0:
                     stat_mean = float(np.mean(self.stats[key]))
                     summary.value.add(tag="{}".format(key), simple_value=stat_mean)
-                    stats_out[key] = stat_mean
                     self.stats[key] = []
             summary.value.add(tag="Environment/Lesson", simple_value=lesson_num)
             self.summary_writer.add_summary(summary, step)
             self.summary_writer.flush()
-        return stats_out
 
     def write_tensorboard_text(self, key, input_dict):
         """

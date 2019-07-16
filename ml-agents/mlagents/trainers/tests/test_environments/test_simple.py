@@ -263,10 +263,8 @@ def test_simple():
         env = Simple1DEnvironment()
         env_manager = LocalEnvManager([env])
         trainer_config = yaml.safe_load(config)
-        final_stats = tc.start_learning(env_manager, trainer_config)
+        tc.start_learning(env_manager, trainer_config)
 
-        for brain_name, stats in final_stats.items():
-            mean_reward = stats["Environment/Cumulative Reward"]
-
+        for brain_name, mean_reward in tc._get_measure_vals():
             assert not math.isnan(mean_reward)
             assert mean_reward > 0.99
