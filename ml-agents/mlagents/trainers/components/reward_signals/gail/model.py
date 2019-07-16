@@ -75,10 +75,8 @@ class GAILModel(object):
             )
             self.expert_action = tf.concat(
                 [
-                    tf.one_hot(
-                        self.action_in_expert[:, i], self.policy_model.act_size[i]
-                    )
-                    for i in range(len(self.policy_model.act_size))
+                    tf.one_hot(self.action_in_expert[:, i], act_size)
+                    for i, act_size in enumerate(self.policy_model.act_size)
                 ],
                 axis=1,
             )
