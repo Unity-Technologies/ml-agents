@@ -16,6 +16,10 @@ BRAIN_NAME = __name__
 OBS_SIZE = 1
 STEP_SIZE = 0.1
 
+TIME_PENALTY = 0.001
+MIN_STEPS = int(1.0 / STEP_SIZE) + 1
+SUCCESS_REWARD = 1.0 + MIN_STEPS * TIME_PENALTY
+
 
 def clamp(x, min_val, max_val):
     return max(min_val, min(x, max_val))
@@ -36,7 +40,6 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             camera_resolutions=[],
             vector_action_space_size=[1],
             vector_action_descriptions=["moveDirection"],
-            # vector_action_space_type=0,  # "discrete"
             vector_action_space_type=1,  # "continuous"
         )
 
@@ -51,24 +54,38 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         text_action: Dict[str, Any] = None,
         value: Dict[str, Any] = None,
     ) -> AllBrainInfo:
+        reward = 0.0
+        done = False
         if vector_action:
             delta = vector_action[BRAIN_NAME][0][0]
-            self.position += clamp(delta, -STEP_SIZE, STEP_SIZE)
+            delta = clamp(delta, -STEP_SIZE, STEP_SIZE)
+            self.position += delta
             self.position = clamp(self.position, -1, 1)
             self.step_count += 1
-        done = self.position >= 1.0 or self.position <= -1.0
-        reward = self.position if done else 0.0
+            done = self.position >= 1.0 or self.position <= -1.0
+            if done:
+                reward = SUCCESS_REWARD * self.position
+            else:
+                reward = -TIME_PENALTY
 
         agent_info = AgentInfoProto(
             stacked_vector_observation=[self.position] * OBS_SIZE,
             reward=reward,
             done=done,
         )
+
+        if done:
+            self._reset_agent()
+
         return {
             BRAIN_NAME: BrainInfo.from_agent_proto(
                 0, [agent_info], self._brains[BRAIN_NAME]
             )
         }
+
+    def _reset_agent(self):
+        self.position = 0.0
+        self.step_count = 0
 
     def reset(
         self,
@@ -76,8 +93,8 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         train_mode: bool = True,
         custom_reset_parameters: Any = None,
     ) -> AllBrainInfo:  # type: ignore
-        self.position = 0.0
-        self.step_count = 0
+        self._reset_agent()
+
         agent_info = AgentInfoProto(
             stacked_vector_observation=[self.position] * OBS_SIZE,
             done=False,
@@ -91,8 +108,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
 
     @property
     def global_done(self):
-
-        return self.step_count > 1000
+        return False
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:
@@ -200,14 +216,14 @@ class LocalEnvManager(EnvManager):
 config = """
 default:
     trainer: ppo
-    batch_size: 127 #1024
+    batch_size: 16
     beta: 5.0e-3
-    buffer_size: 1024 # 10240
+    buffer_size: 64
     epsilon: 0.2
     hidden_units: 128
     lambd: 0.95
-    learning_rate: 3.0e-4
-    max_steps: 5000
+    learning_rate: 5.0e-3
+    max_steps: 2500
     memory_size: 256
     normalize: false
     num_epoch: 3
