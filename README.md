@@ -93,6 +93,7 @@ translating more pages and to other languages. Consequently,
 we welcome any enhancements and improvements from the community.
 
 * [Chinese](docs/localized/zh-CN/)
+* [Korean](docs/localized/KR/)
 
 ## License
 

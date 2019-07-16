@@ -24,7 +24,7 @@ just 6 episodes of demonstrations can reduce training steps by more than 4 times
        width="350" border="0" />
 </p>
 
-ML-Agents provides several ways to interact with demonstrations. For most situations,
+ML-Agents provides several ways to learn from demonstrations. For most situations,
 [GAIL](Training-RewardSignals.md#the-gail-reward-signal) is the preferred approach.
 
 * To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the

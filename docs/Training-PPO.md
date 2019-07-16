@@ -192,7 +192,7 @@ Typical Range: `64` - `512`
 
 ## (Optional) Pretraining Using Demonstrations
 
-In some cases, we would want to bootstrap the agent's policy using behavior recorded
+In some cases, you might want to bootstrap the agent's policy using behavior recorded
 from a player. This can help guide the agent towards the reward. Pretraining adds 
 training operations that mimic a demonstration rather than attempting to maximize reward. 
 It is essentially equivalent to running [behavioral cloning](./Training-BehavioralCloning.md)
@@ -246,16 +246,16 @@ gradient descent. If not specified, it will default to the number of epochs set 
 
 Typical Range: `3` - `10`
 
-### (Optional) Max Batches
+### (Optional) Samples Per Update
 
-`max_batches` are the maximum number of batches of `batch_size`
+`samples_per_update` is the maximum number of samples
 to use during each imitation update. You may want to lower this if your demonstration
 dataset is very large to avoid overfitting the policy on demonstrations. Set to 0 
 to train over all of the demonstrations at each update step.
 
 Default Value: `0` (all)
 
-Typical Range: `10`-`20`
+Typical Range: Approximately equal to PPO's `buffer_size`
 
 ## Training Statistics
 

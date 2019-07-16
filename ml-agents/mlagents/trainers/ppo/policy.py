@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 
+from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
@@ -95,6 +96,7 @@ class PPOPolicy(TFPolicy):
             "update_batch": self.model.update_batch,
         }
 
+    @timed
     def evaluate(self, brain_info):
         """
         Evaluates policy for the agent experiences provided.
@@ -127,6 +129,7 @@ class PPOPolicy(TFPolicy):
             run_out["random_normal_epsilon"] = epsilon
         return run_out
 
+    @timed
     def update(self, mini_batch, num_sequences):
         """
         Updates model using buffer.

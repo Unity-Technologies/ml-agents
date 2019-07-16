@@ -52,8 +52,9 @@ class BCModel(object):
 
     def create_loss(self, learning_rate: float, anneal_steps: int) -> None:
         """
-        Creates the loss and update nodes for the GAIL reward generator
+        Creates the loss and update nodes for the BC module
         :param learning_rate: The learning rate for the optimizer
+        :param anneal_steps: Number of steps over which to anneal the learning_rate
         """
         selected_action = self.policy_model.output
         action_size = self.policy_model.act_size
@@ -63,7 +64,6 @@ class BCModel(object):
             )
         else:
             log_probs = self.policy_model.all_log_probs
-            # self.expert_action = tf.placeholder(shape=[None, len(action_size)], dtype=tf.int32)
             action_idx = [0] + list(np.cumsum(action_size))
             entropy = tf.reduce_sum(
                 (

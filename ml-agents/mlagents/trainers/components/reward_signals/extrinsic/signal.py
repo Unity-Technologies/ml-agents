@@ -1,5 +1,8 @@
+from typing import Any, Dict, List
 import numpy as np
+from mlagents.envs.brain import BrainInfo
 
+from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 
@@ -16,7 +19,9 @@ class ExtrinsicRewardSignal(RewardSignal):
         super().__init__(policy, strength, gamma)
 
     @classmethod
-    def check_config(cls, config_dict):
+    def check_config(
+        cls, config_dict: Dict[str, Any], param_keys: List[str] = None
+    ) -> None:
         """
         Checks the config and throw an exception if a hyperparameter is missing. Extrinsic requires strength and gamma
         at minimum.
@@ -29,7 +34,9 @@ class ExtrinsicRewardSignal(RewardSignal):
 
         return self.strength*env_rews, env_rews
         
-    def evaluate(self, current_info, next_info):
+    def evaluate(
+        self, current_info: BrainInfo, next_info: BrainInfo
+    ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
@@ -40,7 +47,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         scaled_reward = self.strength * unscaled_reward
         return RewardSignalResult(scaled_reward, unscaled_reward)
 
-    def update(self, update_buffer, num_sequences):
+    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
         """
         This method does nothing, as there is nothing to update.
         """
