@@ -510,7 +510,7 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     :param lambd: GAE weighing factor.
     :return: list of advantage estimates for time-steps t to T.
     """
-    value_estimates = np.asarray(value_estimates.tolist() + [value_next])
+    value_estimates = np.append(value_estimates, value_next)
     delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
