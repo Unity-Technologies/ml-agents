@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
@@ -120,8 +120,9 @@ namespace MLAgents
                 agentInfoProto.VisualObservations.Add(
                     ByteString.CopyFrom(obs.EncodeToPNG())
                 );
+                Object.Destroy(obs);
             }
-
+            visualObservations.Clear();
             return agentInfoProto;
         }
     }
@@ -314,10 +315,6 @@ namespace MLAgents
         /// Keeps track of the actions that are masked at each step.
         private ActionMasker actionMasker;
 
-        /// Array of Texture2D used to render to from render buffer before  
-        /// transforming into float tensor.
-        Texture2D[] textureArray;
-
         /// <summary>
         /// Demonstration recorder.
         /// </summary>
@@ -327,13 +324,6 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            var textureCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;
-            textureArray = new Texture2D[textureCount];
-            for (int i = 0; i < textureCount; i++)
-            {
-                textureArray[i] = new Texture2D(1, 1, TextureFormat.RGB24, false);
-            }
-
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             OnEnableHelper(academy);
@@ -531,21 +521,15 @@ namespace MLAgents
 
             BrainParameters param = brain.brainParameters;
             actionMasker = new ActionMasker(param);
-            // If we haven't initialized vectorActions, initialize to 0. This should only
-            // happen during the creation of the Agent. In subsequent episodes, vectorAction
-            // should stay the previous action before the Done(), so that it is properly recorded. 
-            if (action.vectorActions == null)
+            if (param.vectorActionSpaceType == SpaceType.continuous)
             {
-                if (param.vectorActionSpaceType == SpaceType.continuous)
-                {
-                    action.vectorActions = new float[param.vectorActionSize[0]];
-                    info.storedVectorActions = new float[param.vectorActionSize[0]];
-                }
-                else
-                {
-                    action.vectorActions = new float[param.vectorActionSize.Length];
-                    info.storedVectorActions = new float[param.vectorActionSize.Length];
-                }
+                action.vectorActions = new float[param.vectorActionSize[0]];
+                info.storedVectorActions = new float[param.vectorActionSize[0]];
+            }
+            else
+            {
+                action.vectorActions = new float[param.vectorActionSize.Length];
+                info.storedVectorActions = new float[param.vectorActionSize.Length];
             }
 
             if (info.textObservation == null)
@@ -628,24 +612,22 @@ namespace MLAgents
             //First add all cameras
             for (int i = 0; i < agentParameters.agentCameras.Count; i++)
             {
-                ObservationToTexture(
+                var obsTexture = ObservationToTexture(
                     agentParameters.agentCameras[i],
                     param.cameraResolutions[i].width,
-                    param.cameraResolutions[i].height,
-                    ref textureArray[i]);
-                info.visualObservations.Add(textureArray[i]);
+                    param.cameraResolutions[i].height);
+                info.visualObservations.Add(obsTexture);
             }
             
             //Then add all renderTextures
             var camCount = agentParameters.agentCameras.Count;
             for (int i = 0; i < agentParameters.agentRenderTextures.Count; i++)
             {
-                ObservationToTexture(
+                var obsTexture = ObservationToTexture(
                     agentParameters.agentRenderTextures[i],
                     param.cameraResolutions[camCount+i].width,
-                    param.cameraResolutions[camCount+i].height,
-                    ref textureArray[i]);
-                info.visualObservations.Add(textureArray[i]);
+                    param.cameraResolutions[camCount+i].height);
+                info.visualObservations.Add(obsTexture);
             }
 
             info.reward = reward;
@@ -924,11 +906,6 @@ namespace MLAgents
             action.memories.AddRange(memories);
         }
 
-        public List<float> GetMemoriesAction()
-        {
-            return action.memories;
-        }
-
         /// <summary>
         /// Updates the text action.
         /// </summary>
@@ -1116,8 +1093,9 @@ namespace MLAgents
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
-        public static void ObservationToTexture(Camera obsCamera, int width, int height, ref Texture2D texture2D)
+        public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
         {
+            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
             Rect oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
             var depth = 24;
@@ -1126,11 +1104,6 @@ namespace MLAgents
 
             var tempRT =
                 RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-
-            if (width != texture2D.width || height != texture2D.height)
-            {
-                texture2D.Resize(width, height);
-            }
 
             var prevActiveRT = RenderTexture.active;
             var prevCameraRT = obsCamera.targetTexture;
@@ -1142,11 +1115,12 @@ namespace MLAgents
             obsCamera.Render();
 
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
-            texture2D.Apply();
+            
             obsCamera.targetTexture = prevCameraRT;
             obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRT;
             RenderTexture.ReleaseTemporary(tempRT);
+            return texture2D;
         }
         
         /// <summary>
@@ -1157,8 +1131,10 @@ namespace MLAgents
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
-        public static void ObservationToTexture(RenderTexture obsTexture, int width, int height, ref Texture2D texture2D)
+        public static Texture2D ObservationToTexture(RenderTexture obsTexture, int width, int height)
         {
+            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
+
             if (width != texture2D.width || height != texture2D.height)
             {
                 texture2D.Resize(width, height);
@@ -1177,6 +1153,7 @@ namespace MLAgents
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
             texture2D.Apply();
             RenderTexture.active = prevActiveRT;
+            return texture2D;
         }
 
         /// <summary>
