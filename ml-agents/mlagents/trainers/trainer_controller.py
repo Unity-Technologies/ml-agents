@@ -296,7 +296,6 @@ class TrainerController(object):
         env_manager.close()
         if self.train_model:
             self._write_training_metrics()
-            self._write_timing_tree()
             self._export_graph()
         self._write_timing_tree()
 
