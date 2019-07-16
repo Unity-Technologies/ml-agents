@@ -3,7 +3,6 @@ import logging
 import os
 import tensorflow as tf
 import numpy as np
-from typing import Dict
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
 from mlagents.trainers import TrainerMetrics
