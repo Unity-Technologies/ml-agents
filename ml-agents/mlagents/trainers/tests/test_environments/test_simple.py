@@ -265,6 +265,6 @@ def test_simple():
         trainer_config = yaml.safe_load(config)
         tc.start_learning(env_manager, trainer_config)
 
-        for brain_name, mean_reward in tc._get_measure_vals():
+        for brain_name, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)
             assert mean_reward > 0.99
