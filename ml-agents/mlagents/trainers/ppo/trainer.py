@@ -346,9 +346,12 @@ class PPOTrainer(Trainer):
                 else:
                     bootstrapping_info = info
                     idx = l
-                value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
-                if info.local_done[l] and not info.max_reached[l]:
-                    value_next["extrinsic"] = 0.0
+                value_next = self.policy.get_value_estimates(
+                    bootstrapping_info,
+                    idx,
+                    info.local_done[l] and not info.max_reached[l],
+                )
+
                 tmp_advantages = []
                 tmp_returns = []
                 for name in self.policy.reward_signals:

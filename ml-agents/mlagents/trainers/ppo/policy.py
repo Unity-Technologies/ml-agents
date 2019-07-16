@@ -190,7 +190,7 @@ class PPOPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
-    def get_value_estimates(self, brain_info, idx):
+    def get_value_estimates(self, brain_info, idx, done):
         """
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
@@ -214,6 +214,12 @@ class PPOPolicy(TFPolicy):
                 idx
             ].reshape([-1, len(self.model.act_size)])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
+
+        for reward_signal in value_estimates:
+            value_estimates[reward_signal] = (
+                0.0 if done else value_estimates[reward_signal][0]
+            )
+
         return value_estimates
 
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
