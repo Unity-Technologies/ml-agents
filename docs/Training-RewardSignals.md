@@ -190,17 +190,17 @@ but may learn slower.
 
 Default Value: `false`
 
-#### Max Batches
+#### (Optional) Samples Per Update
 
-`max_batches` are the maximum number of batches of [`batch_size`](Training-PPO.md)
-to use during each discriminator update. You may want to lower this if your buffer size
-is very large to avoid overfitting the discriminator on current data. 
+`samples_per_update` is the maximum number of samples to use during each discriminator update. You may 
+want to lower this if your buffer size is very large to avoid overfitting the discriminator on current data. 
+If set to 0, we will use the minimum of buffer size and the number of demonstration samples. 
 
-Default Value: `10`
+Default Value: `0`
 
-Typical Range: `10`-`20`
+Typical Range: Approximately equal to [`buffer_size`](Training-PPO.md)
 
-#### Variational Discriminator Bottleneck
+#### (Optional) Variational Discriminator Bottleneck
 
 `use_vail` enables a [variational bottleneck](https://arxiv.org/abs/1810.00821) within the 
 GAIL discriminator. This forces the discriminator to learn a more general representation 

@@ -23,7 +23,7 @@ class GAILRewardSignal(RewardSignal):
         num_epoch: int = 3,
         encoding_size: int = 64,
         learning_rate: float = 3e-4,
-        max_batches: int = 10,
+        samples_per_update: int = 0,
         use_actions: bool = False,
         use_vail: bool = False,
     ):
@@ -36,13 +36,14 @@ class GAILRewardSignal(RewardSignal):
         :param demo_path: The path to the demonstration file
         :param encoding_size: The size of the the hidden layers of the discriminator
         :param learning_rate: The Learning Rate used during GAIL updates.
-        :param max_batches: The maximum number of batches to update during GAIL updates.
+        :param samples_per_update: The maximum number of samples to update during GAIL updates.
         :param use_actions: Whether or not to use the actions for the discriminator.
-        :param print_debug: Whether or not to print debug statements during GAIL updates.
+        :param use_vail: Whether or not to use a variational bottleneck for the discriminator. 
+        See https://arxiv.org/abs/1810.00821.
         """
         super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
-        self.max_batches = max_batches
+        self.samples_per_update = samples_per_update
 
         self.model = GAILModel(
             policy.model, 128, learning_rate, encoding_size, use_actions, use_vail
@@ -100,16 +101,19 @@ class GAILRewardSignal(RewardSignal):
         """
         Updates model using buffer.
         :param update_buffer: The policy buffer containing the trajectories for the current policy.
-        :param n_sequences: The total (demo + environment) number of sequences used in each mini batch.
+        :param n_sequences: The number of sequences from demo and policy used in each mini batch.
         :return: The loss of the update.
         """
         batch_losses = []
-        n_sequences = max(n_sequences // 2, 1)  # Divide by 2 since we have two buffers
+        # Divide by 2 since we have two buffers, so we have roughly the same batch size
+        n_sequences = max(n_sequences // 2, 1)
         possible_demo_batches = (
             len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
         )
         possible_policy_batches = len(update_buffer["actions"]) // n_sequences
         possible_batches = min(possible_policy_batches, possible_demo_batches)
+
+        max_batches = self.samples_per_update // n_sequences
 
         kl_loss = []
         policy_estimate = []
@@ -122,10 +126,10 @@ class GAILRewardSignal(RewardSignal):
         for _epoch in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
             update_buffer.shuffle()
-            if self.max_batches == 0:
+            if max_batches == 0:
                 num_batches = possible_batches
             else:
-                num_batches = min(possible_batches, self.max_batches)
+                num_batches = min(possible_batches, max_batches)
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
                 policy_update_buffer = update_buffer

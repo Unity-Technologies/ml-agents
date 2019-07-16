@@ -12,7 +12,7 @@ class GAILModel(object):
         learning_rate: float = 3e-4,
         encoding_size: int = 64,
         use_actions: bool = False,
-        use_vail: bool = True,
+        use_vail: bool = False,
     ):
         """
         The initializer for the GAIL reward generator.

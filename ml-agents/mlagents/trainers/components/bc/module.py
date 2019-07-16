@@ -19,7 +19,7 @@ class BCModule:
         steps: int,
         batch_size: int = None,
         num_epoch: int = None,
-        max_batches: int = 0,
+        samples_per_update: int = 0,
     ):
         """
         A BC trainer that can be used inline with RL, especially for pretraining.
@@ -32,7 +32,7 @@ class BCModule:
         :param demo_path: The path to the demonstration file.
         :param batch_size: The batch size to use during BC training.
         :param num_epoch: Number of epochs to train for during each update.
-        :param max_batches: Maximum number of batches to train on during each pretraining update.
+        :param samples_per_update: Maximum number of samples to train on during each pretraining update.
         """
         self.policy = policy
         self.current_lr = policy_learning_rate * strength
@@ -41,12 +41,17 @@ class BCModule:
 
         self.batch_size = batch_size if batch_size else default_batch_size
         self.num_epoch = num_epoch if num_epoch else default_num_epoch
-        self.n_sequences = min(
-            self.batch_size, len(self.demonstration_buffer.update_buffer["actions"])
+        self.n_sequences = max(
+            min(
+                self.batch_size, len(self.demonstration_buffer.update_buffer["actions"])
+            )
+            // policy.sequence_length,
+            1,
         )
+
         self.has_updated = False
         self.use_recurrent = self.policy.use_recurrent
-        self.max_batches = max_batches
+        self.samples_per_update = samples_per_update
         self.out_dict = {
             "loss": self.model.loss,
             "update": self.model.update_batch,
@@ -85,13 +90,15 @@ class BCModule:
         )
         possible_batches = possible_demo_batches
 
+        max_batches = self.samples_per_update // self.n_sequences
+
         n_epoch = self.num_epoch
         for _ in range(n_epoch):
             self.demonstration_buffer.update_buffer.shuffle()
-            if self.max_batches == 0:
+            if max_batches == 0:
                 num_batches = possible_batches
             else:
-                num_batches = min(possible_batches, self.max_batches)
+                num_batches = min(possible_batches, max_batches)
             for i in range(num_batches):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
                 start = i * self.n_sequences

@@ -246,16 +246,16 @@ gradient descent. If not specified, it will default to the number of epochs set 
 
 Typical Range: `3` - `10`
 
-### (Optional) Max Batches
+### (Optional) Samples Per Update
 
-`max_batches` are the maximum number of demonstration batches of `batch_size`
+`samples_per_update` is the maximum number of samples
 to use during each imitation update. You may want to lower this if your demonstration
 dataset is very large to avoid overfitting the policy on demonstrations. Set to 0 
 to train over all of the demonstrations at each update step.
 
 Default Value: `0` (all)
 
-Typical Range: `10`-`20`
+Typical Range: Approximately equal to PPO's `buffer_size`
 
 ## Training Statistics
 
