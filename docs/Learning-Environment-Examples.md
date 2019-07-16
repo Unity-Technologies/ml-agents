@@ -153,7 +153,23 @@ If you would like to contribute environments, please see our
     `VisualPushBlock` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None.
+* Reset Parameters: Four, corresponding to the following:
+    * block_scale: Scale of the block along the x and z dimensions
+        * Default: 2
+        * Recommended Minimum: 0.5
+        * Recommended Maximum:  4
+    * dynamic_friction: Coefficient of friction for the ground material acting on moving objects
+        * Default: 0
+        * Recommended Minimum: 0
+        * Recommended Maximum: 1
+    * static_friction: Coefficient of friction for the ground material acting on stationary objects
+        * Default: 0
+        * Recommended Minimum: 0
+        * Recommended Maximum: 1
+    * block_drag: Effect of air resistance on block
+        * Default: 0.5
+        * Recommended Minimum: 0
+        * Recommended Maximum: 2000
 * Benchmark Mean Reward: 4.5
 * Optional Imitation Learning scene: `PushBlockIL`.
 
