@@ -195,9 +195,13 @@ class PPOPolicy(TFPolicy):
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
         :param idx: Index in BrainInfo of agent.
+        :param done: Whether or not this is the last element of the episode, in which case we want the value estimate to be 0. 
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
         """
+        if done:
+            return {k: 0.0 for k in self.model.value_heads.keys()}
+
         feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
         for i in range(len(brain_info.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [
@@ -215,12 +219,7 @@ class PPOPolicy(TFPolicy):
             ].reshape([-1, len(self.model.act_size)])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
-        for reward_signal in value_estimates:
-            value_estimates[reward_signal] = (
-                0.0 if done else value_estimates[reward_signal][0]
-            )
-
-        return value_estimates
+        return {k: float(v) for k, v in value_estimates.items()}
 
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
         """
