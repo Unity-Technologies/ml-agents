@@ -75,6 +75,8 @@ public class PushAgentBasic : Agent
         groundRenderer = ground.GetComponent<Renderer>();
         // Starting material
         groundMaterial = groundRenderer.material;
+
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -217,5 +219,34 @@ public class PushAgentBasic : Agent
         transform.position = GetRandomSpawnPos();
         agentRB.velocity = Vector3.zero;
         agentRB.angularVelocity = Vector3.zero;
+
+        SetResetParameters();
+    }
+
+    public void SetGroundMaterialFriction()
+    {
+        var resetParams = academy.resetParameters;
+
+        var groundCollider = ground.GetComponent<Collider>() as Collider;
+
+        groundCollider.material.dynamicFriction = resetParams["dynamic_friction"];
+        groundCollider.material.staticFriction = resetParams["static_friction"];
+    }
+
+    public void SetBlockProperties()
+    {
+        var resetParams = academy.resetParameters;
+
+        //Set the scale of the block
+        blockRB.transform.localScale = new Vector3(resetParams["block_scale"], 0.75f, resetParams["block_scale"]);
+
+        // Set the drag of the block
+        blockRB.drag = resetParams["block_drag"];
+    }
+
+    public void SetResetParameters()
+    {
+        SetGroundMaterialFriction();
+        SetBlockProperties();
     }
 }
