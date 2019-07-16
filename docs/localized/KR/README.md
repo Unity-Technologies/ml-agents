@@ -42,13 +42,13 @@ ML-Agents toolkit은 유니티의 풍부한 환경에서 AI의 발전을 위한 
 블로그에 ML-Agents와 관련된 시리즈의 게시물을 게시하였습니다(영어).
 
 * 강화 학습 개념 개요
-  ([multi-armed bandit](https://blogs.unity3d.com/2017/06/26/unity-ai-themed-blog-entries/)
+  ([multi-armed bandit](https://blogs.unity3d.com/kr/2017/06/26/unity-ai-themed-blog-entries/)
   and
-  [Q-learning](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))
-* [Using Machine Learning Agents in a real game: a beginner’s guide](https://blogs.unity3d.com/2017/12/11/using-machine-learning-agents-in-a-real-game-a-beginners-guide/)
-* [포스트](https://blogs.unity3d.com/2018/02/28/introducing-the-winners-of-the-first-ml-agents-challenge/)
+  [Q-learning](https://blogs.unity3d.com/kr/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/))
+* [Using Machine Learning Agents in a real game: a beginner’s guide](https://blogs.unity3d.com/kr/2017/12/11/using-machine-learning-agents-in-a-real-game-a-beginners-guide/)
+* [포스트](https://blogs.unity3d.com/kr/2018/02/28/introducing-the-winners-of-the-first-ml-agents-challenge/)
   [first ML-Agents Challenge](https://connect.unity.com/challenges/ml-agents-1)의 승자 발표
-* [포스트](https://blogs.unity3d.com/2018/01/23/designing-safer-cities-through-simulations/)
+* [포스트](https://blogs.unity3d.com/kr/2018/01/23/designing-safer-cities-through-simulations/)
   안전한 도시 설계를 위한 유니티 사용 방법 개요.
 
 저희의 문서 뿐만 아니라 관련된 기사들이 있습니다:
