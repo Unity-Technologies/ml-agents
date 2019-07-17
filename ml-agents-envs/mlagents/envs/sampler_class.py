@@ -71,7 +71,14 @@ class SamplerFactory:
                 " associated to your sampler in the SamplerFactory."
             )
         sampler_cls = SamplerFactory.NAME_TO_CLASS[name]
-        return sampler_cls(**param_dict)
+        try:
+            return sampler_cls(**param_dict)
+        except:
+            raise SamplerException(
+                "The sampler class associated to the {0} key in the factory".format(name)
+                " was not provided the required arguments. Please ensure that the sampler"
+                " config file consists of the appropriate keys for this sampler class."
+            )
 
 
 class SamplerManager:
