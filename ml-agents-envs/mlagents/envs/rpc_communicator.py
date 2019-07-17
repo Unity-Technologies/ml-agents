@@ -1,5 +1,6 @@
 import logging
 import grpc
+from typing import Optional
 
 import socket
 from multiprocessing import Pipe
@@ -94,7 +95,7 @@ class RpcCommunicator(Communicator):
         self.unity_to_external.parent_conn.recv()
         return aca_param
 
-    def exchange(self, inputs: UnityInput) -> UnityOutput:
+    def exchange(self, inputs: UnityInput) -> Optional[UnityOutput]:
         message = UnityMessage()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)

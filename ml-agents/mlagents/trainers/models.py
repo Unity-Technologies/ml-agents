@@ -10,7 +10,9 @@ logger = logging.getLogger("mlagents.trainers")
 class LearningModel(object):
     _version_number_ = 2
 
-    def __init__(self, m_size, normalize, use_recurrent, brain, seed):
+    def __init__(
+        self, m_size, normalize, use_recurrent, brain, seed, stream_names=None
+    ):
         tf.set_random_seed(seed)
         self.brain = brain
         self.vector_in = None
@@ -22,6 +24,7 @@ class LearningModel(object):
         )
         self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name="masks")
         self.mask = tf.cast(self.mask_input, tf.int32)
+        self.stream_names = stream_names or []
         self.use_recurrent = use_recurrent
         if self.use_recurrent:
             self.m_size = m_size
@@ -71,6 +74,10 @@ class LearningModel(object):
         return global_step, increment_step
 
     @staticmethod
+    def scaled_init(scale):
+        return c_layers.variance_scaling_initializer(scale)
+
+    @staticmethod
     def swish(input_activation):
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
@@ -108,48 +115,62 @@ class LearningModel(object):
             shape=[None, self.vec_obs_size], dtype=tf.float32, name=name
         )
         if self.normalize:
-            self.running_mean = tf.get_variable(
-                "running_mean",
-                [self.vec_obs_size],
-                trainable=False,
-                dtype=tf.float32,
-                initializer=tf.zeros_initializer(),
-            )
-            self.running_variance = tf.get_variable(
-                "running_variance",
-                [self.vec_obs_size],
-                trainable=False,
-                dtype=tf.float32,
-                initializer=tf.ones_initializer(),
-            )
-            self.update_mean, self.update_variance = self.create_normalizer_update(
-                self.vector_in
-            )
-
-            self.normalized_state = tf.clip_by_value(
-                (self.vector_in - self.running_mean)
-                / tf.sqrt(
-                    self.running_variance / (tf.cast(self.global_step, tf.float32) + 1)
-                ),
-                -5,
-                5,
-                name="normalized_state",
-            )
-            return self.normalized_state
+            self.create_normalizer(self.vector_in)
+            return self.normalize_vector_obs(self.vector_in)
         else:
             return self.vector_in
+
+    def normalize_vector_obs(self, vector_obs):
+        normalized_state = tf.clip_by_value(
+            (vector_obs - self.running_mean)
+            / tf.sqrt(
+                self.running_variance
+                / (tf.cast(self.normalization_steps, tf.float32) + 1)
+            ),
+            -5,
+            5,
+            name="normalized_state",
+        )
+        return normalized_state
+
+    def create_normalizer(self, vector_obs):
+        self.normalization_steps = tf.get_variable(
+            "normalization_steps",
+            [],
+            trainable=False,
+            dtype=tf.int32,
+            initializer=tf.ones_initializer(),
+        )
+        self.running_mean = tf.get_variable(
+            "running_mean",
+            [self.vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initializer=tf.zeros_initializer(),
+        )
+        self.running_variance = tf.get_variable(
+            "running_variance",
+            [self.vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initializer=tf.ones_initializer(),
+        )
+        self.update_normalization = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
         mean_current_observation = tf.reduce_mean(vector_input, axis=0)
         new_mean = self.running_mean + (
             mean_current_observation - self.running_mean
-        ) / tf.cast(tf.add(self.global_step, 1), tf.float32)
+        ) / tf.cast(tf.add(self.normalization_steps, 1), tf.float32)
         new_variance = self.running_variance + (mean_current_observation - new_mean) * (
             mean_current_observation - self.running_mean
         )
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
-        return update_mean, update_variance
+        update_norm_step = tf.assign(
+            self.normalization_steps, self.normalization_steps + 1
+        )
+        return tf.group([update_mean, update_variance, update_norm_step])
 
     @staticmethod
     def create_vector_observation_encoder(
@@ -333,18 +354,33 @@ class LearningModel(object):
         m_size = memory_in.get_shape().as_list()[1]
         lstm_input_state = tf.reshape(input_state, shape=[-1, sequence_length, s_size])
         memory_in = tf.reshape(memory_in[:, :], [-1, m_size])
-        _half_point = int(m_size / 2)
+        half_point = int(m_size / 2)
         with tf.variable_scope(name):
-            rnn_cell = tf.contrib.rnn.BasicLSTMCell(_half_point)
+            rnn_cell = tf.contrib.rnn.BasicLSTMCell(half_point)
             lstm_vector_in = tf.contrib.rnn.LSTMStateTuple(
-                memory_in[:, :_half_point], memory_in[:, _half_point:]
+                memory_in[:, :half_point], memory_in[:, half_point:]
             )
             recurrent_output, lstm_state_out = tf.nn.dynamic_rnn(
                 rnn_cell, lstm_input_state, initial_state=lstm_vector_in
             )
 
-        recurrent_output = tf.reshape(recurrent_output, shape=[-1, _half_point])
+        recurrent_output = tf.reshape(recurrent_output, shape=[-1, half_point])
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
+
+    def create_value_heads(self, stream_names, hidden_input):
+        """
+        Creates one value estimator head for each reward signal in stream_names.
+        Also creates the node corresponding to the mean of all the value heads in self.value.
+        self.value_head is a dictionary of stream name to node containing the value estimator head for that signal.
+        :param stream_names: The list of reward signal names
+        :param hidden_input: The last layer of the Critic. The heads will consist of one dense hidden layer on top
+        of the hidden input.
+        """
+        self.value_heads = {}
+        for name in stream_names:
+            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
+            self.value_heads[name] = value
+        self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
     def create_cc_actor_critic(self, h_size, num_layers):
         """
@@ -386,14 +422,14 @@ class LearningModel(object):
             kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
         )
 
-        log_sigma_sq = tf.get_variable(
+        self.log_sigma_sq = tf.get_variable(
             "log_sigma_squared",
             [self.act_size[0]],
             dtype=tf.float32,
             initializer=tf.zeros_initializer(),
         )
 
-        sigma_sq = tf.exp(log_sigma_sq)
+        sigma_sq = tf.exp(self.log_sigma_sq)
 
         self.epsilon = tf.placeholder(
             shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
@@ -408,15 +444,16 @@ class LearningModel(object):
         all_probs = (
             -0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq
             - 0.5 * tf.log(2.0 * np.pi)
-            - 0.5 * log_sigma_sq
+            - 0.5 * self.log_sigma_sq
         )
 
         self.all_log_probs = tf.identity(all_probs, name="action_probs")
 
-        self.entropy = 0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e) + log_sigma_sq)
+        self.entropy = 0.5 * tf.reduce_mean(
+            tf.log(2 * np.pi * np.e) + self.log_sigma_sq
+        )
 
-        value = tf.layers.dense(hidden_value, 1, activation=None)
-        self.value = tf.identity(value, name="value_estimate")
+        self.create_value_heads(self.stream_names, hidden_value)
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, self.act_size[0]], dtype=tf.float32, name="old_probabilities"
@@ -488,8 +525,7 @@ class LearningModel(object):
         self.output = tf.identity(output)
         self.normalized_logits = tf.identity(normalized_logits, name="action")
 
-        value = tf.layers.dense(hidden, 1, activation=None)
-        self.value = tf.identity(value, name="value_estimate")
+        self.create_value_heads(self.stream_names, hidden)
 
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"

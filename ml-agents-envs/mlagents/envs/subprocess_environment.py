@@ -88,8 +88,8 @@ class SubprocessUnityEnvironment(BaseUnityEnvironment):
     def __init__(
         self, env_factory: Callable[[int], BaseUnityEnvironment], n_env: int = 1
     ):
-        self.envs = []
-        self.env_agent_counts = {}
+        self.envs: List[UnityEnvWorker] = []
+        self.env_agent_counts: Dict[str, List[int]] = {}
         self.waiting = False
         for worker_id in range(n_env):
             self.envs.append(self.create_worker(worker_id, env_factory))

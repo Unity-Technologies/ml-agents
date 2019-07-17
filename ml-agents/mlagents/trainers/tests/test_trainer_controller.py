@@ -283,14 +283,8 @@ def test_initialize_invalid_trainer_raises_exception(BrainInfoMock):
     tc = basic_trainer_controller(brain_info_mock)
     bad_config = dummy_bad_config()
 
-    try:
+    with pytest.raises(UnityEnvironmentException):
         tc.initialize_trainers(bad_config)
-        assert (
-            1 == 0,
-            "Initialize trainers with bad config did not raise an exception.",
-        )
-    except UnityEnvironmentException:
-        pass
 
 
 def trainer_controller_with_start_learning_mocks():
@@ -431,4 +425,4 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     )
     trainer_mock.update_policy.assert_called_once()
     trainer_mock.write_summary.assert_called_once()
-    trainer_mock.increment_step_and_update_last_reward.assert_called_once()
+    trainer_mock.increment_step.assert_called_once()

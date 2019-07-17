@@ -6,6 +6,7 @@ import logging
 import numpy as np
 
 from mlagents.envs import AllBrainInfo
+from mlagents.trainers import ActionInfoOutputs
 from mlagents.trainers.bc.trainer import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -62,8 +63,11 @@ class OnlineBCTrainer(BCTrainer):
         )
 
     def add_experiences(
-        self, curr_info: AllBrainInfo, next_info: AllBrainInfo, take_action_outputs
-    ):
+        self,
+        curr_info: AllBrainInfo,
+        next_info: AllBrainInfo,
+        take_action_outputs: ActionInfoOutputs,
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
@@ -124,7 +128,9 @@ class OnlineBCTrainer(BCTrainer):
             curr_info, next_info, take_action_outputs
         )
 
-    def process_experiences(self, current_info: AllBrainInfo, next_info: AllBrainInfo):
+    def process_experiences(
+        self, current_info: AllBrainInfo, next_info: AllBrainInfo
+    ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
