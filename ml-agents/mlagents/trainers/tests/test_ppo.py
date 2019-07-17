@@ -68,6 +68,37 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
 
 @mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
 @mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config):
+    tf.reset_default_graph()
+    mock_communicator.return_value = MockCommunicator(
+        discrete_action=False, visual_inputs=0
+    )
+    env = UnityEnvironment(" ")
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+
+    trainer_parameters = dummy_config
+    model_path = env.brain_names[0]
+    trainer_parameters["model_path"] = model_path
+    trainer_parameters["keep_checkpoints"] = 3
+    policy = PPOPolicy(
+        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
+    )
+    run_out = policy.get_value_estimates(brain_info, 0, done=False)
+    for key, val in run_out.items():
+        assert type(key) is str
+        assert type(val) is float
+
+    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    for key, val in run_out.items():
+        assert type(key) is str
+        assert val == 0.0
+
+    env.close()
+
+
+@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
 def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
