@@ -2,7 +2,8 @@ from math import isclose
 import pytest
 
 from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.sampler_class import UniformSampler, MultiRangeUniformSampler
+from mlagents.envs.exception import UnityException
 
 
 def basic_3Dball_sampler():
@@ -139,7 +140,7 @@ def test_incorrect_uniform_sampler():
     try:
         cur_sampler = SamplerManager(config)
         assert(1 == 0, "SamplerManager should throw error if 'max-value' isn't passed.")
-    except UnityEnvironmentException:
+    except UnityException:
         pass
 
 
@@ -148,6 +149,6 @@ def test_incorrect_sampler():
     try:
         cur_sampler = SamplerManager(config)
         assert(1 == 0, "SamplerManager should throw error if 'sampler-type' key isn't passed.")
-    except UnityEnvironmentException:
+    except UnityException:
         pass
 
