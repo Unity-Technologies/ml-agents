@@ -14,7 +14,7 @@ from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 
 
-logger = logging.getLogger("mlagents.trainers")
+LOGGER = logging.getLogger("mlagents.trainers")
 
 
 class SACTrainer(Trainer):
@@ -31,7 +31,9 @@ class SACTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super(SACTrainer, self).__init__(brain, reward_buff_cap, trainer_parameters, training, run_id)
+        super(SACTrainer, self).__init__(
+            brain, reward_buff_cap, trainer_parameters, training, run_id
+        )
         self.param_keys = [
             "batch_size",
             "buffer_size",
@@ -64,7 +66,11 @@ class SACTrainer(Trainer):
             if "train_interval" in trainer_parameters
             else 1
         )
-        self.target_update_interval = trainer_parameters["target_update_steps"]
+        self.reward_signal_train_interval = (
+            trainer_parameters["reward_signal_train_interval"]
+            if "reward_signal_train_interval" in trainer_parameters
+            else 1
+        )
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         stats = defaultdict(list)
@@ -288,7 +294,7 @@ class SACTrainer(Trainer):
                         # )
                     else:
                         self.training_buffer[agent_id]["action_mask"].append(
-                            stored_info.action_masks[idx], padding_value = 1.0
+                            stored_info.action_masks[idx], padding_value=1.0
                         )
                     a_dist = stored_take_action_outputs["log_probs"]
                     # value is a dictionary from name of reward to value estimate of the value head
@@ -333,7 +339,9 @@ class SACTrainer(Trainer):
                     self.episode_steps[agent_id] += 1
         self.trainer_metrics.end_experience_collection_timer()
 
-    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
+    def process_experiences(
+        self, current_info: AllBrainInfo, new_info: AllBrainInfo
+    ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
@@ -392,15 +400,15 @@ class SACTrainer(Trainer):
                             self.stats["Environment/Cumulative Reward"].append(
                                 rewards.get(agent_id, 0)
                             )
-                            rewards[agent_id] = 0
                             self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                            rewards[agent_id] = 0
                         else:
                             self.stats[
                                 self.policy.reward_signals[name].stat_name
                             ].append(rewards.get(agent_id, 0))
                             rewards[agent_id] = 0
 
-    def end_episode(self):
+    def end_episode(self) -> None:
         """
         A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
@@ -412,7 +420,7 @@ class SACTrainer(Trainer):
             for agent_id in rewards:
                 rewards[agent_id] = 0
 
-    def is_ready_update(self):
+    def is_ready_update(self) -> bool:
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
@@ -420,11 +428,22 @@ class SACTrainer(Trainer):
         return (
             len(self.training_buffer.update_buffer["actions"])
             >= self.trainer_parameters["batch_size"]
-            and self.step % self.train_interval == 0
             and self.step >= self.trainer_parameters["buffer_init_steps"]
         )
 
-    def update_policy(self):
+    def update_policy(self) -> None:
+        """
+        If train_interval is met, update the SAC policy given the current reward signals.
+        If reward_signal_train_interval is met, update the reward signals from the buffer.
+        """
+        if self.step % self.train_interval == 0:
+            LOGGER.debug("Updating SAC policy at step {}".format(self.step))
+            self.update_sac_policy()
+        if self.step % self.reward_signal_train_interval == 0:
+            LOGGER.debug("Updating reward signals at step {}".format(self.step))
+            self.update_reward_signals()
+
+    def update_sac_policy(self):
         """
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
@@ -436,9 +455,7 @@ class SACTrainer(Trainer):
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        value_total, policy_total, forward_total, inverse_total, entcoeff_total, q1loss_total, q2loss_total = (
-            [],
-            [],
+        value_total, policy_total, entcoeff_total, q1loss_total, q2loss_total = (
             [],
             [],
             [],
@@ -453,7 +470,7 @@ class SACTrainer(Trainer):
                 >= self.trainer_parameters["batch_size"]
             ):
                 sampled_minibatch = buffer.sample_mini_batch(
-                    self.trainer_parameters["batch_size"]//self.policy.sequence_length
+                    self.trainer_parameters["batch_size"] // self.policy.sequence_length
                 )
                 # Get rewards for each reward
                 for name, signal in self.policy.reward_signals.items():
@@ -462,9 +479,7 @@ class SACTrainer(Trainer):
                     ] = signal.evaluate_batch(sampled_minibatch)[0]
                 # print(sampled_minibatch)
                 run_out = self.policy.update(
-                    sampled_minibatch,
-                    n_sequences,
-                    update_target=self.step % self.target_update_interval == 0,
+                    sampled_minibatch, n_sequences, update_target=True
                 )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(run_out["policy_loss"])
@@ -486,15 +501,29 @@ class SACTrainer(Trainer):
         self.stats["Losses/Q1 Loss"].append(np.mean(q1loss_total))
         self.stats["Losses/Q2 Loss"].append(np.mean(q2loss_total))
         self.stats["Policy/Entropy Coeff"].append(np.mean(entcoeff_total))
-        sampled_minibatch = buffer.sample_mini_batch(
-            self.trainer_parameters["batch_size"]//self.policy.sequence_length
-        )
-        for _, _reward_signal in self.policy.reward_signals.items():
-            _stats = _reward_signal.update(sampled_minibatch, n_sequences)
-            for _stat, _val in _stats.items():
-                self.stats[_stat].append(_val)
+
         # if self.use_bc:
         #     _bc_loss = self.policy.bc_trainer.update(self.training_buffer)
         #     self.stats["Losses/BC Loss"].append(_bc_loss)
 
         self.trainer_metrics.end_policy_update()
+
+    def update_reward_signals(self) -> None:
+        """
+        Iterate through the reward signals and update them. Unlike in PPO, 
+        do it separate from the policy so that it can be done at a different
+        interval. 
+        """
+        buffer = self.training_buffer.update_buffer
+        num_epoch = self.trainer_parameters["num_reward_signals_epoch"]
+        n_sequences = max(
+            int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
+        )
+        for _ in range(num_epoch):
+            sampled_minibatch = buffer.sample_mini_batch(
+                self.trainer_parameters["batch_size"] // self.policy.sequence_length
+            )
+            for _, _reward_signal in self.policy.reward_signals.items():
+                _stats = _reward_signal.update(sampled_minibatch, n_sequences)
+                for _stat, _val in _stats.items():
+                    self.stats[_stat].append(_val)
