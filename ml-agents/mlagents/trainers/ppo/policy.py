@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from typing import Dict
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
@@ -190,7 +191,9 @@ class PPOPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
-    def get_value_estimates(self, brain_info, idx, done):
+    def get_value_estimates(
+        self, brain_info: BrainInfo, idx: int, done: bool
+    ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
