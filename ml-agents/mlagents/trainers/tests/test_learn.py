@@ -42,7 +42,6 @@ def test_run_training(load_config, create_environment_factory, subproc_env_mock)
     with patch.object(TrainerController, "__init__", mock_init):
         with patch.object(TrainerController, "start_learning", MagicMock()):
             learn.run_training(0, 0, basic_options(), MagicMock())
-            empty_manager = SamplerManager(None)
             mock_init.assert_called_once_with(
                 "./models/ppo-0",
                 "./summaries",
@@ -56,7 +55,7 @@ def test_run_training(load_config, create_environment_factory, subproc_env_mock)
                 subproc_env_mock.return_value.external_brains,
                 0,
                 True,
-                empty_manager,
+                mock_init.sampler_manager,
                 None
             )
 
