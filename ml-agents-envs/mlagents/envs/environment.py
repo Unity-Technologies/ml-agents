@@ -251,7 +251,8 @@ class UnityEnvironment(BaseUnityEnvironment):
                             "-batchmode",
                             "--port",
                             str(self.port),
-                        ] + args
+                        ]
+                        + args
                     )
                 else:
                     self.proc1 = subprocess.Popen(
