@@ -10,6 +10,7 @@ from mlagents.envs.env_manager import EnvManager, StepInfo
 from mlagents.envs.timers import timed
 from mlagents.envs import ActionInfo, BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
+from mlagents.envs.local_env_manager import LocalEnvManager
 
 
 BRAIN_NAME = __name__
@@ -121,115 +122,31 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         pass
 
 
-class EnvContext:
-    def __init__(self, env: BaseUnityEnvironment):
-        self.env = env
-        self.previous_step: StepInfo = StepInfo(None, {}, None)
-        self.previous_all_action_info: Dict[str, ActionInfo] = {}
-
-
-# Copied from SubprocessEnvManager and removed the subprocess part
-class LocalEnvManager(EnvManager):
-    def __init__(self, env: BaseUnityEnvironment):
-        super().__init__()
-        self.env = env
-        self.previous_step: StepInfo = StepInfo(None, {}, None)
-        self.previous_all_action_info: Dict[str, ActionInfo] = {}
-
-    def get_last_steps(self):
-        return [self.previous_step]
-
-    def step(self) -> List[StepInfo]:
-
-        all_action_info = self._take_step(self.previous_step)
-        self.previous_all_action_info = all_action_info
-
-        if self.env.global_done:
-            all_brain_info = self.env.reset()
-        else:
-            actions = {}
-            memories = {}
-            texts = {}
-            values = {}
-            for brain_name, action_info in all_action_info.items():
-                actions[brain_name] = action_info.action
-                memories[brain_name] = action_info.memory
-                texts[brain_name] = action_info.text
-                values[brain_name] = action_info.value
-            all_brain_info = self.env.step(actions, memories, texts, values)
-        step_brain_info = all_brain_info
-
-        step_info = StepInfo(
-            self.previous_step.current_all_brain_info,
-            step_brain_info,
-            self.previous_all_action_info,
-        )
-        self.previous_step = step_info
-        return [step_info]
-
-    def reset(
-        self,
-        config: Dict[str, float] = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
-    ) -> List[StepInfo]:  # type: ignore
-        all_brain_info = self.env.reset(
-            config=config,
-            train_mode=train_mode,
-            custom_reset_parameters=custom_reset_parameters,
-        )
-        self.previous_step = StepInfo(None, all_brain_info, None)
-        return [self.previous_step]
-
-    @property
-    def external_brains(self) -> Dict[str, BrainParameters]:
-        return self.env.external_brains
-
-    @property
-    def reset_parameters(self) -> Dict[str, float]:
-        return self.env.reset_parameters
-
-    def close(self):
-        self.env.close()
-
-    @timed
-    def _take_step(self, last_step: StepInfo) -> Dict[str, ActionInfo]:
-        all_action_info: Dict[str, ActionInfo] = {}
-        for brain_name, brain_info in last_step.current_all_brain_info.items():
-            all_action_info[brain_name] = self.policies[brain_name].get_action(
-                brain_info
-            )
-        return all_action_info
-
-
-config = """
-default:
-    trainer: ppo
-    batch_size: 16
-    beta: 5.0e-3
-    buffer_size: 64
-    epsilon: 0.2
-    hidden_units: 128
-    lambd: 0.95
-    learning_rate: 5.0e-3
-    max_steps: 2500
-    memory_size: 256
-    normalize: false
-    num_epoch: 3
-    num_layers: 2
-    time_horizon: 64
-    sequence_length: 64
-    summary_freq: 500
-    use_recurrent: false
-    reward_signals: 
-        extrinsic:
-            strength: 1.0
-            gamma: 0.99
-
-"""
-
-
 def test_simple():
+    config = """
+        default:
+            trainer: ppo
+            batch_size: 16
+            beta: 5.0e-3
+            buffer_size: 64
+            epsilon: 0.2
+            hidden_units: 128
+            lambd: 0.95
+            learning_rate: 5.0e-3
+            max_steps: 2500
+            memory_size: 256
+            normalize: false
+            num_epoch: 3
+            num_layers: 2
+            time_horizon: 64
+            sequence_length: 64
+            summary_freq: 500
+            use_recurrent: false
+            reward_signals: 
+                extrinsic:
+                    strength: 1.0
+                    gamma: 0.99
+    """
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
