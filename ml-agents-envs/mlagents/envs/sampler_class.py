@@ -3,10 +3,7 @@ from functools import *
 from collections import OrderedDict
 from abc import ABC, abstractmethod
 
-# from .exception import SamplerException
-
-class SamplerException(Exception):
-    pass
+from .exception import SamplerException
 
 class Sampler(ABC): 
 
@@ -75,9 +72,9 @@ class SamplerFactory:
             return sampler_cls(**param_dict)
         except:
             raise SamplerException(
-                "The sampler class associated to the {0} key in the factory".format(name)
-                " was not provided the required arguments. Please ensure that the sampler"
-                " config file consists of the appropriate keys for this sampler class."
+                "The sampler class associated to the " + name + " key in the factory "
+                "was not provided the required arguments. Please ensure that the sampler "
+                "config file consists of the appropriate keys for this sampler class."
             )
 
 
