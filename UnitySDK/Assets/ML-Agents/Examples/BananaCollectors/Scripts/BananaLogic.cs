@@ -22,7 +22,7 @@ public class BananaLogic : MonoBehaviour {
         {
             transform.position = new Vector3(Random.Range(-myArea.range, myArea.range), 
                                              transform.position.y + 3f, 
-                                             Random.Range(-myArea.range, myArea.range));
+                                             Random.Range(-myArea.range, myArea.range)) + myArea.transform.position;
         }
         else 
         {
