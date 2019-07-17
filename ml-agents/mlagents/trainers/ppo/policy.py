@@ -1,6 +1,7 @@
 import logging
 import numpy as np
-from typing import Dict
+from typing import Any, Dict
+import tensorflow as tf
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
@@ -205,7 +206,10 @@ class PPOPolicy(TFPolicy):
         if done:
             return {k: 0.0 for k in self.model.value_heads.keys()}
 
-        feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
+        feed_dict: Dict[tf.Tensor, Any] = {
+            self.model.batch_size: 1,
+            self.model.sequence_length: 1,
+        }
         for i in range(len(brain_info.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [
                 brain_info.visual_observations[i][idx]
