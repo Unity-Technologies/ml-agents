@@ -218,6 +218,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (17)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -263,6 +267,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -310,6 +318,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (12)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -355,6 +367,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -402,6 +418,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -447,6 +467,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -494,6 +518,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -539,6 +567,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -651,6 +683,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -756,6 +792,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -801,6 +841,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -848,6 +892,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -893,6 +941,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1034,6 +1086,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
@@ -1188,6 +1244,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -1308,6 +1368,10 @@ Prefab:
       propertyPath: m_Name
       value: TennisArea (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
   m_IsPrefabParent: 0
@@ -1353,6 +1417,10 @@ Prefab:
     - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_Name
       value: TennisArea (16)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}

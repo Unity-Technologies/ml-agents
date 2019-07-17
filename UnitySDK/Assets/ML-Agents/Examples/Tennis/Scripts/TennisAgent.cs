@@ -59,7 +59,7 @@ public class TennisAgent : Agent
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         
-        if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -6f)
         {
             agentRb.velocity = new Vector3(agentRb.velocity.x, 7f, 0f);
         }
@@ -81,7 +81,7 @@ public class TennisAgent : Agent
     {
         invertMult = invertX ? -1f : 1f;
 
-        transform.position = new Vector3(-invertMult * Random.Range(6f, 8f), -1.5f, 0f) + transform.parent.transform.position;
+        transform.position = new Vector3(-invertMult * Random.Range(6f, 8f), -6.5f, -3.19f) + transform.parent.transform.position;
         agentRb.velocity = new Vector3(0f, 0f, 0f);
     }
 }
