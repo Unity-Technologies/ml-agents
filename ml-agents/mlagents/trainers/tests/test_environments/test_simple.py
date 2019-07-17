@@ -54,19 +54,18 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         text_action: Dict[str, Any] = None,
         value: Dict[str, Any] = None,
     ) -> AllBrainInfo:
-        reward = 0.0
-        done = False
-        if vector_action:
-            delta = vector_action[BRAIN_NAME][0][0]
-            delta = clamp(delta, -STEP_SIZE, STEP_SIZE)
-            self.position += delta
-            self.position = clamp(self.position, -1, 1)
-            self.step_count += 1
-            done = self.position >= 1.0 or self.position <= -1.0
-            if done:
-                reward = SUCCESS_REWARD * self.position
-            else:
-                reward = -TIME_PENALTY
+        assert vector_action is not None
+
+        delta = vector_action[BRAIN_NAME][0][0]
+        delta = clamp(delta, -STEP_SIZE, STEP_SIZE)
+        self.position += delta
+        self.position = clamp(self.position, -1, 1)
+        self.step_count += 1
+        done = self.position >= 1.0 or self.position <= -1.0
+        if done:
+            reward = SUCCESS_REWARD * self.position
+        else:
+            reward = -TIME_PENALTY
 
         agent_info = AgentInfoProto(
             stacked_vector_observation=[self.position] * OBS_SIZE,
@@ -131,46 +130,42 @@ class EnvContext:
 
 # Copied from SubprocessEnvManager and removed the subprocess part
 class LocalEnvManager(EnvManager):
-    def __init__(self, envs: List[BaseUnityEnvironment]):
+    def __init__(self, env: BaseUnityEnvironment):
         super().__init__()
-        self.env_contexts: List[EnvContext] = [EnvContext(env) for env in envs]
+        self.env = env
+        self.previous_step: StepInfo = StepInfo(None, {}, None)
+        self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
     def get_last_steps(self):
-        return [ew.previous_step for ew in self.env_contexts]
+        return [self.previous_step]
 
     def step(self) -> List[StepInfo]:
-        step_brain_infos: List[AllBrainInfo] = []
-        for env_worker in self.env_contexts:
-            all_action_info = self._take_step(env_worker.previous_step)
-            env_worker.previous_all_action_info = all_action_info
-            env_worker.env.step()
 
-            if env_worker.env.global_done:
-                all_brain_info = env_worker.env.reset()
-            else:
-                actions = {}
-                memories = {}
-                texts = {}
-                values = {}
-                for brain_name, action_info in all_action_info.items():
-                    actions[brain_name] = action_info.action
-                    memories[brain_name] = action_info.memory
-                    texts[brain_name] = action_info.text
-                    values[brain_name] = action_info.value
-                all_brain_info = env_worker.env.step(actions, memories, texts, values)
-            step_brain_infos.append(all_brain_info)
+        all_action_info = self._take_step(self.previous_step)
+        self.previous_all_action_info = all_action_info
 
-        steps = []
-        for i in range(len(step_brain_infos)):
-            env_worker = self.env_contexts[i]
-            step_info = StepInfo(
-                env_worker.previous_step.current_all_brain_info,
-                step_brain_infos[i],
-                env_worker.previous_all_action_info,
-            )
-            env_worker.previous_step = step_info
-            steps.append(step_info)
-        return steps
+        if self.env.global_done:
+            all_brain_info = self.env.reset()
+        else:
+            actions = {}
+            memories = {}
+            texts = {}
+            values = {}
+            for brain_name, action_info in all_action_info.items():
+                actions[brain_name] = action_info.action
+                memories[brain_name] = action_info.memory
+                texts[brain_name] = action_info.text
+                values[brain_name] = action_info.value
+            all_brain_info = self.env.step(actions, memories, texts, values)
+        step_brain_info = all_brain_info
+
+        step_info = StepInfo(
+            self.previous_step.current_all_brain_info,
+            step_brain_info,
+            self.previous_all_action_info,
+        )
+        self.previous_step = step_info
+        return [step_info]
 
     def reset(
         self,
@@ -178,30 +173,24 @@ class LocalEnvManager(EnvManager):
         train_mode: bool = True,
         custom_reset_parameters: Any = None,
     ) -> List[StepInfo]:  # type: ignore
-        reset_results = []
-        for worker in self.env_contexts:
-            all_brain_info = worker.env.reset(
-                config=config,
-                train_mode=train_mode,
-                custom_reset_parameters=custom_reset_parameters,
-            )
-            reset_results.append(all_brain_info)
-        for i in range(len(reset_results)):
-            env_worker = self.env_contexts[i]
-            env_worker.previous_step = StepInfo(None, reset_results[i], None)
-        return list(map(lambda ew: ew.previous_step, self.env_contexts))
+        all_brain_info = self.env.reset(
+            config=config,
+            train_mode=train_mode,
+            custom_reset_parameters=custom_reset_parameters,
+        )
+        self.previous_step = StepInfo(None, all_brain_info, None)
+        return [self.previous_step]
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:
-        return self.env_contexts[0].env.external_brains
+        return self.env.external_brains
 
     @property
     def reset_parameters(self) -> Dict[str, float]:
-        return self.env_contexts[0].env.reset_parameters
+        return self.env.reset_parameters
 
     def close(self):
-        for env_ctx in self.env_contexts:
-            env_ctx.env.close()
+        self.env.close()
 
     @timed
     def _take_step(self, last_step: StepInfo) -> Dict[str, ActionInfo]:
@@ -261,7 +250,7 @@ def test_simple():
 
         # Begin training
         env = Simple1DEnvironment()
-        env_manager = LocalEnvManager([env])
+        env_manager = LocalEnvManager(env)
         trainer_config = yaml.safe_load(config)
         tc.start_learning(env_manager, trainer_config)
 
