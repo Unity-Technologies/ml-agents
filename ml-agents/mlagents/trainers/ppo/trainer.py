@@ -346,9 +346,12 @@ class PPOTrainer(Trainer):
                 else:
                     bootstrapping_info = info
                     idx = l
-                value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
-                if info.local_done[l] and not info.max_reached[l]:
-                    value_next["extrinsic"] = 0.0
+                value_next = self.policy.get_value_estimates(
+                    bootstrapping_info,
+                    idx,
+                    info.local_done[l] and not info.max_reached[l],
+                )
+
                 tmp_advantages = []
                 tmp_returns = []
                 for name in self.policy.reward_signals:
@@ -403,8 +406,8 @@ class PPOTrainer(Trainer):
                             self.stats["Environment/Cumulative Reward"].append(
                                 rewards.get(agent_id, 0)
                             )
-                            rewards[agent_id] = 0
                             self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                            rewards[agent_id] = 0
                         else:
                             self.stats[
                                 self.policy.reward_signals[name].stat_name
@@ -473,6 +476,10 @@ class PPOTrainer(Trainer):
             )
             for stat, val in update_stats.items():
                 self.stats[stat].append(val)
+        if self.policy.bc_module:
+            update_stats = self.policy.bc_module.update()
+            for stat, val in update_stats.items():
+                self.stats[stat].append(val)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 
@@ -503,7 +510,7 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     :param lambd: GAE weighing factor.
     :return: list of advantage estimates for time-steps t to T.
     """
-    value_estimates = np.asarray(value_estimates.tolist() + [value_next])
+    value_estimates = np.append(value_estimates, value_next)
     delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
