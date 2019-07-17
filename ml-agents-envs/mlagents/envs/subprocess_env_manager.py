@@ -7,6 +7,7 @@ from multiprocessing.connection import Connection
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, StepInfo
 from mlagents.envs.timers import (
+    TimerNode,
     timed,
     hierarchical_timer,
     reset_timers,
@@ -24,6 +25,11 @@ class EnvironmentResponse(NamedTuple):
     name: str
     worker_id: int
     payload: Any
+
+
+class StepResponse(NamedTuple):
+    all_brain_info: AllBrainInfo
+    timer_root: Optional[TimerNode]
 
 
 class UnityEnvWorker:
@@ -83,7 +89,14 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
                         texts[brain_name] = action_info.text
                         values[brain_name] = action_info.value
                     all_brain_info = env.step(actions, memories, texts, values)
-                _send_response("step", all_brain_info)
+
+                # The timers in this process are independent from all the processes and the "main" process
+                # So after we send back the root timer, we can safely clear them.
+                # Note that we could randomly return timers a fraction of the time if we wanted to reduce
+                # the data transferred.
+                step_response = StepResponse(all_brain_info, _global_timer_stack.get_root())
+                _send_response("step", step_response)
+                reset_timers()
             elif cmd.name == "external_brains":
                 _send_response("external_brains", env.external_brains)
             elif cmd.name == "reset_parameters":
@@ -95,11 +108,6 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
                 _send_response("reset", all_brain_info)
             elif cmd.name == "global_done":
                 _send_response("global_done", env.global_done)
-            elif cmd.name == "timers":
-                # The timers in this process are independent from all the others.
-                # So send back the root timer, then clear them.
-                _send_response("timers", _global_timer_stack.get_root())
-                reset_timers()
             elif cmd.name == "close":
                 break
     except KeyboardInterrupt:
@@ -142,28 +150,28 @@ class SubprocessEnvManager(EnvManager):
             env_worker.send("step", all_action_info)
 
         with hierarchical_timer("step_recv"):
-            step_brain_infos: List[AllBrainInfo] = [
+            step_responses: List[StepResponse] = [
                 self.env_workers[i].recv().payload for i in range(len(self.env_workers))
             ]
         steps = []
-        for i in range(len(step_brain_infos)):
+        for i in range(len(step_responses)):
             env_worker = self.env_workers[i]
             step_info = StepInfo(
                 env_worker.previous_step.current_all_brain_info,
-                step_brain_infos[i],
+                step_responses[i].all_brain_info,
                 env_worker.previous_all_action_info,
             )
             env_worker.previous_step = step_info
             steps.append(step_info)
 
-        # Get timers from the workers, and add them to the "main" timers in this process
-        with hierarchical_timer("workers") as main_timer_node:
-            for env_worker in self.env_workers:
-                env_worker.send("timers")
-                worker_timer_node = env_worker.recv().payload
-                main_timer_node.merge(
-                    worker_timer_node, root_name="worker_root", is_parallel=True
-                )
+        # Get timers from the workers, and add them to the "main" timers from this process
+        timer_nodes = [step_response.timer_root for step_response in step_responses if step_response.timer_root]
+        if timer_nodes:
+            with hierarchical_timer("workers") as main_timer_node:
+                for worker_timer_node in timer_nodes:
+                    main_timer_node.merge(
+                        worker_timer_node, root_name="worker_root", is_parallel=True
+                    )
 
         return steps
 
