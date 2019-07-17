@@ -649,7 +649,7 @@ MonoBehaviour:
   resetParameters:
     resetParameters:
     - key: ball_scale
-      value: 1
+      value: 7.5
     - key: gravity
       value: 9.81
   brainStriker: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
