@@ -9,6 +9,7 @@ from mlagents.envs.subprocess_env_manager import (
     EnvironmentResponse,
     EnvironmentCommand,
     worker,
+    StepResponse,
 )
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 
@@ -58,8 +59,11 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         self.assertEqual(mock_parent_connection.recv.call_count, 2)
 
         # worker returns the data from the reset
+        expected_step_response = StepResponse(
+            all_brain_info="reset_data", timer_root=mock.ANY
+        )
         mock_parent_connection.send.assert_called_with(
-            EnvironmentResponse("step", 0, "reset_data")
+            EnvironmentResponse("step", 0, expected_step_response)
         )
 
     def test_reset_passes_reset_params(self):
@@ -87,7 +91,8 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 
     def test_step_takes_steps_for_all_envs(self):
         SubprocessEnvManager.create_worker = lambda em, worker_id, env_factory: MockEnvWorker(
-            worker_id, EnvironmentResponse("step", worker_id, worker_id)
+            worker_id,
+            EnvironmentResponse("step", worker_id, StepResponse(worker_id, None)),
         )
         manager = SubprocessEnvManager(mock_env_factory, 2)
         step_mock = Mock()
