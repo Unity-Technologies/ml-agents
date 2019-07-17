@@ -26,11 +26,11 @@ def basic_options():
         "--sampler": None,
     }
 
-
+@patch("mlagents.trainers.learn.SamplerManager")
 @patch("mlagents.trainers.learn.SubprocessUnityEnvironment")
 @patch("mlagents.trainers.learn.create_environment_factory")
 @patch("mlagents.trainers.learn.load_config")
-def test_run_training(load_config, create_environment_factory, subproc_env_mock):
+def test_run_training(load_config, create_environment_factory, subproc_env_mock, sampler_manager_mock):
     mock_env = MagicMock()
     mock_env.external_brain_names = []
     mock_env.academy_name = "TestAcademyName"
@@ -55,15 +55,15 @@ def test_run_training(load_config, create_environment_factory, subproc_env_mock)
                 subproc_env_mock.return_value.external_brains,
                 0,
                 True,
-                mock_init.sampler_manager,
+                sampler_manager_mock.return_value,
                 None
             )
 
-
+@patch("mlagents.trainers.learn.SamplerManager")
 @patch("mlagents.trainers.learn.SubprocessUnityEnvironment")
 @patch("mlagents.trainers.learn.create_environment_factory")
 @patch("mlagents.trainers.learn.load_config")
-def test_docker_target_path(load_config, create_environment_factory, subproc_env_mock):
+def test_docker_target_path(load_config, create_environment_factory, subproc_env_mock, sampler_manager):
     mock_env = MagicMock()
     mock_env.external_brain_names = []
     mock_env.academy_name = "TestAcademyName"
