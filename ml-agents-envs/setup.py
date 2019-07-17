@@ -24,7 +24,7 @@ setup(
         "pytest>=3.2.2,<4.0.0",
         "protobuf>=3.6,<3.7",
         "grpcio>=1.11.0,<1.12.0",
-        "cloudpickle==0.8.1",
+        "cloudpickle",
     ],
     python_requires=">=3.5,<3.8",
 )
