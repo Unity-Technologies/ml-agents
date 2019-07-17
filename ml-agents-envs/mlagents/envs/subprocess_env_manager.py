@@ -94,7 +94,9 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
                 # the data transferred.
-                step_response = StepResponse(all_brain_info, _global_timer_stack.get_root())
+                step_response = StepResponse(
+                    all_brain_info, _global_timer_stack.get_root()
+                )
                 _send_response("step", step_response)
                 reset_timers()
             elif cmd.name == "external_brains":
@@ -165,7 +167,11 @@ class SubprocessEnvManager(EnvManager):
             steps.append(step_info)
 
         # Get timers from the workers, and add them to the "main" timers from this process
-        timer_nodes = [step_response.timer_root for step_response in step_responses if step_response.timer_root]
+        timer_nodes = [
+            step_response.timer_root
+            for step_response in step_responses
+            if step_response.timer_root
+        ]
         if timer_nodes:
             with hierarchical_timer("workers") as main_timer_node:
                 for worker_timer_node in timer_nodes:
