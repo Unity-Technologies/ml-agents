@@ -1,6 +1,5 @@
 from math import isclose
 import pytest
-from unittest.mock import *
 
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import UnityEnvironmentException
@@ -135,5 +134,20 @@ def incorrect_sampler_config():
             }
     }
 
+def test_incorrect_uniform_sampler():
+    config = incorrect_uniform_sampler()
+    try:
+        cur_sampler = SamplerManager(config)
+        assert(1 == 0, "SamplerManager should throw error if 'max-value' isn't passed.")
+    except UnityEnvironmentException:
+        pass
 
-def test_incorrect_sampler
+
+def test_incorrect_sampler():
+    config = incorrect_sampler_config()
+    try:
+        cur_sampler = SamplerManager(config)
+        assert(1 == 0, "SamplerManager should throw error if 'sampler-type' key isn't passed.")
+    except UnityEnvironmentException:
+        pass
+
