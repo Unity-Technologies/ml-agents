@@ -161,6 +161,7 @@ def basic_trainer_controller():
         lesson=None,
         training_seed=99,
         fast_simulation=True,
+        multi_gpu=False
     )
 
 
@@ -168,7 +169,7 @@ def basic_trainer_controller():
 @patch("tensorflow.set_random_seed")
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
-    TrainerController("", "", "1", 1, None, True, False, False, None, seed, True)
+    TrainerController("", "", "1", 1, None, True, False, False, None, seed, True, False)
     numpy_random_seed.assert_called_with(seed)
     tensorflow_set_seed.assert_called_with(seed)
 

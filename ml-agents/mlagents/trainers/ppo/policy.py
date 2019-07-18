@@ -16,7 +16,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(TFPolicy):
-    def __init__(self, seed, brain, trainer_params, is_training, load, devices):
+    def __init__(self, seed, brain, trainer_params, is_training, load, devices=["/cpu:0"]):
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
