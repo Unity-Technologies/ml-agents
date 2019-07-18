@@ -8,10 +8,14 @@ public class Ball3DHardAgent : Agent
     [Header("Specific to Ball3DHard")]
     public GameObject ball;
     private Rigidbody ballRb;
+    private ResetParameters resetParams;
 
     public override void InitializeAgent()
     {
         ballRb = ball.GetComponent<Rigidbody>();
+        var academy = Object.FindObjectOfType<Academy>() as Academy;
+        resetParams = academy.resetParameters;
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -23,7 +27,7 @@ public class Ball3DHardAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        
+
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
@@ -65,4 +69,17 @@ public class Ball3DHardAgent : Agent
 
     }
 
+
+    public void SetBall()
+    {
+        //Set the attributes of the ball by fetching the information from the academy
+        ballRb.mass = resetParams["mass"];
+        var scale = resetParams["scale"];
+        ball.transform.localScale = new Vector3(scale, scale, scale);
+    }
+
+    public void SetResetParameters()
+    {
+        SetBall();
+    }
 }
