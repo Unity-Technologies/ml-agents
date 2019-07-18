@@ -13,6 +13,7 @@ class GAILModel(object):
         encoding_size: int = 64,
         use_actions: bool = False,
         use_vail: bool = False,
+        gradient_penalty: float = 10.0,
     ):
         """
         The initializer for the GAIL reward generator.
@@ -31,6 +32,7 @@ class GAILModel(object):
         self.mutual_information = 0.5
         self.policy_model = policy_model
         self.encoding_size = encoding_size
+        self.gradient_penalty = gradient_penalty
         self.use_vail = use_vail
         self.use_actions = use_actions  # True # Not using actions
         self.make_beta()
@@ -198,7 +200,7 @@ class GAILModel(object):
                 name="d_estimate",
                 reuse=reuse,
             )
-            return estimate, z_mean
+            return estimate, z_mean, concat_input
 
     def create_network(self) -> None:
         """
@@ -216,10 +218,10 @@ class GAILModel(object):
             self.use_noise = tf.placeholder(
                 shape=[1], dtype=tf.float32, name="NoiseLevel"
             )
-        self.expert_estimate, self.z_mean_expert = self.create_encoder(
+        self.expert_estimate, self.z_mean_expert, _ = self.create_encoder(
             self.encoded_expert, self.expert_action, self.done_expert, reuse=False
         )
-        self.policy_estimate, self.z_mean_policy = self.create_encoder(
+        self.policy_estimate, self.z_mean_policy, _ = self.create_encoder(
             self.encoded_policy,
             self.policy_model.selected_actions,
             self.done_policy,
@@ -229,6 +231,32 @@ class GAILModel(object):
             self.policy_estimate, [-1], name="GAIL_reward"
         )
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
+
+    def compute_gradient_penalty(self) -> tf.Tensor:
+        """
+        Gradient penalty WGAN-GP. Adds stability esp. for off-policy. 
+        Compute gradients w.r.t randomly interpolated input.
+        """
+        expert = [self.encoded_expert, self.expert_action, self.done_expert]
+        policy = [
+            self.encoded_policy,
+            self.policy_model.selected_actions,
+            self.done_policy,
+        ]
+        interp = []
+        for _expert_in, _policy_in in zip(expert, policy):
+            alpha = tf.random_uniform(tf.shape(_expert_in))
+            interp.append(alpha * _expert_in + (1 - alpha) * _policy_in)
+
+        grad_estimate, _, grad_input = self.create_encoder(
+            interp[0],
+            interp[1],
+            interp[2],
+            reuse=True,
+        )
+        grad = tf.gradients(grad_estimate, [grad_input])[0]
+        gradient_mag = tf.reduce_mean(tf.pow(tf.norm(grad, axis=-1) - 1, 2))
+        return gradient_mag
 
     def create_loss(self, learning_rate: float) -> None:
         """
@@ -261,5 +289,8 @@ class GAILModel(object):
             )
         else:
             self.loss = self.discriminator_loss
+
+        self.loss = self.loss + self.gradient_penalty * self.compute_gradient_penalty()
+
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
