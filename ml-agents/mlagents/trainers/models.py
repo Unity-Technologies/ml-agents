@@ -220,7 +220,7 @@ class LearningModel(object):
         num_layers: int,
         scope: str,
         reuse: bool,
-        encoder_type=None
+        encoder_type=None,
     ) -> tf.Tensor:
         """
         Builds a set of visual (CNN) encoders.
@@ -234,8 +234,8 @@ class LearningModel(object):
         """
         with tf.variable_scope(scope):
             if encoder_type == "resnet":
-                n_channels = [16, 32, 32] # channel for each stack
-                n_blocks = 2 # number of residual blocks
+                n_channels = [16, 32, 32]  # channel for each stack
+                n_blocks = 2  # number of residual blocks
                 hidden = image_input
                 for i, ch in enumerate(n_channels):
                     hidden = tf.layers.conv2d(
@@ -247,10 +247,7 @@ class LearningModel(object):
                         name="layer%dconv_1" % i,
                     )
                     hidden = tf.layers.max_pooling2d(
-                        hidden,
-                        pool_size=[3, 3],
-                        strides=[2, 2],
-                        padding='same',
+                        hidden, pool_size=[3, 3], strides=[2, 2], padding="same"
                     )
                     # create residual blocks
                     for j in range(n_blocks):
@@ -261,7 +258,7 @@ class LearningModel(object):
                             ch,
                             kernel_size=[3, 3],
                             strides=[1, 1],
-                            padding='same',
+                            padding="same",
                             reuse=reuse,
                             name="layer%d_%d_conv1" % (i, j),
                         )
@@ -271,14 +268,14 @@ class LearningModel(object):
                             ch,
                             kernel_size=[3, 3],
                             strides=[1, 1],
-                            padding='same',
+                            padding="same",
                             reuse=reuse,
                             name="layer%d_%d_conv2" % (i, j),
                         )
                         hidden = tf.add(block_input, hidden)
                 hidden = tf.nn.relu(hidden)
                 hidden = c_layers.flatten(hidden)
-            elif encoder_type == 'nature_cnn':
+            elif encoder_type == "nature_cnn":
                 conv1 = tf.layers.conv2d(
                     image_input,
                     32,
@@ -286,7 +283,7 @@ class LearningModel(object):
                     strides=[4, 4],
                     activation=tf.nn.elu,
                     reuse=reuse,
-                    name="conv_1"
+                    name="conv_1",
                 )
                 conv2 = tf.layers.conv2d(
                     conv1,
@@ -295,7 +292,7 @@ class LearningModel(object):
                     strides=[2, 2],
                     activation=tf.nn.elu,
                     reuse=reuse,
-                    name="conv_2"
+                    name="conv_2",
                 )
                 conv3 = tf.layers.conv2d(
                     conv2,
@@ -304,7 +301,7 @@ class LearningModel(object):
                     strides=[1, 1],
                     activation=tf.nn.elu,
                     reuse=reuse,
-                    name="conv_3"
+                    name="conv_3",
                 )
                 hidden = c_layers.flatten(conv3)
             else:
