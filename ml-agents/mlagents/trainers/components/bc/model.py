@@ -57,7 +57,6 @@ class BCModel(object):
         :param anneal_steps: Number of steps over which to anneal the learning_rate
         """
         selected_action = self.policy_model.output
-        action_size = self.policy_model.act_size
         if self.policy_model.brain.vector_action_space_type == "continuous":
             self.loss = tf.reduce_mean(
                 tf.squared_difference(selected_action, self.expert_action)
