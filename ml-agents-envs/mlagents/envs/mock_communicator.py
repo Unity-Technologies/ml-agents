@@ -91,7 +91,7 @@ class MockCommunicator(Communicator):
         try:
             fake_brain = inputs.rl_input.agent_actions["RealFakeBrain"]
             global_done = fake_brain.value[0].vector_actions[0] == -1
-        except:
+        except Exception:
             pass
         result = UnityRLOutput(global_done=global_done, agentInfos=dict_agent_info)
         return UnityOutput(rl_output=result)
