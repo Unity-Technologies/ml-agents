@@ -199,7 +199,7 @@ def assert_ppo_trainer_constructed(
     external_brains = {"testbrain": expected_brain_params}
 
     def mock_constructor(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id, multi_gpu
     ):
         self.trainer_metrics = TrainerMetrics("", "")
         assert brain == expected_brain_params
@@ -209,6 +209,7 @@ def assert_ppo_trainer_constructed(
         assert load == tc.load_model
         assert seed == tc.seed
         assert run_id == tc.run_id
+        assert multi_gpu == tc.multi_gpu
 
     with patch.object(PPOTrainer, "__init__", mock_constructor):
         tc.initialize_trainers(input_config, external_brains)
