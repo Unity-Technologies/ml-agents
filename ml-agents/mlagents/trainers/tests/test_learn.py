@@ -21,6 +21,7 @@ def basic_options():
         "--no-graphics": False,
         "<trainer-config-path>": "basic_path",
         "--debug": False,
+        "--multi-gpu": False,
     }
 
 
