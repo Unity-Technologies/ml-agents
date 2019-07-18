@@ -26,7 +26,7 @@ class CuriosityRewardSignal(RewardSignal):
         :param gamma: The time discounting factor used for this reward.
         :param encoding_size: The size of the hidden encoding layer for the ICM
         :param learning_rate: The learning rate for the ICM.
-        :param num_epoch: The number of epochs to train over the training buffer for the ICM. 
+        :param num_epoch: The number of epochs to train over the training buffer for the ICM.
         """
         super().__init__(policy, strength, gamma)
         self.model = CuriosityModel(
