@@ -52,6 +52,7 @@ def test_run_training(load_config, create_environment_factory, subproc_env_mock)
                 0,
                 0,
                 True,
+                False,
             )
 
 
