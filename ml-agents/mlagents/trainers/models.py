@@ -220,7 +220,7 @@ class LearningModel(object):
         num_layers: int,
         scope: str,
         reuse: bool,
-        encoder_type=None,
+        encoder_type: str=None,
     ) -> tf.Tensor:
         """
         Builds a set of visual (CNN) encoders.
@@ -230,6 +230,7 @@ class LearningModel(object):
         :param h_size: Hidden layer size.
         :param activation: What type of activation function to use for layers.
         :param num_layers: number of hidden layers to create.
+        :param encoder_type: type of visual encoder (default/nature_cnn/resnet)
         :return: List of hidden layer tensors.
         """
         with tf.variable_scope(scope):
