@@ -712,7 +712,13 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: gravity
+      value: 9.81
+    - key: angle
+      value: 55
+    - key: scale
+      value: 1
 --- !u!1001 &1065879750
 Prefab:
   m_ObjectHideFlags: 0

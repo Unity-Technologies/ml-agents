@@ -2,12 +2,12 @@ import logging
 
 import numpy as np
 from mlagents.trainers.bc.models import BehavioralCloningModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class BCPolicy(Policy):
+class BCPolicy(TFPolicy):
     def __init__(self, seed, brain, trainer_parameters, load):
         """
         :param seed: Random seed.

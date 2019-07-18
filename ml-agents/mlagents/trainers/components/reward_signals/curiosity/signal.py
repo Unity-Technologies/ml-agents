@@ -1,13 +1,17 @@
+from typing import Any, Dict, List
 import numpy as np
+from mlagents.envs.brain import BrainInfo
+
+from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 
 
 class CuriosityRewardSignal(RewardSignal):
     def __init__(
         self,
-        policy: Policy,
+        policy: TFPolicy,
         strength: float,
         gamma: float,
         encoding_size: int = 128,
@@ -17,9 +21,12 @@ class CuriosityRewardSignal(RewardSignal):
         """
         Creates the Curiosity reward generator
         :param policy: The Learning Policy
-        :param encoding_size: The size of the Curiosity encoding
-        :param signal_strength: The scaling parameter for the reward. The scaled reward will be the unscaled
+        :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
         reward multiplied by the strength parameter
+        :param gamma: The time discounting factor used for this reward.
+        :param encoding_size: The size of the hidden encoding layer for the ICM
+        :param learning_rate: The learning rate for the ICM.
+        :param num_epoch: The number of epochs to train over the training buffer for the ICM. 
         """
         super().__init__(policy, strength, gamma)
         self.model = CuriosityModel(
@@ -33,7 +40,9 @@ class CuriosityRewardSignal(RewardSignal):
         }
         self.has_updated = False
 
-    def evaluate(self, current_info, next_info):
+    def evaluate(
+        self, current_info: BrainInfo, next_info: BrainInfo
+    ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
@@ -75,7 +84,9 @@ class CuriosityRewardSignal(RewardSignal):
         return RewardSignalResult(scaled_reward, unscaled_reward)
 
     @classmethod
-    def check_config(cls, config_dict):
+    def check_config(
+        cls, config_dict: Dict[str, Any], param_keys: List[str] = None
+    ) -> None:
         """
         Checks the config and throw an exception if a hyperparameter is missing. Curiosity requires strength,
         gamma, and encoding size at minimum.
@@ -83,7 +94,7 @@ class CuriosityRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "encoding_size"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, update_buffer, num_sequences):
+    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
         """
         Updates Curiosity model using training buffer. Divides training buffer into mini batches and performs
         gradient descent.
@@ -91,7 +102,8 @@ class CuriosityRewardSignal(RewardSignal):
         :param num_sequences: Number of sequences in the update buffer.
         :return: Dict of stats that should be reported to Tensorboard.
         """
-        forward_total, inverse_total = [], []
+        forward_total: List[float] = []
+        inverse_total: List[float] = []
         for _ in range(self.num_epoch):
             update_buffer.shuffle()
             buffer = update_buffer
@@ -110,7 +122,9 @@ class CuriosityRewardSignal(RewardSignal):
         }
         return update_stats
 
-    def _update_batch(self, mini_batch, num_sequences):
+    def _update_batch(
+        self, mini_batch: Dict[str, np.ndarray], num_sequences: int
+    ) -> Dict[str, float]:
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
