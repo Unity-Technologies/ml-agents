@@ -38,7 +38,7 @@ jobs:
             . venv/bin/activate
             mkdir test-reports
             pytest --cov=mlagents --cov-report xml --junitxml=test-reports/junit.xml -p no:warnings
-            python-codacy-coverage -r coverage.xml
+            python-codacy-coverage -r test-reports/junit.xml
 
       - run:
           name: Check Code Style for ml-agents and gym_unity using black
