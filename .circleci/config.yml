@@ -40,7 +40,7 @@ jobs:
             pytest --cov=mlagents --cov-report xml --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
-          name: Check Code Style for ml-agents using pre-commit
+          name: Check Code Style using pre-commit
           command: |
             . venv/bin/activate
             pre-commit run --show-diff-on-failure --all-files
