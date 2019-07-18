@@ -22,7 +22,15 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id, multi_gpu
+        self,
+        brain,
+        reward_buff_cap,
+        trainer_parameters,
+        training,
+        load,
+        seed,
+        run_id,
+        multi_gpu,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -67,7 +75,9 @@ class PPOTrainer(Trainer):
 
         self.step = 0
         self.devices = get_devices(multi_gpu)
-        self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load, self.devices)
+        self.policy = PPOPolicy(
+            seed, brain, trainer_parameters, self.is_training, load, self.devices
+        )
 
         stats = defaultdict(list)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
@@ -83,7 +93,6 @@ class PPOTrainer(Trainer):
 
         self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
-
 
     def __str__(self):
         return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
@@ -470,9 +479,7 @@ class PPOTrainer(Trainer):
                     start = l * n_sequences + d * n_sequences_per_device
                     end = start + n_sequences_per_device
                     mini_batches.append(buffer.make_mini_batch(start, end))
-                run_out = self.policy.update(
-                    mini_batches, n_sequences
-                )
+                run_out = self.policy.update(mini_batches, n_sequences)
                 value_total.append(run_out["value_loss"])
                 policy_total.append(np.abs(run_out["policy_loss"]))
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
@@ -522,11 +529,12 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
 
+
 def get_devices(multi_gpu):
     local_device_protos = device_lib.list_local_devices()
-    devices = [x.name for x in local_device_protos if x.device_type == 'GPU']
+    devices = [x.name for x in local_device_protos if x.device_type == "GPU"]
     if len(devices) < 1:
-        devices = ['/cpu:0']
+        devices = ["/cpu:0"]
     if not multi_gpu:
         devices = devices[:1]
     return devices

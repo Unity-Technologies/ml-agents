@@ -60,7 +60,7 @@ class TFPolicy(Policy):
         self.graph = tf.Graph()
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
-        config.allow_soft_placement=True
+        config.allow_soft_placement = True
         self.sess = tf.Session(config=config, graph=self.graph)
         self.saver = None
         if self.use_recurrent:

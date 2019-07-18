@@ -16,7 +16,9 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(TFPolicy):
-    def __init__(self, seed, brain, trainer_params, is_training, load, devices=["/cpu:0"]):
+    def __init__(
+        self, seed, brain, trainer_params, is_training, load, devices=["/cpu:0"]
+    ):
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
@@ -160,14 +162,15 @@ class PPOPolicy(TFPolicy):
         """
         feed_dict = {}
         models = self.model.towers if len(self.devices) > 1 else [self.model]
-        assert(len(mini_batches) == len(models))
+        assert len(mini_batches) == len(models)
         for mini_batch, tower in zip(mini_batches, models):
             feed_dict[tower.batch_size] = num_sequences
             feed_dict[tower.sequence_length] = self.sequence_length
             feed_dict[tower.mask_input] = mini_batch["masks"].flatten()
             feed_dict[tower.advantage] = mini_batch["advantages"].reshape([-1, 1])
             feed_dict[tower.all_old_log_probs] = mini_batch["action_probs"].reshape(
-                    [-1, sum(tower.act_size)])
+                [-1, sum(tower.act_size)]
+            )
 
             for name in self.reward_signals:
                 feed_dict[tower.returns_holders[name]] = mini_batch[

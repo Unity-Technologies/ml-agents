@@ -161,7 +161,7 @@ def basic_trainer_controller():
         lesson=None,
         training_seed=99,
         fast_simulation=True,
-        multi_gpu=False
+        multi_gpu=False,
     )
 
 
@@ -199,7 +199,15 @@ def assert_ppo_trainer_constructed(
     external_brains = {"testbrain": expected_brain_params}
 
     def mock_constructor(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id, multi_gpu
+        self,
+        brain,
+        reward_buff_cap,
+        trainer_parameters,
+        training,
+        load,
+        seed,
+        run_id,
+        multi_gpu,
     ):
         self.trainer_metrics = TrainerMetrics("", "")
         assert brain == expected_brain_params
