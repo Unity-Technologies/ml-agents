@@ -220,7 +220,7 @@ class LearningModel(object):
         num_layers: int,
         scope: str,
         reuse: bool,
-        encoder_type: str=None,
+        encoder_type: str = None,
     ) -> tf.Tensor:
         """
         Builds a set of visual (CNN) encoders.
