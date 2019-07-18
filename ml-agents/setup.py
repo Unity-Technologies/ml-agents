@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from os import path
 from io import open
 
@@ -10,7 +10,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="mlagents",
-    version="0.8.1",
+    version="0.8.2",
     description="Unity Machine Learning Agents",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -23,10 +23,13 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
     ],
-    packages=["mlagents.trainers"],  # Required
+    # find_namespace_packages will recurse through the directories and find all the packages
+    packages=find_namespace_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
+    ),
     zip_safe=False,
     install_requires=[
-        "mlagents_envs==0.8.1",
+        "mlagents_envs==0.8.2",
         "tensorflow>=1.7,<1.8",
         "Pillow>=4.2.1",
         "matplotlib",

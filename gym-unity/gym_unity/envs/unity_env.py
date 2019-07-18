@@ -28,13 +28,13 @@ class UnityEnv(gym.Env):
     def __init__(
         self,
         environment_filename: str,
-        worker_id=0,
-        use_visual=False,
-        uint8_visual=False,
-        multiagent=False,
-        flatten_branched=False,
-        no_graphics=False,
-        allow_multiple_visual_obs=False,
+        worker_id: int = 0,
+        use_visual: bool = False,
+        uint8_visual: bool = False,
+        multiagent: bool = False,
+        flatten_branched: bool = False,
+        no_graphics: bool = False,
+        allow_multiple_visual_obs: bool = False,
     ):
         """
         Environment initialization
@@ -218,16 +218,14 @@ class UnityEnv(gym.Env):
     def _single_step(self, info):
         if self.use_visual:
             visual_obs = info.visual_observations
-            if isinstance(visual_obs, list):
-                visual_obs = np.array(visual_obs)
 
             if self._allow_multiple_visual_obs:
                 visual_obs_list = []
                 for obs in visual_obs:
-                    visual_obs_list.append(self._preprocess_single(obs[0, :, :, :]))
+                    visual_obs_list.append(self._preprocess_single(obs[0]))
                 self.visual_obs = visual_obs_list
             else:
-                self.visual_obs = self._preprocess_single(visual_obs[0][0, :, :, :])
+                self.visual_obs = self._preprocess_single(visual_obs[0][0])
 
             default_observation = self.visual_obs
         else:

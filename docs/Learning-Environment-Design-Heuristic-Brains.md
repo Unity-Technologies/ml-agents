@@ -9,9 +9,6 @@ property of the **Heuristic Brain**.
 
 ## Implementing the Decision interface
 
-When creating your Decision class, extend MonoBehaviour (so you can use the
-class as a Unity component) and extend the Decision interface.
-
 ```csharp
 using UnityEngine;
 using MLAgents;

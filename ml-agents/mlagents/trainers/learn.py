@@ -9,7 +9,7 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
-from typing import Optional, Callable
+from typing import Any, Callable, Dict, Optional
 
 
 from mlagents.trainers.trainer_controller import TrainerController
@@ -19,10 +19,12 @@ from mlagents.envs import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import UnityEnvironmentException, SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
+from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
 
-def run_training(sub_id: int, run_seed: int, run_options, process_queue):
+def run_training(
+    sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue
+) -> None:
     """
     Launches training session.
     :param process_queue: Queue used to send signal back to main.
@@ -104,7 +106,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         run_seed,
         base_port + (sub_id * num_envs),
     )
-    env = SubprocessUnityEnvironment(env_factory, num_envs)
+    env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
 
 
@@ -119,7 +121,6 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         train_model,
         keep_checkpoints,
         lesson,
-        env.external_brains,
         run_seed,
         fast_simulation,
         sampler_manager,
@@ -134,7 +135,7 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
 
 
 def try_create_meta_curriculum(
-    curriculum_folder: Optional[str], env: BaseUnityEnvironment
+    curriculum_folder: Optional[str], env: SubprocessEnvManager
 ) -> Optional[MetaCurriculum]:
     if curriculum_folder is None:
         return None
@@ -177,10 +178,10 @@ def prepare_for_docker_run(docker_target_name, env_path):
     return env_path
 
 
-def load_config(trainer_config_path):
+def load_config(trainer_config_path: str) -> Dict[str, Any]:
     try:
         with open(trainer_config_path) as data_file:
-            trainer_config = yaml.load(data_file)
+            trainer_config = yaml.safe_load(data_file)
             return trainer_config
     except IOError:
         raise UnityEnvironmentException(
