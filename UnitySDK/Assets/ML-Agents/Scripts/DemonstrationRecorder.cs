@@ -14,7 +14,7 @@ namespace MLAgents
         private Agent recordingAgent;
         private string filePath;
         private DemonstrationStore demoStore;
-        public const int MAX_NAME_LENGTH = 16;
+        public const int MaxNameLength = 16;
 
         private void Start()
         {
@@ -39,7 +39,7 @@ namespace MLAgents
         {
             recordingAgent = GetComponent<Agent>();
             demoStore = new DemonstrationStore();
-            demonstrationName = SanitizeName(demonstrationName);
+            demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
             demoStore.Initialize(
                 demonstrationName, 
                 recordingAgent.brain.brainParameters, 

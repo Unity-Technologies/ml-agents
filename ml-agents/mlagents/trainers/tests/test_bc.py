@@ -13,7 +13,7 @@ from mlagents.envs.mock_communicator import MockCommunicator
 
 @pytest.fixture
 def dummy_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
             hidden_units: 128
             learning_rate: 3.0e-4

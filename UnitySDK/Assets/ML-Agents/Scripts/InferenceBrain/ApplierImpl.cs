@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using MLAgents.InferenceBrain.Utils;
 using UnityEngine;
 
@@ -99,34 +100,38 @@ namespace MLAgents.InferenceBrain
     
     public class BarracudaMemoryOutputApplier : TensorApplier.Applier
     {
-        private bool firstHalf = true;
+        private int memoriesCount;
+        private int memoryIndex;
 
-        public BarracudaMemoryOutputApplier(bool firstHalf)
+        public BarracudaMemoryOutputApplier(int memoriesCount, int memoryIndex)
         {
-            this.firstHalf = firstHalf;
+            this.memoriesCount = memoriesCount;
+            this.memoryIndex = memoryIndex;
         }
         
         public void Apply(Tensor tensor, Dictionary<Agent, AgentInfo> agentInfo)
         {
             var tensorDataMemory = tensor.Data as float[,];
             var agentIndex = 0;
-            var memorySize = tensor.Shape[tensor.Shape.Length - 1];
+            var memorySize = (int)tensor.Shape[tensor.Shape.Length - 1];
+            
             foreach (var agent in agentInfo.Keys)
             {
-                var memory = new List<float>();
-                for (var j = 0; j < memorySize; j++)
+                var memory = agent.GetMemoriesAction();
+
+                if (memory == null || memory.Count < memorySize * memoriesCount)
                 {
-                    memory.Add(tensorDataMemory[agentIndex, j]);
+                    memory = new List<float>();
+                    memory.AddRange(Enumerable.Repeat(0f, memorySize * memoriesCount));
                 }
 
-                if (firstHalf)
+                for (var j = 0; j < memorySize; j++)
                 {
-                    agent.UpdateMemoriesAction(memory);
+                    memory[memorySize * memoryIndex + j] = tensorDataMemory[agentIndex, j];
                 }
-                else
-                {
-                    agent.AppendMemoriesAction(memory);
-                }
+                
+                agent.UpdateMemoriesAction(memory);
+
                 agentIndex++;
             }
         }

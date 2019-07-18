@@ -1,6 +1,7 @@
 import logging
 import socket
 import struct
+from typing import Optional
 
 from .communicator import Communicator
 from .communicator_objects import UnityMessage, UnityOutput, UnityInput
@@ -72,7 +73,7 @@ class SocketCommunicator(Communicator):
     def _communicator_send(self, message):
         self._conn.send(struct.pack("I", len(message)) + message)
 
-    def exchange(self, inputs: UnityInput) -> UnityOutput:
+    def exchange(self, inputs: UnityInput) -> Optional[UnityOutput]:
         message = UnityMessage()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)

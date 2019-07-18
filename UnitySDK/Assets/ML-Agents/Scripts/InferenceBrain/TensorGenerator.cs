@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#define ENABLE_BARRACUDA
+using System.Collections.Generic;
+using Barracuda;
 
 namespace MLAgents.InferenceBrain
 {
@@ -37,7 +39,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="bp"> The BrainParameters used to determine what Generators will be
         /// used</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
-        public TensorGenerator(BrainParameters bp, int seed)
+        public TensorGenerator(BrainParameters bp, int seed, object barracudaModel = null)
         {
             // Generator for Inputs
             _dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator();
@@ -45,8 +47,13 @@ namespace MLAgents.InferenceBrain
             _dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator();
             _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator();
             
-            _dict[TensorNames.RecurrentInPlaceholder_C] = new BarracudaRecurrentInputGenerator(true);
-            _dict[TensorNames.RecurrentInPlaceholder_H] = new BarracudaRecurrentInputGenerator(false);
+            #if ENABLE_BARRACUDA
+            Barracuda.Model model = (Barracuda.Model) barracudaModel;
+            for (var i = 0; i < model?.memories.Length; i++)
+            {
+                _dict[model.memories[i].input] = new BarracudaRecurrentInputGenerator(i);
+            }
+            #endif
             
             _dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator();
             _dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator();

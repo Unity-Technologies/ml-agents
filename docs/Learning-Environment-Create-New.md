@@ -433,7 +433,7 @@ setting the Brain properties so that they are compatible with our Agent code.
     Brains to the **Broadcast Hub**.
 2. Select the **RollerAgent** GameObject to show its properties in the Inspector
     window.
-3. Drag the Brain **RollerBallBrain** from the Project window to the 
+3. Drag the Brain **RollerBallPlayer** from the Project window to the 
     RollerAgent **Brain** field.
 4. Change **Decision Interval** from `1` to `10`.
 5. Drag the Target GameObject from the Hierarchy window to the RollerAgent
@@ -495,15 +495,16 @@ environment.
 
 ## Training the Environment
 
-Now you can train the Agent. To get ready for training, you must first to change
-the `Brain` of the agent to be the Learning Brain `RollerBallBrain`.
+Now you can train the Agent. To get ready for training, you must first drag the 
+`RollerBallBrain` asset to the **RollerAgent** GameObject `Brain` field to change to the learning brain.
 Then, select the Academy GameObject and check the `Control` checkbox for 
 the RollerBallBrain item in the **Broadcast Hub** list. From there, the process is
-the same as described in [Training ML-Agents](Training-ML-Agents.md).
+the same as described in [Training ML-Agents](Training-ML-Agents.md). Note that the 
+models will be created in the original ml-agents project folder, `ml-agents/models`.
 
-The hyperparameters for training are specified in the configuration file that you ls
+The hyperparameters for training are specified in the configuration file that you
 pass to the `mlagents-learn` program. Using the default settings specified 
-in the `config/trainer_config.yaml` file (in your ml-agents folder), the
+in the original `ml-agents/config/trainer_config.yaml` file, the
 RollerAgent takes about 300,000 steps to train. However, you can change the 
 following hyperparameters  to speed up training considerably (to under 20,000 steps):
 
