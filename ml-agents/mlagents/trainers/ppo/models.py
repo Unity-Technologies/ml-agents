@@ -24,10 +24,8 @@ class PPOMultiGPUModel(object):
         use_recurrent=False,
         num_layers=2,
         m_size=None,
-        use_curiosity=False,
-        curiosity_strength=0.01,
-        curiosity_enc_size=128,
         seed=0,
+        stream_names=None,
         devices=["/cpu:0"],
     ):
         """
@@ -49,24 +47,16 @@ class PPOMultiGPUModel(object):
                             use_recurrent=use_recurrent,
                             num_layers=num_layers,
                             m_size=m_size,
-                            use_curiosity=use_curiosity,
-                            curiosity_strength=curiosity_strength,
-                            curiosity_enc_size=curiosity_enc_size,
                             seed=seed,
+                            stream_names=stream_names,
                         )
                     )
+                    self.towers[-1].create_ppo_optimizer()
 
         self.value_loss = tf.reduce_mean(tf.stack([t.value_loss for t in self.towers]))
         self.policy_loss = tf.reduce_mean(
             tf.stack([t.policy_loss for t in self.towers])
         )
-        if use_curiosity:
-            self.forward_loss = tf.reduce_mean(
-                tf.stack([t.forward_loss for t in self.towers])
-            )
-            self.inverse_loss = tf.reduce_mean(
-                tf.stack([t.inverse_loss for t in self.towers])
-            )
 
         self.optimizer = self.towers[0].optimizer
         avg_grad = self.average_gradients([t.grads for t in self.towers])
