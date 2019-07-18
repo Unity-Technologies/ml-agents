@@ -135,13 +135,6 @@ class Trainer(object):
         self.step = self.policy.increment_step(n_steps)
 
     @property
-    def parameters(self):
-        """
-        Returns the trainer parameters of the trainer.
-        """
-        raise UnityTrainerException("The parameters property was not implemented.")
-
-    @property
     def graph_scope(self):
         """
         Returns the graph scope of the trainer.
