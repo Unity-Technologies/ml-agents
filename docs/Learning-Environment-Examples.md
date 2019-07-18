@@ -282,11 +282,11 @@ If you would like to contribute environments, please see our
     the jump.
   * Visual Observations: None.
 * Reset Parameters: Two, corresponding to the following
-    * Agent_scale:
-        * Default: 1
-        * Recommended Minimum: 0.25
-        * Recommended Maximum: 5
-    * banana_scale:
+    * banana_speed: The speed of the vertical motion of the banana
+        * Default: 0
+        * Recommended Minimum: 0
+        * Recommended Maximum: 0.6
+    * banana_scale: The scale of the banana in the 3 dimensions
         * Default: 150
         * Recommended Minimum: 50
         * Recommended Maximum: 250
