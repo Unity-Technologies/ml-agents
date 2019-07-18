@@ -25,7 +25,10 @@ class SACPolicy(TFPolicy):
         """
         super().__init__(seed, brain, trainer_params)
 
-        reward_signal_configs = trainer_params["reward_signals"]
+        reward_signal_configs = {}
+        for key, rsignal in trainer_params["reward_signals"].items():
+            if type(rsignal) is dict:
+                reward_signal_configs[key] = rsignal
 
         self.reward_signals = {}
         with self.graph.as_default():
@@ -47,10 +50,9 @@ class SACPolicy(TFPolicy):
             self.model.create_sac_optimizers()
 
             # Initialize Components
-            for _rsignal in reward_signal_configs.keys():
-                self.reward_signals[_rsignal] = create_reward_signal(
-                    self, _rsignal, reward_signal_configs[_rsignal]
-                )
+            for key, rsignal in reward_signal_configs.items():
+                if type(rsignal) is dict:
+                    self.reward_signals[key] = create_reward_signal(self, key, rsignal)
 
             # BC trainer is not a reward signal
             # if "demo_aided" in trainer_params:
@@ -192,7 +194,11 @@ class SACPolicy(TFPolicy):
                     feed_dict[self.model.next_visual_in[i]] = _obs
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
-            next_mem_in = mini_batch["memory"][:, 1, :] if self.sequence_length > 1 else mini_batch["memory"][:, 0, :]
+            next_mem_in = (
+                mini_batch["memory"][:, 1, :]
+                if self.sequence_length > 1
+                else mini_batch["memory"][:, 0, :]
+            )
             feed_dict[self.model.memory_in] = mem_in
             feed_dict[self.model.next_memory_in] = next_mem_in[:, : self.m_size // 4]
         feed_dict[self.model.dones_holder] = mini_batch["done"].flatten()

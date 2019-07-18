@@ -43,12 +43,11 @@ class SACTrainer(Trainer):
             "init_entcoef",
             "max_steps",
             "normalize",
-            "num_epoch",
+            "updates_per_train",
             "num_layers",
             "time_horizon",
             "sequence_length",
             "summary_freq",
-            "target_update_steps",
             "tau",
             "use_recurrent",
             "summary_path",
@@ -67,9 +66,14 @@ class SACTrainer(Trainer):
             else 1
         )
         self.reward_signal_train_interval = (
-            trainer_parameters["reward_signal_train_interval"]
-            if "reward_signal_train_interval" in trainer_parameters
+            trainer_parameters["reward_signals"]["train_interval"]
+            if "train_interval" in trainer_parameters["reward_signals"]
             else 1
+        )
+        self.reward_signal_updates_per_train = (
+            trainer_parameters["reward_signals"]["updates_per_train"]
+            if "updates_per_train" in trainer_parameters["reward_signals"]
+            else trainer_parameters["updates_per_train"]
         )
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
@@ -78,8 +82,9 @@ class SACTrainer(Trainer):
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only
         self.collected_rewards = {"environment": {}}
-        for _reward_signal in trainer_parameters["reward_signals"].keys():
-            self.collected_rewards[_reward_signal] = {}
+        for key, config in trainer_parameters["reward_signals"].items():
+            if type(config) is dict:
+                self.collected_rewards[key] = {}
 
         self.stats = stats
 
@@ -462,8 +467,8 @@ class SACTrainer(Trainer):
             [],
             [],
         )
-        num_epoch = self.trainer_parameters["num_epoch"]
-        for _ in range(num_epoch):
+        num_updates = self.trainer_parameters["updates_per_train"]
+        for _ in range(num_updates):
             buffer = self.training_buffer.update_buffer
             if (
                 len(self.training_buffer.update_buffer["actions"])
@@ -515,11 +520,11 @@ class SACTrainer(Trainer):
         interval. 
         """
         buffer = self.training_buffer.update_buffer
-        num_epoch = self.trainer_parameters["num_reward_signals_epoch"]
+        num_updates = self.reward_signal_updates_per_train
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        for _ in range(num_epoch):
+        for _ in range(num_updates):
             sampled_minibatch = buffer.sample_mini_batch(
                 self.trainer_parameters["batch_size"] // self.policy.sequence_length
             )
