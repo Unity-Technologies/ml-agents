@@ -5,7 +5,10 @@ import tensorflow as tf
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.buffer import Buffer
-from mlagents.trainers.components.reward_signals.reward_signal import RewardSignal, RewardSignalResult
+from mlagents.trainers.components.reward_signals.reward_signal import (
+    RewardSignal,
+    RewardSignalResult,
+)
 from mlagents.trainers.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer

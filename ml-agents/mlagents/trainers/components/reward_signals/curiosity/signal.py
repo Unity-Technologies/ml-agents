@@ -3,7 +3,10 @@ import numpy as np
 from mlagents.envs.brain import BrainInfo
 
 from mlagents.trainers.buffer import Buffer
-from mlagents.trainers.components.reward_signals.reward_signal import RewardSignal, RewardSignalResult
+from mlagents.trainers.components.reward_signals.reward_signal import (
+    RewardSignal,
+    RewardSignalResult,
+)
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.tf_policy import TFPolicy
 
