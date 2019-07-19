@@ -1,4 +1,5 @@
 import numpy as np
+from typing import *
 from functools import *
 from collections import OrderedDict
 from abc import ABC, abstractmethod
@@ -8,7 +9,7 @@ from .exception import SamplerException
 class Sampler(ABC): 
 
     @abstractmethod
-    def sample_parameter(self, *args, **kwargs):
+    def sample_parameter(self) -> float:
         pass
 
 
@@ -18,7 +19,7 @@ class UniformSampler(Sampler):
         self.min_value = min_value
         self.max_value = max_value
 
-    def sample_parameter(self):
+    def sample_parameter(self) -> float:
         return np.random.uniform(self.min_value, self.max_value)
     
 
@@ -33,7 +34,7 @@ class MultiRangeUniformSampler(Sampler):
         self.interval_weights = [x/cum_interval_length for x in interval_lengths]
     
     
-    def sample_parameter(self):
+    def sample_parameter(self) -> float:
         cur_min, cur_max = self.intervals[np.random.choice(len(self.intervals), p=self.interval_weights)]
         return np.random.uniform(cur_min, cur_max)
 
@@ -43,7 +44,7 @@ class GaussianSampler(Sampler):
         self.mean = mean
         self.var = var
     
-    def sample_parameter(self):
+    def sample_parameter(self) -> float:
         return np.random.normal(self.mean, self.var)
 
 
@@ -80,7 +81,7 @@ class SamplerFactory:
 
 class SamplerManager:
     def __init__(self, reset_param_dict):
-        self.reset_param_dict = reset_param_dict if reset_param_dict != None else {}
+        self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert(isinstance(self.reset_param_dict, dict))
         self.samplers = OrderedDict()
         for param_name, cur_param_dict in self.reset_param_dict.items():
@@ -93,14 +94,14 @@ class SamplerManager:
 
             self.samplers[param_name] = param_sampler
     
-    def check_empty_sampler_manager(self):
+    def is_empty(self) -> bool:
         """
         If self.samplers is empty, then bool of it returns false, indicating that the
         sampler manager isn't managing any samplers.
         """
         return not bool(self.samplers)
 
-    def sample_all(self):
+    def sample_all(self) -> Dict[str, float]:
         res = {}
         for param_name, param_sampler in list(self.samplers.items()):
             res[param_name] = param_sampler.sample_parameter()

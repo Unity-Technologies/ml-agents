@@ -23,11 +23,11 @@ from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 
 
 
 class TrainerController(object):
-    # Type of reset_param_dict unspecified as typing library does not support heterogeneous dictionary types
     def __init__(
         self,
         model_path: str,
@@ -42,7 +42,7 @@ class TrainerController(object):
         training_seed: int,
         fast_simulation: bool,
         sampler_manager: SamplerManager,
-        lesson_length: Optional[int],
+        lesson_duration: Optional[int],
     ):
         """
         :param model_path: Path to save the model.
@@ -56,7 +56,7 @@ class TrainerController(object):
         :param lesson: Start learning from this lesson.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         :param sampler_manager: SamplerManager object which stores information about samplers to use for the reset parameters.
-        :param lesson_length: Specifies number of steps after which reset parameters are resampled.
+        :param lesson_duration: Specifies number of steps after which reset parameters are resampled.
         """
 
         self.model_path = model_path
@@ -77,7 +77,7 @@ class TrainerController(object):
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.sampler_manager = sampler_manager
-        self.lesson_length = lesson_length
+        self.lesson_duration = lesson_duration
 
     def _get_measure_vals(self):
         if self.meta_curriculum:
@@ -294,6 +294,7 @@ class TrainerController(object):
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
                     global_step += 1
+                    self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
                         # Save Tensorflow model
                         self._save_model(steps=global_step)
@@ -311,7 +312,8 @@ class TrainerController(object):
             self._export_graph()
         self._write_timing_tree()
 
-    def end_trainer_episodes(self, env, lessons_incremented):
+    def end_trainer_episodes(self, env: BaseUnityEnvironment, lessons_incremented
+        ) -> None:
         self._reset_env(env)
         for brain_name, trainer in self.trainers.items():
             trainer.end_episode()
@@ -319,9 +321,7 @@ class TrainerController(object):
             if changed:
                 self.trainers[brain_name].reward_buffer.clear()
 
-
-    @timed
-    def advance(self, env: SubprocessEnvManager) -> int:
+    def reset_env_if_ready(self, env: BaseUnityEnvironment, steps : int) -> None:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
@@ -337,17 +337,20 @@ class TrainerController(object):
 
         # If any lessons were incremented or the environment is
         # ready to be reset
-        meta_curriculum_reset = (self.meta_curriculum) and any(lessons_incremented.values())
+        meta_curriculum_reset = any(lessons_incremented.values())
 
         # Check if we are performing generalization training and we have finished the
         # specified number of steps for the lesson
-        generalization_reset = ( not self.sampler_manager.check_empty_sampler_manager()
-                                    and (self.global_step != 0) 
-                                    and (self.global_step % self.lesson_length == 0)
+        generalization_reset = ( not self.sampler_manager.is_empty()
+                                    and (steps != 0) 
+                                    and (steps % self.lesson_duration == 0)
                                )
         if meta_curriculum_reset or generalization_reset:
             self.end_trainer_episodes(env, lessons_incremented)
-    
+
+
+    @timed
+    def advance(self, env: SubprocessEnvManager) -> int:    
         with hierarchical_timer("env_step"):
             time_start_step = time()
             new_step_infos = env.step()

@@ -61,7 +61,7 @@ def test_run_training(load_config, create_environment_factory, subproc_env_mock,
 @patch("mlagents.trainers.learn.SubprocessEnvManager")
 @patch("mlagents.trainers.learn.create_environment_factory")
 @patch("mlagents.trainers.learn.load_config")
-def test_docker_target_path(load_config, create_environment_factory, subproc_env_mock, sampler_manager):
+def test_docker_target_path(load_config, create_environment_factory, subproc_env_mock, sampler_manager_mock):
     mock_env = MagicMock()
     mock_env.external_brain_names = []
     mock_env.academy_name = "TestAcademyName"

@@ -2,7 +2,7 @@ from math import isclose
 import pytest
 
 from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.sampler_class import UniformSampler, MultiRangeUniformSampler
+from mlagents.envs.sampler_class import UniformSampler, MultiRangeUniformSampler, GaussianSampler
 from mlagents.envs.exception import UnityException
 
 
@@ -30,7 +30,7 @@ def test_3Dball_sampler():
     config = basic_3Dball_sampler()
     sampler = SamplerManager(config)
 
-    assert sampler.check_empty_sampler_manager() == False
+    assert sampler.check_empty_sampler_manager() is False
     assert isinstance(sampler.samplers["mass"], UniformSampler)
     assert isinstance(sampler.samplers["gravity"], MultiRangeUniformSampler)
 
@@ -50,48 +50,23 @@ def basic_tennis_sampler():
     return {
         "angle":
             {
-                "sampler-type": "uniform",
-                "min_value": 50,
-                "max_value": 60
-            },
-        "gravity":
-            {
-                "sampler-type": "uniform",
-                "min_value": 8,
-                "max_value": 12
-            },
-        "mass":
-            {
-                "sampler-type": "multirange_uniform",
-                "intervals": [[1, 5], [6, 7]]
+                "sampler-type": "gaussian",
+                "mean": 0,
+                "var": 1
             }
     }
 
 def test_tennis_sampler():
     config = basic_tennis_sampler()
     sampler = SamplerManager(config)
-    assert sampler.check_empty_sampler_manager() == False
-    assert isinstance(sampler.samplers["angle"], UniformSampler)
-    assert isinstance(sampler.samplers["gravity"], UniformSampler)
-    assert isinstance(sampler.samplers["mass"], MultiRangeUniformSampler)
+    assert sampler.check_empty_sampler_manager() is False
+    assert isinstance(sampler.samplers["angle"], GaussianSampler)
 
     cur_sample = sampler.sample_all()
 
-    # Check angle uniform sampler
-    assert sampler.samplers["angle"].min_value == config["angle"]["min_value"]
-    assert sampler.samplers["angle"].max_value == config["angle"]["max_value"]
-    assert cur_sample["angle"] >= config["angle"]["min_value"]
-    assert cur_sample["angle"] <= config["angle"]["max_value"]
-
-    # Check gravity uniform sampler
-    assert sampler.samplers["gravity"].min_value == config["gravity"]["min_value"]
-    assert sampler.samplers["gravity"].max_value == config["gravity"]["max_value"]
-    assert cur_sample["gravity"] >= config["gravity"]["min_value"]
-    assert cur_sample["gravity"] <= config["gravity"]["max_value"]
-
-    # Check mass multirange uniform sampler
-    assert config["mass"]["intervals"] == sampler.samplers["mass"].intervals
-    assert check_value_in_intervals(cur_sample["mass"], config["mass"]["intervals"])
+    # Check angle gaussian sampler
+    assert sampler.samplers["angle"].mean == config["angle"]["mean"]
+    assert sampler.samplers["angle"].var == config["angle"]["var"]
 
 
 def make_empty_sampler_config():
@@ -138,8 +113,8 @@ def incorrect_sampler_config():
 def test_incorrect_uniform_sampler():
     config = incorrect_uniform_sampler()
     try:
-        cur_sampler = SamplerManager(config)
-        assert(1 == 0, "SamplerManager should throw error if 'max-value' isn't passed.")
+        with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
+            SamplerManager(config)
     except UnityException:
         pass
 
@@ -147,8 +122,8 @@ def test_incorrect_uniform_sampler():
 def test_incorrect_sampler():
     config = incorrect_sampler_config()
     try:
-        cur_sampler = SamplerManager(config)
-        assert(1 == 0, "SamplerManager should throw error if 'sampler-type' key isn't passed.")
+        with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
+            SamplerManager(config)
     except UnityException:
         pass
 

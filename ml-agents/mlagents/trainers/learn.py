@@ -83,8 +83,7 @@ def run_training(
     if sampler_file_path is not None:
         sampler_config = load_config(sampler_file_path)
         if ("episode-length") in sampler_config:
-            # Default lesson_length is at 1000
-            lesson_length = sampler_config.pop("episode-length", 1000)
+            lesson_length = sampler_config.pop("episode-length")
             if lesson_length <= 0:
                 raise SamplerException(
                     "Specified episode-length is negative or 0. Please provide"
