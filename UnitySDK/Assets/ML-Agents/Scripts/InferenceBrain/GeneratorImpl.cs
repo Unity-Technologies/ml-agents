@@ -300,8 +300,9 @@ namespace MLAgents.InferenceBrain
         {
             var textures = agentInfo.Keys.Select(
                 agent => agentInfo[agent].visualObservations[_index]).ToList();
-            tensorProxy.Data = Utilities.TextureToFloatArray(textures, _grayScale, _allocator);
-            tensorProxy.Shape[0] = textures.Count;
+            
+            TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
+            Utilities.TextureToTensorProxy(tensorProxy, textures, _grayScale, _allocator);
         } 
     } 
 }

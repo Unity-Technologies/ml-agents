@@ -51,7 +51,11 @@ namespace MLAgents.InferenceBrain
 
 			tensor.Data?.Dispose();
 			tensor.Shape[0] = batch;
-			tensor.Data = allocator.Alloc(new TensorShape(batch, (int)tensor.Shape[tensor.Shape.Length - 1]));
+			
+			if (tensor.Shape.Length == 4)
+				tensor.Data = allocator.Alloc(new TensorShape(batch, (int)tensor.Shape[1], (int)tensor.Shape[2], (int)tensor.Shape[3]));
+			else
+				tensor.Data = allocator.Alloc(new TensorShape(batch, (int)tensor.Shape[tensor.Shape.Length - 1]));
 		}
 
 		public static Array BarracudaToFloatArray(Tensor tensor)

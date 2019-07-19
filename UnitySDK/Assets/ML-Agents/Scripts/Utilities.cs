@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Barracuda;
+using MLAgents.InferenceBrain;
 
 namespace MLAgents
 {
@@ -10,17 +11,9 @@ namespace MLAgents
         /// <summary>
         /// Converts a list of Texture2D into a Tensor.
         /// </summary>
-        /// <returns>
-        /// A 4 dimensional float Tensor of dimension
-        /// [batch_size, height, width, channel].
-        /// Where batch_size is the number of input textures,
-        /// height corresponds to the height of the texture,
-        /// width corresponds to the width of the texture,
-        /// channel corresponds to the number of channels extracted from the
-        /// input textures (based on the input blackAndWhite flag
-        /// (3 if the flag is false, 1 otherwise).
-        /// The values of the Tensor are between 0 and 1.
-        /// </returns>
+        /// <param name="tensorProxy">
+        /// Tensor proxy to fill with Texture data.
+        /// </param>
         /// <param name="textures">
         /// The list of textures to be put into the tensor.
         /// Note that the textures must have same width and height.
@@ -30,14 +23,13 @@ namespace MLAgents
         /// will be converted to grayscale before being stored in the tensor.
         /// </param>
         /// <param name="allocator">Tensor allocator</param>
-        public static Tensor TextureToFloatArray(List<Texture2D> textures, bool blackAndWhite, 
+        public static void TextureToTensorProxy(TensorProxy tensorProxy, List<Texture2D> textures, bool blackAndWhite, 
                                                                 ITensorAllocator allocator)
         {
             var batchSize = textures.Count;
             var width = textures[0].width;
             var height = textures[0].height;
-            var pixels = blackAndWhite ? 1 : 3;
-            var result = allocator.Alloc(new TensorShape(batchSize, height, width, pixels));
+            var data = tensorProxy.Data;
 
             for (var b = 0; b < batchSize; b++)
             {
@@ -51,19 +43,18 @@ namespace MLAgents
                         {
                             // For Color32, the r, g and b values are between
                             // 0 and 255.
-                            result[b, h, w, 0] = currentPixel.r / 255.0f;
-                            result[b, h, w, 1] = currentPixel.g / 255.0f;
-                            result[b, h, w,2] = currentPixel.b / 255.0f;
+                            data[b, h, w, 0] = currentPixel.r / 255.0f;
+                            data[b, h, w, 1] = currentPixel.g / 255.0f;
+                            data[b, h, w,2] = currentPixel.b / 255.0f;
                         }
                         else
                         {
-                            result[b, h, w, 0] = (currentPixel.r + currentPixel.g + currentPixel.b)
+                            data[b, h, w, 0] = (currentPixel.r + currentPixel.g + currentPixel.b)
                                 / 3f / 255.0f;
                         }
                     }
                 }
             }
-            return result;
         }
         
         
