@@ -75,5 +75,42 @@ namespace MLAgents
             }
             return result;
         }
+
+        /// <summary>
+        /// Shifts list elements to the left by the specified amount.
+        /// <param name="list">
+        /// Target list
+        /// </param>
+        /// <param name="amount">
+        /// Shift amount
+        /// </param>
+        /// </summary>
+        public static void ShiftLeft<T>(List<T> list, int amount)
+        {
+            for (var i = amount; i < list.Count; i++)
+            {
+                list[i - amount] = list[i];
+            }
+        }
+
+        /// <summary>
+        /// Replaces target list elements with source list elements starting at specified position in target list.
+        /// <param name="dst">
+        /// Target list
+        /// </param>
+        /// <param name="src">
+        /// Source list
+        /// </param>
+        /// <param name="start">
+        /// Offset in target list
+        /// </param>
+        /// </summary>
+        public static void ReplaceRange<T>(List<T> dst, List<T> src, int start)
+        {
+            for (var i = 0; i < src.Count; i++)
+            {
+                dst[i + start] = src[i];
+            }
+        }
     }
 }
