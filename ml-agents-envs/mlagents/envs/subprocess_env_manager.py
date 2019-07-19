@@ -167,6 +167,10 @@ class SubprocessEnvManager(EnvManager):
     def reset(
         self, config=None, train_mode=True, custom_reset_parameters=None
     ) -> List[StepInfo]:
+        while any([ew.waiting for ew in self.env_workers]):
+            if not self.step_queue.empty():
+                step = self.step_queue.get_nowait()
+                self.env_workers[step.worker_id].waiting = False
         # First enqueue reset commands for all workers so that they reset in parallel
         for ew in self.env_workers:
             ew.send("reset", (config, train_mode, custom_reset_parameters))
