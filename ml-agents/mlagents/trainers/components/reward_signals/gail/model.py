@@ -3,6 +3,7 @@ from typing import Tuple, List
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
 
+EPSILON = 1e-7
 
 class GAILModel(object):
     def __init__(
@@ -53,7 +54,7 @@ class GAILModel(object):
         )
         self.kl_div_input = tf.placeholder(shape=[], dtype=tf.float32)
         new_beta = tf.maximum(
-            self.beta + self.alpha * (self.kl_div_input - self.mutual_information), 1e-7
+            self.beta + self.alpha * (self.kl_div_input - self.mutual_information), EPSILON
         )
         self.update_beta = tf.assign(self.beta, new_beta)
 
@@ -212,7 +213,7 @@ class GAILModel(object):
                 initializer=tf.ones_initializer(),
             )
             self.z_sigma_sq = self.z_sigma * self.z_sigma
-            self.z_log_sigma_sq = tf.log(self.z_sigma_sq + 1e-7)
+            self.z_log_sigma_sq = tf.log(self.z_sigma_sq + EPSILON)
             self.use_noise = tf.placeholder(
                 shape=[1], dtype=tf.float32, name="NoiseLevel"
             )
@@ -228,11 +229,11 @@ class GAILModel(object):
         self.discriminator_score = tf.reshape(
             self.policy_estimate, [-1], name="GAIL_reward"
         )
-        self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + 1e-7)
+        self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + EPSILON)
 
     def compute_gradient_penalty(self) -> tf.Tensor:
         """
-        Gradient penalty WGAN-GP. Adds stability esp. for off-policy. 
+        Gradient penalty WGAN-GP. Adds stability esp. for off-policy.
         Compute gradients w.r.t randomly interpolated input.
         """
         expert = [self.encoded_expert, self.expert_action, self.done_expert]
@@ -252,8 +253,14 @@ class GAILModel(object):
             interp[2],
             reuse=True,
         )
+
+
         grad = tf.gradients(grad_estimate, [grad_input])[0]
-        gradient_mag = tf.reduce_mean(tf.pow(tf.norm(grad, axis=-1) - 1, 2))
+
+        # Norm, like log, can return NaN. Use our own safe_norm
+        safe_norm = tf.sqrt(tf.reduce_sum(grad ** 2, axis=-1) + EPSILON)
+        gradient_mag = tf.reduce_mean(tf.pow(safe_norm - 1, 2))
+
         return gradient_mag
 
     def create_loss(self, learning_rate: float) -> None:
@@ -265,8 +272,8 @@ class GAILModel(object):
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
 
         self.discriminator_loss = -tf.reduce_mean(
-            tf.log(self.expert_estimate + 1e-7)
-            + tf.log(1.0 - self.policy_estimate + 1e-7)
+            tf.log(self.expert_estimate + EPSILON)
+            + tf.log(1.0 - self.policy_estimate + EPSILON)
         )
 
         if self.use_vail:
