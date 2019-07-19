@@ -22,8 +22,6 @@ from .communicator_objects import (
     UnityRLInitializationInput,
     UnityRLInitializationOutput,
     UnityInput,
-    UnityOutput,
-    CustomResetParameters,
     CustomAction,
 )
 

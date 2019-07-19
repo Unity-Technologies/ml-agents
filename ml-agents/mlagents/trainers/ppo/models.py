@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel

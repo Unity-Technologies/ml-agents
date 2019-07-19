@@ -1,5 +1,3 @@
-import unittest.mock as mock
-import pytest
 import os
 import tempfile
 

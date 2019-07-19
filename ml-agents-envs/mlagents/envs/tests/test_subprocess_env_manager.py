@@ -2,7 +2,6 @@ import unittest.mock as mock
 from unittest.mock import Mock, MagicMock
 import unittest
 import cloudpickle
-from mlagents.envs.subprocess_env_manager import StepInfo
 
 from mlagents.envs.subprocess_env_manager import (
     SubprocessEnvManager,
