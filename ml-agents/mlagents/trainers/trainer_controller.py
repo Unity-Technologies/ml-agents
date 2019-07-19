@@ -347,6 +347,7 @@ class TrainerController(object):
         generalization_reset = (
             not self.sampler_manager.is_empty()
             and (steps != 0)
+            and (steps)
             and (steps % self.lesson_duration == 0)
         )
         if meta_curriculum_reset or generalization_reset:
