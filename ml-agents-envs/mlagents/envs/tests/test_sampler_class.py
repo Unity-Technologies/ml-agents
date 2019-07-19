@@ -112,18 +112,12 @@ def incorrect_sampler_config():
 
 def test_incorrect_uniform_sampler():
     config = incorrect_uniform_sampler()
-    try:
-        with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
-            SamplerManager(config)
-    except UnityException:
-        pass
+    with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
+        SamplerManager(config)
 
 
 def test_incorrect_sampler():
     config = incorrect_sampler_config()
-    try:
-        with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
-            SamplerManager(config)
-    except UnityException:
-        pass
+    with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
+        SamplerManager(config)
 
