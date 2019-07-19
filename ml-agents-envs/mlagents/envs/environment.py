@@ -48,6 +48,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         docker_training: bool = False,
         no_graphics: bool = False,
         timeout_wait: int = 30,
+        args: list = [],
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -61,6 +62,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
+        :list args: Addition Unity command line arguments
         """
 
         atexit.register(self._close)
@@ -85,7 +87,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, docker_training, no_graphics)
+            self.executable_launcher(file_name, docker_training, no_graphics, args)
         else:
             logger.info(
                 "Start training by pressing the Play button in the Unity Editor."
@@ -180,7 +182,7 @@ class UnityEnvironment(BaseUnityEnvironment):
     def reset_parameters(self):
         return self._resetParameters
 
-    def executable_launcher(self, file_name, docker_training, no_graphics):
+    def executable_launcher(self, file_name, docker_training, no_graphics, args):
         cwd = os.getcwd()
         file_name = (
             file_name.strip()
@@ -250,10 +252,11 @@ class UnityEnvironment(BaseUnityEnvironment):
                             "--port",
                             str(self.port),
                         ]
+                        + args
                     )
                 else:
                     self.proc1 = subprocess.Popen(
-                        [launch_string, "--port", str(self.port)]
+                        [launch_string, "--port", str(self.port)] + args
                     )
             else:
                 """

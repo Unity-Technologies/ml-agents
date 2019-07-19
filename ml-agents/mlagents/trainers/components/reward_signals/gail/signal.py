@@ -38,7 +38,7 @@ class GAILRewardSignal(RewardSignal):
         :param learning_rate: The Learning Rate used during GAIL updates.
         :param samples_per_update: The maximum number of samples to update during GAIL updates.
         :param use_actions: Whether or not to use the actions for the discriminator.
-        :param use_vail: Whether or not to use a variational bottleneck for the discriminator. 
+        :param use_vail: Whether or not to use a variational bottleneck for the discriminator.
         See https://arxiv.org/abs/1810.00821.
         """
         super().__init__(policy, strength, gamma)
@@ -91,8 +91,8 @@ class GAILRewardSignal(RewardSignal):
         cls, config_dict: Dict[str, Any], param_keys: List[str] = None
     ) -> None:
         """
-        Checks the config and throw an exception if a hyperparameter is missing. GAIL requires strength and gamma 
-        at minimum. 
+        Checks the config and throw an exception if a hyperparameter is missing. GAIL requires strength and gamma
+        at minimum.
         """
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
