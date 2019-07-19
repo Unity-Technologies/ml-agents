@@ -1,17 +1,19 @@
 import logging
 import numpy as np
 
+from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
+from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOPolicy(Policy):
+class PPOPolicy(TFPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.
@@ -49,6 +51,19 @@ class PPOPolicy(Policy):
                     self, reward_signal, config
                 )
 
+            # Create pretrainer if needed
+            if "pretraining" in trainer_params:
+                BCModule.check_config(trainer_params["pretraining"])
+                self.bc_module = BCModule(
+                    self,
+                    policy_learning_rate=trainer_params["learning_rate"],
+                    default_batch_size=trainer_params["batch_size"],
+                    default_num_epoch=trainer_params["num_epoch"],
+                    **trainer_params["pretraining"],
+                )
+            else:
+                self.bc_module = None
+
         if load:
             self._load_graph()
         else:
@@ -81,6 +96,7 @@ class PPOPolicy(Policy):
             "update_batch": self.model.update_batch,
         }
 
+    @timed
     def evaluate(self, brain_info):
         """
         Evaluates policy for the agent experiences provided.
@@ -113,6 +129,7 @@ class PPOPolicy(Policy):
             run_out["random_normal_epsilon"] = epsilon
         return run_out
 
+    @timed
     def update(self, mini_batch, num_sequences):
         """
         Updates model using buffer.
