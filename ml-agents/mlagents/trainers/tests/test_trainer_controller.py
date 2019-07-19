@@ -162,7 +162,7 @@ def basic_trainer_controller():
         training_seed=99,
         fast_simulation=True,
         sampler_manager=SamplerManager(None),
-        lesson_length=None
+        lesson_duration=None
     )
 
 
