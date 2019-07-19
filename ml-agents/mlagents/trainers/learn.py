@@ -13,8 +13,8 @@ from typing import Any, Callable, Dict, Optional
 
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.exception import TrainerError
-from mlagents.trainers import MetaCurriculumError, MetaCurriculum
+from mlagents.trainers.exception import TrainerError, MetaCurriculumError
+from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment

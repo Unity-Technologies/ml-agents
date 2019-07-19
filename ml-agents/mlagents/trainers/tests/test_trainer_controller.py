@@ -4,14 +4,14 @@ from unittest.mock import patch, MagicMock, Mock
 import yaml
 import pytest
 
-from mlagents.trainers import ActionInfo
+from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.subprocess_env_manager import StepInfo
+
 from mlagents.trainers import TrainerMetrics
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
-from mlagents.envs.subprocess_env_manager import StepInfo
-from mlagents.envs.exception import UnityEnvironmentException
 
 
 @pytest.fixture
