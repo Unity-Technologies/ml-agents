@@ -56,7 +56,7 @@ def run_training(
     no_graphics = run_options["--no-graphics"]
     trainer_config_path = run_options["<trainer-config-path>"]
     sampler_file_path = (
-        run_options["--sampler"] if run_options ["--sampler"] != "None" else None
+        run_options["--sampler"] if run_options["--sampler"] != "None" else None
     )
 
     # Recognize and use docker volume if one is passed as an argument

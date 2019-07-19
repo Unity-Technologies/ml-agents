@@ -32,7 +32,7 @@ class MultiRangeUniformSampler(Sampler):
         cum_interval_length = sum(interval_lengths)
         # Assign weights to an interval proportionate to the interval size
         self.interval_weights = [x / cum_interval_length for x in interval_lengths]
-    
+
     def sample_parameter(self) -> float:
         cur_min, cur_max = self.intervals[
             np.random.choice(len(self.intervals), p=self.interval_weights)
@@ -60,7 +60,7 @@ class SamplerFactory:
     @staticmethod
     def register_sampler(name, sampler_cls):
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
-  
+
     @staticmethod
     def init_sampler_class(name, param_dict):
         if name not in SamplerFactory.NAME_TO_CLASS:
