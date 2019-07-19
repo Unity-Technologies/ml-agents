@@ -140,7 +140,7 @@ def test_simple():
             sequence_length: 64
             summary_freq: 500
             use_recurrent: false
-            reward_signals: 
+            reward_signals:
                 extrinsic:
                     strength: 1.0
                     gamma: 0.99
