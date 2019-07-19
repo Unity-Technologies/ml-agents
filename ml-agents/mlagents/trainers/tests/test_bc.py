@@ -7,7 +7,7 @@ import yaml
 
 from mlagents.trainers.bc.models import BehavioralCloningModel
 from mlagents.trainers.bc.policy import BCPolicy
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 
 

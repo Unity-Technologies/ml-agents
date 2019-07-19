@@ -220,7 +220,7 @@ Headless Mode, you have to setup the X Server to enable training.)
 9. Test the instance setup from Python using:
 
     ```python
-    from mlagents.envs import UnityEnvironment
+    from mlagents.envs.environment import UnityEnvironment
 
     env = UnityEnvironment(<your_env>)
     ```

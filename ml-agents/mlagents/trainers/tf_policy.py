@@ -4,11 +4,13 @@ from typing import Any, Dict
 import numpy as np
 import tensorflow as tf
 
+from mlagents.envs.action_info import ActionInfo
 from mlagents.envs.exception import UnityException
-from mlagents.envs import Policy, ActionInfo
+from mlagents.envs.policy import Policy
+
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
-from mlagents.envs import BrainInfo
+from mlagents.envs.brain import BrainInfo
 
 
 logger = logging.getLogger("mlagents.trainers")

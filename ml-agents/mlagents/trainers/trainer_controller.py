@@ -11,7 +11,7 @@ import numpy as np
 import tensorflow as tf
 from time import time
 
-from mlagents.envs import BrainParameters
+from mlagents.envs.brain import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.exception import UnityEnvironmentException

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from mlagents.envs import BrainInfo
-from mlagents.envs import ActionInfo
+from mlagents.envs.brain import BrainInfo
+from mlagents.envs.action_info import ActionInfo
 
 
 class Policy(ABC):

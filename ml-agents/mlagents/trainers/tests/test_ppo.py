@@ -8,7 +8,8 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.envs import UnityEnvironment, BrainParameters
+from mlagents.envs.brain import BrainParameters
+from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 
 

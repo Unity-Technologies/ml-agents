@@ -50,7 +50,7 @@ To verify that all steps worked correctly:
 7. Test the instance setup from Python using:
 
 ```python
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 
 env = UnityEnvironment(<your_env>)
 ```

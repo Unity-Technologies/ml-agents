@@ -8,7 +8,7 @@ from typing import List, Any
 
 import numpy as np
 
-from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.envs.brain import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException

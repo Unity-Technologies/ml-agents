@@ -73,7 +73,7 @@ executable, you can pass the name of the executable with the argument
 'file_name' of the `UnityEnvironment`. For instance:
 
 ```python
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 env = UnityEnvironment(file_name=<env_name>)
 ```
 
