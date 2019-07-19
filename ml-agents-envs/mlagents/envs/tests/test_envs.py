@@ -3,12 +3,9 @@ import pytest
 
 import numpy as np
 
-from mlagents.envs import (
-    UnityEnvironment,
-    UnityEnvironmentException,
-    UnityActionException,
-    BrainInfo,
-)
+from mlagents.envs.brain import BrainInfo
+from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.exception import UnityActionException, UnityEnvironmentException
 from mlagents.envs.mock_communicator import MockCommunicator
 
 

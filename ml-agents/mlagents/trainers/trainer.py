@@ -4,7 +4,9 @@ import os
 import tensorflow as tf
 import numpy as np
 
-from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
+from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.envs.brain import AllBrainInfo
+from mlagents.envs.exception import UnityException
 from mlagents.trainers import TrainerMetrics
 
 LOGGER = logging.getLogger("mlagents.trainers")
