@@ -472,7 +472,7 @@ class LearningModel(object):
                             False,
                         )
                         visual_encoders.append(encoded_visual)
-                elif vis_encode_type == EncoderType.nature_cnn:
+                elif vis_encode_type == EncoderType.NATURE_CNN:
                     for j in range(brain.number_visual_observations):
                         encoded_visual = self.create_nature_cnn_visual_observation_encoder(
                             self.visual_in[j],
@@ -559,13 +559,15 @@ class LearningModel(object):
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
-    def create_cc_actor_critic(self, h_size, num_layers):
+    def create_cc_actor_critic(self, h_size, num_layers, vis_encode_type):
         """
         Creates Continuous control actor-critic model.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         """
-        hidden_streams = self.create_observation_streams(2, h_size, num_layers)
+        hidden_streams = self.create_observation_streams(
+            2, h_size, num_layers, vis_encode_type
+        )
 
         if self.use_recurrent:
             self.memory_in = tf.placeholder(
@@ -644,13 +646,15 @@ class LearningModel(object):
             (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
 
-    def create_dc_actor_critic(self, h_size, num_layers):
+    def create_dc_actor_critic(self, h_size, num_layers, vis_encode_type):
         """
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         """
-        hidden_streams = self.create_observation_streams(1, h_size, num_layers)
+        hidden_streams = self.create_observation_streams(
+            1, h_size, num_layers, vis_encode_type
+        )
         hidden = hidden_streams[0]
 
         if self.use_recurrent:
