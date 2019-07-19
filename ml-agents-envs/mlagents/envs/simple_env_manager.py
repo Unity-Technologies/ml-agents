@@ -18,9 +18,6 @@ class SimpleEnvManager(EnvManager):
         self.previous_step: StepInfo = StepInfo(None, {}, None)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
-    def get_last_steps(self):
-        return [self.previous_step]
-
     def step(self) -> List[StepInfo]:
 
         all_action_info = self._take_step(self.previous_step)

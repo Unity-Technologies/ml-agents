@@ -259,10 +259,6 @@ class TrainerController(object):
     def start_learning(
         self, env_manager: EnvManager, trainer_config: Dict[str, Any]
     ) -> None:
-        """
-        Returns stats for each trainer.
-        :return:
-        """
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         if self.meta_curriculum is not None:
