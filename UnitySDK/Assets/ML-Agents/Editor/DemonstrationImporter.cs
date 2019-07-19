@@ -48,7 +48,7 @@ namespace MLAgents
                 ctx.AddObjectToAsset(ctx.assetPath, demonstration, texture);
                 ctx.SetMainObject(demonstration);
 #else
-            ctx.SetMainAsset(ctx.assetPath, model);
+                ctx.SetMainAsset(ctx.assetPath, demonstration);
 #endif
             }
             catch
