@@ -1,5 +1,5 @@
 import unittest.mock as mock
-from mlagents.trainers import TrainerMetrics
+from mlagents.trainers.trainer_metrics import TrainerMetrics
 
 
 class TestTrainerMetrics:

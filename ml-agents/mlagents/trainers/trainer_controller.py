@@ -16,7 +16,8 @@ from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
-from mlagents.trainers import Trainer, TrainerMetrics
+from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer

@@ -7,7 +7,7 @@ import pytest
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.subprocess_env_manager import StepInfo
 
-from mlagents.trainers import TrainerMetrics
+from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer

@@ -7,11 +7,13 @@ from multiprocessing import Pipe
 from concurrent.futures import ThreadPoolExecutor
 
 from .communicator import Communicator
-from .communicator_objects import (
+from .communicator_objects.unity_input_pb2 import UnityInput
+from .communicator_objects.unity_message_pb2 import UnityMessage
+from .communicator_objects.unity_output_pb2 import UnityOutput
+from .communicator_objects.unity_to_external_pb2_grpc import (
     UnityToExternalServicer,
     add_UnityToExternalServicer_to_server,
 )
-from .communicator_objects import UnityMessage, UnityInput, UnityOutput
 from .exception import UnityTimeOutException, UnityWorkerInUseException
 
 logger = logging.getLogger("mlagents.envs")
