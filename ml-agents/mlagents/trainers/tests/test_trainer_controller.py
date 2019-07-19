@@ -215,7 +215,7 @@ def assert_ppo_trainer_constructed(
         assert isinstance(tc.trainers["testbrain"], PPOTrainer)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_trainer_parameters_uses_defaults(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     tc = basic_trainer_controller()
@@ -231,7 +231,7 @@ def test_initialize_trainer_parameters_uses_defaults(BrainParametersMock):
     )
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     tc = basic_trainer_controller()
@@ -250,7 +250,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     )
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_online_bc_trainer(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     tc = basic_trainer_controller()
@@ -266,7 +266,7 @@ def test_initialize_online_bc_trainer(BrainParametersMock):
     )
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_ppo_trainer(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     tc = basic_trainer_controller()
@@ -280,7 +280,7 @@ def test_initialize_ppo_trainer(BrainParametersMock):
     assert_ppo_trainer_constructed(full_config, tc, brain_params_mock, expected_config)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     tc = basic_trainer_controller()
     bad_config = dummy_bad_config()

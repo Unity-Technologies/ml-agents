@@ -9,14 +9,14 @@ from mlagents.envs.exception import UnityActionException, UnityEnvironmentExcept
 from mlagents.envs.mock_communicator import MockCommunicator
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch.object(UnityEnvironment, "get_communicator")
 def test_handles_bad_filename(get_communicator):
     with pytest.raises(UnityEnvironmentException):
         UnityEnvironment(" ")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch.object(UnityEnvironment, "executable_launcher")
+@mock.patch.object(UnityEnvironment, "get_communicator")
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -28,8 +28,8 @@ def test_initialization(mock_communicator, mock_launcher):
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch.object(UnityEnvironment, "executable_launcher")
+@mock.patch.object(UnityEnvironment, "get_communicator")
 def test_reset(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -56,8 +56,8 @@ def test_reset(mock_communicator, mock_launcher):
     )
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch.object(UnityEnvironment, "executable_launcher")
+@mock.patch.object(UnityEnvironment, "get_communicator")
 def test_step(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -106,8 +106,8 @@ def test_step(mock_communicator, mock_launcher):
     assert brain_info["RealFakeBrain"].local_done[2]
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch.object(UnityEnvironment, "executable_launcher")
+@mock.patch.object(UnityEnvironment, "get_communicator")
 def test_close(mock_communicator, mock_launcher):
     comm = MockCommunicator(discrete_action=False, visual_inputs=0)
     mock_communicator.return_value = comm

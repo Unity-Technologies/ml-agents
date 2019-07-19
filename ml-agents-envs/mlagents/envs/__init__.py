@@ -1,2 +1,1 @@
-from .environment import UnityEnvironment
-from .brain import BrainParameters
+from .environment import UnityEnvironment  # noqa

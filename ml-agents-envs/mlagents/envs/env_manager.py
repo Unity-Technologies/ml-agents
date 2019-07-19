@@ -4,6 +4,7 @@ from mlagents.envs.action_info import ActionInfo
 from mlagents.envs.brain import AllBrainInfo, BrainParameters
 from mlagents.envs.policy import Policy
 
+
 class StepInfo(NamedTuple):
     previous_all_brain_info: Optional[AllBrainInfo]
     current_all_brain_info: AllBrainInfo

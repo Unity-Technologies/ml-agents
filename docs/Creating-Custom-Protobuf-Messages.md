@@ -47,8 +47,8 @@ message CustomAction {
 The Python instance of the custom action looks like:
 
 ```python
-from mlagents.envs.communicator_objects import CustomAction
-env = mlagents.envs.UnityEnvironment(...)
+from mlagents.envs.communicator_objects.custom_action_pb2 import CustomAction
+env = mlagents.envs.environment.UnityEnvironment(...)
 ...
 action = CustomAction(direction=CustomAction.NORTH, walkAmount=2.0)
 env.step(custom_action=action)
@@ -106,7 +106,7 @@ message CustomResetParameters {
 The Python instance of the custom reset parameter looks like
 
 ```python
-from mlagents.envs.communicator_objects import CustomResetParameters
+from mlagents.envs.communicator_objects.custom_reset_parameters_pb2 import CustomResetParameters
 env = ...
 pos = CustomResetParameters.Position(x=1, y=1, z=2)
 color = CustomResetParameters.Color(r=.5, g=.1, b=1.0)
