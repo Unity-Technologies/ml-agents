@@ -5,8 +5,8 @@
 import logging
 import numpy as np
 
-from mlagents.envs import AllBrainInfo
-from mlagents.trainers import ActionInfoOutputs
+from mlagents.envs.brain import AllBrainInfo
+from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.bc.trainer import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")

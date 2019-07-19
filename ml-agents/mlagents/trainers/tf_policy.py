@@ -4,7 +4,7 @@ from typing import Any, Dict
 import numpy as np
 import tensorflow as tf
 
-from mlagents.trainers import UnityException
+from mlagents.envs.exception import UnityException
 from mlagents.envs import Policy, ActionInfo
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc

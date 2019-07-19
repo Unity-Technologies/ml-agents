@@ -1,11 +1,11 @@
-from .buffer import *
-from .curriculum import *
-from .meta_curriculum import *
-from .models import *
-from .trainer_metrics import *
-from .trainer import *
-from .tf_policy import *
-from .trainer_controller import *
+from .buffer import Buffer, BufferException
+from .curriculum import Curriculum
+from .meta_curriculum import MetaCurriculum, MetaCurriculumError
+from .models import LearningModel
+from .trainer_metrics import TrainerMetrics
+from .trainer import Trainer, UnityTrainerException
+from .tf_policy import TFPolicy, UnityPolicyException
+from .trainer_controller import TrainerController
 from .bc.models import *
 from .bc.offline_trainer import *
 from .bc.online_trainer import *

@@ -4,7 +4,8 @@ from typing import Any, Dict
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo, ActionInfo
+from mlagents.envs.brain import BrainInfo
+from mlagents.envs.action_info import ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
