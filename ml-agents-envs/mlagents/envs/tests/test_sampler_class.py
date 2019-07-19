@@ -65,23 +65,13 @@ def test_tennis_sampler():
     assert sampler.samplers["angle"].var == config["angle"]["var"]
 
 
-def make_empty_sampler_config():
-    return {}
-
-
-def make_none_sampler_config():
-    return None
-
-
 def test_empty_samplers():
-    empty_config = make_empty_sampler_config()
-    empty_sampler = SamplerManager(empty_config)
+    empty_sampler = SamplerManager({})
     assert empty_sampler.is_empty()
     empty_cur_sample = empty_sampler.sample_all()
     assert empty_cur_sample == {}
 
-    none_config = make_empty_sampler_config()
-    none_sampler = SamplerManager(none_config)
+    none_sampler = SamplerManager(None)
     assert none_sampler.is_empty()
     none_cur_sample = none_sampler.sample_all()
     assert none_cur_sample == {}
