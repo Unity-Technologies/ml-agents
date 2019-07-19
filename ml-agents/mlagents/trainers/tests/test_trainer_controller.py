@@ -14,6 +14,7 @@ from mlagents.envs.subprocess_env_manager import StepInfo
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.sampler_class import SamplerManager
 
+
 @pytest.fixture
 def dummy_config():
     return yaml.safe_load(
@@ -162,7 +163,7 @@ def basic_trainer_controller():
         training_seed=99,
         fast_simulation=True,
         sampler_manager=SamplerManager(None),
-        lesson_duration=None
+        lesson_duration=None,
     )
 
 
@@ -170,7 +171,21 @@ def basic_trainer_controller():
 @patch("tensorflow.set_random_seed")
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
-    TrainerController("", "", "1", 1, None, True, False, False, None, seed, True, SamplerManager(None), None)
+    TrainerController(
+        "", 
+        "", 
+        "1", 
+        1, 
+        None, 
+        True, 
+        False, 
+        False, 
+        None, 
+        seed, 
+        True, 
+        SamplerManager(None), 
+        None,
+    )
     numpy_random_seed.assert_called_with(seed)
     tensorflow_set_seed.assert_called_with(seed)
 

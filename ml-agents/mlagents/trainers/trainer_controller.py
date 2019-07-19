@@ -190,7 +190,8 @@ class TrainerController(object):
                 # Find lesson length based on the form of learning
                 if self.meta_curriculum:
                     lesson_length = self.meta_curriculum.brains_to_curriculums[
-                        brain_name].min_lesson_length
+                        brain_name
+                    ].min_lesson_length
                 else:
                     lesson_length = 0
 
@@ -234,10 +235,11 @@ class TrainerController(object):
             environment.
         """
         sampled_reset_param = self.sampler_manager.sample_all()
-        new_meta_curriculum_config = (self.meta_curriculum.get_config() 
-                                    if self.meta_curriculum else {})
+        new_meta_curriculum_config = (
+            self.meta_curriculum.get_config() if self.meta_curriculum else {}
+        )
         sampled_reset_param.update(new_meta_curriculum_config)
-        return env.reset(train_mode = self.fast_simulation, config = sampled_reset_param)
+        return env.reset(train_mode=self.fast_simulation, config=sampled_reset_param)
 
     def _should_save_model(self, global_step: int) -> bool:
         return (
@@ -312,8 +314,9 @@ class TrainerController(object):
             self._export_graph()
         self._write_timing_tree()
 
-    def end_trainer_episodes(self, env: BaseUnityEnvironment, lessons_incremented
-        ) -> None:
+    def end_trainer_episodes(
+        self, env: BaseUnityEnvironment, lessons_incremented
+    ) -> None:
         self._reset_env(env)
         for brain_name, trainer in self.trainers.items():
             trainer.end_episode()
@@ -321,7 +324,7 @@ class TrainerController(object):
             if changed:
                 self.trainers[brain_name].reward_buffer.clear()
 
-    def reset_env_if_ready(self, env: BaseUnityEnvironment, steps : int) -> None:
+    def reset_env_if_ready(self, env: BaseUnityEnvironment, steps: int) -> None:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
@@ -341,13 +344,13 @@ class TrainerController(object):
 
         # Check if we are performing generalization training and we have finished the
         # specified number of steps for the lesson
-        generalization_reset = ( not self.sampler_manager.is_empty()
-                                    and (steps != 0) 
-                                    and (steps % self.lesson_duration == 0)
-                               )
+        generalization_reset = ( 
+            not self.sampler_manager.is_empty()
+            and (steps != 0) 
+            and (steps % self.lesson_duration == 0)
+        )
         if meta_curriculum_reset or generalization_reset:
             self.end_trainer_episodes(env, lessons_incremented)
-
 
     @timed
     def advance(self, env: SubprocessEnvManager) -> int:    

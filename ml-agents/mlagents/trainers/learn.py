@@ -55,8 +55,10 @@ def run_training(
     fast_simulation = not bool(run_options["--slow"])
     no_graphics = run_options["--no-graphics"]
     trainer_config_path = run_options["<trainer-config-path>"]
-    sampler_file_path = run_options["--sampler"] if run_options ["--sampler"] != "None" else None
-
+    sampler_file_path = (
+        run_options["--sampler"] if run_options ["--sampler"] != "None" else None
+    )
+    
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
         model_path = "./models/{run_id}-{sub_id}".format(run_id=run_id, sub_id=sub_id)

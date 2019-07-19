@@ -2,23 +2,21 @@ from math import isclose
 import pytest
 
 from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.sampler_class import UniformSampler, MultiRangeUniformSampler, GaussianSampler
+from mlagents.envs.sampler_class import (
+    UniformSampler, 
+    MultiRangeUniformSampler, 
+    GaussianSampler,
+)
 from mlagents.envs.exception import UnityException
 
 
 def basic_3Dball_sampler():
     return {
-        "mass":
-            {
-                "sampler-type": "uniform",
-                "min_value": 5,
-                "max_value": 10
-            },
-        "gravity":
-            {
-                "sampler-type": "multirange_uniform",
-                "intervals": [[8, 11], [15, 20]]
-            }
+        "mass": {"sampler-type": "uniform", "min_value": 5, "max_value": 10},
+        "gravity": {
+            "sampler-type": "multirange_uniform",
+            "intervals": [[8, 11], [15, 20]]
+        },
     }
 
 
@@ -44,17 +42,12 @@ def test_3Dball_sampler():
 
     # Check multirange_uniform sampler for gravity
     assert sampler.samplers["gravity"].intervals == config["gravity"]["intervals"]
-    assert check_value_in_intervals(cur_sample["gravity"], sampler.samplers["gravity"].intervals)
+    assert check_value_in_intervals(
+        cur_sample["gravity"], sampler.samplers["gravity"].intervals
+    )
 
 def basic_tennis_sampler():
-    return {
-        "angle":
-            {
-                "sampler-type": "gaussian",
-                "mean": 0,
-                "var": 1
-            }
-    }
+    return {"angle": {"sampler-type": "gaussian", "mean": 0, "var": 1}}
 
 def test_tennis_sampler():
     config = basic_tennis_sampler()
@@ -92,23 +85,11 @@ def test_empty_samplers():
 
 def incorrect_uniform_sampler():
     # Do not specify required arguments to uniform sampler
-    return {
-        "mass":
-            {
-                "sampler-type": "uniform",
-                "min-value": 10
-            }
-    }
+    return {"mass": {"sampler-type": "uniform", "min-value": 10}}
 
 def incorrect_sampler_config():
     # Do not specify 'sampler-type' key
-    return {
-        "mass":
-            {
-                "min-value": 2,
-                "max-value": 30
-            }
-    }
+    return {"mass": {"min-value": 2, "max-value": 30}}
 
 def test_incorrect_uniform_sampler():
     config = incorrect_uniform_sampler()

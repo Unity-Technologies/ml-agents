@@ -6,8 +6,7 @@ from abc import ABC, abstractmethod
 
 from .exception import SamplerException
 
-class Sampler(ABC): 
-
+class Sampler(ABC):
     @abstractmethod
     def sample_parameter(self) -> float:
         pass
@@ -31,7 +30,7 @@ class MultiRangeUniformSampler(Sampler):
         # Cumulative size of the intervals
         cum_interval_length = sum(interval_lengths)
         # Assign weights to an interval proportionate to the interval size
-        self.interval_weights = [x/cum_interval_length for x in interval_lengths]
+        self.interval_weights = [x / cum_interval_length for x in interval_lengths]
     
     
     def sample_parameter(self) -> float:
@@ -51,9 +50,9 @@ class GaussianSampler(Sampler):
 # To introduce new sampling methods, just need to 'register' them to this sampler factory
 class SamplerFactory:
     NAME_TO_CLASS = {
-    "uniform": UniformSampler,
-    "gaussian": GaussianSampler,
-    "multirange_uniform": MultiRangeUniformSampler,
+        "uniform": UniformSampler,
+        "gaussian": GaussianSampler,
+        "multirange_uniform": MultiRangeUniformSampler,
     }
 
     @staticmethod
@@ -82,15 +81,19 @@ class SamplerFactory:
 class SamplerManager:
     def __init__(self, reset_param_dict):
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
-        assert(isinstance(self.reset_param_dict, dict))
+        assert isinstance(self.reset_param_dict, dict)
         self.samplers = OrderedDict()
         for param_name, cur_param_dict in self.reset_param_dict.items():
             if "sampler-type" not in cur_param_dict:
                 raise SamplerException(
-                    "'sampler_type' argument hasn't been supplied for the {0} parameter".format(param_name)
+                    "'sampler_type' argument hasn't been supplied for the {0} parameter".format(
+                        param_name
+                    )
                 )
             sampler_name = cur_param_dict.pop("sampler-type")
-            param_sampler = SamplerFactory.init_sampler_class(sampler_name, cur_param_dict)
+            param_sampler = SamplerFactory.init_sampler_class(
+                sampler_name, cur_param_dict
+            )
 
             self.samplers[param_name] = param_sampler
     
