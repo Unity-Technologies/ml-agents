@@ -24,7 +24,8 @@ class BCModule:
         """
         A BC trainer that can be used inline with RL, especially for pretraining.
         :param policy: The policy of the learning model
-        :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate for the pretrainer.
+        :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate
+            for the pretrainer.
         :param default_batch_size: The default batch size to use if batch_size isn't provided.
         :param default_num_epoch: The default num_epoch to use if num_epoch isn't provided.
         :param strength: The proportion of learning rate used to update through BC.

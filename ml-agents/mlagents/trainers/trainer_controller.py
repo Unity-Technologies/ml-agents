@@ -3,6 +3,7 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
+import json
 import logging
 from typing import *
 
@@ -14,6 +15,7 @@ from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -111,6 +113,16 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             if brain_name in self.trainer_metrics:
                 self.trainers[brain_name].write_training_metrics()
+
+    def _write_timing_tree(self) -> None:
+        timing_path = f"{self.summaries_dir}/{self.run_id}_timers.json"
+        try:
+            with open(timing_path, "w") as f:
+                json.dump(get_timer_tree(), f, indent=2)
+        except FileNotFoundError:
+            self.logger.warning(
+                f"Unable to save to {timing_path}. Make sure the directory exists"
+            )
 
     def _export_graph(self):
         """
@@ -285,7 +297,9 @@ class TrainerController(object):
         if self.train_model:
             self._write_training_metrics()
             self._export_graph()
+        self._write_timing_tree()
 
+    @timed
     def advance(self, env: SubprocessEnvManager) -> int:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
@@ -310,9 +324,10 @@ class TrainerController(object):
                 if changed:
                     self.trainers[brain_name].reward_buffer.clear()
 
-        time_start_step = time()
-        new_step_infos = env.step()
-        delta_time_step = time() - time_start_step
+        with hierarchical_timer("env_step"):
+            time_start_step = time()
+            new_step_infos = env.step()
+            delta_time_step = time() - time_start_step
 
         for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
@@ -333,6 +348,7 @@ class TrainerController(object):
                 trainer.increment_step(len(new_step_infos))
                 if trainer.is_ready_update():
                     # Perform gradient descent with experience buffer
-                    trainer.update_policy()
+                    with hierarchical_timer("update_policy"):
+                        trainer.update_policy()
                     env.set_policy(brain_name, trainer.policy)
         return len(new_step_infos)
