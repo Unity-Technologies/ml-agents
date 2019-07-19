@@ -13,16 +13,17 @@ namespace MLAgents.Tests
 
     public class RandomNormalTest
     {
-        private const float first = -1.19580f;
-        private const float second = -0.97345f;
+        private const float firstValue = -1.19580f;
+        private const float secondValue = -0.97345f;
+        private const double epsilon = 0.0001;
 
         [Test]
         public void RandomNormalTestTwoDouble ()
         {
             RandomNormal rn = new RandomNormal (2018);
 
-            Assert.AreEqual (first, rn.NextDouble (), 0.0001);
-            Assert.AreEqual (second, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (firstValue, rn.NextDouble (), epsilon);
+            Assert.AreEqual (secondValue, rn.NextDouble (), epsilon);
         }
 
         [Test]
@@ -30,8 +31,8 @@ namespace MLAgents.Tests
         {
             RandomNormal rn = new RandomNormal (2018, 5.0f);
 
-            Assert.AreEqual (first + 5.0, rn.NextDouble (), 0.0001);
-            Assert.AreEqual (second + 5.0, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (firstValue + 5.0, rn.NextDouble (), epsilon);
+            Assert.AreEqual (secondValue + 5.0, rn.NextDouble (), epsilon);
         }
 
         [Test]
@@ -39,8 +40,8 @@ namespace MLAgents.Tests
         {
             RandomNormal rn = new RandomNormal (2018, 0.0f, 4.2f);
 
-            Assert.AreEqual (first * 4.2, rn.NextDouble (), 0.0001);
-            Assert.AreEqual (second * 4.2, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (firstValue * 4.2, rn.NextDouble (), epsilon);
+            Assert.AreEqual (secondValue * 4.2, rn.NextDouble (), epsilon);
         }
 
         [Test]
@@ -50,8 +51,8 @@ namespace MLAgents.Tests
             float stddev = 2.2f;
             RandomNormal rn = new RandomNormal (2018, mean, stddev);
 
-            Assert.AreEqual (first * stddev + mean, rn.NextDouble (), 0.0001);
-            Assert.AreEqual (second * stddev + mean, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (firstValue * stddev + mean, rn.NextDouble (), epsilon);
+            Assert.AreEqual (secondValue * stddev + mean, rn.NextDouble (), epsilon);
         }
 
         [Test]
@@ -86,27 +87,28 @@ namespace MLAgents.Tests
             int numSamples = 100000;
             // Adapted from https://www.johndcook.com/blog/standard_deviation/
             // Computes stddev and mean without losing precision
-            double m_oldM = 0.0, m_newM = 0.0, m_oldS = 0.0, m_newS = 0.0;
+            double oldM = 0.0, newM = 0.0, oldS = 0.0, newS = 0.0;
 
             for (int i = 0; i < numSamples; i++) {
                 double x = rn.NextDouble ();
                 if (i == 0) {
-                    m_oldM = m_newM = x;
-                    m_oldS = 0.0;
+                    oldM = newM = x;
+                    oldS = 0.0;
                 } else {
-                    m_newM = m_oldM + (x - m_oldM) / i;
-                    m_newS = m_oldS + (x - m_oldM) * (x - m_newM);
+                    newM = oldM + (x - oldM) / i;
+                    newS = oldS + (x - oldM) * (x - newM);
 
                     // set up for next iteration
-                    m_oldM = m_newM;
-                    m_oldS = m_newS;
+                    oldM = newM;
+                    oldS = newS;
                 }
             }
 
-            double sampleMean = m_newM;
-            double sampleVariance = m_newS / (numSamples - 1);
+            double sampleMean = newM;
+            double sampleVariance = newS / (numSamples - 1);
             double sampleStddev = Math.Sqrt (sampleVariance);
 
+            // Note a larger epsilon here. We could get closer to the true values with more samples.
             Assert.AreEqual (mean, sampleMean, 0.01);
             Assert.AreEqual (stddev, sampleStddev, 0.01);
 
@@ -153,7 +155,7 @@ namespace MLAgents.Tests
 
             int i = 0;
             foreach (float f in t.Data) {
-                Assert.AreEqual (f, reference [i], 0.0001);
+                Assert.AreEqual (f, reference [i], epsilon);
                 ++i;
             }
 
