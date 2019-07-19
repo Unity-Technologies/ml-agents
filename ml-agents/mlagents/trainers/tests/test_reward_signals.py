@@ -131,7 +131,7 @@ def reward_signal_update(env, policy, reward_signal_name):
     assert type(out) is dict
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_gail_cc(mock_env, dummy_config, gail_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, gail_dummy_config, False, False, False
@@ -140,7 +140,7 @@ def test_gail_cc(mock_env, dummy_config, gail_dummy_config):
     reward_signal_update(env, policy, "gail")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_gail_dc(mock_env, dummy_config, gail_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, gail_dummy_config, False, True, False
@@ -149,7 +149,7 @@ def test_gail_dc(mock_env, dummy_config, gail_dummy_config):
     reward_signal_update(env, policy, "gail")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_gail_visual(mock_env, dummy_config, gail_dummy_config):
     gail_dummy_config["gail"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
@@ -161,7 +161,7 @@ def test_gail_visual(mock_env, dummy_config, gail_dummy_config):
     reward_signal_update(env, policy, "gail")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_gail_rnn(mock_env, dummy_config, gail_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, gail_dummy_config, True, False, False
@@ -170,7 +170,7 @@ def test_gail_rnn(mock_env, dummy_config, gail_dummy_config):
     reward_signal_update(env, policy, "gail")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_cc(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, False, False, False
@@ -179,7 +179,7 @@ def test_curiosity_cc(mock_env, dummy_config, curiosity_dummy_config):
     reward_signal_update(env, policy, "curiosity")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_dc(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, False, True, False
@@ -188,7 +188,7 @@ def test_curiosity_dc(mock_env, dummy_config, curiosity_dummy_config):
     reward_signal_update(env, policy, "curiosity")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_visual(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, False, False, True
@@ -197,7 +197,7 @@ def test_curiosity_visual(mock_env, dummy_config, curiosity_dummy_config):
     reward_signal_update(env, policy, "curiosity")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_rnn(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, True, False, False
@@ -206,7 +206,7 @@ def test_curiosity_rnn(mock_env, dummy_config, curiosity_dummy_config):
     reward_signal_update(env, policy, "curiosity")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_extrinsic(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, False, False, False
