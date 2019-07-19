@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from typing import Any, Callable, Dict
 
 import numpy as np
@@ -8,6 +9,12 @@ import tensorflow.contrib.layers as c_layers
 logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
+
+
+class EncoderType(Enum):
+    RESNET = "resnet"
+    NATURE_CNN = "nature_cnn"
+    DEFAUL = "default"
 
 
 class LearningModel(object):
@@ -220,111 +227,162 @@ class LearningModel(object):
         num_layers: int,
         scope: str,
         reuse: bool,
-        encoder_type: str = None,
     ) -> tf.Tensor:
         """
-        Builds a set of visual (CNN) encoders.
-        :param reuse: Whether to re-use the weights within the same scope.
-        :param scope: The scope of the graph within which to create the ops.
+        Builds a set of resnet visual encoders.
         :param image_input: The placeholder for the image input to use.
         :param h_size: Hidden layer size.
         :param activation: What type of activation function to use for layers.
         :param num_layers: number of hidden layers to create.
-        :param encoder_type: type of visual encoder (default/nature_cnn/resnet)
+        :param scope: The scope of the graph within which to create the ops.
+        :param reuse: Whether to re-use the weights within the same scope.
         :return: List of hidden layer tensors.
         """
         with tf.variable_scope(scope):
-            if encoder_type == "resnet":
-                n_channels = [16, 32, 32]  # channel for each stack
-                n_blocks = 2  # number of residual blocks
-                hidden = image_input
-                for i, ch in enumerate(n_channels):
+            conv1 = tf.layers.conv2d(
+                image_input,
+                16,
+                kernel_size=[8, 8],
+                strides=[4, 4],
+                activation=tf.nn.elu,
+                reuse=reuse,
+                name="conv_1",
+            )
+            conv2 = tf.layers.conv2d(
+                conv1,
+                32,
+                kernel_size=[4, 4],
+                strides=[2, 2],
+                activation=tf.nn.elu,
+                reuse=reuse,
+                name="conv_2",
+            )
+            hidden = c_layers.flatten(conv2)
+
+        with tf.variable_scope(scope + "/" + "flat_encoding"):
+            hidden_flat = self.create_vector_observation_encoder(
+                hidden, h_size, activation, num_layers, scope, reuse
+            )
+        return hidden_flat
+
+    def create_nature_cnn_visual_observation_encoder(
+        self,
+        image_input: tf.Tensor,
+        h_size: int,
+        activation: ActivationFunction,
+        num_layers: int,
+        scope: str,
+        reuse: bool,
+    ) -> tf.Tensor:
+        """
+        Builds a set of resnet visual encoders.
+        :param image_input: The placeholder for the image input to use.
+        :param h_size: Hidden layer size.
+        :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
+        :param scope: The scope of the graph within which to create the ops.
+        :param reuse: Whether to re-use the weights within the same scope.
+        :return: List of hidden layer tensors.
+        """
+        print("creating nature cnn")
+        with tf.variable_scope(scope):
+            conv1 = tf.layers.conv2d(
+                image_input,
+                32,
+                kernel_size=[8, 8],
+                strides=[4, 4],
+                activation=tf.nn.elu,
+                reuse=reuse,
+                name="conv_1",
+            )
+            conv2 = tf.layers.conv2d(
+                conv1,
+                64,
+                kernel_size=[4, 4],
+                strides=[2, 2],
+                activation=tf.nn.elu,
+                reuse=reuse,
+                name="conv_2",
+            )
+            conv3 = tf.layers.conv2d(
+                conv2,
+                64,
+                kernel_size=[3, 3],
+                strides=[1, 1],
+                activation=tf.nn.elu,
+                reuse=reuse,
+                name="conv_3",
+            )
+            hidden = c_layers.flatten(conv3)
+
+        with tf.variable_scope(scope + "/" + "flat_encoding"):
+            hidden_flat = self.create_vector_observation_encoder(
+                hidden, h_size, activation, num_layers, scope, reuse
+            )
+        return hidden_flat
+
+    def create_resnet_visual_observation_encoder(
+        self,
+        image_input: tf.Tensor,
+        h_size: int,
+        activation: ActivationFunction,
+        num_layers: int,
+        scope: str,
+        reuse: bool,
+    ) -> tf.Tensor:
+        """
+        Builds a set of resnet visual encoders.
+        :param image_input: The placeholder for the image input to use.
+        :param h_size: Hidden layer size.
+        :param activation: What type of activation function to use for layers.
+        :param num_layers: number of hidden layers to create.
+        :param scope: The scope of the graph within which to create the ops.
+        :param reuse: Whether to re-use the weights within the same scope.
+        :return: List of hidden layer tensors.
+        """
+        print("creating resnet")
+        n_channels = [16, 32, 32]  # channel for each stack
+        n_blocks = 2  # number of residual blocks
+        with tf.variable_scope(scope):
+            hidden = image_input
+            for i, ch in enumerate(n_channels):
+                hidden = tf.layers.conv2d(
+                    hidden,
+                    ch,
+                    kernel_size=[3, 3],
+                    strides=[1, 1],
+                    reuse=reuse,
+                    name="layer%dconv_1" % i,
+                )
+                hidden = tf.layers.max_pooling2d(
+                    hidden, pool_size=[3, 3], strides=[2, 2], padding="same"
+                )
+                # create residual blocks
+                for j in range(n_blocks):
+                    block_input = hidden
+                    hidden = tf.nn.relu(hidden)
                     hidden = tf.layers.conv2d(
                         hidden,
                         ch,
                         kernel_size=[3, 3],
                         strides=[1, 1],
+                        padding="same",
                         reuse=reuse,
-                        name="layer%dconv_1" % i,
+                        name="layer%d_%d_conv1" % (i, j),
                     )
-                    hidden = tf.layers.max_pooling2d(
-                        hidden, pool_size=[3, 3], strides=[2, 2], padding="same"
+                    hidden = tf.nn.relu(hidden)
+                    hidden = tf.layers.conv2d(
+                        hidden,
+                        ch,
+                        kernel_size=[3, 3],
+                        strides=[1, 1],
+                        padding="same",
+                        reuse=reuse,
+                        name="layer%d_%d_conv2" % (i, j),
                     )
-                    # create residual blocks
-                    for j in range(n_blocks):
-                        block_input = hidden
-                        hidden = tf.nn.relu(hidden)
-                        hidden = tf.layers.conv2d(
-                            hidden,
-                            ch,
-                            kernel_size=[3, 3],
-                            strides=[1, 1],
-                            padding="same",
-                            reuse=reuse,
-                            name="layer%d_%d_conv1" % (i, j),
-                        )
-                        hidden = tf.nn.relu(hidden)
-                        hidden = tf.layers.conv2d(
-                            hidden,
-                            ch,
-                            kernel_size=[3, 3],
-                            strides=[1, 1],
-                            padding="same",
-                            reuse=reuse,
-                            name="layer%d_%d_conv2" % (i, j),
-                        )
-                        hidden = tf.add(block_input, hidden)
-                hidden = tf.nn.relu(hidden)
-                hidden = c_layers.flatten(hidden)
-            elif encoder_type == "nature_cnn":
-                conv1 = tf.layers.conv2d(
-                    image_input,
-                    32,
-                    kernel_size=[8, 8],
-                    strides=[4, 4],
-                    activation=tf.nn.elu,
-                    reuse=reuse,
-                    name="conv_1",
-                )
-                conv2 = tf.layers.conv2d(
-                    conv1,
-                    64,
-                    kernel_size=[4, 4],
-                    strides=[2, 2],
-                    activation=tf.nn.elu,
-                    reuse=reuse,
-                    name="conv_2",
-                )
-                conv3 = tf.layers.conv2d(
-                    conv2,
-                    64,
-                    kernel_size=[3, 3],
-                    strides=[1, 1],
-                    activation=tf.nn.elu,
-                    reuse=reuse,
-                    name="conv_3",
-                )
-                hidden = c_layers.flatten(conv3)
-            else:
-                conv1 = tf.layers.conv2d(
-                    image_input,
-                    16,
-                    kernel_size=[8, 8],
-                    strides=[4, 4],
-                    activation=tf.nn.elu,
-                    reuse=reuse,
-                    name="conv_1",
-                )
-                conv2 = tf.layers.conv2d(
-                    conv1,
-                    32,
-                    kernel_size=[4, 4],
-                    strides=[2, 2],
-                    activation=tf.nn.elu,
-                    reuse=reuse,
-                    name="conv_2",
-                )
-                hidden = c_layers.flatten(conv2)
+                    hidden = tf.add(block_input, hidden)
+            hidden = tf.nn.relu(hidden)
+            hidden = c_layers.flatten(hidden)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
             hidden_flat = self.create_vector_observation_encoder(
@@ -376,7 +434,9 @@ class LearningModel(object):
             ),
         )
 
-    def create_observation_streams(self, num_streams, h_size, num_layers):
+    def create_observation_streams(
+        self, num_streams, h_size, num_layers, vis_encode_type
+    ):
         """
         Creates encoding stream for observations.
         :param num_streams: Number of streams to create.
@@ -400,16 +460,40 @@ class LearningModel(object):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
             if self.vis_obs_size > 0:
-                for j in range(brain.number_visual_observations):
-                    encoded_visual = self.create_visual_observation_encoder(
-                        self.visual_in[j],
-                        h_size,
-                        activation_fn,
-                        num_layers,
-                        "main_graph_{}_encoder{}".format(i, j),
-                        False,
-                    )
-                    visual_encoders.append(encoded_visual)
+                vis_encode_type = EncoderType(vis_encode_type)
+                if vis_encode_type == EncoderType.RESNET:
+                    for j in range(brain.number_visual_observations):
+                        encoded_visual = self.create_resnet_visual_observation_encoder(
+                            self.visual_in[j],
+                            h_size,
+                            activation_fn,
+                            num_layers,
+                            "main_graph_{}_encoder{}".format(i, j),
+                            False,
+                        )
+                        visual_encoders.append(encoded_visual)
+                elif vis_encode_type == EncoderType.nature_cnn:
+                    for j in range(brain.number_visual_observations):
+                        encoded_visual = self.create_nature_cnn_visual_observation_encoder(
+                            self.visual_in[j],
+                            h_size,
+                            activation_fn,
+                            num_layers,
+                            "main_graph_{}_encoder{}".format(i, j),
+                            False,
+                        )
+                        visual_encoders.append(encoded_visual)
+                else:
+                    for j in range(brain.number_visual_observations):
+                        encoded_visual = self.create_visual_observation_encoder(
+                            self.visual_in[j],
+                            h_size,
+                            activation_fn,
+                            num_layers,
+                            "main_graph_{}_encoder{}".format(i, j),
+                            False,
+                        )
+                        visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
                 hidden_state = self.create_vector_observation_encoder(
