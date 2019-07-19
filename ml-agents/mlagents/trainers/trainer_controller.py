@@ -314,7 +314,7 @@ class TrainerController(object):
         self._write_timing_tree()
 
     def end_trainer_episodes(
-        self, env: BaseUnityEnvironment, lessons_incremented
+        self, env: BaseUnityEnvironment, lessons_incremented: Dict[str, bool]
     ) -> None:
         self._reset_env(env)
         for brain_name, trainer in self.trainers.items():
