@@ -30,7 +30,7 @@ def test_3Dball_sampler():
     config = basic_3Dball_sampler()
     sampler = SamplerManager(config)
 
-    assert sampler.check_empty_sampler_manager() is False
+    assert sampler.is_empty() is False
     assert isinstance(sampler.samplers["mass"], UniformSampler)
     assert isinstance(sampler.samplers["gravity"], MultiRangeUniformSampler)
 
@@ -59,7 +59,7 @@ def basic_tennis_sampler():
 def test_tennis_sampler():
     config = basic_tennis_sampler()
     sampler = SamplerManager(config)
-    assert sampler.check_empty_sampler_manager() is False
+    assert sampler.is_empty() is False
     assert isinstance(sampler.samplers["angle"], GaussianSampler)
 
     cur_sample = sampler.sample_all()
@@ -78,14 +78,14 @@ def make_none_sampler_config():
 def test_empty_samplers():
     empty_config = make_empty_sampler_config()
     empty_sampler = SamplerManager(empty_config)
-    assert empty_sampler.check_empty_sampler_manager()
+    assert empty_sampler.is_empty()
     empty_cur_sample = empty_sampler.sample_all()
     assert empty_cur_sample == {}
 
 
     none_config = make_empty_sampler_config()
     none_sampler = SamplerManager(none_config)
-    assert none_sampler.check_empty_sampler_manager()
+    assert none_sampler.is_empty()
     none_cur_sample = none_sampler.sample_all()
     assert none_cur_sample == {}
 
@@ -112,12 +112,12 @@ def incorrect_sampler_config():
 
 def test_incorrect_uniform_sampler():
     config = incorrect_uniform_sampler()
-    with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
+    with pytest.raises(UnityException):
         SamplerManager(config)
 
 
 def test_incorrect_sampler():
     config = incorrect_sampler_config()
-    with pytest.raises(UnityException, "SamplerManager should throw error if 'max-value' isn't passed."):
+    with pytest.raises(UnityException):
         SamplerManager(config)
 
