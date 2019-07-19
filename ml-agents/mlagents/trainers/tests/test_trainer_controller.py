@@ -172,18 +172,18 @@ def basic_trainer_controller():
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
     TrainerController(
-        "", 
-        "", 
-        "1", 
-        1, 
-        None, 
-        True, 
-        False, 
-        False, 
-        None, 
-        seed, 
-        True, 
-        SamplerManager(None), 
+        "",
+        "",
+        "1",
+        1,
+        None,
+        True,
+        False,
+        False,
+        None,
+        seed,
+        True,
+        SamplerManager(None),
         None,
     )
     numpy_random_seed.assert_called_with(seed)

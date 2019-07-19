@@ -58,7 +58,7 @@ def run_training(
     sampler_file_path = (
         run_options["--sampler"] if run_options ["--sampler"] != "None" else None
     )
-    
+
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
         model_path = "./models/{run_id}-{sub_id}".format(run_id=run_id, sub_id=sub_id)
@@ -98,7 +98,6 @@ def run_training(
             )
     sampler_manager = SamplerManager(sampler_config)
 
-
     trainer_config = load_config(trainer_config_path)
     env_factory = create_environment_factory(
         env_path,
@@ -109,7 +108,6 @@ def run_training(
     )
     env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
-
 
     # Create controller and begin training.
     tc = TrainerController(

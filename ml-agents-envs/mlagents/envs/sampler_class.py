@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 
 from .exception import SamplerException
 
+
 class Sampler(ABC):
     @abstractmethod
     def sample_parameter(self) -> float:
@@ -20,7 +21,7 @@ class UniformSampler(Sampler):
 
     def sample_parameter(self) -> float:
         return np.random.uniform(self.min_value, self.max_value)
-    
+
 
 class MultiRangeUniformSampler(Sampler):
     def __init__(self, intervals, **kwargs):
@@ -32,9 +33,10 @@ class MultiRangeUniformSampler(Sampler):
         # Assign weights to an interval proportionate to the interval size
         self.interval_weights = [x / cum_interval_length for x in interval_lengths]
     
-    
     def sample_parameter(self) -> float:
-        cur_min, cur_max = self.intervals[np.random.choice(len(self.intervals), p=self.interval_weights)]
+        cur_min, cur_max = self.intervals[
+            np.random.choice(len(self.intervals), p=self.interval_weights)
+        ]
         return np.random.uniform(cur_min, cur_max)
 
 
@@ -42,7 +44,7 @@ class GaussianSampler(Sampler):
     def __init__(self, mean, var, **kwargs):
         self.mean = mean
         self.var = var
-    
+
     def sample_parameter(self) -> float:
         return np.random.normal(self.mean, self.var)
 
@@ -58,7 +60,7 @@ class SamplerFactory:
     @staticmethod
     def register_sampler(name, sampler_cls):
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
-    
+  
     @staticmethod
     def init_sampler_class(name, param_dict):
         if name not in SamplerFactory.NAME_TO_CLASS:
@@ -96,7 +98,7 @@ class SamplerManager:
             )
 
             self.samplers[param_name] = param_sampler
-    
+
     def is_empty(self) -> bool:
         """
         If self.samplers is empty, then bool of it returns false, indicating that the

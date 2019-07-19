@@ -26,7 +26,6 @@ from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 
 
-
 class TrainerController(object):
     def __init__(
         self,
@@ -344,16 +343,17 @@ class TrainerController(object):
 
         # Check if we are performing generalization training and we have finished the
         # specified number of steps for the lesson
-        generalization_reset = ( 
+
+        generalization_reset = (
             not self.sampler_manager.is_empty()
-            and (steps != 0) 
+            and (steps != 0)
             and (steps % self.lesson_duration == 0)
         )
         if meta_curriculum_reset or generalization_reset:
             self.end_trainer_episodes(env, lessons_incremented)
 
     @timed
-    def advance(self, env: SubprocessEnvManager) -> int:    
+    def advance(self, env: SubprocessEnvManager) -> int:
         with hierarchical_timer("env_step"):
             time_start_step = time()
             new_step_infos = env.step()

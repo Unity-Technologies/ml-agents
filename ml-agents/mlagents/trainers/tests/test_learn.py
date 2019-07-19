@@ -25,6 +25,7 @@ def basic_options():
         "--sampler": None,
     }
 
+
 @patch("mlagents.trainers.learn.SamplerManager")
 @patch("mlagents.trainers.learn.SubprocessEnvManager")
 @patch("mlagents.trainers.learn.create_environment_factory")
@@ -58,6 +59,7 @@ def test_run_training(
                 sampler_manager_mock.return_value,
                 None,
             )
+
 
 @patch("mlagents.trainers.learn.SamplerManager")
 @patch("mlagents.trainers.learn.SubprocessEnvManager")
