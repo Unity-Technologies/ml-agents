@@ -1,16 +1,14 @@
 import yaml
 import math
 import tempfile
-from typing import Any, Callable, Dict, Optional, List
+from typing import Any, Dict
 
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.env_manager import EnvManager, StepInfo
-from mlagents.envs.timers import timed
-from mlagents.envs import ActionInfo, BrainInfo, AllBrainInfo, BrainParameters
+from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
-from mlagents.envs.local_env_manager import LocalEnvManager
+from mlagents.envs.simple_env_manager import SimpleEnvManager
 
 
 BRAIN_NAME = __name__
@@ -146,6 +144,7 @@ def test_simple():
                 extrinsic:
                     strength: 1.0
                     gamma: 0.99
+            vis_encode_type: default
     """
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
@@ -167,7 +166,7 @@ def test_simple():
 
         # Begin training
         env = Simple1DEnvironment()
-        env_manager = LocalEnvManager(env)
+        env_manager = SimpleEnvManager(env)
         trainer_config = yaml.safe_load(config)
         tc.start_learning(env_manager, trainer_config)
 

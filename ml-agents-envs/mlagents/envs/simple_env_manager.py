@@ -6,7 +6,7 @@ from mlagents.envs.timers import timed
 from mlagents.envs import ActionInfo, BrainParameters
 
 
-class LocalEnvManager(EnvManager):
+class SimpleEnvManager(EnvManager):
     """
     Simple implementation of the EnvManager interface that only handles one BaseUnityEnvironment at a time.
     This is generally only useful for testing; see SubprocessEnvManager for a production-quality implementation.
