@@ -1,4 +1,4 @@
-from typing import *
+from typing import Any, Callable, Dict, List, NamedTuple
 import cloudpickle
 
 from mlagents.envs import UnityEnvironment

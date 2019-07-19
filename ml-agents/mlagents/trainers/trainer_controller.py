@@ -5,7 +5,7 @@
 import os
 import json
 import logging
-from typing import *
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import tensorflow as tf

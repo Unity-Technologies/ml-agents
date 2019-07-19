@@ -1,5 +1,5 @@
 import os
-from unittest.mock import *
+from unittest.mock import patch, MagicMock, Mock
 
 import yaml
 import pytest

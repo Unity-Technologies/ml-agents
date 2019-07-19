@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import os
 import subprocess
-from typing import *
+from typing import Dict, List, Optional, Tuple
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from .brain import AllBrainInfo, BrainInfo, BrainParameters
