@@ -16,7 +16,7 @@ default:
     sequence_length: 64
     summary_freq: 1000
     use_recurrent: false
-    vis_encode_type: "default"
+    vis_encode_type: default
     reward_signals: 
         extrinsic:
             strength: 1.0
