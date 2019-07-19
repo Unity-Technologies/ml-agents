@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace MLAgents.InferenceBrain.Utils
 {
@@ -12,7 +12,7 @@ namespace MLAgents.InferenceBrain.Utils
         private readonly double m_mean;
         private readonly double m_stddev;
         private readonly System.Random m_random;
-        
+
         public RandomNormal(int seed, float mean = 0.0f, float stddev = 1.0f)
         {
             m_mean = mean;
@@ -23,7 +23,7 @@ namespace MLAgents.InferenceBrain.Utils
         // Each iteration produces two numbers. Hold one here for next call
         private bool m_hasSpare = false;
         private double m_spare = 0.0f;
-        
+
         /// <summary>
         /// Return the next random double number
         /// </summary>
@@ -44,7 +44,7 @@ namespace MLAgents.InferenceBrain.Utils
                 s = u * u + v * v;
             } while (s >= 1.0 || s == 0.0);
 
-            s = Math.Sqrt(-2.0 * Math.Log(s) / 2);
+            s = Math.Sqrt(-2.0 * Math.Log(s) / s);
             m_spare = u * s;
             m_hasSpare = true;
 
@@ -66,9 +66,9 @@ namespace MLAgents.InferenceBrain.Utils
                 }
             }
         }
-        
+
         /// <summary>
-        /// Fill a pre-allocated Tensor with random numbers 
+        /// Fill a pre-allocated Tensor with random numbers
         /// </summary>
         /// <param name="t">The pre-allocated Tensor to fill</param>
         /// <exception cref="NotImplementedException">Throws when trying to fill a Tensor of type other than float</exception>

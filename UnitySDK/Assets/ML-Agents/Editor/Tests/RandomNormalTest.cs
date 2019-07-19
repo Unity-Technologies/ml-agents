@@ -1,122 +1,163 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using MLAgents.InferenceBrain;
 using MLAgents.InferenceBrain.Utils;
 
+using UnityEngine;
+using System.Collections;
+
+
+
 namespace MLAgents.Tests
 {
 
-	public class RandomNormalTest
-	{
+    public class RandomNormalTest
+    {
+        private const float first = -1.19580f;
+        private const float second = -0.97345f;
 
-		[Test]
-		public void RandomNormalTestTwoDouble()
-		{
-			RandomNormal rn = new RandomNormal(2018);
+        [Test]
+        public void RandomNormalTestTwoDouble ()
+        {
+            RandomNormal rn = new RandomNormal (2018);
 
-			Assert.AreEqual(-0.46666, rn.NextDouble(), 0.0001);
-			Assert.AreEqual(-0.37989, rn.NextDouble(), 0.0001);
-		}
+            Assert.AreEqual (first, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (second, rn.NextDouble (), 0.0001);
+        }
 
-		[Test]
-		public void RandomNormalTestWithMean()
-		{
-			RandomNormal rn = new RandomNormal(2018, 5.0f);
+        [Test]
+        public void RandomNormalTestWithMean ()
+        {
+            RandomNormal rn = new RandomNormal (2018, 5.0f);
 
-			Assert.AreEqual(4.53333, rn.NextDouble(), 0.0001);
-			Assert.AreEqual(4.6201, rn.NextDouble(), 0.0001);
-		}
+            Assert.AreEqual (first + 5.0, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (second + 5.0, rn.NextDouble (), 0.0001);
+        }
 
-		[Test]
-		public void RandomNormalTestWithStddev()
-		{
-			RandomNormal rn = new RandomNormal(2018, 1.0f, 4.2f);
+        [Test]
+        public void RandomNormalTestWithStddev ()
+        {
+            RandomNormal rn = new RandomNormal (2018, 0.0f, 4.2f);
 
-			Assert.AreEqual(-0.9599, rn.NextDouble(), 0.0001);
-			Assert.AreEqual(-0.5955, rn.NextDouble(), 0.0001);
-		}
+            Assert.AreEqual (first * 4.2, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (second * 4.2, rn.NextDouble (), 0.0001);
+        }
 
-		[Test]
-		public void RandomNormalTestWithMeanStddev()
-		{
-			RandomNormal rn = new RandomNormal(2018, -3.2f, 2.2f);
+        [Test]
+        public void RandomNormalTestWithMeanStddev ()
+        {
+            float mean = -3.2f;
+            float stddev = 2.2f;
+            RandomNormal rn = new RandomNormal (2018, mean, stddev);
 
-			Assert.AreEqual(-4.2266, rn.NextDouble(), 0.0001);
-			Assert.AreEqual(-4.0357, rn.NextDouble(), 0.0001);
-		}
+            Assert.AreEqual (first * stddev + mean, rn.NextDouble (), 0.0001);
+            Assert.AreEqual (second * stddev + mean, rn.NextDouble (), 0.0001);
+        }
 
-		[Test]
-		public void RandomNormalTestTensorInt()
-		{
-			RandomNormal rn = new RandomNormal(1982);
-			Tensor t = new Tensor
-			{
-				ValueType = Tensor.TensorType.Integer
-			};
+        [Test]
+        public void RandomNormalTestTensorInt ()
+        {
+            RandomNormal rn = new RandomNormal (1982);
+            Tensor t = new Tensor {
+                ValueType = Tensor.TensorType.Integer
+            };
 
-			Assert.Throws<NotImplementedException>(() => rn.FillTensor(t));
-		}
+            Assert.Throws<NotImplementedException> (() => rn.FillTensor (t));
+        }
 
-		[Test]
-		public void RandomNormalTestDataNull()
-		{
-			RandomNormal rn = new RandomNormal(1982);
-			Tensor t = new Tensor
-			{
-				ValueType = Tensor.TensorType.FloatingPoint
-			};
+        [Test]
+        public void RandomNormalTestDataNull ()
+        {
+            RandomNormal rn = new RandomNormal (1982);
+            Tensor t = new Tensor {
+                ValueType = Tensor.TensorType.FloatingPoint
+            };
 
-			Assert.Throws<ArgumentNullException>(() => rn.FillTensor(t));
-		}
+            Assert.Throws<ArgumentNullException> (() => rn.FillTensor (t));
+        }
 
-		[Test]
-		public void RandomNormalTestTensor()
-		{
-			RandomNormal rn = new RandomNormal(1982);
-			Tensor t = new Tensor
-			{
-				ValueType = Tensor.TensorType.FloatingPoint,
-				Data = Array.CreateInstance(typeof(float), new long[3] {3, 4, 2})
-		};
+        [Test]
+        public void RandomNormalTestDistribution ()
+        {
+            float mean = -3.2f;
+            float stddev = 2.2f;
+            RandomNormal rn = new RandomNormal (2018, mean, stddev);
 
-			rn.FillTensor(t);
+            int numSamples = 100000;
+            // Adapted from https://www.johndcook.com/blog/standard_deviation/
+            // Computes stddev and mean without losing precision
+            double m_oldM = 0.0, m_newM = 0.0, m_oldS = 0.0, m_newS = 0.0;
 
-			float[] reference = new float[]
-			{
-				-0.2139822f,
-				0.5051259f,
-				-0.5640336f,
-				-0.3357787f,
-				-0.2055894f,
-				-0.09432302f,
-				-0.01419199f,
-				0.53621f,
-				-0.5507085f,
-				-0.2651141f,
-				0.09315512f,
-				-0.04918706f,
-				-0.179625f,
-				0.2280539f,
-				0.1883962f,
-				0.4047216f,
-				0.1704049f,
-				0.5050544f,
-				-0.3365685f,
-				0.3542781f,
-				0.5951571f,
-				0.03460682f,
-				-0.5537263f,
-				-0.4378373f,
-			};
+            for (int i = 0; i < numSamples; i++) {
+                double x = rn.NextDouble ();
+                if (i == 0) {
+                    m_oldM = m_newM = x;
+                    m_oldS = 0.0;
+                } else {
+                    m_newM = m_oldM + (x - m_oldM) / i;
+                    m_newS = m_oldS + (x - m_oldM) * (x - m_newM);
 
-			int i = 0;
-			foreach (float f in t.Data)
-			{
-				Assert.AreEqual(f, reference[i], 0.0001);
-				++i;
-			}
+                    // set up for next iteration
+                    m_oldM = m_newM;
+                    m_oldS = m_newS;
+                }
+            }
+
+            double sampleMean = m_newM;
+            double sampleVariance = m_newS / (numSamples - 1);
+            double sampleStddev = Math.Sqrt (sampleVariance);
+
+            Assert.AreEqual (mean, sampleMean, 0.01);
+            Assert.AreEqual (stddev, sampleStddev, 0.01);
+
+        }
+
+        [Test]
+        public void RandomNormalTestTensor ()
+        {
+            RandomNormal rn = new RandomNormal (1982);
+            Tensor t = new Tensor {
+                ValueType = Tensor.TensorType.FloatingPoint,
+                Data = Array.CreateInstance (typeof (float), new long [3] { 3, 4, 2 })
+            };
+
+            rn.FillTensor (t);
+
+            float [] reference = new float []
+            {
+                -0.4315872f,
+                0.9561074f,
+                -1.130287f,
+                -0.7763879f,
+                -0.3027347f,
+                -0.1377991f,
+                -0.02921959f,
+                0.9520947f,
+                -1.11074f,
+                -0.5018106f,
+                0.1413168f,
+                -0.07491868f,
+                -0.2645015f,
+                0.3331701f,
+                0.3716498f,
+                1.088157f,
+                0.3414804f,
+                1.167787f,
+                -0.5105762f,
+                0.5396146f,
+                1.225356f,
+                0.06144788f,
+                -1.092338f,
+                -1.177194f,
+            };
+
+            int i = 0;
+            foreach (float f in t.Data) {
+                Assert.AreEqual (f, reference [i], 0.0001);
+                ++i;
+            }
 
 
-		}
-	}
+        }
+    }
 }
