@@ -4,7 +4,7 @@ import cloudpickle
 from mlagents.envs import UnityEnvironment
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
-from queue import Empty as EmptyQueue
+from queue import Empty as EmptyQueueException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, StepInfo
 from mlagents.envs.timers import timed
@@ -158,7 +158,7 @@ class SubprocessEnvManager(EnvManager):
                     if step.worker_id not in step_workers:
                         worker_steps.append(step)
                         step_workers.add(step.worker_id)
-            except EmptyQueue:
+            except EmptyQueueException:
                 pass
 
         step_infos = self._postprocess_steps(worker_steps)
