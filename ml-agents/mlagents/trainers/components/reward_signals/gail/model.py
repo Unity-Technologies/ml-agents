@@ -235,8 +235,8 @@ class GAILModel(object):
 
     def compute_gradient_penalty(self) -> tf.Tensor:
         """
-        Gradient penalty WGAN-GP. Adds stability esp. for off-policy.
-        Compute gradients w.r.t randomly interpolated input.
+        Gradient penalty from https://arxiv.org/pdf/1704.00028. Adds stability esp.
+        for off-policy. Compute gradients w.r.t randomly interpolated input.
         """
         expert = [self.encoded_expert, self.expert_action, self.done_expert]
         policy = [
