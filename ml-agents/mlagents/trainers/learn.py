@@ -20,6 +20,7 @@ from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
+from mlagents.trainers.config import TrainerParameters
 
 def run_training(
     sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue
@@ -76,6 +77,17 @@ def run_training(
         )
 
     trainer_config = load_config(trainer_config_path)
+
+    tp = {}
+    for _name, _params in trainer_config.items():
+        import copy
+        try:
+            _params = copy.deepcopy(_params)
+            tp[_name] = TrainerParameters(**_params)
+        except Exception:
+            print(_name, _params)
+            raise
+
     env_factory = create_environment_factory(
         env_path,
         docker_target_name,
