@@ -44,6 +44,7 @@ class GAILRewardSignal(RewardSignal):
         super().__init__(policy, strength, gamma)
         self.num_epoch = num_epoch
         self.samples_per_update = samples_per_update
+        self.ignore_terminal_states = True
 
         self.model = GAILModel(
             policy.model, 128, learning_rate, encoding_size, use_actions, use_vail

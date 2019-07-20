@@ -33,6 +33,7 @@ class CuriosityRewardSignal(RewardSignal):
             policy.model, encoding_size=encoding_size, learning_rate=learning_rate
         )
         self.num_epoch = num_epoch
+        self.ignore_terminal_states = True
         self.update_dict = {
             "forward_loss": self.model.forward_loss,
             "inverse_loss": self.model.inverse_loss,

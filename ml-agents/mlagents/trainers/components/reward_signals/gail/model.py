@@ -5,6 +5,7 @@ from mlagents.trainers.models import LearningModel
 
 EPSILON = 1e-7
 
+
 class GAILModel(object):
     def __init__(
         self,
@@ -54,7 +55,8 @@ class GAILModel(object):
         )
         self.kl_div_input = tf.placeholder(shape=[], dtype=tf.float32)
         new_beta = tf.maximum(
-            self.beta + self.alpha * (self.kl_div_input - self.mutual_information), EPSILON
+            self.beta + self.alpha * (self.kl_div_input - self.mutual_information),
+            EPSILON,
         )
         self.update_beta = tf.assign(self.beta, new_beta)
 
@@ -143,7 +145,7 @@ class GAILModel(object):
 
     def create_encoder(
         self, state_in: tf.Tensor, action_in: tf.Tensor, done_in: tf.Tensor, reuse: bool
-    ) -> Tuple[tf.Tensor, tf.Tensor]:
+    ) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
         """
         Creates the encoder for the discriminator
         :param state_in: The encoded observation input
@@ -248,12 +250,8 @@ class GAILModel(object):
             interp.append(alpha * _expert_in + (1 - alpha) * _policy_in)
 
         grad_estimate, _, grad_input = self.create_encoder(
-            interp[0],
-            interp[1],
-            interp[2],
-            reuse=True,
+            interp[0], interp[1], interp[2], reuse=True
         )
-
 
         grad = tf.gradients(grad_estimate, [grad_input])[0]
 
