@@ -1,12 +1,12 @@
-# 설치
+﻿# 설치
 
 ML-Agents를 설치하고 사용하기 위해 유니티를 설치해야 하고 이 Repository(저장소)를
-Clone(복제)하고 추가종속성을 가지는 Python(파이썬)을 설치해야합니다. 아래 Subsection(하위섹션)에서는 Docker(독커) 설정 외에도
+Clone(복제)하고 추가종속성을 가지는 Python(파이썬)을 설치해야합니다. 아래 Subsection(하위섹션)에서는 Docker(도커) 설정 외에도
 각 단계를 개괄적으로 설명합니다.
 
 ## **Unity 2017.4** 또는 이후의 버전을 설치하십시오.
 
-[다운로드](https://store.unity.com/kr/download)하고 설치하십시오. 만약 저희의 독커 설정(차후에 소개할)을 사용하고 싶다면,
+[다운로드](https://store.unity.com/kr/download)하고 설치하십시오. 만약 저희의 도커 설정(차후에 소개할)을 사용하고 싶다면,
 유니티를 설치할 때, Linux Build Support를 설정하십시오.
 
 <p align="center">
@@ -84,9 +84,9 @@ pip3 install -e ./
 `mlagents` 패키지가 `mlagents_envs`에 의존적이고, 다른 순서로 설치하면 PyPi로 부터 `mlagents_envs`를
 설치할 수 있기 때문에 이 순서대로 패키지를 설치하는 것은 중요합니다. 
 
-## 독커 기반 설치
+## 도커 기반 설치
 
-만약 ML-Agents를 위해 독커를 사용하고 싶다면, [이 가이드](Using-Docker.md)를 따라하십시오.
+만약 ML-Agents를 위해 도커를 사용하고 싶다면, [이 가이드](Using-Docker.md)를 따라하십시오.
 
 ## 다음 단계
 
