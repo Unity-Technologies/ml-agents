@@ -1,13 +1,13 @@
-# ¼³Ä¡
+# ì„¤ì¹˜
 
-ML-Agents¸¦ ¼³Ä¡ÇÏ°í »ç¿ëÇÏ±â À§ÇØ À¯´ÏÆ¼¸¦ ¼³Ä¡ÇØ¾ß ÇÏ°í ÀÌ Repository(ÀúÀå¼Ò)¸¦
-Clone(º¹Á¦)ÇÏ°í Ãß°¡Á¾¼Ó¼ºÀ» °¡Áö´Â Python(ÆÄÀÌ½ã)À» ¼³Ä¡ÇØ¾ßÇÕ´Ï´Ù. ¾Æ·¡ Subsection(ÇÏÀ§¼½¼Ç)¿¡¼­´Â Docker(µ¶Ä¿) ¼³Á¤ ¿Ü¿¡µµ
-°¢ ´Ü°è¸¦ °³°ýÀûÀ¸·Î ¼³¸íÇÕ´Ï´Ù.
+ML-Agentsë¥¼ ì„¤ì¹˜í•˜ê³  ì‚¬ìš©í•˜ê¸° ìœ„í•´ ìœ ë‹ˆí‹°ë¥¼ ì„¤ì¹˜í•´ì•¼ í•˜ê³  ì´ Repository(ì €ìž¥ì†Œ)ë¥¼
+Clone(ë³µì œ)í•˜ê³  ì¶”ê°€ì¢…ì†ì„±ì„ ê°€ì§€ëŠ” Python(íŒŒì´ì¬)ì„ ì„¤ì¹˜í•´ì•¼í•©ë‹ˆë‹¤. ì•„ëž˜ Subsection(í•˜ìœ„ì„¹ì…˜)ì—ì„œëŠ” Docker(ë…ì»¤) ì„¤ì • ì™¸ì—ë„
+ê° ë‹¨ê³„ë¥¼ ê°œê´„ì ìœ¼ë¡œ ì„¤ëª…í•©ë‹ˆë‹¤.
 
-## **Unity 2017.4** ¶Ç´Â ÀÌÈÄÀÇ ¹öÀüÀ» ¼³Ä¡ÇÏ½Ê½Ã¿À.
+## **Unity 2017.4** ë˜ëŠ” ì´í›„ì˜ ë²„ì „ì„ ì„¤ì¹˜í•˜ì‹­ì‹œì˜¤.
 
-[´Ù¿î·Îµå](https://store.unity.com/kr/download)ÇÏ°í ¼³Ä¡ÇÏ½Ê½Ã¿À. ¸¸¾à ÀúÈñÀÇ µ¶Ä¿ ¼³Á¤(Â÷ÈÄ¿¡ ¼Ò°³ÇÒ)À» »ç¿ëÇÏ°í ½Í´Ù¸é,
-À¯´ÏÆ¼¸¦ ¼³Ä¡ÇÒ ¶§, Linux Build Support¸¦ ¼³Á¤ÇÏ½Ê½Ã¿À.
+[ë‹¤ìš´ë¡œë“œ](https://store.unity.com/kr/download)í•˜ê³  ì„¤ì¹˜í•˜ì‹­ì‹œì˜¤. ë§Œì•½ ì €í¬ì˜ ë…ì»¤ ì„¤ì •(ì°¨í›„ì— ì†Œê°œí• )ì„ ì‚¬ìš©í•˜ê³  ì‹¶ë‹¤ë©´,
+ìœ ë‹ˆí‹°ë¥¼ ì„¤ì¹˜í•  ë•Œ, Linux Build Supportë¥¼ ì„¤ì •í•˜ì‹­ì‹œì˜¤.
 
 <p align="center">
   <img src="images/unity_linux_build_support.png"
@@ -15,62 +15,62 @@ Clone(º¹Á¦)ÇÏ°í Ãß°¡Á¾¼Ó¼ºÀ» °¡Áö´Â Python(ÆÄÀÌ½ã)À» ¼³Ä¡ÇØ¾ßÇÕ´Ï´Ù. ¾Æ·¡ Subsec
        width="500" border="10" />
 </p>
 
-## Windows »ç¿ëÀÚ
-Windows¿¡¼­ È¯°æÀ» ¼³Á¤ÇÏ±â À§ÇØ, [¼¼ºÎ »çÇ×](Installation-Windows.md)¿¡ ¼³Á¤ ¹æ¹ý¿¡ ´ëÇØ ÀÛ¼ºÇÏ¿´½À´Ï´Ù. 
-Mac°ú Linux´Â ´ÙÀ½ °¡ÀÌµå¸¦ È®ÀÎÇØÁÖ½Ê½Ã¿À.
+## Windows ì‚¬ìš©ìž
+Windowsì—ì„œ í™˜ê²½ì„ ì„¤ì •í•˜ê¸° ìœ„í•´, [ì„¸ë¶€ ì‚¬í•­](Installation-Windows.md)ì— ì„¤ì • ë°©ë²•ì— ëŒ€í•´ ìž‘ì„±í•˜ì˜€ìŠµë‹ˆë‹¤. 
+Macê³¼ LinuxëŠ” ë‹¤ìŒ ê°€ì´ë“œë¥¼ í™•ì¸í•´ì£¼ì‹­ì‹œì˜¤.
 
-## Mac ¶Ç´Â Unix »ç¿ëÀÚ
+## Mac ë˜ëŠ” Unix ì‚¬ìš©ìž
 
-### ML-Agents Toolkit ÀúÀå¼Ò º¹Á¦
+### ML-Agents Toolkit ì €ìž¥ì†Œ ë³µì œ
 
-À¯´ÏÆ¼ ¼³Ä¡ ÈÄ¿¡ ML-Agents Toolkit ±êÇãºê ÀúÀå¼Ò¸¦ ¼³Ä¡ÇÏ°í ½ÍÀ» °ÍÀÔ´Ï´Ù.
+ìœ ë‹ˆí‹° ì„¤ì¹˜ í›„ì— ML-Agents Toolkit ê¹ƒí—ˆë¸Œ ì €ìž¥ì†Œë¥¼ ì„¤ì¹˜í•˜ê³  ì‹¶ì„ ê²ƒìž…ë‹ˆë‹¤.
 
 ```sh
 git clone https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-`UnitySDK` ÇÏÀ§ µð·ºÅä¸®¿¡´Â ÇÁ·ÎÁ§Æ®¿¡ Ãß°¡ÇÒ À¯´ÏÆ¼ ¾Ö¼ÂÀÌ Æ÷ÇÔµÇ¾î ÀÖ½À´Ï´Ù.
-¶ÇÇÑ ½ÃÀÛÇÏ´Âµ¥ µµ¿òÀÌ µÇ´Â ¸¹Àº [¿¹Á¦ È¯°æ](Learning-Environment-Examples.md)µéÀÌ ÀÖ½À´Ï´Ù.
+`UnitySDK` í•˜ìœ„ ë””ë ‰í† ë¦¬ì—ëŠ” í”„ë¡œì íŠ¸ì— ì¶”ê°€í•  ìœ ë‹ˆí‹° ì• ì…‹ì´ í¬í•¨ë˜ì–´ ìžˆìŠµë‹ˆë‹¤.
+ë˜í•œ ì‹œìž‘í•˜ëŠ”ë° ë„ì›€ì´ ë˜ëŠ” ë§Žì€ [ì˜ˆì œ í™˜ê²½](Learning-Environment-Examples.md)ë“¤ì´ ìžˆìŠµë‹ˆë‹¤.
 
-`ml-agents` ÇÏÀ§ µð·ºÅä¸®¿¡´Â À¯´ÏÆ¼ È¯°æ°ú ÇÔ°Ô »ç¿ëÇÏ´Â ½ÉÃþ °­È­ÇÐ½À Æ®·¹ÀÌ³Ê ÆÄÀÌ½ã ÆÐÅ°Áö°¡ Æ÷ÇÔµÇ¾î ÀÖ½À´Ï´Ù.
+`ml-agents` í•˜ìœ„ ë””ë ‰í† ë¦¬ì—ëŠ” ìœ ë‹ˆí‹° í™˜ê²½ê³¼ í•¨ê²Œ ì‚¬ìš©í•˜ëŠ” ì‹¬ì¸µ ê°•í™”í•™ìŠµ íŠ¸ë ˆì´ë„ˆ íŒŒì´ì¬ íŒ¨í‚¤ì§€ê°€ í¬í•¨ë˜ì–´ ìžˆìŠµë‹ˆë‹¤.
 
-`ml-agents-envs` ÇÏÀ§ µð·ºÅä¸®¿¡´Â `ml-agents` ÆÐÅ°Áö¿¡ Á¾¼ÓµÇ´Â À¯´ÏÆ¼ÀÇ ÀÎÅÍÆäÀÌ½º¸¦ À§ÇÑ ÆÄÀÌ½ã API°¡ Æ÷ÇÔµÇ¾î ÀÖ½À´Ï´Ù.
+`ml-agents-envs` í•˜ìœ„ ë””ë ‰í† ë¦¬ì—ëŠ” `ml-agents` íŒ¨í‚¤ì§€ì— ì¢…ì†ë˜ëŠ” ìœ ë‹ˆí‹°ì˜ ì¸í„°íŽ˜ì´ìŠ¤ë¥¼ ìœ„í•œ íŒŒì´ì¬ APIê°€ í¬í•¨ë˜ì–´ ìžˆìŠµë‹ˆë‹¤.
 
-`gym-unity` ÇÏÀ§ µð·ºÅä¸®¿¡´Â OpenAI GymÀÇ ÀÎÅÍÆäÀÌ½º¸¦ À§ÇÑ ÆÐÅ°Áö°¡ Æ÷ÇÔµÇ¾î ÀÖ½À´Ï´Ù.
+`gym-unity` í•˜ìœ„ ë””ë ‰í† ë¦¬ì—ëŠ” OpenAI Gymì˜ ì¸í„°íŽ˜ì´ìŠ¤ë¥¼ ìœ„í•œ íŒ¨í‚¤ì§€ê°€ í¬í•¨ë˜ì–´ ìžˆìŠµë‹ˆë‹¤.
 
-### ÆÄÀÌ½ã°ú mlagents ÆÐÅ°Áö ¼³Ä¡
+### íŒŒì´ì¬ê³¼ mlagents íŒ¨í‚¤ì§€ ì„¤ì¹˜
 
-ML-Agents toolkitÀ» »ç¿ëÇÏ±â À§ÇØ [setup.py file](../ml-agents/setup.py)¿¡ ³ª¿­µÈ Á¾¼Ó¼º°ú ÇÔ²² ÆÄÀÌ½ã 3.6ÀÌ ÇÊ¿äÇÕ´Ï´Ù.
-ÁÖ¿ä Á¾¼Ó¼ºÀÇ ÀÏºÎ´Â ´ÙÀ½À» Æ÷ÇÔÇÕ´Ï´Ù:
+ML-Agents toolkitì„ ì‚¬ìš©í•˜ê¸° ìœ„í•´ [setup.py file](../ml-agents/setup.py)ì— ë‚˜ì—´ëœ ì¢…ì†ì„±ê³¼ í•¨ê»˜ íŒŒì´ì¬ 3.6ì´ í•„ìš”í•©ë‹ˆë‹¤.
+ì£¼ìš” ì¢…ì†ì„±ì˜ ì¼ë¶€ëŠ” ë‹¤ìŒì„ í¬í•¨í•©ë‹ˆë‹¤:
 
 - [TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support)
 - [Jupyter](Background-Jupyter.md)
 
-Python 3.6ÀÌ ¸¸¾à ¼³Ä¡µÇ¾î ÀÖÁö ¾Ê´Ù¸é, [´Ù¿î·Îµå](https://www.python.org/downloads/)ÇÏ°í ¼³Ä¡ÇÏ½Ê½Ã¿À.
+Python 3.6ì´ ë§Œì•½ ì„¤ì¹˜ë˜ì–´ ìžˆì§€ ì•Šë‹¤ë©´, [ë‹¤ìš´ë¡œë“œ](https://www.python.org/downloads/)í•˜ê³  ì„¤ì¹˜í•˜ì‹­ì‹œì˜¤.
 
-¸¸¾à ´ç½ÅÀÇ ÆÄÀÌ½ã È¯°æÀÌ `pip3`À» Æ÷ÇÔÇÏÁö ¾Ê´Â´Ù¸é, ´ÙÀ½
-[Áö½Ã»çÇ×](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
-À» µû¶ó¼­ ¼³Ä¡ÇÏ½Ê½Ã¿À.
+ë§Œì•½ ë‹¹ì‹ ì˜ íŒŒì´ì¬ í™˜ê²½ì´ `pip3`ì„ í¬í•¨í•˜ì§€ ì•ŠëŠ”ë‹¤ë©´, ë‹¤ìŒ
+[ì§€ì‹œì‚¬í•­](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
+ì„ ë”°ë¼ì„œ ì„¤ì¹˜í•˜ì‹­ì‹œì˜¤.
 
-Á¾¼Ó¼º°ú `mlagents` ÆÄÀÌ½ã ÆÐÅ°Áö¸¦ ¼³Ä¡ÇÏ±â À§ÇØ ´ÙÀ½ ¸í·É¾î¸¦ ½ÇÇàÇÏ½Ê½Ã¿À:
+ì¢…ì†ì„±ê³¼ `mlagents` íŒŒì´ì¬ íŒ¨í‚¤ì§€ë¥¼ ì„¤ì¹˜í•˜ê¸° ìœ„í•´ ë‹¤ìŒ ëª…ë ¹ì–´ë¥¼ ì‹¤í–‰í•˜ì‹­ì‹œì˜¤:
 
 ```sh
 pip3 install mlagents
 ```
 
-ÀÌ ¸í·É¾î¸¦ ÅëÇØ PyPi·Î ºÎÅÍ(º¹Á¦µÈ ÀúÀå¼Ò°¡ ¾Æ´Ñ) `ml-agents`°¡ ¼³Ä¡µÉ °ÍÀÔ´Ï´Ù. 
-¸¸¾à ¼º°øÀûÀ¸·Î ¼³Ä¡¸¦ ¿Ï·á Çß´Ù¸é, `mlagents-learn --help` ¸í·É¾î¸¦ ½ÇÇàÇÒ ¼ö ÀÖÀ» °ÍÀÔ´Ï´Ù.
-¸í·É¾î¸¦ ½ÇÇàÇÏ¸é À¯´ÏÆ¼ ·Î°í¿Í `mlagents-learn`¿¡¼­ »ç¿ëÇÒ ¼ö ÀÖ´Â ¸í·É¾î ¶óÀÎ ¸Å°³º¯¼öµéÀ» º¼ ¼ö ÀÖ½À´Ï´Ù. 
+ì´ ëª…ë ¹ì–´ë¥¼ í†µí•´ PyPië¡œ ë¶€í„°(ë³µì œëœ ì €ìž¥ì†Œê°€ ì•„ë‹Œ) `ml-agents`ê°€ ì„¤ì¹˜ë  ê²ƒìž…ë‹ˆë‹¤. 
+ë§Œì•½ ì„±ê³µì ìœ¼ë¡œ ì„¤ì¹˜ë¥¼ ì™„ë£Œ í–ˆë‹¤ë©´, `mlagents-learn --help` ëª…ë ¹ì–´ë¥¼ ì‹¤í–‰í•  ìˆ˜ ìžˆì„ ê²ƒìž…ë‹ˆë‹¤.
+ëª…ë ¹ì–´ë¥¼ ì‹¤í–‰í•˜ë©´ ìœ ë‹ˆí‹° ë¡œê³ ì™€ `mlagents-learn`ì—ì„œ ì‚¬ìš©í•  ìˆ˜ ìžˆëŠ” ëª…ë ¹ì–´ ë¼ì¸ ë§¤ê°œë³€ìˆ˜ë“¤ì„ ë³¼ ìˆ˜ ìžˆìŠµë‹ˆë‹¤. 
 
-**ÁÖÀÇ:**
+**ì£¼ì˜:**
 
-- ÇöÀç Python 3.7 ¶Ç´Â Python 3.5À» Áö¿øÇÏÁö ¾Ê½À´Ï´Ù.
-- ¸¸¾à Anaconda¸¦ »ç¿ëÇÏ°í TensorFlow¿¡ ¹®Á¦°¡ ÀÖ´Ù¸é, ´ÙÀ½ 
-  [¸µÅ©](https://www.tensorflow.org/install/pip)¿¡¼­ Anaconda È¯°æ¿¡¼­ ¾î¶»°Ô TensorFlow¸¦ ¼³Ä¡ÇÏ´ÂÁö È®ÀÎÇÏ½Ê½Ã¿À.
-### °³¹ßÀ» À§ÇÑ ¼³Ä¡¹æ¹ý
+- í˜„ìž¬ Python 3.7 ë˜ëŠ” Python 3.5ì„ ì§€ì›í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
+- ë§Œì•½ Anacondaë¥¼ ì‚¬ìš©í•˜ê³  TensorFlowì— ë¬¸ì œê°€ ìžˆë‹¤ë©´, ë‹¤ìŒ 
+  [ë§í¬](https://www.tensorflow.org/install/pip)ì—ì„œ Anaconda í™˜ê²½ì—ì„œ ì–´ë–»ê²Œ TensorFlowë¥¼ ì„¤ì¹˜í•˜ëŠ”ì§€ í™•ì¸í•˜ì‹­ì‹œì˜¤.
+### ê°œë°œì„ ìœ„í•œ ì„¤ì¹˜ë°©ë²•
 
-¸¸¾à `ml-agents` ¶Ç´Â `ml-agents-envs`¸¦ ¼öÁ¤ÇÏ°í ½Í´Ù¸é, PyPi°¡ ¾Æ´Ñ º¹Á¦µÈ ÀúÀå¼Ò·Î ºÎÅÍ ÆÐÅ°Áö¸¦ ¼³Ä¡ÇØ¾ß ÇÕ´Ï´Ù.
-ÀÌ¸¦ À§ÇØ, `ml-agents`¿Í `ml-agents-envs`¸¦ °¢°¢ ¼³Ä¡ÇØ¾ß ÇÕ´Ï´Ù. ÀúÀå¼ÒÀÇ ·çÆ® µð·ºÅä¸®¿¡¼­ ´ÙÀ½ ¸í·É¾î¸¦ ½ÇÇàÇÏ½Ê½Ã¿À:
+ë§Œì•½ `ml-agents` ë˜ëŠ” `ml-agents-envs`ë¥¼ ìˆ˜ì •í•˜ê³  ì‹¶ë‹¤ë©´, PyPiê°€ ì•„ë‹Œ ë³µì œëœ ì €ìž¥ì†Œë¡œ ë¶€í„° íŒ¨í‚¤ì§€ë¥¼ ì„¤ì¹˜í•´ì•¼ í•©ë‹ˆë‹¤.
+ì´ë¥¼ ìœ„í•´, `ml-agents`ì™€ `ml-agents-envs`ë¥¼ ê°ê° ì„¤ì¹˜í•´ì•¼ í•©ë‹ˆë‹¤. ì €ìž¥ì†Œì˜ ë£¨íŠ¸ ë””ë ‰í† ë¦¬ì—ì„œ ë‹¤ìŒ ëª…ë ¹ì–´ë¥¼ ì‹¤í–‰í•˜ì‹­ì‹œì˜¤:
 
 ```sh
 cd ml-agents-envs
@@ -80,20 +80,20 @@ cd ml-agents
 pip3 install -e ./
 ```
 
-`-e` ÇÃ·¡±×¸¦ »ç¿ëÇÏ¿© pip¸¦ ½ÇÇà ÇÏ¸é ÆÄÀÌ½ã ÆÄÀÏÀ» Á÷Á¢ º¯°æÇÒ ¼ö ÀÖ°í `mlagents-learn`¸¦ ½ÇÇàÇÒ ¶§ ¹Ý¿µµË´Ï´Ù.
-`mlagents` ÆÐÅ°Áö°¡ `mlagents_envs`¿¡ ÀÇÁ¸ÀûÀÌ°í, ´Ù¸¥ ¼ø¼­·Î ¼³Ä¡ÇÏ¸é PyPi·Î ºÎÅÍ `mlagents_envs`¸¦
-¼³Ä¡ÇÒ ¼ö ÀÖ±â ¶§¹®¿¡ ÀÌ ¼ø¼­´ë·Î ÆÐÅ°Áö¸¦ ¼³Ä¡ÇÏ´Â °ÍÀº Áß¿äÇÕ´Ï´Ù. 
+`-e` í”Œëž˜ê·¸ë¥¼ ì‚¬ìš©í•˜ì—¬ pipë¥¼ ì‹¤í–‰ í•˜ë©´ íŒŒì´ì¬ íŒŒì¼ì„ ì§ì ‘ ë³€ê²½í•  ìˆ˜ ìžˆê³  `mlagents-learn`ë¥¼ ì‹¤í–‰í•  ë•Œ ë°˜ì˜ë©ë‹ˆë‹¤.
+`mlagents` íŒ¨í‚¤ì§€ê°€ `mlagents_envs`ì— ì˜ì¡´ì ì´ê³ , ë‹¤ë¥¸ ìˆœì„œë¡œ ì„¤ì¹˜í•˜ë©´ PyPië¡œ ë¶€í„° `mlagents_envs`ë¥¼
+ì„¤ì¹˜í•  ìˆ˜ ìžˆê¸° ë•Œë¬¸ì— ì´ ìˆœì„œëŒ€ë¡œ íŒ¨í‚¤ì§€ë¥¼ ì„¤ì¹˜í•˜ëŠ” ê²ƒì€ ì¤‘ìš”í•©ë‹ˆë‹¤. 
 
-## µ¶Ä¿ ±â¹Ý ¼³Ä¡
+## ë…ì»¤ ê¸°ë°˜ ì„¤ì¹˜
 
-¸¸¾à ML-Agents¸¦ À§ÇØ µ¶Ä¿¸¦ »ç¿ëÇÏ°í ½Í´Ù¸é, [ÀÌ °¡ÀÌµå](Using-Docker.md)¸¦ µû¶óÇÏ½Ê½Ã¿À.
+ë§Œì•½ ML-Agentsë¥¼ ìœ„í•´ ë…ì»¤ë¥¼ ì‚¬ìš©í•˜ê³  ì‹¶ë‹¤ë©´, [ì´ ê°€ì´ë“œ](Using-Docker.md)ë¥¼ ë”°ë¼í•˜ì‹­ì‹œì˜¤.
 
-## ´ÙÀ½ ´Ü°è
+## ë‹¤ìŒ ë‹¨ê³„
 
-[±âÃÊ °¡ÀÌµå](Basic-Guide.md) ÆäÀÌÁö¿¡´Â À¯´ÏÆ¼ ³»¿¡¼­ ML-Agents toolkitÀÇ ¼³Á¤ ¹× ÇÐ½ÀµÈ ¸ðµ¨ ½ÇÇà, 
-È¯°æ ±¸Ãà, ÇÐ½À ¹æ¹ý¿¡ ´ëÇÑ ¿©·¯ ÂªÀº Æ©Åä¸®¾óÀ» Æ÷ÇÔÇÏ°í ÀÖ½À´Ï´Ù.
+[ê¸°ì´ˆ ê°€ì´ë“œ](Basic-Guide.md) íŽ˜ì´ì§€ì—ëŠ” ìœ ë‹ˆí‹° ë‚´ì—ì„œ ML-Agents toolkitì˜ ì„¤ì • ë° í•™ìŠµëœ ëª¨ë¸ ì‹¤í–‰, 
+í™˜ê²½ êµ¬ì¶•, í•™ìŠµ ë°©ë²•ì— ëŒ€í•œ ì—¬ëŸ¬ ì§§ì€ íŠœí† ë¦¬ì–¼ì„ í¬í•¨í•˜ê³  ìžˆìŠµë‹ˆë‹¤.
 
-## µµ¿ò¸»
+## ë„ì›€ë§
 
-ML-Agents¿Í °ü·ÃµÈ ¹®Á¦°¡ ¹ß»ýÇÏ¸é ÀúÈñÀÇ [FAQ](FAQ.md)¿Í [Á¦¾à »çÇ×](Limitations.md) ÆäÀÌÁö¸¦ Âü°íÇØ ÁÖ½Ê½Ã¿À.
-¸¸¾à ¹®Á¦¿¡ ´ëÇÑ ¾Æ¹«°Íµµ Ã£À» ¼ö ¾ø´Ù¸é OS, Pythons ¹öÀü ¹× Á¤È®ÇÑ ¿À·ù ¸Þ¼¼Áö¿Í ÇÔ²² [ÀÌ½´ Á¦Ãâ](https://github.com/Unity-Technologies/ml-agents/issues)À» ÇØÁÖ½Ê½Ã¿À.
+ML-Agentsì™€ ê´€ë ¨ëœ ë¬¸ì œê°€ ë°œìƒí•˜ë©´ ì €í¬ì˜ [FAQ](FAQ.md)ì™€ [ì œì•½ ì‚¬í•­](Limitations.md) íŽ˜ì´ì§€ë¥¼ ì°¸ê³ í•´ ì£¼ì‹­ì‹œì˜¤.
+ë§Œì•½ ë¬¸ì œì— ëŒ€í•œ ì•„ë¬´ê²ƒë„ ì°¾ì„ ìˆ˜ ì—†ë‹¤ë©´ OS, Pythons ë²„ì „ ë° ì •í™•í•œ ì˜¤ë¥˜ ë©”ì„¸ì§€ì™€ í•¨ê»˜ [ì´ìŠˆ ì œì¶œ](https://github.com/Unity-Technologies/ml-agents/issues)ì„ í•´ì£¼ì‹­ì‹œì˜¤.
