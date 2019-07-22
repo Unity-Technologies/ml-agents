@@ -229,7 +229,7 @@ class PPOPolicy(TFPolicy):
         # If we're done, reassign all of the value estimates that need terminal states.
         if done:
             for k in value_estimates:
-                if not self.reward_signals[k].ignore_terminal_states:
+                if self.reward_signals[k].use_terminal_states:
                     value_estimates[k] = 0.0
 
         return value_estimates

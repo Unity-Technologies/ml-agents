@@ -95,7 +95,7 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
         assert val == 0.0
 
     # Check if we ignore terminal states properly
-    policy.reward_signals["extrinsic"].ignore_terminal_states = True
+    policy.reward_signals["extrinsic"].use_terminal_states = False
     run_out = policy.get_value_estimates(brain_info, 0, done=True)
     for key, val in run_out.items():
         assert type(key) is str

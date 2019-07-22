@@ -32,9 +32,9 @@ class RewardSignal(abc.ABC):
         short_name = class_name.replace("RewardSignal", "")
         self.stat_name = f"Policy/{short_name} Reward"
         self.value_name = f"Policy/{short_name} Value Estimate"
-        # Don't terminate discounted reward computation at Done. Useful for eliminating positive bias in rewards with
+        # Terminate discounted reward computation at Done. Can disable to mitigate positive bias in rewards with
         # no natural end, e.g. GAIL or Curiosity
-        self.ignore_terminal_states = False
+        self.use_terminal_states = True
         self.gamma = gamma
         self.policy = policy
         self.strength = strength
