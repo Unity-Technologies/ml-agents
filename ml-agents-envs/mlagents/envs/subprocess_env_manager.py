@@ -12,7 +12,7 @@ from mlagents.envs.timers import (
     timed,
     hierarchical_timer,
     reset_timers,
-    _global_timer_stack,
+    get_timer_root,
 )
 from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo
 
@@ -99,9 +99,7 @@ def worker(
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
                 # the data transferred.
-                step_response = StepResponse(
-                    all_brain_info, _global_timer_stack.get_root()
-                )
+                step_response = StepResponse(all_brain_info, get_timer_root())
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
             elif cmd.name == "external_brains":

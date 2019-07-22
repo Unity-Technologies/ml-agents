@@ -220,6 +220,17 @@ def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:
     return timer_stack.get_timing_tree()
 
 
+def get_timer_root(timer_stack: TimerStack = None) -> TimerNode:
+    """
+    Get the root TimerNode of the timer_stack (or the global TimerStack if not specified)
+    """
+    timer_stack = timer_stack or _global_timer_stack
+    return timer_stack.get_root()
+
+
 def reset_timers(timer_stack: TimerStack = None) -> None:
+    """
+    Reset the timer_stack (or the global TimerStack if not specified)
+    """
     timer_stack = timer_stack or _global_timer_stack
     timer_stack.reset()
