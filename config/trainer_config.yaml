@@ -243,6 +243,10 @@ GridWorldLearning:
     max_steps: 5.0e5
     summary_freq: 2000
     time_horizon: 5
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.9
 
 BasicLearning:
     batch_size: 64

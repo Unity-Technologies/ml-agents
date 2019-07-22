@@ -15,7 +15,7 @@ class GAILModel(object):
         encoding_size: int = 64,
         use_actions: bool = False,
         use_vail: bool = False,
-        gradient_penalty: float = 10.0,
+        gradient_penalty_weight: float = 10.0,
     ):
         """
         The initializer for the GAIL reward generator.
@@ -34,7 +34,7 @@ class GAILModel(object):
         self.mutual_information = 0.5
         self.policy_model = policy_model
         self.encoding_size = encoding_size
-        self.gradient_penalty = gradient_penalty
+        self.gradient_penalty_weight = gradient_penalty_weight
         self.use_vail = use_vail
         self.use_actions = use_actions  # True # Not using actions
         self.make_beta()
@@ -80,10 +80,8 @@ class GAILModel(object):
             )
             self.expert_action = tf.concat(
                 [
-                    tf.one_hot(
-                        self.action_in_expert[:, i], self.policy_model.act_size[i]
-                    )
-                    for i in range(len(self.policy_model.act_size))
+                    tf.one_hot(self.action_in_expert[:, i], act_size)
+                    for i, act_size in enumerate(self.policy_model.act_size)
                 ],
                 axis=1,
             )
@@ -147,7 +145,7 @@ class GAILModel(object):
 
     def create_encoder(
         self, state_in: tf.Tensor, action_in: tf.Tensor, done_in: tf.Tensor, reuse: bool
-    ) -> Tuple[tf.Tensor, tf.Tensor]:
+    ) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
         """
         Creates the encoder for the discriminator
         :param state_in: The encoded observation input
@@ -235,10 +233,10 @@ class GAILModel(object):
         )
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + EPSILON)
 
-    def compute_gradient_penalty(self) -> tf.Tensor:
+    def create_gradient_magnitude(self) -> tf.Tensor:
         """
-        Gradient penalty WGAN-GP. Adds stability esp. for off-policy.
-        Compute gradients w.r.t randomly interpolated input.
+        Gradient penalty from https://arxiv.org/pdf/1704.00028. Adds stability esp.
+        for off-policy. Compute gradients w.r.t randomly interpolated input.
         """
         expert = [self.encoded_expert, self.expert_action, self.done_expert]
         policy = [
@@ -257,7 +255,7 @@ class GAILModel(object):
 
         grad = tf.gradients(grad_estimate, [grad_input])[0]
 
-        # Norm, like log, can return NaN. Use our own safe_norm
+        # Norm's gradient could be NaN at 0. Use our own safe_norm
         safe_norm = tf.sqrt(tf.reduce_sum(grad ** 2, axis=-1) + EPSILON)
         gradient_mag = tf.reduce_mean(tf.pow(safe_norm - 1, 2))
 
@@ -295,7 +293,8 @@ class GAILModel(object):
         else:
             self.loss = self.discriminator_loss
 
-        self.loss = self.loss + self.gradient_penalty * self.compute_gradient_penalty()
+        if self.gradient_penalty_weight > 0.0:
+            self.loss += self.gradient_penalty_weight * self.create_gradient_magnitude()
 
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
