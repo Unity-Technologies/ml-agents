@@ -50,8 +50,8 @@ class SACNetwork(LearningModel):
                     1,
                     self.h_size,
                     0,
-                    ["critic/value/"],
                     vis_encode_type=vis_encode_type,
+                    stream_scopes=["critic/value/"],
                 )
             if brain.vector_action_space_type == "continuous":
                 self.create_cc_critic(
@@ -79,14 +79,22 @@ class SACNetwork(LearningModel):
             if self.share_ac_cnn:
                 with tf.variable_scope("policy_network"):
                     hidden_streams = self.create_observation_streams(
-                        1, self.h_size, 0, ["critic/value/"]
+                        1,
+                        self.h_size,
+                        0,
+                        vis_encode_type=vis_encode_type,
+                        stream_scopes=["critic/value/"],
                     )
                 hidden_policy = hidden_streams[0]
                 hidden_critic = hidden_streams[0]
             else:
                 with tf.variable_scope("policy_network"):
                     hidden_streams = self.create_observation_streams(
-                        2, self.h_size, 0, ["policy/", "critic/value/"]
+                        2,
+                        self.h_size,
+                        0,
+                        vis_encode_type=vis_encode_type,
+                        stream_scopes=["policy/", "critic/value/"],
                     )
                 hidden_policy = hidden_streams[0]
                 hidden_critic = hidden_streams[1]

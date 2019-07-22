@@ -434,7 +434,12 @@ class LearningModel(object):
         )
 
     def create_observation_streams(
-        self, num_streams, h_size, num_layers, stream_scopes, vis_encode_type="default"
+        self,
+        num_streams,
+        h_size,
+        num_layers,
+        vis_encode_type="default",
+        stream_scopes=None,
     ):
         """
         Creates encoding stream for observations.
