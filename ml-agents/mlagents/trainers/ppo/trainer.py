@@ -23,12 +23,8 @@ class PPOTrainer(Trainer):
     def __init__(self, brain, trainer_parameters):
         """
         Responsible for collecting experiences and training PPO model.
+        :param brain: BrainParameters for the Brain associated with this trainer.
         :param trainer_parameters: The parameters for the trainer (dictionary).
-        :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param training: Whether the trainer is set for training.
-        :param load: Whether the model should be loaded.
-        :param seed: The seed the model will be initialized with
-        :param run_id: The identifier of the current run
         """
         super(PPOTrainer, self).__init__(brain, trainer_parameters)
         self.param_keys = [
@@ -52,6 +48,9 @@ class PPOTrainer(Trainer):
             "model_path",
             "reward_signals",
             "vis_encode_type",
+            "seed",
+            "load",
+            "reward_buff_cap",
         ]
         self.check_param_keys()
 
@@ -64,13 +63,7 @@ class PPOTrainer(Trainer):
             )
 
         self.step = 0
-        self.policy = PPOPolicy(
-            trainer_parameters["seed"],
-            brain,
-            trainer_parameters,
-            self.is_training,
-            trainer_parameters["load"],
-        )
+        self.policy = PPOPolicy(brain, trainer_parameters)
 
         stats = defaultdict(list)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward

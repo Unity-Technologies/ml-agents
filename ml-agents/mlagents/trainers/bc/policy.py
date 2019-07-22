@@ -8,14 +8,13 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class BCPolicy(TFPolicy):
-    def __init__(self, seed, brain, trainer_parameters, load):
+    def __init__(self, brain, trainer_parameters):
         """
-        :param seed: Random seed.
         :param brain: Assigned Brain object.
         :param trainer_parameters: Defined training parameters.
         :param load: Whether a pre-trained model will be loaded or a new one created.
         """
-        super(BCPolicy, self).__init__(seed, brain, trainer_parameters)
+        super(BCPolicy, self).__init__(brain, trainer_parameters)
 
         with self.graph.as_default():
             with self.graph.as_default():
@@ -27,10 +26,10 @@ class BCPolicy(TFPolicy):
                     normalize=False,
                     use_recurrent=trainer_parameters["use_recurrent"],
                     brain=brain,
-                    seed=seed,
+                    seed=trainer_parameters["seed"],
                 )
 
-        if load:
+        if trainer_parameters["load"]:
             self._load_graph()
         else:
             self._initialize_graph()

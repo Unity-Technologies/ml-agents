@@ -39,11 +39,10 @@ class TFPolicy(Policy):
         "action_output_shape",
     ]
 
-    def __init__(self, seed, brain, trainer_parameters):
+    def __init__(self, brain, trainer_parameters):
         """
         Initialized the policy.
-        :param seed: Random seed to use for TensorFlow.
-        :param brain: The corresponding Brain for this policy.
+        :param brain: The corresponding BrainParameters for this policy.
         :param trainer_parameters: The trainer parameters.
         """
         self.m_size = None
@@ -51,7 +50,7 @@ class TFPolicy(Policy):
         self.inference_dict = {}
         self.update_dict = {}
         self.sequence_length = 1
-        self.seed = seed
+        self.seed = trainer_parameters["seed"]
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.use_continuous_act = brain.vector_action_space_type == "continuous"

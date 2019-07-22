@@ -16,16 +16,13 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(TFPolicy):
-    def __init__(self, seed, brain, trainer_params, is_training, load):
+    def __init__(self, brain, trainer_params):
         """
         Policy for Proximal Policy Optimization Networks.
-        :param seed: Random seed.
         :param brain: Assigned Brain object.
         :param trainer_params: Defined training parameters.
-        :param is_training: Whether the model should be trained.
-        :param load: Whether a pre-trained model will be loaded or a new one created.
         """
-        super().__init__(seed, brain, trainer_params)
+        super().__init__(brain, trainer_params)
 
         reward_signal_configs = trainer_params["reward_signals"]
 
@@ -42,7 +39,7 @@ class PPOPolicy(TFPolicy):
                 use_recurrent=trainer_params["use_recurrent"],
                 num_layers=int(trainer_params["num_layers"]),
                 m_size=self.m_size,
-                seed=seed,
+                seed=trainer_params["seed"],
                 stream_names=list(reward_signal_configs.keys()),
                 vis_encode_type=trainer_params["vis_encode_type"],
             )
@@ -67,7 +64,7 @@ class PPOPolicy(TFPolicy):
             else:
                 self.bc_module = None
 
-        if load:
+        if trainer_params["load"]:
             self._load_graph()
         else:
             self._initialize_graph()
@@ -84,10 +81,10 @@ class PPOPolicy(TFPolicy):
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.model.memory_out
         if (
-            is_training
+            trainer_params["training"]
             and self.use_vec_obs
             and trainer_params["normalize"]
-            and not load
+            and not trainer_params["load"]
         ):
             self.inference_dict["update_mean"] = self.model.update_normalization
 
