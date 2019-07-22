@@ -112,5 +112,28 @@ namespace MLAgents
                 dst[i + start] = src[i];
             }
         }
+
+        
+        /// <summary>
+        /// Adds elements to list without extra temp allocations (assuming it fits pre-allocated capacity of the list).
+        /// Regular List<T>.AddRange() unfortunately allocates temp list to add items.
+        /// https://stackoverflow.com/questions/2123161/listt-addrange-implementation-suboptimal
+        /// Note: this implementation might be slow with large numbers of elements in the source array.
+        /// <param name="dst">
+        /// Target list
+        /// </param>
+        /// <param name="src">
+        /// Source array
+        /// </param>
+        /// </summary>
+        public static void AddRangeNoAlloc<T>(List<T> dst, T[] src)
+        {
+            var offset = dst.Count;
+            
+            for (var i = 0; i < src.Length; i++)
+            {
+                dst.Add(src[i]);
+            }
+        }
     }
 }
