@@ -61,6 +61,7 @@ class PPOTrainer(Trainer):
             "memory_size",
             "model_path",
             "reward_signals",
+            "vis_encode_type",
         ]
         self.check_param_keys()
 
@@ -459,7 +460,7 @@ class PPOTrainer(Trainer):
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        value_total, policy_total, forward_total, inverse_total = [], [], [], []
+        value_total, policy_total = [], []
         advantages = self.training_buffer.update_buffer["advantages"].get_batch()
         self.training_buffer.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)

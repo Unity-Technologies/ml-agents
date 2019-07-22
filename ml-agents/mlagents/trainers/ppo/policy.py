@@ -47,6 +47,7 @@ class PPOPolicy(TFPolicy):
                     m_size=self.m_size,
                     seed=seed,
                     stream_names=list(reward_signal_configs.keys()),
+                    vis_encode_type=trainer_params["vis_encode_type"],
                     devices=self.devices,
                 )
             else:
@@ -63,6 +64,7 @@ class PPOPolicy(TFPolicy):
                     m_size=self.m_size,
                     seed=seed,
                     stream_names=list(reward_signal_configs.keys()),
+                    vis_encode_type=trainer_params["vis_encode_type"],
                 )
 
             # Create reward signals
@@ -229,7 +231,7 @@ class PPOPolicy(TFPolicy):
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
         :param idx: Index in BrainInfo of agent.
-        :param done: Whether or not this is the last element of the episode, in which case we want the value estimate to be 0. 
+        :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
         """

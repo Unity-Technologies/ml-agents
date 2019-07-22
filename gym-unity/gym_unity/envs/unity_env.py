@@ -43,7 +43,8 @@ class UnityEnv(gym.Env):
         :param use_visual: Whether to use visual observation or vector observation.
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
-        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete.
+        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than
+            MultiDiscrete.
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
         """
