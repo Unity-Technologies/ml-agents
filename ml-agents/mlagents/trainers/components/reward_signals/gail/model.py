@@ -293,9 +293,8 @@ class GAILModel(object):
         else:
             self.loss = self.discriminator_loss
 
-        self.loss = (
-            self.loss + self.gradient_penalty_weight * self.create_gradient_magnitude()
-        )
+        if self.gradient_penalty_weight > 0.0:
+            self.loss += self.gradient_penalty_weight * self.create_gradient_magnitude()
 
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
