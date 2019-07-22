@@ -60,7 +60,7 @@ class Trainer(object):
         """
         Takes a parameter dictionary and converts it to a human-readable string.
         Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
-        param: param_dict: A Dictionary of key, value parameters. 
+        param: param_dict: A Dictionary of key, value parameters.
         return: A string version of this dictionary.
         """
         if not isinstance(param_dict, dict):
@@ -247,7 +247,7 @@ class Trainer(object):
                 )
                 s = sess.run(s_op)
                 self.summary_writer.add_summary(s, self.get_step)
-        except:
+        except Exception:
             LOGGER.info(
                 "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
             )
