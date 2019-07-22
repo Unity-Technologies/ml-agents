@@ -1,6 +1,7 @@
 import logging
 import socket
 import struct
+from typing import Optional
 
 from .communicator import Communicator
 from .communicator_objects import UnityMessage, UnityOutput, UnityInput
@@ -31,7 +32,7 @@ class SocketCommunicator(Communicator):
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self._socket.bind(("localhost", self.port))
-        except:
+        except Exception:
             raise UnityTimeOutException(
                 "Couldn't start socket communication because worker number {} is still in use. "
                 "You may need to manually close a previously opened environment "
@@ -42,7 +43,7 @@ class SocketCommunicator(Communicator):
             self._socket.listen(1)
             self._conn, _ = self._socket.accept()
             self._conn.settimeout(30)
-        except:
+        except Exception:
             raise UnityTimeOutException(
                 "The Unity environment took too long to respond. Make sure that :\n"
                 "\t The environment does not need user interaction to launch\n"
@@ -65,14 +66,14 @@ class SocketCommunicator(Communicator):
             s = s[4:]
             while len(s) != message_length:
                 s += self._conn.recv(self._buffer_size)
-        except socket.timeout as e:
+        except socket.timeout:
             raise UnityTimeOutException("The environment took too long to respond.")
         return s
 
     def _communicator_send(self, message):
         self._conn.send(struct.pack("I", len(message)) + message)
 
-    def exchange(self, inputs: UnityInput) -> UnityOutput:
+    def exchange(self, inputs: UnityInput) -> Optional[UnityOutput]:
         message = UnityMessage()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)

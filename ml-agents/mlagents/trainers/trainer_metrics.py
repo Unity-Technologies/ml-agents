@@ -2,6 +2,7 @@
 import logging
 import csv
 from time import time
+from typing import List, Optional
 
 LOGGER = logging.getLogger("mlagents.trainers")
 FIELD_NAMES = [
@@ -27,23 +28,23 @@ class TrainerMetrics:
         """
         self.path = path
         self.brain_name = brain_name
-        self.rows = []
-        self.time_start_experience_collection = None
+        self.rows: List[List[Optional[str]]] = []
+        self.time_start_experience_collection: Optional[float] = None
         self.time_training_start = time()
-        self.last_buffer_length = None
-        self.last_mean_return = None
-        self.time_policy_update_start = None
-        self.delta_last_experience_collection = None
-        self.delta_policy_update = None
+        self.last_buffer_length: Optional[int] = None
+        self.last_mean_return: Optional[float] = None
+        self.time_policy_update_start: Optional[float] = None
+        self.delta_last_experience_collection: Optional[float] = None
+        self.delta_policy_update: Optional[float] = None
 
-    def start_experience_collection_timer(self):
+    def start_experience_collection_timer(self) -> None:
         """
         Inform Metrics class that experience collection is starting. Intended to be idempotent
         """
         if self.time_start_experience_collection is None:
             self.time_start_experience_collection = time()
 
-    def end_experience_collection_timer(self):
+    def end_experience_collection_timer(self) -> None:
         """
         Inform Metrics class that experience collection is done.
         """
@@ -55,7 +56,7 @@ class TrainerMetrics:
                 self.delta_last_experience_collection += curr_delta
         self.time_start_experience_collection = None
 
-    def add_delta_step(self, delta: float):
+    def add_delta_step(self, delta: float) -> None:
         """
         Inform Metrics class about time to step in environment.
         """
@@ -64,7 +65,9 @@ class TrainerMetrics:
         else:
             self.delta_last_experience_collection = delta
 
-    def start_policy_update_timer(self, number_experiences: int, mean_return: float):
+    def start_policy_update_timer(
+        self, number_experiences: int, mean_return: float
+    ) -> None:
         """
         Inform Metrics class that policy update has started.
         :int number_experiences: Number of experiences in Buffer at this point.
@@ -74,8 +77,8 @@ class TrainerMetrics:
         self.last_mean_return = mean_return
         self.time_policy_update_start = time()
 
-    def _add_row(self, delta_train_start):
-        row = [self.brain_name]
+    def _add_row(self, delta_train_start: float) -> None:
+        row: List[Optional[str]] = [self.brain_name]
         row.extend(
             format(c, ".3f") if isinstance(c, float) else c
             for c in [
@@ -89,7 +92,7 @@ class TrainerMetrics:
         self.delta_last_experience_collection = None
         self.rows.append(row)
 
-    def end_policy_update(self):
+    def end_policy_update(self) -> None:
         """
         Inform Metrics class that policy update has started.
         """
@@ -115,7 +118,7 @@ class TrainerMetrics:
         )
         self._add_row(delta_train_start)
 
-    def write_training_metrics(self):
+    def write_training_metrics(self) -> None:
         """
         Write Training Metrics to CSV
         """

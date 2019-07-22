@@ -209,6 +209,11 @@ public class AgentSoccer : Agent
         transform.position = area.GetRandomSpawnPos(agentRole, team);
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
+        SetResetParameters();
+    }
+
+    public void SetResetParameters()
+    {
         area.ResetBall();
     }
 }

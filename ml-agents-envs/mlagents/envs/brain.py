@@ -84,7 +84,7 @@ class BrainInfo:
         return np.append(m1, m2, axis=0)
 
     @staticmethod
-    def process_pixels(image_bytes, gray_scale):
+    def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
         """
         Converts byte array observation image into numpy array, re-sizes it,
         and optionally converts it to grey scale
@@ -92,8 +92,8 @@ class BrainInfo:
         :param image_bytes: input byte array corresponding to image
         :return: processed numpy array of observation from environment
         """
-        s = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(s))
+        image_bytearray = bytearray(image_bytes)
+        image = Image.open(io.BytesIO(image_bytearray))
         s = np.array(image) / 255.0
         if gray_scale:
             s = np.mean(s, axis=2)
@@ -101,11 +101,11 @@ class BrainInfo:
         return s
 
     @staticmethod
-    def from_agent_proto(agent_info_list, brain_params):
+    def from_agent_proto(worker_id: int, agent_info_list, brain_params):
         """
         Converts list of agent infos to BrainInfo.
         """
-        vis_obs = []
+        vis_obs: List[np.ndarray] = []
         for i in range(brain_params.number_visual_observations):
             obs = [
                 BrainInfo.process_pixels(
@@ -157,13 +157,14 @@ class BrainInfo:
             vector_obs = np.nan_to_num(
                 np.array([x.stacked_vector_observation for x in agent_info_list])
             )
+        agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         brain_info = BrainInfo(
             visual_observation=vis_obs,
             vector_observation=vector_obs,
             text_observations=[x.text_observation for x in agent_info_list],
             memory=memory,
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
-            agents=[x.id for x in agent_info_list],
+            agents=agents,
             local_done=[x.done for x in agent_info_list],
             vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
             text_action=[list(x.stored_text_actions) for x in agent_info_list],
@@ -174,17 +175,19 @@ class BrainInfo:
         return brain_info
 
 
-def safe_concat_lists(l1: Optional[List], l2: Optional[List]):
-    if l1 is None and l2 is None:
-        return None
-    if l1 is None and l2 is not None:
-        return l2.copy()
-    if l1 is not None and l2 is None:
-        return l1.copy()
+def safe_concat_lists(l1: Optional[List], l2: Optional[List]) -> Optional[List]:
+    if l1 is None:
+        if l2 is None:
+            return None
+        else:
+            return l2.copy()
     else:
-        copy = l1.copy()
-        copy.extend(l2)
-        return copy
+        if l2 is None:
+            return l1.copy()
+        else:
+            copy = l1.copy()
+            copy.extend(l2)
+            return copy
 
 
 def safe_concat_np_ndarray(a1: Optional[np.ndarray], a2: Optional[np.ndarray]):

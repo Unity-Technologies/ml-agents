@@ -1,0 +1,39 @@
+repos:
+-   repo: https://github.com/python/black
+    rev: 19.3b0
+    hooks:
+    -   id: black
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.720
+    hooks:
+    -   id: mypy
+        name: mypy-ml-agents
+        files: "ml-agents/.*"
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
+    -   id: mypy
+        name: mypy-ml-agents-envs
+        files: "ml-agents-envs/.*"
+        # Exclude protobuf files and don't follow them when imported
+        exclude: ".*_pb2.py"
+        # TODO get disallow-incomplete-defs working
+        args: [--ignore-missing-imports, --follow-imports=silent]
+    -   id: mypy
+        name: mypy-gym-unity
+        files: "gym-unity/.*"
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+    -   id: mixed-line-ending
+        exclude: >
+            (?x)^(
+                .*cs.meta|
+                .*.css
+            )$
+        args: [--fix=lf]
+    -   id: flake8
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py
+            )$
