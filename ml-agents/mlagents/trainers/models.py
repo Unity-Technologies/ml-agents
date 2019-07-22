@@ -14,7 +14,7 @@ ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 class EncoderType(Enum):
     RESNET = "resnet"
     NATURE_CNN = "nature_cnn"
-    DEFAUL = "default"
+    DEFAULT = "default"
 
 
 class LearningModel(object):
