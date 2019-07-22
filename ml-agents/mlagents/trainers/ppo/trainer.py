@@ -20,9 +20,7 @@ logger = logging.getLogger("mlagents.trainers")
 class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
-    def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
-    ):
+    def __init__(self, brain, trainer_parameters):
         """
         Responsible for collecting experiences and training PPO model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
@@ -32,7 +30,7 @@ class PPOTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
         """
-        super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super(PPOTrainer, self).__init__(brain, trainer_parameters)
         self.param_keys = [
             "batch_size",
             "beta",
@@ -66,7 +64,13 @@ class PPOTrainer(Trainer):
             )
 
         self.step = 0
-        self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
+        self.policy = PPOPolicy(
+            trainer_parameters["seed"],
+            brain,
+            trainer_parameters,
+            self.is_training,
+            trainer_parameters["load"],
+        )
 
         stats = defaultdict(list)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
@@ -80,6 +84,7 @@ class PPOTrainer(Trainer):
 
         self.training_buffer = Buffer()
 
+        reward_buff_cap = trainer_parameters["reward_buff_cap"]
         self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
 

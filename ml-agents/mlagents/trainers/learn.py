@@ -9,16 +9,178 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, NamedTuple
 
 
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
+from mlagents.envs.brain import BrainParameters
+
+
+class RunArgs(NamedTuple):
+    docker_target_name: Optional[str]
+    env_path: Optional[str]
+    run_id: str
+    load_model: bool
+    train_model: bool
+    save_freq: int
+    keep_checkpoints: int
+    base_port: int
+    num_envs: int
+    curriculum_folder: Optional[str]
+    lesson: int
+    fast_simulation: bool
+    no_graphics: bool
+    trainer_config_path: str
+    model_path: str
+    summaries_dir: str
+
+    @staticmethod
+    def _create_model_path(model_path):
+        try:
+            if not os.path.exists(model_path):
+                os.makedirs(model_path)
+        except Exception:
+            raise UnityEnvironmentException(
+                "The folder {} containing the "
+                "generated model could not be "
+                "accessed. Please make sure the "
+                "permissions are set correctly.".format(model_path)
+            )
+
+    @staticmethod
+    def from_docopt_dict(docopt_dict: Dict[str, Any], sub_id: int) -> "RunArgs":
+        # Docker Parameters
+        docker_target_name = (
+            docopt_dict["--docker-target-name"]
+            if docopt_dict["--docker-target-name"] != "None"
+            else None
+        )
+
+        # General parameters
+        env_path = docopt_dict["--env"] if docopt_dict["--env"] != "None" else None
+        run_id = docopt_dict["--run-id"]
+        load_model = docopt_dict["--load"]
+        train_model = docopt_dict["--train"]
+        save_freq = int(docopt_dict["--save-freq"])
+        keep_checkpoints = int(docopt_dict["--keep-checkpoints"])
+        base_port = int(docopt_dict["--base-port"])
+        num_envs = int(docopt_dict["--num-envs"])
+        curriculum_folder = (
+            docopt_dict["--curriculum"]
+            if docopt_dict["--curriculum"] != "None"
+            else None
+        )
+        lesson = int(docopt_dict["--lesson"])
+        fast_simulation = not bool(docopt_dict["--slow"])
+        no_graphics = docopt_dict["--no-graphics"]
+        trainer_config_path = docopt_dict["<trainer-config-path>"]
+
+        # Recognize and use docker volume if one is passed as an argument
+        if not docker_target_name:
+            model_path = "./models/{run_id}-{sub_id}".format(
+                run_id=run_id, sub_id=sub_id
+            )
+            summaries_dir = "./summaries"
+        else:
+            trainer_config_path = "/{docker_target_name}/{trainer_config_path}".format(
+                docker_target_name=docker_target_name,
+                trainer_config_path=trainer_config_path,
+            )
+            if curriculum_folder is not None:
+                curriculum_folder = "/{docker_target_name}/{curriculum_folder}".format(
+                    docker_target_name=docker_target_name,
+                    curriculum_folder=curriculum_folder,
+                )
+            model_path = "/{docker_target_name}/models/{run_id}-{sub_id}".format(
+                docker_target_name=docker_target_name, run_id=run_id, sub_id=sub_id
+            )
+            summaries_dir = "/{docker_target_name}/summaries".format(
+                docker_target_name=docker_target_name
+            )
+        RunArgs._create_model_path(model_path)
+        return RunArgs(
+            docker_target_name,
+            env_path,
+            run_id,
+            load_model,
+            train_model,
+            save_freq,
+            keep_checkpoints,
+            base_port,
+            num_envs,
+            curriculum_folder,
+            lesson,
+            fast_simulation,
+            no_graphics,
+            trainer_config_path,
+            model_path,
+            summaries_dir,
+        )
+
+
+def initialize_trainers(
+    run_id: str,
+    summaries_dir: str,
+    model_path: str,
+    keep_checkpoints: int,
+    train_model: bool,
+    load_model: bool,
+    seed: int,
+    external_brains: Dict[str, BrainParameters],
+    trainer_config: Dict[str, Any],
+    meta_curriculum: Optional[MetaCurriculum],
+) -> Dict[str, Trainer]:
+    """
+    Initialization of the trainers
+    :param trainer_config: The configurations of the trainers
+    """
+    trainer_parameters_dict = {}
+    trainers = {}
+    trainer_config = trainer_config
+    for brain_name in external_brains:
+        trainer_parameters = trainer_config["default"].copy()
+        trainer_parameters["summary_path"] = "{basedir}/{name}".format(
+            basedir=summaries_dir, name=str(run_id) + "_" + brain_name
+        )
+        trainer_parameters["model_path"] = "{basedir}/{name}".format(
+            basedir=model_path, name=brain_name
+        )
+        trainer_parameters["keep_checkpoints"] = keep_checkpoints
+        trainer_parameters["training"] = train_model
+        trainer_parameters["load"] = load_model
+        trainer_parameters["seed"] = seed
+        trainer_parameters["run_id"] = run_id
+        trainer_parameters["reward_buff_cap"] = (
+            meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
+            if meta_curriculum
+            else 1
+        )
+        if brain_name in trainer_config:
+            _brain_key: Any = brain_name
+            while not isinstance(trainer_config[_brain_key], dict):
+                _brain_key = trainer_config[_brain_key]
+            trainer_parameters.update(trainer_config[_brain_key])
+        trainer_parameters_dict[brain_name] = trainer_parameters.copy()
+    for brain_name in external_brains:
+        trainer = Trainer.initialize_from_trainer_config(
+            trainer_parameters_dict[brain_name], external_brains[brain_name]
+        )
+        if trainer is None:
+            raise UnityEnvironmentException(
+                "The trainer config contains "
+                "an unknown trainer type for "
+                "brain {}".format(brain_name)
+            )
+        else:
+            trainers[brain_name] = trainer
+    return trainers
 
 
 def run_training(
@@ -31,106 +193,75 @@ def run_training(
     :param run_seed: Random seed used for training.
     :param run_options: Command line arguments for training.
     """
-    # Docker Parameters
-    docker_target_name = (
-        run_options["--docker-target-name"]
-        if run_options["--docker-target-name"] != "None"
-        else None
-    )
-
-    # General parameters
-    env_path = run_options["--env"] if run_options["--env"] != "None" else None
-    run_id = run_options["--run-id"]
-    load_model = run_options["--load"]
-    train_model = run_options["--train"]
-    save_freq = int(run_options["--save-freq"])
-    keep_checkpoints = int(run_options["--keep-checkpoints"])
-    base_port = int(run_options["--base-port"])
-    num_envs = int(run_options["--num-envs"])
-    curriculum_folder = (
-        run_options["--curriculum"] if run_options["--curriculum"] != "None" else None
-    )
-    lesson = int(run_options["--lesson"])
-    fast_simulation = not bool(run_options["--slow"])
-    no_graphics = run_options["--no-graphics"]
-    trainer_config_path = run_options["<trainer-config-path>"]
-    # Recognize and use docker volume if one is passed as an argument
-    if not docker_target_name:
-        model_path = "./models/{run_id}-{sub_id}".format(run_id=run_id, sub_id=sub_id)
-        summaries_dir = "./summaries"
-    else:
-        trainer_config_path = "/{docker_target_name}/{trainer_config_path}".format(
-            docker_target_name=docker_target_name,
-            trainer_config_path=trainer_config_path,
-        )
-        if curriculum_folder is not None:
-            curriculum_folder = "/{docker_target_name}/{curriculum_folder}".format(
-                docker_target_name=docker_target_name,
-                curriculum_folder=curriculum_folder,
-            )
-        model_path = "/{docker_target_name}/models/{run_id}-{sub_id}".format(
-            docker_target_name=docker_target_name, run_id=run_id, sub_id=sub_id
-        )
-        summaries_dir = "/{docker_target_name}/summaries".format(
-            docker_target_name=docker_target_name
-        )
-
-    trainer_config = load_config(trainer_config_path)
+    run_args = RunArgs.from_docopt_dict(run_options, sub_id)
+    trainer_config = load_config(run_args.trainer_config_path)
     env_factory = create_environment_factory(
-        env_path,
-        docker_target_name,
-        no_graphics,
+        run_args.env_path,
+        run_args.docker_target_name,
+        run_args.no_graphics,
         run_seed,
-        base_port + (sub_id * num_envs),
+        run_args.base_port + (sub_id * run_args.num_envs),
     )
-    env = SubprocessEnvManager(env_factory, num_envs)
-    maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
+    env = SubprocessEnvManager(env_factory, run_args.num_envs)
+    meta_curriculum = None
+    if run_args.curriculum_folder is not None:
+        meta_curriculum = create_meta_curriculum(run_args.curriculum_folder, env)
+        # TODO: Should be able to start learning at different lesson numbers
+        # for each curriculum.
+        meta_curriculum.set_all_curriculums_to_lesson_num(run_args.lesson)
 
+    trainers = initialize_trainers(
+        run_args.run_id,
+        run_args.summaries_dir,
+        run_args.model_path,
+        run_args.keep_checkpoints,
+        run_args.train_model,
+        run_args.load_model,
+        run_seed,
+        env.external_brains,
+        trainer_config,
+        meta_curriculum,
+    )
     # Create controller and begin training.
     tc = TrainerController(
-        model_path,
-        summaries_dir,
-        run_id + "-" + str(sub_id),
-        save_freq,
-        maybe_meta_curriculum,
-        load_model,
-        train_model,
-        keep_checkpoints,
-        lesson,
+        trainers,
+        run_args.summaries_dir,
+        run_args.run_id + "-" + str(sub_id),
+        run_args.save_freq,
+        meta_curriculum,
+        run_args.train_model,
+        run_args.keep_checkpoints,
+        run_args.lesson,
         run_seed,
-        fast_simulation,
+        run_args.fast_simulation,
     )
 
     # Signal that environment has been launched.
     process_queue.put(True)
 
     # Begin training
-    tc.start_learning(env, trainer_config)
+    tc.start_learning(env)
 
 
-def try_create_meta_curriculum(
-    curriculum_folder: Optional[str], env: SubprocessEnvManager
-) -> Optional[MetaCurriculum]:
-    if curriculum_folder is None:
-        return None
-    else:
-        meta_curriculum = MetaCurriculum(curriculum_folder, env.reset_parameters)
-        if meta_curriculum:
-            for brain_name in meta_curriculum.brains_to_curriculums.keys():
-                if brain_name not in env.external_brains.keys():
-                    raise MetaCurriculumError(
-                        "One of the curricula "
-                        "defined in " + curriculum_folder + " "
-                        "does not have a corresponding "
-                        "Brain. Check that the "
-                        "curriculum file has the same "
-                        "name as the Brain "
-                        "whose curriculum it defines."
-                    )
-        return meta_curriculum
+def create_meta_curriculum(
+    curriculum_folder: str, env: SubprocessEnvManager
+) -> MetaCurriculum:
+    meta_curriculum = MetaCurriculum(curriculum_folder, env.reset_parameters)
+    for brain_name in meta_curriculum.brains_to_curriculums.keys():
+        if brain_name not in env.external_brains.keys():
+            raise MetaCurriculumError(
+                "One of the curricula "
+                "defined in " + curriculum_folder + " "
+                "does not have a corresponding "
+                "Brain. Check that the "
+                "curriculum file has the same "
+                "name as the Brain "
+                "whose curriculum it defines."
+            )
+    return meta_curriculum
 
 
-def prepare_for_docker_run(docker_target_name, env_path):
+def prepare_for_docker_run(docker_target_name: str, env_path: str) -> str:
     for f in glob.glob(
         "/{docker_target_name}/*".format(docker_target_name=docker_target_name)
     ):
@@ -169,8 +300,8 @@ def load_config(trainer_config_path: str) -> Dict[str, Any]:
 
 
 def create_environment_factory(
-    env_path: str,
-    docker_target_name: str,
+    env_path: Optional[str],
+    docker_target_name: Optional[str],
     no_graphics: bool,
     seed: Optional[int],
     start_port: int,
@@ -184,8 +315,8 @@ def create_environment_factory(
             .replace(".x86_64", "")
             .replace(".x86", "")
         )
-    docker_training = docker_target_name is not None
-    if docker_training and env_path is not None:
+    docker_training: bool = docker_target_name is not None
+    if docker_target_name is not None and env_path is not None:
         """
             Comments for future maintenance:
                 Some OS/VM instances (e.g. COS GCP Image) mount filesystems

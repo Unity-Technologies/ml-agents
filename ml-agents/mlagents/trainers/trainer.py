@@ -21,7 +21,24 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the base class for the mlagents.envs.trainers"""
 
-    def __init__(self, brain, trainer_parameters, training, run_id):
+    @staticmethod
+    def initialize_from_trainer_config(trainer_parameters, brain_parameters):
+        from mlagents.trainers.ppo.trainer import PPOTrainer
+        from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
+        from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
+
+        kwargs = {"brain": brain_parameters, "trainer_parameters": trainer_parameters}
+        if trainer_parameters["trainer"] == "offline_bc":
+            trainer_cls = OfflineBCTrainer
+        elif trainer_parameters["trainer"] == "online_bc":
+            trainer_cls = OnlineBCTrainer
+        elif trainer_parameters["trainer"] == "ppo":
+            trainer_cls = PPOTrainer
+        else:
+            return None
+        return trainer_cls(**kwargs)
+
+    def __init__(self, brain_parameters, trainer_parameters):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
@@ -30,14 +47,14 @@ class Trainer(object):
         :int run_id: The identifier of the current run
         """
         self.param_keys = []
-        self.brain_name = brain.brain_name
-        self.run_id = run_id
+        self.brain_name = brain_parameters.brain_name
+        self.run_id = trainer_parameters["run_id"]
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
         self.cumulative_returns_since_policy_update = []
-        self.is_training = training
+        self.is_training = trainer_parameters["training"]
         self.stats = {}
         self.trainer_metrics = TrainerMetrics(
             path=self.summary_path + ".csv", brain_name=self.brain_name

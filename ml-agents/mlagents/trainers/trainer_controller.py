@@ -11,28 +11,21 @@ import numpy as np
 import tensorflow as tf
 from time import time
 
-from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.env_manager import EnvManager
-from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
-from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
-from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
-from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 
 
 class TrainerController(object):
     def __init__(
         self,
-        model_path: str,
+        trainers: Dict[str, Trainer],
         summaries_dir: str,
         run_id: str,
         save_freq: int,
         meta_curriculum: Optional[MetaCurriculum],
-        load: bool,
         train: bool,
         keep_checkpoints: int,
         lesson: Optional[int],
@@ -51,48 +44,39 @@ class TrainerController(object):
         :param lesson: Start learning from this lesson.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         """
-
-        self.model_path = model_path
+        self.trainers = trainers
+        self.meta_curriculum = meta_curriculum
         self.summaries_dir = summaries_dir
         self.logger = logging.getLogger("mlagents.envs")
         self.run_id = run_id
         self.save_freq = save_freq
         self.lesson = lesson
-        self.load_model = load
         self.train_model = train
         self.keep_checkpoints = keep_checkpoints
-        self.trainers: Dict[str, Trainer] = {}
         self.trainer_metrics: Dict[str, TrainerMetrics] = {}
-        self.meta_curriculum = meta_curriculum
-        self.seed = training_seed
         self.training_start_time = time()
         self.fast_simulation = fast_simulation
-        np.random.seed(self.seed)
-        tf.set_random_seed(self.seed)
+        np.random.seed(training_seed)
+        tf.set_random_seed(training_seed)
 
     def _get_measure_vals(self):
         brain_names_to_measure_vals = {}
-        if self.meta_curriculum:
-            for (
-                brain_name,
-                curriculum,
-            ) in self.meta_curriculum.brains_to_curriculums.items():
-                if curriculum.measure == "progress":
-                    measure_val = (
-                        self.trainers[brain_name].get_step
-                        / self.trainers[brain_name].get_max_steps
-                    )
-                    brain_names_to_measure_vals[brain_name] = measure_val
-                elif curriculum.measure == "reward":
-                    measure_val = np.mean(self.trainers[brain_name].reward_buffer)
-                    brain_names_to_measure_vals[brain_name] = measure_val
-        else:
-            for brain_name, trainer in self.trainers.items():
-                measure_val = np.mean(trainer.reward_buffer)
+        for (
+            brain_name,
+            curriculum,
+        ) in self.meta_curriculum.brains_to_curriculums.items():
+            if curriculum.measure == "progress":
+                measure_val = (
+                    self.trainers[brain_name].get_step
+                    / self.trainers[brain_name].get_max_steps
+                )
+                brain_names_to_measure_vals[brain_name] = measure_val
+            elif curriculum.measure == "reward":
+                measure_val = np.mean(self.trainers[brain_name].reward_buffer)
                 brain_names_to_measure_vals[brain_name] = measure_val
         return brain_names_to_measure_vals
 
-    def _save_model(self, steps=0):
+    def _save_model(self):
         """
         Saves current model to checkpoint folder.
         :param steps: Current number of steps in training process.
@@ -102,11 +86,11 @@ class TrainerController(object):
             self.trainers[brain_name].save_model()
         self.logger.info("Saved Model")
 
-    def _save_model_when_interrupted(self, steps=0):
+    def _save_model_when_interrupted(self):
         self.logger.info(
-            "Learning was interrupted. Please wait " "while the graph is generated."
+            "Learning was interrupted. Please wait while the graph is generated."
         )
-        self._save_model(steps)
+        self._save_model()
 
     def _write_training_metrics(self):
         """
@@ -133,87 +117,6 @@ class TrainerController(object):
         """
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
-
-    def initialize_trainers(
-        self,
-        trainer_config: Dict[str, Any],
-        external_brains: Dict[str, BrainParameters],
-    ) -> None:
-        """
-        Initialization of the trainers
-        :param trainer_config: The configurations of the trainers
-        """
-        trainer_parameters_dict = {}
-        for brain_name in external_brains:
-            trainer_parameters = trainer_config["default"].copy()
-            trainer_parameters["summary_path"] = "{basedir}/{name}".format(
-                basedir=self.summaries_dir, name=str(self.run_id) + "_" + brain_name
-            )
-            trainer_parameters["model_path"] = "{basedir}/{name}".format(
-                basedir=self.model_path, name=brain_name
-            )
-            trainer_parameters["keep_checkpoints"] = self.keep_checkpoints
-            if brain_name in trainer_config:
-                _brain_key: Any = brain_name
-                while not isinstance(trainer_config[_brain_key], dict):
-                    _brain_key = trainer_config[_brain_key]
-                trainer_parameters.update(trainer_config[_brain_key])
-            trainer_parameters_dict[brain_name] = trainer_parameters.copy()
-        for brain_name in external_brains:
-            if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
-                self.trainers[brain_name] = OfflineBCTrainer(
-                    brain=external_brains[brain_name],
-                    trainer_parameters=trainer_parameters_dict[brain_name],
-                    training=self.train_model,
-                    load=self.load_model,
-                    seed=self.seed,
-                    run_id=self.run_id,
-                )
-            elif trainer_parameters_dict[brain_name]["trainer"] == "online_bc":
-                self.trainers[brain_name] = OnlineBCTrainer(
-                    brain=external_brains[brain_name],
-                    trainer_parameters=trainer_parameters_dict[brain_name],
-                    training=self.train_model,
-                    load=self.load_model,
-                    seed=self.seed,
-                    run_id=self.run_id,
-                )
-            elif trainer_parameters_dict[brain_name]["trainer"] == "ppo":
-                self.trainers[brain_name] = PPOTrainer(
-                    brain=external_brains[brain_name],
-                    reward_buff_cap=self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].min_lesson_length
-                    if self.meta_curriculum
-                    else 1,
-                    trainer_parameters=trainer_parameters_dict[brain_name],
-                    training=self.train_model,
-                    load=self.load_model,
-                    seed=self.seed,
-                    run_id=self.run_id,
-                )
-                self.trainer_metrics[brain_name] = self.trainers[
-                    brain_name
-                ].trainer_metrics
-            else:
-                raise UnityEnvironmentException(
-                    "The trainer config contains "
-                    "an unknown trainer type for "
-                    "brain {}".format(brain_name)
-                )
-
-    @staticmethod
-    def _create_model_path(model_path):
-        try:
-            if not os.path.exists(model_path):
-                os.makedirs(model_path)
-        except Exception:
-            raise UnityEnvironmentException(
-                "The folder {} containing the "
-                "generated model could not be "
-                "accessed. Please make sure the "
-                "permissions are set correctly.".format(model_path)
-            )
 
     def _reset_env(self, env: EnvManager) -> List[StepInfo]:
         """Resets the environment.
@@ -256,19 +159,9 @@ class TrainerController(object):
             else:
                 trainer.write_summary(global_step, delta_train_start)
 
-    def start_learning(
-        self, env_manager: EnvManager, trainer_config: Dict[str, Any]
-    ) -> None:
-        # TODO: Should be able to start learning at different lesson numbers
-        # for each curriculum.
-        if self.meta_curriculum is not None:
-            self.meta_curriculum.set_all_curriculums_to_lesson_num(self.lesson)
-        self._create_model_path(self.model_path)
-
+    def start_learning(self, env_manager: EnvManager) -> None:
         tf.reset_default_graph()
 
-        # Prevent a single session from taking all GPU memory.
-        self.initialize_trainers(trainer_config, env_manager.external_brains)
         for _, t in self.trainers.items():
             self.logger.info(t)
 
@@ -279,6 +172,9 @@ class TrainerController(object):
                 trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
         try:
             for brain_name, trainer in self.trainers.items():
+                self.trainer_metrics[brain_name] = self.trainers[
+                    brain_name
+                ].trainer_metrics
                 env_manager.set_policy(brain_name, trainer.policy)
             self._reset_env(env_manager)
             while self._not_done_training():
@@ -287,14 +183,14 @@ class TrainerController(object):
                     global_step += 1
                     if self._should_save_model(global_step):
                         # Save Tensorflow model
-                        self._save_model(steps=global_step)
+                        self._save_model()
                     self.write_to_tensorboard(global_step)
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
-                self._save_model(steps=global_step)
+                self._save_model()
         except KeyboardInterrupt:
             if self.train_model:
-                self._save_model_when_interrupted(steps=global_step)
+                self._save_model_when_interrupted()
             pass
         env_manager.close()
         if self.train_model:
